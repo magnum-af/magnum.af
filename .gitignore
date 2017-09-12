@@ -1,0 +1,13 @@
+*.pyc
+*.vtr
+*.out
+*.png
+build/
+debug/
+*.vti
+*.vtk
+bin/
+.hope/
+*.swp
+*.dat
+*.pdf
