@@ -5,11 +5,12 @@
 #include "arrayfire.h"
 #include "state.hpp"
 #include "func.hpp"
+#include "LLGTerm.hpp"
 //#include "atomistic_demag.hpp"
 //#include "micro_demag.hpp"
 //#include "micro_dmi.hpp"
 //#include "micro_anisotropy.hpp"
-#include "micro_exch.hpp"
+//#include "micro_exch.hpp"
 //#include "zee.hpp"
 //#include "integrator.hpp"
 

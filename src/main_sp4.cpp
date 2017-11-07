@@ -23,11 +23,11 @@ int main(int argc, char** argv)
    for (int i=0; i<argc; i++)
         cout << "Parameter " << i << " was " << argv[i] << "\n";
   
-  std::string filepath(argc>0? argv[1]: "../Data/Testing/");
+  std::string filepath(argc>1? argv[1]: "../Data/Testing");
   if(argc>0)filepath.append("/");
   std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
 
-  setDevice(argc>1? argv[2]:"0");
+  setDevice(argc>2? std::stoi(argv[2]):0);
   //if(argc>1) setDevice(std::stoi(argv[2]));
   info();
 
