@@ -1,5 +1,5 @@
-#ifndef EXCH_H
-#define EXCH_H
+#ifndef MICRO_EXCH_H
+#define MICRO_EXCH_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "state.hpp"

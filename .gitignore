@@ -4,6 +4,7 @@
 *.png
 build/
 debug/
+Data/
 *.vti
 *.vtk
 bin/

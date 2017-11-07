@@ -6,9 +6,9 @@
 #include <string>
 #include <memory>
 #include "llg.hpp"
-#include "demag.hpp"
-#include "exch.hpp"
 #include "zee.hpp"
+//#include "micro_demag.hpp"
+//#include "micro_exch.hpp"
 #include "atomistic_demag.hpp"
 #include "atomistic_exchange.hpp"
 #include "atomistic_anisotropy.hpp"

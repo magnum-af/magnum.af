@@ -1,4 +1,4 @@
-#include "demag.hpp"
+#include "micro_demag.hpp"
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx

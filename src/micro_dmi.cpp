@@ -1,4 +1,4 @@
-#include "dmi.hpp"
+#include "micro_dmi.hpp"
 using namespace af;
 void showdims(const array& a){
   std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;

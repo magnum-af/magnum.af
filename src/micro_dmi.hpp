@@ -1,11 +1,11 @@
-#ifndef ANISOTROPY_H
-#define ANISOTROPY_H
+#ifndef MICRO_DMI_H
+#define MICRO_DMI_H
 #include "arrayfire.h"
 #include "mesh.hpp"
 #include "param.hpp"
 #include "func.hpp"
 #include "LLGTerm.hpp"
-class ANISOTROPY : public LLGTerm {
+class DMI : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -14,13 +14,13 @@ class ANISOTROPY : public LLGTerm {
     //CPU time
     double* get_cpu_time(){return &cpu_time;}
 
-    ANISOTROPY (Mesh, Param);
     Param param;
     Mesh mesh;
-
-    af::array eu;//Uniaxial anisotropy normal vector
-
+    DMI (Mesh, Param);
+    af::array filtr_fd1;
+    void correct_edges(af::array& out, const af::array& in);
+    af::array n;
     double     cpu_time{0.};
-    af::timer timer_anisotropy;
+    af::timer timer_dmi;
 };
 #endif

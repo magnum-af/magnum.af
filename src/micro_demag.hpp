@@ -1,11 +1,12 @@
-#ifndef DMI_H
-#define DMI_H
+#ifndef MICRO_DEMAG_H
+#define MICRO_DEMAG_H
 #include "arrayfire.h"
+#include "LLGTerm.hpp"
 #include "mesh.hpp"
 #include "param.hpp"
 #include "func.hpp"
-#include "LLGTerm.hpp"
-class DMI : public LLGTerm {
+
+class DemagSolver : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -16,11 +17,14 @@ class DMI : public LLGTerm {
 
     Param param;
     Mesh mesh;
-    DMI (Mesh, Param);
-    af::array filtr_fd1;
-    void correct_edges(af::array& out, const af::array& in);
-    af::array n;
-    double     cpu_time{0.};
-    af::timer timer_dmi;
+
+    DemagSolver (Mesh, Param);
+    af::array Nfft;
+    af::array h_field;
+    af::array hfft;
+    af::array mfft;
+
+    double cpu_time{0.};
+    af::timer timer_demagsolve;
 };
 #endif

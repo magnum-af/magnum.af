@@ -1,12 +1,11 @@
-#ifndef DEMAG_H
-#define DEMAG_H
+#ifndef MICRO_ANISOTROPY_H
+#define MICRO_ANISOTROPY_H
 #include "arrayfire.h"
-#include "LLGTerm.hpp"
 #include "mesh.hpp"
 #include "param.hpp"
 #include "func.hpp"
-
-class DemagSolver : public LLGTerm {
+#include "LLGTerm.hpp"
+class ANISOTROPY : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -15,16 +14,13 @@ class DemagSolver : public LLGTerm {
     //CPU time
     double* get_cpu_time(){return &cpu_time;}
 
+    ANISOTROPY (Mesh, Param);
     Param param;
     Mesh mesh;
 
-    DemagSolver (Mesh, Param);
-    af::array Nfft;
-    af::array h_field;
-    af::array hfft;
-    af::array mfft;
+    af::array eu;//Uniaxial anisotropy normal vector
 
-    double cpu_time{0.};
-    af::timer timer_demagsolve;
+    double     cpu_time{0.};
+    af::timer timer_anisotropy;
 };
 #endif
