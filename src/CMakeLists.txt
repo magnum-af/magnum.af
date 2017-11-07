@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(cpp.mag)
+project(pth-mag)
 
 #useage:
 #cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
@@ -49,13 +49,13 @@ ADD_LIBRARY(FOO_CORE OBJECT ${SOURCE})
 # ArrayFire CPU backend
 if(${ArrayFire_CPU_FOUND})
     MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
-    ADD_EXECUTABLE(cppmag-cpu $<TARGET_OBJECTS:FOO_CORE>)
-    TARGET_LINK_LIBRARIES(cppmag-cpu ${ArrayFire_CPU_LIBRARIES}
+    ADD_EXECUTABLE(pth-mag-cpu $<TARGET_OBJECTS:FOO_CORE>)
+    TARGET_LINK_LIBRARIES(pth-mag-cpu ${ArrayFire_CPU_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT})
     if(VTK_LIBRARIES)
-      target_link_libraries(cppmag-cpu ${VTK_LIBRARIES})
+      target_link_libraries(pth-mag-cpu ${VTK_LIBRARIES})
     else()
-      target_link_libraries(cppmag-cpu vtkHybrid vtkWidgets)
+      target_link_libraries(pth-mag-cpu vtkHybrid vtkWidgets)
     endif()
 ENDIF()
 
@@ -64,8 +64,8 @@ ENDIF()
 #IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
 #    # We need to find OpenCL as transitive linking is disabled on some OSes
 #    MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
-#    ADD_EXECUTABLE(cppmag-opencl $<TARGET_OBJECTS:FOO_CORE>)
-#    TARGET_LINK_LIBRARIES(cppmag-opencl ${ArrayFire_OpenCL_LIBRARIES}
+#    ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:FOO_CORE>)
+#    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES}
 #        ${OpenCL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 #ENDIF()
 
@@ -77,12 +77,12 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     FIND_PACKAGE(NVVM REQUIRED)
     MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
     MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
-    ADD_EXECUTABLE(cppmag-cuda $<TARGET_OBJECTS:FOO_CORE>)
-    TARGET_LINK_LIBRARIES(cppmag-cuda ${ArrayFire_CUDA_LIBRARIES}
+    ADD_EXECUTABLE(pth-mag-cuda $<TARGET_OBJECTS:FOO_CORE>)
+    TARGET_LINK_LIBRARIES(pth-mag-cuda ${ArrayFire_CUDA_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
     if(VTK_LIBRARIES)
-      target_link_libraries(cppmag-cuda ${VTK_LIBRARIES})
+      target_link_libraries(pth-mag-cuda ${VTK_LIBRARIES})
     else()
-      target_link_libraries(cppmag-cuda vtkHybrid vtkWidgets)
+      target_link_libraries(pth-mag-cuda vtkHybrid vtkWidgets)
     endif()
 ENDIF()
