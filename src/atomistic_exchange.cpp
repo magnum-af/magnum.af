@@ -47,7 +47,7 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 
   if(state.param.afsync) sync();
   cpu_time += timer::stop(timer_solve);
-  return state.param.J_atom/(2.*state.param.mu0*state.param.p)* mj;
+  return state.param.J_atom/(state.param.mu0*state.param.p)* mj;
 }
   //return state.param.J/(state.mesh.dx*state.param.mu0) * mj;
   //return state.param.J/(state.mesh.dx*state.param.mu0*state.param.p) * mj;
