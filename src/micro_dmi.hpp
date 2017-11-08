@@ -1,10 +1,9 @@
 #ifndef MICRO_DMI_H
 #define MICRO_DMI_H
 #include "arrayfire.h"
-#include "mesh.hpp"
-#include "param.hpp"
-#include "func.hpp"
 #include "LLGTerm.hpp"
+#include "state.hpp"
+#include "func.hpp"
 class DMI : public LLGTerm {
   public:
     //Field contribution

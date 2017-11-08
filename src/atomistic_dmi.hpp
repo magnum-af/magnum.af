@@ -1,8 +1,9 @@
 #ifndef ATOMISTIC_DMI_H
 #define ATOMISTIC_DMI_H
 #include "arrayfire.h"
-#include "func.hpp"
 #include "LLGTerm.hpp"
+#include "state.hpp"
+#include "func.hpp"
 class ATOMISTIC_DMI : public LLGTerm {
   public:
     //Field contribution

@@ -2,8 +2,7 @@
 #define MICRO_DEMAG_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "mesh.hpp"
-#include "param.hpp"
+#include "state.hpp"
 #include "func.hpp"
 
 class DemagSolver : public LLGTerm {

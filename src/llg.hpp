@@ -3,9 +3,9 @@
 #include <vector>
 #include <memory>
 #include "arrayfire.h"
+#include "LLGTerm.hpp"
 #include "state.hpp"
 #include "func.hpp"
-#include "LLGTerm.hpp"
 //#include "atomistic_demag.hpp"
 //#include "micro_demag.hpp"
 //#include "micro_dmi.hpp"

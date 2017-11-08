@@ -1,10 +1,9 @@
 #ifndef MICRO_ANISOTROPY_H
 #define MICRO_ANISOTROPY_H
 #include "arrayfire.h"
-#include "mesh.hpp"
-#include "param.hpp"
-#include "func.hpp"
 #include "LLGTerm.hpp"
+#include "state.hpp"
+#include "func.hpp"
 class ANISOTROPY : public LLGTerm {
   public:
     //Field contribution
