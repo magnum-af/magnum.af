@@ -6,13 +6,6 @@
 #include "LLGTerm.hpp"
 #include "state.hpp"
 #include "func.hpp"
-//#include "atomistic_demag.hpp"
-//#include "micro_demag.hpp"
-//#include "micro_dmi.hpp"
-//#include "micro_anisotropy.hpp"
-//#include "micro_exch.hpp"
-//#include "zee.hpp"
-//#include "integrator.hpp"
 
 using namespace af;
 
