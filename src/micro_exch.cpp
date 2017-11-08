@@ -3,8 +3,9 @@ using namespace af;
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
+//TODO check effect of boundary considerations
 double ExchSolver::E(const State& state){
-  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
 //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));//Terms proportional to m dorp out in the cross product of the LLG and thus can be neglected
@@ -31,6 +32,29 @@ array ExchSolver::h(const State& state){
     return  (2.* param.A)/(param.mu0*param.ms) * exch;
 }
 
+//TODO check effect of boundary considerations
+array ExchSolver::h_withedges(const State& state){
+    timer_exchsolve = timer::start();
+    //Convolution
+    array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
+
+    //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
+    timer_edges = timer::start();
+    exch(0, span,span,span)+=state.m(0 ,span,span,span)/ pow(mesh.dx,2);
+    exch(-1,span,span,span)+=state.m(-1,span,span,span)/ pow(mesh.dx,2);
+    
+    
+    exch(span,0 ,span,span)+=state.m(span,0 ,span,span)/ pow(mesh.dy,2);
+    exch(span,-1,span,span)+=state.m(span,-1,span,span)/ pow(mesh.dy,2);
+    
+    exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
+    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
+
+    if(param.afsync) sync();
+    time_edges += timer::stop(timer_edges);
+    cpu_time += timer::stop(timer_exchsolve);
+    return  (2.* param.A)/(param.mu0*param.ms) * exch;
+}
 
 
 //void showdims2(const array& a){

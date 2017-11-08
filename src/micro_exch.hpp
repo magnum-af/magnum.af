@@ -9,6 +9,8 @@ class ExchSolver : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
+    //Field contribution with edges for Energy calculation
+    af::array h_withedges(const State& state);
     //Energy contribution
     double E(const State& state);
     //CPU time
