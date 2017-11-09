@@ -208,7 +208,7 @@ array LLG::llgstep(State& state){
     h=hnext;
     if(state0.param.afsync) af::sync();
     time_integrator += timer::stop(timer_integrator);
-    mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
+    //mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
     state.steps ++;
     calls ++;
 
