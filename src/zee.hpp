@@ -12,7 +12,7 @@ class Zee : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     //CPU time
-    double* get_cpu_time(){return &cpu_time;}
+    double get_cpu_time(){return cpu_time;}
 
     Zee(af::array zee_in, Mesh mesh_in, Param param_in);
     af::array zee_field;

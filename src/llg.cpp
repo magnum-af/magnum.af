@@ -49,6 +49,17 @@ array LLG::fheff(const array& m){
   return solution;
 }
 
+double LLG::cpu_time(){
+  double cpu_time = 0.;
+  for(unsigned i=0;i<Fieldterms.size();++i){
+    cpu_time+=Fieldterms[i]->get_cpu_time();
+  }
+  return cpu_time;
+}
+void LLG::print_cpu_time(std::ostream& stream){
+    stream <<"cpu_time = "<<LLG::cpu_time()<<" [s]"<<std::endl;
+}
+//  std::cout<<"cpu_time = "<<Llg.cpu_time()<<""<<std::endl;
 //// Calculation of effective field
 //array LLG::fheffminimal(array m){
 //  if (state0.b_zee){return Demag.h(m) + Exch.h(m) + state0.h_zee;}

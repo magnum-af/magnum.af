@@ -19,6 +19,8 @@ class LLG {
 
     //Energy calculation
     double E(const State& state);
+    double cpu_time();
+    void print_cpu_time(std::ostream&);
     
     // rhs of the LLG equation
     bool fdmdt_string{false};

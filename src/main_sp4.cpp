@@ -73,6 +73,7 @@ int main(int argc, char** argv)
     state.m=Llg.llgstep(state);
     calcm(state,stream);
   }
+  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
   af_to_vti(state.m, mesh ,(filepath + "relax").c_str());
 
@@ -95,6 +96,7 @@ int main(int argc, char** argv)
   }
   af_to_vti(state.m, mesh ,(filepath + "2ns").c_str());
   stream.close();
+  Llg.print_cpu_time(std::cout); 
   return 0;
 }
 void calcm(State state, std::ostream& myfile){

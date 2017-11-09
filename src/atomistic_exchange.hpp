@@ -12,7 +12,7 @@ class ATOMISTIC_EXCHANGE : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     //CPU time
-    double* get_cpu_time(){return &cpu_time;}
+    double get_cpu_time(){return cpu_time;}
 
     ATOMISTIC_EXCHANGE (const Mesh& mesh);
     af::array filtr;

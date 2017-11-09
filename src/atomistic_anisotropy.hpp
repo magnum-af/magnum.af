@@ -11,7 +11,7 @@ class ATOMISTIC_ANISOTROPY : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     //CPU time
-    double* get_cpu_time(){return &cpu_time;}
+    double get_cpu_time(){return cpu_time;}
 
     ATOMISTIC_ANISOTROPY (const Mesh& mesh, const Param& param);
     //ATOMISTIC_ANISOTROPY (const Mesh&, const Param&);

@@ -11,7 +11,7 @@ class ANISOTROPY : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     //CPU time
-    double* get_cpu_time(){return &cpu_time;}
+    double get_cpu_time(){return cpu_time;}
 
     ANISOTROPY (Mesh, Param);
     Param param;
