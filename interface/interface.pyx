@@ -1,7 +1,9 @@
 import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
-from ctypes.wintypes import BOOL
+from cython.operator cimport dereference as deref
+
+#from ctypes.wintypes import BOOL
 
 cdef extern from "<arrayfire.h>":
   ctypedef void* af_array
@@ -34,7 +36,73 @@ cdef extern from "../src/param.hpp":
     double D_atom_axis[3];
     double K_atom;
     double K_atom_axis[3];
- 
+
+cdef class pyMesh:
+  cdef Mesh* thisptr
+  def __cinit__(self,int a, int b, int c, double d, double e, double f):
+    self.thisptr = new Mesh(a,b,c,d,e,f)
+
+  def __dealloc__(self):
+    del self.thisptr
+
+  def n0(self):
+    return self.thisptr.n0
+
+cdef class pyParam:
+  cdef Param* thisptr
+  def __cinit__(self):
+    self.thisptr = new Param ()  
+
+  def __dealloc__(self):
+    del self.thisptr
+
+  def set_gamma(self,gamma_in):
+    self.thisptr.gamma=gamma_in
+  
+  def print_gamma(self):
+    print self.thisptr.gamma
+
+
+cdef extern from "../src/state.hpp":
+  cdef cppclass State:
+    State (Mesh mesh_in, Param param_in, array m_in);
+
+#TODO
+cdef class pyState:
+  cdef State* thisptr
+  #cdef pyMesh mesh
+  #cdef pyParam param
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in, array m_in):
+    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
+  def __dealloc__(self):
+    del self.c_state
+
+
+
+#cdef class pyState:
+#  cdef State* thisptr
+#  cdef pyMesh mesh
+#  cdef pyState state
+#  def __cinit__(self, pyMesh mesh_in, pyParam param_in, array m_in):
+#    self.thisptr = new State (ctypes.addressof(mesh_in.thisptr), param_in, m_in)  
+#
+#  def __dealloc__(self):
+#    del self.thisptr
+
+  
+  #def __cinit__(self, Mesh mesh_in, Param param_in, array m_in):
+  #def __cinit__(self, pyMesh mesh_in, pyParam param_in, array m_in):
+
+  #def __cinit__(self, mesh_in, param_in, m_in):
+  #  self.thisptr = new State (mesh_in, param_in, m_in)  
+
+  #def __dealloc__(self):
+  #  del self.thisptr
+
+  
+#  def printme(self):
+#    self.thisptr.printme()
+    
 
 #cdef class pyTest:
 #  cdef Test* thisptr # hold a C++ instance
@@ -50,18 +118,3 @@ cdef extern from "../src/param.hpp":
 #    arrayfire.info()
 #    self.thisptr.usearray(adr)
 
-cdef class pyMesh:
-  cdef Mesh* thisptr
-  def __cinit__(self,int a, int b, int c, double d, double e, double f):
-    self.thisptr = new Mesh(a,b,c,d,e,f)
-
-  def __dealloc__(self):
-    del self.thisptr
-
-  def n0(self):
-    return self.thisptr.n0
-
-
-#  def printme(self):
-#    self.thisptr.printme()
-    
