@@ -63,20 +63,29 @@ cdef class pyParam:
     print self.thisptr.gamma
 
 
-cdef extern from "../src/state.hpp":
-  cdef cppclass State:
-    State (Mesh mesh_in, Param param_in, array m_in);
+##TODO
+#cdef extern from "../src/state.hpp":
+#  cdef cppclass State:
+#    State (Mesh mesh_in, Param param_in, array m_in);
+#
+#cdef class pyState:
+#  cdef State* thisptr
+#  #cdef pyMesh mesh
+#  #cdef pyParam param
+#  def __cinit__(self, pyMesh mesh_in, pyParam param_in, array m_in):
+#    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
+#  def __dealloc__(self):
+#    del self.c_state
 
-#TODO
+cdef extern from "teststate.hpp":
+  cdef cppclass testState:
+    testState (Mesh mesh_in, Param param_in);
 cdef class pyState:
-  cdef State* thisptr
-  #cdef pyMesh mesh
-  #cdef pyParam param
-  def __cinit__(self, pyMesh mesh_in, pyParam param_in, array m_in):
-    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
+  cdef testState* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.c_state
-
 
 
 #cdef class pyState:
