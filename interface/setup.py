@@ -9,8 +9,8 @@ setup(
               # Note, you can link against a c++ library
               # instead of including the source
               libraries = ["afcuda"],
-              #libraries = ["afcpu"],
-              sources=["interface.pyx", "../src/mesh.cpp","teststate.cpp"],
+              #TODO libraries = ["afcpu"],
+              sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp"],
               language="c++"),
     ],
   cmdclass = {'build_ext': build_ext},

@@ -1,3 +1,5 @@
+#clib library_with_useful_functions
+
 import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
@@ -64,40 +66,42 @@ cdef class pyParam:
     print self.thisptr.gamma
 
 
-##TODO
-#cdef extern from "../src/state.hpp":
-#  cdef cppclass State:
-#    State (Mesh mesh_in, Param param_in, long int m_in);
-#
-#cdef class pyState:
-#  cdef State* thisptr
-#  #cdef pyMesh mesh
-#  #cdef pyParam param
-#  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):
-#    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
-#  def __dealloc__(self):
-#    del self.thisptr
-##TODO END
+cdef extern from "../src/state.hpp":
+  cdef cppclass State:
+    State (Mesh mesh_in, Param param_in, long int m_in);
+    void print_m();
 
-cdef extern from "teststate.hpp":
-  cdef cppclass testState:
-    testState (Mesh mesh_in, Param param_in, long int a);
-    void printn0();
+cdef class pyState:
+  cdef State* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_address_in):
+    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_address_in.arr))  
+  def __dealloc__(self):
+    del self.thisptr
+  def print_m(self):
+    self.thisptr.print_m()
+
+
+
 
 #cdef uintptr_t adr = <uintptr_t>ctypes.addressof(foo_ct.contents)
 #cy_use_struct(<Foo*>adr)
 
-cdef class pytestState:
-  cdef testState* thisptr
-  def printn0(self):
-    return self.thisptr.printn0()
- 
-  def __cinit__(self, pyMesh mesh_in, pyParam param_in, a_in):
-    self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr),ctypes.addressof(a_in.arr))  
-  #def __cinit__(self, pyMesh mesh_in, pyParam param_in):
-  #  self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr))  
-  def __dealloc__(self):
-    del self.thisptr
+#cdef extern from "teststate.hpp":
+#  cdef cppclass testState:
+#    testState (Mesh mesh_in, Param param_in, long int a);
+#    void printn0();
+#
+#cdef class pytestState:
+#  cdef testState* thisptr
+#  def printn0(self):
+#    return self.thisptr.printn0()
+# 
+#  def __cinit__(self, pyMesh mesh_in, pyParam param_in, a_in):
+#    self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr),ctypes.addressof(a_in.arr))  
+#  #def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+#  #  self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+#  def __dealloc__(self):
+#    del self.thisptr
 
 
 #cdef class pyState:

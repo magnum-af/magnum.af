@@ -14,7 +14,8 @@ testState::testState (Mesh mesh_in, Param param_in, long int aptr):
   af::print("ARRAY:", *A);
   //af_print(*A);
   std::cout<<"segtest1"<<std::endl;
-  m=*A;//TODO check!!!
+  //m=*A;//TODO check!!!
+  m = * ( new af::array( *a ));
   af::print("ARRAY m:", m);
   //std::cout<<"segtest3"<<std::endl;
 }

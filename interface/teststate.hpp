@@ -1,3 +1,5 @@
+#ifndef TEST_STATE_H
+#define TEST_STATE_H
 #include "arrayfire.h"
 #include "../src/mesh.hpp"
 #include "../src/param.hpp"
@@ -11,4 +13,5 @@ class testState{
     Param param;
     void printn0();
 };
+#endif
 
