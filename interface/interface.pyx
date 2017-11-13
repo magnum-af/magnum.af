@@ -82,17 +82,29 @@ cdef class pyParam:
 cdef extern from "teststate.hpp":
   cdef cppclass testState:
     testState (Mesh mesh_in, Param param_in);
+    void printn0();
 
 #cdef uintptr_t adr = <uintptr_t>ctypes.addressof(foo_ct.contents)
 #cy_use_struct(<Foo*>adr)
 
 cdef class pyState:
   cdef testState* thisptr
+  cdef pyMesh mesh
+  cdef pyParam param
+  def printn0(self):
+    return self.thisptr.printn0()
+ 
+  #def __cinit__(self, mesh_in,  param_in):
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     #self.thisptr = new testState (<uintptr_t>ctypes.addressof(mesh_in),<uintptr_t>ctypes.addressof(param_in))  
+    mesh=mesh_in
+    param=param_in
+    #cdef uintptr_t adr1 = <uintptr_t>ctypes.addressof(mesh_in)
+    #cdef uintptr_t adr2 = <uintptr_t>ctypes.addressof(param_in)
+    #self.thisptr = new testState (<Mesh*>adr1,<Param*>adr2)  
     self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   def __dealloc__(self):
-    del self.c_state
+    del self.thisptr
 
 
 #cdef class pyState:

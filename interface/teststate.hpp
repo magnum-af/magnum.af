@@ -7,5 +7,6 @@ class testState{
     testState (Mesh mesh_in, Param param_in);
     Mesh mesh;
     Param param;
+    void printn0();
 };
 

@@ -13,6 +13,7 @@ param.print_gamma()
 #TODO print param.D
 
 pystate=pth_mag.pyState(meshvar,param)
+pystate.printn0()
 
 #a = arrayfire.constant(2.,2,2,2,3)
 #arrayfire.lock_array(a)
