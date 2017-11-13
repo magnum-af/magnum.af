@@ -2,6 +2,7 @@ import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
+from libc.stdint cimport uintptr_t
 
 #from ctypes.wintypes import BOOL
 
@@ -76,13 +77,19 @@ cdef class pyParam:
 #    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
 #  def __dealloc__(self):
 #    del self.c_state
+##TODO END
 
 cdef extern from "teststate.hpp":
   cdef cppclass testState:
     testState (Mesh mesh_in, Param param_in);
+
+#cdef uintptr_t adr = <uintptr_t>ctypes.addressof(foo_ct.contents)
+#cy_use_struct(<Foo*>adr)
+
 cdef class pyState:
   cdef testState* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    #self.thisptr = new testState (<uintptr_t>ctypes.addressof(mesh_in),<uintptr_t>ctypes.addressof(param_in))  
     self.thisptr = new testState (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.c_state

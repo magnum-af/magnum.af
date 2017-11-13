@@ -10,7 +10,7 @@ setup(
               # instead of including the source
               #libraries = ["afcuda"],
               libraries = ["afcpu"],
-              sources=["interface.pyx", "../src/mesh.cpp"],
+              sources=["interface.pyx", "../src/mesh.cpp","teststate.cpp"],
               language="c++"),
     ],
   cmdclass = {'build_ext': build_ext},
