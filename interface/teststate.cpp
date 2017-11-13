@@ -4,6 +4,7 @@ testState::testState (Mesh mesh_in, Param param_in, long int aptr):
               mesh(mesh_in),param(param_in)
 {
   printf("%p a CPP array address \n", (void*)aptr);
+  printf("%p a CPP array address \n", (void**)aptr);
   //af::info();
   //af_array a = *(void **)aptr;
   void **a = (void **)aptr;
@@ -13,8 +14,8 @@ testState::testState (Mesh mesh_in, Param param_in, long int aptr):
   af::print("ARRAY:", *A);
   //af_print(*A);
   std::cout<<"segtest1"<<std::endl;
-  //m=*A;//TODO check!!!
-  //af::print("ARRAY m:", m);
+  m=*A;//TODO check!!!
+  af::print("ARRAY m:", m);
   //std::cout<<"segtest3"<<std::endl;
 }
 

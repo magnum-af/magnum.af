@@ -8,8 +8,8 @@ setup(
     Extension("pth_mag",
               # Note, you can link against a c++ library
               # instead of including the source
-              #libraries = ["afcuda"],
-              libraries = ["afcpu"],
+              libraries = ["afcuda"],
+              #libraries = ["afcpu"],
               sources=["interface.pyx", "../src/mesh.cpp","teststate.cpp"],
               language="c++"),
     ],
