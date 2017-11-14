@@ -4,7 +4,7 @@
 using namespace af;
 
 String::String(State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):
- state(statein), Llg(state,1e-6,1e-6,3.5e-10,1.0e-15, Fieldterms_in), n_interp(n_interp_in), dt(dt_in){
+ state(statein), Llg(state, Fieldterms_in), n_interp(n_interp_in), dt(dt_in){
 
   //To only use the first term in llg equ
   Llg.fdmdt_string=true;

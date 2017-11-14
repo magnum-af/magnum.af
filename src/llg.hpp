@@ -2,6 +2,7 @@
 #define LLG_H
 #include <vector>
 #include <memory>
+#include <initializer_list>
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "state.hpp"
@@ -11,7 +12,7 @@ using namespace af;
 
 class LLG {
   public:
-    LLG (State, double, double, double, double, std::vector<std::shared_ptr<LLGTerm> >);
+    LLG (State, std::vector<std::shared_ptr<LLGTerm> >);
     //Field Term Contributions
     std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
     // Class Objects
