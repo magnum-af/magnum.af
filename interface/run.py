@@ -3,7 +3,7 @@ import ctypes
 import arrayfire
 
 arrayfire.info()
-meshvar=pth_mag.pyMesh(42,4,5,2.,3.,4.)
+meshvar=pth_mag.pyMesh(42,4,5,1e-9,1e-9,1e-9)
 print "n0= ", meshvar.n0()
 
 param=pth_mag.pyParam()
@@ -12,9 +12,15 @@ param.set_gamma(4e2)
 param.print_gamma()
 #TODO print param.D
 
-m=arrayfire.constant(42.0,3,3,3,1,dtype=arrayfire.Dtype.f64)
+#m=arrayfire.constant(42.0,100,100,100,3,dtype=arrayfire.Dtype.f64)
+m=arrayfire.randu(15,15,15,3,dtype=arrayfire.Dtype.f64)
 pystate=pth_mag.pyState(meshvar,param,m)
 pystate.print_m()
+
+demag=pth_mag.pyDemagSolver(meshvar,param)
+demag.print_Nfft()
+ 
+#TODO print pystate.get_m()
 
 #a = arrayfire.constant(2.,2,2,2,3)
 #arrayfire.lock_array(a)

@@ -6,6 +6,10 @@ double DemagSolver::E(const State& state){
   return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
+void DemagSolver::print_Nfft(){
+    af::print("Nfft=", Nfft);
+}
+
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
 DemagSolver::DemagSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){

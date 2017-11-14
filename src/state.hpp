@@ -1,4 +1,3 @@
-//#pragma GCC clib library_with_useful_functions
 #ifndef STATE_H
 #define STATE_H
 #include "arrayfire.h"
@@ -15,6 +14,9 @@ class State{
     af::array m;
     int steps{0};
     void print_m();//TODO Replace with return array
+    //TODO 
+    //long int get_m();
+    //TODO END
 
 
     //State& operator+(af::array& rhs);

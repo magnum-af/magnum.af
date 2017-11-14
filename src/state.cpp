@@ -17,6 +17,13 @@ void State::print_m(){
     af::print("m=", m);
 }
 
+//TODO
+//long int State::get_m(){
+//    return (long int)&m;
+//    //return &m.arr;
+//}
+//TODO END
+
 //State::State& operator+(af::array& rhs){
 //  this->m=this->m+rhs;
 //  return *this;

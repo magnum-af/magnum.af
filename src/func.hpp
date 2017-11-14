@@ -18,5 +18,5 @@ double meani(const array& a, const int i);
 double FrobeniusNorm(const array& a);
 //TODO void calcm(State state, LLG Llg, std::ostream& myfile);
 double euclnorm(const array& a);
-auto rk4(array f(double, array));
+//TODO auto rk4(array f(double, array));
 #endif

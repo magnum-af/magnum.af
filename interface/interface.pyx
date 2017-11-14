@@ -70,15 +70,41 @@ cdef extern from "../src/state.hpp":
   cdef cppclass State:
     State (Mesh mesh_in, Param param_in, long int m_in);
     void print_m();
+    long int get_m();
 
 cdef class pyState:
   cdef State* thisptr
-  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_address_in):
-    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_address_in.arr))  
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):
+    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
   def __dealloc__(self):
     del self.thisptr
   def print_m(self):
     self.thisptr.print_m()
+
+#  #TODO
+#  def get_m(self):
+#    cdef void **a = (void **) self.thisptr.get_m()
+#    cdef array m_out = * ( array (* a))
+#    return m_out
+#    #return self.thisptr.get_m()
+
+
+cdef extern from "../src/micro_demag.hpp":
+  cdef cppclass DemagSolver:
+    DemagSolver (Mesh mesh_in, Param param_in);
+    void print_Nfft();
+
+cdef class pyDemagSolver:
+  cdef DemagSolver* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    self.thisptr = new DemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+  def print_Nfft(self):
+    self.thisptr.print_Nfft()
+
+
+
 
 
 
