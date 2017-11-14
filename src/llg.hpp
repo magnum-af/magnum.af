@@ -101,10 +101,10 @@ class LLG {
 
     //Numerical Recipies Adaptive Stepsize control
     const double err0{1.};// Desired error
-    const double atol;//Tolerated absolute error
-    const double rtol;//Tolerated relative error
-    const double hmax;
-    const double hmin;
+    const double atol{1e-8};//Tolerated absolute error
+    const double rtol{1e-8};//Tolerated relative error
+    const double hmin{1e-15};
+    const double hmax{3.5e-10};
     array  givescale(const array& a); // Scale function return= atol + abs(y) * rtol
     double  err{.0};      // Estimated error 
     int counter_reject{0};// # of rejections
