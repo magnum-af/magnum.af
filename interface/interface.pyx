@@ -1,8 +1,17 @@
+
+#HOTTIP
+#https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
+
+
+
 #clib library_with_useful_functions
 import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
+from libcpp.memory cimport shared_ptr
+from libcpp.vector cimport vector
+
 #from libc.stdint cimport uintptr_t
 
 #from ctypes.wintypes import BOOL
@@ -11,14 +20,14 @@ from cython.operator cimport dereference as deref
 #  ctypedef void* af_array
 
 #https://github.com/cython/cython/blob/master/Cython/Includes/libcpp/memory.pxd
-cdef extern from "<memory>" namespace "std":
-  cdef cppclass shared_ptr[T]:
-    shared_ptr()
-    shared_ptr(nullptr_t)
-    shared_ptr(T*)
-    shared_ptr(shared_ptr[T]&)
-    shared_ptr(shared_ptr[T]&, T*)
-    #shared_ptr(unique_ptr[T]&)
+#cdef extern from "<memory>" namespace "std":
+#  cdef cppclass shared_ptr[T]:
+#    shared_ptr()
+#    shared_ptr(nullptr_t)
+#    shared_ptr(T*)
+#    shared_ptr(shared_ptr[T]&)
+#    shared_ptr(shared_ptr[T]&, T*)
+#    #shared_ptr(unique_ptr[T]&)
     
 cdef extern from "../src/LLGTerm.hpp":
   cdef cppclass LLGTerm
@@ -27,20 +36,25 @@ cdef extern from "<arrayfire.h>" namespace "af":
   cdef cppclass array:
     array()
 
-cdef extern from "<vector>" namespace "std":
-    cdef cppclass vector[T]:
-        cppclass iterator:
-            T operator*()
-            iterator operator++()
-            bint operator==(iterator)
-            bint operator!=(iterator)
-        vector()
-        void push_back(T&)
-        T& operator[](int)
-        T& at(int)
-        iterator begin()
-        iterator end()
-cdef vector[int].iterator iter 
+#cdef class pyVector:
+#  pass; 
+#cdef vector[Obj] vec;
+#cdef  vec.push_back(Obj());
+
+#cdef extern from "<vector>" namespace "std":
+#    cdef cppclass vector[T]:
+#        cppclass iterator:
+#            T operator*()
+#            iterator operator++()
+#            bint operator==(iterator)
+#            bint operator!=(iterator)
+#        vector()
+#        void push_back(T&)
+#        T& operator[](int)
+#        T& at(int)
+#        iterator begin()
+#        iterator end()
+#cdef vector[int].iterator iter 
 
 #cdef class pyVector:
 #  cdef vector[shared_ptr]* thisptr
@@ -55,7 +69,7 @@ cdef class pyVector:
     self.thisptr = new vector[shared_ptr[LLGTerm]] ()
   def __dealloc__(self):
     del self.thisptr
-  #TODO def push_back(self, shared_ptr[LLGTerm] a):
+  #def push_back(self, shared_ptr[LLGTerm] a):
   #  self.thisptr.push_back(a)
 
 cdef extern from "../src/llg.hpp":
@@ -63,6 +77,7 @@ cdef extern from "../src/llg.hpp":
     LLG (State state_in, vector[shared_ptr[LLGTerm]] vector_in);
     array llgstep(State& state);
     double E(const State& state);
+    double cpu_time();
 
 cdef class pyLLG:
   cdef LLG* thisptr
@@ -70,8 +85,12 @@ cdef class pyLLG:
     self.thisptr = new LLG (deref(state_in.thisptr), deref(vector_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
+#TODO  def llgstep(self, pyState state_in):
+#    return self.thisptr.llgstep(deref(state_in.thisptr))
   def print_E(self,pyState state_in):
-    print self.thisptr.E(deref(state_in.thisptr))
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.cpu_time()
 
 cdef extern from "../src/mesh.hpp":
   cdef cppclass Mesh:
@@ -119,6 +138,8 @@ cdef class pyParam:
 
   def set_gamma(self,gamma_in):
     self.thisptr.gamma=gamma_in
+  def set_ms(self,ms):
+    self.thisptr.ms=ms
   
   def print_gamma(self):
     print self.thisptr.gamma
@@ -152,6 +173,7 @@ cdef extern from "../src/micro_demag.hpp":
     DemagSolver (Mesh mesh_in, Param param_in);
     double E(const State& state);
     void print_Nfft();
+    double get_cpu_time();
 
 cdef class pyDemagSolver:
   cdef DemagSolver* thisptr
@@ -162,7 +184,9 @@ cdef class pyDemagSolver:
   def print_Nfft(self):
     self.thisptr.print_Nfft()
   def print_E(self,pyState state_in):
-    print "E=", self.thisptr.E(deref(state_in.thisptr))
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
 
 
 
