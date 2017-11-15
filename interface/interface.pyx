@@ -1,19 +1,18 @@
 #clib library_with_useful_functions
-
 import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
-from libc.stdint cimport uintptr_t
+#from libc.stdint cimport uintptr_t
 
 #from ctypes.wintypes import BOOL
 
 #cdef extern from "<arrayfire.h>":
 #  ctypedef void* af_array
 
-cdef extern from "<memory>" namespace "std":
-  cdef cppclass shared_ptr:
-    shared_ptr()
+#cdef extern from "<memory>" namespace "std":
+#  cdef cppclass shared_ptr:
+#    shared_ptr()
     
 
 cdef extern from "<arrayfire.h>" namespace "af":
@@ -124,10 +123,9 @@ cdef class pyDemagSolver:
   def print_Nfft(self):
     self.thisptr.print_Nfft()
 
-cdef extern from "../src/llg.hpp":
-  cdef cppclass LLG:
-    LLG (State state_in, vector vector_in);
-
+#cdef extern from "../src/llg.hpp":
+#  cdef cppclass LLG:
+#    LLG (State state_in, vector vector_in);
 
 
 
