@@ -1,6 +1,8 @@
 #include "llg.hpp"
 #include <algorithm>
 #include <iomanip>
+#include <iostream>
+
 using namespace af;
 
 //Energy calculation

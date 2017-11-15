@@ -10,8 +10,9 @@ setup(
               # instead of including the source
               #libraries = ["afcuda"],
               libraries = ["afcpu"],
-              sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp"],
-              #sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp","../src/llg.cpp"],
+              #sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp"],
+              sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp","../src/llg.cpp"],
+              extra_compile_args=['-std=gnu++14','-O3'],
               language="c++"),
     ],
   cmdclass = {'build_ext': build_ext},

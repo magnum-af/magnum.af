@@ -10,10 +10,18 @@ from cython.operator cimport dereference as deref
 #cdef extern from "<arrayfire.h>":
 #  ctypedef void* af_array
 
-#cdef extern from "<memory>" namespace "std":
-#  cdef cppclass shared_ptr:
-#    shared_ptr()
+#https://github.com/cython/cython/blob/master/Cython/Includes/libcpp/memory.pxd
+cdef extern from "<memory>" namespace "std":
+  cdef cppclass shared_ptr[T]:
+    shared_ptr()
+    shared_ptr(nullptr_t)
+    shared_ptr(T*)
+    shared_ptr(shared_ptr[T]&)
+    shared_ptr(shared_ptr[T]&, T*)
+    #shared_ptr(unique_ptr[T]&)
     
+cdef extern from "../src/LLGTerm.hpp":
+  cdef cppclass LLGTerm
 
 cdef extern from "<arrayfire.h>" namespace "af":
   cdef cppclass array:
@@ -32,8 +40,38 @@ cdef extern from "<vector>" namespace "std":
         T& at(int)
         iterator begin()
         iterator end()
-
 cdef vector[int].iterator iter 
+
+#cdef class pyVector:
+#  cdef vector[shared_ptr]* thisptr
+#  def __cinit__(self):
+#    self.thisptr = new vector[shared_ptr] ()
+#  def __dealloc__(self):
+#    del self.thisptr
+
+cdef class pyVector:
+  cdef vector[shared_ptr[LLGTerm]]* thisptr
+  def __cinit__(self):
+    self.thisptr = new vector[shared_ptr[LLGTerm]] ()
+  def __dealloc__(self):
+    del self.thisptr
+  #TODO def push_back(self, shared_ptr[LLGTerm] a):
+  #  self.thisptr.push_back(a)
+
+cdef extern from "../src/llg.hpp":
+  cdef cppclass LLG:
+    LLG (State state_in, vector[shared_ptr[LLGTerm]] vector_in);
+    array llgstep(State& state);
+    double E(const State& state);
+
+cdef class pyLLG:
+  cdef LLG* thisptr
+  def __cinit__(self, pyState state_in, pyVector vector_in):
+    self.thisptr = new LLG (deref(state_in.thisptr), deref(vector_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+  def print_E(self,pyState state_in):
+    print self.thisptr.E(deref(state_in.thisptr))
 
 cdef extern from "../src/mesh.hpp":
   cdef cppclass Mesh:
@@ -112,6 +150,7 @@ cdef class pyState:
 cdef extern from "../src/micro_demag.hpp":
   cdef cppclass DemagSolver:
     DemagSolver (Mesh mesh_in, Param param_in);
+    double E(const State& state);
     void print_Nfft();
 
 cdef class pyDemagSolver:
@@ -122,10 +161,9 @@ cdef class pyDemagSolver:
     del self.thisptr
   def print_Nfft(self):
     self.thisptr.print_Nfft()
+  def print_E(self,pyState state_in):
+    print "E=", self.thisptr.E(deref(state_in.thisptr))
 
-#cdef extern from "../src/llg.hpp":
-#  cdef cppclass LLG:
-#    LLG (State state_in, vector vector_in);
 
 
 

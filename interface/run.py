@@ -19,6 +19,12 @@ pystate.print_m()
 
 demag=pth_mag.pyDemagSolver(meshvar,param)
 demag.print_Nfft()
+#TODO coredump: demag.print_E(pystate)
+
+vec=pth_mag.pyVector(demag)
+Llg=pth_mag.pyLLG(pystate,vec)
+Llg.print_E(pystate)
+
  
 #TODO print pystate.get_m()
 
