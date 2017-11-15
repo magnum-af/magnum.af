@@ -9,7 +9,7 @@ import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
-from libcpp.memory cimport shared_ptr
+from libcpp.memory cimport shared_ptr, make_shared
 from libcpp.vector cimport vector
 
 #from libc.stdint cimport uintptr_t
@@ -57,11 +57,19 @@ cdef extern from "<arrayfire.h>" namespace "af":
 #cdef vector[int].iterator iter 
 
 #cdef class pyVector:
-#  cdef vector[shared_ptr]* thisptr
+#  cdef vector* thisptr
 #  def __cinit__(self):
-#    self.thisptr = new vector[shared_ptr] ()
+#    self.thisptr = new vector ()
 #  def __dealloc__(self):
 #    del self.thisptr
+
+#cdef class pyVector:
+#  cdef vector[shared_ptr[LLGTerm]]* thisptr
+#  def __cinit__(self, shared_ptr[LLGTerm] T_in):
+#    self.thisptr = new vector[shared_ptr[LLGTerm]] (T_in)
+#  def __dealloc__(self):
+#    del self.thisptr
+##  def py_push_back(self,  T):
 
 cdef class pyVector:
   cdef vector[shared_ptr[LLGTerm]]* thisptr
@@ -69,8 +77,20 @@ cdef class pyVector:
     self.thisptr = new vector[shared_ptr[LLGTerm]] ()
   def __dealloc__(self):
     del self.thisptr
-  #def push_back(self, shared_ptr[LLGTerm] a):
-  #  self.thisptr.push_back(a)
+#  def push_back(self,  shared_ptr[LLGTerm] a):
+#    self.thisptr.push_back( a)
+
+#https://dmtn-013.lsst.io/
+#cpdef as_list(self):
+#    cdef vector[shared_ptr[_Doodad]] v = self.inst.as_vector()
+#
+#    results = []
+#    for item in v:
+#        d = Doodad(init=False)
+#        d.thisptr = move(item)
+#        results.append(d)
+#
+#    return results
 
 cdef extern from "../src/llg.hpp":
   cdef cppclass LLG:
@@ -81,8 +101,15 @@ cdef extern from "../src/llg.hpp":
 
 cdef class pyLLG:
   cdef LLG* thisptr
-  def __cinit__(self, pyState state_in, pyVector vector_in):
-    self.thisptr = new LLG (deref(state_in.thisptr), deref(vector_in.thisptr))  
+  #def __cinit__(self, pyState state_in, pyVector vector_in):
+  def __cinit__(self, pyState state_in, terms):
+    cdef vector[shared_ptr[LLGTerm]] vector_in
+    #for term in terms:
+    #vector_in.push_back[shared_ptr[LLGTerm]](terms)
+    #cdef shared_ptr[LLGTerm] cterm = make_shared[LLGTerm](terms.thisptr)
+    #vector_in.push_back(make_shared[LLGTerm](deref(term.thisptr)))
+    self.thisptr = new LLG (deref(state_in.thisptr), vector_in)  
+    #self.thisptr = new LLG (deref(state_in.thisptr), <vector[shared_ptr[LLGTerm]]>vector_in))  
   def __dealloc__(self):
     del self.thisptr
 #TODO  def llgstep(self, pyState state_in):

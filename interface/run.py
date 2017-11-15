@@ -1,5 +1,4 @@
 import pth_mag
-import ctypes
 import arrayfire
 
 arrayfire.info()
