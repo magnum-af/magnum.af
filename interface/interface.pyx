@@ -8,12 +8,33 @@ from libc.stdint cimport uintptr_t
 
 #from ctypes.wintypes import BOOL
 
-cdef extern from "<arrayfire.h>":
-  ctypedef void* af_array
+#cdef extern from "<arrayfire.h>":
+#  ctypedef void* af_array
+
+cdef extern from "<memory>" namespace "std":
+  cdef cppclass shared_ptr:
+    shared_ptr()
+    
 
 cdef extern from "<arrayfire.h>" namespace "af":
   cdef cppclass array:
     array()
+
+cdef extern from "<vector>" namespace "std":
+    cdef cppclass vector[T]:
+        cppclass iterator:
+            T operator*()
+            iterator operator++()
+            bint operator==(iterator)
+            bint operator!=(iterator)
+        vector()
+        void push_back(T&)
+        T& operator[](int)
+        T& at(int)
+        iterator begin()
+        iterator end()
+
+cdef vector[int].iterator iter 
 
 cdef extern from "../src/mesh.hpp":
   cdef cppclass Mesh:
@@ -103,6 +124,9 @@ cdef class pyDemagSolver:
   def print_Nfft(self):
     self.thisptr.print_Nfft()
 
+cdef extern from "../src/llg.hpp":
+  cdef cppclass LLG:
+    LLG (State state_in, vector vector_in);
 
 
 
