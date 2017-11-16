@@ -114,14 +114,14 @@ cdef extern from "../src/llg.hpp":
 cdef class pyLLG:
   cdef LLG* thisptr
   #def __cinit__(self, pyState state_in, pyVector vector_in):
-  cdef pyDemagSolver owned_bar
-  def __cinit__(self, pyState state_in, terms):
-    self.owned_bar = terms
+  def __cinit__(self, pyState state_in, *args):
     cdef vector[shared_ptr[LLGTerm]] vector_in
-    cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>self.owned_bar.addr())
+    #cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.pythisptr())
     #cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.addr())
     #cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>ctypes.addressof(terms))
-    vector_in.push_back(temp)
+    #vector_in.push_back(temp)
+    for arg in args:
+      vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
     #for term in terms:
     #vector_in.push_back(shared_ptr[LLGTerm](<LLGTerm*>terms.thisptr))   
     #vector_in.push_back[shared_ptr[LLGTerm]](terms)
@@ -234,7 +234,7 @@ cdef class pyDemagSolver:
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
-  def addr(self):
+  def pythisptr(self):
       return <size_t><void*>self.thisptr
 
 
