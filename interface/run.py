@@ -22,8 +22,10 @@ demag.print_Nfft()
 print "demag= ", demag.print_E(pystate)
 print "demag_time= ",demag.cpu_time()
 
-vec=pth_mag.pyVector(demag)
-Llg=pth_mag.pyLLG(pystate,vec)
+#vec=pth_mag.pyVector(demag)
+#Llg=pth_mag.pyLLG(pystate,vec)
+#print demag.addr()
+Llg=pth_mag.pyLLG(pystate,demag)
 print "LLG= ", Llg.print_E(pystate)
 print "LLG_cpu_time= ",Llg.cpu_time()
 

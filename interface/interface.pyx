@@ -1,6 +1,7 @@
 
 #HOTTIP
 #https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
+#https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 
 
 
@@ -9,7 +10,7 @@ import ctypes
 import arrayfire 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
-from libcpp.memory cimport shared_ptr, make_shared
+from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
 
 #from libc.stdint cimport uintptr_t
@@ -80,6 +81,17 @@ cdef class pyVector:
 #  def push_back(self,  shared_ptr[LLGTerm] a):
 #    self.thisptr.push_back( a)
 
+cdef extern from "<utility>" namespace "std" nogil:
+    #cdef shared_ptr[LLGTerm] move(unique_ptr[LLGTerm])
+    cdef shared_ptr[LLGTerm] move(shared_ptr[LLGTerm])
+
+
+#cdef public newDoodadFromSptr(shared_ptr[LLGTerm] _d):
+#    d = LLGTerm(init=False)
+#    d.thisptr = move(_d)
+#
+#    return d
+
 #https://dmtn-013.lsst.io/
 #cpdef as_list(self):
 #    cdef vector[shared_ptr[_Doodad]] v = self.inst.as_vector()
@@ -102,9 +114,16 @@ cdef extern from "../src/llg.hpp":
 cdef class pyLLG:
   cdef LLG* thisptr
   #def __cinit__(self, pyState state_in, pyVector vector_in):
+  cdef pyDemagSolver owned_bar
   def __cinit__(self, pyState state_in, terms):
+    self.owned_bar = terms
     cdef vector[shared_ptr[LLGTerm]] vector_in
+    cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>self.owned_bar.addr())
+    #cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.addr())
+    #cdef shared_ptr[LLGTerm] temp = shared_ptr[LLGTerm] (<LLGTerm*><size_t>ctypes.addressof(terms))
+    vector_in.push_back(temp)
     #for term in terms:
+    #vector_in.push_back(shared_ptr[LLGTerm](<LLGTerm*>terms.thisptr))   
     #vector_in.push_back[shared_ptr[LLGTerm]](terms)
     #cdef shared_ptr[LLGTerm] cterm = make_shared[LLGTerm](terms.thisptr)
     #vector_in.push_back(make_shared[LLGTerm](deref(term.thisptr)))
@@ -206,14 +225,17 @@ cdef class pyDemagSolver:
   cdef DemagSolver* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new DemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
-  def __dealloc__(self):
-    del self.thisptr
+  #TODO this causes double free coruption!!!!
+  #def __dealloc__(self):
+  #  del self.thisptr
   def print_Nfft(self):
     self.thisptr.print_Nfft()
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
+  def addr(self):
+      return <size_t><void*>self.thisptr
 
 
 
