@@ -1,5 +1,19 @@
 
 #HOTTIP
+#https://stackoverflow.com/questions/44396749/handling-c-arrays-in-cython-with-numpy-and-pytorch
+
+#TODO have a look on
+#from libcpp.memory cimport shared_ptr
+#
+#cdef class Holder:
+#    cdef shared_ptr[cpp_class] ptr
+#
+#    @staticmethod
+#    cdef make_holder(shared_ptr[cpp_class] ptr):
+#       cdef holder = Holder() # empty class
+#       holder.ptr = ptr
+#       return holder
+
 #https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
 #https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 
@@ -146,6 +160,17 @@ cdef extern from "../src/mesh.hpp":
     Mesh (int, int, int, double, double, double)
     void printme()
 
+cdef class pyMesh:
+  cdef Mesh* thisptr
+  def __cinit__(self,int a, int b, int c, double d, double e, double f):
+    self.thisptr = new Mesh(a,b,c,d,e,f)
+
+  def __dealloc__(self):
+    del self.thisptr
+
+  def n0(self):
+    return self.thisptr.n0
+
 cdef extern from "../src/param.hpp":
   cdef cppclass Param:
 #    double mu0;
@@ -163,29 +188,38 @@ cdef extern from "../src/param.hpp":
     double K_atom;
     double K_atom_axis[3];
 
-cdef class pyMesh:
-  cdef Mesh* thisptr
-  def __cinit__(self,int a, int b, int c, double d, double e, double f):
-    self.thisptr = new Mesh(a,b,c,d,e,f)
-
-  def __dealloc__(self):
-    del self.thisptr
-
-  def n0(self):
-    return self.thisptr.n0
-
 cdef class pyParam:
   cdef Param* thisptr
   def __cinit__(self):
     self.thisptr = new Param ()  
-
   def __dealloc__(self):
     del self.thisptr
 
-  def set_gamma(self,gamma_in):
-    self.thisptr.gamma=gamma_in
-  def set_ms(self,ms):
-    self.thisptr.ms=ms
+  def gamma(self,value):
+    self.thisptr.gamma=value
+  def ms(self,value):
+    self.thisptr.ms=value
+  def alpha(self,value):
+    self.thisptr.alpha=value
+  def A(self,value):
+    self.thisptr.A=value
+  def p(self,value):
+    self.thisptr.p=value
+  def mode(self,value):
+    self.thisptr.mode=value
+  def D(self,value):
+    self.thisptr.D=value
+  def Ku1(self,value):
+    self.thisptr.Ku1=value
+  def J_atom(self,value):
+    self.thisptr.J_atom=value
+  def D_atom(self,value):
+    self.thisptr.D_atom=value
+  def K_atom(self,value):
+    self.thisptr.K_atom=value
+  #TODO
+  #uudef D_axis(self,value):
+  #  self.thisptr.D_axis[7]=value
   
   def print_gamma(self):
     print self.thisptr.gamma

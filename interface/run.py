@@ -7,9 +7,10 @@ print "n0= ", meshvar.n0()
 
 param=pth_mag.pyParam()
 param.print_gamma()
-param.set_gamma(4e2)
-param.set_ms(4e2)
+param.gamma(4e2)
+param.ms(4e2)
 param.print_gamma()
+#TODO param.D_axis(3)
 #TODO print param.D
 
 #m=arrayfire.constant(42.0,100,100,100,3,dtype=arrayfire.Dtype.f64)
