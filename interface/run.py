@@ -19,20 +19,20 @@ param.alpha (1)
 m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-af.device.lock_array(m)
+#af.device.lock_array(m)
 pystate=pth_mag.pyState(meshvar,param,m)
-#m_test=pystate.get_m()
+m_test=pystate.get_m()
 
-#Alternative:
-m_test=af.Array()
-m_test_addr=pystate.get_m()
-m_test.arr = ctypes.c_void_p(m_test_addr)
+##Alternative:
+#m_test=af.Array()
+#m_test_addr=pystate.get_m()
+#m_test.arr = ctypes.c_void_p(m_test_addr)
 
 #af.device.lock_array(m_test)
 
 
-print "Test", m_test
-af.device.lock_array(m_test)
+#af.device.lock_array(m_test)
+print "Test", af.mean(m_test)
 print af.device.is_locked_array(m_test)
 
 
