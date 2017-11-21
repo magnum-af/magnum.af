@@ -1,10 +1,12 @@
 import pth_mag
 import arrayfire as af
+import ctypes
 
 af.info()
 meshvar=pth_mag.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
 m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
 print "n0= ", meshvar.n0()
+
 
 param=pth_mag.pyParam()
 param.gamma (2.211e5)
@@ -18,6 +20,13 @@ m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 pystate=pth_mag.pyState(meshvar,param,m)
+
+#m_test=pystate.get_m()
+m_test=af.Array()
+m_test.arr = ctypes.c_void_p(pystate.get_m())
+
+
+print "Test", m_test
 
 demag=pth_mag.pyDemagSolver(meshvar,param)
 exch=pth_mag.pyExchSolver(meshvar,param)

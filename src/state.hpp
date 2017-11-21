@@ -14,6 +14,7 @@ class State{
     af::array m;
     int steps{0};
     void print_m();//TODO Replace with return array
+    long int get_m_addr(){m.lock(); return (long int) m.get();}
     //TODO 
     //long int get_m();
     //TODO END

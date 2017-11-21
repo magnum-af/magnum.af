@@ -1,23 +1,11 @@
-#HOTTIP
+#HOTTIPS
 #https://stackoverflow.com/questions/44396749/handling-c-arrays-in-cython-with-numpy-and-pytorch
-#TODO have a look on
-#from libcpp.memory cimport shared_ptr
-#
-#cdef class Holder:
-#    cdef shared_ptr[cpp_class] ptr
-#
-#    @staticmethod
-#    cdef make_holder(shared_ptr[cpp_class] ptr):
-#       cdef holder = Holder() # empty class
-#       holder.ptr = ptr
-#       return holder
-
 #https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
 #https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 #clib library_with_useful_functions
 
 import ctypes
-import arrayfire 
+import arrayfire as af 
 from libc.stdint cimport uintptr_t
 from cython.operator cimport dereference as deref
 from libcpp.memory cimport shared_ptr#, make_shared
@@ -30,13 +18,6 @@ cdef extern from "../src/LLGTerm.hpp":
 cdef extern from "<arrayfire.h>" namespace "af":
   cdef cppclass array:
     array()
-
-cdef class pyArray:
-  cdef array* thisptr
-  def __cinit__(self):
-    self.thisptr = new array ()  
-  def __dealloc__(self):
-    del self.thisptr
 
 cdef extern from "../src/mesh.hpp":
   cdef cppclass Mesh:
@@ -140,10 +121,11 @@ cdef extern from "../src/state.hpp":
   cdef cppclass State:
     State (Mesh mesh_in, Param param_in, long int m_in);
     void print_m();
-    long int get_m();
+    #long int get_m();
     double t;
     array m;
     Param param;
+    long int get_m_addr();
 
 
 cdef class pyState:
@@ -156,6 +138,23 @@ cdef class pyState:
     self.thisptr.print_m()
   def t(self):
     return self.thisptr.t
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+  def get_m(self):
+    return self.thisptr.get_m_addr()
+
+    #m_addr = self.thisptr.get_m_addr()
+    #m=af.Array()
+    #m.arr = ctypes.c_void_p(m_addr)
+    #return m
+    
+
+
+#def get_m(pystate):
+#  m_addr = pystate.pythisptr.get_m_addr()
+#  m=af.Array()
+#  m.arr = ctypes.c_void_ptr(m_addr)
+#  return m
 
 
 cdef extern from "../src/llg.hpp":
@@ -190,6 +189,7 @@ cdef class pyLLG:
   #    vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.pythisptr()))
   #  self.thisptr = new LLG (deref(state_in.thisptr), vector_in)  
     
+  
 
 cdef extern from "../src/micro_demag.hpp":
   cdef cppclass DemagSolver:
@@ -233,9 +233,6 @@ cdef class pyExchSolver:
 
 cdef extern from "../src/zee.hpp":
   cdef cppclass Zee:
-    #Zee (array array_in, Mesh mesh_in, Param param_in);
-    #TODO implement this in cpp!
-    #TODO momment, this might not be neccessary
     Zee (long int m_in, Mesh mesh_in, Param param_in);
     double E(const State& state);
     double get_cpu_time();
