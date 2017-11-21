@@ -3,6 +3,7 @@
 #include<math.h>
 class Param{
   public:
+    ~Param(){}; 
     double mu0=4e-7 * M_PI;
     double gamma{0},ms{0},A{0},alpha{0};
     double p{0}; //ATOMISTIC_DEMAG dipole p

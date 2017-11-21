@@ -19,14 +19,22 @@ param.alpha (1)
 m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
+af.device.lock_array(m)
 pystate=pth_mag.pyState(meshvar,param,m)
-
 #m_test=pystate.get_m()
+
+#Alternative:
 m_test=af.Array()
-m_test.arr = ctypes.c_void_p(pystate.get_m())
+m_test_addr=pystate.get_m()
+m_test.arr = ctypes.c_void_p(m_test_addr)
+
+#af.device.lock_array(m_test)
 
 
 print "Test", m_test
+af.device.lock_array(m_test)
+print af.device.is_locked_array(m_test)
+
 
 demag=pth_mag.pyDemagSolver(meshvar,param)
 exch=pth_mag.pyExchSolver(meshvar,param)
@@ -34,8 +42,8 @@ Llg=pth_mag.pyLLG(pystate,demag,exch)
 
 print "relax --------------------"
 print pystate.t()
-while pystate.t() < 1e-9:
-  Llg.llgstep(pystate)
+#while pystate.t() < 1e-9:
+Llg.llgstep(pystate)
 print pystate.t()
 
 
@@ -51,7 +59,8 @@ zeeswitch = af.tile(zeeswitch,100,25,1)
 zee=pth_mag.pyZee(zeeswitch,meshvar,param)
 Llg2=pth_mag.pyLLG(pystate,demag,exch,zee)
 print pystate.t()
-while pystate.t() < 2e-9:
-  Llg2.llgstep(pystate)
+#while pystate.t() < 2e-9:
+Llg2.llgstep(pystate)
 print pystate.t()
+print "Triggering garbage collection: (waiting for cored)"
 #TODO print pystate.get_m()

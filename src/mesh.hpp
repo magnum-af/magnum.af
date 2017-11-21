@@ -7,6 +7,7 @@ class Mesh{
     double dx,dy,dz;            // Distance between cells
     int n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
     Mesh (int, int, int, double, double, double);
+    ~Mesh(){};
     af::dim4 dims;
     af::dim4 dims_expanded;
 };
