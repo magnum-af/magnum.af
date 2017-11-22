@@ -1,7 +1,7 @@
 #include "source.hpp"
 
 Wrap:: Wrap() {}
-Wrap::~Wrap() {}
+//Wrap::~Wrap() {}
 
 void Wrap::c_py_to_cpp(long int addr){
     A = *( new af::array( *(void**) addr ));

@@ -1,5 +1,5 @@
 import ctypes
-import arrayfire 
+import arrayfire as af
 
 cdef extern from "source.hpp":
   cdef cppclass Wrap:
@@ -16,6 +16,9 @@ cdef class pyWrap:
   def py_to_cpp(self, a):
     self.thisptr.c_py_to_cpp(ctypes.addressof(a.arr))
   def cpp_to_py(self):
-    return self.thisptr.c_cpp_to_py()
+    #return self.thisptr.c_cpp_to_py()
+    B = af.Array()
+    B.arr = ctypes.c_void_p(self.thisptr.c_cpp_to_py()) 
+    return B
   def calc_B(self):
     self.thisptr.c_calc_B()
