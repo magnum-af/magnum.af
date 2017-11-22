@@ -1,5 +1,5 @@
-import pth_mag
 import arrayfire as af
+import pth_mag
 import ctypes
 
 af.info()
@@ -22,6 +22,7 @@ m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 #af.device.lock_array(m)
 pystate=pth_mag.pyState(meshvar,param,m)
 m_test=pystate.get_m()
+print "af.mean(m_test)=", af.mean(m_test)
 
 ##Alternative:
 #m_test=af.Array()
@@ -32,8 +33,8 @@ m_test=pystate.get_m()
 
 
 #af.device.lock_array(m_test)
-print "Test", af.mean(m_test)
-print af.device.is_locked_array(m_test)
+#print "Test", af.mean(m_test)
+#print af.device.is_locked_array(m_test)
 
 
 demag=pth_mag.pyDemagSolver(meshvar,param)
@@ -62,5 +63,7 @@ print pystate.t()
 #while pystate.t() < 2e-9:
 Llg2.llgstep(pystate)
 print pystate.t()
-print "Triggering garbage collection: (waiting for cored)"
+af.sync() # maybe this helps
+print "end    --------------------"
+#print "Triggering garbage collection: (waiting for core dumped)"
 #TODO print pystate.get_m()

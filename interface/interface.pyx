@@ -4,12 +4,12 @@
 #https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 #clib library_with_useful_functions
 
-import ctypes
 import arrayfire as af 
 from libc.stdint cimport uintptr_t
-from cython.operator cimport dereference as deref
 from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
+from cython.operator cimport dereference as deref
+import ctypes
 
 
 cdef extern from "../src/LLGTerm.hpp":
@@ -31,7 +31,6 @@ cdef class pyMesh:
   cdef Mesh* thisptr
   def __cinit__(self,int a, int b, int c, double d, double e, double f):
     self.thisptr = new Mesh(a,b,c,d,e,f)
-
   #def __dealloc__(self):
   #  del self.thisptr
 
@@ -145,11 +144,12 @@ cdef class pyState:
     m_addr = self.thisptr.get_m_addr()
     m=af.Array()
     m.arr = ctypes.c_void_p(m_addr)
+    #m.arr = ctypes.c_void_p(m_addr)
+
+    #af.sync()
     #af.device.lock_array(m)
-    m2=af.Array()
-    m2=m
     #af.device.lock_array(m2)
-    return m2
+    return m
     ##Alternative
     #return self.thisptr.get_m_addr()
 
