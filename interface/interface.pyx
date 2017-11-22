@@ -119,8 +119,6 @@ cdef class pyParam:
 cdef extern from "../src/state.hpp":
   cdef cppclass State:
     State (Mesh mesh_in, Param param_in, long int m_in);
-    void print_m();
-    #long int get_m();
     double t;
     array m;
     Param param;
@@ -130,12 +128,10 @@ cdef extern from "../src/state.hpp":
 cdef class pyState:
   cdef State* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):
-    #af.device.lock_array(m_in)#This avoids memory corruption caused by double free
+    af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
     self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
   #def __dealloc__(self):
   #  del self.thisptr
-  def print_m(self):
-    self.thisptr.print_m()
   def t(self):
     return self.thisptr.t
   def pythisptr(self):

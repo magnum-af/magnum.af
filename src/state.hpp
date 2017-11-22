@@ -14,12 +14,8 @@ class State{
     double t{0.};//time
     af::array m;
     int steps{0};
-    void print_m();//TODO Replace with return array
     //long int get_m_addr(){return (long int) m.get();}
     long int get_m_addr(){m.lock(); return (long int) m.get();}
-    //TODO 
-    //long int get_m();
-    //TODO END
 
 
     //State& operator+(af::array& rhs);
