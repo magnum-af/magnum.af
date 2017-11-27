@@ -35,6 +35,10 @@ http://arrayfire.org/docs/installing.htm
 * from source 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
+#Arrayfire-Python
+* see https://github.com/arrayfire/arrayfire-python
+$ pip install arrayfire
+
 # VTK:
 * follow
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
