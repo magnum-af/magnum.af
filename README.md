@@ -1,10 +1,17 @@
 PTH-MAG: A general purpose magnetic simulation software
 =====
 
-## Main Feature:
+## Main Features:
 * Atomistic LLG Solver
 * Micromagnetic LLG Solver
 * String Method
+
+
+## Prerequisites:
+* A C++14 compiler, like gcc or clang
+* [CMake](http://www.cmake.org) 3.0.0 or newer
+* ArrayFire 3.0.1 or newer via. [pre-built binaries](http://arrayfire.com/download) or
+  [source](https://github.com/arrayfire/arrayfire)
 
 ## Installation Guide: (PRELIMINARY)
 
@@ -14,6 +21,15 @@ Installation of hardware-specific drivers:
 $ http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
 * AMD APP SDK 
 http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
+*fix linking error by 
+"On 64-bit installs, AMDAPPSDK-3.0 installs with a broken symbolic link which can be fixed by going to $AMDAPPSDKROOT/lib/x86_64/and executing:""
+
+$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so
+
+* Arrayfire from binaries or source
+http://arrayfire.org/docs/installing.htm
+https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
+
 
 * VTK:
 $ cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
@@ -21,11 +37,6 @@ $ cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
 Note: In new projects, set VTK_DIR by 
 $ export VTK_DIR=/home/.../VTK-build:$VTK_DIR
 
-## Prerequisites:
-* A C++14 compiler, like gcc or clang
-* [CMake](http://www.cmake.org) 3.0.0 or newer
-* ArrayFire 3.0.1 or newer via. [pre-built binaries](http://arrayfire.com/download) or
-  [source](https://github.com/arrayfire/arrayfire)
 
 ## Building this project
 
