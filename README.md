@@ -16,18 +16,23 @@ PTH-MAG: A general purpose magnetic simulation software
 ## Installation Guide: (PRELIMINARY)
 
 
-* AMD Graphics Card:
+# AMD Graphics Card:
 Installation of hardware-specific drivers:
 $ http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
 * AMD APP SDK 
 http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
 *fix linking error by 
-"On 64-bit installs, AMDAPPSDK-3.0 installs with a broken symbolic link which can be fixed by going to $AMDAPPSDKROOT/lib/x86_64/and executing:""
+"On 64-bit installs, AMDAPPSDK-3.0 installs with a broken symbolic link which 
+can be fixed by going to $AMDAPPSDKROOT/lib/x86_64/ (usually $/opt/AMDAPPSDK-3.0/lib/x86_64) 
+and executing:""
 
 $ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so
 
-* Arrayfire from binaries or source
+# Arrayfire 
+* from binaries 
 http://arrayfire.org/docs/installing.htm
+
+* from source 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
