@@ -9,7 +9,8 @@ setup(
               # Note, you can link against a c++ library
               # instead of including the source
               #libraries = ["afcuda"],
-              libraries = ["afcpu"],
+              #libraries = ["afcpu"],
+              libraries = ["afopencl"],
               #sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp"],
               sources=["interface.pyx", "../src/mesh.cpp","../src/state.cpp","../src/micro_demag.cpp","../src/func.cpp","../src/llg.cpp","../src/micro_exch.cpp","../src/zee.cpp"],
               extra_compile_args=['-std=gnu++14','-O3'],
