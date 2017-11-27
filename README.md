@@ -51,7 +51,9 @@ $ sudo make install -jXX  (where XX is number of threads)
 if you encounter the error " CMake Error at Rendering/OpenGL/CMakeLists.txt:304 (message):
    X11_Xt_LIB could not be found.  Required for VTK X lib."
 try
-"$ sudo apt-get install libxt-dev"
+
+`$ sudo apt-get install libxt-dev`
+
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
 # PTH-MAG:
