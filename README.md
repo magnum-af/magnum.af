@@ -35,9 +35,19 @@ http://arrayfire.org/docs/installing.htm
 * from source 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
+# VTK:
+* follow
+https://www.vtk.org/Wiki/VTK/Configure_and_Build
 
-* VTK:
-$ cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
+# PTH-MAG:
+* Note in new projects, set VTK_DIR by 
+$export VTK_DIR=/home/.../VTK-build:$VTK_DIR
+
+* in pth_mag folder
+$ mkdir build && cd build
+
+$ cmake -DVTK_DIR:PATH=/home/...path_to_VTK_build.../VKT-build ..
+
 
 Note: In new projects, set VTK_DIR by 
 $ export VTK_DIR=/home/.../VTK-build:$VTK_DIR
