@@ -39,6 +39,12 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 * follow
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
 
+* generate ccmake files with
+$ ccmake /...path_to_VTK/
+* install with
+$ sudo make install -jXX  (where XX is number of threads)
+
+
 # PTH-MAG:
 * Note in new projects, set VTK_DIR by 
 $export VTK_DIR=/home/.../VTK-build:$VTK_DIR
