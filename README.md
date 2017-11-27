@@ -9,6 +9,9 @@ PTH-MAG: A general purpose magnetic simulation software
 ## Installation Guide: (PRELIMINARY)
 
 
+## AMD Graphics Card:
+flollow http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
+
 * VTK:
 $ cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
 
