@@ -5,6 +5,11 @@ Zee::Zee(af::array zee_in, Mesh mesh_in, Param param_in) :
      zee_field(zee_in), mesh(mesh_in), param(param_in){
 }
 
+Zee::Zee(long int aptr, Mesh mesh_in, Param param_in): mesh(mesh_in), param(param_in){
+    void **a= (void**)aptr;
+    zee_field = *( new af::array( *a ));
+}
+
 array Zee::h(const State& state){
   //timer = timer::start();
   //if(param.afsync) sync();

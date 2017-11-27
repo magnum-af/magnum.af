@@ -92,21 +92,23 @@ double maxnorm(const array& a){
 }
 
 
-//RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
-auto rk4(array f(double, array))
-{
-        return
-        [       f            ](double t,  array y, double dt ) -> array { return
-        [t,y,dt,f            ](                    array  dy1) -> array { return
-        [t,y,dt,f,dy1        ](                    array  dy2) -> array { return
-        [t,y,dt,f,dy1,dy2    ](                    array  dy3) -> array { return
-        [t,y,dt,f,dy1,dy2,dy3](                    array  dy4) -> array { return
-        ( dy1 + 2*dy2 + 2*dy3 + dy4 ) / 6   ;} (
-        dt * f( t+dt  , y+dy3   )          );} (
-        dt * f( t+dt/2, y+dy2/2 )          );} (
-        dt * f( t+dt/2, y+dy1/2 )          );} (
-        dt * f( t     , y       )          );} ;
-}
+//TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
+////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
+//auto rk4(array f(double, array))
+//{
+//        return
+//        [       f            ](double t,  array y, double dt ) -> array { return
+//        [t,y,dt,f            ](                    array  dy1) -> array { return
+//        [t,y,dt,f,dy1        ](                    array  dy2) -> array { return
+//        [t,y,dt,f,dy1,dy2    ](                    array  dy3) -> array { return
+//        [t,y,dt,f,dy1,dy2,dy3](                    array  dy4) -> array { return
+//        ( dy1 + 2*dy2 + 2*dy3 + dy4 ) / 6   ;} (
+//        dt * f( t+dt  , y+dy3   )          );} (
+//        dt * f( t+dt/2, y+dy2/2 )          );} (
+//        dt * f( t+dt/2, y+dy1/2 )          );} (
+//        dt * f( t     , y       )          );} ;
+//}
+//TODO END
 
 //int main(void)
 //{

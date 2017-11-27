@@ -12,3 +12,5 @@ bin/
 *.swp
 *.dat
 *.pdf
+interface.cpp
+*.so

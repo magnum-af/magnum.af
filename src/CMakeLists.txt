@@ -59,15 +59,20 @@ if(${ArrayFire_CPU_FOUND})
     endif()
 ENDIF()
 
-## ArrayFire OpenCL backend
-#FIND_PACKAGE(OpenCL)
-#IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
-#    # We need to find OpenCL as transitive linking is disabled on some OSes
-#    MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
-#    ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:FOO_CORE>)
-#    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES}
-#        ${OpenCL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-#ENDIF()
+# ArrayFire OpenCL backend
+FIND_PACKAGE(OpenCL)
+IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+    # We need to find OpenCL as transitive linking is disabled on some OSes
+    MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
+    ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:FOO_CORE>)
+    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES}
+        ${OpenCL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    if(VTK_LIBRARIES)
+      target_link_libraries(pth-mag-opencl ${VTK_LIBRARIES})
+    else()
+      target_link_libraries(pth-mag-opencl vtkHybrid vtkWidgets)
+    endif()
+ENDIF()
 
 # ArrayFire CUDA backend
 FIND_PACKAGE(CUDA)
@@ -86,3 +91,5 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
       target_link_libraries(pth-mag-cuda vtkHybrid vtkWidgets)
     endif()
 ENDIF()
+
+

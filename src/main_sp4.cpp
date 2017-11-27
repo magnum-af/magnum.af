@@ -37,10 +37,10 @@ int main(int argc, char** argv)
 
 
   //Simulation Parameters
-  double hmax = 3.5e-10;
-  double hmin = 1.0e-15;
-  double atol = 1e-8;
-  double rtol = atol;
+  //double hmax = 3.5e-10;
+  //double hmin = 1.0e-15;
+  //double atol = 1e-8;
+  //double rtol = atol;
   
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
@@ -62,7 +62,8 @@ int main(int argc, char** argv)
   std::vector<llgt_ptr> llgterm;
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
   llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-  LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
+  LLG Llg(state,llgterm);
+  //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
   std::ofstream stream;
   stream.precision(12);

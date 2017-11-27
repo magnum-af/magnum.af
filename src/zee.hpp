@@ -15,6 +15,7 @@ class Zee : public LLGTerm {
     double get_cpu_time(){return cpu_time;}
 
     Zee(af::array zee_in, Mesh mesh_in, Param param_in);
+    Zee(long int zee_in_addr, Mesh mesh_in, Param param_in);
     af::array zee_field;
     Mesh mesh;
     Param param;
