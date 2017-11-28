@@ -24,11 +24,12 @@ http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
 
 http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
 
-* fix linking error by 
+* fix linking error
 
 "On 64-bit installs, AMDAPPSDK-3.0 installs with a broken symbolic link which 
 can be fixed by going to $AMDAPPSDKROOT/lib/x86_64/ (usually $/opt/AMDAPPSDK-3.0/lib/x86_64) 
-and executing:
+
+by  executing:
 
 `$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
@@ -42,11 +43,13 @@ http://arrayfire.org/docs/installing.htm
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 # Arrayfire-Python
-* see 
 
-https://github.com/arrayfire/arrayfire-python
+
+* Install arrayfire-python bindings by
 
 `$ pip install arrayfire`
+
+Fore more details see https://github.com/arrayfire/arrayfire-python
 
 # VTK:
 * follow
