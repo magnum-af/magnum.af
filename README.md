@@ -64,7 +64,8 @@ Fore more details see https://github.com/arrayfire/arrayfire-python
 
 `$ sudo apt install libvtk6-dev`
 
-
+Note: maybe python-vtk is also neccessary
+`$ sudo apt install python-vtk`
 ### From source (not recommended)
 * follow
 
