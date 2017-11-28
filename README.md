@@ -64,6 +64,16 @@ Fore more details see https://github.com/arrayfire/arrayfire-python
 
 `$ sudo apt install libvtk6-dev`
 
+Currently, this comes with a broken link in Ubuntu 16.04. Fix by installing
+
+`$ sudo apt-get install libproj-dev`
+
+An other quick and dirty fix is
+
+`$ sudo ln -s  /usr/lib/x86_64-linux-gnu/libproj.so.<your-version> /usr/lib/x86_64-linux-gnu/libproj.so`
+
+with <your-version> being eg 9 (https://stackoverflow.com/questions/37369369/compiling-pcl-1-7-on-ubuntu-16-04-errors-in-cmake-generated-makefile)
+
 Note: maybe python-vtk is also neccessary
 `$ sudo apt install python-vtk`
 ### From source (not recommended)
