@@ -13,10 +13,10 @@ PTH-MAG: A general purpose magnetic simulation software
 * ArrayFire 3.0.1 or newer via. [pre-built binaries](http://arrayfire.com/download) or
   [source](https://github.com/arrayfire/arrayfire)
 
-## Installation Guide: (PRELIMINARY)
+# Installation Guide:
 
 
-# OpenCL Devices (e.g. AMD Graphics Cards):
+## OpenCL Devices (e.g. AMD Graphics Cards):
 * Installation of hardware-specific drivers:
 
 http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
@@ -33,7 +33,7 @@ by  executing:
 
 `$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
-# Arrayfire 
+## Arrayfire 
 * from binaries 
 
 http://arrayfire.org/docs/installing.htm
@@ -42,7 +42,7 @@ http://arrayfire.org/docs/installing.htm
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
-# Arrayfire-Python
+## Arrayfire-Python
 
 
 * Install arrayfire-python bindings by
@@ -51,7 +51,7 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 Fore more details see https://github.com/arrayfire/arrayfire-python
 
-# VTK:
+## VTK:
 * follow
 
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
@@ -71,7 +71,7 @@ try
 
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
-# PTH-MAG:
+## PTH-MAG:
 * Note in new projects, set VTK_DIR by
 
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
@@ -87,7 +87,7 @@ Note: In new projects, set VTK_DIR by
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
 
 
-## TODEL
+# TODEL
 ## Building this project
 
 ### Linux and OSX
