@@ -55,6 +55,17 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 Fore more details see https://github.com/arrayfire/arrayfire-python
 
 ## VTK:
+### From Package Manager
+* Check current versions:
+
+`$ apt-cache search libvtk`
+
+* Choose latest version with headers  (i.e. latest -dev version), e.g. 
+
+`$ sudo apt install libvtk6-dev`
+
+
+### From source (not recommended)
 * follow
 
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
