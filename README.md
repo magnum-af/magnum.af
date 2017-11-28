@@ -16,39 +16,51 @@ PTH-MAG: A general purpose magnetic simulation software
 ## Installation Guide: (PRELIMINARY)
 
 
-# AMD Graphics Card:
-Installation of hardware-specific drivers:
-$ http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
+# OpenCL Devices (e.g. AMD Graphics Cards):
+* Installation of hardware-specific drivers:
+
+http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
 * AMD APP SDK 
+
 http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
-*fix linking error by 
+
+* fix linking error by 
+
 "On 64-bit installs, AMDAPPSDK-3.0 installs with a broken symbolic link which 
 can be fixed by going to $AMDAPPSDKROOT/lib/x86_64/ (usually $/opt/AMDAPPSDK-3.0/lib/x86_64) 
-and executing:""
+and executing:
 
-$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so
+`$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
 # Arrayfire 
 * from binaries 
+
 http://arrayfire.org/docs/installing.htm
 
-* from source 
+* from source
+
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
-#Arrayfire-Python
-* see https://github.com/arrayfire/arrayfire-python
-$ pip install arrayfire
+# Arrayfire-Python
+* see 
+
+https://github.com/arrayfire/arrayfire-python
+
+`$ pip install arrayfire`
 
 # VTK:
 * follow
+
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
 
 * generate ccmake files with
-$ ccmake /...path_to_VTK/
-* install with
-$ sudo make install -jXX  (where XX is number of threads)
 
-if you encounter the error " CMake Error at Rendering/OpenGL/CMakeLists.txt:304 (message):
+`$ ccmake /...path_to_VTK/`
+* install with
+
+`$ sudo make install -jXX`  (where XX is number of threads)
+
+Note: if you encounter the error  "CMake Error at Rendering/OpenGL/CMakeLists.txt:304 (message):
    X11_Xt_LIB could not be found.  Required for VTK X lib."
 try
 
@@ -57,19 +69,22 @@ try
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
 # PTH-MAG:
-* Note in new projects, set VTK_DIR by 
-$export VTK_DIR=/home/.../VTK-build:$VTK_DIR
+* Note in new projects, set VTK_DIR by
+
+`$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
 
 * in pth_mag folder
-$ mkdir build && cd build
 
-$ cmake -DVTK_DIR:PATH=/home/...path_to_VTK_build.../VKT-build ..
+`$ mkdir build && cd build`
+
+`$ cmake -DVTK_DIR:PATH=/home/path_to_VTK_build/VKT-build  ..`
 
 
 Note: In new projects, set VTK_DIR by 
-$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR
+`$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
 
 
+## TODEL
 ## Building this project
 
 ### Linux and OSX
