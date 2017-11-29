@@ -4,6 +4,9 @@
 #include "mesh.hpp"
 #include "param.hpp"
 
+//#include "vtk_writer.hpp"
+
+
 class State{
   public:
     State (Mesh mesh_in, Param param_in, af::array m_in);
@@ -16,6 +19,9 @@ class State{
     int steps{0};
     //long int get_m_addr(){return (long int) m.get();}
     long int get_m_addr(){m.lock(); return (long int) m.get();}
+
+    //Causes problem with wrapping
+    //void write_vtk(std::string);
 
 
     //State& operator+(af::array& rhs);

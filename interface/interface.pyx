@@ -4,11 +4,13 @@
 #https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 #clib library_with_useful_functions
 
+
 import arrayfire as af 
 from libc.stdint cimport uintptr_t
 from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
 from cython.operator cimport dereference as deref
+from libcpp.string cimport string
 import ctypes
 
 
@@ -35,6 +37,11 @@ cdef class pyMesh:
   def n0(self):
     return self.thisptr.n0
 
+#cdef extern from "../src/vtk_writer.hpp":
+#  cdef void af_to_vti(array field, Mesh mesh, string outputname);
+
+
+
 
 cdef extern from "../src/state.hpp":
   cdef cppclass State:
@@ -42,7 +49,9 @@ cdef extern from "../src/state.hpp":
     double t;
     array m;
     Param param;
+    Mesh mesh;
     long int get_m_addr();
+    void write_vtk(string);
 
 
 cdef class pyState:
@@ -56,6 +65,9 @@ cdef class pyState:
     return self.thisptr.t
   def pythisptr(self):
       return <size_t><void*>self.thisptr
+  #def py_write_vtk(self):
+  #  self.thisptr.write_vtk("test") 
+  #  af_to_vti(self.thisptr.m, self.thisptr.mesh,"test") 
   def get_m(self):
     m_addr = self.thisptr.get_m_addr()
     m=af.Array()
@@ -161,9 +173,6 @@ cdef class pyZee:
     return self.thisptr.get_cpu_time()
   def pythisptr(self):
       return <size_t><void*>self.thisptr
-#TODO 
-#cdef extern from "../src/vtk_writer.hpp":
-#  cdef void af_to_vti(long int field, pyMesh mesh, std::string outputname);
 
 cdef extern from "../src/param.hpp":
   cdef cppclass Param:
