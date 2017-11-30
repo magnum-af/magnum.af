@@ -34,4 +34,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # Process the CMakeLists.txt in the 'src' and 'bin' directory.
 add_subdirectory( src )
-add_subdirectory( bin )
+#add_subdirectory( bin )
