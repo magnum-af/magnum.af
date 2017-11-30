@@ -16,9 +16,13 @@ State::State (Mesh mesh_in, Param param_in, long int aptr):
 }
 
 //Causes problem with wrapping
-//void State::write_vtk(std::string outputname){
-//   af_to_vtk(m, mesh, outputname); 
-//}
+void State::write_vtk(std::string outputname){
+   af_to_vtk(m, mesh, outputname); 
+}
+
+void State::write_vtk_todel(){
+   af_to_vtk(m, mesh, "test"); 
+}
 
 //State::State& operator+(af::array& rhs){
 //  this->m=this->m+rhs;

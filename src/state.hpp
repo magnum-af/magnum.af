@@ -3,8 +3,7 @@
 #include "arrayfire.h"
 #include "mesh.hpp"
 #include "param.hpp"
-
-//#include "vtk_writer.hpp"
+#include "vtk_writer.hpp"
 
 
 class State{
@@ -21,7 +20,8 @@ class State{
     long int get_m_addr(){m.lock(); return (long int) m.get();}
 
     //Causes problem with wrapping
-    //void write_vtk(std::string);
+    void write_vtk(std::string);
+    void write_vtk_todel();
 
 
     //State& operator+(af::array& rhs);

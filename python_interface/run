@@ -1,0 +1,2 @@
+#!/bin/bash
+cd build && cmake .. && make && PYTHONPATH=./src/ python ../run.py && cd ..
