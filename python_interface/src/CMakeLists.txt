@@ -1,5 +1,6 @@
 # If the pyx file is a C++ file, we should specify that here.
 FIND_PACKAGE(ArrayFire REQUIRED)
+#INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS}) # When is this needed?
 #If VTK_DIR not set, you may set: 
 #set(VTK_DIR "/home/pheistra/Programs/VTK-build/")
 FIND_PACKAGE(VTK REQUIRED)
