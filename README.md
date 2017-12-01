@@ -76,6 +76,13 @@ with <your-version> being eg 9 (https://stackoverflow.com/questions/37369369/com
 
 Note: maybe python-vtk is also neccessary
 `$ sudo apt install python-vtk`
+
+Add the VTK_DIR environment variable in your .bashrc file and source it
+
+add `export VTK_DIR=/path_to_VTK:$VTK_DIR`
+
+`source .bashrc`
+
 ### From source (not recommended)
 * follow
 

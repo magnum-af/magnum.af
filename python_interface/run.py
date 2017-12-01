@@ -1,5 +1,5 @@
 import arrayfire as af
-import interface as pth_mag
+import pth_mag
 import ctypes
 from copy import deepcopy
 

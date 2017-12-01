@@ -1,2 +1,3 @@
 #!/bin/bash
+echo "If error tells: LLGTerm.hpp not found: include directory is missing"
 cd build && cmake .. && make -j16 && PYTHONPATH=./src/ python ../run.py && cd ..
