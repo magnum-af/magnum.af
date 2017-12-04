@@ -62,6 +62,14 @@ ENDIF()
 
 # ArrayFire OpenCL backend
 FIND_PACKAGE(OpenCL)
+MESSAGE(STATUS "----> PTH: OpenCL_FOUND ${OpenCL_FOUND}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_INCLUDE_DIRS}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_LIBRARIES}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_STRING}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_MAJOR}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_MINOR}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_INCLUDE_DIR}")
+MESSAGE(STATUS "----> PTH:              ${OpenCL_LIBRARY}")
 IF(${ArrayFire_OpenCL_FOUND})
 #TODO IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
