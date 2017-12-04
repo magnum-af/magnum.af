@@ -51,38 +51,30 @@ ADD_LIBRARY(pth-mag_CORE OBJECT ${SOURCE})
 if(${ArrayFire_CPU_FOUND})
     MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
     ADD_EXECUTABLE(pth-mag-cpu $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-cpu ${ArrayFire_CPU_LIBRARIES}
+    TARGET_LINK_LIBRARIES(pth-mag-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT})
-    if(VTK_LIBRARIES)
-      target_link_libraries(pth-mag-cpu ${VTK_LIBRARIES})
-    else()
-      target_link_libraries(pth-mag-cpu vtkHybrid vtkWidgets)
-    endif()
 ENDIF()
 
 # ArrayFire OpenCL backend
 FIND_PACKAGE(OpenCL)
-MESSAGE(STATUS "----> PTH: OpenCL_FOUND ${OpenCL_FOUND}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_INCLUDE_DIRS}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_LIBRARIES}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_STRING}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_MAJOR}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_VERSION_MINOR}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_INCLUDE_DIR}")
-MESSAGE(STATUS "----> PTH:              ${OpenCL_LIBRARY}")
+MESSAGE(STATUS "----> PTH: OpenCL_FOUND: ${OpenCL_FOUND}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_INCLUDE_DIRS}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_LIBRARIES}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_STRING}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MAJOR}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MINOR}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_INCLUDE_DIR}")
+MESSAGE(STATUS "----> PTH:             : ${OpenCL_LIBRARY}")
 IF(${ArrayFire_OpenCL_FOUND})
-#TODO IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+# TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
+#IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
     ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES}
-         ${CMAKE_THREAD_LIBS_INIT})
-        #TODO ${OpenCL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-    if(VTK_LIBRARIES)
-      target_link_libraries(pth-mag-opencl ${VTK_LIBRARIES})
-    else()
-      target_link_libraries(pth-mag-opencl vtkHybrid vtkWidgets)
-    endif()
+    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES} 
+        # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
+        #${OpenCL_LIBRARIES} 
+        ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 
 # ArrayFire CUDA backend
@@ -94,25 +86,31 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
     MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
     ADD_EXECUTABLE(pth-mag-cuda $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-cuda ${ArrayFire_CUDA_LIBRARIES}
+    TARGET_LINK_LIBRARIES(pth-mag-cuda ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
-    if(VTK_LIBRARIES)
-      target_link_libraries(pth-mag-cuda ${VTK_LIBRARIES})
-    else()
-      target_link_libraries(pth-mag-cuda vtkHybrid vtkWidgets)
-    endif()
 ENDIF()
 
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
-  #${pth-mag_SOURCE_DIR}/src/pth_mag.pyx
-  #TODO remove absolute path
-  /home/pth/git/pth-mag/src/pth_mag.pyx
-  #Additional files would come here
+  ${pth-mag_SOURCE_DIR}/pth_mag.pyx
+  # MESSAGE(STATUS "----> PTH: PATH : ${pth-mag_SOURCE_DIR}")
+  #Additional files would come here as follows:
   #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
 cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_writer.cpp)
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
+
+
+
+
+
+
+
+    #if(VTK_LIBRARIES)
+    #  target_link_libraries(pth-mag-opencl ${VTK_LIBRARIES})
+    #else()
+    #  target_link_libraries(pth-mag-opencl vtkHybrid vtkWidgets)
+    #endif()
