@@ -22,7 +22,7 @@ add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
   ${CMAKE_CURRENT_BINARY_DIR}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
-include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include )
+include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
 
 enable_testing()
 find_file( NOSETESTS_EXECUTABLE nosetests )
