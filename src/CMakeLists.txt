@@ -26,7 +26,7 @@ FIND_PACKAGE(ArrayFire REQUIRED)
 # ArrayFire_OpenCL_LIBRARIES - Location of ArrayFire's OpenCL library, if found
 
 #VKT
-set(VTK_DIR "/usr/include/vtk-6.2/")
+#set(VTK_DIR "/usr/include/vtk-6.2/")#TODO Unluckily this has to be set for each system manually, according to VTK
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 

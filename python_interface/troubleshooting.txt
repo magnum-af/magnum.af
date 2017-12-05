@@ -1,2 +1,0 @@
-"If error tells: LLGTerm.hpp not found: the folder "include" is missing"
-$ mkdir include

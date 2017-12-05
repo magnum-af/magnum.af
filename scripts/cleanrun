@@ -1,2 +1,3 @@
 #!/bin/bash
-cd build && make clean && cmake .. && make -j16 && PYTHONPATH=./src/ python ../scripts/test_pyinterf.py && cd ..
+rm -r build && mkdir build && cd build && cmake .. && make -j16 && PYTHONPATH=./src/ python ../scripts/test_pyinterf.py && cd ..
+#cd build && make clean && cmake .. && make -j16 && PYTHONPATH=./src/ python ../scripts/test_pyinterf.py && cd ..
