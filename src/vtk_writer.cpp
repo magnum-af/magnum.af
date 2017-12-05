@@ -101,49 +101,87 @@ void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){
 }
 
 
-//3D Image data
+//3D Image data Cell Centered
+//Optimization should avoid generation of two vtkImageData objects
 void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
- 
-   double* host_a = field.host<double>();
- 
-   std::cout<<"vtk_writer: af_to_vti: Number of points:"<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3)<<std::endl;
- 
-   vtkSmartPointer<vtkImageData> imageData =
-     vtkSmartPointer<vtkImageData>::New();
-   imageData->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
-    imageData->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
- #if VTK_MAJOR_VERSION <= 5
-   imageData->SetNumberOfScalarComponents(field.dims(3));
-   imageData->SetScalarTypeToDouble();
- #else
-   imageData->AllocateScalars(VTK_DOUBLE, field.dims(3));
- #endif
-   int* dims = imageData->GetDimensions();
- 
-   for (int z = 0; z < dims[2]; z++)
-     {
-     for (int y = 0; y < dims[1]; y++)
-       {
-       for (int x = 0; x < dims[0]; x++)
-         {
-         for (int im=0; im < field.dims(3); im++)
-           {
-           double* pixel = static_cast<double*>(imageData->GetScalarPointer(x,y,z));
-           pixel[im] = host_a[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))];
-           //int idx = x+dims[0]*(y+dims[1]*(z+ dims[2] * im));
-           //std::cout<<"idx= "<< idx<< "\t" <<host_a[idx]<<std::endl;                                               
-           }
-         }
-       }
-     }
- 
-   vtkSmartPointer<vtkXMLImageDataWriter> writer =
-     vtkSmartPointer<vtkXMLImageDataWriter>::New();
-   writer->SetFileName((outputname.append(".vti")).c_str());
- #if VTK_MAJOR_VERSION <= 5
-   writer->SetInputConnection(imageData->GetProducerPort());
- #else
-   writer->SetInputData(imageData);
- #endif
-   writer->Write();
+  
+    double* host_a = field.host<double>();
+  
+    std::cout<<"vtk_writer: af_to_vti: Number of af::array elements:"<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3)<<std::endl;
+  
+    vtkSmartPointer<vtkImageData> imageDataPointCentered = vtkSmartPointer<vtkImageData>::New();
+    imageDataPointCentered->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
+    imageDataPointCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
+    imageDataPointCentered->SetOrigin(0,0,0);
+    #if VTK_MAJOR_VERSION <= 5
+       imageDataPointCentered->SetNumberOfScalarComponents(field.dims(3));
+       imageDataPointCentered->SetScalarTypeToDouble();
+    #else
+       imageDataPointCentered->AllocateScalars(VTK_DOUBLE, field.dims(3));
+    #endif
+    int* dims = imageDataPointCentered->GetDimensions();
+  
+    for (int z = 0; z < dims[2]; z++)
+      {
+      for (int y = 0; y < dims[1]; y++)
+        {
+        for (int x = 0; x < dims[0]; x++)
+          {
+          for (int im=0; im < field.dims(3); im++)
+            {
+            double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x,y,z));
+            pixel[im] = host_a[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))];
+            //int idx = x+dims[0]*(y+dims[1]*(z+ dims[2] * im));
+            //std::cout<<"idx= "<< idx<< "\t" <<host_a[idx]<<std::endl;                                               
+            }
+          }
+        }
+      }
+
+    vtkSmartPointer<vtkImageData> imageDataCellCentered = vtkSmartPointer<vtkImageData>::New();
+    imageDataCellCentered->SetDimensions(field.dims(0)+1, field.dims(1)+1, field.dims(2)+1);
+    imageDataCellCentered->SetOrigin(0,0,0);
+    imageDataCellCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
+    imageDataCellCentered->GetCellData()->SetScalars (imageDataPointCentered->GetPointData()->GetScalars());
+  
+    vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+    writer->SetFileName((outputname.append(".vti")).c_str());
+    #if VTK_MAJOR_VERSION <= 5
+        writer->SetInputConnection(imageDataCellCentered->GetProducerPort());
+    #else
+        writer->SetInputData(imageDataCellCentered);
+    #endif
+    writer->Write();
 }
+
+//https://www.vtk.org/gitweb?p=VTK.git;a=blob;f=Examples/DataManipulation/Cxx/Arrays.cxx
+
+void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
+    vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
+    reader->SetFileName(filepath.c_str());
+    reader->Update(); 
+    vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
+    imageData=reader->GetOutput();
+    
+    std::cout<<"---->VTK: GetNumberOfCells() "<<imageData->GetNumberOfCells()<<std::endl;
+    std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetNumberOfPoints()<<std::endl;
+    std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetCellData()->GetScalars()<<std::endl;
+    //double * temp = imageData->GetCellData()->GetScalars();
+    //std::cout<<"---->VTK: "<<temp[0]<<std::endl;
+    
+    double* pixel = static_cast<double*>(imageData->GetScalarPointer(0,0,0));
+    vtkCell* cell = imageData->GetCell(0);
+    //double* temp = cell->GetPoints()->GetPoint(0);
+    std::cout<<"---->VTK: "<<pixel  <<std::endl;
+    //std::cout<<"---->VTK: "<<pixel[0]  <<std::endl;
+    //double* temp = imageData->GetCell(0)->GetPoints();
+    vtkDoubleArray* temp;
+    (imageData->GetCellData()->GetScalars()->GetData(0,1,0,0,temp));
+    //temp->GetValue(0);
+    //std::cout<<"TEMP:>VTK: "<<temp->GetValue(0)  <<std::endl;
+    //std::cout<<"---->VTK: "<<temp[0]  <<std::endl;
+    //std::cout<<"---->VTK: "<<*imageData->GetCell(1,1,0)  <<std::endl;
+    //vtkCell* temp = imageData->GetCell(1,1,0);
+    //std::cout<<"---->VTK: "<<pixel[0] << "\t"<<pixel[1] << "\t"<< pixel[2] <<std::endl;
+}
+//TODO: State vti_to_af(const af::array& field, const Mesh& mesh, std::string filename){
