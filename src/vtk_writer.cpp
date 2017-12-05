@@ -162,7 +162,7 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     reader->Update(); 
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
     imageData=reader->GetOutput();
-    
+//TODO    Assert()
     std::cout<<"---->VTK: GetNumberOfCells() "<<imageData->GetNumberOfCells()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetNumberOfPoints()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetCellData()->GetScalars()<<std::endl;
@@ -170,13 +170,22 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     //std::cout<<"---->VTK: "<<temp[0]<<std::endl;
     
     double* pixel = static_cast<double*>(imageData->GetScalarPointer(0,0,0));
-    vtkCell* cell = imageData->GetCell(0);
+    //vtkCell* cell = imageData->GetCell(0);
     //double* temp = cell->GetPoints()->GetPoint(0);
-    std::cout<<"---->VTK: "<<pixel  <<std::endl;
+    std::cout<<"---->VTK------------------------: "<<pixel  <<std::endl;
     //std::cout<<"---->VTK: "<<pixel[0]  <<std::endl;
     //double* temp = imageData->GetCell(0)->GetPoints();
-    vtkDoubleArray* temp;
-    (imageData->GetCellData()->GetScalars()->GetData(0,1,0,0,temp));
+    vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
+    //vtkSmartPointer<vtkDataArray> temp1 = vtkSmartPointer<vtkDataArray>::New();
+    imageData->GetCellData()->GetScalars()->GetData(0,10,0,0,temp);
+    std::cout<<"lalalal "<< temp->GetValue(0)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(1)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(2)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(3)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(4)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(5)<<std::endl;
+    std::cout<<"lalalal "<< temp->GetValue(6)<<std::endl;
+    //(imageData->GetCellData()->GetScalars())->PrintSelf(std::cout,vtkIndent(0));//->GetData(0,10,0,0,temp);
     //temp->GetValue(0);
     //std::cout<<"TEMP:>VTK: "<<temp->GetValue(0)  <<std::endl;
     //std::cout<<"---->VTK: "<<temp[0]  <<std::endl;
