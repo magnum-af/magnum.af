@@ -105,13 +105,13 @@ void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){
 //Optimization should avoid generation of two vtkImageData objects
 void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
   
-    print("FLAT",af::flat(field));
+    //print("FLAT",af::flat(field));
     double* host_a = field.host<double>();
-    for(int i=0; i < field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3); i++){
-        std::cout<<"host: "<< i << " = " << host_a[i]<<std::endl;
-    }
-    af::array Test(field.dims(0), field.dims(1), field.dims(2) , field.dims(3),host_a);
-    af::print("Test=",Test);
+    //for(int i=0; i < field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3); i++){
+    //    std::cout<<"host: "<< i << " = " << host_a[i]<<std::endl;
+    //}
+    //af::array Test(field.dims(0), field.dims(1), field.dims(2) , field.dims(3),host_a);
+    //af::print("Test=",Test);
   
     std::cout<<"vtk_writer: af_to_vti: Number of af::array elements:"<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3)<<std::endl;
   
@@ -172,6 +172,7 @@ void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
 //TODO    Assert()
     assert (imageData!=NULL);
     std::cout<<"---->VTK: GetNumberOfCells() "<<imageData->GetNumberOfCells()<<std::endl;
+    std::cout<<"---->VTK: GetScalarSize()"<<imageData->GetScalarSize()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetNumberOfPoints()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetCellData()->GetScalars()<<std::endl;
     //double * temp = imageData->GetCellData()->GetScalars();
@@ -199,44 +200,70 @@ void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
     mesh=Mesh(dims_reduced[0],dims_reduced[1],dims_reduced[2],spacing[0],spacing[1],spacing[2]);
     double* A_host = NULL;
     A_host = new double[3*imageData->GetNumberOfCells()];
-    double* B_host = NULL;
-    B_host = new double[3*imageData->GetNumberOfCells()];
-    for(int i=0; i < 3* imageData->GetNumberOfCells(); i++){
-        std::cout<<"i = "<< i << "     Value = " <<  temp->GetValue(i)<<std::endl;
-        A_host[i]=temp->GetValue(i);
-    }
-    for (int z = 0; z < dims_reduced[2]; z++)
-      {
-      for (int y = 0; y < dims_reduced[1]; y++)
-        {
-        for (int x = 0; x < dims_reduced[0]; x++)
-          {
-          for (int im=0; im < 3; im++)//TODO make this dimension depemdent on input
-            {
-            //  A_host[i]=temp->GetValue(i);
-            //double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x,y,z));
-            //pixel[im] = host_a[x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im))];
-            //int idx = im+dims_reduced[2]*(z+dims_reduced[1]*(y+ dims_reduced[0] * x));
-            int idx = x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im));
-            //int idx = im * dims_reduced[0] * dims_reduced [1] * dims_reduced[2] ;
-            std::cout<<"idx= "<< idx<< " \t A_host[idx] =  " <<A_host[idx] << "\t GetValue= "<< temp->GetValue(idx)<<std::endl;
-            //std::cout<<"GetScalarCOmp="<<imageData->GetScalarComponentAsDouble(x,y,z,im)<<std::endl;
-            B_host[idx]=temp->GetValue(idx);
-            }
-          }
+//    double* B_host = NULL;
+//    B_host = new double[3*imageData->GetNumberOfCells()];
+
+
+
+//VERSION SORT WITH C++ LOOP
+    int A_host_idx=0;
+    for(int i=0; i < 3; i++){
+        for (int j = i; j < 3 * imageData->GetNumberOfCells(); j = j + 3){
+            //std::cout<<"j = "<< j << "     Value = " <<  temp->GetValue(j)<<std::endl;
+            A_host[A_host_idx]=temp->GetValue(j);
+            A_host_idx++;
         }
-      }
-    delete [] B_host;
+    }
+    //TESTING
+    //for(int i=0; i < 3* imageData->GetNumberOfCells(); i++){
+    //    std::cout<<"i = "<< i << "     A_host_VALUE = " <<  A_host[i]<<std::endl;
+    //}
     af::array A(3*imageData->GetNumberOfCells(),1,1,1,A_host);
     delete [] A_host;
-    af::print("A=",A);
-    A=af::moddims(A,af::dim4(3,dims_reduced[0],dims_reduced[1],dims_reduced[2]));
-    af::print("A=",A);
-    A=af::reorder(A,1,2,3,0);
-    af::print("A=",A);
+    A=af::moddims(A,af::dim4(dims_reduced[0],dims_reduced[1],dims_reduced[2],3));
+    //af::print("A_C++=",A);
+
+
+
+////VERSION SORT WITH ARRAYFIRE
+//    for(int i=0; i < 3* imageData->GetNumberOfCells(); i++){
+//        std::cout<<"i = "<< i << "     Value = " <<  temp->GetValue(i)<<std::endl;
+//        A_host[i]=temp->GetValue(i);
+//    }
+//
+//
+//    for (int z = 0; z < dims_reduced[2]; z++)
+//      {
+//      for (int y = 0; y < dims_reduced[1]; y++)
+//        {
+//        for (int x = 0; x < dims_reduced[0]; x++)
+//          {
+//          for (int im=0; im < 3; im++)//TODO make this dimension depemdent on input
+//            {
+//            //  A_host[i]=temp->GetValue(i);
+//            //double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x,y,z));
+//            //pixel[im] = host_a[x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im))];
+//            //int idx = im+dims_reduced[2]*(z+dims_reduced[1]*(y+ dims_reduced[0] * x));
+//            int idx = x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im));
+//            //int idx = im * dims_reduced[0] * dims_reduced [1] * dims_reduced[2] ;
+//            std::cout<<"idx= "<< idx<< " \t A_host[idx] =  " <<A_host[idx] << "\t GetValue= "<< temp->GetValue(idx)<<std::endl;
+//            //std::cout<<"GetScalarCOmp="<<imageData->GetScalarComponentAsDouble(x,y,z,im)<<std::endl;
+//            }
+//          }
+//        }
+//      }
+//    af::array A(3*imageData->GetNumberOfCells(),1,1,1,A_host);
+//    delete [] A_host;
+//    af::print("A=",A);
+//    A=af::moddims(A,af::dim4(3,dims_reduced[0],dims_reduced[1],dims_reduced[2]));
+//    af::print("A=",A);
+//    A=af::reorder(A,1,2,3,0);
+//    af::print("A=",A);
+
     field=A;
     
     std::cout<<"TYPE="<<A.type()<<std::endl;
+    std::cout<<"---->VTK: GetScalarSize()"<<imageData->GetScalarSize()<<std::endl;
     //af::array B=af::constant(2.,1,1,1,1,f64);
     //std::cout<<"TYPE="<<B.type()<<std::endl;
     
@@ -258,3 +285,54 @@ void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
     //std::cout<<"---->VTK: "<<pixel[0] << "\t"<<pixel[1] << "\t"<< pixel[2] <<std::endl;
 }
 //TODO: State vti_to_af(const af::array& field, const Mesh& mesh, std::string filename){
+
+
+
+//TODO try in main
+//3D Image data
+void atomisitic_af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
+ 
+   double* host_a = field.host<double>();
+ 
+   std::cout<<"vtk_writer: af_to_vti: Number of points:"<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3)<<std::endl;
+ 
+   vtkSmartPointer<vtkImageData> imageData =
+     vtkSmartPointer<vtkImageData>::New();
+   imageData->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
+    imageData->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
+ #if VTK_MAJOR_VERSION <= 5
+   imageData->SetNumberOfScalarComponents(field.dims(3));
+   imageData->SetScalarTypeToDouble();
+ #else
+   imageData->AllocateScalars(VTK_DOUBLE, field.dims(3));
+ #endif
+   int* dims = imageData->GetDimensions();
+ 
+   for (int z = 0; z < dims[2]; z++)
+     {
+     for (int y = 0; y < dims[1]; y++)
+       {
+       for (int x = 0; x < dims[0]; x++)
+         {
+         for (int im=0; im < field.dims(3); im++)
+           {
+           double* pixel = static_cast<double*>(imageData->GetScalarPointer(x,y,z));
+           pixel[im] = host_a[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))];
+           //int idx = x+dims[0]*(y+dims[1]*(z+ dims[2] * im));
+           //std::cout<<"idx= "<< idx<< "\t" <<host_a[idx]<<std::endl;                                               
+           }
+         }
+       }
+     }
+ 
+//TODO    std::cout<<"---->VTK: GetScalarSize()"<<imageData->GetScalarSize()<<std::endl;
+   vtkSmartPointer<vtkXMLImageDataWriter> writer =
+     vtkSmartPointer<vtkXMLImageDataWriter>::New();
+   writer->SetFileName((outputname.append(".vti")).c_str());
+ #if VTK_MAJOR_VERSION <= 5
+   writer->SetInputConnection(imageData->GetProducerPort());
+ #else
+   writer->SetInputData(imageData);
+ #endif
+   writer->Write();
+}
