@@ -105,6 +105,7 @@ void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){
 //Optimization should avoid generation of two vtkImageData objects
 void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
   
+    print("FLAT",af::flat(field));
     double* host_a = field.host<double>();
     for(int i=0; i < field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3); i++){
         std::cout<<"host: "<< i << " = " << host_a[i]<<std::endl;
@@ -161,7 +162,7 @@ void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
 
 //https://www.vtk.org/gitweb?p=VTK.git;a=blob;f=Examples/DataManipulation/Cxx/Arrays.cxx
 
-void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
+void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
     vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
     reader->SetFileName(filepath.c_str());
     reader->Update(); 
@@ -184,13 +185,18 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     //double* temp = imageData->GetCell(0)->GetPoints();
     vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
     //vtkSmartPointer<vtkDataArray> temp1 = vtkSmartPointer<vtkDataArray>::New();
-    imageData->GetCellData()->GetScalars()->GetData(0,3*imageData->GetNumberOfCells(),0,2,temp);
+    std::cout<<"---->VTK------------------------: "<<pixel  <<std::endl;
+    imageData->GetCellData()->GetScalars()->GetData(0,imageData->GetNumberOfCells()-1,0,3-1,temp);
+    std::cout<<"---->VTK------------------------: "<<pixel  <<std::endl;
     int* dims_reduced = imageData->GetDimensions();
+    double* spacing = imageData->GetSpacing();
     for(int i=0; i < 3; i++){
         std::cout<<"dims_reduced= "<< i << " = " <<  dims_reduced[i]<<std::endl;
         dims_reduced[i]--;
         std::cout<<"dims_reduced= "<< i << " = " <<  dims_reduced[i]<<std::endl;
+        std::cout<<"Spacing= "<< i << " = " <<  spacing[i]<<std::endl;
     }
+    mesh=Mesh(dims_reduced[0],dims_reduced[1],dims_reduced[2],spacing[0],spacing[1],spacing[2]);
     double* A_host = NULL;
     A_host = new double[3*imageData->GetNumberOfCells()];
     double* B_host = NULL;
@@ -214,11 +220,13 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
             int idx = x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im));
             //int idx = im * dims_reduced[0] * dims_reduced [1] * dims_reduced[2] ;
             std::cout<<"idx= "<< idx<< " \t A_host[idx] =  " <<A_host[idx] << "\t GetValue= "<< temp->GetValue(idx)<<std::endl;
+            //std::cout<<"GetScalarCOmp="<<imageData->GetScalarComponentAsDouble(x,y,z,im)<<std::endl;
             B_host[idx]=temp->GetValue(idx);
             }
           }
         }
       }
+    delete [] B_host;
     af::array A(3*imageData->GetNumberOfCells(),1,1,1,A_host);
     delete [] A_host;
     af::print("A=",A);
@@ -226,6 +234,7 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     af::print("A=",A);
     A=af::reorder(A,1,2,3,0);
     af::print("A=",A);
+    field=A;
     
     std::cout<<"TYPE="<<A.type()<<std::endl;
     //af::array B=af::constant(2.,1,1,1,1,f64);

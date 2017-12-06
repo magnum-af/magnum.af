@@ -25,5 +25,5 @@
 void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname);//Rectilinear grid writer
 void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname);//3D Image data
 
-void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath);
+void vti_to_af(af::array& field, Mesh& mesh, std::string filepath);
 #endif
