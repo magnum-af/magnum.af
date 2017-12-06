@@ -44,9 +44,11 @@ cdef extern from "../../src/state.hpp":
     State (Mesh mesh_in, Param param_in, long int m_in);
     double t;
     array m;
+    Mesh mesh;
     Param param;
     long int get_m_addr();
     void write_vtk(string);
+    void write_vti(string);
     void write_vtk_todel();
 
 
@@ -63,6 +65,9 @@ cdef class pyState:
       return <size_t><void*>self.thisptr
   def py_write_vtk(self):
     self.thisptr.write_vtk_todel() 
+  #TODO
+  #def py_write_vti(self,in_string):
+  #  self.thisptr.write_vti(in_string) 
     #self.thisptr.write_vtk("test") 
     #af_to_vti(self.thisptr.m, self.thisptr.mesh,"test") 
   def get_m(self):

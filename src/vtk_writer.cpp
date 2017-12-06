@@ -103,7 +103,7 @@ void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){
 
 //3D Image data Cell Centered
 //Optimization should avoid generation of two vtkImageData objects
-void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
+void vti_writer(const af::array field, const Mesh& mesh, std::string outputname){
   
     //print("FLAT",af::flat(field));
     double* host_a = field.host<double>();
@@ -162,7 +162,13 @@ void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
 
 //https://www.vtk.org/gitweb?p=VTK.git;a=blob;f=Examples/DataManipulation/Cxx/Arrays.cxx
 
-void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
+    //USEAGE:
+    //array Aout = array();
+    //Mesh meshout = Mesh(NaN,NaN,NaN,NaN,NaN,NaN);
+    //vti_to_af(Aout,meshout,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
+    //print("Aout",Aout);
+    //std::cout << "  " << meshout.n0 << "  " << meshout.n1 << "  " << meshout.n2 << "  " << meshout.dx << "  " << meshout.dy << "  " << meshout.dz <<  std::endl;
+void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
     int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
     vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
     reader->SetFileName(filepath.c_str());
@@ -213,7 +219,7 @@ void vti_to_af(af::array& field, Mesh& mesh, std::string filepath){
 
 //TODO try in main
 //3D Image data
-void atomisitic_af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
+void atomistic_vti_writer(const af::array field, const Mesh& mesh, std::string outputname){
  
    double* host_a = field.host<double>();
  

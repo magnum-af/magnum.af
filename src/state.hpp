@@ -21,6 +21,7 @@ class State{
 
     //Causes problem with wrapping
     void write_vtk(std::string);
+    void write_vti(std::string);
     void write_vtk_todel();
 
 

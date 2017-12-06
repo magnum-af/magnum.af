@@ -20,6 +20,10 @@ void State::write_vtk(std::string outputname){
    af_to_vtk(m, mesh, outputname); 
 }
 
+void State::write_vti(std::string outputname){
+   vti_writer(m, mesh, outputname); 
+}
+
 void State::write_vtk_todel(){
    af_to_vtk(m, mesh, "test"); 
 }
