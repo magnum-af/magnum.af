@@ -106,6 +106,11 @@ void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){
 void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){
   
     double* host_a = field.host<double>();
+    for(int i=0; i < field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3); i++){
+        std::cout<<"host: "<< i << " = " << host_a[i]<<std::endl;
+    }
+    af::array Test(field.dims(0), field.dims(1), field.dims(2) , field.dims(3),host_a);
+    af::print("Test=",Test);
   
     std::cout<<"vtk_writer: af_to_vti: Number of af::array elements:"<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3)<<std::endl;
   
@@ -161,8 +166,10 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     reader->SetFileName(filepath.c_str());
     reader->Update(); 
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
+    if(reader->GetOutput()==NULL) std::cout<<" reader==NULL"<<std::endl;
     imageData=reader->GetOutput();
 //TODO    Assert()
+    assert (imageData!=NULL);
     std::cout<<"---->VTK: GetNumberOfCells() "<<imageData->GetNumberOfCells()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetNumberOfPoints()<<std::endl;
     std::cout<<"---->VTK: GetNumberOfPoints()"<<imageData->GetCellData()->GetScalars()<<std::endl;
@@ -177,14 +184,62 @@ void vti_to_af(const af::array& field, const Mesh& mesh, std::string filepath){
     //double* temp = imageData->GetCell(0)->GetPoints();
     vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
     //vtkSmartPointer<vtkDataArray> temp1 = vtkSmartPointer<vtkDataArray>::New();
-    imageData->GetCellData()->GetScalars()->GetData(0,10,0,0,temp);
-    std::cout<<"lalalal "<< temp->GetValue(0)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(1)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(2)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(3)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(4)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(5)<<std::endl;
-    std::cout<<"lalalal "<< temp->GetValue(6)<<std::endl;
+    imageData->GetCellData()->GetScalars()->GetData(0,3*imageData->GetNumberOfCells(),0,2,temp);
+    int* dims_reduced = imageData->GetDimensions();
+    for(int i=0; i < 3; i++){
+        std::cout<<"dims_reduced= "<< i << " = " <<  dims_reduced[i]<<std::endl;
+        dims_reduced[i]--;
+        std::cout<<"dims_reduced= "<< i << " = " <<  dims_reduced[i]<<std::endl;
+    }
+    double* A_host = NULL;
+    A_host = new double[3*imageData->GetNumberOfCells()];
+    double* B_host = NULL;
+    B_host = new double[3*imageData->GetNumberOfCells()];
+    for(int i=0; i < 3* imageData->GetNumberOfCells(); i++){
+        std::cout<<"i = "<< i << "     Value = " <<  temp->GetValue(i)<<std::endl;
+        A_host[i]=temp->GetValue(i);
+    }
+    for (int z = 0; z < dims_reduced[2]; z++)
+      {
+      for (int y = 0; y < dims_reduced[1]; y++)
+        {
+        for (int x = 0; x < dims_reduced[0]; x++)
+          {
+          for (int im=0; im < 3; im++)//TODO make this dimension depemdent on input
+            {
+            //  A_host[i]=temp->GetValue(i);
+            //double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x,y,z));
+            //pixel[im] = host_a[x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im))];
+            //int idx = im+dims_reduced[2]*(z+dims_reduced[1]*(y+ dims_reduced[0] * x));
+            int idx = x+dims_reduced[0]*(y+dims_reduced[1]*(z+ dims_reduced[2] * im));
+            //int idx = im * dims_reduced[0] * dims_reduced [1] * dims_reduced[2] ;
+            std::cout<<"idx= "<< idx<< " \t A_host[idx] =  " <<A_host[idx] << "\t GetValue= "<< temp->GetValue(idx)<<std::endl;
+            B_host[idx]=temp->GetValue(idx);
+            }
+          }
+        }
+      }
+    af::array A(3*imageData->GetNumberOfCells(),1,1,1,A_host);
+    delete [] A_host;
+    af::print("A=",A);
+    A=af::moddims(A,af::dim4(3,dims_reduced[0],dims_reduced[1],dims_reduced[2]));
+    af::print("A=",A);
+    A=af::reorder(A,1,2,3,0);
+    af::print("A=",A);
+    
+    std::cout<<"TYPE="<<A.type()<<std::endl;
+    //af::array B=af::constant(2.,1,1,1,1,f64);
+    //std::cout<<"TYPE="<<B.type()<<std::endl;
+    
+    //std::cout<<"lalalal "<< temp->GetValue(0)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(1)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(2)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(3)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(4)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(5)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(6)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(imageData->GetNumberOfCells()-1)<<std::endl;
+    //std::cout<<"lalalal "<< temp->GetValue(imageData->GetNumberOfCells())<<std::endl;
     //(imageData->GetCellData()->GetScalars())->PrintSelf(std::cout,vtkIndent(0));//->GetData(0,10,0,0,temp);
     //temp->GetValue(0);
     //std::cout<<"TEMP:>VTK: "<<temp->GetValue(0)  <<std::endl;
