@@ -17,15 +17,15 @@ State::State (Mesh mesh_in, Param param_in, long int aptr):
 
 //Causes problem with wrapping
 void State::write_vtk(std::string outputname){
-   af_to_vtk(m, mesh, outputname); 
+   vtk_writer(m, mesh, outputname); 
 }
 
 void State::write_vti(std::string outputname){
-   vti_writer(m, mesh, outputname); 
+   vti_writer_micro(m, mesh, outputname); 
 }
 
 void State::write_vtk_todel(){
-   af_to_vtk(m, mesh, "test"); 
+   vtk_writer(m, mesh, "test"); 
 }
 
 //State::State& operator+(af::array& rhs){
