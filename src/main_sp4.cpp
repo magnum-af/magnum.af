@@ -57,8 +57,8 @@ int main(int argc, char** argv)
   m(0,span,span,1 ) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
   m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
   State state(mesh,param, m);
-  af_to_vti(state.m, mesh ,(filepath + "minit").c_str());
-  vti_to_af(state.m,mesh,"/home/pheistra/git/pth-mag/Data/Testing/minit.vti");
+  vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+  //vti_reader(state.m,mesh,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
 
   std::vector<llgt_ptr> llgterm;
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   }
   std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
-  af_to_vti(state.m, mesh ,(filepath + "relax").c_str());
+  vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
   std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
 
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     state.m=Llg.llgstep(state);
     calcm(state,stream);
   }
-  af_to_vti(state.m, mesh ,(filepath + "2ns").c_str());
+  vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
   stream.close();
   Llg.print_cpu_time(std::cout); 
   return 0;
