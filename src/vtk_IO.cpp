@@ -277,6 +277,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname)
 //TODO Gives error reading in file
 // vtkRectilinearGrid Reader
 // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
+// https://public.kitware.com/pipermail/paraview/2012-July/025678.html
 void vtr_reader(af::array& field, Mesh& mesh, std::string filepath){
     //int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
     vtkSmartPointer<vtkXMLRectilinearGridReader> reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();

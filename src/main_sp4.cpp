@@ -13,7 +13,7 @@
 #include "atomistic_exchange.hpp"
 #include "atomistic_anisotropy.hpp"
 #include "atomistic_dmi.hpp"
-#include "vtk_writer.hpp"
+#include "vtk_IO.hpp"
 #include "string.hpp"
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 void calcm(State state, std::ostream& myfile);
