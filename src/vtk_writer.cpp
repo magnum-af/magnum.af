@@ -170,6 +170,7 @@ void vti_writer(const af::array field, const Mesh& mesh, std::string outputname)
     //std::cout << "  " << meshout.n0 << "  " << meshout.n1 << "  " << meshout.n2 << "  " << meshout.dx << "  " << meshout.dy << "  " << meshout.dz <<  std::endl;
 void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
     int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
+    //Candidate is imageData->GetScalarSize()<<std::endl;
     vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
     reader->SetFileName(filepath.c_str());
     reader->Update(); 
@@ -213,11 +214,9 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
     //delete [] A_host;
     //A=af::moddims(A,af::dim4(dims_reduced[0],dims_reduced[1],dims_reduced[2],dim4th));
     //field=A;
-    std::cout<<"---->VTK: GetScalarSize()"<<imageData->GetScalarSize()<<std::endl;//TODO
 }
 
 
-//TODO try in main
 //3D Image data
 void atomistic_vti_writer(const af::array field, const Mesh& mesh, std::string outputname){
  
@@ -264,4 +263,57 @@ void atomistic_vti_writer(const af::array field, const Mesh& mesh, std::string o
    writer->SetInputData(imageData);
  #endif
    writer->Write();
+}
+
+void atomistic_vti_reader(af::array& field, Mesh& mesh, std::string filepath){
+    int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
+    //Candidate is imageData->GetScalarSize()<<std::endl;
+    vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
+    reader->SetFileName(filepath.c_str());
+    reader->Update(); 
+    vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
+    imageData=reader->GetOutput();
+    //std::cout<<reader->GetOutput();
+
+    //vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
+    //imageData->GetCellData()->GetScalars()->GetData(0,imageData->GetNumberOfCells()-1,0,dim4th-1,temp);
+
+    int* dims = imageData->GetDimensions();
+    double* spacing = imageData->GetSpacing();
+    mesh=Mesh(dims[0],dims[1],dims[2],spacing[0],spacing[1],spacing[2]);
+    double* A_host = NULL;
+    A_host = new double[dim4th*imageData->GetNumberOfPoints()];
+    for (int z = 0; z < dims[2]; z++)
+      {
+      for (int y = 0; y < dims[1]; y++)
+        {
+        for (int x = 0; x < dims[0]; x++)
+          {
+          for (int im=0; im < dim4th; im++)
+            {
+            double* pixel = static_cast<double*>(imageData->GetScalarPointer(x,y,z));
+            A_host[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))] = pixel[im] ;
+            int idx = x+dims[0]*(y+dims[1]*(z+ dims[2] * im));
+            std::cout<<"idx= "<< idx<< "\t" <<A_host[idx]<<std::endl;                                               
+            }
+          }
+        }
+      }
+
+    //for(int i=0; i < dim4th* imageData->GetNumberOfPoints(); i++){
+    //    std::cout<<"A_host[i] = "<<A_host[i]<<std::endl;
+    //}
+    //std::cout<<imageData->GetNumberOfPoints()<<std::endl;
+    //Two Versions to sort CellData to double* A_host 
+    //Perform equally both on CPU and OpenCL
+
+    ////VERSION SORT WITH ARRAYFIRE
+    //for(int i=0; i < dim4th* imageData->GetNumberOfCells(); i++){
+    //    A_host[i]=temp->GetValue(i);
+    //}
+    af::array A(dim4th*imageData->GetNumberOfPoints(),1,1,1,A_host);
+    delete [] A_host;
+    A=af::moddims(A,af::dim4(dims[0],dims[1],dims[2],dim4th));
+    //A=af::reorder(A,1,2,3,0);
+    field=A;
 }
