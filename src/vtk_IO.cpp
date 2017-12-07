@@ -184,7 +184,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
 void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname){
   
     const double d[3]={mesh.dx,mesh.dy,mesh.dz};
-    af::dim4 dims(field.dims(0),field.dims(1),field.dims(2),field.dims(3));
+    const long long int dims[4] = {field.dims(0),field.dims(1),field.dims(2),field.dims(3)};
   
     double* host_a = field.host<double>();
   
