@@ -13,7 +13,7 @@
 #include "atomistic_exchange.hpp"
 #include "atomistic_anisotropy.hpp"
 #include "atomistic_dmi.hpp"
-#include "vtk_writer.hpp"
+#include "vtk_IO.hpp"
 #include "string.hpp"
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 void calcm(State state, std::ostream& myfile);
@@ -75,6 +75,12 @@ int main(int argc, char** argv)
   print("B",B);
   std::cout<<bmesh.n0<<"  "<<bmesh.n1<<"  "<<bmesh.n2<<"  "<<bmesh.dx<<"  "<<bmesh.dy<<"  "<<bmesh.dz<<"  "<<std::endl;
 
+  vtr_writer(B, bmesh ,(filepath + "minit").c_str());
+  array C = array();
+  Mesh cmesh = Mesh(0,0,0,0,0,0);
+  vtr_reader(C,cmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vtk");
+  print("C",C);
+  std::cout<<cmesh.n0<<"  "<<cmesh.n1<<"  "<<cmesh.n2<<"  "<<cmesh.dx<<"  "<<cmesh.dy<<"  "<<cmesh.dz<<"  "<<std::endl;
 //  std::vector<llgt_ptr> llgterm;
 //  llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
 //  llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));

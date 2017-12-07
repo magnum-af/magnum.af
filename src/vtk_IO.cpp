@@ -1,4 +1,4 @@
-#include "vtk_writer.hpp"
+#include "vtk_IO.hpp"
 
 
 //3D vtkImageData vtkCellData writer
@@ -181,99 +181,110 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
 
 
 //vtkRectilinearGrid writer (currently not needed as we only compute on regular grids
-void vtk_writer(const af::array field, const Mesh& mesh, std::string outputname){
-
-  const double d[3]={mesh.dx,mesh.dy,mesh.dz};
-  af::dim4 dims(field.dims(0),field.dims(1),field.dims(2),field.dims(3));
-
-  double* host_a = field.host<double>();
-
-  std::cout<<"vtk_writer: Number of points:"<< dims[0]*dims[1]*dims[2]*dims[3]<<std::endl;
-
-  //------------------------------------------------------------------------------
-  //VKT grid
-  //------------------------------------------------------------------------------
-  vtkSmartPointer<vtkRectilinearGrid> grid = vtkSmartPointer<vtkRectilinearGrid>::New();
-
-  grid->SetDimensions(dims[0], dims[1], dims[2]);
-
-  vtkDataArray* coords[3];
-
-  // compute & populate coordinate vectors
-  for(int i=0; i < dims[3]; ++i)//i^= x,y,z
-  {
-    coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
-    coords[i]->SetNumberOfTuples(dims[i]);
-
-    for(int j=0; j < dims[i]; ++j)
+void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname){
+  
+    const double d[3]={mesh.dx,mesh.dy,mesh.dz};
+    af::dim4 dims(field.dims(0),field.dims(1),field.dims(2),field.dims(3));
+  
+    double* host_a = field.host<double>();
+  
+    std::cout<<"vtk_writer: Number of points:"<< dims[0]*dims[1]*dims[2]*dims[3]<<std::endl;
+  
+    //------------------------------------------------------------------------------
+    //VKT grid
+    //------------------------------------------------------------------------------
+    vtkSmartPointer<vtkRectilinearGrid> grid = vtkSmartPointer<vtkRectilinearGrid>::New();
+  
+    grid->SetDimensions(dims[0], dims[1], dims[2]);
+  
+    vtkDataArray* coords[3];
+  
+    // compute & populate coordinate vectors
+    for(int i=0; i < dims[3]; ++i)//i^= x,y,z
     {
-      double val = (double)j*d[i];
-      coords[ i ]->SetTuple( j, &val );
-    } // END for all points along this dimension
-
-  } // END for all dimensions
-
-  grid->SetXCoordinates( coords[0] );
-  grid->SetYCoordinates( coords[1] );
-  grid->SetZCoordinates( coords[2] );
-  coords[0]->Delete();
-  coords[1]->Delete();
-  coords[2]->Delete();
-
-  //VKT value grid
-  vtkSmartPointer<vtkRectilinearGrid> value_grid = vtkSmartPointer<vtkRectilinearGrid>::New();
-  value_grid->SetDimensions(1,1,1);
-  vtkDataArray* value_coords[3];
-
-  for(int i=0; i < 3; ++i)//i^= x,y,z
-  {
-    value_coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
-    value_coords[i]->SetNumberOfTuples(1);
-  } // END for all dimensions
-
-  // compute & populate XYZ field
-  vtkIdType npoints = grid->GetNumberOfPoints();
-  vtkDoubleArray* vkt_xyz = vtkDoubleArray::New();
-  vkt_xyz->SetName("m");
-  //vkt_xyz->SetName( outputname.c_str() );
-  vkt_xyz->SetNumberOfComponents(3);
-  vkt_xyz->SetNumberOfTuples( npoints );
-
-  for(vtkIdType pntIdx=0; pntIdx < npoints; ++pntIdx )
-  {
-    double af_vals[3];
-    for(int i=0; i < 3; ++i)
+        coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
+        coords[i]->SetNumberOfTuples(dims[i]);
+    
+        for(int j=0; j < dims[i]; ++j)
+        {
+            double val = (double)j*d[i];
+            coords[ i ]->SetTuple( j, &val );
+        } // END for all points along this dimension
+    
+    } // END for all dimensions
+  
+    grid->SetXCoordinates( coords[0] );
+    grid->SetYCoordinates( coords[1] );
+    grid->SetZCoordinates( coords[2] );
+    coords[0]->Delete();
+    coords[1]->Delete();
+    coords[2]->Delete();
+  
+    //VKT value grid
+    vtkSmartPointer<vtkRectilinearGrid> value_grid = vtkSmartPointer<vtkRectilinearGrid>::New();
+    value_grid->SetDimensions(1,1,1);
+    vtkDataArray* value_coords[3];
+  
+    for(int i=0; i < 3; ++i)//i^= x,y,z
     {
-      af_vals[i]=host_a[pntIdx+i*npoints];
-      value_coords[i]->SetTuple(0, &af_vals[i] );
-    }
-      value_grid->SetXCoordinates( value_coords[0] );
-      value_grid->SetYCoordinates( value_coords[1] );
-      value_grid->SetZCoordinates( value_coords[2] );
-
-      vkt_xyz->SetTuple(pntIdx, value_grid->GetPoint(0) );
-  } // END for all points
-  grid->GetPointData()->AddArray( vkt_xyz );
-
-  //vtkNew<vtkPointDataToCellData> pd2cd;
-  //pd2cd->PassPointDataOn();
-  //pd2cd->SetInputDataObject(grid);
-  //pd2cd->Update();
-  //grid->ShallowCopy(pd2cd->GetOutputDataObject(0));
-  //
-  vtkRectilinearGridWriter* writer = vtkRectilinearGridWriter::New();
-  writer->SetFileName((outputname.append(".vtk")).c_str());
-  writer->SetInputData( grid );
-  writer->Write();
-
-  writer->Delete();
-  vkt_xyz->Delete();
-  value_coords[0]->Delete();
-  value_coords[1]->Delete();
-  value_coords[2]->Delete();
-  delete[] host_a;
+        value_coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
+        value_coords[i]->SetNumberOfTuples(1);
+    } // END for all dimensions
+  
+    // compute & populate XYZ field
+    vtkIdType npoints = grid->GetNumberOfPoints();
+    vtkDoubleArray* vkt_xyz = vtkDoubleArray::New();
+    vkt_xyz->SetName("m");
+    //vkt_xyz->SetName( outputname.c_str() );
+    vkt_xyz->SetNumberOfComponents(3);
+    vkt_xyz->SetNumberOfTuples( npoints );
+  
+    for(vtkIdType pntIdx=0; pntIdx < npoints; ++pntIdx )
+    {
+        double af_vals[3];
+        for(int i=0; i < 3; ++i)
+        {
+            af_vals[i]=host_a[pntIdx+i*npoints];
+            value_coords[i]->SetTuple(0, &af_vals[i] );
+        }
+            value_grid->SetXCoordinates( value_coords[0] );
+            value_grid->SetYCoordinates( value_coords[1] );
+            value_grid->SetZCoordinates( value_coords[2] );
+  
+            vkt_xyz->SetTuple(pntIdx, value_grid->GetPoint(0) );
+    } // END for all points
+    grid->GetPointData()->AddArray( vkt_xyz );
+  
+    //vtkNew<vtkPointDataToCellData> pd2cd;
+    //pd2cd->PassPointDataOn();
+    //pd2cd->SetInputDataObject(grid);
+    //pd2cd->Update();
+    //grid->ShallowCopy(pd2cd->GetOutputDataObject(0));
+    //
+    vtkRectilinearGridWriter* writer = vtkRectilinearGridWriter::New();
+    writer->SetFileName((outputname.append(".vtk")).c_str());
+    writer->SetInputData( grid );
+    writer->Write();
+  
+    writer->Delete();
+    vkt_xyz->Delete();
+    value_coords[0]->Delete();
+    value_coords[1]->Delete();
+    value_coords[2]->Delete();
+    delete[] host_a;
 }
 
+//TODO Gives error reading in file
+// vtkRectilinearGrid Reader
+// https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
+void vtr_reader(af::array& field, Mesh& mesh, std::string filepath){
+    //int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
+    vtkSmartPointer<vtkXMLRectilinearGridReader> reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
+    reader->SetFileName(filepath.c_str());
+    reader->Update();
+    vtkSmartPointer<vtkRectilinearGrid> inputData = vtkSmartPointer<vtkRectilinearGrid>::New();
+    inputData=reader->GetOutput();
+}
 
 ////https://www.vtk.org/gitweb?p=VTK.git;a=blob;f=Examples/DataManipulation/Cxx/Arrays.cxx
 ////USEAGE:

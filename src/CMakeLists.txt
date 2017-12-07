@@ -100,7 +100,7 @@ set_source_files_properties(
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_writer.cpp)
+cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_IO.cpp)
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 
