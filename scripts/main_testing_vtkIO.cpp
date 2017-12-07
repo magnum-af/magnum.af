@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
   // Parameter initialization
   const double x=5.e-7, y=1.25e-7, z=3.e-9;
-  const int nx = 6, ny=5 ,nz=4;
+  const int nx = 5, ny=4 ,nz=2;
 
 
   //Simulation Parameters
@@ -59,16 +59,21 @@ int main(int argc, char** argv)
   m=iota(dim4(nx,ny,nz,3),dim4(1,1,1,1),f64);
   print("A",m);
   State state(mesh,param, m);
-  vti_writer(state.m, mesh ,(filepath + "minit").c_str());
-  atomistic_vti_writer(state.m, mesh ,(filepath + "aminit").c_str());
-  vti_reader(state.m,mesh,"/home/pheistra/git/pth-mag/Data/Testing/minit.vti");
-
-  Mesh newmesh = Mesh(0,0,0,0,0,0);
+  vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   array A = array();
-  atomistic_vti_reader(A,newmesh,"/home/pheistra/git/pth-mag/Data/Testing/aminit.vti");
- 
+  Mesh newmesh = Mesh(0,0,0,0,0,0);
+  vti_reader(A,newmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
+
+  vti_writer_atom(A, newmesh ,(filepath + "aminit").c_str());
   print("A",A);
   std::cout<<newmesh.n0<<"  "<<newmesh.n1<<"  "<<newmesh.n2<<"  "<<newmesh.dx<<"  "<<newmesh.dy<<"  "<<newmesh.dz<<"  "<<std::endl;
+  array B = array();
+  Mesh bmesh = Mesh(0,0,0,0,0,0);
+
+  vti_reader(B,bmesh,"/home/pth/git/pth-mag/Data/Testing/aminit.vti");
+ 
+  print("B",B);
+  std::cout<<bmesh.n0<<"  "<<bmesh.n1<<"  "<<bmesh.n2<<"  "<<bmesh.dx<<"  "<<bmesh.dy<<"  "<<bmesh.dz<<"  "<<std::endl;
 
 //  std::vector<llgt_ptr> llgterm;
 //  llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
