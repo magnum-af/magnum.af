@@ -78,7 +78,7 @@ int main(int argc, char** argv)
   vtr_writer(B, bmesh ,(filepath + "minit").c_str());
   array C = array();
   Mesh cmesh = Mesh(0,0,0,0,0,0);
-  vtr_reader(C,cmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vtk");
+  vtr_reader(C,cmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vtr");
   print("C",C);
   std::cout<<cmesh.n0<<"  "<<cmesh.n1<<"  "<<cmesh.n2<<"  "<<cmesh.dx<<"  "<<cmesh.dy<<"  "<<cmesh.dz<<"  "<<std::endl;
 //  std::vector<llgt_ptr> llgterm;
