@@ -21,12 +21,12 @@ array LLG::givescale(const array& a){
 array LLG::fdmdt(const array& m, const array& heff){
   calls_fdmdt++;
   timer_fdmdt=timer::start();
-  if(fdmdt_string){
+  if(fdmdt_dissipation_term_only){
     dmdt = - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, cross4(m, heff));
   }
   else{
     dmdt = - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, heff) - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, cross4(m, heff));
-    }
+  }
   time_fdmdt+=af::timer::stop(timer_fdmdt);
   return dmdt;
 }

@@ -24,7 +24,7 @@ class LLG {
     void print_cpu_time(std::ostream&);
     
     // rhs of the LLG equation
-    bool fdmdt_string{false};
+    bool fdmdt_dissipation_term_only{false};//If ture, only use the energy dissipation term (i.e. Mx(MxH)) in the LLG
     array fdmdt(const array& m, const array& heff);
     int calls_fdmdt{0};
     array fdmdtminimal(array m, array heff);
