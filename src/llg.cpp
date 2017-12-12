@@ -14,9 +14,9 @@ double LLG::E(const State& state){
   return solution;
 }
 
-array LLG::givescale(const array& a){
-  return atol+rtol*abs(a);
-}
+//array LLG::givescale(const array& a){
+//  return atol+rtol*abs(a);
+//}
 
 array LLG::fdmdt(const array& m, const array& heff){
   calls_fdmdt++;
@@ -74,72 +74,72 @@ void LLG::print_cpu_time(std::ostream& stream){
 //}
 
 
-bool LLG::controller(const double err, double& h){
-  static const double beta =0.4/5.0;
-  static const double alpha = 0.2 - 0.75*beta;
-  static const double headroom{0.9};
-  static const double minscale{0.2};
-  static const double maxscale{10.};
-
-  double scale;
-  
-//  std::cout << "err = " << err << " h= " << h << "reject "<< reject << " t="<<true << " f=" <<false << std::endl;
-  if (err <= 1.0){
-    if (err == 0.0)
-      scale = maxscale;
-    else{
-      scale=headroom*pow(err,-alpha)*pow(errold,beta);
-      if (scale < minscale){
-        scale=minscale;
-        counter_maxscale++;
-      }
-      if (scale > maxscale){
-        scale=maxscale;
-        counter_minscale++;
-      }
-    }
-  if (reject)
-    hnext=h*std::min(scale,1.0);//Do not increase stepsize if previous try was rejected
-  else 
-    hnext=h*scale;
-  if(hnext<=hmin) {
-    hnext=hmin;
-    counter_hmin++;
-    std::cout << "Warning: hnext reached hmin in if, error bounds may be invalid"<<std::endl;
-  }
-  if(hnext>=hmax){
-    hnext=hmax;
-    counter_hmax++;
-    std::cout << "Warning: hnext reached hmax in if, error bounds may be invalid"<<std::endl;
-  }
-  //if(hnext<=hmin) hnext=hmin, std::cout << "Warning: hmin reached in if, error bounds may be invalid"<<std::endl;
-  //if(hnext>=hmax) hnext=hmax, std::cout << "Warning: hmax reached in if, error bounds may be invalid"<<std::endl;
-
-  errold=std::max(err,1.0e-4);//Why?
-  reject=false;
-  counter_accepted++;
-  return true;
-  }
-  else{
-    scale=std::max(headroom*pow(err,-alpha),minscale);
-    h *= scale;
-    if(h<=hmin) {
-      h=hmin;
-      counter_hmin++;
-      std::cout << "Warning: hmin reached in else, error bounds may be invalid"<<std::endl;
-      return true;
-    }
-    if(h>=hmax){
-      h=hmax;
-      counter_hmax++;
-      std::cout << "Warning: hmax reached in else, error bounds may be invalid"<<std::endl;
-      return true;
-    }
-    reject=true;
-    counter_reject++;
-    return false;
-  }
-}
+//bool LLG::controller(const double err, double& h){
+//  static const double beta =0.4/5.0;
+//  static const double alpha = 0.2 - 0.75*beta;
+//  static const double headroom{0.9};
+//  static const double minscale{0.2};
+//  static const double maxscale{10.};
+//
+//  double scale;
+//  
+////  std::cout << "err = " << err << " h= " << h << "reject "<< reject << " t="<<true << " f=" <<false << std::endl;
+//  if (err <= 1.0){
+//    if (err == 0.0)
+//      scale = maxscale;
+//    else{
+//      scale=headroom*pow(err,-alpha)*pow(errold,beta);
+//      if (scale < minscale){
+//        scale=minscale;
+//        counter_maxscale++;
+//      }
+//      if (scale > maxscale){
+//        scale=maxscale;
+//        counter_minscale++;
+//      }
+//    }
+//  if (reject)
+//    hnext=h*std::min(scale,1.0);//Do not increase stepsize if previous try was rejected
+//  else 
+//    hnext=h*scale;
+//  if(hnext<=hmin) {
+//    hnext=hmin;
+//    counter_hmin++;
+//    std::cout << "Warning: hnext reached hmin in if, error bounds may be invalid"<<std::endl;
+//  }
+//  if(hnext>=hmax){
+//    hnext=hmax;
+//    counter_hmax++;
+//    std::cout << "Warning: hnext reached hmax in if, error bounds may be invalid"<<std::endl;
+//  }
+//  //if(hnext<=hmin) hnext=hmin, std::cout << "Warning: hmin reached in if, error bounds may be invalid"<<std::endl;
+//  //if(hnext>=hmax) hnext=hmax, std::cout << "Warning: hmax reached in if, error bounds may be invalid"<<std::endl;
+//
+//  errold=std::max(err,1.0e-4);//Why?
+//  reject=false;
+//  counter_accepted++;
+//  return true;
+//  }
+//  else{
+//    scale=std::max(headroom*pow(err,-alpha),minscale);
+//    h *= scale;
+//    if(h<=hmin) {
+//      h=hmin;
+//      counter_hmin++;
+//      std::cout << "Warning: hmin reached in else, error bounds may be invalid"<<std::endl;
+//      return true;
+//    }
+//    if(h>=hmax){
+//      h=hmax;
+//      counter_hmax++;
+//      std::cout << "Warning: hmax reached in else, error bounds may be invalid"<<std::endl;
+//      return true;
+//    }
+//    reject=true;
+//    counter_reject++;
+//    return false;
+//  }
+//}
 
 array LLG::llgstep(State& state){
     timer_integrator = timer::start();
@@ -200,14 +200,14 @@ array LLG::llgstep(State& state){
         else if (state.param.mode == 12){
           mtemp = DP78(state.m,h,err);
         }
-        if(controller(err,h))
+        if(controller.success(err,h))
           break;
         
       }while(while_break < 100);
     }
     state.t+=h;
     mtemp+=state.m;
-    h=hnext;
+    h=controller.get_hnext();
     if(state0.param.afsync) af::sync();
     time_integrator += timer::stop(timer_integrator);
     //mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
@@ -258,7 +258,7 @@ array LLG::BS23(const array& m, const double dt, double& err)
   k[4]   = fdmdt(m + sumbk, heff);
 
   rk_error = sumbk - dt * (7./24.* k[1]  + 1./4.* k[2]  + 1./3. * k[3] + 1./8. * k[4]);
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   return sumbk;
 }
 
@@ -356,7 +356,7 @@ array LLG::RKF45(const array& m, const double dt, double& err)
   rk_error = sumbk - (      25./216.  * k1  +                       1408./2565. * k3  +  2197./4104. * k4    -1./5.  * k5                     );
 
   //rk_abs_error = maxnorm(rk_error);
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   return sumbk;
 }
 
@@ -392,7 +392,7 @@ array LLG::CK45(const array& m, const double dt, double& err)
   sumbk = 37./378. * k1 + 250./621. * k3 + 125./594. * k4 + 512./1771. * k6;
   rk_error = sumbk - ( 2825./27648. * k1  + 18575./48384. * k3 + 13525./55296. * k4 + 277./14336. * k5 + 1./4. * k6 );
 
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   //err = maxnorm(rk_error);
   return sumbk;
 }
@@ -429,7 +429,7 @@ array LLG::tsit45(const array& m, const double dt, double& err)
   rk_error*=dt;
   //rk_error=sumbk-rk_error;
   //print("rk_error",rk_error);
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   return sumbk;
 }
 
@@ -465,7 +465,7 @@ array LLG::DP45(const array& m, const double dt, double& err)
   }
   rk_error*=dt;
   //!!!Note: here e is already the difference between the ususal b and bhat!!!! (no rk_error=sumbk-rk_error)
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   return sumbk;
 }
 
@@ -503,7 +503,7 @@ array LLG::BS45(const array& m, const double dt , double& err)
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
 
   return sumbk;
 }
@@ -552,14 +552,14 @@ array LLG::BS45de(const array& m, const double dt , double& err)
     rk_error+=e[i]*k[i];
   }
   rk_error*=dt;
-  err=maxnorm(rk_error/givescale(m));//TODO we only use m, not max(m,m+sumbk) for error estimate! Is this convenient?
+  err=maxnorm(rk_error/controller.givescale(m));//TODO we only use m, not max(m,m+sumbk) for error estimate! Is this convenient?
 //std::cout<<"Test"<<afvalue(rk_error(0,0,0,0))<<"\t"<<maxnorm(rk_error)<<"\t"<<err<<std::endl;
 if(err>1.)
   std::cout<<"RKErr>1"<<std::endl;
 
   //We now check this error with the controller, if it passes (cont returns true), hnext is changed temporary but then overwritten in llgstep after passing second controlling
   //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages 
-  if(controller(err,h)==false){
+  if(controller.success(err,h)==false){
     std::cout<<"CONTROOOL"<<std::endl;
     return constant(10000000.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
   }
@@ -588,7 +588,7 @@ if(err>1.)
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
 
   return sumbk;
 }
@@ -623,7 +623,7 @@ array LLG::DP78(const array& m, const double dt , double& err)
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
   return sumbk;
 }
 
@@ -634,11 +634,11 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
   state0.m.lock();
 
   if ((state0.param.mode == 0) || (state0.param.mode == 1) || (state0.param.mode == 2) || (state0.param.mode == 3) || (state0.param.mode == 5)){
-    h=hmax;
-    hnext=hmax;
+    h=controller.hmax;
+    hnext=controller.hmax;
   }
   else
-    h=1.01*hmin;
+    h=1.01*controller.hmin;
 
   //Tsit45
   if (state0.param.mode == 8){

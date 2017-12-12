@@ -7,6 +7,7 @@
 #include "LLGTerm.hpp"
 #include "state.hpp"
 #include "func.hpp"
+#include "controller.hpp"
 
 using namespace af;
 
@@ -66,18 +67,19 @@ class LLG {
 
 
     //RKF
-    double rk_abs_error{0.};
-    double rk_abs_tol_error{8.e-6}; // 8.e-6 is pretty good
-    double rk_rel_error{0.};
-    double rk_rel_tol_error{5.e-3}; // 5.e-3 is pretty good
-    double h_abs{0.}; 
-    double h_rel{0.}; 
+    //double rk_abs_error{0.};
+    //double rk_abs_tol_error{8.e-6}; // 8.e-6 is pretty good
+    //double rk_rel_error{0.};
+    //double rk_rel_tol_error{5.e-3}; // 5.e-3 is pretty good
+    //double h_abs{0.}; 
+    //double h_rel{0.}; 
+    
     double h; // actual stepsize, min of h_abs and h_rel
-    int counter_abs{0};
-    int counter_rel{0};
-    int counter_abs_reject{0};
-    int counter_rel_reject{0};
-    int p{5};
+    //int counter_abs{0};
+    //int counter_rel{0};
+    //int counter_abs_reject{0};
+    //int counter_rel_reject{0};
+    //int p{5};
     // Runge-Kutta-Fehlberg
     array RKF5(const array&, const double dt);
 
@@ -101,11 +103,11 @@ class LLG {
     array BS23(const array&, const double h, double& err);
 
     //Numerical Recipies Adaptive Stepsize control
-    const double err0{1.};// Desired error
-    const double atol{1e-8};//Tolerated absolute error
-    const double rtol{1e-8};//Tolerated relative error
-    const double hmin{1e-15};
-    const double hmax{3.5e-10};
+    //const double err0{1.};// Desired error
+    //const double atol{1e-8};//Tolerated absolute error
+    //const double rtol{1e-8};//Tolerated relative error
+    //const double hmin{1e-15};
+    //const double hmax{3.5e-10};
     array  givescale(const array& a); // Scale function return= atol + abs(y) * rtol
     double  err{.0};      // Estimated error 
     int counter_reject{0};// # of rejections
@@ -113,7 +115,8 @@ class LLG {
     int counter_hmax{0};// # of rejections
     int counter_hmin{0};// # of rejections
     //For Controller
-    bool controller(const double err, double& h);
+    //bool controller(const double err, double& h);
+    Controller controller = Controller();
     bool reject{false};
     double errold{1.0e-4};
     int counter_maxscale{0};// # of rejections
