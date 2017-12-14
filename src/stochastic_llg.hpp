@@ -16,10 +16,12 @@ class Stochastic_LLG {
     array StemiImplicitHeun(const array& m, const double dt);
     void step(State& state, const double dt);
     unsigned long int get_calls() const { return calls ;};
+    unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};
 
     Param param;
     private:
     unsigned long int calls{0};
+    unsigned long int fdmdt_calls{0};
     Mesh mesh;
     array fheff(const array& m);
     array fdmdt(const array& m);
