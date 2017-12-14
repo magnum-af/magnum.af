@@ -15,6 +15,7 @@
 #include "atomistic_dmi.hpp"
 #include "vtk_IO.hpp"
 #include "string.hpp"
+#include "stochastic_llg.hpp"
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 void calcm(State state, std::ostream& myfile);
 int main(int argc, char** argv)
@@ -34,6 +35,7 @@ int main(int argc, char** argv)
   // Parameter initialization
   const double x=5.e-7, y=1.25e-7, z=3.e-9;
   const int nx = 100, ny=25 ,nz=1;
+  double dt = 1e-12;
 
 
   //Simulation Parameters
@@ -63,7 +65,8 @@ int main(int argc, char** argv)
   std::vector<llgt_ptr> llgterm;
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
   llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-  LLG Llg(state,llgterm);
+//  LLG Llg(state,llgterm);
+  Stochastic_LLG Stoch(state,llgterm);
   //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
   std::ofstream stream;
@@ -72,14 +75,15 @@ int main(int argc, char** argv)
   
   timer t = af::timer::start();
   while (state.t < 1.e-9){
-    state.m=Llg.llgstep(state);
+    Stoch.step(state,dt); 
+    //state.m=Llg.llgstep(state);
     calcm(state,stream);
   }
-  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
+//  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
   vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
-  std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
+//  std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
 
   // Prepare switch
   array zeeswitch = constant(0.0,1,1,1,3,f64);
@@ -88,17 +92,19 @@ int main(int argc, char** argv)
   zeeswitch(0,0,0,2)=0.0;
   zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
   llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
-  Llg.Fieldterms=llgterm;
+  //Llg.Fieldterms=llgterm;
+  Stoch.Fieldterms=llgterm;
   //TODO remove state0 in LLG!
-  Llg.state0.param.alpha=0.02;
+  Stoch.param.alpha=0.02;
 
   while (state.t < 2.e-9){
-    state.m=Llg.llgstep(state);
+    //state.m=Llg.llgstep(state);
+    Stoch.step(state,dt); 
     calcm(state,stream);
   }
   vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
   stream.close();
-  Llg.print_cpu_time(std::cout); 
+ // Llg.print_cpu_time(std::cout); 
   return 0;
 }
 void calcm(State state, std::ostream& myfile){
