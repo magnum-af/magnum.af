@@ -74,14 +74,15 @@ int main(int argc, char** argv)
   stream.open ((filepath + "m.dat").c_str());
   
   timer t = af::timer::start();
-  while (state.t < 5.e-10){
+  for (int i = 0; i < 50; i++){
+  //while (state.t < 5.e-10){
     Stoch.step(state,dt); 
     //state.m=Llg.llgstep(state);
     calcm(state,stream);
   }
   std::cout<<"prelim fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
   std::cout<<"prelim CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
-  std::cout<<"prelim CPU TIME  = "<<Stoch.time<<"\n"<<std::endl;
+  std::cout<<"prelim TIME  = "<<Stoch.time<<"\n"<<std::endl;
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
   vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
@@ -100,7 +101,8 @@ int main(int argc, char** argv)
   //TODO remove state0 in LLG!
   Stoch.param.alpha=0.02;
 
-  while (state.t < 1.5e-9){
+  for (int i = 0; i < 50; i++){
+  //while (state.t < 1.5e-9){
     //state.m=Llg.llgstep(state);
     Stoch.step(state,dt); 
     calcm(state,stream);
@@ -110,7 +112,7 @@ int main(int argc, char** argv)
  // Llg.print_cpu_time(std::cout); 
   std::cout<<"fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
   std::cout<<" CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
-  std::cout<<" CPU TIME  = "<<Stoch.time<<"\n"<<std::endl;
+  std::cout<<" TIME  = "<<Stoch.time<<"\n"<<std::endl;
   return 0;
 }
 void calcm(State state, std::ostream& myfile){

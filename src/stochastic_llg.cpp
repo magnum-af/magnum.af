@@ -29,12 +29,15 @@ double Stochastic_LLG::cpu_time(){
 
 array Stochastic_LLG::rk4(const array& m, const double dt)
 {
-  array k1   =  dt * fdmdt(m                               );
-  array k2   =  dt * fdmdt(m + 1./2.*k1                    );
-  array k3   =  dt * fdmdt(m            + 1./2.*k2         );
-  array k4   =  dt * fdmdt(m                       +    k3 );
+    timer_stoch = timer::start();
+    array k1   =  dt * fdmdt(m                               );
+    array k2   =  dt * fdmdt(m + 1./2.*k1                    );
+    array k3   =  dt * fdmdt(m            + 1./2.*k2         );
+    array k4   =  dt * fdmdt(m                       +    k3 );
+    time += timer::stop(timer_stoch);
+    std::cout<<" CPU TIME  = "<<cpu_time()<<"\n"<<std::endl;
 
-  return (k1 + 2.*k2 + 2.*k3 + k4) / 6.;
+    return (k1 + 2.*k2 + 2.*k3 + k4) / 6.;
 }
 
 //array Stochastic_LLG::StemiImplicitHeun(const array& m, const double dt){
