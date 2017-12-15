@@ -80,6 +80,8 @@ int main(int argc, char** argv)
     calcm(state,stream);
   }
   std::cout<<"prelim fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
+  std::cout<<"prelim CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
+  std::cout<<"prelim CPU TIME  = "<<Stoch.time<<"\n"<<std::endl;
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
   vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
@@ -107,6 +109,8 @@ int main(int argc, char** argv)
   stream.close();
  // Llg.print_cpu_time(std::cout); 
   std::cout<<"fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
+  std::cout<<" CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
+  std::cout<<" CPU TIME  = "<<Stoch.time<<"\n"<<std::endl;
   return 0;
 }
 void calcm(State state, std::ostream& myfile){

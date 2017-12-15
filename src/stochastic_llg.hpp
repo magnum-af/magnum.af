@@ -17,8 +17,10 @@ class Stochastic_LLG {
     void step(State& state, const double dt);
     unsigned long int get_calls() const { return calls ;};
     unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};
+    double cpu_time();
 
     Param param;
+    double     time{0.};
     private:
     unsigned long int calls{0};
     unsigned long int fdmdt_calls{0};
@@ -27,6 +29,7 @@ class Stochastic_LLG {
     array fdmdt(const array& m);
 
     array m_prev;
+    af::timer timer_stoch;
 };
 
 #endif
