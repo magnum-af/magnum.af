@@ -4,6 +4,7 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A	pth_mag.pyx	/^  def A(self,value):$/;"	m	class:pyParam
 ANISOTROPY	micro_anisotropy.cpp	/^ANISOTROPY::ANISOTROPY (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){$/;"	f	class:ANISOTROPY
 ANISOTROPY	micro_anisotropy.hpp	/^class ANISOTROPY : public LLGTerm {$/;"	c
 ATOMISTIC_ANISOTROPY	atomistic_anisotropy.cpp	/^ATOMISTIC_ANISOTROPY::ATOMISTIC_ANISOTROPY (const Mesh& mesh, const Param& param){$/;"	f	class:ATOMISTIC_ANISOTROPY
@@ -22,12 +23,24 @@ BS23	llg.cpp	/^array LLG::BS23(const array& m, const double dt, double& err)$/;"
 BS45	llg.cpp	/^array LLG::BS45(const array& m, const double dt , double& err)$/;"	f	class:LLG
 BS45de	llg.cpp	/^array LLG::BS45de(const array& m, const double dt , double& err)$/;"	f	class:LLG
 CK45	llg.cpp	/^array LLG::CK45(const array& m, const double dt, double& err)$/;"	f	class:LLG
+CONTROLLER_H	controller.hpp	2;"	d
+Controller	controller.hpp	/^class Controller{$/;"	c
+D	pth_mag.pyx	/^  def D(self,value):$/;"	m	class:pyParam
 DMI	micro_dmi.cpp	/^DMI::DMI (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){$/;"	f	class:DMI
 DMI	micro_dmi.hpp	/^class DMI : public LLGTerm {$/;"	c
 DP45	llg.cpp	/^array LLG::DP45(const array& m, const double dt, double& err)$/;"	f	class:LLG
 DP78	llg.cpp	/^array LLG::DP78(const array& m, const double dt , double& err)$/;"	f	class:LLG
+D_atom	pth_mag.pyx	/^  def D_atom(self,value):$/;"	m	class:pyParam
 D_atom_axis	param.hpp	/^    double D_atom_axis[3]={0.,0.,-1.};\/\/Atomistic$/;"	m	class:Param
+D_atom_axis	pth_mag.pyx	/^  def D_atom_axis(self, *args):$/;"	m	class:pyParam
+D_atom_axis_x	pth_mag.pyx	/^  def D_atom_axis_x(self,value):$/;"	m	class:pyParam
+D_atom_axis_y	pth_mag.pyx	/^  def D_atom_axis_y(self,value):$/;"	m	class:pyParam
+D_atom_axis_z	pth_mag.pyx	/^  def D_atom_axis_z(self,value):$/;"	m	class:pyParam
 D_axis	param.hpp	/^    double D_axis[3]={0,0,-1};\/\/DMI axis$/;"	m	class:Param
+D_axis	pth_mag.pyx	/^  def D_axis(self, *args):$/;"	m	class:pyParam
+D_axis_x	pth_mag.pyx	/^  def D_axis_x(self,value):$/;"	m	class:pyParam
+D_axis_y	pth_mag.pyx	/^  def D_axis_y(self,value):$/;"	m	class:pyParam
+D_axis_z	pth_mag.pyx	/^  def D_axis_z(self,value):$/;"	m	class:pyParam
 DemagSolver	micro_demag.cpp	/^DemagSolver::DemagSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){$/;"	f	class:DemagSolver
 DemagSolver	micro_demag.hpp	/^class DemagSolver : public LLGTerm {$/;"	c
 E	atomistic_anisotropy.cpp	/^double ATOMISTIC_ANISOTROPY::E(const State& state){$/;"	f	class:ATOMISTIC_ANISOTROPY
@@ -43,13 +56,29 @@ E	string.hpp	/^    std::vector<double> E;\/\/Energy values$/;"	m	class:String
 E	zee.cpp	/^double Zee::E(const State& state){$/;"	f	class:Zee
 ExchSolver	micro_exch.cpp	/^ExchSolver::ExchSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){$/;"	f	class:ExchSolver
 ExchSolver	micro_exch.hpp	/^class ExchSolver : public LLGTerm {$/;"	c
+FSAL	integrators.hpp	/^    bool FSAL=false;$/;"	m	class:Integrator
 FSAL	llg.hpp	/^    bool FSAL=false;$/;"	m	class:LLG
 FUNC_H	func.hpp	2;"	d
 Fieldterms	llg.hpp	/^    std::vector<std::shared_ptr<LLGTerm> > Fieldterms;$/;"	m	class:LLG
+Fieldterms	stochastic_llg.hpp	/^    std::vector<std::shared_ptr<LLGTerm> > Fieldterms;$/;"	m	class:Stochastic_LLG
 FrobeniusNorm	func.cpp	/^double FrobeniusNorm(const array& a){$/;"	f
+INTEGRATORS_H	integrators.hpp	2;"	d
+Integrator	integrators.cpp	/^Integrator::Integrator(std::string scheme){$/;"	f	class:Integrator
+Integrator	integrators.hpp	/^class Integrator{$/;"	c
+J_atom	pth_mag.pyx	/^  def J_atom(self,value):$/;"	m	class:pyParam
+K_atom	pth_mag.pyx	/^  def K_atom(self,value):$/;"	m	class:pyParam
 K_atom_axis	param.hpp	/^    double K_atom_axis[3]={0.,0.,1.};\/\/Atomistic$/;"	m	class:Param
+K_atom_axis	pth_mag.pyx	/^  def K_atom_axis(self, *args):$/;"	m	class:pyParam
+K_atom_axis_x	pth_mag.pyx	/^  def K_atom_axis_x(self,value):$/;"	m	class:pyParam
+K_atom_axis_y	pth_mag.pyx	/^  def K_atom_axis_y(self,value):$/;"	m	class:pyParam
+K_atom_axis_z	pth_mag.pyx	/^  def K_atom_axis_z(self,value):$/;"	m	class:pyParam
+Ku1	pth_mag.pyx	/^  def Ku1(self,value):$/;"	m	class:pyParam
 Ku1_axis	param.hpp	/^    double Ku1_axis[3]={0,0,1};\/\/Anisotropy axis$/;"	m	class:Param
-LLG	llg.cpp	/^LLG::LLG (State state0_in, double atol_in, double  rtol_in, double  hmax_in, double  hmin_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in), atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){$/;"	f	class:LLG
+Ku1_axis	pth_mag.pyx	/^  def Ku1_axis(self, *args):$/;"	m	class:pyParam
+Ku1_axis_x	pth_mag.pyx	/^  def Ku1_axis_x(self,value):$/;"	m	class:pyParam
+Ku1_axis_y	pth_mag.pyx	/^  def Ku1_axis_y(self,value):$/;"	m	class:pyParam
+Ku1_axis_z	pth_mag.pyx	/^  def Ku1_axis_z(self,value):$/;"	m	class:pyParam
+LLG	llg.cpp	/^LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in){$/;"	f	class:LLG
 LLG	llg.hpp	/^class LLG {$/;"	c
 LLGTerm	LLGTerm.hpp	/^class LLGTerm{$/;"	c
 LLGTerm_H	LLGTerm.hpp	2;"	d
@@ -73,29 +102,53 @@ Param	param.hpp	/^class Param{$/;"	c
 RKF45	llg.cpp	/^array LLG::RKF45(const array& m, const double dt, double& err)$/;"	f	class:LLG
 RKF5	llg.cpp	/^array LLG::RKF5(const array& m, const double dt)$/;"	f	class:LLG
 STATE_H	state.hpp	2;"	d
+STOCHASTIC_LLG_H	stochastic_llg.hpp	2;"	d
 STRING_H	string.hpp	2;"	d
 State	state.cpp	/^State::State (Mesh mesh_in, Param param_in, af::array m_in):$/;"	f	class:State
+State	state.cpp	/^State::State (Mesh mesh_in, Param param_in, long int aptr):$/;"	f	class:State
 State	state.hpp	/^class State{$/;"	c
+StemiImplicitHeun	stochastic_llg.cpp	/^array Stochastic_LLG::StemiImplicitHeun(const array& m, const double dt){$/;"	f	class:Stochastic_LLG
+Stochastic_LLG	stochastic_llg.cpp	/^Stochastic_LLG::Stochastic_LLG (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m){$/;"	f	class:Stochastic_LLG
+Stochastic_LLG	stochastic_llg.hpp	/^class Stochastic_LLG {$/;"	c
 String	string.cpp	/^String::String(State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):$/;"	f	class:String
 String	string.hpp	/^class String {$/;"	c
-VTK_WRITER_H	vtk_writer.hpp	2;"	d
+VTK_WRITER_H	vtk_IO.hpp	2;"	d
 ZEE_H	zee.hpp	2;"	d
 Zee	zee.cpp	/^Zee::Zee(af::array zee_in, Mesh mesh_in, Param param_in) :$/;"	f	class:Zee
+Zee	zee.cpp	/^Zee::Zee(long int aptr, Mesh mesh_in, Param param_in): mesh(mesh_in), param(param_in){$/;"	f	class:Zee
 Zee	zee.hpp	/^class Zee : public LLGTerm {$/;"	c
+__cinit__	pth_mag.pyx	/^  def __cinit__(self):$/;"	m	class:pyParam	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self, array_in, pyMesh mesh_in, pyParam param_in):$/;"	m	class:pyZee	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self, pyMesh mesh_in, pyParam param_in):$/;"	m	class:pyDemagSolver	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self, pyMesh mesh_in, pyParam param_in):$/;"	m	class:pyExchSolver	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):$/;"	m	class:pyState	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self, pyState state_in, *args):$/;"	m	class:pyLLG	file:
+__cinit__	pth_mag.pyx	/^  def __cinit__(self,int a, int b, int c, double d, double e, double f):$/;"	m	class:pyMesh	file:
+a	integrators.hpp	/^    double a[14][14]={{0.}};$/;"	m	class:Integrator
 a	llg.hpp	/^    double a[14][14]={{0.}};$/;"	m	class:LLG
-af_to_vti	vtk_writer.cpp	/^void af_to_vti(const af::array field, const Mesh& mesh, std::string outputname){$/;"	f
-af_to_vtk	vtk_writer.cpp	/^void af_to_vtk(const af::array field, const Mesh& mesh, std::string outputname){$/;"	f
+add_terms	pth_mag.pyx	/^  def add_terms(self,*args):$/;"	m	class:pyLLG
 afvalue	func.cpp	/^double afvalue(const array& a){$/;"	f
-atol	llg.hpp	/^    const double atol;\/\/Tolerated absolute error$/;"	m	class:LLG
+alpha	controller.hpp	/^        const double alpha = 0.2 - 0.75*beta;$/;"	m	class:Controller
+alpha	pth_mag.pyx	/^  def alpha(self,value):$/;"	m	class:pyParam
+b	integrators.hpp	/^    double b[14]={0.};$/;"	m	class:Integrator
 b	llg.hpp	/^    double b[14]={0.};$/;"	m	class:LLG
+beta	controller.hpp	/^        const double beta = 0.4\/5.0;$/;"	m	class:Controller
+bhat	integrators.hpp	/^    double bhat[14]={0.};$/;"	m	class:Integrator
 bhat	llg.hpp	/^    double bhat[14]={0.};$/;"	m	class:LLG
+c	integrators.hpp	/^    double c[14]={0.};$/;"	m	class:Integrator
 c	llg.hpp	/^    double c[14]={0.};$/;"	m	class:LLG
 calc_E	string.cpp	/^void String::calc_E(){$/;"	f	class:String
 calc_x	string.cpp	/^void String::calc_x(){$/;"	f	class:String
 calc_x	string.cpp	/^void String::calc_x(std::vector<State> inputimages){$/;"	f	class:String
 calcm	main_sp4.cpp	/^void calcm(State state, std::ostream& myfile){$/;"	f
-controller	llg.cpp	/^bool LLG::controller(const double err, double& h){$/;"	f	class:LLG
+controller	llg.hpp	/^    Controller controller = Controller();$/;"	m	class:LLG
 correct_edges	micro_dmi.cpp	/^void DMI::correct_edges(array& out, const array& in){$/;"	f	class:DMI
+cpu_time	llg.cpp	/^double LLG::cpu_time(){$/;"	f	class:LLG
+cpu_time	pth_mag.pyx	/^  def cpu_time(self):$/;"	m	class:pyDemagSolver
+cpu_time	pth_mag.pyx	/^  def cpu_time(self):$/;"	m	class:pyExchSolver
+cpu_time	pth_mag.pyx	/^  def cpu_time(self):$/;"	m	class:pyLLG
+cpu_time	pth_mag.pyx	/^  def cpu_time(self):$/;"	m	class:pyZee
+cpu_time	stochastic_llg.cpp	/^double Stochastic_LLG::cpu_time(){$/;"	f	class:Stochastic_LLG
 cross4	func.cpp	/^array cross4(const array& a,const array& b){$/;"	f
 crosstemp	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
 dims	mesh.hpp	/^    af::dim4 dims;$/;"	m	class:Mesh
@@ -106,29 +159,43 @@ dt	string.hpp	/^    double dt;$/;"	m	class:String
 dx	mesh.hpp	/^    double dx,dy,dz;            \/\/ Distance between cells$/;"	m	class:Mesh
 dy	mesh.hpp	/^    double dx,dy,dz;            \/\/ Distance between cells$/;"	m	class:Mesh
 dz	mesh.hpp	/^    double dx,dy,dz;            \/\/ Distance between cells$/;"	m	class:Mesh
+e	integrators.hpp	/^    double e[14]={0.};$/;"	m	class:Integrator
 e	llg.hpp	/^    double e[14]={0.};$/;"	m	class:LLG
 eu	atomistic_anisotropy.hpp	/^    af::array eu;\/\/Uniaxial anisotropy normal vector$/;"	m	class:ATOMISTIC_ANISOTROPY
 eu	micro_anisotropy.hpp	/^    af::array eu;\/\/Uniaxial anisotropy normal vector$/;"	m	class:ANISOTROPY
 euclnorm	func.cpp	/^double euclnorm(const array& a){$/;"	f
 explicitEuler	llg.cpp	/^array LLG::explicitEuler(const array& m, double dt){$/;"	f	class:LLG
-f	func.cpp	/^auto rk4(array f(double, array))$/;"	f
 fdmdt	llg.cpp	/^array LLG::fdmdt(const array& m, const array& heff){$/;"	f	class:LLG
+fdmdt	stochastic_llg.cpp	/^array Stochastic_LLG::fdmdt(const array& m){$/;"	f	class:Stochastic_LLG
 fdmdtminimal	llg.cpp	/^array LLG::fdmdtminimal(array m, array heff){ \/\/array LLG::fdmdt(array& m, array& heff){$/;"	f	class:LLG
 fheff	llg.cpp	/^array LLG::fheff(const array& m){$/;"	f	class:LLG
+fheff	stochastic_llg.cpp	/^array Stochastic_LLG::fheff(const array& m){$/;"	f	class:Stochastic_LLG
 filtr	atomistic_exchange.hpp	/^    af::array filtr;$/;"	m	class:ATOMISTIC_EXCHANGE
 filtr	micro_exch.hpp	/^    af::array filtr;$/;"	m	class:ExchSolver
 filtr_fd1	atomistic_dmi.hpp	/^    af::array filtr_fd1;$/;"	m	class:ATOMISTIC_DMI
 filtr_fd1	micro_dmi.hpp	/^    af::array filtr_fd1;$/;"	m	class:DMI
-get_cpu_time	atomistic_anisotropy.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ATOMISTIC_ANISOTROPY
-get_cpu_time	atomistic_demag.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ATOMISTIC_DEMAG
-get_cpu_time	atomistic_dmi.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ATOMISTIC_DMI
-get_cpu_time	atomistic_exchange.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ATOMISTIC_EXCHANGE
-get_cpu_time	micro_anisotropy.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ANISOTROPY
-get_cpu_time	micro_demag.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:DemagSolver
-get_cpu_time	micro_dmi.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:DMI
-get_cpu_time	micro_exch.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:ExchSolver
-get_cpu_time	zee.hpp	/^    double* get_cpu_time(){return &cpu_time;}$/;"	f	class:Zee
-givescale	llg.cpp	/^array LLG::givescale(const array& a){$/;"	f	class:LLG
+gamma	pth_mag.pyx	/^  def gamma(self,value):$/;"	m	class:pyParam
+get_calls	stochastic_llg.hpp	/^    unsigned long int get_calls() const { return calls ;};$/;"	f	class:Stochastic_LLG
+get_counter_accepted	controller.hpp	/^        unsigned int get_counter_accepted() const { return counter_accepted;};\/\/ # of accepced steps$/;"	f	class:Controller
+get_counter_hmax	controller.hpp	/^        unsigned int get_counter_hmax    () const { return counter_hmax    ;};\/\/ # of rejections$/;"	f	class:Controller
+get_counter_hmin	controller.hpp	/^        unsigned int get_counter_hmin    () const { return counter_hmin    ;};\/\/ # of rejections$/;"	f	class:Controller
+get_counter_maxscale	controller.hpp	/^        unsigned int get_counter_maxscale() const { return counter_maxscale;};\/\/ # of rejections$/;"	f	class:Controller
+get_counter_minscale	controller.hpp	/^        unsigned int get_counter_minscale() const { return counter_minscale;};\/\/ # of rejections$/;"	f	class:Controller
+get_counter_reject	controller.hpp	/^        unsigned int get_counter_reject  () const { return counter_reject  ;};\/\/ # of rejections$/;"	f	class:Controller
+get_cpu_time	atomistic_anisotropy.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ATOMISTIC_ANISOTROPY
+get_cpu_time	atomistic_demag.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ATOMISTIC_DEMAG
+get_cpu_time	atomistic_dmi.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ATOMISTIC_DMI
+get_cpu_time	atomistic_exchange.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ATOMISTIC_EXCHANGE
+get_cpu_time	micro_anisotropy.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ANISOTROPY
+get_cpu_time	micro_demag.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:DemagSolver
+get_cpu_time	micro_dmi.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:DMI
+get_cpu_time	micro_exch.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:ExchSolver
+get_cpu_time	zee.hpp	/^    double get_cpu_time(){return cpu_time;}$/;"	f	class:Zee
+get_fdmdt_calls	stochastic_llg.hpp	/^    unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};$/;"	f	class:Stochastic_LLG
+get_hnext	controller.hpp	/^        double get_hnext () const { return hnext ;};\/\/ # of rejections$/;"	f	class:Controller
+get_m	pth_mag.pyx	/^  def get_m(self):$/;"	m	class:pyState
+get_m_addr	state.hpp	/^    long int get_m_addr(){m.lock(); return (long int) m.get();}$/;"	f	class:State
+givescale	controller.hpp	/^        af::array  givescale(const af::array& a){return atol+rtol*af::abs(a);}; $/;"	f	class:Controller
 h	atomistic_anisotropy.cpp	/^array ATOMISTIC_ANISOTROPY::h(const State& state){$/;"	f	class:ATOMISTIC_ANISOTROPY
 h	atomistic_demag.cpp	/^array ATOMISTIC_DEMAG::h(const State& state){$/;"	f	class:ATOMISTIC_DEMAG
 h	atomistic_dmi.cpp	/^array ATOMISTIC_DMI::h(const State& state){$/;"	f	class:ATOMISTIC_DMI
@@ -141,13 +208,14 @@ h	micro_exch.cpp	/^array ExchSolver::h(const State& state){$/;"	f	class:ExchSolv
 h	zee.cpp	/^array Zee::h(const State& state){$/;"	f	class:Zee
 h_field	micro_demag.hpp	/^    af::array h_field;$/;"	m	class:DemagSolver
 h_withedges	micro_exch.cpp	/^array ExchSolver::h_withedges(const State& state){$/;"	f	class:ExchSolver
+headroom	controller.hpp	/^        const double headroom = 0.9;$/;"	m	class:Controller
 heff	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
 hfft	micro_demag.hpp	/^    af::array hfft;$/;"	m	class:DemagSolver
-hmax	llg.hpp	/^    const double hmax;$/;"	m	class:LLG
-hmin	llg.hpp	/^    const double hmin;$/;"	m	class:LLG
+hnext	controller.hpp	/^        double hnext;$/;"	m	class:Controller
 hnext	llg.hpp	/^    double hnext;$/;"	m	class:LLG
 images	string.hpp	/^    std::vector<State> images;\/\/Current images$/;"	m	class:String
 integrate	string.cpp	/^void String::integrate(){$/;"	f	class:String
+k	integrators.hpp	/^    af::array k[14];$/;"	m	class:Integrator
 k	llg.hpp	/^    array k[14];$/;"	m	class:LLG
 k1	llg.hpp	/^    array k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13;$/;"	m	class:LLG
 k10	llg.hpp	/^    array k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13;$/;"	m	class:LLG
@@ -164,24 +232,32 @@ k8	llg.hpp	/^    array k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13;$/;"	m	class:L
 k9	llg.hpp	/^    array k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13;$/;"	m	class:LLG
 lin_interpolate	string.cpp	/^void String::lin_interpolate(){$/;"	f	class:String
 llgstep	llg.cpp	/^array LLG::llgstep(State& state){$/;"	f	class:LLG
+llgstep	pth_mag.pyx	/^  def llgstep(self, pyState state_in):$/;"	m	class:pyLLG
 llgt_ptr	main_sp4.cpp	/^using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; $/;"	t	file:
 m	state.hpp	/^    af::array m;$/;"	m	class:State
+m_prev	stochastic_llg.hpp	/^    array m_prev;$/;"	m	class:Stochastic_LLG
 main	main_sp4.cpp	/^int main(int argc, char** argv)$/;"	f
 matr	micro_exch.hpp	/^    af::array matr;$/;"	m	class:ExchSolver
 maxnorm	func.cpp	/^double maxnorm(const array& a){$/;"	f
+maxscale	controller.hpp	/^        const double maxscale = 10.;$/;"	m	class:Controller
 meani	func.cpp	/^double meani(const array& a, const int i){$/;"	f
 mesh	micro_anisotropy.hpp	/^    Mesh mesh;$/;"	m	class:ANISOTROPY
 mesh	micro_demag.hpp	/^    Mesh mesh;$/;"	m	class:DemagSolver
 mesh	micro_dmi.hpp	/^    Mesh mesh;$/;"	m	class:DMI
 mesh	micro_exch.hpp	/^    Mesh mesh;$/;"	m	class:ExchSolver
 mesh	state.hpp	/^    Mesh mesh;$/;"	m	class:State
+mesh	stochastic_llg.hpp	/^    Mesh mesh;$/;"	m	class:Stochastic_LLG
 mesh	zee.hpp	/^    Mesh mesh;$/;"	m	class:Zee
 mfft	micro_demag.hpp	/^    af::array mfft;$/;"	m	class:DemagSolver
+minscale	controller.hpp	/^        const double minscale = 0.2;$/;"	m	class:Controller
+mode	pth_mag.pyx	/^  def mode(self,value):$/;"	m	class:pyParam
+ms	pth_mag.pyx	/^  def ms(self,value):$/;"	m	class:pyParam
 mtemp	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
 mu0	param.hpp	/^    double mu0=4e-7 * M_PI;$/;"	m	class:Param
 n	atomistic_dmi.hpp	/^    af::array n;$/;"	m	class:ATOMISTIC_DMI
 n	micro_dmi.hpp	/^    af::array n;$/;"	m	class:DMI
 n0	mesh.hpp	/^    int n0,n1,n2;               \/\/ Number of cells in x,y,z$/;"	m	class:Mesh
+n0	pth_mag.pyx	/^  def n0(self):$/;"	m	class:pyMesh
 n0_exp	mesh.hpp	/^    int n0_exp, n1_exp, n2_exp; \/\/ Expanded cell sizes for demag FFT$/;"	m	class:Mesh
 n1	mesh.hpp	/^    int n0,n1,n2;               \/\/ Number of cells in x,y,z$/;"	m	class:Mesh
 n1_exp	mesh.hpp	/^    int n0_exp, n1_exp, n2_exp; \/\/ Expanded cell sizes for demag FFT$/;"	m	class:Mesh
@@ -190,25 +266,67 @@ n2_exp	mesh.hpp	/^    int n0_exp, n1_exp, n2_exp; \/\/ Expanded cell sizes for d
 n_interp	string.hpp	/^    int n_interp;$/;"	m	class:String
 newellf	micro_demag.cpp	/^double newellf(double x, double y, double z){$/;"	f
 newellg	micro_demag.cpp	/^double newellg(double x, double y, double z){$/;"	f
+p	pth_mag.pyx	/^  def p(self,value):$/;"	m	class:pyParam
 param	micro_anisotropy.hpp	/^    Param param;$/;"	m	class:ANISOTROPY
 param	micro_demag.hpp	/^    Param param;$/;"	m	class:DemagSolver
 param	micro_dmi.hpp	/^    Param param;$/;"	m	class:DMI
 param	micro_exch.hpp	/^    Param param;$/;"	m	class:ExchSolver
 param	state.hpp	/^    Param param;$/;"	m	class:State
+param	stochastic_llg.hpp	/^    Param param;$/;"	m	class:Stochastic_LLG
 param	zee.hpp	/^    Param param;$/;"	m	class:Zee
+print_A	pth_mag.pyx	/^  def print_A(self):$/;"	m	class:pyParam
+print_D	pth_mag.pyx	/^  def print_D(self):$/;"	m	class:pyParam
+print_D_atom	pth_mag.pyx	/^  def print_D_atom(self):$/;"	m	class:pyParam
+print_E	pth_mag.pyx	/^  def print_E(self,pyState state_in):$/;"	m	class:pyDemagSolver
+print_E	pth_mag.pyx	/^  def print_E(self,pyState state_in):$/;"	m	class:pyExchSolver
+print_E	pth_mag.pyx	/^  def print_E(self,pyState state_in):$/;"	m	class:pyLLG
+print_E	pth_mag.pyx	/^  def print_E(self,pyState state_in):$/;"	m	class:pyZee
+print_J_atom	pth_mag.pyx	/^  def print_J_atom(self):$/;"	m	class:pyParam
+print_K_atom	pth_mag.pyx	/^  def print_K_atom(self):$/;"	m	class:pyParam
+print_K_atom_axis_x	pth_mag.pyx	/^  def print_K_atom_axis_x(self):$/;"	m	class:pyParam
+print_K_atom_axis_y	pth_mag.pyx	/^  def print_K_atom_axis_y(self):$/;"	m	class:pyParam
+print_K_atom_axis_z	pth_mag.pyx	/^  def print_K_atom_axis_z(self):$/;"	m	class:pyParam
+print_Ku1	pth_mag.pyx	/^  def print_Ku1(self):$/;"	m	class:pyParam
+print_Nfft	micro_demag.cpp	/^void DemagSolver::print_Nfft(){$/;"	f	class:DemagSolver
+print_Nfft	pth_mag.pyx	/^  def print_Nfft(self):$/;"	m	class:pyDemagSolver
+print_alpha	pth_mag.pyx	/^  def print_alpha(self):$/;"	m	class:pyParam
+print_cpu_time	llg.cpp	/^void LLG::print_cpu_time(std::ostream& stream){$/;"	f	class:LLG
+print_gamma	pth_mag.pyx	/^  def print_gamma(self):$/;"	m	class:pyParam
+print_mode	pth_mag.pyx	/^  def print_mode(self):$/;"	m	class:pyParam
+print_ms	pth_mag.pyx	/^  def print_ms(self):$/;"	m	class:pyParam
+print_mu0	pth_mag.pyx	/^  def print_mu0(self):$/;"	m	class:pyParam
+print_n0	pth_mag.pyx	/^  def print_n0(self):$/;"	m	class:pyMesh
+print_p	pth_mag.pyx	/^  def print_p(self):$/;"	m	class:pyParam
+pyDemagSolver	pth_mag.pyx	/^cdef class pyDemagSolver:$/;"	c
+pyExchSolver	pth_mag.pyx	/^cdef class pyExchSolver:$/;"	c
+pyLLG	pth_mag.pyx	/^cdef class pyLLG:$/;"	c
+pyMesh	pth_mag.pyx	/^cdef class pyMesh:$/;"	c
+pyParam	pth_mag.pyx	/^cdef class pyParam:$/;"	c
+pyState	pth_mag.pyx	/^cdef class pyState:$/;"	c
+pyZee	pth_mag.pyx	/^cdef class pyZee:$/;"	c
+py_write_vtk	pth_mag.pyx	/^  def py_write_vtk(self):$/;"	m	class:pyState
+pythisptr	pth_mag.pyx	/^  def pythisptr(self):$/;"	m	class:pyDemagSolver
+pythisptr	pth_mag.pyx	/^  def pythisptr(self):$/;"	m	class:pyExchSolver
+pythisptr	pth_mag.pyx	/^  def pythisptr(self):$/;"	m	class:pyState
+pythisptr	pth_mag.pyx	/^  def pythisptr(self):$/;"	m	class:pyZee
 renormalize	func.cpp	/^array renormalize(const array& a){$/;"	f
 rk4	llg.cpp	/^array LLG::rk4(const array& m, const double dt)$/;"	f	class:LLG
+rk4	stochastic_llg.cpp	/^array Stochastic_LLG::rk4(const array& m, const double dt)$/;"	f	class:Stochastic_LLG
 rk4_3o8	llg.cpp	/^array LLG::rk4_3o8(const array& m, const double dt)$/;"	f	class:LLG
 rk4minimal	llg.cpp	/^array LLG::rk4minimal(const array& m, const double dt)$/;"	f	class:LLG
 rk_error	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
 rktemp	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
-rtol	llg.hpp	/^    const double rtol;\/\/Tolerated relative error$/;"	m	class:LLG
+s	integrators.hpp	/^    int s; \/\/Number of stages in RK method$/;"	m	class:Integrator
 s	llg.hpp	/^    int s=0;$/;"	m	class:LLG
+set_state0_alpha	pth_mag.pyx	/^  def set_state0_alpha(self,value):$/;"	m	class:pyLLG
 showdims	micro_dmi.cpp	/^void showdims(const array& a){$/;"	f
 state	string.hpp	/^    State state;$/;"	m	class:String
 state0	llg.hpp	/^    State state0;$/;"	m	class:LLG
+step	stochastic_llg.cpp	/^void Stochastic_LLG::step(State& state, const double dt){$/;"	f	class:Stochastic_LLG
 step	string.cpp	/^void String::step(){$/;"	f	class:String
+success	controller.cpp	/^bool Controller::success(const double err, double& h){$/;"	f	class:Controller
 sumbk	llg.hpp	/^    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; $/;"	m	class:LLG
+t	pth_mag.pyx	/^  def t(self):$/;"	m	class:pyState
 timer	zee.hpp	/^    af::timer timer;$/;"	m	class:Zee
 timer_anisotropy	atomistic_anisotropy.hpp	/^    af::timer timer_anisotropy;$/;"	m	class:ATOMISTIC_ANISOTROPY
 timer_anisotropy	micro_anisotropy.hpp	/^    af::timer timer_anisotropy;$/;"	m	class:ANISOTROPY
@@ -225,9 +343,21 @@ timer_fdmdt	llg.hpp	/^    timer timer_fdmdt;$/;"	m	class:LLG
 timer_heff	llg.hpp	/^    timer timer_heff;$/;"	m	class:LLG
 timer_integrator	llg.hpp	/^    timer timer_integrator;$/;"	m	class:LLG
 timer_solve	atomistic_exchange.hpp	/^    af::timer timer_solve;$/;"	m	class:ATOMISTIC_EXCHANGE
+timer_stoch	stochastic_llg.hpp	/^    af::timer timer_stoch;$/;"	m	class:Stochastic_LLG
 tsit45	llg.cpp	/^array LLG::tsit45(const array& m, const double dt, double& err)$/;"	f	class:LLG
 vec_renormalize	string.cpp	/^void String::vec_renormalize(){$/;"	f	class:String
 vecnorm	func.cpp	/^array vecnorm(const array& a){$/;"	f
+vti_reader	vtk_IO.cpp	/^void vti_reader(af::array& field, Mesh& mesh, std::string filepath){$/;"	f
+vti_writer_atom	vtk_IO.cpp	/^void vti_writer_atom(const af::array field, const Mesh& mesh, std::string outputname){$/;"	f
+vti_writer_micro	vtk_IO.cpp	/^void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname){$/;"	f
+vtr_reader	vtk_IO.cpp	/^void vtr_reader(af::array& field, Mesh& mesh, std::string filepath){$/;"	f
+vtr_writer	vtk_IO.cpp	/^void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname){$/;"	f
+write_vti	state.cpp	/^void State::write_vti(std::string outputname){$/;"	f	class:State
+write_vtk	state.cpp	/^void State::write_vtk(std::string outputname){$/;"	f	class:State
+write_vtk_todel	state.cpp	/^void State::write_vtk_todel(){$/;"	f	class:State
 x	string.hpp	/^    std::vector<double> x;\/\/Current x values$/;"	m	class:String
 x_interp	string.hpp	/^    std::vector<double> x_interp;\/\/x-values where to interpolate at (will be regular grid)$/;"	m	class:String
 zee_field	zee.hpp	/^    af::array zee_field;$/;"	m	class:Zee
+~Mesh	mesh.hpp	/^    ~Mesh(){};$/;"	f	class:Mesh
+~Param	param.hpp	/^    ~Param(){}; $/;"	f	class:Param
+~State	state.hpp	/^    ~State(){};$/;"	f	class:State

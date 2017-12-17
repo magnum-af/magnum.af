@@ -9,11 +9,16 @@ using namespace af;
 
 class Stochastic_LLG {
     public:
+    template <class T>  T test(const T& m, const double dt);
     Stochastic_LLG (State, std::vector<std::shared_ptr<LLGTerm> >);
     std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
 
-    array rk4(const array& m, const double dt);
-    array StemiImplicitHeun(const array& m, const double dt);
+    //array rk4(const array& m, const double dt);
+    template <class T>  T rk4(const T& m, const double dt);
+    array SemiHeun(const array& m, const double dt);
+    template <class T> T SemiImplicitHeun(const T& m, const double dt);
+    //void SemiImplicitHeun(array& m, const double dt);
+    //array SemiImplicitHeun(const array& m, const double dt);
     void step(State& state, const double dt);
     unsigned long int get_calls() const { return calls ;};
     unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};
