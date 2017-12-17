@@ -17,6 +17,7 @@ class Stochastic_LLG {
     template <class T>  T rk4(const T& m, const double dt);
     array SemiHeun(const array& m, const double dt);
     template <class T> T SemiImplicitHeun(const T& m, const double dt);
+    template <class T> T StochSemiImplicitHeun(const T& m, const double dt);
     //void SemiImplicitHeun(array& m, const double dt);
     //array SemiImplicitHeun(const array& m, const double dt);
     void step(State& state, const double dt);
@@ -32,6 +33,7 @@ class Stochastic_LLG {
     Mesh mesh;
     array fheff(const array& m);
     array fdmdt(const array& m);
+    array stochfdmdt(const array& m, const array& h_th, const double dt);
 
     array m_prev;
     af::timer timer_stoch;

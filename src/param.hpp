@@ -4,7 +4,9 @@
 class Param{
   public:
     ~Param(){}; 
-    double mu0=4e-7 * M_PI;
+    double mu0=4e-7 * M_PI; // TODO const leads to error in string.cpp
+    double kb = 1.38064852e-23; // Boltzmann Constant
+    double T{0};//in stochastic.cpp: Temperature in Stochastic Integrator
     double gamma{0},ms{0},A{0},alpha{0};
     double p{0}; //ATOMISTIC_DEMAG dipole p
     bool afsync{false};
