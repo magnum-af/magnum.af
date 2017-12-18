@@ -49,7 +49,7 @@ template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const do
     for (int i = 0; i < 5; i++){
         m_it = m + stochfdmdt(m_it, h_th, dt) * dt/2.;
     }
-    return  fdmdt(m_it, h_th, dt) * dt;
+    return  stochfdmdt(m_it, h_th, dt) * dt;
 }
 //END TODO
 
