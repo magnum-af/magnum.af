@@ -9,14 +9,15 @@ using namespace af;
 
 class Stochastic_LLG {
     public:
+    Stochastic_LLG (State, std::vector<std::shared_ptr<LLGTerm> >, const double);
     template <class T>  T test(const T& m, const double dt);
-    Stochastic_LLG (State, std::vector<std::shared_ptr<LLGTerm> >);
     std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
 
     //array rk4(const array& m, const double dt);
     template <class T>  T rk4(const T& m, const double dt);
     array SemiHeun(const array& m, const double dt);
     template <class T> T SemiImplicitHeun(const T& m, const double dt);
+    template <class T> T StochHeun(const T& m, const double dt);
     template <class T> T StochSemiImplicitHeun(const T& m, const double dt);
     //void SemiImplicitHeun(array& m, const double dt);
     //array SemiImplicitHeun(const array& m, const double dt);
@@ -38,6 +39,7 @@ class Stochastic_LLG {
     array stochfdmdt(const array& m, const array& h_th);
 
     array m_prev;
+    array h_th_prev;
     af::timer timer_stoch;
 };
 

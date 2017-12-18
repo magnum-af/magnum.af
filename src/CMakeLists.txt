@@ -73,7 +73,7 @@ IF(${ArrayFire_OpenCL_FOUND})
     ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:pth-mag_CORE>)
     TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES} 
         # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
-        #${OpenCL_LIBRARIES} 
+        #${OpenCL_LIBRARIES} #TODO include this on eg GTO
         ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 

@@ -1,5 +1,7 @@
 #include "stochastic_llg.hpp"
-Stochastic_LLG::Stochastic_LLG (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m){
+Stochastic_LLG::Stochastic_LLG (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, const double dt) : Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m){
+    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Initial random thermal field at t=0
 }
 
 array Stochastic_LLG::fheff(const array& m){
@@ -26,13 +28,69 @@ double Stochastic_LLG::cpu_time(){
   return cpu_time;
 }
 
-//TODO
 array Stochastic_LLG::stochfdmdt(const array& m, const array& h_th){
     stochfdmdt_calls++;
     const array h = fheff(m) + h_th;
     const array cross_temp = cross4(m, h);
     return  - param.gamma/(1.+pow(param.alpha,2)) * cross_temp - param.alpha*param.gamma/(1.+pow(param.alpha,2)) * cross4(m, cross_temp);
 }
+
+template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const double dt)
+{
+    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    const array h_th_init = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t
+    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t+dt/2
+    T m1= dt/2. * stochfdmdt (m   , h_th_init);
+    T m2= dt/2. * stochfdmdt (m+m1, h_th);
+    T m3= dt/2. * stochfdmdt (m+m2, h_th);
+    T m4= dt/2. * stochfdmdt (m+m3, h_th);
+    T m5= dt/2. * stochfdmdt (m+m4, h_th);
+    return   dt * stochfdmdt (m+m5, h_th);
+}
+
+template <class T>  T Stochastic_LLG::StochHeun(const T& m, const double dt)
+{
+    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t+dt/2
+    T k1 = dt * stochfdmdt(m, h_th_prev);
+    T k2 = dt * stochfdmdt(m + k1, h_th);
+    h_th_prev = h_th;
+    return (k1 + k2 )/2.;
+}
+
+template <class T>  T Stochastic_LLG::SemiImplicitHeun(const T& m,  const double dt)
+{
+    T m1= dt/2. * fdmdt (m);
+    T m2= dt/2. * fdmdt (m+m1);
+    T m3= dt/2. * fdmdt (m+m2);
+    T m4= dt/2. * fdmdt (m+m3);
+    T m5= dt/2. * fdmdt (m+m4);
+    return  fdmdt( m + m5) * dt;
+}
+
+//array rk4(array (*fdmdt)(const array&)  ,const array& m, const double dt)
+template <class T>  T Stochastic_LLG::rk4(const T& m, const double dt)
+{
+    T k1   =  dt * fdmdt(m                               );
+    T k2   =  dt * fdmdt(m + 1./2.*k1                    );
+    T k3   =  dt * fdmdt(m            + 1./2.*k2         );
+    T k4   =  dt * fdmdt(m                       +    k3 );
+    return (k1 + 2.*k2 + 2.*k3 + k4) / 6.;
+}
+
+void Stochastic_LLG::step(State& state, const double dt){
+    timer_stoch = timer::start();
+    //state.m += rk4(state.m,dt);
+    //state.m += SemiImplicitHeun(state.m,dt);
+    state.m += StochSemiImplicitHeun(state.m,dt);
+    //state.m += StochHeun(state.m,dt);
+    state.m = renormalize(state.m);
+    state.t+=dt;
+    calls ++;
+    time += timer::stop(timer_stoch);
+    //std::cout<<" TIME  = "<<time<<std::endl;
+}
+
 
 //template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const double dt)
 //{
@@ -45,23 +103,6 @@ array Stochastic_LLG::stochfdmdt(const array& m, const array& h_th){
 //    }
 //    return  stochfdmdt(m_it, h_th) * dt;
 //}
-template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const double dt)
-{
-    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
-    const array h_th_init = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t
-    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t+dt/2
-    T m1= dt/2. * stochfdmdt (m   , h_th_init);
-    T m2= dt/2. * stochfdmdt (m+m1, h_th);
-    T m3= dt/2. * stochfdmdt (m+m2, h_th);
-    T m4= dt/2. * stochfdmdt (m+m3, h_th);
-    T m5= dt/2. * stochfdmdt (m+m4, h_th);
-    return   dt * stochfdmdt (m+m5, h_th);
-    //for (int i = 0; i < 5; i++){
-    //    m_it = m + stochfdmdt(m_it, h_th) * dt/2.;
-    //}
-    //return  stochfdmdt(m_it, h_th) * dt;
-}
-//END TODO
 
 
 //template <class T>  T Stochastic_LLG::SemiImplicitHeun(const T& m, const double dt)
@@ -73,21 +114,6 @@ template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const do
 //    }
 //    return  fdmdt(m_it) * dt;
 //}
-
-//TODO
-template <class T>  T Stochastic_LLG::SemiImplicitHeun(const T& m,  const double dt)
-{
-    //T m_it = constant(0., mesh.dims, f64);
-    //for (int i = 0; i < 5; i++){
-    //    m_it = fdmdt(m + m_it) * dt/2.;
-    //}
-    T m1= dt/2. * fdmdt (m);
-    T m2= dt/2. * fdmdt (m+m1);
-    T m3= dt/2. * fdmdt (m+m2);
-    T m4= dt/2. * fdmdt (m+m3);
-    T m5= dt/2. * fdmdt (m+m4);
-    return  fdmdt( m + m5) * dt;
-}
 
 //template <class T>  T Stochastic_LLG::SemiImplicitHeun(const T& m, const double dt)
 //{
@@ -114,28 +140,6 @@ template <class T>  T Stochastic_LLG::SemiImplicitHeun(const T& m,  const double
 //    T m5= m + dt/2. * fdmdt (m4);
 //    return m + dt * fdmdt(m5);
 //}
-
-void Stochastic_LLG::step(State& state, const double dt){
-    timer_stoch = timer::start();
-    //state.m += rk4(state.m,dt);
-    //state.m += SemiImplicitHeun(state.m,dt);
-    state.m += StochSemiImplicitHeun(state.m,dt);
-    state.m = renormalize(state.m);
-    state.t+=dt;
-    calls ++;
-    time += timer::stop(timer_stoch);
-    std::cout<<" TIME  = "<<time<<std::endl;
-}
-
-////array rk4(array (*fdmdt)(const array&)  ,const array& m, const double dt)
-template <class T>  T Stochastic_LLG::rk4(const T& m, const double dt)
-{
-    T k1   =  dt * fdmdt(m                               );
-    T k2   =  dt * fdmdt(m + 1./2.*k1                    );
-    T k3   =  dt * fdmdt(m            + 1./2.*k2         );
-    T k4   =  dt * fdmdt(m                       +    k3 );
-    return (k1 + 2.*k2 + 2.*k3 + k4) / 6.;
-}
 
 ////array rk4(array (*fdmdt)(const array&)  ,const array& m, const double dt)
 //array Stochastic_LLG::rk4(const array& m, const double dt)

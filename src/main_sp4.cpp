@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   // Parameter initialization
   const double x=5.e-7, y=1.25e-7, z=3.e-9;
   const int nx = 100, ny=25 ,nz=1;
-  double dt = 5e-13;
+  double dt = 2e-13;
 
 
   //Simulation Parameters
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
   llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
 //  LLG Llg(state,llgterm);
-  Stochastic_LLG Stoch(state,llgterm);
+  Stochastic_LLG Stoch(state,llgterm,dt);
   //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
   std::ofstream stream;
@@ -86,6 +86,7 @@ int main(int argc, char** argv)
   std::cout<<"prelim TIME  = "<<Stoch.time<<"\n"<<std::endl;
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
+  std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
   vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
 //  std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
