@@ -52,6 +52,7 @@ int main(int argc, char** argv)
   param.A     = 1.3e-11;
   param.alpha = 1;
   param.afsync  = false;
+  param.T  = 300;
 
   // Initial magnetic field
   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -74,8 +75,8 @@ int main(int argc, char** argv)
   stream.open ((filepath + "m.dat").c_str());
   
   timer t = af::timer::start();
-  for (int i = 0; i < 50; i++){
-  //while (state.t < 5.e-10){
+  //for (int i = 0; i < 50; i++){
+  while (state.t < 5.e-10){
     Stoch.step(state,dt); 
     //state.m=Llg.llgstep(state);
     calcm(state,stream);
@@ -101,8 +102,8 @@ int main(int argc, char** argv)
   //TODO remove state0 in LLG!
   Stoch.param.alpha=0.02;
 
-  for (int i = 0; i < 50; i++){
-  //while (state.t < 1.5e-9){
+  //for (int i = 0; i < 50; i++){
+  while (state.t < 1.5e-9){
     //state.m=Llg.llgstep(state);
     Stoch.step(state,dt); 
     calcm(state,stream);
