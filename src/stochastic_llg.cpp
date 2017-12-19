@@ -1,10 +1,5 @@
 #include "stochastic_llg.hpp"
-Stochastic_LLG::Stochastic_LLG (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, const double dt) : Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m){
-    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
-    h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Initial random thermal field at t=0
-}
-
-array Stochastic_LLG::fheff(const array& m){
+array Derived::fheff(const array& m){
     State temp(mesh,param,m);
     array solution = Fieldterms[0]->h(temp);
     for(unsigned i=1;i<Fieldterms.size();++i){
@@ -13,26 +8,31 @@ array Stochastic_LLG::fheff(const array& m){
     return solution;
 }
 
-array Stochastic_LLG::fdmdt(const array& m){
+array Derived::fdmdt(const array& m){
     fdmdt_calls++;
     const array heff = fheff(m);
     const array cross_temp = cross4(m, heff);
     return - param.gamma/(1.+pow(param.alpha,2)) * cross_temp - param.alpha*param.gamma/(1.+pow(param.alpha,2)) * cross4(m, cross_temp);
 }
+
+array Derived::stochfdmdt(const array& m, const array& h_th){
+    stochfdmdt_calls++;
+    const array h = fheff(m) + h_th;
+    const array cross_temp = cross4(m, h);
+    return  - param.gamma/(1.+pow(param.alpha,2)) * cross_temp - param.alpha*param.gamma/(1.+pow(param.alpha,2)) * cross4(m, cross_temp);
+}
  
+Stochastic_LLG::Stochastic_LLG (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, const double dt) : Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m){
+    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Initial random thermal field at t=0
+}
+
 double Stochastic_LLG::cpu_time(){
   double cpu_time = 0.;
   for(unsigned i=0;i<Fieldterms.size();++i){
     cpu_time+=Fieldterms[i]->get_cpu_time();
   }
   return cpu_time;
-}
-
-array Stochastic_LLG::stochfdmdt(const array& m, const array& h_th){
-    stochfdmdt_calls++;
-    const array h = fheff(m) + h_th;
-    const array cross_temp = cross4(m, h);
-    return  - param.gamma/(1.+pow(param.alpha,2)) * cross_temp - param.alpha*param.gamma/(1.+pow(param.alpha,2)) * cross4(m, cross_temp);
 }
 
 template <class T>  T Stochastic_LLG::StochSemiImplicitHeun(const T& m, const double dt)

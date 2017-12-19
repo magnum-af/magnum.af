@@ -26,17 +26,26 @@ class Stochastic_LLG {
         unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};
         unsigned long int get_stochfdmdt_calls() const { return stochfdmdt_calls ;};
 
-    private:
-        unsigned long int calls{0};
         unsigned long int fdmdt_calls{0};
         unsigned long int stochfdmdt_calls{0};
-        array fheff(const array& m);
-        array fdmdt(const array& m);
-        array stochfdmdt(const array& m, const array& h_th);
+    private:
+        unsigned long int calls{0};
+        virtual array fheff(const array& m)=0;
+        virtual array fdmdt(const array& m)=0;
+        virtual array stochfdmdt(const array& m, const array& h_th)=0;
 
         array m_prev;
         array h_th_prev;
         af::timer timer_stoch;
+};
+
+class Derived : public Stochastic_LLG {
+    public:
+        Derived(State state, std::vector<std::shared_ptr<LLGTerm>> terms, const double d): Stochastic_LLG (state, terms, d){}
+    private:
+        array fheff(const array& m);
+        array fdmdt(const array& m);
+        array stochfdmdt(const array& m, const array& h_th);
 };
 
 #endif
