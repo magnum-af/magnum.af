@@ -1,5 +1,5 @@
-#ifndef INTEGRATORS_H
-#define INTEGRATORS_H
+#ifndef INTEGRATOR_H
+#define INTEGRATOR_H
 #include "arrayfire.h"
 #include "controller.hpp"
 #include <vector>

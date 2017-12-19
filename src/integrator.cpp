@@ -1,4 +1,4 @@
-#include "integrators.hpp"
+#include "integrator.hpp"
 
 Integrator::Integrator(std::string scheme){
 
