@@ -82,8 +82,8 @@ void Stochastic_LLG::step(State& state, const double dt){
     timer_stoch = timer::start();
     //state.m += rk4(state.m,dt);
     //state.m += SemiImplicitHeun(state.m,dt);
-    state.m += StochSemiImplicitHeun(state.m,dt);
-    //state.m += StochHeun(state.m,dt);
+    //state.m += StochSemiImplicitHeun(state.m,dt);
+    state.m += StochHeun(state.m,dt);
     state.m = renormalize(state.m);
     state.t+=dt;
     calls ++;
