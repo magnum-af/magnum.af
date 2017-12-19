@@ -10,10 +10,10 @@ using namespace af;
 
 class Stochastic_LLG : public Stochastic_Integrator {
     public:
-        Stochastic_LLG(State state, std::vector<std::shared_ptr<LLGTerm>> terms, const double d): Stochastic_Integrator (state, terms, d){}
+        Stochastic_LLG(State state, std::vector<std::shared_ptr<LLGTerm>> terms, const double d, std::string smode): Stochastic_Integrator (state, terms, d, smode){}
     private:
         array fheff(const array& m);
-        array fdmdt(const array& m);
+        array detfdmdt(const array& m);//only for reference in detRK4
         array stochfdmdt(const array& m, const array& h_th);
 };
 

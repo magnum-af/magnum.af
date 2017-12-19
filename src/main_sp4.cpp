@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
   llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
 //  LLG Llg(state,llgterm);
-  Stochastic_LLG Stoch(state,llgterm,dt);
+  Stochastic_LLG Stoch(state,llgterm,dt,"Heun");
   //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
   std::ofstream stream;

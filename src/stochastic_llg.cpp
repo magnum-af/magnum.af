@@ -8,7 +8,7 @@ array Stochastic_LLG::fheff(const array& m){
     return solution;
 }
 
-array Stochastic_LLG::fdmdt(const array& m){
+array Stochastic_LLG::detfdmdt(const array& m){
     fdmdt_calls++;
     const array heff = fheff(m);
     const array cross_temp = cross4(m, heff);

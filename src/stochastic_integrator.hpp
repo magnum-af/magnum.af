@@ -9,7 +9,7 @@ using namespace af;
 
 class Stochastic_Integrator {
     public:
-        Stochastic_Integrator (State, std::vector<std::shared_ptr<LLGTerm> >, const double);
+        Stochastic_Integrator (State, std::vector<std::shared_ptr<LLGTerm> >, const double, std::string );
         std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
         Param param;
         Mesh mesh;
@@ -23,22 +23,23 @@ class Stochastic_Integrator {
         unsigned long int get_stochfdmdt_calls() const { return stochfdmdt_calls ;};
 
     protected:
-        template <class T> T StochHeun(const T& m, const double dt);
-        template <class T> T StochSemiImplicitHeun(const T& m, const double dt);
+        template <class T> T Heun(const T& m, const double dt);
         template <class T> T SemiImplicitHeun(const T& m, const double dt);
-        template <class T> T rk4(const T& m, const double dt);
+        template <class T> T detRK4(const T& m, const double dt);
 
         unsigned long int fdmdt_calls{0};
         unsigned long int calls{0};
         unsigned long int stochfdmdt_calls{0};
         double time{0.};
     private:
-        virtual array fdmdt(const array& m)=0;
+        virtual array detfdmdt(const array& m)=0;
         virtual array stochfdmdt(const array& m, const array& h_th)=0;
 
         array m_prev;
         array h_th_prev;
         af::timer timer_stoch;
+       
+        int mode; //Integration mode
 };
 
 #endif
