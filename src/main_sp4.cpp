@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
   llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
 //  LLG Llg(state,llgterm);
-  Derived Stoch(state,llgterm,dt);
+  Stochastic_LLG Stoch(state,llgterm,dt);
   //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
   std::ofstream stream;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   }
   std::cout<<"prelim fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
   std::cout<<"prelim CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
-  std::cout<<"prelim TIME  = "<<Stoch.time<<"\n"<<std::endl;
+  std::cout<<"prelim TIME  = "<<Stoch.get_time()<<"\n"<<std::endl;
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
   double timerelax= af::timer::stop(t);
   std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
  // Llg.print_cpu_time(std::cout); 
   std::cout<<"fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
   std::cout<<" CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
-  std::cout<<" TIME  = "<<Stoch.time<<"\n"<<std::endl;
+  std::cout<<" TIME  = "<<Stoch.get_time()<<"\n"<<std::endl;
   return 0;
 }
 void calcm(State state, std::ostream& myfile){
