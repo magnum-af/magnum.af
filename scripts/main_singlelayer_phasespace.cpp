@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   Param param = Param();
   param.gamma = 2.211e5;
   param.ms    = 1.1e6;
-  param.A     = 1.5e-11;
+  param.A     = 1.5e-11;//TODO why this value? Check!
   param.alpha = 1;
   param.afsync  = false;
 
