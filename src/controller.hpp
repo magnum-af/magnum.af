@@ -20,6 +20,10 @@ class Controller{
         unsigned int get_counter_hmin    () const { return counter_hmin    ;};// # of rejections
         unsigned int get_counter_maxscale() const { return counter_maxscale;};// # of rejections
         unsigned int get_counter_minscale() const { return counter_minscale;};// # of rejections
+        //TODO better solution?
+        // Scale function return= atol + abs(y) * rtol
+        double atol{1e-6};//Tolerated absolute error
+        double rtol{1e-6};//Tolerated relative error
     private:
         //Numerical Recipies 3rd Edition suggests these values:
         const double beta = 0.4/5.0;
@@ -28,9 +32,6 @@ class Controller{
         const double minscale = 0.2;
         const double maxscale = 10.;
 
-        // Scale function return= atol + abs(y) * rtol
-        const double atol{1e-8};//Tolerated absolute error
-        const double rtol{1e-8};//Tolerated relative error
 
         bool reject{false};
         double errold{1.0e-4};//This value is max(err,1.0e-4)

@@ -1,0 +1,19 @@
+paul@SERVERGPU1:~/git/pth-mag/Data/phasespace$ head test.dat
+time ./pth-mag-cuda /home/paul/git/pth-mag/Data/phasespace/d0.00288/k4800000 0 0.00288 4800000 > he-8cout.dat
+paul@SERVERGPU1:~/git/pth-mag/Data/phasespace$ time ./pth-mag-cuda /home/paul/git/pth-mag/Data/phasespace/d0.00288/k4800000 0 0.00288 4800000 > he-8cout.dat
+terminate called after throwing an instance of 'af::exception'
+  what():  ArrayFire Exception (Internal error:998):
+In function std::vector<char> cuda::compileToPTX(const char*, std::string)
+In file src/backend/cuda/jit.cpp:291
+NVRTC Error(6): NVRTC_ERROR_COMPILATION
+
+
+In function af::array af::sum(const af::array&, int)
+In file src/api/cpp/reduce.cpp:21
+Aborted
+
+real    101m35.054s
+user    93m38.868s
+sys     7m53.168s
+paul@SERVERGPU1:~/git/pth-mag/Data/phasespace$ 
+

@@ -65,15 +65,15 @@ MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MAJOR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MINOR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_INCLUDE_DIR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_LIBRARY}")
-IF(${ArrayFire_OpenCL_FOUND})
+#IF(${ArrayFire_OpenCL_FOUND})
 # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
-#IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
     ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:pth-mag_CORE>)
     TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES} 
         # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
-        #${OpenCL_LIBRARIES} #TODO include this on eg GTO
+        ${OpenCL_LIBRARIES} #TODO include this on eg GTO
         ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 
