@@ -70,7 +70,8 @@ int main(int argc, char** argv)
   //param.Ku1_axis[2]=1;
 
   param.J_atom=4.*param.A*dx;
-  param.D_atom= 2.* param.D * pow(dx,2);
+  param.D_atom= param.D * pow(dx,2)/2.;
+  //TODO this is wrong in pthmag: param.D_atom= 2.* param.D * pow(dx,2);
   std::cout<<"D_atom="<<param.D_atom<<std::endl;
   param.K_atom=param.Ku1*pow(dx,3);
   std::cout<<"Ku1_atom="<<param.K_atom<<std::endl;
