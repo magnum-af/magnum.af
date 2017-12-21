@@ -69,7 +69,8 @@ int main(int argc, char** argv)
   std::cout<<"Ku1="<<param.Ku1<<std::endl;
   //param.Ku1_axis[2]=1;
 
-  param.J_atom=4.*param.A*dx;
+  param.J_atom=2.*param.A*dx;
+  //TODO this is wrong in pth magparam.J_atom=4.*param.A*dx;
   param.D_atom= param.D * pow(dx,2)/2.;
   //TODO this is wrong in pthmag: param.D_atom= 2.* param.D * pow(dx,2);
   std::cout<<"D_atom="<<param.D_atom<<std::endl;

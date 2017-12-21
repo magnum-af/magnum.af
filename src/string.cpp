@@ -94,7 +94,12 @@ void String::step(){
 }
 
 void String::vec_renormalize(){
-  for(unsigned int i=0; i<images.size();i++) images[i].m= renormalize(images[i].m);
+    for(unsigned int i=0; i<images.size();i++){
+        //Eval avoid JIT crash here!
+        af::eval(images[i].m);
+        images[i].m= renormalize(images[i].m);
+        af::eval(images[i].m);
+    }
 }
 
 

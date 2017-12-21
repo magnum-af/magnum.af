@@ -1,0 +1,26 @@
+paul@SERVERGPU1:~/git/pth-mag/Data/phasespace$ ./run_opencl.sh
+Enter GPU
+1
+1
+Enter D_DMI
+0.00432
+0.00432
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+terminate called after throwing an instance of 'af::exception'
+  what():  ArrayFire Exception (Internal error:998):
+OpenCL Error (-11): Build Program Failure when calling clBuildProgram
+In function af::array af::sum(const af::array&, int)
+In file src/api/cpp/reduce.cpp:21
+./run_opencl.sh: line 13: 11481 Aborted                 ./pth-mag-opencl "d$D/k$K" "$GPU" "$D" "$K" > d$D/k$K/cout.dat
+
+real    288m19.374s
+user    261m35.608s
+sys     26m54.616s
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+./pth-mag-opencl: /usr/local/cuda-8.0/lib64/libOpenCL.so.1: no version information available (required by /usr/local/lib/libafopencl.so.3)
+^C
+paul@SERVERGPU1:~/git/pth-mag/Data/phasespace$ ls
+
