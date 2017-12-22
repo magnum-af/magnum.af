@@ -34,12 +34,10 @@ int main(int argc, char** argv)
 
 
   //Simulation Parameters
-  double hmax = 3.5e-10;
-  double hmin = 1.0e-15;
-
-  double atol = 1e-6;
-  
-  double rtol = atol;
+  //double hmax = 3.5e-10;
+  //double hmin = 1.0e-15;
+  //double atol = 1e-6;
+  //double rtol = atol;
   
   double n_interp = 60;
   double string_dt=5e-13;
@@ -70,9 +68,11 @@ int main(int argc, char** argv)
   //param.Ku1_axis[2]=1;
 
   param.J_atom=2.*param.A*dx;
-  //TODO this is wrong in pth magparam.J_atom=4.*param.A*dx;
   param.D_atom= param.D * pow(dx,2)/2.;
-  //TODO this is wrong in pthmag: param.D_atom= 2.* param.D * pow(dx,2);
+  //TODO this is wrong in pth 
+  //TODO this is wrong in pthmag: 
+  const double wrong_J_atom=4.*param.A*dx;
+  const double wrong_D_atom= 2.* param.D * pow(dx,2);
   std::cout<<"D_atom="<<param.D_atom<<std::endl;
   param.K_atom=param.Ku1*pow(dx,3);
   std::cout<<"Ku1_atom="<<param.K_atom<<std::endl;
@@ -196,7 +196,8 @@ int main(int argc, char** argv)
   }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.D_atom<<"\t"<<param.K_atom<<"\t"<<std::endl;
+    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<wrong_D_atom<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
+    //OLD: stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.D_atom<<"\t"<<param.K_atom<<"\t"<<std::endl;
 
   std::ofstream myfileE;
   myfileE.precision(12);
