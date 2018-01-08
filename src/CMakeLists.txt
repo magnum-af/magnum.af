@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(pth-mag)
 
 #useage:
+#on GTO use:
 #cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
 
 # Find the ArrayFire package.
@@ -27,6 +28,7 @@ FIND_PACKAGE(ArrayFire REQUIRED)
 
 #VKT
 #set(VTK_DIR "/usr/include/vtk-6.2/")#TODO Unluckily this has to be set for each system manually, according to VTK
+#set(VTK_DIR "/usr/include/vtk-5.8/")# for GTO #TODO Unluckily this has to be set for each system manually, according to VTK
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
@@ -100,7 +102,7 @@ set_source_files_properties(
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_IO.cpp)
+cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx param.cpp controller.cpp integrator.cpp mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_IO.cpp)
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 

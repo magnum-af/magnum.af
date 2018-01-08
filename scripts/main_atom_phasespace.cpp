@@ -40,8 +40,7 @@ int main(int argc, char** argv)
     //double rtol = atol;
     
     double n_interp = 60;
-    double string_dt=1e-15;
-    //TODO//double string_dt=5e-13;
+    double string_dt=5e-13;
     const int string_steps = 10000;
     std::string filepath(argc>0? argv[1]: "../Data/Testing/");
     if(argc>0)filepath.append("/");
@@ -108,8 +107,7 @@ int main(int argc, char** argv)
     LLG Llg(state,llgterm);
   
     timer t = af::timer::start();
-    while (state.t < 1.e-15){
-    //TODO//while (state.t < 8.e-10){
+    while (state.t < 8.e-10){
         state.m=Llg.llgstep(state);
     }
     double timerelax= af::timer::stop(t);
@@ -148,7 +146,7 @@ int main(int argc, char** argv)
     std::vector<State> images_max_lowest; 
     std::vector<double> E_max_lowest;
     for(int i=0; i<string_steps;i++){
-        //TODO//af::printMemInfo();
+        af::printMemInfo();
         string.step();
         string.calc_E();
         auto max = std::max_element(std::begin(string.E), std::end(string.E));

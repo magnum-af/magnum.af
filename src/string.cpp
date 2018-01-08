@@ -71,8 +71,9 @@ void String::lin_interpolate(){
       std::cout<<"Warning: x_interp[j="<<j<<"] exceedes x range, y_interp[j] value set to y[j]"<<std::endl;
       images[i]=images_temp[j];
     }
-    vec_renormalize();
+    af::eval(images[i].m);//TODO check performance, maybe only evaluate for i%5=0 or so
   }
+  vec_renormalize();//TODO this was in loop, check (with paper) that is should be called outside for loop //shouldn't be this out of the for loop?!? //should not change the result but optimize performance
 }
 
 void String::integrate(){
@@ -84,6 +85,7 @@ void String::integrate(){
     double h=imagtime+dt-images[i].t;
     double dummy_err;
     images[i].m += Llg.RKF45(images[i].m,h,dummy_err);
+    af::eval(images[i].m);
   }
 }
 
