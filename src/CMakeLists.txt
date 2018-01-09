@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(pth-mag)
 
 #useage:
+#on GTO use:
 #cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
 
 # Find the ArrayFire package.
@@ -27,6 +28,7 @@ FIND_PACKAGE(ArrayFire REQUIRED)
 
 #VKT
 #set(VTK_DIR "/usr/include/vtk-6.2/")#TODO Unluckily this has to be set for each system manually, according to VTK
+#set(VTK_DIR "/usr/include/vtk-5.8/")# for GTO #TODO Unluckily this has to be set for each system manually, according to VTK
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
@@ -65,15 +67,15 @@ MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MAJOR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_VERSION_MINOR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_INCLUDE_DIR}")
 MESSAGE(STATUS "----> PTH:             : ${OpenCL_LIBRARY}")
-IF(${ArrayFire_OpenCL_FOUND})
+#IF(${ArrayFire_OpenCL_FOUND})
 # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
-#IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
     ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:pth-mag_CORE>)
     TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES} 
         # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
-        #${OpenCL_LIBRARIES} #TODO include this on eg GTO
+        ${OpenCL_LIBRARIES} #TODO include this on eg GTO
         ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 
@@ -100,7 +102,7 @@ set_source_files_properties(
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_IO.cpp)
+cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx param.cpp controller.cpp integrator.cpp mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp vtk_IO.cpp)
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 

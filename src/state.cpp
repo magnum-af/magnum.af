@@ -2,7 +2,9 @@
 State::State (Mesh mesh_in, Param param_in, af::array m_in):
               mesh(mesh_in),param(param_in), m(m_in)
 {
-    m.lock();
+    // Causes Memory error as for each e.g. string interation, new arrays are created and none are deleted
+    // now only used for wrapping with wrapping
+    //m.lock();
 }
 
 State::State (Mesh mesh_in, Param param_in, long int aptr):
