@@ -4,15 +4,44 @@ python setup.py build_ext -i
 
 Troubleshooting:
 
+-----------------------------------------------------
+
 * Forgetting to mention a file in sources in setup.py results in error like:
 
 ImportError: /home/pth/git/pth-mag/interface/pth_mag.so: undefined symbol: _ZN4MeshC1Eiiiddd
 
-Include respective file to solve
+Include respective file in src/CMakeLists cython_add_module_w_AF_VTK() to solve
+
+-----------------------------------------------------
 
 * Core dump at startup often results when choosing the wrong library in setup.py for desired backend (cpu, opencl, cuda)
 
 E.g.: ibraries = ["afopencl"] 
 
-Include correct library 
+Include correct library in setup.py
 
+-----------------------------------------------------
+
+* af JIT error:
+
+Error message:
+
+terminate called after throwing an instance of 'af::exception'
+  what():  ArrayFire Exception (Internal error:998):
+In function std::vector<char> cuda::compileToPTX(const char*, std::string)
+In file src/backend/cuda/jit.cpp:291
+NVRTC Error(6): NVRTC_ERROR_COMPILATION
+
+Fix:
+include af::eval() in respective function/line where program crashes
+
+
+-----------------------------------------------------
+
+* af Memory error:
+
+https://github.com/arrayfire/arrayfire/issues/1709
+
+Fix:
+remove af.lock() or af device pointer 
+optionally add more af::eval()
