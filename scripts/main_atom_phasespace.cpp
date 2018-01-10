@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     std::vector<State> images_max_lowest; 
     std::vector<double> E_max_lowest;
     for(int i=0; i<string_steps;i++){
-        af::printMemInfo();
+        //af::printMemInfo();
         string.step();
         string.calc_E();
         auto max = std::max_element(std::begin(string.E), std::end(string.E));

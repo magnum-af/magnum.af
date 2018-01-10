@@ -42,7 +42,7 @@ void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outpu
   
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3) 
+    std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2) 
         << " Cells in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
          writer->SetInputConnection(imageDataCellCentered->GetProducerPort());
@@ -85,7 +85,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
       }
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3) 
+    std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2)  
          << " Points in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
         writer->SetInputConnection(imageData->GetProducerPort());
@@ -188,7 +188,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname)
   
     double* host_a = field.host<double>();
   
-    std::cout<<"vtk_writer: Number of points:"<< dims[0]*dims[1]*dims[2]*dims[3]<<std::endl;
+    std::cout<<"vtk_writer: Number of points:"<< dims[0]*dims[1]*dims[2]<<std::endl;
   
     //------------------------------------------------------------------------------
     //VKT grid
@@ -263,7 +263,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname)
     //
     vtkRectilinearGridWriter* writer = vtkRectilinearGridWriter::New();
     writer->SetFileName((outputname.append(".vtr")).c_str());
-    std::cout<<"vtr_writer: Writing vtkRectilinearGrid Data with "<< field.dims(0)* field.dims(1)* field.dims(2) * field.dims(3) 
+    std::cout<<"vtr_writer: Writing vtkRectilinearGrid Data with "<< field.dims(0)* field.dims(1)* field.dims(2)  
          << " Points in file "<<outputname<<std::endl;
     writer->SetInputData( grid );
     writer->Write();

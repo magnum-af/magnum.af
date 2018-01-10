@@ -1,0 +1,19 @@
+#ifndef PTH_MAG_H
+#define PTH_MAG_H
+#include "Faddeeva.hh"
+#include "atomistic_anisotropy.hpp"
+#include "atomistic_demag.hpp"
+#include "atomistic_dmi.hpp"
+#include "atomistic_exchange.hpp"
+#include "atomistic_dmi.hpp"
+#include "micro_anisotropy.hpp"
+#include "micro_demag.hpp"
+#include "micro_dmi.hpp"
+#include "micro_exch.hpp"
+#include "micro_dmi.hpp"
+#include "zee.hpp"
+#include "string.hpp"
+#include "llg.hpp"
+#include "stochastic_llg.hpp"
+#include "vtk_IO.hpp"
+#endif
