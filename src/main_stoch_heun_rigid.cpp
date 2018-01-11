@@ -17,25 +17,46 @@ void calcm(State state, std::ostream& myfile);
 //    return result.real;
 //}
 
+
+//Mathematica:
+//(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
 double mean_mz_analytical (double chi){
     return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi 
+}
+
+void set_m_to_z(State& state){
+    state.m(span,span,span,0)=0.;
+    state.m(span,span,span,1)=0.;
+    state.m(span,span,span,2)=1.;
 }
 
 int main(int argc, char** argv)
 {
     std::cout<<"argc"<<argc<<std::endl;
     for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << "\n";}
-    std::string filepath(argc>1? argv[1]: "../Data/Testing");
+    std::string filepath(argc>1? argv[1]: "../Data/rigid");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
+    std::ofstream stream;
+    stream.precision(12);
+    stream.open ((filepath + "m.dat").c_str());
+    std::ofstream stream2;
+    stream2.precision(12);
+    stream2.open ((filepath + "rigid.dat").c_str());
+    
+
   
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
   
+    //Integration param
+    unsigned long int measure_steps = 6e4;
+
+    stream2<<"#measure_steps = "<<measure_steps<<std::endl;
+    stream2<<"# dt << Stoch.param.T<<  mean_mz <<  abs_mean_mz << mean_mz_analytical(chi) <<Stoch.param.T<<  mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.param.T<<  mean_mz << abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 ,nz=1;
-    double dt = 1e-14;
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
@@ -46,24 +67,117 @@ int main(int argc, char** argv)
     param.alpha = 0.1;
     param.T = 10;
 
-    //Integration param
-    //unsigned long int relax_steps   = 1e2;
-    unsigned long int measure_steps = 2e4;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
-    State state(mesh,param, m);
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
-  
+    State state(mesh,param, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-    Stochastic_LLG Stoch(state,llgterm,dt,"Heun");
+    Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
   
-    std::ofstream stream;
-    stream.precision(12);
-    stream.open ((filepath + "m.dat").c_str());
+  
+    //Declare Variables
+    double mean_mz;
+    double abs_mean_mz;
+    double chi;
+    //Initialize others
+    double dt = 1e-15;
+
+    //MEASURE
     
+    for(int i=0;i<25;i++){
+        std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
+        //T=10
+        param.T=10.;
+        state=State(mesh,param,m);
+        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        llgterm.clear();
+        mean_mz=0;
+        abs_mean_mz=0;
+        for (unsigned long int i = 0; i < measure_steps; i++){
+            Stoch.step(state,dt); 
+            mean_mz+=afvalue(state.m(0,0,0,2));
+            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
+            //calcm(state,stream);
+        }
+
+        mean_mz=mean_mz/measure_steps;
+        abs_mean_mz=abs_mean_mz/measure_steps;
+        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
+        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
+        std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
+        std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
+        stream2<< std::setw(6)<< dt << "\t" << Stoch.param.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+
+        //T=50
+        param.T=50.;
+        state=State(mesh,param,m);
+        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        llgterm.clear();
+        mean_mz=0;
+        abs_mean_mz=0;
+        for (unsigned long int i = 0; i < measure_steps; i++){
+            Stoch.step(state,dt); 
+            mean_mz+=afvalue(state.m(0,0,0,2));
+            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
+            //calcm(state,stream);
+        }
+
+        mean_mz=mean_mz/measure_steps;
+        abs_mean_mz=abs_mean_mz/measure_steps;
+        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
+        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
+        std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
+        std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
+        stream2<< Stoch.param.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+
+        //T=200
+        param.T=200.;
+        state=State(mesh,param,m);
+        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        llgterm.clear();
+        mean_mz=0;
+        abs_mean_mz=0;
+        for (unsigned long int i = 0; i < measure_steps; i++){
+            Stoch.step(state,dt); 
+            mean_mz+=afvalue(state.m(0,0,0,2));
+            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
+            //calcm(state,stream);
+        }
+
+        mean_mz=mean_mz/measure_steps;
+        abs_mean_mz=abs_mean_mz/measure_steps;
+        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
+        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
+        std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
+        std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
+        stream2<< Stoch.param.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<<"\t"<<measure_steps<<std::endl;
+
+        dt*=1.35;
+    }
+
+    stream.close();
+    stream2.close();
+    return 0;
+}
+void calcm(State state, std::ostream& myfile){
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2)<< "\t" << std::endl;
+}
+
+    //unsigned long int relax_steps   = 1e2;
+    //std::cout<<"Reference T=10        = "<< 0.98979 <<std::endl;
+    //std::cout<<"Reference T=50        = "<< 0.94268 <<std::endl;
+    //std::cout<<"Reference T=200       = "<< 0.71976 <<std::endl;
+  
     ////RELAX
     //timer t = af::timer::start();
     //for (unsigned long int i = 0; i < relax_steps; i++){
@@ -79,58 +193,3 @@ int main(int argc, char** argv)
     //double timemeasure= af::timer::stop(t2);
     //std::cout<<"timemeasure [af-s]: "<< timemeasure <<std::endl;
 
-    //MEASURE
-    Stoch.param.T  = 10;
-    double mean_mz=0;
-    for (unsigned long int i = 0; i < measure_steps; i++){
-        Stoch.step(state,dt); 
-        mean_mz+=afvalue(state.m(0,0,0,2));
-        //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
-        calcm(state,stream);
-    }
-
-    mean_mz=mean_mz/measure_steps;
-    double chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-    std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) << " at "<<Stoch.param.T<<" K" <<std::endl;
-    std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<"\n"<<std::endl;
-
-    Stoch.param.T  = 50;
-    //state.param.T  = 50;
-    mean_mz=0;
-    for (unsigned long int i = 0; i < measure_steps; i++){
-        Stoch.step(state,dt); 
-        mean_mz+=afvalue(state.m(0,0,0,2));
-        //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
-        calcm(state,stream);
-    }
-
-    mean_mz=mean_mz/measure_steps;
-    chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-    std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) << " at "<<Stoch.param.T<<" K" <<std::endl;
-    std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<"\n"<<std::endl;
-
-    Stoch.param.T  = 200;
-    //state.param.T  = 200;
-    mean_mz=0;
-    for (unsigned long int i = 0; i < measure_steps; i++){
-        Stoch.step(state,dt); 
-        mean_mz+=afvalue(state.m(0,0,0,2));
-        //if(i%1000==0) std::cout<< i <<"  "<< mean_mz <<std::endl;
-        calcm(state,stream);
-    }
-
-    mean_mz=mean_mz/measure_steps;
-    chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-    std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) << " at "<<Stoch.param.T<<" K" <<std::endl;
-    std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<"\n"<<std::endl;
-
-    //std::cout<<"Reference T=10        = "<< 0.98979 <<std::endl;
-    //std::cout<<"Reference T=50        = "<< 0.94268 <<std::endl;
-    //std::cout<<"Reference T=200       = "<< 0.71976 <<std::endl;
-  
-    stream.close();
-    return 0;
-}
-void calcm(State state, std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2)<< "\t" << std::endl;
-}
