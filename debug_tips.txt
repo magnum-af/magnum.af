@@ -45,3 +45,13 @@ https://github.com/arrayfire/arrayfire/issues/1709
 Fix:
 remove af.lock() or af device pointer 
 optionally add more af::eval()
+
+
+-----------------------------------------------------
+
+Error:
+/usr/local/lib/libafopencl.so.3.5.0: undefined reference to `clReleaseMemObject@OPENCL_1.0'
+Fix:
+Include 
+        ${OpenCL_LIBRARIES} #TODO include this on eg GTO
+in src/CMakeLists.txt

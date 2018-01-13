@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     stream2.precision(12);
     stream2.open ((filepath + "rigid.dat").c_str());
   
-    setDevice(argc>2? std::stoi(argv[2]):0);
+    setDevice(argc>2? std::stoi(argv[2]):3);
     info();
   
     //Integration param
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     m(0,0,0,2)=1.;
     State state(mesh,param, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
-    Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
+    Stochastic_LLG Stoch(state,llgterm,0.,"SemiHeun");//ATTENTION, to be set in each loop
   
     //Declare Variables
     double mean_mz;
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
         param.T=10.;
         state=State(mesh,param,m);
         llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
         param.T=50.;
         state=State(mesh,param,m);
         llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
         param.T=200.;
         state=State(mesh,param,m);
         llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
