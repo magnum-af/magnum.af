@@ -11,6 +11,7 @@ bin/
 *.swp
 *.dat
 *.pdf
+*.eps
 interface.cpp
 *.so
 Makefile

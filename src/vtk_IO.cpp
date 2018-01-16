@@ -42,8 +42,8 @@ void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outpu
   
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2) 
-        << " Cells in file "<<outputname<<std::endl;
+    //std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2) 
+    //    << " Cells in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
          writer->SetInputConnection(imageDataCellCentered->GetProducerPort());
     #else
@@ -85,8 +85,8 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
       }
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2)  
-         << " Points in file "<<outputname<<std::endl;
+    //std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2)  
+    //     << " Points in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
         writer->SetInputConnection(imageData->GetProducerPort());
     #else
