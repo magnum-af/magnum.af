@@ -5,9 +5,9 @@
 using namespace af; 
 typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 
-void calcm(State state, std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" ;
-    myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
+void calcm(State state, std::ostream& myfile, double get_avg){
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
+    //myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
 }
 
 class Detector{
@@ -68,9 +68,10 @@ int main(int argc, char** argv)
     const int nx = 30, ny=30 ,nz=1;
     const double dx=1e-9;
   
-    const double dt = 1e-13;//Integration step
+    const double dt = 1e-15;//Integration step
+    const int samples = 10;
     const double maxtime = 1e-5;
-    std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
+    //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
@@ -126,13 +127,13 @@ int main(int argc, char** argv)
     ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse " << std::endl;
     std::vector<double> antimes;// appends annihilation time for each iteration to calculate mean
     // Iterations to obtain mean annihilaiton time
-    for(int j = 0; j < 1000; j++){
+    for(int j = 0; j < samples; j++){
         state = State(mesh,param, m);
         std::cout<<"TEST (should be 0): state.t = "<< state.t << std::endl;
         std::ofstream stream_m(filepath + "m"+std::to_string(j)+".dat");
         stream_m.precision(12);
      
-        Detector detector = Detector(3000, 0.75);
+        Detector detector = Detector( (int)(3e-10/dt), 0.75);
         unsigned long int i=0;
         while (detector.event == false){
             if(state.t > maxtime){
@@ -140,17 +141,18 @@ int main(int argc, char** argv)
                  break;
             }
             Stoch.step(state,dt); 
-            calcm(state,stream_m);
             detector.add_data(meani(state.m,2));
+            calcm(state, stream_m, detector.get_avg());
             if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-            if(i % 100 == 0) vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-            if(i % 1000 == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
-            if(i % 1000 == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
+            if(i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
+            if(i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
+            if(i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
             i++;
         }
+        vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
         
         double detect_time = state.t;
-        Detector detector2 = Detector(50, 0.75);
+        Detector detector2 = Detector((int)(5e-12/dt), 0.75);
         detector2.gt=false;
         int reverse=0;
         for (std::list<double>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
@@ -174,11 +176,22 @@ int main(int argc, char** argv)
         mean_antime+=n;
     }
     mean_antime/= (double) antimes.size();
+
+    double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
+    for (double n : antimes){
+        unbiased_sample_variance += pow( n - mean_antime ,2);
+    }
+    unbiased_sample_variance/=( (double)antimes.size() -1 );
+    double unbiased_sample_sigma = sqrt(unbiased_sample_variance);
+
+    std::cout<<"antimes.size() = "<< antimes.size() << std::endl;
     std::cout<<"mean_antime = "<< mean_antime << std::endl;
+    std::cout<<"unbiased_sample_variance = "<< unbiased_sample_variance << std::endl;
+    std::cout<<"unbiased_sample_sigma = "<< unbiased_sample_sigma << std::endl;
     ofs_antime.open((filepath + "mean_antime.dat").c_str());
     ofs_antime.precision(12);
-    ofs_antime<<"#mean_antime << \t << antimes.size()"<< std::endl;
-    ofs_antime<< mean_antime << "\t" << antimes.size() << std::endl;
+    ofs_antime<<"#mean_antime << unbiased_sample_variance << unbiased_sample_sigma<< antimes.size() "<< std::endl;
+    ofs_antime<< mean_antime <<  "\t" << unbiased_sample_variance <<"\t" << unbiased_sample_sigma<< "\t" << antimes.size() <<  std::endl;
     ofs_antime.close();
   
     return 0;
