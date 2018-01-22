@@ -1,4 +1,5 @@
 #include <list>
+#include <sstream>
 #include "arrayfire.h"
 #include "pth_mag.hpp"
 
@@ -68,7 +69,17 @@ int main(int argc, char** argv)
     const int nx = 30, ny=30 ,nz=1;
     const double dx=1e-9;
   
-    const double dt = 1e-15;//Integration step
+    double dt;
+    if(argc>4){
+        std::istringstream os(argv[4]); // Reading double in scientific notation
+        os >> dt;
+    }
+    else{
+        dt = 1e-13;
+    }
+    std::cout << "dt = " << dt << std::endl;
+    //const double dt = 1e-13;//Integration step
+    const double threshold = 0.9;
     const int samples = 10;
     const double maxtime = 1e-5;
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
@@ -92,14 +103,14 @@ int main(int argc, char** argv)
 
     array m; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
-    vti_reader(m, testmesh, "../E_barrier/relax.vti");
+    vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
     
     //Reading energy barrier from calculation performed with main_n30.cpp
     double e_barrier;
     //ifstream stream(filepath+"E_barrier/E_barrier.dat");
-    ifstream stream("../E_barrier/E_barrier.dat");
+    ifstream stream("../../E_barrier/E_barrier.dat");
     if (stream.is_open()){
         stream >> e_barrier;
     }
@@ -133,7 +144,7 @@ int main(int argc, char** argv)
         std::ofstream stream_m(filepath + "m"+std::to_string(j)+".dat");
         stream_m.precision(12);
      
-        Detector detector = Detector( (int)(3e-10/dt), 0.75);
+        Detector detector = Detector( (int)(3e-10/dt), threshold);
         unsigned long int i=0;
         while (detector.event == false){
             if(state.t > maxtime){
@@ -152,7 +163,7 @@ int main(int argc, char** argv)
         vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
         
         double detect_time = state.t;
-        Detector detector2 = Detector((int)(5e-12/dt), 0.75);
+        Detector detector2 = Detector((int)(5e-12/dt), threshold);
         detector2.gt=false;
         int reverse=0;
         for (std::list<double>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
