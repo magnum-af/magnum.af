@@ -24,6 +24,7 @@ class String {
     void integrate();//Integrate all images for dt
     void step();
     void vec_renormalize();
+    void write_vti(std::string file);
   private:
 };
 #endif

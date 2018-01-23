@@ -7,8 +7,26 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 
 void calcm(State state, std::ostream& myfile, double get_avg){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
+    //myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
     //myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
+}
+
+void set_boundary_mz(array& m){
+    m( 0, span, span, 0)=0.;
+    m(-1, span, span, 0)=0.;
+    m(span,  0, span, 0)=0.;
+    m(span, -1, span, 0)=0.;
+
+    m( 0, span, span, 1)=0.;
+    m(-1, span, span, 1)=0.;
+    m(span,  0, span, 1)=0.;
+    m(span, -1, span, 1)=0.;
+
+    m( 0, span, span, 2)=1.;
+    m(-1, span, span, 2)=1.;
+    m(span,  0, span, 2)=1.;
+    m(span, -1, span, 2)=1.;
 }
 
 class Detector{
@@ -104,6 +122,7 @@ int main(int argc, char** argv)
     array m; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
     vti_reader(m, testmesh, "../../E_barrier/relax.vti");
+    //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
     
@@ -152,6 +171,7 @@ int main(int argc, char** argv)
                  break;
             }
             Stoch.step(state,dt); 
+            //set_boundary_mz(state.m);
             detector.add_data(meani(state.m,2));
             calcm(state, stream_m, detector.get_avg());
             if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)

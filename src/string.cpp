@@ -103,6 +103,11 @@ void String::vec_renormalize(){
     }
 }
 
+void String::write_vti(std::string file){
+    for(unsigned j = 0; j < images.size(); j++){
+        vti_writer_atom(images[j].m, state.mesh , file + std::to_string(j));
+    }
+}
 
 
 //#include "string.hpp"
