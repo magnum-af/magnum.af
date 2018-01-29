@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     param.Ku1=6.4e6;
   
     param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2)/2.;
+    param.D_atom= param.D * pow(dx,2);
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   

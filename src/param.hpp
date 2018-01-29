@@ -19,7 +19,7 @@ struct Param{
     //Atomistic
     double J_atom{0.};//Exchange
     double D_atom{0.};//Atomistic
-    double D_atom_axis[3]={0.,0.,-1.};//Atomistic
+    double D_atom_axis[3]={0.,0.,1.};//Atomistic
     double K_atom{0.};//Atomistic
     double K_atom_axis[3]={0.,0.,1.};//Atomistic
 };

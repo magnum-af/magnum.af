@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     //param.Ku1_axis[2]=1;
   
     param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2)/2.;
+    param.D_atom= param.D * pow(dx,2);
     //old values in prev versions, this is now wrong in pthmag: 
     const double wrong_J_atom=4.*param.A*dx;
     const double wrong_D_atom= 2.* param.D * pow(dx,2);
