@@ -44,7 +44,7 @@ array ATOMISTIC_DMI::h(const State& state){
     second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
     if(state.param.afsync) sync();
     cpu_time += timer::stop(timer_dmi);
-    return -state.param.D_atom/(state.param.mu0*state.param.p) * (first-second);
+    return state.param.D_atom/(state.param.mu0*state.param.p) * (first-second);
     //return -state.param.D/2. * res;
 }
 
