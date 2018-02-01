@@ -90,9 +90,11 @@ int main(int argc, char** argv)
 
     for(int i=0; i < mesh.n0; i++){
         array mm = array(state.m);
-        mm=shift(mm,i);
+        mm=shift(mm,i,i);
         mm(seq(0,i),span,span,span)=0;
         mm(seq(0,i),span,span,2)=1.;
+        mm(span,seq(0,i),span,span)=0;
+        mm(span,seq(0,i),span,2)=1.;
         inputimages.push_back(State(mesh, param, mm));
     }
    
