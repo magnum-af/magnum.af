@@ -115,7 +115,7 @@ int main(int argc, char** argv)
     std::cout<< "param.T = " << param.T << std::endl;
   
     param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2)/2.;
+    param.D_atom= param.D * pow(dx,2);
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 

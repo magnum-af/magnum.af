@@ -7,48 +7,80 @@ double ATOMISTIC_DMI::E(const State& state){
 }
 
 ATOMISTIC_DMI::ATOMISTIC_DMI (const Mesh& mesh, const Param& param){
-  //initialize finite difference first order derivative filter
-  double norm=sqrt(pow(param.D_atom_axis[0],2)+ pow(param.D_atom_axis[1],2) + pow(param.D_atom_axis[2], 2));
-  n=array(mesh.n0,mesh.n1,mesh.n2,3,f64);
-  n(span,span,span,0)=param.D_atom_axis[0]/norm;
-  n(span,span,span,1)=param.D_atom_axis[1]/norm;
-  n(span,span,span,2)=param.D_atom_axis[2]/norm;
-  //print("n",n);
-
-  filtr_fd1=constant(0.0,3,3,3,3,f64);
-  //dmx/dx
-  filtr_fd1(0,1,1,0)= 1;
-  filtr_fd1(2,1,1,0)=-1;
-
-  //dmy/dy
-  filtr_fd1(1,0,1,1)= 1;
-  filtr_fd1(1,2,1,1)=-1;
-
-  //dmz/dz
-  filtr_fd1(1,1,0,2)= 1;
-  filtr_fd1(1,1,2,2)=-1;
+    //initialize finite difference first order derivative filter
+    double norm=sqrt(pow(param.D_atom_axis[0],2)+ pow(param.D_atom_axis[1],2) + pow(param.D_atom_axis[2], 2));
+    n=array(mesh.n0,mesh.n1,mesh.n2,3,f64);
+    n(span,span,span,0)=param.D_atom_axis[0]/norm;
+    n(span,span,span,1)=param.D_atom_axis[1]/norm;
+    n(span,span,span,2)=param.D_atom_axis[2]/norm;
+    //print("n",n);
+  
+    filtr_fd1=constant(0.0,3,3,3,3,f64);
+    //dmx/dx
+    filtr_fd1(0,1,1,0)= 1;
+    filtr_fd1(2,1,1,0)=-1;
+  
+    //dmy/dy
+    filtr_fd1(1,0,1,1)= 1;
+    filtr_fd1(1,2,1,1)=-1;
+  
+    //dmz/dz
+    filtr_fd1(1,1,0,2)= 1;
+    filtr_fd1(1,1,2,2)=-1;
 }
 
 array ATOMISTIC_DMI::h(const State& state){
-  timer_dmi = timer::start();
-  array first = convolve(state.m,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-  //Make Divergence
-  first=sum(first,3);
-  first=tile(first,1,1,1,3);
-  first=n*first;
-
-  //Dot product
-  array second = sum(n*state.m,3);
-  //Expand for fd1 convolution
-  second = tile(second,1,1,1,3);
-  second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-  if(state.param.afsync) sync();
-  cpu_time += timer::stop(timer_dmi);
-  return -2.*state.param.D_atom/(state.param.mu0*state.param.p) * (first-second);
-  //return -state.param.D/2. * res;
+    timer_dmi = timer::start();
+    array first = convolve(state.m,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
+    //Make Divergence
+    first=sum(first,3);
+    first=tile(first,1,1,1,3);
+    first=n*first;
+  
+    //Dot product
+    array second = sum(n*state.m,3);
+    //Expand for fd1 convolution
+    second = tile(second,1,1,1,3);
+    second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
+    if(state.param.afsync) sync();
+    cpu_time += timer::stop(timer_dmi);
+    return state.param.D_atom/(state.param.mu0*state.param.p) * (first-second);
+    //return -state.param.D/2. * res;
 }
 
 
+////Version with DMI d pointing only in nz direction
+//array ATOMISTIC_DMI::h(const State& state){
+//    timer_dmi = timer::start();
+//    
+//    array filterHdx=constant(0., 3, 1, 1, 3, f64);
+//    filterHdx(2,0,0,2)=-1;
+//    filterHdx(0,0,0,2)= 1;
+//    array Hdx = convolve( state.m, filterHdx, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span,span,span,2);
+//    //print ("filterHdx", filterHdx);
+//    //print ("Hdx", Hdx);
+//
+//    array filterHdy=constant(0., 1, 3, 1, 3, f64);
+//    filterHdy(0,2,0,2)=-1;
+//    filterHdy(0,0,0,2)= 1;
+//    array Hdy = convolve( state.m, filterHdy, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span,span,span,2);
+//    //print ("Hdy", Hdy);
+//    
+//    array filterHdz=constant(0., 3, 3, 1, 3, f64);
+//    filterHdz(2,1,0,0)= 1;
+//    filterHdz(0,1,0,0)=-1;
+//    filterHdz(1,2,0,1)= 1;
+//    filterHdz(1,0,0,1)=-1;
+//    array Hdz = convolve( state.m, filterHdz, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span,span,span,seq(0,1));
+//    Hdz=Hdz(span,span,span,0)+Hdz(span,span,span,1);
+//    //print ("Hdz", Hdz);
+//    
+//    if(state.param.afsync) sync();
+//    cpu_time += timer::stop(timer_dmi);
+//    return -2. * state.param.D_atom/(state.param.mu0 * state.param.p) * join(3, Hdx, Hdy, Hdz); // TODO FACTOR 2?
+//    //print ("H", H);
+//    //return H;
+//}
 
 
 

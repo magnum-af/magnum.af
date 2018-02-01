@@ -58,7 +58,7 @@ array DMI::h(const State& state){
 
   if(param.afsync) sync();
   cpu_time += timer::stop(timer_dmi);
-  return  -2.* param.D/(param.mu0*param.ms) * (first-second);//Note: Js=mu0*Ms
+  return 2.* param.D/(param.mu0*param.ms) * (first-second);//Note: Js=mu0*Ms
 }
 
 
