@@ -3,7 +3,7 @@
 template <class T>  T Stochastic_Integrator::Heun(const T& m, const double dt)
 {
     const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
-    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t+dt/2
+    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     T k1 = dt * stochfdmdt(m, h_th_prev);
     T k2 = dt * stochfdmdt(m + k1, h_th);
     h_th_prev = h_th;
@@ -54,7 +54,9 @@ Stochastic_Integrator::Stochastic_Integrator (State in, std::vector<std::shared_
   Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m)
 {
     const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
-    h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Initial random thermal field at t=0
+    unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now().time_since_epoch()).count();
+    rand_engine=af::randomEngine(af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed));
+    h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Initial random thermal field at t=0
 
     //Setting int mode for usage in void step(...)
     if (smode == "Heun" || smode == "0"){ mode = 0;}

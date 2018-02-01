@@ -2,6 +2,7 @@
 #define STOCHASTIC_INTEGRATOR_H
 #include "arrayfire.h"
 #include <memory>
+#include <chrono>
 #include "LLGTerm.hpp"
 #include "state.hpp"
 #include "func.hpp"
@@ -40,6 +41,8 @@ class Stochastic_Integrator {
         af::timer timer_stoch;
        
         int mode; //Integration mode
+
+        af::randomEngine rand_engine;
 };
 
 #endif
