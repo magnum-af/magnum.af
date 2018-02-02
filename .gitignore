@@ -19,3 +19,4 @@ CMakeFiles
 cmake_install.cmake
 Data/debug_phasespace
 Data/test_phasesp
+*.exe
