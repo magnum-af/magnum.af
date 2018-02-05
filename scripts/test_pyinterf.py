@@ -10,7 +10,6 @@ m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
 
 
 param=pth_mag.pyParam()
-param.gamma (2.211e5)
 param.ms    (8e5)
 param.A     (1.3e-11)
 param.alpha (1)

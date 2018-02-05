@@ -56,7 +56,6 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Param param = Param();
-    param.gamma = 2.211e5;
     param.ms    = 1281197;
     param.Ku1   = 6.9e6;
     param.alpha = 0.1;

@@ -53,7 +53,6 @@ int main(int argc, char** argv)
   //Generating Objects
   Mesh mesh(nx,ny,nz,dx,dx,dx);
   Param param = Param();
-  param.gamma = 2.211e5;
   param.ms    = 1.1e6;
   param.A     = 1.5e-11;//TODO why this value? Check!
   param.alpha = 1;

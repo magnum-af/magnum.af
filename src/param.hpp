@@ -5,7 +5,8 @@ struct Param{
     double mu0=4e-7 * M_PI; // TODO const leads to error in string.cpp
     double kb = 1.38064852e-23; // Boltzmann Constant
     double T{0};//in stochastic.cpp: Temperature in Stochastic Integrator
-    double gamma{0},ms{0},A{0},alpha{0};
+    double gamma{221276.1488637255};//gyromagnetic ratio: gamma = gamma_e * mu0; electron gyromagnetic ratio multiplied by magnetic constant
+    double ms{0},A{0},alpha{0};
     double p{0}; //ATOMISTIC_DEMAG dipole p
     bool afsync{false};
     int mode{6};  // 0 -> rk4, 1 -> rk4_3o8, 2 -> rkf, 3 -> explicitEuler
