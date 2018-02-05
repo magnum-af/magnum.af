@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     const double maxtime = 1e-5;
   
     std::list<af::array> images; //The data to take the average on
-    unsigned int images_length=20;
+    unsigned int images_length=25;
 
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
   
@@ -177,8 +177,8 @@ int main(int argc, char** argv)
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10,9)
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
-        if( images.size() < images_length &&  i % (int)(1e-10/dt) == 0) images.push_back(state.m); 
-        if( images.size() > images_length &&  i % (int)(1e-10/dt) == 0) {images.pop_front(); images.push_back(state.m);} 
+        if( images.size() < images_length &&  i % (int)(1e-11/dt) == 0) images.push_back(state.m); 
+        if( images.size() > images_length &&  i % (int)(1e-11/dt) == 0) {images.pop_front(); images.push_back(state.m);} 
         i++;
     }
 
