@@ -11,6 +11,7 @@ using namespace af;
 class Stochastic_LLG : public Stochastic_Integrator {
     public:
         Stochastic_LLG(State state, std::vector<std::shared_ptr<LLGTerm>> terms, const double d, std::string smode): Stochastic_Integrator (state, terms, d, smode){}
+        double E(const State& state); //Energy calculation
     private:
         array fheff(const array& m);
         array detfdmdt(const array& m);//only for reference in detRK4

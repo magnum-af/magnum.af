@@ -1,4 +1,14 @@
 #include "stochastic_llg.hpp"
+
+//Energy calculation
+double Stochastic_LLG::E(const State& state){
+    double solution = 0.;
+    for(unsigned i=0;i<Fieldterms.size();++i){
+        solution+=Fieldterms[i]->E(state);
+    }
+    return solution;
+}
+
 array Stochastic_LLG::fheff(const array& m){
     State temp(mesh,param,m);
     array solution = Fieldterms[0]->h(temp);
