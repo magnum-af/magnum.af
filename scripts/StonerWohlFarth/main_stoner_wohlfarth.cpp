@@ -25,6 +25,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=2.e-9, y=2.e-9, z=2.e-9;
     const int nx = 1, ny=1 ,nz=1;
+    const double dt = 1e-14;
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
@@ -41,10 +42,10 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,2)=1./param.mu0;
     llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
     State state(mesh, param, m);
-    Stochastic_LLG Stoch(state, llgterm, 0., "SemiHeun");
+    Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
   
     while (state.t < 100e-9){
-        Stoch.step(state, 1e-14); 
+        Stoch.step(state, dt); 
         calcm(state,stream);
     }
     return 0;

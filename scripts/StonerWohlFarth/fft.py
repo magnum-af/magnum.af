@@ -1,8 +1,9 @@
-#from magnumfe import *
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import interpolate
+from scipy.optimize import curve_fit
 
+np.set_printoptions(formatter={'float':'{: .5E}'.format})
 Aex = 13e-12
 mu0= 4 * np.pi * 1e-7
 ms = 1./mu0
@@ -28,13 +29,12 @@ def fft(t, x, dt):
   # perform FFT
   XX = np.fft.fftshift(np.fft.fft(x_interp))
   f = np.fft.fftshift(np.fft.fftfreq(len(t_interp), d=dt))
-  print "dt:", dt, "f:", f.max()
   #X = np.abs(XX)**2 # fangohrs version
   X = (2*np.absolute(XX))**2*dt**2/(max(t)-min(t)) # dieters version
   return f, X
 
 # main routine
-x = read_m_t_magnumfe("rigid.dat")
+x = read_m_t_magnumfe("m.dat")
 t, my = x[:,0], x[:,2]
 f, MY = fft(t, my, t[1]-t[0])
 
@@ -49,11 +49,18 @@ plt.ylabel('Polarization Jx [T]')
 plt.subplot(2, 1, 2)
 #plt.plot(f,MY)
 plt.xlim([0,3*w0/2/np.pi])
-plt.ylim([1e-18, 1e-11])
+plt.ylim([1e-18, 1e-10])
 plt.semilogy(f, MY, 'bo', label="simulation")
 plt.semilogy(f, MY, 'b-', label=None, alpha=0.2)
 
+func = lambda w,w0,dw,a: a*(1/((w-w0)**2+dw**2) + 1/((w+w0)**2+dw**2))
+p0=np.array([w0, alpha*w0, gamma*alpha*kb*T/mu0/ms/V])
+popt, pcov = curve_fit(func, 2*np.pi*f, MY, p0=p0)
+print "popt:", popt
+print "p0:  ", p0
 f = np.linspace(0, 3*w0/2/np.pi, num=1000)
+plt.semilogy(f, func(2.*np.pi*f, *popt), 'b-', linewidth=2, alpha=0.2)
+
 PSD_analytic = lambda w: gamma*alpha*kb*T/mu0/ms/V/((w-w0)**2+(alpha*w0)**2) + gamma*alpha*kb*T/mu0/ms/V/((w+w0)**2+(alpha*w0)**2)
 plt.semilogy(f, [PSD_analytic(2.*np.pi*fi) for fi in f], "g-", label="analytic", linewidth=2, alpha=0.5)
 plt.legend()
