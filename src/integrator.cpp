@@ -4,12 +4,12 @@ Integrator::Integrator(std::string scheme){
 
     if (scheme == "RKF45") {
         std::cout << "Integrators: Initializing RKF45 method." << std::endl;
-        Controller controller=Controller();
+        //TODO Controller controller=Controller();
     }
 
     if (scheme == "DP45") {
         std::cout << "Integrators: Initializing DP45 method." << std::endl;
-        Controller controller=Controller();
+        //TODO Controller controller=Controller();
     }
 }
 

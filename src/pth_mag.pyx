@@ -8,6 +8,7 @@ import arrayfire as af
 from libc.stdint cimport uintptr_t
 from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 from cython.operator cimport dereference as deref
 import ctypes
 
@@ -47,9 +48,14 @@ cdef extern from "../../src/state.hpp":
     Mesh mesh;
     Param param;
     long int get_m_addr();
-    void write_vtk(string);
-    void write_vti(string);
-    void write_vtk_todel();
+
+    void _vti_writer_micro(string outputname);
+    void _vti_writer_atom (string outputname);
+    void _vti_reader(string inputname);
+
+    void _vtr_writer(string outputname);
+    void _vtr_reader(string inputname);
+
 
 
 cdef class pyState:
@@ -63,13 +69,19 @@ cdef class pyState:
     return self.thisptr.t
   def pythisptr(self):
       return <size_t><void*>self.thisptr
-  def py_write_vtk(self):
-    self.thisptr.write_vtk_todel() 
-  #TODO
-  #def py_write_vti(self,in_string):
-  #  self.thisptr.write_vti(in_string) 
-    #self.thisptr.write_vtk("test") 
-    #af_to_vti(self.thisptr.m, self.thisptr.mesh,"test") 
+
+  def py_vti_writer_micro(self, outputname):
+    self.thisptr._vti_writer_micro( outputname ) 
+  def py_vti_writer_atom(self, outputname):
+    self.thisptr._vti_writer_atom( outputname ) 
+  def py_vti_reader(self, outputname):
+    self.thisptr._vti_reader( outputname ) 
+
+  def py_vtr_writer(self, outputname):
+    self.thisptr._vtr_writer( outputname ) 
+  def py_vtr_reader(self, outputname):
+    self.thisptr._vtr_reader( outputname ) 
+
   def get_m(self):
     m_addr = self.thisptr.get_m_addr()
     m=af.Array()
@@ -176,8 +188,14 @@ cdef class pyZee:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 #TODO 
-#cdef extern from "../src/vtk_writer.hpp":
-#  cdef void af_to_vti(array field, Mesh mesh, string outputname);
+
+
+
+#cdef extern from "../../src/vtk_IO.hpp":
+##  cdef void af_to_vti(array field, Mesh mesh, string outputname);
+#  cdef void vti_writer_atom(array field, Mesh mesh, string outputname);
+#def vti(field, mesh, outputname):
+#  vti_writer_atom(field, mesh, outputname);
 
 cdef extern from "../../src/param.hpp":
   cdef cppclass Param:

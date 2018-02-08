@@ -16,17 +16,15 @@ class State{
     double t{0.};//time
     af::array m;
     int steps{0};
-    //long int get_m_addr(){return (long int) m.get();}
-    long int get_m_addr(){m.lock(); return (long int) m.get();}
+    long int get_m_addr(){return (long int) m.get();}
+    //long int get_m_addr(){m.lock(); return (long int) m.get();}
 
-    //Causes problem with wrapping
-    //TODO
-    void write_vtk(std::string);
-    void write_vti(std::string);
-    void write_vtk_todel();
+    void _vti_writer_micro(std::string outputname);
+    void _vti_writer_atom (std::string outputname);
+    void _vti_reader(std::string inputname);
 
-
-    //State& operator+(af::array& rhs);
+    void _vtr_writer(std::string outputname);
+    void _vtr_reader(std::string inputname);
 };
 
 #endif
