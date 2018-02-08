@@ -13,8 +13,8 @@ template <class T>  T Stochastic_Integrator::Heun(const T& m, const double dt)
 template <class T>  T Stochastic_Integrator::SemiImplicitHeun(const T& m, const double dt)
 {
     const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
-    const array h_th_init = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t
-    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);// Random thermal field at t+dt/2
+    const array h_th_init = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t
+    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     T m1= dt/2. * stochfdmdt (m   , h_th_init);
     T m2= dt/2. * stochfdmdt (m+m1, h_th);
     T m3= dt/2. * stochfdmdt (m+m2, h_th);
@@ -32,7 +32,7 @@ template <class T>  T Stochastic_Integrator::detRK4(const T& m, const double dt)
     return (k1 + 2.*k2 + 2.*k3 + k4) / 6.;
 }
 
-void Stochastic_Integrator::step(State& state, const double dt){
+void Stochastic_Integrator::step(State& state, const double dt){//TODO remove dt as parameter here, inconsistency between Heun/SemiHeun
     timer_stoch = timer::start();
     if (mode == 0){ 
         state.m += Heun(state.m,dt);
