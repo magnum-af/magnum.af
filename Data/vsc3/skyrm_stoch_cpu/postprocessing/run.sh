@@ -5,9 +5,9 @@
 g++ -std=c++14 -o postprocessing/calc_mean_annihilationtime.exe postprocessing/calc_mean_annihilationtime.cpp 
 
 echo $1
-if [[ ! -e "$1" && (! -d "$2") ]]; then
+if [[ -z "$1" && (-z "$2") ]]; then
     echo "Usage: ./run.sh /path/to/inputfile /path/to/outputfolder"
     echo "e.g.:  ./run.sh \$PWD/annihilationtime.dat \$PWD"
-else
-    ./postprocessing/calc_mean_annihilationtime.exe $1 $2
+    exit 1
 fi
+./postprocessing/calc_mean_annihilationtime.exe $1 $2
