@@ -40,8 +40,11 @@ int main(int argc, char** argv)
     //double rtol = atol;
     
     double n_interp = 60;
-    double string_dt=5e-13;
+    double string_dt=2e-14;
     const int string_steps = 10000;
+    double string_abort_rel_diff = 1e-12;
+    double string_abort_abs_diff = 1e-27;
+
     std::string filepath(argc>0? argv[1]: "../Data/Testing/");
     if(argc>0)filepath.append("/");
     //else std::string filepath("../Data/Testing/");
@@ -106,9 +109,15 @@ int main(int argc, char** argv)
     LLG Llg(state,llgterm);
   
     timer t = af::timer::start();
-    while (state.t < 8.e-10){
+    double E_prev=1e20;
+    while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-20){
+        E_prev=Llg.E(state);
         state.m=Llg.llgstep(state);
+        if( state.steps % 1000 == 0) std::cout << "step " << state.steps << std::endl;
     }
+    //while (state.t < 8.e-10){
+    //    state.m=Llg.llgstep(state);
+    //}
     double timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
   
@@ -155,23 +164,15 @@ int main(int argc, char** argv)
             images_max_lowest=string.images;
             E_max_lowest=string.E;
         }    
-        //Wrong approach
-        //else if(i>50){
-        //  std::cout   << "Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;
-        //  stream_steps<<"#Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;
-        //  break;
-        //}
         
-        //std::cout<<"Test: fabs= "<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
-        
-        if(i>25 && fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<1e-6){
-            std::cout   <<      "Exiting loop: Energy barrier relative difference smaller than 1e-6"<<std::endl;
-            stream_steps<<     "#Exiting loop: Energy barrier relative difference smaller than 1e-6"<<std::endl;
+        if(i>25 && fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))< string_abort_rel_diff){
+            std::cout   <<      "Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
+            stream_steps<<     "#Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
             break;
         }
-        if(i>25 && fabs(*max-string.E[0]-max_prev_step)<1e-27){
-            std::cout   <<      "Exiting loop: Energy barrier difference smaller than 1e-27"<<std::endl;
-            stream_steps<<     "#Exiting loop: Energy barrier difference smaller than 1e-27"<<std::endl;
+        if(i>25 && fabs(*max-string.E[0]-max_prev_step) < string_abort_abs_diff){
+            std::cout   <<      "Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
+            stream_steps<<     "#Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
             break;
         }
         std::cout   <<i<<"\t"<<*max-string.E[0]<<"\t"<<string.E[0]<<"\t"<<*max-string.E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
