@@ -16,4 +16,5 @@
 #include "llg.hpp"
 #include "stochastic_llg.hpp"
 #include "vtk_IO.hpp"
+#include "pgfplot.hpp"
 #endif
