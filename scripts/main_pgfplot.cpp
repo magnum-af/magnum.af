@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     vti_reader(m, testmesh, inputfile);
     
     pgfplot_mz(m, testmesh, outputfile,1);
-    pgfplot_nz_quiver(m, testmesh, outputfile2,1);
+    pgfplot_nz_quiver(m, testmesh, outputfile2, 1, 6);
 
     return 0;
 }
