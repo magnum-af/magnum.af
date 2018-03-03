@@ -70,7 +70,7 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
         const double ry=j1*dy;
         const double rz=j2*dz;
         const double r = sqrt(pow(rx,2)+pow(ry,2)+pow(rz,2));
-        if(r==0.){
+        if(r==0.){ //TODO repsace with if (j0 == 0 && j1 == 0 && j2 == 0)
           //std::cout<<"In ATOMISTIC_DEMAG::N_atomistic: r==0"<<std::endl;
           //std::cout<<"In ATOMISTIC_DEMAG::setting n to 1/3."<<std::endl;
           //Accounting for self-interaction (would be inf, when approximated with sphere -1/3 in diag
@@ -109,7 +109,7 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
   }
   array Naf(6,n2_exp,n1_exp,n0_exp,N);
   Naf=reorder(Naf,3,2,1,0);
-  Naf*=1./(4.*M_PI);
+  Naf*=1./(4.*M_PI);//TODO is here a minus missing?!
   //print("ATOMISTIC_DEMAG::N_atomistic: Naf",Naf);
   //print("Demag:Naf", Naf(0,0,0,span));
   delete [] N;
