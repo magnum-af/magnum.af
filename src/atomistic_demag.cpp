@@ -43,7 +43,7 @@ array ATOMISTIC_DEMAG::h(const State& state){
   array h_field;
   if (state.mesh.n2_exp == 1){
     h_field=fftC2R<2>(hfft);
-    af::print("h_dip",state.param.p * h_field(seq(0,state.mesh.n0_exp/2-1),seq(0,state.mesh.n1_exp/2-1)));//TODO hack
+    //af::print("h_dip",state.param.p * h_field(seq(0,state.mesh.n0_exp/2-1),seq(0,state.mesh.n1_exp/2-1)));//TODO hack
     if(state.param.afsync) sync();
     cpu_time += timer::stop(timer_demagsolve);
     return state.param.p * h_field(seq(0,state.mesh.n0_exp/2-1),seq(0,state.mesh.n1_exp/2-1));//TODO consider p density, then we have to multip at m before fft
