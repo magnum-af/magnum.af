@@ -73,7 +73,7 @@ int main(int argc, char** argv)
     param.J_atom=2.*param.A*dx;
     param.D_atom= param.D * pow(dx,2);
     //old values in prev versions, this is now wrong in pthmag: 
-    const double wrong_J_atom=4.*param.A*dx;
+    //const double wrong_J_atom=4.*param.A*dx;
     const double wrong_D_atom= 2.* param.D * pow(dx,2);
     std::cout<<"D_atom="<<param.D_atom<<std::endl;
     param.K_atom=param.Ku1*pow(dx,3);
@@ -81,17 +81,9 @@ int main(int argc, char** argv)
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
-     // Initial magnetic field
-     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-     m(span,span,span,2) = -1;
-     for(int ix=0;ix<mesh.n0;ix++){
-         for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx,2)+pow(ry,2));
-             if(r>nx/4.) m(ix,iy,span,2)=1.;
-         }
-     }
+    array m; 
+    Mesh testmesh(nx,ny,nz,dx,dx,dx);
+    vti_reader(m, testmesh, std::string("/home/paul/git/pth-mag/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/relax.vti");
   
     State state(mesh,param, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
@@ -108,24 +100,6 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
   
     LLG Llg(state,llgterm);
-  
-    timer t = af::timer::start();
-    double E_prev=1e20;
-    while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-20){
-        E_prev=Llg.E(state);
-        state.m=Llg.llgstep(state);
-        if( state.steps % 1000 == 0) std::cout << "step " << state.steps << std::endl;
-    }
-    //while (state.t < 8.e-10){
-    //    state.m=Llg.llgstep(state);
-    //}
-    double timerelax= af::timer::stop(t);
-    vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
-  
-    std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
-  
-  
-  
   
     array last   = constant( 0,mesh.dims,f64);
     last(span,span,span,2)=1;
