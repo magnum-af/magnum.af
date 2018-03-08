@@ -107,11 +107,17 @@ int main(int argc, char** argv)
     std::vector<State> inputimages; 
     //inputimages.push_back(state);
     //inputimages.push_back(State(mesh,param, last));
-    for(int i=0; i < mesh.n0; i++){
+    for(int i=0; i < n_interp; i++){
         array mm = array(state.m);
-        mm=shift(mm,i);
-        mm(seq(0,i),span,span,span)=0;
-        mm(seq(0,i),span,span,2)=1.;
+        mm=shift(mm,2*i);
+        if(2*i < nx){
+            mm(seq(0,2*i),span,span,span)=0;
+            mm(seq(0,2*i),span,span,2)=1.;
+        }
+        else {
+            mm(span,span,span,span)=0;
+            mm(span,span,span,2)=1.;
+        }
         inputimages.push_back(State(mesh, param, mm));
     }
   
