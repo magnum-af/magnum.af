@@ -15,6 +15,12 @@ inline bool exists (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
 }
+
+void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
+    //TODO check if this yields correct value
+    //  state.t << <mx>
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
+}
   
 int main(int argc, char** argv)
 {
@@ -125,7 +131,18 @@ int main(int argc, char** argv)
             }
         }
     }
-    std::cout << "n_cells" << n_cells << std::endl;
+    std::cout << "n_cells= " << n_cells << ", should be nx^2*M_PI/4.= " << pow(nx,2)*M_PI/4. << std::endl;
+    calc_mean_m(state,n_cells,std::cout);
+
+    std::ofstream stream;
+    stream.precision(12);
+    stream.open ((filepath + "m.dat").c_str());
+    stream << "# t	<mx>" << std::endl;
+
+
+    calc_mean_m(state,n_cells,stream);
+    stream.close();
+    
     //array zee = constant(0.0,1,1,1,3,f64);
     //zee(0,0,0,0)=120e-3/param.mu0;//120 mT field
     //zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
