@@ -23,10 +23,12 @@ af::array DemagSolver::h(const State&  state){
     timer_demagsolve = af::timer::start();
   // FFT with zero-padding of the m field
   if (mesh.n2_exp == 1){
-    mfft=af::fftR2C<2>(state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<2>(param.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+      else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
   }
   else {
-    mfft=af::fftR2C<3>(state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<3>(param.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+      else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
   }
 
   // Pointwise product
@@ -45,13 +47,13 @@ af::array DemagSolver::h(const State&  state){
     h_field=af::fftC2R<2>(hfft);
     if(param.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return param.ms * h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
+    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
   }
   else {
     h_field=af::fftC2R<3>(hfft);
     if(param.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return param.ms * h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
+    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
   }
 }
 

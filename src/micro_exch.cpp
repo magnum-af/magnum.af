@@ -41,7 +41,13 @@ array ExchSolver::h_withedges(const State& state){
     if(param.afsync) sync();
     time_edges += timer::stop(timer_edges);
     cpu_time += timer::stop(timer_exchsolve);
-    return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    //return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    else { 
+        array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
 }
 
 //Terms proportional to m dorp out in the cross product of the LLG and thus is neglected
@@ -52,7 +58,12 @@ array ExchSolver::h(const State& state){
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
     if(param.afsync) sync();
     cpu_time += timer::stop(timer_exchsolve);
-    return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    else { 
+        array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
 }
 
 

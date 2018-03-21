@@ -24,6 +24,16 @@ array renormalize(const array& a){
   return a/tile(sqrt(sum(a*a,3)),1,1,1,3); 
 }
 
+//Renormalization where values with Ms zero are set from inf to zero
+array renormalize_handle_zero_values(const array& a){
+    array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3); 
+    array renorm = a/norm_a;
+    replace(renorm,norm_a!=0,0);
+    return renorm;
+    
+    //TODO for (array& a) only: return replace(a/tile(sqrt(sum(a*a,3)),1,1,1,3), a!=0., 0.);
+}
+
 array vecnorm(const array& a){
   return sqrt(sum(a*a,3)); 
 }

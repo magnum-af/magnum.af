@@ -42,9 +42,10 @@ array LLG::fheff(const array& m){
   array solution = constant(0.,state0.mesh.dims, f64);
   timer_heff=timer::start();
 
-  State temp(state0.mesh,state0.param,m);
+  state0.m=m; //TODO avoid state0 in the first place
+  //TODO avoid this line  State temp(state0.mesh,state0.param,m);
   for(unsigned i=0;i<Fieldterms.size();++i){
-    solution+=Fieldterms[i]->h(temp);
+    solution+=Fieldterms[i]->h(state0);
   }
 
   time_heff+=af::timer::stop(timer_heff);
@@ -215,7 +216,10 @@ array LLG::llgstep(State& state){
     calls ++;
 
     //Normalization
-    return renormalize(mtemp);
+    //return renormalize(mtemp);
+    ////TODO better handle?
+    if (state.Ms.isempty()) return  renormalize(mtemp);
+    else return (renormalize_handle_zero_values(mtemp));//Normalized array where all initial values == 0 are set to 0
     //return mtemp;
 
 

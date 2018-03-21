@@ -11,6 +11,7 @@ using namespace af;
 array cross4(const array& a,const array& b);
 array dotproduct(const array& a,const array& b);
 array renormalize(const array& a);
+array renormalize_handle_zero_values(const array& a);
 array vecnorm(const array& a);
 double afvalue(const array& a); //give value of a 1,1,1,1 af array
 double maxnorm(const array& a);
