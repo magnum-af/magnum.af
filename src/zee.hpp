@@ -7,6 +7,10 @@
 
 class Zee : public LLGTerm {
   public:
+    Zee(af::array zee_in);
+    //TODO 
+    Zee(double rate_in);
+    Zee(long int zee_in_addr);
     //Field contribution
     af::array h(const State& state);
     //Energy contribution
@@ -14,11 +18,8 @@ class Zee : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    Zee(af::array zee_in, Mesh mesh_in, Param param_in);
-    Zee(long int zee_in_addr, Mesh mesh_in, Param param_in);
+    double rate;//[T/s]
     af::array zee_field;
-    Mesh mesh;
-    Param param;
     double cpu_time{0.};
     af::timer timer;
 };

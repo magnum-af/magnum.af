@@ -65,7 +65,6 @@ int main(int argc, char** argv)
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new Zee(zee,mesh,param)));
     LLG Llg(state,llgterm);
 
     //obtaining relaxed magnetization
@@ -138,14 +137,22 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
-
-
     calc_mean_m(state,n_cells,stream);
+
+
+    //array zee = constant(0.0,1,1,1,3,f64);
+    //zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
+    //Llg.Fieldterms.push_back( llgt_ptr (new Zee(zee,mesh,param)));
+    Llg.Fieldterms.push_back( llgt_ptr (new Zee(0.20e6))); //Rate in T/s
+    while (state.t < 0.120/0.2e6){
+         state.m=Llg.llgstep(state);
+        calc_mean_m(state,n_cells,stream);
+    }
     stream.close();
     
     //array zee = constant(0.0,1,1,1,3,f64);
-    //zee(0,0,0,0)=120e-3/param.mu0;//120 mT field
     //zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
+    //TODO this is in zee //zee(0,0,0,0)=120e-3/param.mu0;//120 mT field
 
 
     //while (state.t < 1.e-8){

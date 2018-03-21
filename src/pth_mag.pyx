@@ -173,14 +173,14 @@ cdef class pyExchSolver:
 
 cdef extern from "../../src/zee.hpp":
   cdef cppclass Zee:
-    Zee (long int m_in, Mesh mesh_in, Param param_in);
+    Zee (long int m_in);
     double E(const State& state);
     double get_cpu_time();
 
 cdef class pyZee:
   cdef Zee* thisptr
-  def __cinit__(self, array_in, pyMesh mesh_in, pyParam param_in):
-    self.thisptr = new Zee (ctypes.addressof(array_in.arr), deref(mesh_in.thisptr), deref(param_in.thisptr))  
+  def __cinit__(self, array_in):
+    self.thisptr = new Zee (ctypes.addressof(array_in.arr))  
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
