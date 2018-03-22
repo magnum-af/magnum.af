@@ -9,7 +9,7 @@ class Zee : public LLGTerm {
   public:
     Zee(af::array zee_in);
     //TODO 
-    Zee(double rate_in);
+    Zee(double rate_in, double hzee_max_in);
     Zee(long int zee_in_addr);
     //Field contribution
     af::array h(const State& state);
@@ -19,6 +19,7 @@ class Zee : public LLGTerm {
     double get_cpu_time(){return cpu_time;}
 
     double rate;//[T/s]
+    double hzee_max;//[T]
     af::array zee_field;
     double cpu_time{0.};
     af::timer timer;

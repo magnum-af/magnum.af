@@ -5,7 +5,7 @@ Zee::Zee(af::array zee_in) : zee_field(zee_in)
 {
 }
 
-Zee::Zee(double rate_in) : rate(rate_in)
+Zee::Zee(double rate_in, double hzee_max_in) : rate(rate_in), hzee_max(hzee_max_in)
 {
 }
 
@@ -20,8 +20,14 @@ array Zee::h(const State& state){
     //if(param.afsync) sync();
     //time += timer::stop(timer);
     if (zee_field.isempty()){
+        //HACK
+        double field_Tesla = 0;
+        if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
+        else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
+	else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
+        else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
         array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant(rate/state.param.mu0 *state.t,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     }
     else return zee_field;
