@@ -27,6 +27,19 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
     //  state.t << <mx>
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << "\t" << hzee << std::endl;
 }
+
+af::array zee_func(State state){
+    double field_Tesla = 0;
+    double rate = 0.34e6 ; //[T/s]
+    double hzee_max = 0.12; //[T]
+    if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
+    else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
+    else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
+    else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
+    array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    return  zee;
+}
   
 int main(int argc, char** argv)
 {
@@ -40,7 +53,8 @@ int main(int argc, char** argv)
     std::cout.precision(24);
 
     // Parameter initialization
-    const int nx = 400, ny=400 ,nz=1;
+    const int nx = 250, ny=250 ,nz=1;
+    //const int nx = 400, ny=400 ,nz=1;
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
   
     //Generating Objects
@@ -149,9 +163,10 @@ int main(int argc, char** argv)
     //zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
     //Llg.Fieldterms.push_back( llgt_ptr (new Zee(zee,mesh,param)));
     timer t_hys = af::timer::start();
-    double rate = 0.20e6 ; //[T/s]
+    double rate = 0.34e6 ; //[T/s]
     double hzee_max = 0.12; //[T]
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(rate,hzee_max))); //Rate in T/s
+  //  Llg.Fieldterms.push_back( llgt_ptr (new Zee(rate,hzee_max))); //Rate in T/s
+    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          state.m=Llg.llgstep(state);
          calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[2]->h(state)(0,0,0,0)));

@@ -15,11 +15,19 @@ Zee::Zee(long int aptr)
     zee_field = *( new af::array( *a ));
 }
 
+Zee::Zee(af::array (*callback_func_in)(State state)): callback_func(callback_func_in)
+{
+    callback=true;
+}
+
 array Zee::h(const State& state){
     //timer = timer::start();
     //if(param.afsync) sync();
     //time += timer::stop(timer);
-    if (zee_field.isempty()){
+    if(callback){
+        return callback_func(state);
+    }
+    else if (zee_field.isempty()){
         //HACK
         double field_Tesla = 0;
         if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
