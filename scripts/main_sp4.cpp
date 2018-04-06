@@ -35,7 +35,6 @@ int main(int argc, char** argv)
   // Parameter initialization
   const double x=5.e-7, y=1.25e-7, z=3.e-9;
   const int nx = 100, ny=25 ,nz=1;
-  double dt = 2e-13;
 
 
   //Simulation Parameters
@@ -96,7 +95,7 @@ int main(int argc, char** argv)
   zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
   zeeswitch(0,0,0,2)=0.0;
   zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
+  llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
   Llg.Fieldterms=llgterm;
   //Stoch.Fieldterms=llgterm;
   //TODO remove state0 in LLG!
