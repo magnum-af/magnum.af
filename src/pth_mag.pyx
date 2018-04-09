@@ -171,6 +171,23 @@ cdef class pyExchSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
+cdef extern from "../../src/atomistic_demag.hpp":
+  cdef cppclass ATOMISTIC_DEMAG:
+    ATOMISTIC_DEMAG(Mesh);
+    double E(const State& state);
+    double get_cpu_time();
+
+cdef class pyATOMISTIC_DEMAG:
+  cdef ATOMISTIC_DEMAG* thisptr
+  def __cinit__(self, pyMesh mesh_in):
+    self.thisptr = new ATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
+  def print_E(self,pyState state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
 cdef extern from "../../src/zee.hpp":
   cdef cppclass Zee:
     Zee (long int m_in);
