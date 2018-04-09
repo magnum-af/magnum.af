@@ -5,8 +5,8 @@ import math
 
 class AtomisticAnisotropyTest(unittest.TestCase):
     #TODO also test H field
-  p=9.274009994e-24
-  dx = 2.715e-10
+  p  = 9.3e-24
+  dx = 2.7e-10
 
   def test_atomistic_anisotropy_2_1_1_z_z(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -27,7 +27,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     Llg=pth_mag.pyLLG(pystate,atom_demag)
     analytical = -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3
 
-    self.assertEqual(Llg.print_E(pystate),analytical)
+    self.assertAlmostEqual(Llg.print_E(pystate),analytical)
 
   def test_atomistic_anisotropy_2_1_1_z_x(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -69,7 +69,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     Llg=pth_mag.pyLLG(pystate,atom_demag)
     analytical = param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3
 
-    self.assertEqual(Llg.print_E(pystate),analytical)
+    self.assertAlmostEqual(Llg.print_E(pystate),analytical)
 
   def test_atomistic_anisotropy_1_2_1_z_z(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -90,7 +90,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     Llg=pth_mag.pyLLG(pystate,atom_demag)
     analytical = -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3
 
-    self.assertEqual(Llg.print_E(pystate),analytical)
+    self.assertAlmostEqual(Llg.print_E(pystate),analytical)
 
   def test_atomistic_anisotropy_1_2_1_x_z(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
