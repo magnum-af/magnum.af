@@ -10,6 +10,6 @@ wrapper.py_to_cpp(A)
 wrapper.calc_B()
 B_addr = wrapper.cpp_to_py()
 
-
-B = af.Array(B_addr,A.shape, af.Dtype.f64) #This line produces wrong values and needs fixing
+B = af.Array()
+B.arr = ctypes.c_void_p(B_addr)
 print "py: B = ", B

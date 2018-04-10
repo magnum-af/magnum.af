@@ -14,5 +14,6 @@ void Wrap::c_calc_B(){
 }
 
 long int Wrap::c_cpp_to_py(){
+    //TODO B.lock();
     return (long int) B.get();
 }
