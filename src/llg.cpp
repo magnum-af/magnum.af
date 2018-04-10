@@ -62,6 +62,23 @@ double LLG::cpu_time(){
 void LLG::print_cpu_time(std::ostream& stream){
     stream <<"cpu_time = "<<LLG::cpu_time()<<" [s]"<<std::endl;
 }
+
+long int LLG::get_fheff_addr(const State& state){
+    //array fheff_pass_to_python = fheff(state.m);
+    //fheff_pass_to_python.lock(); //Caution with locking arrays
+    //std::cout << "LLG::get_fheff_addr:"<< (long int) fheff_pass_to_python.get() << std::endl;
+    //return (long int) fheff_pass_to_python.get();
+    
+  //  get_fheff_addr_temp_array = fheff(state.m);
+  //  //get_fheff_addr_temp_array.lock(); //check if it works without locking
+  //  return (long int) get_fheff_addr_temp_array.get();
+
+    //With vector, but also with sagfaults for second call
+    get_fheff_addr_temp_array.push_back(fheff(state.m));
+    get_fheff_addr_temp_array.back().lock(); 
+    return (long int) get_fheff_addr_temp_array.back().get();
+}
+
 //  std::cout<<"cpu_time = "<<Llg.cpu_time()<<""<<std::endl;
 //// Calculation of effective field
 //array LLG::fheffminimal(array m){

@@ -1,5 +1,5 @@
 #!/bin/bash
-PYTHONPATH=../../build/src/ python atomistic_demag.py
+PYTHONPATH=../../build/src/ python atomistic_dipole_dipole.py
 
 #Planned:
 #tests for all interactions

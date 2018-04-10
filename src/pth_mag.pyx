@@ -4,6 +4,11 @@
 #https://stackoverflow.com/questions/47044866/how-to-convert-python-object-to-c-type-in-cython
 #clib library_with_useful_functions
 
+## numpy to arrayfire
+#af.interop.np_to_af_array
+## arrayfire to numpy
+#af.Array.__array__()
+
 import arrayfire as af 
 from libc.stdint cimport uintptr_t
 from libcpp.memory cimport shared_ptr#, make_shared
@@ -101,6 +106,7 @@ cdef extern from "../../src/llg.hpp":
     vector[shared_ptr[LLGTerm]] Fieldterms;
     array llgstep(State& state);
     double E(const State& state);
+    long int get_fheff_addr(State& state);
     double cpu_time();
     State state0;
 
@@ -117,6 +123,11 @@ cdef class pyLLG:
     state_in.thisptr.m=self.thisptr.llgstep(deref(state_in.thisptr))
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
+  def get_fheff(self, pyState state):
+    fheff_addr = self.thisptr.get_fheff_addr(deref(state.thisptr))
+    fheff=af.Array()
+    fheff.arr = ctypes.c_void_p(fheff_addr)
+    return fheff
   def cpu_time(self):
     return self.thisptr.cpu_time()
   def set_state0_alpha(self,value):

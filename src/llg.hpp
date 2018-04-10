@@ -33,6 +33,11 @@ class LLG {
     // Calculation of effective field with optional zeeman field
     array fheff(const array& m);
     array fheffminimal(array m);
+    long int get_fheff_addr(const State& state);//Getter function for effective field for wrapping 
+
+    std::vector<array> get_fheff_addr_temp_array;
+    //Alternative: 
+    //array get_fheff_addr_temp_array;
 
     array llgstep(State& state);
     bool llg_wasnormalized{true};//set true after normalization in llgstep, false if not normalized
