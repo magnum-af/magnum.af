@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     //std::cout<<"argv"<<std::strtod(argv[2],&charptr)<<std::endl;
     
     // Parameter initialization
-    const int nx = 112, ny=112 ,nz=4;//nz=5 -> lz=(5-1)*dx
+    const int nx = 112, ny=112 ,nz=1;//nz=5 -> lz=(5-1)*dx
     const double dx=2.715e-10;
   
   
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     //double rtol = atol;
     
     double n_interp = 60;
-    double string_dt=2e-14;
+    double string_dt=5e-14;
     const int string_steps = 10000;
     double string_abort_rel_diff = 1e-12;
     double string_abort_abs_diff = 1e-27;
@@ -128,10 +128,17 @@ int main(int argc, char** argv)
   
     array last   = constant( 0,mesh.dims,f64);
     last(span,span,span,2)=1;
+    State state_last(mesh,param, last);
+    E_prev=1e20;
+    while (fabs((E_prev-Llg.E(state_last))/E_prev) > 1e-20){
+        E_prev=Llg.E(state_last);
+        state_last.m=Llg.llgstep(state_last);
+        if( state_last.steps % 1000 == 0) std::cout << "state_last step " << state_last.steps << std::endl;
+    }
     
     std::vector<State> inputimages; 
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh,param, last));
+    inputimages.push_back(state_last);
   
     String string(state,inputimages, n_interp, string_dt ,llgterm);
     //String* string = new String(state,inputimages, n_interp ,llgterm);
