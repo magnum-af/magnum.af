@@ -1,4 +1,5 @@
 #!/bin/bash
+PYTHONPATH=../../build/src/ python atomistic_anisotropy.py
 PYTHONPATH=../../build/src/ python atomistic_dipole_dipole.py
 
 #Planned:

@@ -199,6 +199,23 @@ cdef class pyATOMISTIC_DEMAG:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
+cdef extern from "../../src/atomistic_anisotropy.hpp":
+  cdef cppclass ATOMISTIC_ANISOTROPY:
+    ATOMISTIC_ANISOTROPY(Mesh, Param);
+    double E(const State& state);
+    double get_cpu_time();
+
+cdef class pyATOMISTIC_ANISOTROPY:
+  cdef ATOMISTIC_ANISOTROPY* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    self.thisptr = new ATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def print_E(self,pyState state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
 cdef extern from "../../src/zee.hpp":
   cdef cppclass Zee:
     Zee (long int m_in);
