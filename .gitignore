@@ -3,3 +3,4 @@ bin/
 Data/
 src/main*
 *.swp
+scripts/wrapping_github/
