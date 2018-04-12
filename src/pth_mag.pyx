@@ -216,6 +216,40 @@ cdef class pyATOMISTIC_ANISOTROPY:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
+cdef extern from "../../src/atomistic_exchange.hpp":
+  cdef cppclass ATOMISTIC_EXCHANGE:
+    ATOMISTIC_EXCHANGE(Mesh);
+    double E(const State& state);
+    double get_cpu_time();
+
+cdef class AtomisticExchange:
+  cdef ATOMISTIC_EXCHANGE* thisptr
+  def __cinit__(self, pyMesh mesh_in):
+    self.thisptr = new ATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
+  def print_E(self,pyState state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
+cdef extern from "../../src/atomistic_dmi.hpp":
+  cdef cppclass ATOMISTIC_DMI:
+    ATOMISTIC_DMI(Mesh, Param);
+    double E(const State& state);
+    double get_cpu_time();
+
+cdef class AtomisticDMI:
+  cdef ATOMISTIC_DMI* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    self.thisptr = new ATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def print_E(self,pyState state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
 cdef extern from "../../src/zee.hpp":
   cdef cppclass Zee:
     Zee (long int m_in);

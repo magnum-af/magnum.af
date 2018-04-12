@@ -10,7 +10,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
   k  = 1e-20
   dx = 2.715e-10
 
-  def test_atomistic_dipole_dipole_2_1_1_z_z(self):
+  def test_atomistic_anisotropy_2_1_1_z_z(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
     param=pth_mag.pyParam()
     param.p (self.p)
@@ -40,7 +40,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,2], 2*param.print_K_atom()/param.print_mu0()/param.print_p() )
 
-  def test_atomistic_dipole_dipole_2_1_1_z_x(self):
+  def test_atomistic_anisotropy_2_1_1_z_x(self):
     mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
     param=pth_mag.pyParam()
     param.p (self.p)
@@ -70,7 +70,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 
-  def test_atomistic_dipole_dipole_1_2_1_z_z(self):
+  def test_atomistic_anisotropy_1_2_1_z_z(self):
     mesh=pth_mag.pyMesh(1, 2, 1, self.dx, self.dx, self.dx)
     param=pth_mag.pyParam()
     param.p (self.p)
