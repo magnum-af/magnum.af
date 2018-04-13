@@ -29,3 +29,11 @@ void State::_vtr_writer(std::string outputname){
 void State::_vtr_reader(std::string inputname){
     vtr_reader(m, mesh, inputname); 
 }
+
+double State::meani(const int i){
+  double *norm_host=NULL;
+  norm_host = af::mean(af::mean(af::mean(m(af::span,af::span,af::span,i),0),1),2).host<double>();
+  double norm = norm_host[0];
+  af::freeHost(norm_host);
+  return norm;
+}

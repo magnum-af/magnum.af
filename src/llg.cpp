@@ -224,6 +224,7 @@ array LLG::llgstep(State& state){
       }while(while_break < 100);
     }
     state.t+=h;
+    h_stepped=h;
     state0.t+=h;//TODO avoid state0
     mtemp+=state.m;
     h=controller.get_hnext();

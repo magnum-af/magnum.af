@@ -27,6 +27,7 @@ class State{
 
     void _vtr_writer(std::string outputname);
     void _vtr_reader(std::string inputname);
+    double meani(const int i);
 };
 
 #endif

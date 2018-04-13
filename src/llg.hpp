@@ -79,7 +79,8 @@ class LLG {
     //double h_abs{0.}; 
     //double h_rel{0.}; 
     
-    double h; // actual stepsize, min of h_abs and h_rel
+    double h; // working variable in Controller, actual stepsize and next stepsize, min of h_abs and h_rel
+    double h_stepped; // step size set after llgstep is called
     //int counter_abs{0};
     //int counter_rel{0};
     //int counter_abs_reject{0};

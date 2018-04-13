@@ -60,6 +60,7 @@ cdef extern from "../../src/state.hpp":
 
     void _vtr_writer(string outputname);
     void _vtr_reader(string inputname);
+    double meani(const int i);
 
 
 
@@ -98,6 +99,8 @@ cdef class pyState:
     return m
     ##Alternative
     #return self.thisptr.get_m_addr()
+  def meanxyz(self, i):
+    return self.thisptr.meani(i)
 
 
 cdef extern from "../../src/llg.hpp":
@@ -108,6 +111,7 @@ cdef extern from "../../src/llg.hpp":
     double E(const State& state);
     long int get_fheff_addr(State& state);
     double cpu_time();
+    double h_stepped;
     State state0;
 
 cdef class pyLLG:
@@ -123,6 +127,8 @@ cdef class pyLLG:
     state_in.thisptr.m=self.thisptr.llgstep(deref(state_in.thisptr))
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
+  def print_stepsize(self):
+    return self.thisptr.h_stepped
   def get_fheff(self, pyState state):
     fheff_addr = self.thisptr.get_fheff_addr(deref(state.thisptr))
     fheff=af.Array()
@@ -269,6 +275,11 @@ cdef class pyZee:
 #TODO 
 
 
+#cdef extern from "../../src/func.hpp":
+#    double meani(const State& state_in, const int i);
+#
+#def pymeani(pyState state, int i):
+#  return meani(deref(state.thisptr))
 
 #cdef extern from "../../src/vtk_IO.hpp":
 ##  cdef void af_to_vti(array field, Mesh mesh, string outputname);
