@@ -8,6 +8,7 @@ setup(
     Extension("wrap",
               #libraries = ["afcuda"],
               libraries = ["afopencl"],
+              #libraries = ["afcpu"],
               sources=["interface.pyx","source.cpp"],
               extra_compile_args=['-std=gnu++14','-O3'],
               language="c++"),
