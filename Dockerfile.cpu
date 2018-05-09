@@ -1,7 +1,7 @@
 FROM phusion/baseimage:0.10.1
 MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at> 
 #image: afcpusrc
-#build: docker build -t afcpusrc .
+#build:  docker build -t afcpusrc -f Dockerfile.cpu .
 #run image: docker run -ti afcpusrc /bin/bash
 #run tests: docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
 
@@ -92,13 +92,14 @@ RUN apt-get -y install libglfw3-dev
 # Add pth-mag repository
 RUN mkdir /tmp/pth-mag
 
-COPY pth-mag /tmp/pth-mag
+COPY . /tmp/pth-mag
 
 #Setting variable for cmake, shout be set previously by "echo /opt/arrayfire/lib > /etc/ld.so.conf.d/arrayfire.conf && \ ldconfig" but is not working properly
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 
 RUN cd /tmp/pth-mag && \
     cp scripts/sp4/main_sp4.cpp src/ && \
+    rm -rf build && \
     mkdir build && \
     cd build && \
     cmake .. && \
