@@ -1,0 +1,105 @@
+FROM phusion/baseimage:0.10.1
+MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at> 
+#image: afcpusrc
+#build: docker build -t afcpusrc .
+#run image: docker run -ti afcpusrc /bin/bash
+#run tests: docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
+
+
+RUN apt-get update && apt-get install -y software-properties-common && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        clinfo \
+        cmake \
+        git \
+        libboost-all-dev \
+        libfftw3-dev \
+        libfontconfig1-dev \
+        libfreeimage-dev \
+        liblapack-dev \
+        liblapacke-dev \
+        libopenblas-dev \
+        ocl-icd-opencl-dev \
+        opencl-headers \
+        wget \
+        xorg-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Setting up symlinks for libcuda and OpenCL ICD
+RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/lib/libcuda.so.1 && \
+    ln -s /usr/lib/libcuda.so.1 /usr/lib/libcuda.so && \
+    mkdir -p /etc/OpenCL/vendors && \
+    echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd && \
+    echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+
+WORKDIR /root
+
+# Build GLFW from source
+RUN git clone https://github.com/glfw/glfw.git && \
+    cd glfw && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && \
+    make -j16 && \
+    make install
+
+
+# AF_DISABLE_GRAPHICS - Environment variable to disable graphics at
+# runtime due to lack of graphics support by docker - visit
+# http://arrayfire.org/docs/configuring_environment.htm#af_disable_graphics
+# for more information
+ENV AF_PATH=/opt/arrayfire AF_DISABLE_GRAPHICS=1
+ARG COMPILE_GRAPHICS=OFF
+RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master && \
+    cd arrayfire && mkdir build && cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/opt/arrayfire-3 \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DBUILD_CPU=ON \
+             -DBUILD_CUDA=OFF \
+             -DBUILD_OPENCL=OFF \
+             -DBUILD_UNIFIED=OFF \
+             -DBUILD_GRAPHICS=${COMPILE_GRAPHICS} \
+             -DBUILD_NONFREE=OFF \
+             -DBUILD_EXAMPLES=OFF \
+             -DBUILD_TEST=OFF \
+             -DBUILD_DOCS=OFF \
+             -DINSTALL_FORGE_DEV=ON \
+             -DUSE_FREEIMAGE_STATIC=OFF && \
+             # -DCOMPUTES_DETECTED_LIST="30;35;37;50;52;60" \
+    make -j16 && make install && \
+    mkdir -p ${AF_PATH} && ln -s /opt/arrayfire-3/* ${AF_PATH}/ && \
+    echo "${AF_PATH}/lib" >> /etc/ld.so.conf.d/arrayfire.conf && \
+    echo "/usr/local/cuda/nvvm/lib64" >> /etc/ld.so.conf.d/arrayfire.conf && \
+    ldconfig
+
+WORKDIR /root/arrayfire
+
+# Installing VTK
+RUN apt-get update && apt-get -y install libvtk6-dev
+RUN apt-get -y install libproj-dev
+ENV VTK_DIR=$VTK_DIR:/usr/lib/tcltk/vtk-6.2
+
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+RUN pip install Cython
+RUN pip install arrayfire
+RUN pip install numpy
+# Install GFLW
+RUN apt-get -y install libglfw3-dev
+
+# Add pth-mag repository
+RUN mkdir /tmp/pth-mag
+
+COPY pth-mag /tmp/pth-mag
+
+#Setting variable for cmake, shout be set previously by "echo /opt/arrayfire/lib > /etc/ld.so.conf.d/arrayfire.conf && \ ldconfig" but is not working properly
+ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
+
+RUN cd /tmp/pth-mag && \
+    cp scripts/sp4/main_sp4.cpp src/ && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j12
