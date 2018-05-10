@@ -1,6 +1,6 @@
 test: 
   script:
     - docker build -t afcpusrc -f Dockerfile.cpu .
-    - docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
+    - docker run -t afcpusrc /pth-mag/tests/runall.sh /pth-mag
   tags:
   - docker

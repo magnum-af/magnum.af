@@ -3,7 +3,7 @@ MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at>
 #image: afcpusrc
 #build:  docker build -t afcpusrc -f Dockerfile.cpu .
 #run image: docker run -ti afcpusrc /bin/bash
-#run tests: docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
+#run tests: docker run -t afcpusrc /pth-mag/tests/runall.sh /pth-mag
 
 
 RUN apt-get update && apt-get install -y software-properties-common && \
@@ -104,3 +104,8 @@ RUN cd /tmp/pth-mag && \
     cd build && \
     cmake .. && \
     make -j12
+
+RUN mkdir /pth-mag && mkdir /pth-mag/build && mkdir /pth-mag/build/src && \
+    mv /tmp/pth-mag/build/src/pth_mag.so /pth-mag/build/src/ && \
+    mv /tmp/pth-mag/tests /pth-mag && \
+    rm -rf /tmp/pth-mag
