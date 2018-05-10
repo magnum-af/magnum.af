@@ -1,6 +1,6 @@
-before_script: 
+test: 
+  script:
     - docker build -t afcpusrc -f Dockerfile.cpu .
-
-runtests:
-    script: 
-        - docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
+    - docker run -t afcpusrc /tmp/pth-mag/tests/unit/runall.sh /tmp/pth-mag
+  tags:
+  - docker
