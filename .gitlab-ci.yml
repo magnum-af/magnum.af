@@ -4,3 +4,4 @@ test:
     - docker run -t afcpusrc /pth-mag/tests/runall.sh /pth-mag
   tags:
   - docker
+  - deploy # Currently set only to select floarian-CP01 runner as Klaus has no space on disk
