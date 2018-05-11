@@ -1,0 +1,124 @@
+//Define basic properties of mesh and other basic parameters of simulation
+Nx:=4096 //Number of cells in x
+Ny:=32  //       -"-         y
+Nz:=1    //       -"-         z
+Length_x:=20.0e-6 //size of simulated area in x
+Length_y:=0.1e-6  //size of simulated area in y
+Length_z:=40.0e-9 //size of simulated area in z
+MaxDt = 1e-9 //maximum timestep - sometimes needed for long simulations without dynamics in a certain time-window
+MaxErr=1e-8 //maximum error, has to be low for YIG
+//FixDt = 1e-13 // fix the timestep, needed for instance in simulations with temperature
+//Dind = 0.00035/2 //effective strength of interfacial DMI
+//MaxErr = 1e-6 //Maximum error
+//ext_EnableUnsafe() //In theory should enable space-dependent DMI but that does not work so great
+//OutputFormat = OVF2_TEXT //save in text format for current analysis in Python and Matlab
+
+//Define magnetic field via the two angles theta and phi (theta: in-plane, origin at x-axis, phi: out-of-plane, origin in-plane)
+Bext := 0.20 //Field in T
+theta := 0.0
+phi := 0.0
+Bx:=Bext*cos(theta)*cos(phi)
+By:=Bext*sin(theta)*cos(phi)
+Bz:=Bext*sin(phi)
+
+//Define position of antenna
+antenna_pos:=Length_x/2
+
+//Define CellSize
+Cx:=Length_x/Nx
+Cy:=Length_y/Ny
+Cz:=Length_z/Nz
+
+SetGridsize(Nx, Ny, Nz)
+//SetPBC(5, 0, 0)
+SetCellsize(Length_x/Nx, Length_y/Ny, Length_z/Nz)
+
+// Def. geometry:
+setgeom(rect(20.0e-6, 0.1e-6))
+saveas(geom, "waveguide")
+snapshot(geom)
+
+// define material parameters
+Msat  = 1.4e5 //saturation magnetization
+Aex   = 3.5-12 //exchange constant
+//anisU   = vector(0, 0, 1) //anisotropy axis for unaxial anisotropy
+//Ku1 =  0.0 //(out of-plane) anisotropy constant - Ku1 = Msat*Bk/2 
+alpha = 0.0002 //global alpha
+
+defregion(200,rect(Length_x,Length_y))
+Msat.setregion(200,1.4e5)
+Aex.setregion(200,3.5e-12)
+alpha.setregion(200,2e-4)
+
+//increase of alpha towards edges
+number_of_steps:=25 //number of alpha steps
+width_of_step:=2*Cx //width of the areas with fixed alpha
+// Def. region of in center where effective field is saved to table:
+DefRegion(255, rect(5*Cx, 5*Cy))
+Msat.setregion(255,1.4e5)
+Aex.setregion(255,3.5e-12)
+alpha.setregion(255,2e-4)
+
+for i:=1; i<number_of_steps; i++{
+	//Define the regions in which the damping should be increased
+	DefRegion(i, rect(width_of_step, Length_y).Transl(-Length_x*0.5+(i-1)*width_of_step,0,0))
+	DefRegion(i+number_of_steps, rect(width_of_step, Length_y).Transl(Length_x*0.5-(i-1)*width_of_step,0,0))
+	
+	//The damping should decrease exponentially from a start value alpha_0 to a selected value alpha_end
+	//alpha(region)=alpha_0*exp(-beta*x)
+	alpha_end:=0.0002
+	alpha_0:=0.5
+	beta:=-log(alpha_end/alpha_0)/number_of_steps
+	
+	//Define the damping values in each region
+	alpha.setRegion(i,alpha_0*exp(-beta*i))
+	alpha.setRegion(i+number_of_steps,alpha_0*exp(-beta*i))
+	Msat.setRegion(i,1.4e5)
+	Msat.setRegion(i+number_of_steps,1.4e5)
+	Aex.setRegion(i,3.5e-12)
+	Aex.setRegion(i+number_of_steps,3.5e-12)
+}
+
+snapshot(regions)
+snapshot(alpha)
+snapshot(Msat)
+snapshot(Aex)
+
+// load ground state relaxation 
+//m = uniform(0,0,1)
+m.loadfile("D:/Simulationen/Testskripte/GS-200,0,0.ovf")
+//set field
+B_ext = vector(Bx, By, Bz)
+//set timestep for saving in the table
+tableautosave(1e-12)
+
+//start excitation def
+//
+fmax:=20.0e9
+kmax:=2*pi/(10.0e-9)
+
+sincfield:= newVectorMask(Nx, 1, 1) //field of right antenna
+for i:=0; i<Nx; i++{
+	for j:=0; j<1; j++{ 
+		
+		Bz:=0.001*sinc((i*Cx-Length_x/2)*kmax)
+		
+		//Set the external field in every cell i,j to be the calculated antenna field.
+		sincfield.setVector(i, j, 0, vector(0, 0, Bz))
+	}
+}
+B_ext.Add(sincfield,sinc(2*pi*fmax*t))
+
+autosave(m.comp(2),1/(2*fmax)) //save m_z every n seconds
+tableAdd(B_eff.Region(255))
+tableAdd(B_ext.Region(255))
+//AutoSnapshot(m.Comp(2), 1e-10) //do picture of mz every n s
+//relax()
+snapshot(B_ext.comp(2))
+run(100e-9)
+//saveas(m,"0,0,100.ovf")
+
+
+
+
+

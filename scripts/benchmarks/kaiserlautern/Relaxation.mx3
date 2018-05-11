@@ -1,0 +1,56 @@
+//Define basic properties of mesh and other basic parameters of simulation
+Nx:=4096 //Number of cells in x
+Ny:=32  //       -"-         y
+Nz:=1    //       -"-         z
+Length_x:=20.0e-6 //size of simulated area in x
+Length_y:=0.1e-6  //size of simulated area in y
+Length_z:=40.0e-9 //size of simulated area in z
+MaxDt = 1e-9 //maximum timestep - sometimes needed for long simulations without dynamics in a certain time-window
+MaxErr=1e-8 //maximum error, has to be low for YIG
+
+//Define magnetic field via the two angles theta and phi (theta: in-plane, origin at x-axis, phi: out-of-plane, origin in-plane)
+Bext := 0.20 //Field in T
+theta := 0.0
+phi := 0.0
+Bx:=Bext*cos(theta)*cos(phi)
+By:=Bext*sin(theta)*cos(phi)
+Bz:=Bext*sin(phi)
+
+//Define CellSize
+Cx:=Length_x/Nx
+Cy:=Length_y/Ny
+Cz:=Length_z/Nz
+
+SetGridsize(Nx, Ny, Nz)
+SetCellsize(Length_x/Nx, Length_y/Ny, Length_z/Nz)
+
+// Def. geometry:
+setgeom(rect(20.0e-6, 0.1e-6))
+saveas(geom, "waveguide")
+snapshot(geom)
+
+// define material parameters
+Msat  = 1.4e5 //saturation magnetization
+Aex   = 3.5e-12 //exchange constant
+alpha = 0.02 //global alpha
+
+// load ground state relaxation 
+m = uniform(0.81,0.19,0)
+//m.loadfile("D:/Data/Data/MuMax/OOP-SOT/1.02 nm - Ku 1,0343MJm3/OOP-CSOT-10mT-GS.ovf")
+//set field
+B_ext = vector(Bx, By, Bz)
+//set timestep for saving in the table
+tableautosave(1e-12)
+
+//AutoSnapshot(m.Comp(2), 1e-10) //do picture of mz every n s
+relax()
+run(300e-9)
+alpha = 0.0002
+run(300e-9)
+saveas(m,"GS-200,0,0.ovf")
+saveas(m.comp(2),"GSz-200,0,0.ovf")
+
+
+
+
+
