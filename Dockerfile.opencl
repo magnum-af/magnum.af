@@ -3,7 +3,7 @@ MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at>
 #image: afopenclsrc
 #build:  docker build -t afopenclsrc -f Dockerfile.opencl .
 #run image: docker run -ti afopenclsrc /bin/bash
-#run tests: docker run -t afopenclsrc /pth-mag/tests/runall.sh /pth-mag
+#run tests: docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /pth-mag/tests/runall.sh /pth-mag
 
 # A docker container with the Nvidia kernel module and CUDA drivers installed 
 

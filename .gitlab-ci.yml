@@ -2,6 +2,6 @@ test:
   script:
     - docker build -t afcpusrc -f Dockerfile.cpu .
     - docker run -t afcpusrc /pth-mag/tests/runall.sh /pth-mag
+    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /pth-mag/tests/runall.sh /pth-mag
   tags:
-  #- docker
-  - packer # Currently set only to select floarian-CP01 runner as Klaus has no space on disk
+  - packer # Currently set only to select GTO
