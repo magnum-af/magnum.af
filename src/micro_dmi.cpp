@@ -3,6 +3,7 @@ using namespace af;
 void showdims(const array& a){
   std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
 }
+void apply_boundary_condition(array& hfield, const State& state);
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
 double DMI::E(const State& state){
@@ -42,7 +43,9 @@ array DMI::h(const State& state){
   //First: n(div m)
   //Gradient and edges
   array first = convolve(state.m,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-  correct_edges(first,state.m);
+
+  //correct_edges(first,state.m);
+  apply_boundary_condition(first, state);
   //Make Divergence
   first=sum(first,3);
   first=tile(first,1,1,1,3);
@@ -54,7 +57,8 @@ array DMI::h(const State& state){
   //Expand for fd1 convolution
   second = tile(second,1,1,1,3);
   second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-  correct_edges(second,state.m);
+  //correct_edges(second,state.m);
+  apply_boundary_condition(second, state);
 
   if(param.afsync) sync();
   cpu_time += timer::stop(timer_dmi);
@@ -94,6 +98,93 @@ void DMI::correct_edges(array& out, const array& in){
   }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------
+// EXPERIMENTAL
+// TODO unit tests !
+// Boundary Conditions according to DOI: 10.1103/PhysRevB.88.184422 Skyrmion confinement in ultrathin film nanostructures ...
+// dm/dn = 1/xi (n_DM x n_surface) x m ; xi = 2 A/D
+// here:
+// dm/dn = 1/xi (D_axis x n_surface) x m ; xi = 2 A/D
+void apply_boundary_condition(array& hfield, const State& state){
+    //DM Vector:
+    const array n_DM(1,1,1,3, state.param.D_axis);
+
+    if(state.m.dims(0)==1){
+        hfield(span,span,span,0)=0.;
+    }
+    else{
+        // low x boundary:
+        // n_surface=(-1,0,0)
+        // dm/dn=dm/d(-x)= (m_-1 - m_1) / 2 * dx = 1/xi (D_axis x n_surface) x m
+        // => m_-1 = m_1 + 2 * dx * 1/xi (D_axis x n_surface) x m_0
+        const double c_n_x_surface_low[]={-1,0,0};
+        const array n_x_surface_low(1,1,1,3,c_n_x_surface_low); // normal vector to the x-surface at boundary with lower index i=0
+        const array n_DMxn_x_surf_low=tile(cross4(n_DM, n_x_surface_low),1, state.m.dims(1), state.m.dims(2),1);
+        const array x_minus_1 = state.m(1,span,span,0) + 2 * state.mesh.dx * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_x_surf_low , state.m(0,span,span,span))(span,span,span,0);
+        hfield(0,span,span,0)+= - 0.5 * x_minus_1 / state.mesh.dx; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dx )  with m_{i-1} being replaced
+
+        // high x boundary:
+        // n_surface=(1,0,0)
+        // dm/dn=dm/d(x)= (m_{n+1} - m_{n-1}) / 2 * dx = 1/xi (D_axis x n_surface) x m_n
+        // => m_{i+1} = m_{i-1} + 2 * dx * 1/xi (D_axis x n_surface) x m_i
+        const double c_n_x_surface_high[]={1,0,0};
+        const array n_x_surface_high(1,1,1,3,c_n_x_surface_high); // normal vector to the x-surface at boundary with higher index i=0
+        const array n_DMxn_x_surf_high=tile(cross4(n_DM, n_x_surface_high),1, state.m.dims(1), state.m.dims(2),1);
+        const array x_i_plus_1 = state.m(-1,span,span,0) + 2 * state.mesh.dx * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_x_surf_high , state.m(-1,span,span,span))(span,span,span,0);
+        hfield(-1,span,span,0)+= 0.5 * x_i_plus_1 / state.mesh.dx;
+    }
+
+    if(state.m.dims(1)==1){
+        hfield(span,span,span,1)=0.;
+    }
+    else{
+        // low y boundary:
+        // n_surface=(0,-1,0)
+        // dm/dn=dm/d(-y)= (m_-1 - m_1) / 2 * dx = 1/xi (D_axis x n_surface) x m_0
+        // => m_-1 = m_1 + 2 * dx * 1/xi (D_axis x n_surface) x m_0
+        const double c_n_y_surface_low[]={0,-1,0};
+        const array n_y_surface_low(1,1,1,3,c_n_y_surface_low); // normal vector to the y-surface at boundary with lower indey i=0
+        const array n_DMxn_y_surf_low=tile(cross4(n_DM, n_y_surface_low), state.m.dims(0), 1, state.m.dims(2), 1);
+        const array y_minus_1 = state.m(span,1,span,1) + 2 * state.mesh.dy * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_y_surf_low , state.m(span,0,span,span))(span,span,span,1);
+        hfield(span,0,span,1)+= - 0.5 * y_minus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dy )  with m_{i-1} being replaced
+
+        // high y boundary:
+        // n_surface=(0,1,0)
+        const double c_n_y_surface_high[]={0,1,0};
+        const array n_y_surface_high(1,1,1,3,c_n_y_surface_high); // normal vector to the y-surface at boundary with higher indey i=0
+        const array n_DMxn_y_surf_high=tile(cross4(n_DM, n_y_surface_high), state.m.dims(0), 1, state.m.dims(2), 1);
+        const array y_i_plus_1 = state.m(span,-1,span,1) + 2 * state.mesh.dy * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_y_surf_high , state.m(span,-1,span,span))(span,span,span,1);
+        hfield(span,-1,span,1)+= 0.5 * y_i_plus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dy )  with m_{i-1} being replaced
+    }
+
+    //z
+    if(state.m.dims(2)==1){
+      hfield(span,span,span,2)=0.;
+    }
+    else{
+        // low z boundary:
+        // n_surface=(0,0,-1)
+        // dm/dn=dm/d(-z)= (m_-1 - m_1) / 2 * dz = 1/xi (D_axis x n_surface) x m
+        // => m_-1 = m_1 + 2 * dz * 1/xi (D_axis x n_surface) x m_0
+        const double c_n_z_surface_low[]={0,0,-1};
+        const array n_z_surface_low(1,1,1,3,c_n_z_surface_low); // normal vector to the z-surface at boundary with lower index i=0
+        const array n_DMxn_z_surf_low=tile(cross4(n_DM, n_z_surface_low), state.m.dims(0),state.m.dims(1), 1, 1);
+        const array z_minus_1 = state.m(span,span,1,2) + 2 * state.mesh.dz * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_z_surf_low , state.m(span,span,0,span))(span,span,span,2);
+        hfield(span,span,0,2)+= - 0.5 * z_minus_1 / state.mesh.dz; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dz )  with m_{i-1} being replaced
+
+        // high z boundary:
+        // n_surface=(1,0,0)
+        // dm/dn=dm/d(z)= (m_{n+1} - m_{n-1}) / 2 * dz = 1/xi (D_axis x n_surface) x m_n
+        // => m_{i+1} = m_{i-1} + 2 * dz * 1/xi (D_axis x n_surface) x m_i
+        const double c_n_z_surface_high[]={0,0,1};
+        const array n_z_surface_high(1,1,1,3,c_n_z_surface_high); // normal vector to the z-surface at boundary with higher index i=0
+        const array n_DMxn_z_surf_high=tile(cross4(n_DM, n_z_surface_high), state.m.dims(0), state.m.dims(1), 1, 1);
+        const array z_i_plus_1 = state.m(span,span,-1,2) + 2 * state.mesh.dz * (state.param.D/(2*state.param.A))  * cross4(n_DMxn_z_surf_high , state.m(span,span,-1,span))(span,span,span,2);
+        hfield(span,span,-1,2)+= 0.5 * z_i_plus_1 / state.mesh.dz;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------
 
 //void DMI::correct_edges(array& out, const array& in){
 //  //Lower x bound: after convolve it is:  1/2 * (1)  
