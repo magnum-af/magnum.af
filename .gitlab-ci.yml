@@ -5,4 +5,4 @@ test:
     - docker build -t afopenclsrc -f Dockerfile.opencl .
     - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /magnum.af/tests/runall.sh /magnum.af
   tags:
-  - packer # Currently set only to select GTO
+  - gpu
