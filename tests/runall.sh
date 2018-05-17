@@ -1,5 +1,5 @@
 #!/bin/bash
-#usage: ./runall /path/to/gitdirectory(pth-mag)
+#usage: ./runall /path/to/gitdirectory(magnum.af)
 
 #unit
 for filename in $1/tests/unit/*.py; do

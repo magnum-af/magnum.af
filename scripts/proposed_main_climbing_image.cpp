@@ -1,7 +1,7 @@
 //on GTO
-//make -j && ../bin/pth-mag-opencl /home/paul/git/pth-mag/Data/Testing 0 0.01296 7200000
+//make -j && ../bin/magnum.af-opencl /home/paul/git/magnum.af/Data/Testing 0 0.01296 7200000
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 int main(int argc, char** argv)
 {
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     
     std::vector<State> inputimages; 
     for(int i=0; i < n_interp; i++){
-        vti_reader(m, testmesh, std::string("/home/paul/git/pth-mag/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/skyrm_image"+std::to_string(i)+".vti");
+        vti_reader(m, testmesh, std::string("/home/paul/git/magnum.af/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/skyrm_image"+std::to_string(i)+".vti");
         inputimages.push_back(State(mesh, param, m));
     }
   

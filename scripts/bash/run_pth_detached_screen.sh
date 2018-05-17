@@ -1,5 +1,5 @@
 #!/bin/bash
-cp ~/git/pth-mag/src/main*.cpp .
-cp ~/git/pth-mag/bin/pth-mag-opencl .
+cp ~/git/magnum.af/src/main*.cpp .
+cp ~/git/magnum.af/bin/magnum.af-opencl .
 mkdir data
-screen -d -m bash -c 'time ./pth-mag-opencl $PWD/data 2 > $PWD/data/cout.dat'
+screen -d -m bash -c 'time ./magnum.af-opencl $PWD/data 2 > $PWD/data/cout.dat'

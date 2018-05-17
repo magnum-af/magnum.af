@@ -293,7 +293,7 @@ void vtr_reader(af::array& field, Mesh& mesh, std::string filepath){
 ////USEAGE:
 ////array Aout = array();
 ////Mesh meshout = Mesh(NaN,NaN,NaN,NaN,NaN,NaN);
-////vti_to_af(Aout,meshout,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
+////vti_to_af(Aout,meshout,"/home/pth/git/magnum.af/Data/Testing/minit.vti");
 ////print("Aout",Aout);
 ////std::cout << "  " << meshout.n0 << "  " << meshout.n1 << "  " << meshout.n2 << "  " << meshout.dx << "  " << meshout.dy << "  " << meshout.dz <<  std::endl;
 //void vti_reader_micro(af::array& field, Mesh& mesh, std::string filepath){

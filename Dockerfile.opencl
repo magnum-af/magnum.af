@@ -3,7 +3,7 @@ MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at>
 #image: afopenclsrc
 #build:  docker build -t afopenclsrc -f Dockerfile.opencl .
 #run image: docker run -ti afopenclsrc /bin/bash
-#run tests: docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /pth-mag/tests/runall.sh /pth-mag
+#run tests: docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /magnum.af/tests/runall.sh /magnum.af
 
 # A docker container with the Nvidia kernel module and CUDA drivers installed 
 
@@ -116,15 +116,15 @@ RUN pip install numpy
 # Install GFLW
 RUN apt-get -y install libglfw3-dev
 
-# Add pth-mag repository
-RUN mkdir /tmp/pth-mag
+# Add magnum.af repository
+RUN mkdir /tmp/magnum.af
 
-COPY . /tmp/pth-mag
+COPY . /tmp/magnum.af
 
 #Setting variable for cmake, shout be set previously by "echo /opt/arrayfire/lib > /etc/ld.so.conf.d/arrayfire.conf && \ ldconfig" but is not working properly
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 
-RUN cd /tmp/pth-mag && \
+RUN cd /tmp/magnum.af && \
     cp scripts/sp4/main_sp4.cpp src/ && \
     rm -rf build && \
     mkdir build && \
@@ -132,10 +132,10 @@ RUN cd /tmp/pth-mag && \
     cmake .. && \
     make -j12
 
-RUN mkdir /pth-mag && mkdir /pth-mag/build && mkdir /pth-mag/build/src && \
-    mv /tmp/pth-mag/build/src/pth_mag.so /pth-mag/build/src/ && \
-    mv /tmp/pth-mag/tests /pth-mag && \
-    rm -rf /tmp/pth-mag
+RUN mkdir /magnum.af && mkdir /magnum.af/build && mkdir /magnum.af/build/src && \
+    mv /tmp/magnum.af/build/src/magnum_af.so /magnum.af/build/src/ && \
+    mv /tmp/magnum.af/tests /magnum.af && \
+    rm -rf /tmp/magnum.af
 
 
 
@@ -194,12 +194,12 @@ RUN mkdir /pth-mag && mkdir /pth-mag/build && mkdir /pth-mag/build/src && \
 ## Install GFLW
 #RUN apt-get -y install libglfw3-dev
 #
-## Add pth-mag repository
-#RUN mkdir /tmp/pth-mag
+## Add magnum.af repository
+#RUN mkdir /tmp/magnum.af
 #
-#COPY . /tmp/pth-mag
+#COPY . /tmp/magnum.af
 #
-#RUN cd /tmp/pth-mag && \
+#RUN cd /tmp/magnum.af && \
 #    cp scripts/sp4/main_sp4.cpp src/ && \
 #    mkdir build && \
 #    cd build && \
@@ -212,7 +212,7 @@ RUN mkdir /pth-mag && mkdir /pth-mag/build && mkdir /pth-mag/build/src && \
 
 #TODO
 # Cleanup
-#RUN rm -r /tmp/pth-mag
+#RUN rm -r /tmp/magnum.af
 
 #NOTES:
 #on GTO:

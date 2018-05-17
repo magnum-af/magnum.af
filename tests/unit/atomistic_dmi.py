@@ -1,7 +1,7 @@
 import unittest
 import arrayfire as af
 import numpy as np
-import pth_mag
+import magnum_af
 import math
 
 class AtomisticDMITest(unittest.TestCase):
@@ -11,8 +11,8 @@ class AtomisticDMITest(unittest.TestCase):
   dx = 1.1
 
   def test_atomistic_dmi_2_1_1_z_z(self):
-    mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.D_atom (self.D)
     m=af.constant(0.0,2,1,1,3,dtype=af.Dtype.f64)
@@ -24,9 +24,9 @@ class AtomisticDMITest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 1
 
-    state=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.AtomisticDMI(mesh,param)
-    Llg=pth_mag.pyLLG(state,atom_ani)
+    state=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.AtomisticDMI(mesh,param)
+    Llg=magnum_af.pyLLG(state,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), 0)
 
@@ -43,8 +43,8 @@ class AtomisticDMITest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 
   def test_atomistic_dmi_2_1_1_z_x(self):
-    mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.D_atom (self.D)
     m=af.constant(0.0,2,1,1,3,dtype=af.Dtype.f64)
@@ -56,9 +56,9 @@ class AtomisticDMITest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 0
 
-    state=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.AtomisticDMI(mesh,param)
-    Llg=pth_mag.pyLLG(state,atom_ani)
+    state=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.AtomisticDMI(mesh,param)
+    Llg=magnum_af.pyLLG(state,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), - param.print_D_atom())
 
@@ -76,8 +76,8 @@ class AtomisticDMITest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 
   def test_atomistic_dmi_1_1_2_z_z(self):
-    mesh=pth_mag.pyMesh(1, 1, 2, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(1, 1, 2, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.D_atom (self.D)
     m=af.constant(0.0,1,1,2,3,dtype=af.Dtype.f64)
@@ -89,9 +89,9 @@ class AtomisticDMITest(unittest.TestCase):
     m[0,0,1,1] = 0
     m[0,0,1,2] = 0
 
-    state=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.AtomisticDMI(mesh,param)
-    Llg=pth_mag.pyLLG(state,atom_ani)
+    state=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.AtomisticDMI(mesh,param)
+    Llg=magnum_af.pyLLG(state,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), 0)
 

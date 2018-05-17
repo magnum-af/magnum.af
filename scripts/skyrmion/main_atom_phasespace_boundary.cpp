@@ -1,5 +1,5 @@
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 //#include <iostream>
 //#include <iomanip>
 //#include <fstream>
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   
     array m; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
-    vti_reader(m, testmesh, std::string("/home/paul/git/pth-mag/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/relax.vti");
+    vti_reader(m, testmesh, std::string("/home/paul/git/magnum.af/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/relax.vti");
   
     State state(mesh,param, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());

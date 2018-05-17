@@ -1,7 +1,7 @@
 #include <list>
 #include <sstream>
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 
 int main(int argc, char** argv)
 {

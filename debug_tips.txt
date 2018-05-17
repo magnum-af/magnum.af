@@ -8,7 +8,7 @@ Troubleshooting:
 
 * Forgetting to mention a file in sources in setup.py results in error like:
 
-ImportError: /home/pth/git/pth-mag/interface/pth_mag.so: undefined symbol: _ZN4MeshC1Eiiiddd
+ImportError: /home/pth/git/magnum.af/interface/magnum_af.so: undefined symbol: _ZN4MeshC1Eiiiddd
 
 Include respective file in src/CMakeLists cython_add_module_w_AF_VTK() to solve
 

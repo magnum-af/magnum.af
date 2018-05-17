@@ -1,7 +1,7 @@
 #include <list>
 #include <sstream>
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 
 using namespace af; 
 typedef std::shared_ptr<LLGTerm> llgt_ptr; 
@@ -58,8 +58,8 @@ int main(int argc, char** argv)
 {
     std::cout.precision(32);
     std::cout<<time<<std::endl;
-    // .pth-mag /path/to/write path/to/read dt T ID GPU
-    // .pth-mag $PWD  ~/git/pth-mag/Data/skyrmion_stoch/E_barrier 1e-9 300 0 0
+    // .magnum.af /path/to/write path/to/read dt T ID GPU
+    // .magnum.af $PWD  ~/git/magnum.af/Data/skyrmion_stoch/E_barrier 1e-9 300 0 0
     std::cout<<"argc = "<<argc<<std::endl;
     for (int i=0; i<argc; i++){
         cout << "Parameter " << i << " was " << argv[i] << "\n";
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     filepath.append("/");
     std::cout<<"Writing into path "<<filepath<<std::endl;
 
-    std::string indatapath(argc>2? argv[2]: "/home/pth/git/pth-mag/Data/skyrmion_stoch/E_barrier");
+    std::string indatapath(argc>2? argv[2]: "/home/pth/git/magnum.af/Data/skyrmion_stoch/E_barrier");
     indatapath.append("/");
 
     //Timestep

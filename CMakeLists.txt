@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(pth-mag)
+project(magnum.af)
 #Note in new projects, set VTK_DIR by export VTK_DIR=/home/.../VTK-build:$VTK_DIR
 
 # Compile with C++14 support.

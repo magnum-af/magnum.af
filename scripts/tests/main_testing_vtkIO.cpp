@@ -61,7 +61,7 @@ int main(int argc, char** argv)
   vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   array A = array();
   Mesh newmesh = Mesh(0,0,0,0,0,0);
-  vti_reader(A,newmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
+  vti_reader(A,newmesh,"/home/pth/git/magnum.af/Data/Testing/minit.vti");
 
   vti_writer_atom(A, newmesh ,(filepath + "aminit").c_str());
   print("A",A);
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
   array B = array();
   Mesh bmesh = Mesh(0,0,0,0,0,0);
 
-  vti_reader(B,bmesh,"/home/pth/git/pth-mag/Data/Testing/aminit.vti");
+  vti_reader(B,bmesh,"/home/pth/git/magnum.af/Data/Testing/aminit.vti");
  
   print("B",B);
   std::cout<<bmesh.n0<<"  "<<bmesh.n1<<"  "<<bmesh.n2<<"  "<<bmesh.dx<<"  "<<bmesh.dy<<"  "<<bmesh.dz<<"  "<<std::endl;
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   vtr_writer(B, bmesh ,(filepath + "minit").c_str());
   array C = array();
   Mesh cmesh = Mesh(0,0,0,0,0,0);
-  vtr_reader(C,cmesh,"/home/pth/git/pth-mag/Data/Testing/minit.vtr");
+  vtr_reader(C,cmesh,"/home/pth/git/magnum.af/Data/Testing/minit.vtr");
   print("C",C);
   std::cout<<cmesh.n0<<"  "<<cmesh.n1<<"  "<<cmesh.n2<<"  "<<cmesh.dx<<"  "<<cmesh.dy<<"  "<<cmesh.dz<<"  "<<std::endl;
 //  std::vector<llgt_ptr> llgterm;

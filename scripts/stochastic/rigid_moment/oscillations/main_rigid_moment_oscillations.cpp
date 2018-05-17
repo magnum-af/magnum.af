@@ -4,7 +4,7 @@
 #include <iostream>
 #include <complex>
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 using namespace af;
 using namespace std::complex_literals;
 using Faddeeva::erfi;

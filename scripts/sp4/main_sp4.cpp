@@ -59,7 +59,7 @@ int main(int argc, char** argv)
   m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
   State state(mesh,param, m);
   vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
-  //vti_reader(state.m,mesh,"/home/pth/git/pth-mag/Data/Testing/minit.vti");
+  //vti_reader(state.m,mesh,"/home/pth/git/magnum.af/Data/Testing/minit.vti");
 
   std::vector<llgt_ptr> llgterm;
   llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));

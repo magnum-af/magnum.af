@@ -1,7 +1,7 @@
 import unittest
 import arrayfire as af
 import numpy as np
-import pth_mag
+import magnum_af
 import math
 
 class AtomisticAnisotropyTest(unittest.TestCase):
@@ -11,8 +11,8 @@ class AtomisticAnisotropyTest(unittest.TestCase):
   dx = 2.715e-10
 
   def test_atomistic_anisotropy_2_1_1_z_z(self):
-    mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.K_atom (self.k)
     m=af.constant(0.0,2,1,1,3,dtype=af.Dtype.f64)
@@ -24,9 +24,9 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 1
 
-    pystate=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=pth_mag.pyLLG(pystate,atom_ani)
+    pystate=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
+    Llg=magnum_af.pyLLG(pystate,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -2*param.print_K_atom())
 
@@ -41,8 +41,8 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,2], 2*param.print_K_atom()/param.print_mu0()/param.print_p() )
 
   def test_atomistic_anisotropy_2_1_1_z_x(self):
-    mesh=pth_mag.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.K_atom (self.k)
     m=af.constant(0.0,2,1,1,3,dtype=af.Dtype.f64)
@@ -54,9 +54,9 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 0
 
-    pystate=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=pth_mag.pyLLG(pystate,atom_ani)
+    pystate=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
+    Llg=magnum_af.pyLLG(pystate,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -param.print_K_atom())
 
@@ -71,8 +71,8 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 
   def test_atomistic_anisotropy_1_2_1_z_z(self):
-    mesh=pth_mag.pyMesh(1, 2, 1, self.dx, self.dx, self.dx)
-    param=pth_mag.pyParam()
+    mesh=magnum_af.pyMesh(1, 2, 1, self.dx, self.dx, self.dx)
+    param=magnum_af.pyParam()
     param.p (self.p)
     param.K_atom (self.k)
     m=af.constant(0.0,1,2,1,3,dtype=af.Dtype.f64)
@@ -84,9 +84,9 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[0,1,0,1] = 0
     m[0,1,0,2] = 1
 
-    pystate=pth_mag.pyState(mesh,param,m)
-    atom_ani=pth_mag.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=pth_mag.pyLLG(pystate,atom_ani)
+    pystate=magnum_af.pyState(mesh,param,m)
+    atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
+    Llg=magnum_af.pyLLG(pystate,atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -2*param.print_K_atom())
 

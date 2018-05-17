@@ -1,9 +1,9 @@
 #!/bin/bash
 path=$(pwd)
-cd ~/git/pth-mag/build
+cd ~/git/magnum.af/build
 cmake ..
 make -j
 cd $path
-cp ~/git/pth-mag/src/main* .
-cp ~/git/pth-mag/bin/pth-mag-cpu .
-time ./pth-mag-cpu $PWD > cout.dat
+cp ~/git/magnum.af/src/main* .
+cp ~/git/magnum.af/bin/magnum.af-cpu .
+time ./magnum.af-cpu $PWD > cout.dat

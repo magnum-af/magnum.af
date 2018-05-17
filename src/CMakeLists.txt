@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(pth-mag)
+project(magnum.af)
 
 #useage:
 #on GTO use:
@@ -46,14 +46,14 @@ FILE(GLOB SOURCE "*.cpp")
 # Here we take a different approach to compilation. We build all of the source
 # files into a CMake object library and then link this library against the
 # different ArrayFire backends.
-ADD_LIBRARY(pth-mag_CORE OBJECT ${SOURCE})
+ADD_LIBRARY(magnum.af_CORE OBJECT ${SOURCE})
 
 # Build the program, linking specifically with designated backends
 # ArrayFire CPU backend
 if(${ArrayFire_CPU_FOUND})
     MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
-    ADD_EXECUTABLE(pth-mag-cpu $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES}
+    ADD_EXECUTABLE(magnum.af-cpu $<TARGET_OBJECTS:magnum.af_CORE>)
+    TARGET_LINK_LIBRARIES(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 
@@ -72,8 +72,8 @@ MESSAGE(STATUS "----> PTH:             : ${OpenCL_LIBRARY}")
 IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
-    ADD_EXECUTABLE(pth-mag-opencl $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-opencl ${ArrayFire_OpenCL_LIBRARIES} 
+    ADD_EXECUTABLE(magnum.af-opencl $<TARGET_OBJECTS:magnum.af_CORE>)
+    TARGET_LINK_LIBRARIES(magnum.af-opencl ${ArrayFire_OpenCL_LIBRARIES} 
         # TODO OpenCL not found by FIND_PACKAGE on this machine only but included by arrayfire
         ${OpenCL_LIBRARIES} #TODO include this on eg GTO
         ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
@@ -87,22 +87,22 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     FIND_PACKAGE(NVVM REQUIRED)
     MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
     MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
-    ADD_EXECUTABLE(pth-mag-cuda $<TARGET_OBJECTS:pth-mag_CORE>)
-    TARGET_LINK_LIBRARIES(pth-mag-cuda ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES}
+    ADD_EXECUTABLE(magnum.af-cuda $<TARGET_OBJECTS:magnum.af_CORE>)
+    TARGET_LINK_LIBRARIES(magnum.af-cuda ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
 ENDIF()
 
 
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
-  ${pth-mag_SOURCE_DIR}/pth_mag.pyx
-  # MESSAGE(STATUS "----> PTH: PATH : ${pth-mag_SOURCE_DIR}")
+  ${magnum.af_SOURCE_DIR}/magnum_af.pyx
+  # MESSAGE(STATUS "----> PTH: PATH : ${magnum.af_SOURCE_DIR}")
   #Additional files would come here as follows:
   #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx param.cpp controller.cpp integrator.cpp mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp atomistic_demag.cpp atomistic_anisotropy.cpp atomistic_exchange.cpp atomistic_dmi.cpp vtk_IO.cpp)
+cython_add_module_w_AF_VTK( magnum_af magnum_af.pyx param.cpp controller.cpp integrator.cpp mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp atomistic_demag.cpp atomistic_anisotropy.cpp atomistic_exchange.cpp atomistic_dmi.cpp vtk_IO.cpp)
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 
@@ -112,7 +112,7 @@ cython_add_module_w_AF_VTK( pth_mag pth_mag.pyx param.cpp controller.cpp integra
 
 
     #if(VTK_LIBRARIES)
-    #  target_link_libraries(pth-mag-opencl ${VTK_LIBRARIES})
+    #  target_link_libraries(magnum.af-opencl ${VTK_LIBRARIES})
     #else()
-    #  target_link_libraries(pth-mag-opencl vtkHybrid vtkWidgets)
+    #  target_link_libraries(magnum.af-opencl vtkHybrid vtkWidgets)
     #endif()

@@ -1,5 +1,5 @@
 #include "arrayfire.h"
-#include "pth_mag.hpp"
+#include "magnum_af.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
