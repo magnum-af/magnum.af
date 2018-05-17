@@ -1,9 +1,10 @@
-PTH-MAG: A general purpose magnetic simulation software
+magnum.af: A general purpose magnetic simulation software
 =====
 
 ## Main Features:
-* Atomistic LLG Solver
 * Micromagnetic LLG Solver
+* Atomistic LLG Solver
+* Langevin Dynamics
 * String Method
 
 
@@ -103,12 +104,12 @@ try
 
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
-## PTH-MAG:
+## magnun.af:
 Note: In new projects, set VTK_DIR by
 
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
 
-* in pth_mag folder run
+* in magnun.af folder run
 
 `$ mkdir build && cd build`
 
