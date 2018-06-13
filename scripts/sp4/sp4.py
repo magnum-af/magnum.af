@@ -65,3 +65,6 @@ while pystate.t() < 2e-9:
   print intx, inty, intz
 print pystate.t()
 print "finished  --------------------"
+#TODO second call causes segfault:
+print "af.mean(m_test)=", af.mean(pystate.get_m())
+print "af.mean(m_test)=", af.mean(pystate.get_m())
