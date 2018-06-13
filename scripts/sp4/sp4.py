@@ -1,65 +1,67 @@
-import unittest
 import arrayfire as af
 import magnum_af
-import math
+import ctypes
+from copy import deepcopy
 
-class sp4(unittest.TestCase):
-  meshvar=magnum_af.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
-  m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
-  
-  param=magnum_af.pyParam()
-  param.ms    (8e5)
-  param.A     (1.3e-11)
-  param.alpha (1)
-  
-  m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
-  m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-  m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-  pystate=magnum_af.pyState(meshvar,param,m)
-  
-  demag=magnum_af.pyDemagSolver(meshvar,param)
-  exch=magnum_af.pyExchSolver(meshvar,param)
-  Llg=magnum_af.pyLLG(pystate,demag,exch)
+#af.set_backend("cpu")
+af.info()
+meshvar=magnum_af.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
+m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
 
-  def test_relaxation(self):
-    intx=0
-    inty=0
-    intz=0
-    while self.pystate.t() < 1e-9:
-      self.Llg.llgstep(self.pystate)
-      intx+=self.pystate.meanxyz(0)*self.Llg.print_stepsize()
-      inty+=self.pystate.meanxyz(1)*self.Llg.print_stepsize()
-      intz+=self.pystate.meanxyz(2)*self.Llg.print_stepsize()
 
-    self.assertLess(math.fabs(intx - 9.81206172824e-10), 1e-15)
-    self.assertLess(math.fabs(inty - 9.14350283169e-11), 1e-15)
-    self.assertLess(math.fabs(intz + 5.74381785359e-13), 1e-15)
+param=magnum_af.pyParam()
+param.ms    (8e5)
+param.A     (1.3e-11)
+param.alpha (1)
 
-  def test_switch(self):
-    self.Llg.set_state0_alpha(0.02)
-    
-    zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-    zeeswitch[0,0,0,0]=-24.6e-3/self.param.print_mu0()
-    zeeswitch[0,0,0,1]=+4.3e-3/self.param.print_mu0()
-    zeeswitch[0,0,0,2]=0.0
-    zeeswitch = af.tile(zeeswitch,100,25,1)
-    zee=magnum_af.pyZee(zeeswitch)
-    self.Llg.add_terms(zee)
-    intx=0
-    inty=0
-    intz=0
-     
-    with open('../../Data/sp4.dat', 'w') as f:
-      while self.pystate.t() < 2e-9:
-        self.Llg.llgstep(self.pystate)
-        intx+= self.pystate.meanxyz(0) * self.Llg.print_stepsize()
-        inty+= self.pystate.meanxyz(1) * self.Llg.print_stepsize()
-        intz+= self.pystate.meanxyz(2) * self.Llg.print_stepsize()
-        f.write("%10.12f %10.12f %10.12f %10.12f\n" % (self.pystate.t(), self.pystate.meanxyz(0), self.pystate.meanxyz(1), self.pystate.meanxyz(2)))
+m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
+m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
+m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
+pystate=magnum_af.pyState(meshvar,param,m)
 
-    self.assertLess(math.fabs(intx + 6.41261165705e-10), 1e-15)
-    self.assertLess(math.fabs(inty - 1.47353233738e-10), 1e-15)
-    self.assertLess(math.fabs(intz + 1.78144535231e-11), 1e-15)
+demag=magnum_af.pyDemagSolver(meshvar,param)
+exch=magnum_af.pyExchSolver(meshvar,param)
+Llg=magnum_af.pyLLG(pystate,demag,exch)
 
-if __name__ == '__main__':
-  unittest.main()
+print "relax --------------------"
+print pystate.t()
+while pystate.t() < 1e-9:
+  time1=pystate.t()
+  Llg.llgstep(pystate)
+  time2=pystate.t()
+  print Llg.print_stepsize(), time2-time1, time1, time2, pystate.t()
+print pystate.t()
+#pystate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax")
+
+#teststate=magnum_af.pyState(meshvar,param,m) # testing wether teststate.m is correctly overwirtten with m_relax
+#teststate.py_vti_reader("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax.vti")
+#teststate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_reader")
+
+print "switch --------------------"
+Llg.set_state0_alpha(0.02)# this should be changed in cpp version
+
+zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
+zeeswitch[0,0,0,0]=-24.6e-3/param.print_mu0()
+zeeswitch[0,0,0,1]=+4.3e-3/param.print_mu0()
+zeeswitch[0,0,0,2]=0.0
+zeeswitch = af.tile(zeeswitch,100,25,1)
+zee=magnum_af.pyZee(zeeswitch)
+Llg.add_terms(zee)
+print pystate.t()
+intx=0
+inty=0
+intz=0
+while pystate.t() < 2e-9:
+  time1=pystate.t()
+  Llg.llgstep(pystate)
+  time2=pystate.t()
+  intx+=pystate.meanxyz(0)*Llg.print_stepsize()
+  inty+=pystate.meanxyz(1)*Llg.print_stepsize()
+  intz+=pystate.meanxyz(2)*Llg.print_stepsize()
+  #print Llg.print_stepsize(), time2-time1, time1, time2, pystate.t()
+  #print pystate.meanxyz(0), pystate.meanxyz(1), pystate.meanxyz(2)
+  #  std::cout << "cpp h= "<< h << "t2-t1 "<< time2-time1 << " time1 "<< time1<< " time2 " << time2 << "state.t "<< state.t << std::endl;
+  #  std::cout.precision(12);
+  print intx, inty, intz
+print pystate.t()
+print "finished  --------------------"
