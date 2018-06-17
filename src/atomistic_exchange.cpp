@@ -3,44 +3,44 @@ using namespace af;
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
+
 double ATOMISTIC_EXCHANGE::E(const State& state){
   return -state.param.mu0/2. *state.param.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-  //return -(state.param.mu0*state.param.p) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-  //
-
-
-
-
-  //return -state.param.p/2.* 1./state.param.ms *afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-  //return -state.param.p/2.*afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 }
 
 ATOMISTIC_EXCHANGE::ATOMISTIC_EXCHANGE (const Mesh& mesh){
-
-    filtr=constant(0.0,3,3,3,3,f64);
-    filtr(0,1,1,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-    filtr(2,1,1,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-    filtr(1,0,1,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-    filtr(1,2,1,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-    filtr(1,1,0,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-    filtr(1,1,2,span)= 1.;//mesh.dx; //  /pow(mesh.dx,2);
-                         
-    //filtr(0,1,1,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //filtr(2,1,1,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //filtr(1,0,1,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //filtr(1,2,1,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //filtr(1,1,0,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //filtr(1,1,2,1)= 1.;//mesh.dy; //  /pow(mesh.dy,2);
-    //                     
-    //filtr(0,1,1,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
-    //filtr(2,1,1,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
-    //filtr(1,0,1,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
-    //filtr(1,2,1,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
-    //filtr(1,1,0,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
-    //filtr(1,1,2,2)= 1.;//mesh.dz; //  /pow(mesh.dz,2);
 }
 
 array ATOMISTIC_EXCHANGE::h(const State& state){
+
+    array filtr=constant(0.0,3,3,3,3,f64);
+    if(state.param.hexagonal_close_packed == true){
+        std::cout << "WARNING: Experimental hcp exchange" << std::endl;
+        filtr(0,1,1,span)= 1.;
+        filtr(0,2,1,span)= 1.;// hex lattice 
+        filtr(2,1,1,span)= 1.;
+        filtr(2,0,1,span)= 1.;// hex lattice
+        filtr(1,0,1,span)= 1.;
+        filtr(1,2,1,span)= 1.;
+        filtr(1,1,0,span)= 1.;
+        filtr(1,1,2,span)= 1.;
+        //TODO hex in z: filtr(,,,span)= 1.;// hex lattice
+        //NOTE: numers of NN is 12, so 3 in +z and 3 in +z slice
+        af::print("filtr",filtr);
+         
+    }
+    //else if(state.param.atom_fcc=true){
+    //    //https://www.physics-in-a-nutshell.com/article/11/close-packed-structures-fcc-and-hcp 
+    //}
+    else{
+        filtr(0,1,1,span)= 1.;
+        filtr(2,1,1,span)= 1.;
+        filtr(1,0,1,span)= 1.;
+        filtr(1,2,1,span)= 1.;
+        filtr(1,1,0,span)= 1.;
+        filtr(1,1,2,span)= 1.;
+    }
+
   timer_solve = timer::start();
   //convolution
   array mj = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);

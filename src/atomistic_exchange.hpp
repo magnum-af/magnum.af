@@ -15,7 +15,6 @@ class ATOMISTIC_EXCHANGE : public LLGTerm {
     double get_cpu_time(){return cpu_time;}
 
     ATOMISTIC_EXCHANGE (const Mesh& mesh);
-    af::array filtr;
 
     double     cpu_time{0.};
     af::timer timer_solve;

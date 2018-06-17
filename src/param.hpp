@@ -23,6 +23,7 @@ struct Param{
     double K_atom{0.};			// [J]   	// Atomistic anisotropy
     double D_atom_axis[3]={0.,0.,1.};		 	// Atomistic DMI axis
     double K_atom_axis[3]={0.,0.,1.};		 	// Atomistic anisotropy axis
+    bool  hexagonal_close_packed{false};                // Selects hexagonal close packed atomistic structure
 
     // non-physical-parameters
     int mode{6};  			// 		// Inegration method	//TODO skipp inparam 0 -> rk4, 1 -> rk4_3o8, 2 -> rkf, 3 -> explicitEuler
