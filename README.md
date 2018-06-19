@@ -1,4 +1,4 @@
-magnum.af: A general purpose magnetic simulation software
+magnum.af: A finite differences GPU accelerated magnetic simulation software
 =====
 
 ## Main Features:
