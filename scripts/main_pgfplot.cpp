@@ -20,6 +20,9 @@ int main(int argc, char** argv)
     
     pgfplot_mz(m, testmesh, outputfile,1);
     pgfplot_nz_quiver(m, testmesh, outputfile2, 1, 6);
+    //pgfplot_mi(m, testmesh, outputfile, 0, 0, 2);
+    //pgfplot_nz_quiver(m, testmesh, outputfile2, 0, 8);
+
 
     return 0;
 }
