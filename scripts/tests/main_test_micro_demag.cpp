@@ -10,7 +10,7 @@ using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 
 bool compare(double a, double b){
-    //std::cout << "COM:"<< a <<"," << b <<","<<fabs(a-b)/fabs(a+b)<<std::endl;
+    std::cout << "COM:"<< a <<"," << b <<","<<fabs(a-b)/fabs(a+b)<<std::endl;
     const double threshold = 1e-12;
     if(a == 0 && b == 0) return false;
     if(fabs(a-b)/fabs(a+b)< threshold) return false;
@@ -47,6 +47,6 @@ int main(int argc, char** argv)
         std::cout << "!!! Test FAILED !!!" << std::endl;
         return 1;
     }
-  
+    //TODO  NOTE: Test fails for opencl (Error: 2.37e-8 > threshold), passes for cpu (Error: 4.05e-13 < threshold)
     return 0;
 }
