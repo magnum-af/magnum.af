@@ -2,6 +2,7 @@ test_cpu:
   script:
     - docker build -t afcpusrc -f Dockerfile.cpu .
     - docker run -t afcpusrc /magnum.af/tests/runall.sh /magnum.af
+    - docker rmi $(docker images -f "dangling=true" -q)
   tags:
     - docker
 
@@ -9,5 +10,6 @@ test_gpu:
   script:
     - docker build -t afopenclsrc -f Dockerfile.opencl .
     - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /magnum.af/tests/runall.sh /magnum.af
+    - docker rmi $(docker images -f "dangling=true" -q)
   tags:
     - gpu
