@@ -1,11 +1,13 @@
 test_cpu: 
+  image: magnum.af.cpu:latest
   script:
     - docker build -t magnum.af.cpu -f Dockerfile.cpu .
     - docker run -t magnum.af.cpu /magnum.af/tests/runall.sh /magnum.af
   tags:
     - docker
 
-test_gpu: 
+test_gpu:
+  image: magnum.af.opencl:latest
   script:
     - docker build -t magnum.af.opencl -f Dockerfile.opencl .
     - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/runall.sh /magnum.af
