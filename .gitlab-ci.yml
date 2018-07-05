@@ -5,6 +5,7 @@ test_cpu:
     - docker run -t magnum.af.cpu /magnum.af/tests/runall.sh /magnum.af
   tags:
     - docker
+    - opencl
 
 test_gpu:
   image: magnum.af.opencl:latest
