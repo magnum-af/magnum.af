@@ -1,5 +1,8 @@
 #!/bin/bash
 # $1 is supposed to be /path/to/magnum.af
 
+# building tests
+$1/tests/unit/cpp/maketests.sh $1
+
 # running all test binaries
-for file in $1/tests/unit/cpp/bin/*; do $file; done
+$1/tests/unit/cpp/runall.sh $1
