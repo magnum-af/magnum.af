@@ -2,11 +2,11 @@
 
 currdir=$PWD
 echo $PWD
-if [ ! -f ~/git/magnum.af/build ]
+if [ ! -f $1/build ]
 then 
-    mkdir ~/git/magnum.af/build
+    mkdir $1/build
 fi
-cd ~/git/magnum.af/build
+cd $1/build
 cmake ..
 make -j
 cd $currdir
