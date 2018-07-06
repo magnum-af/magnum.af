@@ -116,6 +116,13 @@ RUN pip install numpy
 # Install GFLW
 RUN apt-get -y install libglfw3-dev
 
+# Instal Google Tests
+RUN apt-get install libgtest-dev && \
+    cd /usr/src/gtest && \
+    cmake CMakeLists.txt && \
+    make && \
+    cp *.a /usr/lib
+
 # Add magnum.af repository
 RUN mkdir /tmp/magnum.af
 
@@ -130,7 +137,9 @@ RUN cd /tmp/magnum.af && \
     mkdir build && \
     cd build && \
     cmake .. && \
-    make -j12
+    make -j12 && \
+    cd .. && \
+    ./tests/unit/cpp/maketests.sh .
 
 RUN mkdir /magnum.af && mkdir /magnum.af/build && mkdir /magnum.af/build/src && \
     mv /tmp/magnum.af/build/src/magnum_af.so /magnum.af/build/src/ && \
