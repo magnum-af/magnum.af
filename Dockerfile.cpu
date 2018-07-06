@@ -113,7 +113,7 @@ RUN cd /tmp/magnum.af && \
     make -j12 && \
     ./tests/unit/cpp/maketests.sh .
 
-RUN --parents /magnum.af/build/src && \
+RUN mkdir /magnum.af && mkdir /magnum.af/build && mkdir /magnum.af/build/src && \
     mv /tmp/magnum.af/build/src/magnum_af.so /magnum.af/build/src/ && \
     mv /tmp/magnum.af/tests /magnum.af && \
     rm -rf /tmp/magnum.af
