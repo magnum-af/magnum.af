@@ -16,6 +16,7 @@ cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../../..
 buildfile=main_skyrmion_stoch.cpp
+plotfile=plot*.sh
 
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
@@ -31,9 +32,14 @@ $magafdir/scripts/bash/check_main_remove.sh
 # creating write dir
 $magafdir/scripts/bash/check_write_dir.sh $1/skyrm
 
+# copying files
+cp $magafdir/bin/magnum.af-* $1
+cp $buildfile $1
+cp $plotfile $1
+
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
-    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $GPU $T $dt"
+    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $GPU $T $dt > $1/cout.txt"
 else
     $magafdir/bin/magnum.af-cpu $1 $GPU $T $dt
 fi

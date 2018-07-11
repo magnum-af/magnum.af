@@ -1,36 +1,33 @@
 #!/bin/bash
-
-magafdir=../..
-# aborting if src/main* already exists
-if [ -e $magafdir/src/main*.cpp ]
-then
-    echo "To run, please remove main in magnun.af/src! Aborting..."
+if [ ! -n "$1" ]; then
+    echo "Usage: ./run*.sh /absolute/path/to/write/to"
     exit 1
-else
-    echo "src/ is clean, building..."
 fi
 
-# determining write directory
-if [ -n "$1" ];then
-    if [ -e "$1" ];then
-        echo "writing in existing directory " $1
-    else
-        mkdir --parents $1
-        echo "writing in new directory " $1
-    fi
-else
-    if [ ! -e "$magafdir/Data/Testing" ];then
-        echo " creating default directory $magafdir/Data/Testing"
-        mkdir --parents $magafdir/Data/Testing
-    else
-        echo "writing in existing default directory $magafdir/Data/Testing"
-    fi
-fi
+# calling this scripts's directory
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+magafdir=../..
+buildfile=main_sp4.cpp
+plotfile=plot_sp4.sh
 
-# building
-cp main_sp4.cpp $magafdir/src
+# checking if other main exists in /src
+$magafdir/scripts/bash/check_main.sh
+
+# building 
+cp $buildfile $magafdir/src
 $magafdir/scripts/bash/build.sh $magafdir
-rm $magafdir/src/main_sp4.cpp
+rm $magafdir/src/$buildfile
+
+# moving possible old main back
+$magafdir/scripts/bash/check_main_remove.sh
+
+# creating write dir
+$magafdir/scripts/bash/check_write_dir.sh $1/skyrm
+
+# copying files
+cp $magafdir/bin/magnum.af-* $1
+cp $buildfile $1
+cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
@@ -42,8 +39,4 @@ else
 fi
 
 # plotting
-if [ -n "$1" ]; then
-    ./plot_sp4.sh $1/m.dat
-else 
-    ./plot_sp4.sh $magafdir/Data/Testing/m.dat
-fi
+./$plotfile $1/m.dat
