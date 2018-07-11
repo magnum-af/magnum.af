@@ -46,8 +46,8 @@ class Detector{
                     avg+=values;
                 }
                 avg/=(double)length;
-                if(gt == true  && avg > threshold) {event = true;}
-                if(gt == false && avg < threshold) {event = true;}
+                if(gt == true  && std::fabs(avg) > threshold) {event = true;}
+                if(gt == false && std::fabs(avg) < threshold) {event = true;}
             }
         }
         double get_avg(){return avg;}
@@ -104,6 +104,7 @@ int main(int argc, char** argv)
     const int samples = 10;
     const double maxtime = 1e-5;
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
+    unsigned long long dir_size_max=2e9; // in Bytes
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
@@ -179,9 +180,14 @@ int main(int argc, char** argv)
             detector.add_data(meani(state.m,2));
             calcm(state, stream_m, detector.get_avg());
             if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-            if(i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-            if(i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
-            if(i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
+            if(i % (int)(1e-10/dt) == 0){ 
+		vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
+            	std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << ", avg_mz= "<< detector.get_avg() << std::endl;
+	        if(GetDirSize(filepath)>dir_size_max){
+			std::cout<<"WARNING: Output Directory is larger than "<<GetDirSize(filepath)<<" Bytes, ABORTING!"<<std::endl;
+			return 1;
+	    	}
+	    }
             i++;
         }
         vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
