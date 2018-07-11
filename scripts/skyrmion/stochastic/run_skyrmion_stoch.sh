@@ -33,11 +33,10 @@ $magafdir/scripts/bash/check_write_dir.sh $1/skyrm
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
-    $magafdir/bin/magnum.af-opencl $1 $GPU $T $dt
-elif [ -e $magafdir/bin/magnum.af-cuda ];then
-    $magafdir/bin/magnum.af-cuda $1 $GPU $T $dt
+    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $GPU $T $dt"
 else
     $magafdir/bin/magnum.af-cpu $1 $GPU $T $dt
 fi
 
-./plot_skyrmion_stoch.sh $1/m0.dat
+# run plot
+#./plot_skyrmion_stoch.sh $1/m0.dat
