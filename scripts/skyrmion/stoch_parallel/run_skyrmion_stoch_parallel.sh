@@ -25,7 +25,7 @@ if [ -n "$1" ];then
         echo "Error: Write Directory exists!" $1
 	exit 1
     else
-        mkdir --parents $1/data
+        mkdir --parents $1/data/vti
         echo "writing in new directory " $1
     fi
 fi

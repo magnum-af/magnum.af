@@ -29,7 +29,7 @@ fi
 
 # building
 cp main_sp4.cpp $magafdir/src
-$magafdir/scripts/build.sh $magafdir
+$magafdir/scripts/bash/build.sh $magafdir
 rm $magafdir/src/main_sp4.cpp
 
 # running

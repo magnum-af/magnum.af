@@ -79,6 +79,9 @@ int main(int argc, char** argv)
     filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
 
+    std::string indatapath(argc>5? argv[5]: "/home/pth/git/magnum.af/scripts/skyrmion/stoch_parallel/data");
+    indatapath.append("/");
+
     setDevice(argc>2? std::stoi(argv[2]):0);
     //if(argc>1) setDevice(std::stoi(argv[2]));
     info();
@@ -120,7 +123,8 @@ int main(int argc, char** argv)
 
     array m; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
-    vti_reader(m, testmesh, "../../E_barrier/relax.vti");
+    vti_reader(m, testmesh, indatapath + "relax.vti");
+    //vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
@@ -128,7 +132,8 @@ int main(int argc, char** argv)
     //Reading energy barrier from calculation performed with main_n30.cpp
     double e_barrier;
     //ifstream stream(filepath+"E_barrier/E_barrier.dat");
-    ifstream stream("../../E_barrier/E_barrier.dat");
+    ifstream stream(indatapath + "E_barrier.dat");
+    //ifstream stream("../../E_barrier/E_barrier.dat");
     if (stream.is_open()){
         stream >> e_barrier;
     }
