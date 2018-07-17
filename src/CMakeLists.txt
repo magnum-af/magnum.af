@@ -37,7 +37,7 @@ INCLUDE(${VTK_USE_FILE})
 INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})
 
 # Get a list of all of the source files in the directory:
-FILE(GLOB SOURCE "*.cpp")
+FILE(GLOB SOURCE "*.cpp" "integrators/*.cpp" "llg_terms/*.cpp")
 
 # There are several ways of compiling source code in CMake. In most cases you
 # specify the source files to an ADD_EXCUTABLE call. Because we intend to
@@ -102,7 +102,7 @@ set_source_files_properties(
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( magnum_af magnum_af.pyx param.cpp controller.cpp integrator.cpp mesh.cpp state.cpp micro_demag.cpp func.cpp llg.cpp micro_exch.cpp zee.cpp atomistic_demag.cpp atomistic_anisotropy.cpp atomistic_exchange.cpp atomistic_dmi.cpp vtk_IO.cpp)
+cython_add_module_w_AF_VTK( magnum_af magnum_af.pyx ${SOURCE} )
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 

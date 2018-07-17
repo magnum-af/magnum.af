@@ -3,9 +3,9 @@
 #include "arrayfire.h"
 #include <memory>
 #include <chrono>
-#include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../llg_terms/LLGTerm.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 using namespace af;
 
 class Stochastic_Integrator {

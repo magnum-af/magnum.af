@@ -2,7 +2,7 @@
 #define INTEGRATOR_H
 #include "arrayfire.h"
 #include "controller.hpp"
-#include "func.hpp"
+#include "../func.hpp"
 
 class Integrator {
     public: 

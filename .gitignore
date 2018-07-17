@@ -2,5 +2,6 @@ build/
 bin/
 Data/
 src/main*
+src/tags
 *.swp
 scripts/wrapping_github/

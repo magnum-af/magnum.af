@@ -2,8 +2,8 @@
 #define ZEE_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 
 class Zee : public LLGTerm {
   public:

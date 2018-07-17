@@ -2,8 +2,8 @@
 #define ATOMISTIC_EXCHANGE_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 
 class ATOMISTIC_EXCHANGE : public LLGTerm {
   public:

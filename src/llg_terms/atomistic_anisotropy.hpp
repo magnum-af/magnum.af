@@ -2,8 +2,8 @@
 #define ATOMISTIC_ANISOTROPY_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 class ATOMISTIC_ANISOTROPY : public LLGTerm {
   public:
     //Field contribution

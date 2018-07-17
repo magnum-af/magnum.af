@@ -4,9 +4,9 @@
 #include <memory>
 #include <initializer_list>
 #include "arrayfire.h"
-#include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../llg_terms/LLGTerm.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 #include "controller.hpp"
 
 using namespace af;

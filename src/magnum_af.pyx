@@ -18,7 +18,7 @@ from cython.operator cimport dereference as deref
 import ctypes
 
 
-cdef extern from "../../src/LLGTerm.hpp":
+cdef extern from "../../src/llg_terms/LLGTerm.hpp":
   cdef cppclass LLGTerm
 
 cdef extern from "<arrayfire.h>" namespace "af":
@@ -103,7 +103,7 @@ cdef class pyState:
     return self.thisptr.meani(i)
 
 
-cdef extern from "../../src/llg.hpp":
+cdef extern from "../../src/integrators/llg.hpp":
   cdef cppclass LLG:
     LLG (State state_in, vector[shared_ptr[LLGTerm]] vector_in);
     vector[shared_ptr[LLGTerm]] Fieldterms;
@@ -148,7 +148,7 @@ cdef class pyLLG:
     
   
 
-cdef extern from "../../src/micro_demag.hpp":
+cdef extern from "../../src/llg_terms/micro_demag.hpp":
   cdef cppclass DemagSolver:
     DemagSolver (Mesh mesh_in, Param param_in);
     double E(const State& state);
@@ -171,7 +171,7 @@ cdef class pyDemagSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/micro_exch.hpp":
+cdef extern from "../../src/llg_terms/micro_exch.hpp":
   cdef cppclass ExchSolver:
     ExchSolver (Mesh mesh_in, Param param_in);
     double E(const State& state);
@@ -188,7 +188,7 @@ cdef class pyExchSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/atomistic_demag.hpp":
+cdef extern from "../../src/llg_terms/atomistic_demag.hpp":
   cdef cppclass ATOMISTIC_DEMAG:
     ATOMISTIC_DEMAG(Mesh);
     double E(const State& state);
@@ -205,7 +205,7 @@ cdef class pyATOMISTIC_DEMAG:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/atomistic_anisotropy.hpp":
+cdef extern from "../../src/llg_terms/atomistic_anisotropy.hpp":
   cdef cppclass ATOMISTIC_ANISOTROPY:
     ATOMISTIC_ANISOTROPY(Mesh, Param);
     double E(const State& state);
@@ -222,7 +222,7 @@ cdef class pyATOMISTIC_ANISOTROPY:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/atomistic_exchange.hpp":
+cdef extern from "../../src/llg_terms/atomistic_exchange.hpp":
   cdef cppclass ATOMISTIC_EXCHANGE:
     ATOMISTIC_EXCHANGE(Mesh);
     double E(const State& state);
@@ -239,7 +239,7 @@ cdef class AtomisticExchange:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/atomistic_dmi.hpp":
+cdef extern from "../../src/llg_terms/atomistic_dmi.hpp":
   cdef cppclass ATOMISTIC_DMI:
     ATOMISTIC_DMI(Mesh, Param);
     double E(const State& state);
@@ -256,7 +256,7 @@ cdef class AtomisticDMI:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef extern from "../../src/zee.hpp":
+cdef extern from "../../src/llg_terms/zee.hpp":
   cdef cppclass Zee:
     Zee (long int m_in);
     double E(const State& state);
@@ -275,13 +275,13 @@ cdef class pyZee:
 #TODO 
 
 
-#cdef extern from "../../src/func.hpp":
+#cdef extern from "../../src/llg_terms/func.hpp":
 #    double meani(const State& state_in, const int i);
 #
 #def pymeani(pyState state, int i):
 #  return meani(deref(state.thisptr))
 
-#cdef extern from "../../src/vtk_IO.hpp":
+#cdef extern from "../../src/llg_terms/vtk_IO.hpp":
 ##  cdef void af_to_vti(array field, Mesh mesh, string outputname);
 #  cdef void vti_writer_atom(array field, Mesh mesh, string outputname);
 #def vti(field, mesh, outputname):

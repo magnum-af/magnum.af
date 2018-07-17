@@ -2,9 +2,9 @@
 #define STOCHASTIC_LLG_H
 #include "arrayfire.h"
 #include <memory>
-#include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../llg_terms/LLGTerm.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 #include "stochastic_integrator.hpp"
 using namespace af;
 

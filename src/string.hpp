@@ -2,7 +2,7 @@
 #define STRING_H
 #include <vector>
 #include "arrayfire.h"
-#include "llg.hpp"
+#include "integrators/llg.hpp"
 class String {
   public:
     String(State state, std::vector<State> inputimages, int n_interp, double dt, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in);

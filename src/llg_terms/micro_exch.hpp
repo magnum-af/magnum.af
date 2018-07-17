@@ -2,8 +2,8 @@
 #define MICRO_EXCH_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "state.hpp"
-#include "func.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
 
 class ExchSolver : public LLGTerm {
   public:

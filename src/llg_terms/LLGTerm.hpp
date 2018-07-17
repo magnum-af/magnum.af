@@ -1,7 +1,7 @@
 #ifndef LLGTerm_H
 #define LLGTerm_H
 #include "arrayfire.h"
-#include "state.hpp"
+#include "../state.hpp"
 
 class LLGTerm{
   public:
