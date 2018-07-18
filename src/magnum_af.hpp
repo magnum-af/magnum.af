@@ -15,6 +15,7 @@
 #include "string.hpp"
 #include "integrators/llg.hpp"
 #include "integrators/stochastic_llg.hpp"
+#include "integrators/adaptive_runge_kutta.hpp"
 #include "vtk_IO.hpp"
 #include "pgfplot.hpp"
 #include "misc.hpp"
