@@ -139,7 +139,7 @@ RUN cd /tmp/magnum.af && \
     cmake .. && \
     make -j12 && \
     cd .. && \
-    ./tests/unit/cpp/maketests.sh . 
+    ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh . 
 
 RUN mkdir /magnum.af && mkdir /magnum.af/build && mkdir /magnum.af/build/src && \
