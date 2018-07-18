@@ -1,9 +1,7 @@
 #include "adaptive_runge_kutta.hpp"
 
-//af::array givem (const af::array& m){ return m;}//TODO del
-
-AdaptiveRungeKutta::AdaptiveRungeKutta(callback_function f_in, std::string scheme_in, Controller controller, bool is_renormalize): 
-  f(f_in), scheme (scheme_in), controller(controller), is_renormalize(is_renormalize)
+AdaptiveRungeKutta::AdaptiveRungeKutta(callback_function f_in, std::string scheme_in, Controller controller): 
+  f(f_in), scheme (scheme_in), controller(controller)
     {
     if (scheme == "RKF45") {
         std::cout << "Integrators: Initializing RKF45 method." << std::endl;
@@ -21,7 +19,7 @@ af::array AdaptiveRungeKutta::step(const af::array& m, const double t, double& d
     af::array mtemp;
     do{
         if (scheme == "RKF45") {
-            mtemp = RKF45(m, t, h, err);//TODO
+            mtemp = RKF45(m, t, h, err);
         }
         else { //if (scheme == "DP45") 
         }
@@ -30,15 +28,8 @@ af::array AdaptiveRungeKutta::step(const af::array& m, const double t, double& d
     dt=h; //dt is the actual timestep taken by the controller
     h=controller.get_hnext();
     mtemp+=m;
-
-    //TODO if (state.Ms.isempty()) return  renormalize(mtemp);
-    //return (renormalize_handle_zero_values(mtemp));//Normalized array where all initial values == 0 are set to 0
-    if(is_renormalize) return renormalize(mtemp);
-    else return mtemp;//TODO renorm
+    return mtemp;
 }
-
-        //af::array (*foo)(const af::array&);
-        //foo = &givem;
 
 // Runge-Kutta-Fehlberg method with stepsize control
 af::array AdaptiveRungeKutta::RKF45(const af::array& m, const double t, const double dt, double& err)
