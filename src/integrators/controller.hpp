@@ -22,6 +22,9 @@ class Controller{
         unsigned long long int get_counter_hmin    () const { return counter_hmin    ;};// # of rejections
         unsigned long long int get_counter_maxscale() const { return counter_maxscale;};// # of rejections
         unsigned long long int get_counter_minscale() const { return counter_minscale;};// # of rejections
+
+        bool get_reject() const { return reject;};
+
         //TODO better solution?
         // Scale function return= atol + abs(y) * rtol
         const double atol;//Tolerated absolute error
