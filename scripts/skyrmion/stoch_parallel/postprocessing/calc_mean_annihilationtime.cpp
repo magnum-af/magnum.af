@@ -42,7 +42,7 @@ int main(int argc, char** argv){
         std::cout << "#mean_detect_time <<<< unbiased_sample_sigma <<<< unbiased_sample_variance <<<< .size()" << std::endl;
         std::cout <<  mean_detect_time <<"\t"<< unbiased_sample_sigma <<"\t"<< unbiased_sample_variance << "\t" << vec_detect_time.size() << "\n" << std::endl;
 
-        ofstream stream_out((string(argv[2])+"/mean_annihilationtime.dat").c_str(), std::ios_base::app);
+        ofstream stream_out((string(argv[2])+"/mean_annihilationtime.dat").c_str(), std::ios_base::trunc);
         stream_out << mean_detect_time  <<"\t"<< unbiased_sample_sigma <<"\t"<< unbiased_sample_variance << "\t" << vec_detect_time.size() << std::endl;
         stream_out << "#mean_detect_time <<<< unbiased_sample_sigma <<<< unbiased_sample_variance <<<< vec_detect_time.size() " << std::endl;
         stream_out.close();
