@@ -43,21 +43,23 @@ fi
 cp main_skyrmion_stoch_parallel.cpp  $1
 cp $magafdir/bin/* $1
 
-echo "Enter dt [s]"
-read dt
-echo $dt
+dt=5e-14
+runs=1000
+#echo "Enter dt [s]"
+#read dt
+#echo $dt
 
 echo "Enter T [k]"
 read T
 echo $T
 
-echo "Enter Numer of runs"
-read runs
-echo "runs = $runs"
+#echo "Enter Numer of runs"
+#read runs
+#echo "runs = $runs"
 
 echo "dt=$dt \n  T=$T \n runs=$runs" >> $1/inputvars.txt
 for ((i = 1; i <= $runs; i++)); do
-    echo "$1/magnum.af-cpu $1 $DIR/data $dt $T $i 0" >> $1/parallel_commands.txt
+    echo "$1/magnum.af-cpu $1/data $DIR/data $dt $T $i 0" >> $1/parallel_commands.txt
 done
 
 # running slurm script
