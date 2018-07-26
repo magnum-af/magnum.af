@@ -7,7 +7,11 @@ if [ -n "$1" ];then
         echo "Error: Write Directory exists!" $1
 	exit 1
     else
-        mkdir --parents $1
+        if [ -d "$1" ];then
+            mkdir --parents $1
+        else
+            mkdir --parents $1/
+        fi
         echo "writing in new directory " $1
         exit 0
     fi
