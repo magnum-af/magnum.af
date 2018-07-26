@@ -56,13 +56,12 @@ int main(int argc, char** argv)
     param.alpha = 0.02;
 
     const double x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
-    const double dxy = sqrt(param.A/param.Ku1); // Discretization
-    const int nx = std::round( x/dxy); 
-    const int ny = std::round( y/dxy); 
-    std::cout << x << " y= "<< y << " dx= "<< dxy << " nx = " << nx << " ny = " << ny << std::endl;
+    const int nx = 320;
+    const int ny = 2048;
+    const int nz = 2;
   
     //Generating Objects
-    Mesh mesh(nx,ny,1,dxy,dxy,z);
+    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     // Initial magnetic field
     array Ms = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
