@@ -1,8 +1,6 @@
 #!/bin/bash
-# Usage .sh absolute/path/to/write/output/
+# Usage .sh absolute/path/to/write/output/ <optional-GPU number>
 set -e
-
-GPU=0
 
 # calling this scripts's directory
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -31,14 +29,19 @@ fi
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
-#cp $plotfile $1
 
 # running
-if [ -e $magafdir/bin/magnum.af-opencl ];then
-    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $GPU > $1/cout.txt"
+if [ -e $magafdir/bin/magnum.af-cuda ];then
+    screen -d -m bash -c "$magafdir/bin/magnum.af-cuda $1 $2 > $1/cout.txt 2>&1"
+elif [ -e $magafdir/bin/magnum.af-opencl ];then
+    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 > $1/cout.txt 2>&1"
 else
     $magafdir/bin/magnum.af-cpu $1 $GPU
 fi
 
-# run plot
-#./plot_skyrmion_stoch.sh $1/m0.dat
+# executing tail -f on cout.dat
+if [ -e $magafdir/bin/magnum.af-cuda ];then
+    tail -f $1/cout.txt
+elif [ -e $magafdir/bin/magnum.af-opencl ];then
+    tail -f $1/cout.txt
+fi

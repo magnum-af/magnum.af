@@ -14,8 +14,6 @@ then
 
     mkdir --parents $magafdir/temp_main
     mv $magafdir/src/main*.cpp $magafdir/temp_main
-    exit 1
 else
     echo "src/ is clean, building..."
-    exit 0
 fi

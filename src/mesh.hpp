@@ -1,5 +1,6 @@
 #ifndef MESH_H
 #define MESH_H
+#include <iostream>
 #include "arrayfire.h"
 struct Mesh{
     int n0,n1,n2;               // Number of cells in x,y,z
@@ -9,5 +10,6 @@ struct Mesh{
     Mesh (int, int, int, double, double, double);
     af::dim4 dims;
     af::dim4 dims_expanded;
+    void print(std::ostream& stream);
 };
 #endif

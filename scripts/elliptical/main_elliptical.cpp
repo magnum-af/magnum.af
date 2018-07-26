@@ -85,19 +85,26 @@ int main(int argc, char** argv)
 
     State state(mesh,param, m);
     state.Ms=Ms;
+    vti_writer_micro(m, mesh ,(filepath + "minit_nonnormalized").c_str());
+    m=renormalize_handle_zero_values(m);
+    state.m=m;
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    mesh.print(std::cout);
 
     std::vector<llgt_ptr> llgterm;
+    timer t_demag = af::timer::start();
     llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
+    std::cout<<"Demag assembled in "<< af::timer::stop(t_demag) <<std::endl;
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
     LLG Llg(state,llgterm);
 
     // Relaxation
     timer t = af::timer::start();
     double E_prev=1e20;
     double E=0;
-    while (fabs((E_prev-E)/E_prev) > 1e-20){
+    while (fabs((E_prev-E)/E_prev) > 1e-10){
         state.m=Llg.llgstep(state);
         if( state.steps % 1000 == 0){
             E_prev=E;
