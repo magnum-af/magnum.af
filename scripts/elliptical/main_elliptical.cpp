@@ -57,8 +57,8 @@ int main(int argc, char** argv)
     param.alpha = 0.02;
 
     const double x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
-    const int nx = 512;
-    const int ny = 2048;
+    const int nx = 343;
+    const int ny = 1920;
     const int nz = 2;
   
     //Generating Objects
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
             const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
             if(r<1){
                 Ms(ix,iy,span,span)=param.ms;
-                m(ix,iy,span,0)=1;
+                m(ix,iy,span,1)=1;
             }
         }
     }
@@ -97,6 +97,7 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
     llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
     LLG Llg(state,llgterm);
+    Llg.fdmdt_dissipation_term_only=true;
 
     // Relaxation
     if(!exists (path_mrelax)){

@@ -37,7 +37,7 @@ INCLUDE(${VTK_USE_FILE})
 INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})
 
 # Get a list of all of the source files in the directory:
-FILE(GLOB SOURCE "*.cpp" "integrators/*.cpp" "llg_terms/*.cpp")
+FILE(GLOB SOURCE "*.cpp" "integrators/*.cpp" "llg_terms/*.cpp" "solvers/*.cpp")
 
 # There are several ways of compiling source code in CMake. In most cases you
 # specify the source files to an ADD_EXCUTABLE call. Because we intend to

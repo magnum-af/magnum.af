@@ -16,6 +16,7 @@
 #include "integrators/llg.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"
+#include "solvers/minimizer.hpp"
 #include "vtk_IO.hpp"
 #include "pgfplot.hpp"
 #include "misc.hpp"
