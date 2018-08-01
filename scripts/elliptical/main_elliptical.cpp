@@ -128,17 +128,19 @@ int main(int argc, char** argv)
     long int n_cells=0;//Number of cells with Ms!=0
     for(int ix=0;ix<mesh.n0;ix++){
         for(int iy=0;iy<mesh.n1;iy++){
-            const double a= (double)(mesh.n0/2);
-            const double b= (double)(mesh.n1/2);
-            const double rx=double(ix)-mesh.n0/2.;
-            const double ry=double(iy)-mesh.n1/2.;
-            const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-            if(r<1){
-                n_cells++;
+            for(int iz=0;iz<mesh.n2;iz++){
+                const double a= (double)(mesh.n0/2);
+                const double b= (double)(mesh.n1/2);
+                const double rx=double(ix)-mesh.n0/2.;
+                const double ry=double(iy)-mesh.n1/2.;
+                const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                if(r<1){
+                    n_cells++;
+                }
             }
         }
     }
-    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI= " << mesh.n0/2*mesh.n1/2*M_PI << std::endl;
+    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
     calc_mean_m(state,n_cells,std::cout);
 
     std::ofstream stream;
