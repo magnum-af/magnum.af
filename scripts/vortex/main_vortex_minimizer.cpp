@@ -23,7 +23,7 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
 
 af::array zee_func(State state){
     double field_Tesla = 0;
-    double hzee_max = 0.4; //[T]
+    double hzee_max = 0.25; //[T]
     double rate = hzee_max/100; //[T/s]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
@@ -128,12 +128,12 @@ int main(int argc, char** argv)
     calc_mean_m(state,n_cells,stream);
 
     timer t_hys = af::timer::start();
-    double hzee_max = 0.4; //[T]
+    double hzee_max = 0.25; //[T]
     double rate = hzee_max/100; //[T/s]
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
-        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,2)));
+        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,0)));
         state.t+=1.;
         state.steps++;
         if( state.steps % 10 == 0){
