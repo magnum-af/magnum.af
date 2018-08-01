@@ -20,6 +20,10 @@ double afvalue(const array& a){
   return value;
 }
 
+double full_inner_product(const array& a, const array& b){
+  return afvalue(sum(sum(sum(sum(a*b,3),2),1),0));
+}
+
 array renormalize(const array& a){
   return a/tile(sqrt(sum(a*a,3)),1,1,1,3); 
 }

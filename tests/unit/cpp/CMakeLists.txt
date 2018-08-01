@@ -24,3 +24,6 @@ target_link_libraries(param ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthrea
 
 add_executable(mesh tmesh.cpp)
 target_link_libraries(mesh ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread)
+
+add_executable(full_inner_product full_inner_product.cpp)
+target_link_libraries(full_inner_product ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread)
