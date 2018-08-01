@@ -36,6 +36,7 @@ class Minimizer {
         const double tau_max;
         const double dm_max;
         const unsigned int samples;
+        double E(const State& state);//TODO only for testing, remove?
       
 };
 

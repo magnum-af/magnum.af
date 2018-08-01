@@ -3,6 +3,15 @@
 //{
 //}
 
+//Energy calculation
+double Minimizer::E(const State& state){
+  double solution = 0.;
+  for(unsigned i=0;i<llgterms.size();++i){
+    solution+=llgterms[i]->E(state);
+  }
+  return solution;
+}
+
 Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples): scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples)
 {
 }
@@ -23,7 +32,7 @@ af::array Minimizer::h(const State& state){
 }
 
 af::array Minimizer::dm(const State& state){
-    return cross4( state.m, cross4( -state.m, h(state))); //TODO check minus sign
+    return cross4( state.m, cross4( state.m, h(state))); //TODO check minus sign
 }
 
 af::array Minimizer::m_next(const State& state, const double tau){
@@ -58,6 +67,7 @@ void Minimizer::minimize(State& state){
     unsigned long int step = 0;
     double dm_max = 1e18;
     std::list<double> last_dm_max;
+    af::timer timer = af::timer::start();
 
     while (last_dm_max.size() < samples || *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) > dm_max){
         af::array m_next = this->m_next(state, tau);
@@ -68,6 +78,7 @@ void Minimizer::minimize(State& state){
 
         // Update state
         state.m = m_next;
+        //state.m = renormalize(state.m);// TODO check performance /w /wo
 
         // Calculate y^n-1 for step-size control
         af::array dm_next = this->dm(state);
@@ -92,7 +103,7 @@ void Minimizer::minimize(State& state){
         else tau = - std::max(std::min(fabs(tau),tau_max),tau_min);
         // Increase step count
         step ++;
-        
+        std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
     }
-
+    std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
 }; 
