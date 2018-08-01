@@ -6,6 +6,7 @@ int main(int argc, char** argv)
 {
     std::string filepath(argc>1? argv[1]: "../../Data/Testing");
     if(argc>0)filepath.append("/");
+    setDevice(argc>2? std::stoi(argv[2]):0);
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 ,nz=1;
@@ -28,8 +29,6 @@ int main(int argc, char** argv)
     Minimizer minimizer;
     minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    //minimizer.h(state);
-    //af::print("h",minimizer.h(state));
     vti_writer_micro(state.m, mesh ,(filepath + "init").c_str());
     minimizer.minimize(state);
     vti_writer_micro(state.m, mesh ,(filepath + "minimized").c_str());
