@@ -19,8 +19,11 @@ FIND_PACKAGE(ArrayFire REQUIRED)
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 # Link runTests with what we want to test and the GTest and pthread library
-add_executable(param tparam.cpp)
-target_link_libraries(param ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread)
-
-add_executable(mesh tmesh.cpp)
-target_link_libraries(mesh ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread)
+file( GLOB APP_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
+foreach( testsourcefile ${APP_SOURCES} )
+    # String replace, to cut off .cpp.
+    string( REPLACE ".cpp" "" testname ${testsourcefile} )
+    # Adding executables and linking
+    add_executable( ${testname} ${testsourcefile} )
+    target_link_libraries( ${testname} ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread )
+endforeach( testsourcefile ${APP_SOURCES} )

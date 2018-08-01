@@ -18,18 +18,18 @@ class Stochastic_Integrator {
         double cpu_time();
 
         //Getter functions
-        unsigned long int get_time() const { return time;};
         unsigned long int get_calls() const { return calls ;};
         unsigned long int get_fdmdt_calls() const { return fdmdt_calls ;};
         unsigned long int get_stochfdmdt_calls() const { return stochfdmdt_calls ;};
+        double get_time() const { return time;};
 
     protected:
         template <class T> T Heun(const T& m, const double dt);
         template <class T> T SemiImplicitHeun(const T& m, const double dt);
         template <class T> T detRK4(const T& m, const double dt);
 
-        unsigned long int fdmdt_calls{0};
         unsigned long int calls{0};
+        unsigned long int fdmdt_calls{0};
         unsigned long int stochfdmdt_calls{0};
         double time{0.};
     private:

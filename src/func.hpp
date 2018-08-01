@@ -14,6 +14,7 @@ array renormalize(const array& a);
 array renormalize_handle_zero_values(const array& a);
 array vecnorm(const array& a);
 double afvalue(const array& a); //give value of a 1,1,1,1 af array
+double full_inner_product(const array& a, const array& b);
 double maxnorm(const array& a);
 double meani(const array& a, const int i);
 double FrobeniusNorm(const array& a);
