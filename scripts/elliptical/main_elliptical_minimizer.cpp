@@ -10,11 +10,8 @@
 #include <unistd.h>
 #include <string>
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+
 void calcm(State state, std::ostream& myfile);
-inline bool exists (const std::string& name) {
-  struct stat buffer;   
-  return (stat (name.c_str(), &buffer) == 0); 
-}
 
 void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
@@ -90,38 +87,21 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
 
-    std::vector<llgt_ptr> llgterm;
-    timer t_demag = af::timer::start();
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    std::cout<<"Demag assembled in "<< af::timer::stop(t_demag) <<std::endl;
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-    LLG Llg(state,llgterm);
-    Llg.fdmdt_dissipation_term_only=true;
+    Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
+    minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    minimizer.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
 
     // Relaxation
     if(!exists (path_mrelax)){
         timer t = af::timer::start();
-        double E_prev=1e20;
-        double E=0;
-        while (fabs((E_prev-E)/E_prev) > 1e-10){
-            state.m=Llg.llgstep(state);
-            if( state.steps % 1000 == 0){
-                E_prev=E;
-                E=Llg.E(state);
-                std::cout << "step " << state.steps << " time= " << state.t << " E= " << E << " fabs= " << fabs((E_prev-E)/E_prev) << std::endl;
-                vti_writer_micro(state.m, mesh ,(filepath + "m_current_relaxation"+std::to_string(state.steps)).c_str());
-            }
-        }
+        minimizer.minimize(state);
         std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
         vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
-        std::cout << "state.t= "<< state.t << std::endl;
-        state.t=0;//setting new zero time
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
-        vti_reader(m, mesh, path_mrelax);
-        state.m=m;
+        vti_reader(state.m, state.mesh, path_mrelax);
     }
 
     //Calc n_cells:
@@ -143,25 +123,25 @@ int main(int argc, char** argv)
     std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
     calc_mean_m(state,n_cells,std::cout);
 
-    std::ofstream stream;
-    stream.precision(12);
-    stream.open ((filepath + "m.dat").c_str());
-    stream << "# t	<mx>" << std::endl;
-    calc_mean_m(state,n_cells,stream);
-
-    timer t_hys = af::timer::start();
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.25; //[T]
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
-    while (state.t < 4* hzee_max/rate){
-         state.m=Llg.llgstep(state);
-         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[3]->h(state)(0,0,0,2)));
-         if( state.steps % 2000 == 0){
-             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)+std::to_string(state.t)).c_str());
-         }
-    }
-
-    stream.close();
-    std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
+//    std::ofstream stream;
+//    stream.precision(12);
+//    stream.open ((filepath + "m.dat").c_str());
+//    stream << "# t	<mx>" << std::endl;
+//    calc_mean_m(state,n_cells,stream);
+//
+//    timer t_hys = af::timer::start();
+//    double rate = 0.34e6 ; //[T/s]
+//    double hzee_max = 0.25; //[T]
+//    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+//    while (state.t < 4* hzee_max/rate){
+//         state.m=Llg.llgstep(state);
+//         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[3]->h(state)(0,0,0,2)));
+//         if( state.steps % 2000 == 0){
+//             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)+std::to_string(state.t)).c_str());
+//         }
+//    }
+//
+//    stream.close();
+//    std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
     return 0;
 }

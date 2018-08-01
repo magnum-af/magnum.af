@@ -6,7 +6,7 @@ set -e
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../..
-buildfile=main_elliptical.cpp
+buildfile=main_elliptical_minimizer.cpp
 plotfile=plot*.sh
 
 # checking if other main exists in /src
