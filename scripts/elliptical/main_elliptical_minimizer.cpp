@@ -23,8 +23,8 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
 
 af::array zee_func(State state){
     double field_Tesla = 0;
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.25; //[T]
+    double hzee_max = 0.4; //[T]
+    double rate = hzee_max/100; //[T/s]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
@@ -87,10 +87,12 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
 
+    af::timer timer_llgterms = af::timer::start();
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
     minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
+    std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     // Relaxation
     if(!exists (path_mrelax)){
@@ -123,25 +125,27 @@ int main(int argc, char** argv)
     std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
     calc_mean_m(state,n_cells,std::cout);
 
-//    std::ofstream stream;
-//    stream.precision(12);
-//    stream.open ((filepath + "m.dat").c_str());
-//    stream << "# t	<mx>" << std::endl;
-//    calc_mean_m(state,n_cells,stream);
-//
-//    timer t_hys = af::timer::start();
-//    double rate = 0.34e6 ; //[T/s]
-//    double hzee_max = 0.25; //[T]
-//    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
-//    while (state.t < 4* hzee_max/rate){
-//         state.m=Llg.llgstep(state);
-//         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[3]->h(state)(0,0,0,2)));
-//         if( state.steps % 2000 == 0){
-//             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)+std::to_string(state.t)).c_str());
-//         }
-//    }
-//
-//    stream.close();
-//    std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
+    std::ofstream stream;
+    stream.precision(12);
+    stream.open ((filepath + "m.dat").c_str());
+    stream << "# t	<mx>" << std::endl;
+    calc_mean_m(state,n_cells,stream);
+
+    timer t_hys = af::timer::start();
+    double hzee_max = 0.4; //[T]
+    double rate = hzee_max/100; //[T/s]
+    minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
+    while (state.t < 4* hzee_max/rate){
+        minimizer.minimize(state);
+         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[3]->h(state)(0,0,0,2)));
+         state.t+=1.;
+         state.steps++;
+         if( state.steps % 10 == 0){
+             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)+std::to_string(state.t)).c_str());
+         }
+    }
+
+    stream.close();
+    std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
     return 0;
 }
