@@ -23,8 +23,8 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
 
 af::array zee_func(State state){
     double field_Tesla = 0;
-    double hzee_max = 0.4; //[T]
-    double rate = hzee_max/100; //[T/s]
+    double hzee_max = 0.25; //[T]
+    double rate = hzee_max/50; //[T/s]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
@@ -63,6 +63,7 @@ int main(int argc, char** argv)
     // Initial magnetic field
     array Ms = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
+    long int n_cells=0;//Number of cells with Ms!=0
     for(int ix=0;ix<mesh.n0;ix++){
         for(int iy=0;iy<mesh.n1;iy++){
             const double a= (double)(mesh.n0/2);
@@ -71,15 +72,19 @@ int main(int argc, char** argv)
             const double ry=double(iy)-mesh.n1/2.;
             const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
             if(r<1){
+                for(int iz=0;iz<mesh.n2;iz++){
+                    n_cells++;
+                }
                 Ms(ix,iy,span,span)=param.ms;
                 m(ix,iy,span,1)=1;
             }
         }
     }
-
+    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
 
     State state(mesh,param, m);
     state.Ms=Ms;
+    calc_mean_m(state,n_cells,std::cout);
     vti_writer_micro(m, mesh ,(filepath + "minit_nonnormalized").c_str());
     m=renormalize_handle_zero_values(m);
     state.m=m;
@@ -106,25 +111,6 @@ int main(int argc, char** argv)
         vti_reader(state.m, state.mesh, path_mrelax);
     }
 
-    //Calc n_cells:
-    long int n_cells=0;//Number of cells with Ms!=0
-    for(int ix=0;ix<mesh.n0;ix++){
-        for(int iy=0;iy<mesh.n1;iy++){
-            for(int iz=0;iz<mesh.n2;iz++){
-                const double a= (double)(mesh.n0/2);
-                const double b= (double)(mesh.n1/2);
-                const double rx=double(ix)-mesh.n0/2.;
-                const double ry=double(iy)-mesh.n1/2.;
-                const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-                if(r<1){
-                    n_cells++;
-                }
-            }
-        }
-    }
-    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
-    calc_mean_m(state,n_cells,std::cout);
-
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
@@ -132,15 +118,15 @@ int main(int argc, char** argv)
     calc_mean_m(state,n_cells,stream);
 
     timer t_hys = af::timer::start();
-    double hzee_max = 0.4; //[T]
-    double rate = hzee_max/100; //[T/s]
+    double hzee_max = 0.25; //[T]
+    double rate = hzee_max/50; //[T/s]
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
         calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,2)));
         state.t+=1.;
         state.steps++;
-        if( state.steps % 10 == 0){
+        if( state.steps % 1 == 0){
             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
         }
     }
