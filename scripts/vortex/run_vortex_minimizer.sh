@@ -28,13 +28,14 @@ fi
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
+cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
-    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 $3 > $1/cout.txt 2>&1"
+    screen -d -S GPU$2 -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 $3 > $1/cout.txt 2>&1"
     echo "NOTE: Opencl Backend fails due to arrayfire error 202 in fft, if chosen mesh dimensions have primefactor > 11"
 elif [ -e $magafdir/bin/magnum.af-cuda ];then
-    screen -d -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $3> $1/cout.txt 2>&1"
+    screen -d -S GPU$2 -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $3> $1/cout.txt 2>&1"
 else
     $magafdir/bin/magnum.af-cpu $1 $2 $3
 fi
