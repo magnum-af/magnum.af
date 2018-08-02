@@ -10,15 +10,8 @@
 #include <unistd.h>
 #include <string>
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
-void calcm(State state, std::ostream& myfile);
-inline bool exists (const std::string& name) {
-  struct stat buffer;   
-  return (stat (name.c_str(), &buffer) == 0); 
-}
 
 void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
-    //TODO check if this yields correct value
-    //  state.t << <mx>
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
 }
 
@@ -49,6 +42,7 @@ int main(int argc, char** argv)
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     setDevice(argc>2? std::stoi(argv[2]):0);
+    std::string path_mrelax(argc>3? argv[3]: "");
     info();
     std::cout.precision(24);
 
@@ -88,7 +82,7 @@ int main(int argc, char** argv)
     LLG Llg(state,llgterm);
 
     //obtaining relaxed magnetization
-    if(!exists (filepath+"mrelax.vti")){
+    if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
         for(int ix=0;ix<mesh.n0;ix++){
