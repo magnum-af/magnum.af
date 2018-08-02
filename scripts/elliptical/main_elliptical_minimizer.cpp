@@ -21,10 +21,12 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
 }
 
+double hzee_max = 0.12; //[T]
+int quater_steps=250; // One 4th of total steps
+
 af::array zee_func(State state){
     double field_Tesla = 0;
-    double hzee_max = 0.25; //[T]
-    double rate = hzee_max/50; //[T/s]
+    double rate = hzee_max/quater_steps; //[T/s]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
@@ -118,8 +120,7 @@ int main(int argc, char** argv)
     calc_mean_m(state,n_cells,stream);
 
     timer t_hys = af::timer::start();
-    double hzee_max = 0.25; //[T]
-    double rate = hzee_max/50; //[T/s]
+    double rate = hzee_max/quater_steps; //[T/s]
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
