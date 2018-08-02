@@ -1,9 +1,7 @@
 #include "minimizer.hpp"
-//Minimizer::Minimizer(LlgTerms llgterms) : llgterms ( llgterms )
-//{
-//}
 
 //Energy calculation
+// only for testing, remove?
 double Minimizer::E(const State& state){
   double solution = 0.;
   for(unsigned i=0;i<llgterms.size();++i){
@@ -32,7 +30,7 @@ af::array Minimizer::h(const State& state){
 }
 
 af::array Minimizer::dm(const State& state){
-    return cross4( state.m, cross4( state.m, h(state))); //TODO check minus sign
+    return cross4( state.m, cross4( state.m, h(state)));
 }
 
 af::array Minimizer::m_next(const State& state, const double tau){
@@ -103,7 +101,8 @@ void Minimizer::minimize(State& state){
         else tau = - std::max(std::min(fabs(tau),tau_max),tau_min);
         // Increase step count
         step ++;
-        std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
+        std::cout << "step "<< step << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
+        //std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
     }
     std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
 }; 

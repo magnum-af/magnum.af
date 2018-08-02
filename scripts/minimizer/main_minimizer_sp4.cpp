@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     }
 
     //LlgTerms llgterms;
-    Minimizer minimizer;
+    Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 10);
     minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
     vti_writer_micro(state.m, mesh ,(filepath + "init").c_str());

@@ -17,7 +17,6 @@ typedef std::vector<LlgTerm> LlgTerms;
 
 class Minimizer {
     public:
-        //Minimizer(LlgTerms);
         Minimizer(std::string scheme = "BB", double tau_min = 1e-10, double tau_max = 1e-5, double dm_max = 1e4, int samples = 10);
 
         af::array h(const State& m);// Effective Field 
@@ -36,7 +35,7 @@ class Minimizer {
         const double tau_max;
         const double dm_max;
         const unsigned int samples;
-        double E(const State& state);//TODO only for testing, remove?
+        double E(const State& state);// only for testing, remove?
       
 };
 
