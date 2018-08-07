@@ -104,12 +104,16 @@ try
 
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
+##  Arrayfire Python and Cython
+$ pip install arrayfire
+$ pip install Cython
+
 ## magnun.af:
 Note: In new projects, set VTK_DIR by
 
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
 
-* in magnun.af folder run
+* in magnum.af folder run
 
 `$ mkdir build && cd build`
 
