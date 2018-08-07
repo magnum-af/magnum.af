@@ -92,7 +92,6 @@ int main(int argc, char** argv)
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
     minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    minimizer.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     //obtaining relaxed magnetization
