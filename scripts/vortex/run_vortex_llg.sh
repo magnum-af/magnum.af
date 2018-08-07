@@ -28,6 +28,7 @@ fi
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
+cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then

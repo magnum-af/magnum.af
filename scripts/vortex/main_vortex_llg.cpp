@@ -16,10 +16,11 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
 }
 
+double rate = 0.34e6 ; //[T/s]
+double hzee_max = 0.12; //[T]
+
 af::array zee_func(State state){
     double field_Tesla = 0;
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.12; //[T]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
@@ -89,6 +90,7 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
     LLG Llg(state,llgterm);
+    //Llg.fdmdt_dissipation_term_only=true;
 
     //obtaining relaxed magnetization
     if(!exists (path_mrelax)){
@@ -129,8 +131,6 @@ int main(int argc, char** argv)
     calc_mean_m(state,n_cells,stream);
 
     timer t_hys = af::timer::start();
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.12; //[T]
     Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          state.m=Llg.llgstep(state);
