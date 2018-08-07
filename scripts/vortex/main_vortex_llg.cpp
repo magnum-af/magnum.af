@@ -111,7 +111,9 @@ int main(int argc, char** argv)
         std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
         vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
         std::cout << "state.t= "<< state.t << std::endl;
-        state.t=0;//setting new zero time
+        //setting new zero time
+        state.t=0;
+        Llg.state0.t=0;
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
