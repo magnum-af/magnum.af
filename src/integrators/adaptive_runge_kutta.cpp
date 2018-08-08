@@ -18,34 +18,41 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(callback_function f_in, std::string schem
     }
 }
 
-void AdaptiveRungeKutta::step(af::array& m, double& t){
+void AdaptiveRungeKutta::step(State& state){
     af::array mtemp;
     do{
         if (scheme == "RKF45") {
-            mtemp = RKF45(m, t, h, err);
+            mtemp = RKF45(state.m, state.t, h, err);
         }
         else if (scheme == "DP45")  {
-            mtemp = DP45(m, t, h, err);
+//            mtemp = DP45(m, t, h, err);
         }
         else {
-            mtemp = BS45(m, t, h, err); 
+//            mtemp = BS45(m, t, h, err); 
         }
     }while(!controller.success(err,h));
 
-    t+=h; //h is the actual timestep taken by the controller
+    state.t+=h; //h is the actual timestep taken by the controller
     h=controller.get_hnext();
-    m+=mtemp;
+    state.m+=mtemp;
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(const af::array& m, const double t, const double dt, double& err)
+af::array AdaptiveRungeKutta::RKF45(State state, const double dt, double& err)
 {
-    af::array k1   =  dt * f(t             , m                                                                                                    );
-    af::array k2   =  dt * f(t + 1./4.*dt  , m   +    1./4.    * k1                                                                               );
-    af::array k3   =  dt * f(t + 3./8.*dt  , m   +    3./32.   * k1  + 9/32.       * k2                                                           );
-    af::array k4   =  dt * f(t + 12./13.*dt, m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     );
-    af::array k5   =  dt * f(t + dt        , m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                );
-    af::array k6   =  dt * f(t + 1./2.*dt  , m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5);
+    double t = state.t;
+    af::array m = state.m;
+    af::array k1   =  dt * f(state                                                                                                    );
+    state.t = t + 1./4. * dt;
+    state.t = t + 3./8. * dt;
+    state.t = t + 12./13. * dt;
+    state.t = t + dt;
+    state.t = t + 1./2.*dt;
+    af::array k2 = dt * f(t + 1./4.*dt  , m   +    1./4.    * k1                                                                               );
+    af::array k3 = dt * f(t + 3./8.*dt  , m   +    3./32.   * k1  + 9/32.       * k2                                                           );
+    af::array k4 = dt * f(t + 12./13.*dt, m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     );
+    af::array k5 = dt * f(t + dt        , m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                );
+    af::array k6 = dt * f(t + 1./2.*dt  , m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5);
   
     af::array sumbk = 16./135. * k1 + 6656./12825.* k3 + 28561./56430.* k4 -9./50. * k5 + 2./55. *k6;
     af::array rk_error = sumbk - ( 25./216. * k1 + 1408./2565. * k3 + 2197./4104. * k4 -1./5. * k5);

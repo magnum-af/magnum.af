@@ -3,8 +3,9 @@
 #include "arrayfire.h"
 #include "controller.hpp"
 #include "../func.hpp"
+#include "../state.hpp"
 
-typedef af::array (*callback_function)(const double t, const af::array&);
+typedef State (*callback_function)(const State& state);
 
 class AdaptiveRungeKutta {
     public:
