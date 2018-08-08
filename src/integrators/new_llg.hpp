@@ -16,8 +16,13 @@ class NewLlg {
         const bool dissipation_term_only{false};
         std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
     private:
-        af::array fheff(const State& state);
         af::array fdmdt(const State& state);
+        typedef array (NewLlg::*fptr)(const State& state);
+	fptr GetFPointer(void)
+        {
+            return &NewLlg::fdmdt;
+        }
+        af::array fheff(const State& state);
         AdaptiveRungeKutta integrator;
          
 };

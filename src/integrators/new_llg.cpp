@@ -1,7 +1,9 @@
 #include "new_llg.hpp"
 
+typedef array (*callback_function)(const State& state);
 NewLlg::NewLlg(std::string scheme){
-    integrator =  AdaptiveRungeKutta(&fdmdt, scheme);
+	State state(Mesh(0,0,0,0,0,0),Param(),af::constant(0,1));//TODO
+    integrator =  AdaptiveRungeKutta(GetFPointer(), scheme);
 };
 
 af::array NewLlg::fheff(const State& state){
