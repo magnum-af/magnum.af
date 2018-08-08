@@ -14,4 +14,4 @@ gnuplot  -e '
 	p 
         "m.dat" u ($5*3.14159*4*1e-7):2 w l t "<m_x>", 
         "m.dat" u ($5*3.14159*4*1e-7):3 w l t "<m_y>",
-        "m.dat" u ($5*3.14159*4*1e-7):4 w l t "<m_z>"' --persist
+        "m.dat" u ($5*3.14159*4*1e-7):4 w l t "<m_z>"; pause -1'

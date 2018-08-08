@@ -7,7 +7,7 @@ cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../..
 buildfile=main_elliptical_minimizer.cpp
-plotfile=plot*.sh
+plotfile=../vortex/plot_hysteresis.sh
 
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
@@ -29,6 +29,7 @@ fi
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
+cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-cuda ];then

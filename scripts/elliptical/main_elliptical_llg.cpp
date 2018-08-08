@@ -14,11 +14,13 @@ using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 
 void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
+    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << std::endl;
 }
 
 void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile, double hzee){
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << "\t" << hzee << std::endl;
+    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
 }
 
 af::array zee_func(State state){
