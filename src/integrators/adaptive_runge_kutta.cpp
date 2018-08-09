@@ -38,37 +38,38 @@ void AdaptiveRungeKutta::step(State& state){
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(State state, const double dt, double& err)
+af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err)
 {
-    const double t = state.t;
-    const af::array m = state.m;
+    //const double t = state.t;
+    //const af::array m = state.m;
+    State tempstate=state;
     //stage1
     af::array k1   =  dt * f(state);
 
     //stage2
-    state.t = t + 1./4. * dt;
-    state.m = m   +    1./4.    * k1                                                                               ;
-    af::array k2 = dt * f(state);
+    tempstate.t = state.t + 1./4. * dt;
+    tempstate.m = state.m   +    1./4.    * k1                                                                               ;
+    af::array k2 = dt * f(tempstate);
 
     //stage3
-    state.t = t + 3./8. * dt;
-    state.m = m   +    3./32.   * k1  + 9/32.       * k2                                                           ;
-    af::array k3 = dt * f(state);
+    tempstate.t = state.t + 3./8. * dt;
+    tempstate.m = state.m   +    3./32.   * k1  + 9/32.       * k2                                                           ;
+    af::array k3 = dt * f(tempstate);
 
     //stage4
-    state.t = t + 12./13. * dt;
-    state.m = m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     ;
-    af::array k4 = dt * f(state);
+    tempstate.t = state.t + 12./13. * dt;
+    tempstate.m = state.m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     ;
+    af::array k4 = dt * f(tempstate);
 
     //stage5
-    state.t = t + dt;
-    state.m = m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                ;
-    af::array k5 = dt * f(state);
+    tempstate.t = state.t + dt;
+    tempstate.m = state.m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                ;
+    af::array k5 = dt * f(tempstate);
 
     //stage6
-    state.t = t + 1./2.*dt;
-    state.m = m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5;
-    af::array k6 = dt * f(state);
+    tempstate.t = state.t + 1./2.*dt;
+    tempstate.m = state.m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5;
+    af::array k6 = dt * f(tempstate);
   
     //af::array k2 = dt * f(t + 1./4.*dt  , m   +    1./4.    * k1                                                                               );
     //af::array k3 = dt * f(t + 3./8.*dt  , m   +    3./32.   * k1  + 9/32.       * k2                                                           );
@@ -79,7 +80,7 @@ af::array AdaptiveRungeKutta::RKF45(State state, const double dt, double& err)
     af::array sumbk = 16./135. * k1 + 6656./12825.* k3 + 28561./56430.* k4 -9./50. * k5 + 2./55. *k6;
     af::array rk_error = sumbk - ( 25./216. * k1 + 1408./2565. * k3 + 2197./4104. * k4 -1./5. * k5);
   
-    err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+    err=maxnorm(rk_error/controller.givescale(max(state.m,state.m+sumbk)));
     return sumbk;
 }
 

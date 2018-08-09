@@ -13,7 +13,7 @@ class AdaptiveRungeKutta {
         virtual af::array f(const State& state)=0; // callback function s.a. LLG
         const std::string scheme; //Integration scheme s.a. RKF45, DP45, ...
         Controller controller;
-        af::array RKF45(State state, const double dt, double& err);
+        af::array RKF45(const State& state, const double dt, double& err);
         af::array DP45(const af::array& m, const double t, const double dt, double& err);
         af::array BS45(const af::array& m, const double t, const double dt , double& err);
         double h{1.01e-15}; //step size of RK used in controller

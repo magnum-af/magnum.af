@@ -47,13 +47,13 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     
+    // Relax
     timer t = af::timer::start();
     while (state.t < 5.e-10){
         Llg.step(state);
         calcm(state,stream);
     }
-    double timerelax= af::timer::stop(t);
-    std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
+    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
     // Prepare switch
@@ -65,10 +65,13 @@ int main(int argc, char** argv)
     Llg.llgterms.push_back( LlgTerm (new Zee(zeeswitch)));
     state.param.alpha=0.02;
 
+    // Switch
+    t = af::timer::start();
     while (state.t < 1.5e-9){
         Llg.step(state);
         calcm(state,stream);
     }
+    std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
     stream.close();
     return 0;
