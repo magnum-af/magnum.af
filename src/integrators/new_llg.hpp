@@ -23,7 +23,7 @@ class NewLlg {
             return &NewLlg::fdmdt;
         }
         af::array fheff(const State& state);
-        AdaptiveRungeKutta integrator;
+        AdaptiveRungeKutta integrator = AdaptiveRungeKutta(this->NewLlg::GetFPointer());
          
 };
 
