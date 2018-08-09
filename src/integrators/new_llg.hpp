@@ -2,15 +2,23 @@
 #define NEW_LLG_H
 #include "arrayfire.h"
 #include "../state.hpp"
+#include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
+#include "adaptive_runge_kutta.hpp"
+#include <memory>//shared_ptr
 
+typedef std::shared_ptr<LLGTerm> LlgTerm; 
+typedef std::vector<LlgTerm> LlgTerms; 
 
-class NewLlg {
-   public:
-        void step(State&);
+class NewLlg : public AdaptiveRungeKutta{
+    public:
+        NewLlg(std::string scheme = "RKF45", Controller controller = Controller());
         double E(const State&);
-        const dissipation_term_only{false};
-   private:
+        const bool dissipation_term_only{false};
+        LlgTerms llgterms;
+    private:
+        af::array f(const State& state);
+        af::array fheff(const State& state);
          
 };
 

@@ -39,10 +39,9 @@ int main(int argc, char** argv)
     State state(mesh,param, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    LLG Llg(state,llgterm);
+    NewLlg Llg = NewLlg();
+    Llg.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    Llg.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
     
     std::ofstream stream;
     stream.precision(12);
@@ -51,7 +50,7 @@ int main(int argc, char** argv)
     // Relax
     timer t = af::timer::start();
     while (state.t < 5.e-10){
-        state.m=Llg.llgstep(state);
+        Llg.step(state);
         calcm(state,stream);
     }
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
@@ -63,15 +62,13 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
-    Llg.Fieldterms=llgterm;
-    Llg.state0.param.alpha=0.02;//TODO remove in llg class
+    Llg.llgterms.push_back( LlgTerm (new Zee(zeeswitch)));
     state.param.alpha=0.02;
 
     // Switch
     t = af::timer::start();
     while (state.t < 1.5e-9){
-        state.m=Llg.llgstep(state);
+        Llg.step(state);
         calcm(state,stream);
     }
     std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;

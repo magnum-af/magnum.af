@@ -16,8 +16,17 @@ include_directories(${GTEST_INCLUDE_DIRS})
 # Locate Arrayfire
 FIND_PACKAGE(ArrayFire REQUIRED)
 
+FIND_PACKAGE(VTK REQUIRED)
+INCLUDE(${VTK_USE_FILE})
+
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 # Link runTests with what we want to test and the GTest and pthread library
-add_executable(rkf rkf45.cpp)
-target_link_libraries(rkf ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} pthread)
+file( GLOB APP_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
+foreach( testsourcefile ${APP_SOURCES} )
+    # String replace, to cut off .cpp.
+    string( REPLACE ".cpp" "" testname ${testsourcefile} )
+    # Adding executables and linking
+    add_executable( ${testname} ${testsourcefile} )
+    target_link_libraries( ${testname} ${GTEST_LIBRARIES} ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} pthread )
+endforeach( testsourcefile ${APP_SOURCES} )
