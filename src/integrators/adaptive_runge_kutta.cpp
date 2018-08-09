@@ -1,7 +1,7 @@
 #include "adaptive_runge_kutta.hpp"
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(callback_function f_in, std::string scheme_in, Controller controller): 
-  f(f_in), scheme (scheme_in), controller(controller)
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_in, Controller controller): 
+  scheme (scheme_in), controller(controller)
     {
     if (scheme == "RKF45") {
         std::cout << "Integrators: Initializing RKF45 method." << std::endl;
@@ -42,24 +42,45 @@ af::array AdaptiveRungeKutta::RKF45(State state, const double dt, double& err)
 {
     const double t = state.t;
     const af::array m = state.m;
+    //stage1
     af::array k1   =  dt * f(state);
-//    state.t = t + 1./4. * dt;
-//    state.t = t + 3./8. * dt;
-//    state.t = t + 12./13. * dt;
-//    state.t = t + dt;
-//    state.t = t + 1./2.*dt;
-//    af::array k2 = dt * f(t + 1./4.*dt  , m   +    1./4.    * k1                                                                               );
-//    af::array k3 = dt * f(t + 3./8.*dt  , m   +    3./32.   * k1  + 9/32.       * k2                                                           );
-//    af::array k4 = dt * f(t + 12./13.*dt, m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     );
-//    af::array k5 = dt * f(t + dt        , m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                );
-//    af::array k6 = dt * f(t + 1./2.*dt  , m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5);
-//  
-//    af::array sumbk = 16./135. * k1 + 6656./12825.* k3 + 28561./56430.* k4 -9./50. * k5 + 2./55. *k6;
-//    af::array rk_error = sumbk - ( 25./216. * k1 + 1408./2565. * k3 + 2197./4104. * k4 -1./5. * k5);
-//  
-//    //rk_abs_error = maxnorm(rk_error);
-//    err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
-//    return sumbk;
+
+    //stage2
+    state.t = t + 1./4. * dt;
+    state.m = m   +    1./4.    * k1                                                                               ;
+    af::array k2 = dt * f(state);
+
+    //stage3
+    state.t = t + 3./8. * dt;
+    state.m = m   +    3./32.   * k1  + 9/32.       * k2                                                           ;
+    af::array k3 = dt * f(state);
+
+    //stage4
+    state.t = t + 12./13. * dt;
+    state.m = m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     ;
+    af::array k4 = dt * f(state);
+
+    //stage5
+    state.t = t + dt;
+    state.m = m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                ;
+    af::array k5 = dt * f(state);
+
+    //stage6
+    state.t = t + 1./2.*dt;
+    state.m = m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5;
+    af::array k6 = dt * f(state);
+  
+    //af::array k2 = dt * f(t + 1./4.*dt  , m   +    1./4.    * k1                                                                               );
+    //af::array k3 = dt * f(t + 3./8.*dt  , m   +    3./32.   * k1  + 9/32.       * k2                                                           );
+    //af::array k4 = dt * f(t + 12./13.*dt, m   + 1932./2197. * k1  - 7200./2197. * k2   +  7296./2197. * k3                                     );
+    //af::array k5 = dt * f(t + dt        , m   +  439./216.  * k1  -     8.      * k2   +  3680./513.  * k3  -   845./4104. * k4                );
+    //af::array k6 = dt * f(t + 1./2.*dt  , m   -    8./27.   * k1  +     2.      * k2   -  3544./2565. * k3  +  1859./4104. * k4  - 11./40. * k5);
+  
+    af::array sumbk = 16./135. * k1 + 6656./12825.* k3 + 28561./56430.* k4 -9./50. * k5 + 2./55. *k6;
+    af::array rk_error = sumbk - ( 25./216. * k1 + 1408./2565. * k3 + 2197./4104. * k4 -1./5. * k5);
+  
+    err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+    return sumbk;
 }
 
 ////TODO

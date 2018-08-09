@@ -7,23 +7,18 @@
 #include "adaptive_runge_kutta.hpp"
 #include <memory>//shared_ptr
 
+typedef std::shared_ptr<LLGTerm> LlgTerm; 
+typedef std::vector<LlgTerm> LlgTerms; 
 
-class NewLlg {
+class NewLlg : public AdaptiveRungeKutta{
     public:
-        NewLlg(std::string scheme = "RKF45");
-        void step(State&);
+        NewLlg(std::string scheme = "RKF45", Controller controller = Controller());
         double E(const State&);
         const bool dissipation_term_only{false};
-        std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
+        LlgTerms llgterms;
     private:
-        af::array fdmdt(const State& state);
-        typedef array (NewLlg::*fptr)(const State& state);
-	fptr GetFPointer(void)
-        {
-            return &NewLlg::fdmdt;
-        }
+        af::array f(const State& state);
         af::array fheff(const State& state);
-        AdaptiveRungeKutta integrator = AdaptiveRungeKutta(this->NewLlg::GetFPointer());
          
 };
 

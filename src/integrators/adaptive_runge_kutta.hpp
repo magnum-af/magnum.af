@@ -5,14 +5,12 @@
 #include "../func.hpp"
 #include "../state.hpp"
 
-typedef array (*callback_function)(const State& state);
-
 class AdaptiveRungeKutta {
     public:
-        AdaptiveRungeKutta(callback_function f, std::string scheme = "RKF45", Controller controller = Controller());
+        AdaptiveRungeKutta(std::string scheme = "RKF45", Controller controller = Controller());
         void step(State&);
     private:
-        callback_function f;
+        virtual af::array f(const State& state)=0; // callback function s.a. LLG
         const std::string scheme; //Integration scheme s.a. RKF45, DP45, ...
         Controller controller;
         af::array RKF45(State state, const double dt, double& err);
