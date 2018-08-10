@@ -19,6 +19,7 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_in, Controller control
 }
 
 void AdaptiveRungeKutta::step(State& state){
+    af::timer timer_allsteps = af::timer::start();
     af::array mtemp;
     do{
         if (scheme == "RKF45") {
@@ -35,6 +36,7 @@ void AdaptiveRungeKutta::step(State& state){
     state.t+=h; //h is the actual timestep taken by the controller
     h=controller.get_hnext();
     state.m+=mtemp;
+    time_allsteps+=af::timer::stop(timer_allsteps);
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control

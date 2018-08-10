@@ -1,16 +1,16 @@
 #include "new_llg.hpp"
 
-NewLlg::NewLlg(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller) {
+NewLlg::NewLlg(std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
 };
 
 af::array NewLlg::fheff(const State& state){
   af::array solution = constant(0.,state.mesh.dims, f64);
-  //timer_heff=timer::start();
+  af::timer timer_heff=timer::start();
 
   for(unsigned i=0;i<llgterms.size();++i){
     solution+=llgterms[i]->h(state);
   }
-  //time_heff+=af::timer::stop(timer_heff);
+  time_heff+=af::timer::stop(timer_heff);
   return solution;
 }
 

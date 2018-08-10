@@ -49,11 +49,17 @@ int main(int argc, char** argv)
     
     // Relax
     timer t = af::timer::start();
+    double time=0;
     while (state.t < 5.e-10){
+        timer t2 = af::timer::start();
         Llg.step(state);
+        time+=af::timer::stop(t2);
         calcm(state,stream);
     }
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
+    std::cout<<"timerelax              [af-s]: "<< af::timer::stop(t) <<std::endl;
+    std::cout<<"time                   [af-s]: "<< time <<std::endl;
+    std::cout<<"Llg.get_time_allsteps  [af-s]: "<< Llg.get_time_allsteps() <<std::endl;
+    std::cout<<"Llg.get_time_heff      [af-s]: "<< Llg.get_time_heff() <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
     // Prepare switch
@@ -67,16 +73,23 @@ int main(int argc, char** argv)
 
     // Switch
     t = af::timer::start();
+    time=0;
     while (state.t < 1.5e-9){
+        timer t2 = af::timer::start();
         Llg.step(state);
+        time+=af::timer::stop(t2);
         calcm(state,stream);
     }
-    std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
+    std::cout<<"Llg.get_time_heff       [af-s]: "<< Llg.get_time_heff() <<std::endl;
+    std::cout<<"time                    [af-s]: "<< time <<std::endl;
+    std::cout<<"Time integrate 1ns      [af-s]: "<< af::timer::stop(t) <<std::endl;
+    std::cout<<"Llg.get_timer_allsteps  [af-s]: "<< Llg.get_time_allsteps() <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
     stream.close();
     return 0;
 }
 
 void calcm(State state, std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2)<< "\t" << std::endl;
+    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))<< "\t" << afvalue(sum_dim3(span,span,span,1)) << "\t" << afvalue(sum_dim3(span,span,span,2))<< std::endl;
 }
