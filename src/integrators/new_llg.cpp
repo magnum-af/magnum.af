@@ -5,7 +5,7 @@ NewLlg::NewLlg(std::string scheme, Controller controller, bool dissipation_term_
 
 af::array NewLlg::fheff(const State& state){
   af::array solution = constant(0.,state.mesh.dims, f64);
-  af::timer timer_heff=timer::start();
+  af::timer timer_heff = af::timer::start();
 
   for(unsigned i=0;i<llgterms.size();++i){
     solution+=llgterms[i]->h(state);

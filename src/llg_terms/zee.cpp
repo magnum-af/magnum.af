@@ -15,7 +15,7 @@ Zee::Zee(af::array (*callback_func_in)(State state)): callback_func(callback_fun
     callback=true;
 }
 
-array Zee::h(const State& state){
+af::array Zee::h(const State& state){
     //timer = timer::start();
     //if(param.afsync) sync();
     //time += timer::stop(timer);
