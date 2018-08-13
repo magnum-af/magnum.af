@@ -90,6 +90,6 @@ int main(int argc, char** argv)
 }
 
 void calcm(State state, std::ostream& myfile){
-    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))<< "\t" << afvalue(sum_dim3(span,span,span,1)) << "\t" << afvalue(sum_dim3(span,span,span,2))<< std::endl;
+    array mean_dim3 = mean(mean(mean(state.m,0),1),2);
+    myfile << std::setw(12) << state.t << "\t" << afvalue(mean_dim3(span,span,span,0))<< "\t" << afvalue(mean_dim3(span,span,span,1)) << "\t" << afvalue(mean_dim3(span,span,span,2))<< std::endl;
 }
