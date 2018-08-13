@@ -1,15 +1,15 @@
 #include "adaptive_runge_kutta.hpp"
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_in, Controller controller): 
-  scheme (scheme_in), controller(controller)
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_): 
+  scheme_ (scheme_), controller_(controller_), renormalize_(renormalize_)
     {
-    if (scheme == "RKF45") {
+    if (scheme_ == "RKF45") {
         std::cout << "Integrators: Initializing RKF45 method." << std::endl;
     }
-    else if (scheme == "DP45") {
+    else if (scheme_ == "DP45") {
         std::cout << "Integrators: Initializing DP45 method." << std::endl;
     }
-    else if (scheme == "BS45") {
+    else if (scheme_ == "BS45") {
         std::cout << "Integrators: Initializing BS45 method." << std::endl;
     }
     else {
@@ -22,25 +22,33 @@ void AdaptiveRungeKutta::step(State& state){
     af::timer timer_allsteps = af::timer::start();
     af::array mtemp;
     do{
-        if (scheme == "RKF45") {
-            mtemp = RKF45(state, h, err);
+        if (scheme_ == "RKF45") {
+            mtemp = RKF45(state, h_, err_);
         }
-        else if (scheme == "DP45")  {
-//            mtemp = DP45(m, t, h, err);
+        else if (scheme_ == "DP45")  {
+//            mtemp = DP45(m, t, h_, err_);
         }
         else {
-//            mtemp = BS45(m, t, h, err); 
+//            mtemp = BS45(m, t, h_, err_); 
         }
-    }while(!controller.success(err,h));
+    }while(!controller_.success(err_, h_));
 
-    state.t+=h; //h is the actual timestep taken by the controller
-    h=controller.get_hnext();
-    state.m+=mtemp;
-    time_allsteps+=af::timer::stop(timer_allsteps);
+    state.t += h_; //h is the actual timestep taken by the controller_
+    h_ = controller_.get_hnext();
+    state.m += mtemp;
+    if (renormalize_){
+        if (state.Ms.isempty()){
+            state.m = renormalize(state.m);
+        }
+        else {
+            state.m = renormalize_handle_zero_values(state.m);
+        }
+    }
+    time_allsteps_+=af::timer::stop(timer_allsteps);
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err)
+af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err_)
 {
     //const double t = state.t;
     //const af::array m = state.m;
@@ -82,14 +90,14 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
     af::array sumbk = 16./135. * k1 + 6656./12825.* k3 + 28561./56430.* k4 -9./50. * k5 + 2./55. *k6;
     af::array rk_error = sumbk - ( 25./216. * k1 + 1408./2565. * k3 + 2197./4104. * k4 -1./5. * k5);
   
-    err=maxnorm(rk_error/controller.givescale(max(state.m,state.m+sumbk)));
+    err_=maxnorm(rk_error/controller_.givescale(max(state.m,state.m+sumbk)));
     return sumbk;
 }
 
 ////TODO
 //// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
 //// Dormand-Prince 4/5 method
-//af::array AdaptiveRungeKutta::DP45(const af::array& m, const double t, const double dt, double& err)
+//af::array AdaptiveRungeKutta::DP45(const af::array& m, const double t, const double dt, double& err_)
 //{
 //    // Iterating over a-matrix and calculating k[i]s
 //    af::array k[8];
@@ -110,7 +118,7 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 //
 //    
 //    const bool llg_wasnormalized=true;//TODO
-//    if(controller.get_reject() || (( controller.get_counter_reject() + controller.get_counter_accepted()) <=0) || llg_wasnormalized){
+//    if(controller_.get_reject() || (( controller_.get_counter_reject() + controller_.get_counter_accepted()) <=0) || llg_wasnormalized){
 //        k[1]   =  f(t, m);
 //        }
 //    else{
@@ -137,13 +145,13 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 //    }
 //    rk_error*=dt;
 //    //!!!Note: here e is already the difference between the ususal b and bhat!!!! (no rk_error=sumbk-rk_error)
-//    err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+//    err_=maxnorm(rk_error/controller_.givescale(max(m,m+sumbk)));
 //    return sumbk;
 //}
 //
 //
 //// Bogacki 4,5 method with sigle error andstepsize control
-//af::array AdaptiveRungeKutta::BS45(const af::array& m, const double t, const double dt , double& err)
+//af::array AdaptiveRungeKutta::BS45(const af::array& m, const double t, const double dt , double& err_)
 //{
 //    af::array k[9];
 //    const int s=8;
@@ -199,7 +207,7 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 //    b[7] = 79937.e0/1113912.e0;
 //    b[8] = 3293.e0/556956.e0;
 //    const bool llg_wasnormalized=true;//TODO
-//    if(controller.get_reject() || (( controller.get_counter_reject() + controller.get_counter_accepted()) <=0) || llg_wasnormalized){
+//    if(controller_.get_reject() || (( controller_.get_counter_reject() + controller_.get_counter_accepted()) <=0) || llg_wasnormalized){
 //    //if(reject || calls==0 || llg_wasnormalized){
 //    //Note: in generalized rkcall use: if(FSAL==false || reject || calls==0 || llg_wasnormalized){
 //      k[1]   =  f(t, m);
@@ -228,7 +236,7 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 //    }
 //    rk_error*=dt;
 //    rk_error=sumbk-rk_error;
-//    err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+//    err_=maxnorm(rk_error/controller_.givescale(max(m,m+sumbk)));
 //  
 //    return sumbk;
 //}

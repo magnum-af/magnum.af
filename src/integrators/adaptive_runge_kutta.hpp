@@ -7,19 +7,21 @@
 
 class AdaptiveRungeKutta {
     public:
-        AdaptiveRungeKutta(std::string scheme = "RKF45", Controller controller = Controller());
+        AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(), const bool renormalize_ = true);
         void step(State&);
-        double get_time_allsteps(){return time_allsteps;}
+        double get_time_allsteps(){return time_allsteps_;}
     private:
         virtual af::array f(const State& state)=0; // callback function s.a. LLG
-        const std::string scheme; //Integration scheme s.a. RKF45, DP45, ...
-        Controller controller;
         af::array RKF45(const State& state, const double dt, double& err);
         af::array DP45(const af::array& m, const double t, const double dt, double& err);
         af::array BS45(const af::array& m, const double t, const double dt , double& err);
-        double h{1.01e-15}; //step size of RK used in controller
-        double err{0}; // error for stepsize controller
-        double time_allsteps{0};
+
+        const std::string scheme_; //Integration scheme s.a. RKF45, DP45, ...
+        Controller controller_;
+        double h_{1.01e-15}; //step size of RK used in controller
+        double err_{0}; // error for stepsize controller
+        double time_allsteps_{0};
+        const bool renormalize_;
 };
 
 #endif

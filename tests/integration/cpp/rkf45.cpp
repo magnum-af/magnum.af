@@ -15,7 +15,7 @@ class Callback : public AdaptiveRungeKutta{
         }
 };
 
-Callback::Callback(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller) {
+Callback::Callback(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false) {
 };
 
 TEST(RKF45IntegrationTest, n) {
