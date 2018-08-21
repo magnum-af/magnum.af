@@ -108,7 +108,7 @@ try
 $ pip install arrayfire
 $ pip install Cython
 
-## magnun.af:
+## magnum.af:
 Note: In new projects, set VTK_DIR by
 
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
