@@ -54,6 +54,7 @@ void AdaptiveRungeKutta::step(State& state){
     }
     time_allsteps_+=af::timer::stop(timer_allsteps);
     step_calls_++;
+    af::eval(state.m);
 }
 
 

@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     State state(mesh,param, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
-    NewLlg Llg = NewLlg();
+    NewLlg Llg = NewLlg("RKF45");
     Llg.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     Llg.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
     
