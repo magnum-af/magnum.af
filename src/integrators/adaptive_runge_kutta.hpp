@@ -15,6 +15,7 @@ class AdaptiveRungeKutta {
         af::array RKF45(const State& state, const double dt, double& err);
         af::array DP45(const State& state, const double dt, double& err);
         af::array BS45(const State& state, const double dt , double& err);
+        af::array DP78(const State& state, const double dt, double& err);
         af::array BS23(const State& state, const double dt , double& err);
 
         const std::string scheme_; //Integration scheme s.a. RKF45, DP45, ...
