@@ -21,6 +21,8 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controlle
     }
 }
 
+
+
 void AdaptiveRungeKutta::step(State& state){
     af::timer timer_allsteps = af::timer::start();
     af::array mtemp;
@@ -98,7 +100,6 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 
 
 // Dormand-Prince 4/5 method
-// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
 af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_)
 {
     State tempstate=state;
@@ -163,6 +164,7 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
     err_=maxnorm(rk_error/controller_.givescale(max(state.m,state.m+sumbk)));
     return sumbk;
 }
+
 
 
 // Bogacki 4,5 method with sigle error andstepsize control
@@ -274,6 +276,8 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt , double&
     return sumbk;
 }
 
+
+
 // Bogacki-Shampine 2/3rd order  with stepsize control
 af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& err)
 {
@@ -311,8 +315,11 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
     return sumbk;
 }
 
+
+
+//// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
+//////TODO far too high error in integration test
 //// Dormand-Prince 4/5 method
-////TODO far too high error in integration test
 //// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
 //af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_)
 //{
@@ -334,37 +341,36 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    a[6][1]=9017.0/3168.0,a[6][2]=-355.0/33.0,a[6][3]=46732.0/5247.0,a[6][4]=49.0/176.0,a[6][5]=-5103.0/18656.0,
 //    a[7][1]=35.0/384.0,a[7][3]=500.0/1113.0,a[7][4]=125.0/192.0,a[7][5]=-2187.0/6784.0,a[7][6]=11.0/84.0;
 //
-//    
-//    const bool llg_wasnormalized=true;//TODO
-//    if(controller_.get_reject() || (( controller_.get_counter_reject() + controller_.get_counter_accepted()) <=0) || llg_wasnormalized){
-//        k[1]   =  f(state);
-//        }
-//    else{
-//        k[1]=k[s];
+//    // Stage 1
+//    if( controller_.get_reject() || renormalize_ || step_calls_ == 0)
+//    {
+//        k[1]   = dt * f(tempstate);
 //    }
+//    else
+//    {
+//        k[1]=k_FSAL;
+//    }
+//    // Stages 2-7
 //    for(int i=2;i<=s;i++){
 //        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
 //        for(int j=1;j<i;j++){
 //            rktemp+=a[i][j] * k[j];
 //        }
-//        rktemp*=dt;
 //        tempstate.t = state.t + c[i];
 //        tempstate.m = state.m + rktemp;
-//        k[i]= f(tempstate); 
-//        //k[i]= f(t+c[i], m + rktemp); 
+//        k[i]= dt * f(tempstate); 
 //    }
 //    //Local extrapolation using 5th order approx
 //    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
 //    for(int i=1;i<s;i++){
 //        sumbk+=a[s][i]*k[i];
 //    }
-//    sumbk*=dt;
 //    //Error estimation using 4th order approx
 //    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
 //    for(int i=1;i<=s;i++){
 //        rk_error+=e[i]*k[i];
 //    }
-//    rk_error*=dt;
+//    k_FSAL=k[7];
 //    //!!!Note: here e is already the difference between the ususal b and bhat!!!! (no rk_error=sumbk-rk_error)
 //    err_=maxnorm(rk_error/controller_.givescale(max(state.m,state.m+sumbk)));
 //    return sumbk;
