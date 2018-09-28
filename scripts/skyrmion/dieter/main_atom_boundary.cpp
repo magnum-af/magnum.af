@@ -63,11 +63,6 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
-
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));

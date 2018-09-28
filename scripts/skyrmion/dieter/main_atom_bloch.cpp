@@ -16,25 +16,28 @@ int main(int argc, char** argv)
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
 
     setDevice(argc>2? std::stoi(argv[2]):0);
+    std::string path_mrelax(argc>3? argv[3]: "");
     //if(argc>1) setDevice(std::stoi(argv[2]));
     info();
 
     // Parameter initialization
-    const int nxy = 4*90, nz=1;
-    const double dx=0.25e-9;
+    double length = 90e-9; //[nm]
+    const double dx=0.6e-9;
+    const double dz=0.6e-9;
+    const int nz = 1;
+    const int nx = (int)(length/dx);
+    std::cout << "nx = "<< nx << std::endl;
   
     double n_interp = 60;
-    double string_dt=5e-14;
+    double string_dt=1e-13;
     const int string_steps = 10000;
-    double string_abort_rel_diff = 1e-12;
-    double string_abort_abs_diff = 1e-27;
-
+  
   
     //Generating Objects
-    Mesh mesh(nxy,nxy,nz,dx,dx,dx);
+    Mesh mesh(nx,nx,nz,dx,dx,dz);
     Param param = Param();
-    param.ms    = 0.72/param.mu0;
-    param.A     = 1.5e-11;
+    param.ms    = 580000;
+    param.A     = 15e-12;
     param.alpha = 1;
     param.D=3e-3;
     param.Ku1=0.6e6;
@@ -44,7 +47,6 @@ int main(int argc, char** argv)
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
-  
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      m(span,span,span,2) = -1;
@@ -53,7 +55,7 @@ int main(int argc, char** argv)
              const double rx=double(ix)-mesh.n0/2.;
              const double ry=double(iy)-mesh.n1/2.;
              const double r = sqrt(pow(rx,2)+pow(ry,2));
-             if(r>30/4.) m(ix,iy,span,2)=1.;
+             if(r>nx/4.) m(ix,iy,span,2)=1.;
          }
      }
   
@@ -61,25 +63,30 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
+    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
-  
+    
     LLG Llg(state,llgterm);
+
+    if(!exists (path_mrelax)){
+        std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
+        timer t = af::timer::start();
+        while (state.t < 15.e-10){
+            state.m=Llg.llgstep(state);
+        }
+        double timerelax= af::timer::stop(t);
+        vti_writer_atom(state.m, mesh ,filepath + "relax");
   
-    timer t = af::timer::start();
-    double E_prev=1e20;
-    while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-20){
-        E_prev=Llg.E(state);
-        state.m=Llg.llgstep(state);
-        if( state.steps % 1000 == 0) std::cout << "step " << state.steps << std::endl;
+        std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
+        state.t=0;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
-    double timerelax= af::timer::stop(t);
-    vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
-  
-    std::cout<<"timerelax [af-s]: "<< timerelax << ", steps = " << state.steps << std::endl; 
-  
+    else{
+        std::cout << "found mrelax. loading magnetization" << std::endl;
+        vti_reader(state.m, state.mesh, path_mrelax);
+    }
+
     array last   = constant( 0,mesh.dims,f64);
     last(span,span,span,2)=1;
     
