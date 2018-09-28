@@ -22,9 +22,7 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     double length = 90e-9; //[nm]
-    const double dx=0.6e-9;
-    const double dz=0.6e-9;
-    const int nz = 1;
+    const double dx=0.5e-9;
     const int nx = (int)(length/dx);
     std::cout << "nx = "<< nx << std::endl;
   
@@ -36,7 +34,7 @@ int main(int argc, char** argv)
   
   
     //Generating Objects
-    Mesh mesh(nx,nx,nz,dx,dx,dz);
+    Mesh mesh(nx,nx,1,dx,dx,dx);
     Param param = Param();
     param.ms    = 580000;
     param.A     = 15e-12;
