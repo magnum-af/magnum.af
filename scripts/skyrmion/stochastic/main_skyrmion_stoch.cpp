@@ -163,7 +163,7 @@ int main(int argc, char** argv)
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
-        vti_reader(m_temp, testmesh, "path_mrelax");
+        vti_reader(m_temp, testmesh, path_mrelax);
     }
     //vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //set_boundary_mz(m);

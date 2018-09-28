@@ -1,13 +1,13 @@
 #!/bin/bash
-# Usage .sh absolute/path/to/write/output/ <optional-GPU number>
+# Usage .sh absolute/path/to/write/output/ optional-GPU number main.cpp
 set -e
 
 # calling this scripts's directory
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../../..
-buildfile=main_skyrmion_blochpoint.cpp
-plotfile=plot*.sh
+buildfile=$3
+plotfile=plot*
 
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
@@ -29,10 +29,11 @@ fi
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
+cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
-    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 > $1/cout.txt 2>&1"
+    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 $4 > $1/cout.txt 2>&1"
 #elif [ -e $magafdir/bin/magnum.af-cuda ];then
 #    screen -d -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $3> $1/cout.txt 2>&1"
 else
