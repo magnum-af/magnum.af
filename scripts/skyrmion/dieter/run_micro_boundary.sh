@@ -1,21 +1,12 @@
 #!/bin/bash
-# Usage .sh absolute/path/to/write/to
-
-echo "Enter dt [s]"
-read dt
-echo "dt = $dt [s]"
-
-echo "Enter T [K]"
-read T
-echo "T = $T [K]"
-
-GPU=0
+# Usage .sh absolute/path/to/write/output/ <optional-GPU number>
+set -e
 
 # calling this scripts's directory
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../../..
-buildfile=main_skyrmion_stoch.cpp
+buildfile=main_micro_boundary.cpp
 plotfile=plot*.sh
 
 # checking if other main exists in /src
@@ -30,22 +21,23 @@ rm $magafdir/src/$buildfile
 $magafdir/scripts/bash/check_main_remove.sh
 
 # creating write dir
-$magafdir/scripts/bash/check_write_dir.sh $1/skyrm
+$magafdir/scripts/bash/check_write_dir.sh $1
+if [ "$?" == 1 ];then
+    exit 1
+fi
 
 # copying files
 cp $magafdir/bin/magnum.af-* $1
 cp $buildfile $1
-cp $plotfile $1
 
 # running
 if [ -e $magafdir/bin/magnum.af-opencl ];then
-    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $GPU $T $dt > $1/cout.txt"
+    screen -d -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 > $1/cout.txt 2>&1"
+#elif [ -e $magafdir/bin/magnum.af-cuda ];then
+#    screen -d -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $3> $1/cout.txt 2>&1"
 else
-    $magafdir/bin/magnum.af-cpu $1 $GPU $T $dt
+    $magafdir/bin/magnum.af-cpu $1 $2 $3
 fi
 
 echo "To follow cout.dat run:"
 echo "tail -f $1/cout.txt"
-
-# run plot
-#./plot_skyrmion_stoch.sh $1/m0.dat

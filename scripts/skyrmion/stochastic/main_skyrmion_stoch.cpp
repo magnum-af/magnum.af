@@ -12,22 +12,22 @@ void calcm(State state, std::ostream& myfile, double get_avg){
     //myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
 }
 
-void set_boundary_mz(array& m){
-    m( 0, span, span, 0)=0.;
-    m(-1, span, span, 0)=0.;
-    m(span,  0, span, 0)=0.;
-    m(span, -1, span, 0)=0.;
-
-    m( 0, span, span, 1)=0.;
-    m(-1, span, span, 1)=0.;
-    m(span,  0, span, 1)=0.;
-    m(span, -1, span, 1)=0.;
-
-    m( 0, span, span, 2)=1.;
-    m(-1, span, span, 2)=1.;
-    m(span,  0, span, 2)=1.;
-    m(span, -1, span, 2)=1.;
-}
+//void set_boundary_mz(array& m){
+//    m( 0, span, span, 0)=0.;
+//    m(-1, span, span, 0)=0.;
+//    m(span,  0, span, 0)=0.;
+//    m(span, -1, span, 0)=0.;
+//
+//    m( 0, span, span, 1)=0.;
+//    m(-1, span, span, 1)=0.;
+//    m(span,  0, span, 1)=0.;
+//    m(span, -1, span, 1)=0.;
+//
+//    m( 0, span, span, 2)=1.;
+//    m(-1, span, span, 2)=1.;
+//    m(span,  0, span, 2)=1.;
+//    m(span, -1, span, 2)=1.;
+//}
 
 class Detector{
     public:
@@ -61,30 +61,32 @@ class Detector{
 
 int main(int argc, char** argv)
 {
-//    Detector detector = Detector ();
-//    int i = -1;
-//    detector.threshold = 3000;
-//    while (detector.event == false ){
-//        i++;
-//    //for (int i=0; i < 4000; i++){
-//        detector.add_data(i);
-//        std::cout << i <<", "<< detector.data.size()<<", "<< detector.data.front()<<" , "<< detector.data.back()<<" , "<< detector.get_avg()<<std::endl;
-//    }
-
     std::cout<<"argc = "<<argc<<std::endl;
-     for (int i=0; i<argc; i++)
+    for (int i=0; i<argc; i++){
           cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
+    }
     std::string filepath(argc>1? argv[1]: "../Data/skyrmion_stoch/Testing");
     filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
-
-    std::string indatapath(argc>5? argv[5]: "/home/pth/git/magnum.af/scripts/skyrmion/stoch_parallel/data");
-    indatapath.append("/");
-
     setDevice(argc>2? std::stoi(argv[2]):0);
-    //if(argc>1) setDevice(std::stoi(argv[2]));
+
+    //std::string indatapath(argc>5? argv[5]: "/home/pth/git/magnum.af/scripts/skyrmion/stoch_parallel/data");
+    //indatapath.append("/");
+    std::string path_mrelax(argc>5? argv[5]: "");
     info();
+
+    //Reading energy barrier from calculation performed with main_n30.cpp
+    double e_barrier=NaN;//TODO
+    ////ifstream stream(filepath+"E_barrier/E_barrier.dat");
+    //ifstream stream(indatapath + "E_barrier.dat");
+    ////ifstream stream("../../E_barrier/E_barrier.dat");
+    //if (stream.is_open()){
+    //    stream >> e_barrier;
+    //}
+    //stream.close();
+    //std::cout.precision(12);
+    //std::cout <<"E_barrier from prev calculation = "<< e_barrier <<std::endl;
+    //END TODO
 
     // Parameter initialization
     const int nx = 30, ny=30 ,nz=1;
@@ -122,25 +124,54 @@ int main(int argc, char** argv)
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 
-    array m; 
+    array m_temp; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
-    vti_reader(m, testmesh, indatapath + "relax.vti");
+    //vti_reader(m, testmesh, indatapath + "relax.vti");
+    if(!exists (path_mrelax)){
+        std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
+        // Initial magnetic field
+        array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
+        m(span,span,span,2) = -1;
+        for(int ix=0;ix<mesh.n0;ix++){
+            for(int iy=0;iy<mesh.n1;iy++){
+                const double rx=double(ix)-mesh.n0/2.;
+                const double ry=double(iy)-mesh.n1/2.;
+                const double r = sqrt(pow(rx,2)+pow(ry,2));
+                if(r>nx/4.) m(ix,iy,span,2)=1.;
+            }
+        }
+  
+        State state(mesh,param, m);
+        vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+  
+        std::vector<llgt_ptr> llgterm;
+        
+        llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
+        llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
+        llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
+        llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+  
+        LLG Llg(state,llgterm);
+  
+        timer t = af::timer::start();
+        while (state.t < 8.e-10){
+            state.m=Llg.llgstep(state);
+        }
+        double timerelax= af::timer::stop(t);
+        vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
+        m_temp=m;
+    }
+    else{
+        std::cout << "found mrelax. loading magnetization" << std::endl;
+        vti_reader(m_temp, testmesh, "path_mrelax");
+    }
     //vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
     
-    //Reading energy barrier from calculation performed with main_n30.cpp
-    double e_barrier;
-    //ifstream stream(filepath+"E_barrier/E_barrier.dat");
-    ifstream stream(indatapath + "E_barrier.dat");
-    //ifstream stream("../../E_barrier/E_barrier.dat");
-    if (stream.is_open()){
-        stream >> e_barrier;
-    }
-    stream.close();
-    std::cout.precision(12);
-    std::cout <<"E_barrier from prev calculation = "<< e_barrier <<std::endl;
+    af::array m = m_temp; //NOTE: not beautiful 
+    
 
     double A = pow(10,9);
     double k = pow(10,8);
@@ -152,6 +183,7 @@ int main(int argc, char** argv)
     //Assemble Stochastic Integrator and State object
     State state(mesh,param, m);
     std::vector<llgt_ptr> llgterm;
+    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
@@ -178,7 +210,7 @@ int main(int argc, char** argv)
             Stoch.step(state,dt); 
             //set_boundary_mz(state.m);
             detector.add_data(meani(state.m,2));
-            calcm(state, stream_m, detector.get_avg());
+            if ( i % 500 == 0) calcm(state, stream_m, detector.get_avg());
             if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
             if(i % (int)(1e-10/dt) == 0){ 
 		vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
