@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     double n_interp = 60;
     double string_dt=1e-13;
     const int string_steps = 10000;
+    double string_abort_rel_diff = 1e-12;
+    double string_abort_abs_diff = 1e-27;
   
   
     //Generating Objects
@@ -137,7 +139,7 @@ int main(int argc, char** argv)
         std::cout   <<i<<"\t"<<*max-string.E[0]<<"\t"<<string.E[0]<<"\t"<<*max-string.E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
         stream_steps<<i<<"\t"<<*max-string.E[0]<<"\t"<<string.E[0]<<"\t"<<*max-string.E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
         stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-        stream_E_barrier<<max_lowest<<"\t"<<nxy<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
+        stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
         stream_E_barrier.close();
         for(unsigned j=0;j<string.E.size();++j)
         {
@@ -158,7 +160,7 @@ int main(int argc, char** argv)
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-    stream_E_barrier<<max_lowest<<"\t"<<nxy<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
+    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
     stream_E_barrier.close();
   
     std::ofstream myfileE;
