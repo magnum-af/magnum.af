@@ -96,7 +96,8 @@ int main(int argc, char** argv)
 
     // Direct x-boundary
     for(int j=0; j < n_interp; j++){
-        int i = ((mesh.n0/2)/n_interp + 1) * j;
+        int i = (int)((mesh.n0/2)/n_interp + 1) * j;
+        if (i > mesh.n0) i = mesh.n0;
         std::cout << "i= " << i<< std::endl;
         array mm = array(state.m);
         mm=shift(mm,i);

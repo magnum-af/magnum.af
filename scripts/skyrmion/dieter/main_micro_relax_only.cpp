@@ -19,24 +19,18 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    double length = 90e-9; //[nm]
-    const double dx=0.5e-9;
-    const int nx = (int)(length/dx);
-    std::cout << "nx = "<< nx << std::endl;
+    const int nx = 90, nz=1;
+    const double dx=1.0e-9;
+    const double dz=0.6e-9;
   
     //Generating Objects
-    Mesh mesh(nx,nx,1,dx,dx,dx);
+    Mesh mesh(nx,nx,nz,dx,dx,dz);
     Param param = Param();
     param.ms    = 580000;
     param.A     = 15e-12;
     param.alpha = 1;
     param.D=3e-3;
     param.Ku1=0.6e6;
-  
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -54,10 +48,11 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-//    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
+    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    
     
     LLG Llg(state,llgterm);
 
