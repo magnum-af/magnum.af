@@ -17,6 +17,16 @@ double LLG::E(const State& state){
 //array LLG::givescale(const array& a){
 //  return atol+rtol*abs(a);
 //}
+void LLG::write_fieldterms_atom(const State& state, const std::string filepath){
+    for(unsigned i=0;i<Fieldterms.size();++i){
+        vti_writer_atom(Fieldterms[i]->h(state), state.mesh ,filepath + std::to_string(i));
+    }
+}
+void LLG::write_fieldterms_micro(const State& state, const std::string filepath){
+    for(unsigned i=0;i<Fieldterms.size();++i){
+        vti_writer_micro(Fieldterms[i]->h(state), state.mesh ,filepath + std::to_string(i));
+    }
+}
 
 array LLG::fdmdt(const array& m, const array& heff){
   calls_fdmdt++;

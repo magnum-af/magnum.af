@@ -23,6 +23,9 @@ class LLG {
     double E(const State& state);
     double cpu_time();
     void print_cpu_time(std::ostream&);
+    // vtk fieldterm writer
+    void write_fieldterms_atom (const State& state, const std::string filepath);
+    void write_fieldterms_micro(const State& state, const std::string filepath);
     
     // rhs of the LLG equation
     bool fdmdt_dissipation_term_only{false};//If ture, only use the energy dissipation term (i.e. Mx(MxH)) in the LLG
