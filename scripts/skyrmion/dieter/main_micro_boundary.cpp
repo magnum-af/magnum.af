@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 90, nz=1;
-    const double dx=1.0e-9;
+    const double dx=2.0e-9;
     const double dz=0.6e-9;
   
     double n_interp = 60;
@@ -62,26 +62,29 @@ int main(int argc, char** argv)
     LLG Llg(state,llgterm);
   
     timer t = af::timer::start();
-    while (state.t < 8.e-10){
-        state.m=Llg.llgstep(state);
+    double E_prev=1e20;
+    while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-8){
+        E_prev=Llg.E(state);
+        for ( int i = 0; i < 100; i++){
+            state.m=Llg.llgstep(state);
+        }
+        if( state.steps % 1000 == 0) std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
     double timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh ,filepath + "relax");
   
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
   
-    array last   = constant( 0,mesh.dims,f64);
-    last(span,span,span,2)=1;
-    
     std::vector<State> inputimages; 
-    //inputimages.push_back(state);
 
     // Direct x-boundary
-    for(int i=0; i < mesh.n0; i++){
+    // TODO temp fix: going to left boundary to check boundary annihilatoin. In relax skyrm, top and right boundary seems wrong
+    inputimages.push_back(State(mesh, param, state.m));
+    for(int i=1; i < mesh.n0; i++){
         array mm = array(state.m);
-        mm=shift(mm,i);
-        mm(seq(0,i),span,span,span)=0;
-        mm(seq(0,i),span,span,2)=1.;
+        mm=shift(mm,-i);
+        mm(seq(-i,-1),span,span,span)=0;
+        mm(seq(-i,-1),span,span,2)=1.;
         inputimages.push_back(State(mesh, param, mm));
     }
 
