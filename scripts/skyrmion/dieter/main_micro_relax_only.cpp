@@ -45,7 +45,7 @@ int main(int argc, char** argv)
      }
   
     State state(mesh,param, m);
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
     //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         state.m=Llg.llgstep(state);
     }
     double timerelax= af::timer::stop(t);
-    vti_writer_atom(state.m, mesh ,filepath + "relax");
+    vti_writer_micro(state.m, mesh ,filepath + "relax");
   
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
     return 0;

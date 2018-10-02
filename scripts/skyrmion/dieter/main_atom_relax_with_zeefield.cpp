@@ -58,16 +58,35 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
     llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+
+    array zeeswitch = constant(0.0,1,1,1,3,f64);
+    zeeswitch(0,0,0,2)= - 0.07 * pow(param.ms,2) * param.mu0;
+    zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
+    llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
     
     LLG Llg(state,llgterm);
+    Llg.write_fieldterms_micro(state, filepath + "init_field_micro_");
+    Llg.write_fieldterms_atom (state, filepath + "init_field_atom_");
 
-    std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
     timer t = af::timer::start();
-    while (state.t < 15.e-10){
-        state.m=Llg.llgstep(state);
+    double E_prev=1e20;
+    while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-10){
+        E_prev=Llg.E(state);
+        for ( int i = 0; i < 100; i++){
+            state.m=Llg.llgstep(state);
+        }
+        if( state.steps % 1000 == 0) std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
     double timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh ,filepath + "relax");
+    Llg.write_fieldterms_micro(state, filepath);
+    Llg.write_fieldterms_micro(state, filepath + "field_micro_");
+    Llg.write_fieldterms_atom (state, filepath + "field_atom_");
+    //vti_writer_atom(Llg.Fieldterms[0]->h(state), mesh ,filepath + "aDemag");
+    //vti_writer_atom(Llg.Fieldterms[1]->h(state), mesh ,filepath + "aExch");
+    //vti_writer_atom(Llg.Fieldterms[2]->h(state), mesh ,filepath + "aDMI");
+    //vti_writer_atom(Llg.Fieldterms[3]->h(state), mesh ,filepath + "aAni");
+    //vti_writer_atom(Llg.Fieldterms[4]->h(state), mesh ,filepath + "aZee");
   
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
     return 0;
