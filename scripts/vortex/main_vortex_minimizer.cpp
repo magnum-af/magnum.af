@@ -97,8 +97,8 @@ int main(int argc, char** argv)
     //obtaining relaxed magnetization
     if(!exists (path_mrelax)){
         timer t = af::timer::start();
-        std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
         minimizer.minimize(state);
+        std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
         vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
     }
     else{
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
-        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,0)));
+        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,0)));//TODO or llgterms[2]?
         state.t+=1.;
         state.steps++;
         if( state.steps % 10 == 0){
