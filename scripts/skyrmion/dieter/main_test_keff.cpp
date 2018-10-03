@@ -16,14 +16,14 @@ int main(int argc, char** argv)
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
 
     setDevice(argc>2? std::stoi(argv[2]):0);
-    //if(argc>1) setDevice(std::stoi(argv[2]));
     info();
 
     // Parameter initialization
-    double length = 90e-9; //[nm]
-    const double dx=0.25e-9;
-    const int nx = (int)(length/dx);
-    std::cout << "nx = "<< nx << std::endl;
+    //double length = 00.1e-9; //[nm]
+    const int nx = 2500;
+    const double dx=1.e-9;
+    //const int nx = (int)(length/dx);
+    //std::cout << "nx = "<< nx << std::endl;
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
@@ -44,28 +44,39 @@ int main(int argc, char** argv)
     m(span,span,span,0)=1.;
 
     State state(mesh,param, m);
-    //vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
   
     LLG Llg(state,llgterm);
 
+    // Inplane 
+    vti_writer_micro(state.m, state.mesh ,(filepath + "m_inplane").c_str());
     const double E_inplane = Llg.E(state);
+    Llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
+
+    // Out-of-plane
     state.m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     state.m(span,span,span,2)=1.;
+    vti_writer_micro(state.m, state.mesh ,(filepath + "m_ouf_of_plane").c_str());
     const double E_out_of_plane = Llg.E(state);
-    const double Keff = pow(param.ms,2) * param.mu0 * pow(mesh.dx,3) * pow(mesh.n0,2);
-    std::cout << E_inplane << "\t" << E_out_of_plane << "\t" << E_inplane - E_out_of_plane << "\t" << Keff << std::endl;
+    Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
+
+    // Keff 
+    const double Keff = - 0.5 * pow(param.ms,2) * param.mu0 * pow(mesh.dx,3) * mesh.n0 * mesh.n1 * mesh.n2;
+
+    const double g_electron = 2.002319;
+    const double correction = 1.07831;
+
+    const double mub = 9.27400999e-24;
+    const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub,2)/pow(dx,3);
+    //TODO
+    //const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub,2)/pow(dx,3) * mesh.n0 * mesh.n1 * mesh.n2;
+
+    std::cout << "deltaEd = " << deltaEd << std::endl;
+
+    std::cout << "E_inplance= " << E_inplane << "\n" << "E_out_of_plane= " << E_out_of_plane << "\n" << "E_inplane - E_out_of_plane= " << E_inplane - E_out_of_plane << "\n" << "Keff= " <<  Keff << std::endl;
     std::cout << "dE/Keff = " << (E_inplane - E_out_of_plane)/Keff << std::endl;
-    // TODO values?
 
     return 0;
 }
