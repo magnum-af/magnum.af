@@ -26,6 +26,7 @@ class LLG {
     // vtk fieldterm writer
     void write_fieldterms_atom (const State& state, const std::string filepath);
     void write_fieldterms_micro(const State& state, const std::string filepath);
+    void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
     
     // rhs of the LLG equation
     bool fdmdt_dissipation_term_only{false};//If ture, only use the energy dissipation term (i.e. Mx(MxH)) in the LLG

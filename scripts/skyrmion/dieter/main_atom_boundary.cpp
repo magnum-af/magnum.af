@@ -60,7 +60,7 @@ int main(int argc, char** argv)
      }
   
     State state(mesh,param, m);
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
@@ -72,14 +72,8 @@ int main(int argc, char** argv)
 
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
-        timer t = af::timer::start();
-        while (state.t < 15.e-10){
-            state.m=Llg.llgstep(state);
-        }
-        double timerelax= af::timer::stop(t);
-        vti_writer_atom(state.m, mesh ,filepath + "relax");
-  
-        std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
+        Llg.relax(state);
+        vti_writer_micro(state.m, mesh ,filepath + "relax");
         state.t=0;
     }
     else{
@@ -188,7 +182,7 @@ int main(int argc, char** argv)
       std::string name = filepath;
       name.append("skyrm_image_max_lowest");
       name.append(std::to_string(i));
-      vti_writer_atom(images_max_lowest[i].m, mesh ,name.c_str());
+      vti_writer_micro(images_max_lowest[i].m, mesh ,name.c_str());
     }
   
     for(unsigned i=0;i<Llg.Fieldterms.size();++i){
