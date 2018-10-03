@@ -110,7 +110,7 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
   }
   array Naf(6,n2_exp,n1_exp,n0_exp,N);
   Naf=reorder(Naf,3,2,1,0);
-  Naf* = 1./(4.*M_PI);
+  Naf *= 1./(4.*M_PI);
   //print("ATOMISTIC_DEMAG::N_atomistic: Naf",Naf);
   //print("Demag:Naf", Naf(0,0,0,span));
   delete [] N;
