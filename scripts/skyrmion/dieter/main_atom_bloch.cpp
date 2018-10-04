@@ -2,7 +2,6 @@
 #include "magnum_af.hpp"
 
 using namespace af; 
-typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 
 int main(int argc, char** argv)
 {
@@ -50,13 +49,13 @@ int main(int argc, char** argv)
     State state(mesh, param, mesh.skyrmconf());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    NewLlg Llg;
+    //std::vector<llgt_ptr> llgterm;
+    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
+    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
     
-    LLG Llg(state,llgterm);
 
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
@@ -76,7 +75,7 @@ int main(int argc, char** argv)
     inputimages.push_back(state);
     inputimages.push_back(State(mesh,param, last));
   
-    String string(state,inputimages, n_interp, string_dt ,llgterm);
+    String string(state,inputimages, n_interp, string_dt , Llg.llgterms);
     std::cout.precision(12);
   
     std::ofstream stream_E_barrier;
@@ -166,12 +165,12 @@ int main(int argc, char** argv)
       vti_writer_micro(images_max_lowest[i].m, mesh ,name.c_str());
     }
   
-    for(unsigned i=0;i<Llg.Fieldterms.size();++i){
-      std::cout<<"get_cpu_time()"<<std::endl;
-      std::cout<<i<<"\t"<<Llg.cpu_time()<<std::endl;
-      stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
-      stream_steps<<"#"<<i<<"\t"<<Llg.cpu_time()<<std::endl;
-    }
+    //for(unsigned i=0;i<Llg.llgterms.size();++i){
+    //  std::cout<<"get_cpu_time()"<<std::endl;
+    //  std::cout<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //  stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
+    //  stream_steps<<"#"<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //}
   
     myfileE.close();
     stream_steps.close();
