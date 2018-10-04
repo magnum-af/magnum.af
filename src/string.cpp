@@ -30,6 +30,112 @@ String::String(State statein, std::vector<State> inputimages, int n_interp_in, d
     vec_renormalize();
 }
 
+void String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
+    std::cout.precision(12);
+  
+    std::ofstream stream_E_barrier;
+    stream_E_barrier.precision(12);
+  
+    std::ofstream stream_steps;
+    stream_steps.precision(12);
+    stream_steps.open ((filepath + "steps.dat").c_str());
+  
+    std::ofstream stream_E_curves;
+    stream_E_curves.precision(12);
+    stream_E_curves.open ((filepath + "E_curves.dat").c_str());
+  
+    double max_lowest=1e100;
+    double max_prev_step=1e100;
+    int i_max_lowest=-1;
+    std::vector<State> images_max_lowest; 
+    std::vector<double> E_max_lowest;
+    for(int i=0; i<string_steps;i++){
+        //af::printMemInfo();
+        this->step();
+        this->calc_E();
+        auto max = std::max_element(std::begin(this->E), std::end(this->E));
+        if(*max-this->E[0]<max_lowest) {
+            max_lowest=*max-this->E[0];
+            i_max_lowest=i;
+            images_max_lowest=this->images;
+            E_max_lowest=this->E;
+        }    
+        if(i>25 && fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))< string_abort_rel_diff){
+            std::cout   <<      "Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
+            stream_steps<<     "#Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
+            break;
+        }
+        if(i>25 && fabs(*max-this->E[0]-max_prev_step) < string_abort_abs_diff){
+            std::cout   <<      "Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
+            stream_steps<<     "#Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
+            break;
+        }
+        std::cout   <<i<<"\t"<<*max-this->E[0]<<"\t"<<this->E[0]<<"\t"<<*max-this->E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))<<std::endl;
+        stream_steps<<i<<"\t"<<*max-this->E[0]<<"\t"<<this->E[0]<<"\t"<<*max-this->E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))<<std::endl;
+        stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
+        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].param.D<<"\t"<<this->images[0].param.Ku1<<"\t"<<this->images[0].param.K_atom<<"\t"<<this->images[0].param.D_atom<<std::endl;
+        stream_E_barrier.close();
+        for(unsigned j=0;j<this->E.size();++j)
+        {
+            stream_E_curves<<i<<" "<<j<<" "<<this->E[j]-this->E[0]<<" "<<this->E[j]-this->E[-1]<<" "<<this->E[j]<<std::endl;
+        }
+        stream_E_curves<<i<<"\n\n"<<std::endl;
+        max_prev_step=*max-this->E[0];
+        if(i%20==1){ 
+            std::cout<<"Writing current skyrm images for iteration"<<i<<std::endl;
+            for(unsigned j = 0; j < this->images.size(); j++){
+                std::string name = filepath;
+                name.append("current_skyrm_image");
+                name.append(std::to_string(j));
+                vti_writer_micro(this->images[j].m, this->images[0].mesh ,name.c_str());
+            }
+        }
+    }
+    std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    stream_E_barrier.close();
+    stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
+    stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].param.D<<"\t"<<this->images[0].param.Ku1<<"\t"<<this->images[0].param.K_atom<<"\t"<<this->images[0].param.D_atom<<std::endl;
+    stream_E_barrier.close();
+  
+    std::ofstream myfileE;
+    myfileE.precision(12);
+    myfileE.open ((filepath + "E_last_step.dat").c_str());
+  
+    std::ofstream stream_max_lowest;
+    stream_max_lowest.precision(12);
+    stream_max_lowest.open ((filepath + "E_max_lowest.dat").c_str());
+  
+    std::cout<<this->E.size()<<"\t"<<this->images.size()<< "\t" <<std::endl;
+    for(unsigned i = 0; i < this->images.size(); i++){
+      std::cout<<"i="<<i<< "\t" << "E= "<<this->E[i]<<std::endl;
+      myfileE<<i<< "\t" << this->E[i]<< "\t" << this->E[i]-this->E[0]<< "\t" << this->E[i]-this->E[-1]<<std::endl;
+      std::string name = filepath;
+      name.append("skyrm_image");
+      name.append(std::to_string(i));
+      vti_writer_micro(this->images[i].m, this->images[0].mesh ,name.c_str());
+      stream_max_lowest<<i<< "\t" << E_max_lowest[i]<<"\t" << E_max_lowest[i]-E_max_lowest[0]<<"\t" << E_max_lowest[i]-E_max_lowest[-1]<<std::endl;
+      name = filepath;
+      name.append("skyrm_image_max_lowest");
+      name.append(std::to_string(i));
+      vti_writer_micro(images_max_lowest[i].m, this->images[0].mesh ,name.c_str());
+    }
+  
+    //for(unsigned i=0;i<Llg.llgterms.size();++i){
+    //  std::cout<<"get_cpu_time()"<<std::endl;
+    //  std::cout<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //  stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
+    //  stream_steps<<"#"<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //}
+  
+    myfileE.close();
+    stream_steps.close();
+    stream_E_curves.close();
+    stream_max_lowest.close();
+};
+
+
+
 void String::calc_E(){
     if(E.empty()==false) E.clear();
     for(int i=0; i<n_interp; i++) E.push_back(Llg.E(images[i]));
