@@ -37,3 +37,15 @@ double NewLlg::E(const State& state){
   return solution;
 }
 
+void NewLlg::relax(State& state, const double precision, const int iloop, const int iwritecout){
+    af::timer t = af::timer::start();
+    double E_prev=1e20;
+    while (fabs((E_prev-E(state))/E_prev) > precision){
+        E_prev=E(state);
+        for ( int i = 0; i<iloop; i++){
+            step(state);
+        }
+        if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
+    }
+    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl; 
+}

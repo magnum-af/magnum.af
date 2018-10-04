@@ -2,14 +2,14 @@
 #define STRING_H
 #include <vector>
 #include "arrayfire.h"
-#include "integrators/llg.hpp"
+#include "integrators/new_llg.hpp"
 class String {
   public:
     String(State state, std::vector<State> inputimages, int n_interp, double dt, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in);
 
     State state;
     //Mesh mesh;
-    LLG Llg;//(state_relax,atol,rtol,hmax,hmin);
+    NewLlg Llg;//(state_relax,atol,rtol,hmax,hmin);
     int n_interp;
     double dt;
     double time{0};

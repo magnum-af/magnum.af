@@ -17,6 +17,7 @@ class NewLlg : public AdaptiveRungeKutta{
         const bool dissipation_term_only;
         LlgTerms llgterms;
         double get_time_heff(){return time_heff;}
+        void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
     private:
         af::array f(const State& state);
         af::array fheff(const State& state);

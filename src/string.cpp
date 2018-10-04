@@ -4,10 +4,11 @@
 using namespace af;
 
 String::String(State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):
-  state(statein), Llg(state, Fieldterms_in), n_interp(n_interp_in), dt(dt_in){
+  state(statein), Llg("RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
 
   //If set true, this only uses the energy dissipation term (i.e. Mx(MxH)) in the LLG
-    Llg.fdmdt_dissipation_term_only=true;
+  // in init  Llg.fdmdt_dissipation_term_only=true;
+  Llg.llgterms = Fieldterms_in;
 
     calc_x(inputimages);
 
@@ -80,12 +81,15 @@ void String::integrate(){
     for(unsigned int i=0;i<images.size();i++){
         double imagtime=images[i].t;
         while (images[i].t < imagtime + dt){
-            images[i].m=Llg.llgstep(images[i]);
+            Llg.step(images[i]);
         }
-        double h=imagtime+dt-images[i].t;
-        double dummy_err;
-        images[i].m += Llg.RKF45(images[i].m,h,dummy_err);
-        //af::eval(images[i].m);//If memory error occurs, uncomment this 
+        // Now skipping step backwards
+        // double h=imagtime+dt-images[i].t;
+        // double dummy_err;
+        // images[i].m += Llg.RKF45(images[i],h,dummy_err);
+        
+        // NOTE:
+        // af::eval(images[i].m);//If memory error occurs, uncomment this 
     }
 }
 
@@ -183,7 +187,7 @@ void String::write_vti(std::string file){
 //    images.push_back(images_interp[i]);
 //    images[i].t=0;//TODO handle time
 //    while (images[i].t < dt){
-//      images[i].m=Llg.llgstep(images[i]);
+//      images[i].m=Llg.step(images[i]);
 //    }
 //    double h=dt-images[i].t;
 //    double dummy_err;
