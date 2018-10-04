@@ -47,19 +47,7 @@ int main(int argc, char** argv)
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
-     // Initial magnetic field
-     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-     m(span,span,span,2) = -1;
-     for(int ix=0;ix<mesh.n0;ix++){
-         for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx,2)+pow(ry,2));
-             if(r>nx/4.) m(ix,iy,span,2)=1.;
-         }
-     }
-  
-    State state(mesh,param, m);
+    State state(mesh, param, mesh.skyrmconf());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
