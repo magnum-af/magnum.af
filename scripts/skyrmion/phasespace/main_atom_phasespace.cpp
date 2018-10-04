@@ -1,20 +1,6 @@
 #include "arrayfire.h"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <algorithm>
-#include <string>
-#include <memory>
-#include "llg.hpp"
-#include "micro_demag.hpp"
-#include "micro_exch.hpp"
-#include "zee.hpp"
-#include "atomistic_demag.hpp"
-#include "atomistic_exchange.hpp"
-#include "atomistic_anisotropy.hpp"
-#include "atomistic_dmi.hpp"
-#include "vtk_IO.hpp"
-#include "string.hpp"
+#include "magnum_af.hpp"
+
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 int main(int argc, char** argv)
 {
