@@ -72,7 +72,6 @@ int main(int argc, char** argv)
     }
 
     String string(state, inputimages, n_interp, string_dt , Llg.llgterms);
-    string.write_vti(filepath+"init_string");
     string.run(filepath);
     return 0;
 }

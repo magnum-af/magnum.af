@@ -31,6 +31,8 @@ String::String(State statein, std::vector<State> inputimages, int n_interp_in, d
 }
 
 void String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
+
+    this->write_vti(filepath+"init_string");
     std::cout.precision(12);
   
     std::ofstream stream_E_barrier;

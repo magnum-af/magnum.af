@@ -41,7 +41,6 @@ int main(int argc, char** argv)
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
     
-
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         Llg.relax(state);
