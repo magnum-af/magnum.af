@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage .sh absolute/path/to/write/output/ optional-GPU number main.cpp
+# Usage .sh $1=absolute/path/to/write/output/ $2=GPU-number $3=main.cpp $4=path/to/relax.vti
 set -e
 
 # calling this scripts's directory
