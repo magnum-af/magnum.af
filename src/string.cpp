@@ -52,9 +52,11 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
     std::vector<State> images_max_lowest; 
     std::vector<double> E_max_lowest;
     for(int i=0; i<string_steps;i++){
+        af::timer t = af::timer::start();
         //af::printMemInfo();
         this->step();
         this->calc_E();
+        // Update maximal values
         auto max = std::max_element(std::begin(this->E), std::end(this->E));
         if(*max-this->E[0]<max_lowest) {
             max_lowest=*max-this->E[0];
@@ -62,18 +64,19 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
             images_max_lowest=this->images;
             E_max_lowest=this->E;
         }    
-        if(i>25 && fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))< string_abort_rel_diff){
-            std::cout   <<      "Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
-            stream_steps<<     "#Exiting loop: Energy barrier relative difference smaller than" << string_abort_rel_diff <<std::endl;
+        // Check for convergence
+        const double abs_diff = fabs(*max-this->E[0]-max_prev_step);
+        const double rel_diff = fabs((2.* abs_diff)/(*max-this->E[0]+max_prev_step));
+        if(i > 25 && rel_diff < string_abort_rel_diff){
+            std::cout <<      "String run: relative difference of two consecutive E_barriers is: rel_diff= " << rel_diff << " This is smaller than " << string_abort_rel_diff <<std::endl;
+            stream_steps <<  "#String run: relative difference of two consecutive E_barriers is: rel_diff= " << rel_diff << " This is smaller than " << string_abort_rel_diff <<std::endl;
             break;
         }
-        if(i>25 && fabs(*max-this->E[0]-max_prev_step) < string_abort_abs_diff){
-            std::cout   <<      "Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
-            stream_steps<<     "#Exiting loop: Energy barrier difference smaller than" << string_abort_abs_diff <<std::endl;
+        if(i > 25 && abs_diff < string_abort_abs_diff){
+            std::cout   <<  "String run: absolute difference of two consecutive E_barriers is: abs_diff= " << abs_diff << " is smaller than " << string_abort_abs_diff <<std::endl;
+            stream_steps<< "#String run: absolute difference of two consecutive E_barriers is: abs_diff= " << abs_diff << " is smaller than " << string_abort_abs_diff <<std::endl;
             break;
         }
-        std::cout   <<i<<"\t"<<*max-this->E[0]<<"\t"<<this->E[0]<<"\t"<<*max-this->E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))<<std::endl;
-        stream_steps<<i<<"\t"<<*max-this->E[0]<<"\t"<<this->E[0]<<"\t"<<*max-this->E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-this->E[0]-max_prev_step)/(*max-this->E[0]+max_prev_step))<<std::endl;
         stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
         stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].param.D<<"\t"<<this->images[0].param.Ku1<<"\t"<<this->images[0].param.K_atom<<"\t"<<this->images[0].param.D_atom<<std::endl;
         stream_E_barrier.close();
@@ -83,7 +86,7 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
         }
         stream_E_curves<<i<<"\n\n"<<std::endl;
         max_prev_step=*max-this->E[0];
-        if(i%20==1){ 
+        if(i%50==1){ 
             std::cout<<"Writing current skyrm images for iteration"<<i<<std::endl;
             for(unsigned j = 0; j < this->images.size(); j++){
                 std::string name = filepath;
@@ -92,13 +95,11 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
                 vti_writer_micro(this->images[j].m, this->images[0].mesh ,name.c_str());
             }
         }
+        std::cout   << i << "\t" << *max-this->E[0 ]<< "\t rate= "<< 1./(af::timer::stop(t)) << " [1/s]" << std::endl;
+        stream_steps<< i << "\t" << *max-this->E[0 ]<< "\t"<< std::endl;
     }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_E_barrier.close();
-    stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-    stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].param.D<<"\t"<<this->images[0].param.Ku1<<"\t"<<this->images[0].param.K_atom<<"\t"<<this->images[0].param.D_atom<<std::endl;
-    stream_E_barrier.close();
   
     std::ofstream myfileE;
     myfileE.precision(12);
