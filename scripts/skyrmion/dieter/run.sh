@@ -32,10 +32,10 @@ cp $buildfile $1
 cp $plotfile $1
 
 # running
-if [ -e $magafdir/bin/magnum.af-opencl ];then
+if [ -e $magafdir/bin/magnum.af-cuda ];then
+    screen -d -S GPU$2 -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $4 > $1/cout.txt 2>&1"
+elif [ -e $magafdir/bin/magnum.af-opencl ];then
     screen -d -S GPU$2 -m bash -c "$magafdir/bin/magnum.af-opencl $1 $2 $4 > $1/cout.txt 2>&1"
-#elif [ -e $magafdir/bin/magnum.af-cuda ];then
-#    screen -d -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-8.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $1 $2 $3> $1/cout.txt 2>&1"
 else
     $magafdir/bin/magnum.af-cpu $1 $2 $3
 fi
