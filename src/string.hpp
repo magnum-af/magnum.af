@@ -2,16 +2,17 @@
 #define STRING_H
 #include <vector>
 #include "arrayfire.h"
-#include "integrators/llg.hpp"
+#include "integrators/new_llg.hpp"
 class String {
   public:
     String(State state, std::vector<State> inputimages, int n_interp, double dt, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in);
+    void run(const std::string filepath, const double string_abort_rel_diff = 1e-12, const double string_abort_abs_diff = 1e-27, const int string_steps = 10000);
 
-    State state;
+    State state;// TODO remove this state instace
     //Mesh mesh;
-    LLG Llg;//(state_relax,atol,rtol,hmax,hmin);
-    int n_interp;
-    double dt;
+    NewLlg Llg;//(state_relax,atol,rtol,hmax,hmin);
+    const int n_interp;
+    const double dt;
     double time{0};
     std::vector<double> x;//Current x values
     std::vector<double> x_interp;//x-values where to interpolate at (will be regular grid)

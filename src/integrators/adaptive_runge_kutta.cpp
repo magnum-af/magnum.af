@@ -59,7 +59,7 @@ void AdaptiveRungeKutta::step(State& state){
         }
     }
     time_allsteps_+=af::timer::stop(timer_allsteps);
-    step_calls_++;
+    state.steps++;
     af::eval(state.m);
 }
 
@@ -126,7 +126,7 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
 
     // Stage 1
     af::array k1;
-    if( controller_.get_reject() || renormalize_ || step_calls_ == 0)
+    if( controller_.get_reject() || renormalize_ || state.steps == 0)
     {
         k1 = dt * f(tempstate);
     }

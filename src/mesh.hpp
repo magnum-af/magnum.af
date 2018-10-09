@@ -11,5 +11,6 @@ struct Mesh{
     af::dim4 dims;
     af::dim4 dims_expanded;
     void print(std::ostream& stream);
+    af::array skyrmconf(const bool point_up = false);
 };
 #endif
