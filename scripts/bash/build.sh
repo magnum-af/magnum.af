@@ -12,5 +12,8 @@ then
 fi
 cd $1/build
 cmake ..
+# NOTE: GTO use:
+# cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
+
 make -j
 cd $currdir
