@@ -30,10 +30,103 @@ String::String(State statein, std::vector<State> inputimages, int n_interp_in, d
     vec_renormalize();
 }
 
+
+void String::calc_E(){
+    if(E.empty()==false) E.clear();
+    for(int i=0; i<n_interp; i++) E.push_back(Llg.E(images[i]));
+}
+
+
+void String::calc_x(){
+    x.clear();
+    x.push_back(0.);
+    for(unsigned int i=1; i<images.size(); i++){
+        x.push_back(x[i-1] + FrobeniusNorm(images[i].m-images[i-1].m));
+    }
+    x_interp.clear();
+    for(int i=0;i<n_interp;i++){
+        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
+    }
+}
+
+
+void String::calc_x(std::vector<State> inputimages){
+    x.clear();
+    x.push_back(0.);
+    for(unsigned int i=1; i<inputimages.size(); i++){
+        x.push_back(x[i-1] + FrobeniusNorm(inputimages[i].m-inputimages[i-1].m));
+    }
+    x_interp.clear();
+    for(int i=0;i<n_interp;i++){
+        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
+    }
+}
+
+
+void String::lin_interpolate(){
+    std::vector<State>images_temp=images;
+    for(int i=0;i<n_interp;i++){
+        int j=0;
+        while(x[j]<x_interp[i] && j<n_interp) j++;
+        if(j>0) j--;
+        if(j<n_interp-1){
+            images[i].m=images_temp[j].m+(x_interp[i]-x[j])*(images_temp[j+1].m-images_temp[j].m)/(x[j+1]-x[j]);
+        }
+        else{
+            std::cout<<"Warning: x_interp[j="<<j<<"] exceedes x range, y_interp[j] value set to y[j]"<<std::endl;
+            images[i]=images_temp[j];
+        }
+        //af::eval(images[i].m);//If memory error occurs, uncomment this, check performance, maybe only evaluate for i%5=0 or so
+    }
+    vec_renormalize();
+}
+
+
+void String::integrate(){
+    for(unsigned int i=0;i<images.size();i++){
+        double imagtime=images[i].t;
+        while (images[i].t < imagtime + dt){
+            Llg.step(images[i]);
+        }
+        // Now skipping step backwards
+        // double h=imagtime+dt-images[i].t;
+        // double dummy_err;
+        // images[i].m += Llg.RKF45(images[i],h,dummy_err);
+        
+        // NOTE:
+        // af::eval(images[i].m);//If memory error occurs, uncomment this 
+    }
+}
+
+
+void String::step(){
+    integrate();
+    calc_x();
+    lin_interpolate();
+}
+
+
+void String::vec_renormalize(){
+    for(unsigned int i=0; i<images.size();i++){
+        images[i].m= renormalize(images[i].m);
+        //af::eval avoids JIT crash here!
+        af::eval(images[i].m);
+    }
+}
+
+
+void String::write_vti(std::string file){
+    for(unsigned j = 0; j < images.size(); j++){
+        vti_writer_atom(images[j].m, state.mesh , file + std::to_string(j));
+    }
+}
+
+
 void String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
 
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
+    std::cout.width(16);
   
     std::ofstream stream_E_barrier;
     stream_E_barrier.precision(12);
@@ -95,8 +188,8 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
                 vti_writer_micro(this->images[j].m, this->images[0].mesh ,name.c_str());
             }
         }
-        std::cout   << i << "\t" << *max-this->E[0 ]<< "\t rate= "<< 1./(af::timer::stop(t)) << " [1/s]" << std::endl;
-        stream_steps<< i << "\t" << *max-this->E[0 ]<< "\t"<< std::endl;
+        std::cout   << i << "\t" << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
+        stream_steps<< i << "\t" << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff <<  std::endl;
     }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
@@ -136,91 +229,6 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
     stream_E_curves.close();
     stream_max_lowest.close();
 };
-
-
-
-void String::calc_E(){
-    if(E.empty()==false) E.clear();
-    for(int i=0; i<n_interp; i++) E.push_back(Llg.E(images[i]));
-}
-
-void String::calc_x(){
-    x.clear();
-    x.push_back(0.);
-    for(unsigned int i=1; i<images.size(); i++){
-        x.push_back(x[i-1] + FrobeniusNorm(images[i].m-images[i-1].m));
-    }
-    x_interp.clear();
-    for(int i=0;i<n_interp;i++){
-        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
-    }
-}
-
-void String::calc_x(std::vector<State> inputimages){
-    x.clear();
-    x.push_back(0.);
-    for(unsigned int i=1; i<inputimages.size(); i++){
-        x.push_back(x[i-1] + FrobeniusNorm(inputimages[i].m-inputimages[i-1].m));
-    }
-    x_interp.clear();
-    for(int i=0;i<n_interp;i++){
-        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
-    }
-}
-
-void String::lin_interpolate(){
-    std::vector<State>images_temp=images;
-    for(int i=0;i<n_interp;i++){
-        int j=0;
-        while(x[j]<x_interp[i] && j<n_interp) j++;
-        if(j>0) j--;
-        if(j<n_interp-1){
-            images[i].m=images_temp[j].m+(x_interp[i]-x[j])*(images_temp[j+1].m-images_temp[j].m)/(x[j+1]-x[j]);
-        }
-        else{
-            std::cout<<"Warning: x_interp[j="<<j<<"] exceedes x range, y_interp[j] value set to y[j]"<<std::endl;
-            images[i]=images_temp[j];
-        }
-        //af::eval(images[i].m);//If memory error occurs, uncomment this, check performance, maybe only evaluate for i%5=0 or so
-    }
-    vec_renormalize();
-}
-
-void String::integrate(){
-    for(unsigned int i=0;i<images.size();i++){
-        double imagtime=images[i].t;
-        while (images[i].t < imagtime + dt){
-            Llg.step(images[i]);
-        }
-        // Now skipping step backwards
-        // double h=imagtime+dt-images[i].t;
-        // double dummy_err;
-        // images[i].m += Llg.RKF45(images[i],h,dummy_err);
-        
-        // NOTE:
-        // af::eval(images[i].m);//If memory error occurs, uncomment this 
-    }
-}
-
-void String::step(){
-    integrate();
-    calc_x();
-    lin_interpolate();
-}
-
-void String::vec_renormalize(){
-    for(unsigned int i=0; i<images.size();i++){
-        images[i].m= renormalize(images[i].m);
-        //af::eval avoids JIT crash here!
-        af::eval(images[i].m);
-    }
-}
-
-void String::write_vti(std::string file){
-    for(unsigned j = 0; j < images.size(); j++){
-        vti_writer_atom(images[j].m, state.mesh , file + std::to_string(j));
-    }
-}
 
 
 //#include "string.hpp"
