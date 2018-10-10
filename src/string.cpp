@@ -130,13 +130,16 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
   
     std::ofstream stream_E_barrier;
     stream_E_barrier.precision(12);
+    stream_E_barrier.width(16);
   
     std::ofstream stream_steps;
     stream_steps.precision(12);
+    stream_steps.width(16);
     stream_steps.open ((filepath + "steps.dat").c_str());
   
     std::ofstream stream_E_curves;
     stream_E_curves.precision(12);
+    stream_E_curves.width(16);
     stream_E_curves.open ((filepath + "E_curves.dat").c_str());
   
     double max_lowest=1e100;
