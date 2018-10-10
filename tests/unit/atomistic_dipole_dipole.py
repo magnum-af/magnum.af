@@ -27,17 +27,17 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
     Llg=magnum_af.pyLLG(pystate,atom_demag)
 
-    self.assertAlmostEqual(Llg.print_E(pystate), -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
+    self.assertEqual(Llg.print_E(pystate), param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], param.print_p() /4. /math.pi /self.dx**3 )
+    self.assertAlmostEqual(np_heff[0,0,0,2], -param.print_p() /4. /math.pi /self.dx**3 )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], param.print_p() /4. /math.pi /self.dx**3 )
+    self.assertAlmostEqual(np_heff[1,0,0,2], -param.print_p() /4. /math.pi /self.dx**3 )
 
   def test_atomistic_dipole_dipole_2_1_1_z_x(self):
     mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -62,12 +62,12 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
 
-    self.assertAlmostEqual(np_heff[0,0,0,0], -2*param.print_p() /4. /math.pi /self.dx**3  )
+    self.assertAlmostEqual(np_heff[0,0,0,0], 2*param.print_p() /4. /math.pi /self.dx**3  )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,2], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], param.print_p() /4. /math.pi /self.dx**3 )
+    self.assertAlmostEqual(np_heff[1,0,0,2], -param.print_p() /4. /math.pi /self.dx**3 )
 
   def test_atomistic_dipole_dipole_2_1_1_z_minus_z(self):
     mesh=magnum_af.pyMesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -87,17 +87,17 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
     Llg=magnum_af.pyLLG(pystate,atom_demag)
 
-    self.assertAlmostEqual(Llg.print_E(pystate), param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
+    self.assertEqual(Llg.print_E(pystate), -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], -param.print_p() /4. /math.pi /self.dx**3 )
+    self.assertAlmostEqual(np_heff[0,0,0,2], param.print_p() /4. /math.pi /self.dx**3 )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], param.print_p() /4. /math.pi /self.dx**3 )
+    self.assertAlmostEqual(np_heff[1,0,0,2], -param.print_p() /4. /math.pi /self.dx**3 )
 
   def test_atomistic_dipole_dipole_1_2_1_z_z(self):
     mesh=magnum_af.pyMesh(1, 2, 1, self.dx, self.dx, self.dx)
@@ -117,7 +117,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
     Llg=magnum_af.pyLLG(pystate,atom_demag)
     
-    self.assertAlmostEqual(Llg.print_E(pystate), -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
+    self.assertEqual(Llg.print_E(pystate), param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
   def test_atomistic_dipole_dipole_1_2_1_x_z(self):
     mesh=magnum_af.pyMesh(1, 2, 1, self.dx, self.dx, self.dx)
