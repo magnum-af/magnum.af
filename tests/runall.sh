@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #usage: ./runall /path/to/gitdirectory(magnum.af)
 
 #unit
