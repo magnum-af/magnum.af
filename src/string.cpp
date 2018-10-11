@@ -126,20 +126,16 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
 
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
-    std::cout.width(16);
   
     std::ofstream stream_E_barrier;
     stream_E_barrier.precision(12);
-    stream_E_barrier.width(16);
   
     std::ofstream stream_steps;
     stream_steps.precision(12);
-    stream_steps.width(16);
     stream_steps.open ((filepath + "steps.dat").c_str());
   
     std::ofstream stream_E_curves;
     stream_E_curves.precision(12);
-    stream_E_curves.width(16);
     stream_E_curves.open ((filepath + "E_curves.dat").c_str());
   
     double max_lowest=1e100;
@@ -191,8 +187,8 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
                 vti_writer_micro(this->images[j].m, this->images[0].mesh ,name.c_str());
             }
         }
-        std::cout   << i << "\t" << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
-        stream_steps<< i << "\t" << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff <<  std::endl;
+        std::cout   << i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
+        stream_steps<< i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff <<  std::endl;
     }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
