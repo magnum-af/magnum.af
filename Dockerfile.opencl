@@ -1,30 +1,30 @@
 FROM phusion/baseimage:0.10.1
 MAINTAINER PTH <paul.thomas.heistracher@univie.ac.at> 
-#image: afopenclsrc
-#build:  docker build -t afopenclsrc -f Dockerfile.opencl .
-#run image: docker run -ti afopenclsrc /bin/bash
-#run tests: docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t afopenclsrc /magnum.af/tests/runall.sh /magnum.af
+#image: magnum.af.opencl
+#build:  docker build -t magnum.af.opencl -f Dockerfile.opencl .
+#run image: docker run -ti magnum.af.opencl /bin/bash
+#run tests: docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/runall.sh /magnum.af
 
 # A docker container with the Nvidia kernel module and CUDA drivers installed 
 
 RUN apt-get update && apt-get install -q -y wget build-essential kmod
 
 RUN cd /opt && \ 
-    wget https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run && \
-    chmod +x cuda_8.0.61_375.26_linux-run  
+    wget https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda_9.0.176_384.81_linux-run && \
+    chmod +x cuda_9.0.176_384.81_linux-run  
 
 RUN cd /opt && \
     mkdir nvidia_installers && \
-    ./cuda_8.0.61_375.26_linux-run -extract=`pwd`/nvidia_installers
+    ./cuda_9.0.176_384.81_linux-run -extract=`pwd`/nvidia_installers
 
 RUN cd /opt/nvidia_installers && \ 
-    ./NVIDIA-Linux-x86_64-375.26.run -s --no-kernel-module 
+    ./NVIDIA-Linux-x86_64-384.81.run -s --no-kernel-module 
     
 RUN cd /opt/nvidia_installers && \ 
-    ./cuda-linux64-rel-8.0.61-21551265.run -noprompt 
-    
+    ./cuda-linux.9.0.176-22781540.run -noprompt 
+
 RUN cd /opt/nvidia_installers && \
-    ./cuda-samples-linux-8.0.61-21551265.run -noprompt -cudaprefix=/usr/local/cuda-8.0/
+    ./cuda-samples.9.0.176-22781540-linux.run -noprompt -cudaprefix=/usr/local/cuda-9.0/
 
 # Ensure the CUDA libs and binaries are in the correct environment variables 
 ENV LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-8.0/lib64 
