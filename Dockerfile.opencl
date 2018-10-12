@@ -27,8 +27,8 @@ RUN cd /opt/nvidia_installers && \
     ./cuda-samples.9.0.176-22781540-linux.run -noprompt -cudaprefix=/usr/local/cuda-9.0/
 
 # Ensure the CUDA libs and binaries are in the correct environment variables 
-ENV LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-8.0/lib64 
-ENV PATH=$PATH:/usr/local/cuda-8.0/bin
+ENV LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64 
+ENV PATH=$PATH:/usr/local/cuda-9.0/bin
 
 ## Installing ArrayFire
 
