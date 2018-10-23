@@ -10,6 +10,7 @@ af::array vecnorm(const af::array& a);
 double afvalue(const af::array& a); //give value of a 1,1,1,1 af af::array
 double full_inner_product(const af::array& a, const af::array& b);
 double maxnorm(const af::array& a);
+double minval(const af::array& a);
 double meani(const af::array& a, const int i);
 double FrobeniusNorm(const af::array& a);
 //TODO void calcm(State state, LLG Llg, std::ostream& myfile);

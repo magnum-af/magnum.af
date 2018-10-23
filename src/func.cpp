@@ -105,6 +105,15 @@ double maxnorm(const array& a){
   return maxnorm;
 }
 
+// Minimum value 
+double minval(const array& a){
+  double *minval_host=NULL;
+  minval_host = min(min(min(min(a,0),1),2),3).host<double>();
+  double minval = minval_host[0];
+  freeHost(minval_host);
+  return minval;
+}
+
 
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
