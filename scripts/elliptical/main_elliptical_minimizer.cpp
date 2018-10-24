@@ -62,34 +62,12 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    // Initial magnetic field
-    array Ms = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    long int n_cells=0;//Number of cells with Ms!=0
-    for(int ix=0;ix<mesh.n0;ix++){
-        for(int iy=0;iy<mesh.n1;iy++){
-            const double a= (double)(mesh.n0/2);
-            const double b= (double)(mesh.n1/2);
-            const double rx=double(ix)-mesh.n0/2.;
-            const double ry=double(iy)-mesh.n1/2.;
-            const double r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-            if(r<1){
-                for(int iz=0;iz<mesh.n2;iz++){
-                    n_cells++;
-                }
-                Ms(ix,iy,span,span)=param.ms;
-                m(ix,iy,span,1)=1;
-            }
-        }
-    }
-    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= " << mesh.n0/2*mesh.n1/2*M_PI*mesh.n2 << std::endl;
 
-    State state(mesh,param, m);
-    state.Ms=Ms;
+    long int n_cells=0;//Number of cells with Ms!=0
+    State state(mesh,param, mesh.ellipse(n_cells));
     calc_mean_m(state,n_cells,std::cout);
-    vti_writer_micro(m, mesh ,(filepath + "minit_nonnormalized").c_str());
-    m=renormalize_handle_zero_values(m);
-    state.m=m;
+    vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
+    state.m=renormalize_handle_zero_values(state.m);//TODO check if needed
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
