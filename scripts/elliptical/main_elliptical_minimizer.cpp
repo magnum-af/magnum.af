@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     State state(mesh,param, mesh.ellipse(n_cells));
     calc_mean_m(state,n_cells,std::cout);
     vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
-    state.m=renormalize_handle_zero_values(state.m);//TODO check if needed
+    //state.m=renormalize_handle_zero_values(state.m);//
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
