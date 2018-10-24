@@ -7,11 +7,11 @@ test_cpu:
   tags:
     - docker
 
-test_gpu:
-  script:
-    - docker build -t magnum.af.opencl -f Dockerfile.opencl .
-    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/unit/cpp/runall.sh /magnum.af
-    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/integration/cpp/runall.sh /magnum.af
-    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/runall.sh /magnum.af
-  tags:
-    - gpu
+#test_gpu:
+#  script:
+#    - docker build -t magnum.af.opencl -f Dockerfile.opencl .
+#    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/unit/cpp/runall.sh /magnum.af
+#    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/integration/cpp/runall.sh /magnum.af
+#    - docker run --device=/dev/nvidia3 --device=/dev/nvidiactl --device=/dev/nvidia-uvm --device=/dev/nvidia-uvm-tools -t magnum.af.opencl /magnum.af/tests/runall.sh /magnum.af
+#  tags:
+#    - gpu
