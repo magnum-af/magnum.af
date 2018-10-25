@@ -28,6 +28,9 @@ class State{
     void _vtr_writer(std::string outputname);
     void _vtr_reader(std::string inputname);
     double meani(const int i);
+    void calc_mean_m( std::ostream& myfile);
+    void calc_mean_m( std::ostream& myfile, const long int n_cells ); // n_cells is number of cells with non_zero_Ms
+    void calc_mean_m( std::ostream& myfile, const long int n_cells, double hzee);
 };
 
 #endif

@@ -1,25 +1,5 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <algorithm>
-#include <string>
-#include <memory>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string>
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
-
-void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
-    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << std::endl;
-}
-
-void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile, double hzee){
-    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
-}
 
 double hzee_max = 0.12; //[T]
 int quater_steps=250; // One 4th of total steps
@@ -65,9 +45,8 @@ int main(int argc, char** argv)
 
     long int n_cells=0;//Number of cells with Ms!=0
     State state(mesh,param, mesh.ellipse(n_cells));
-    calc_mean_m(state,n_cells,std::cout);
+    state.calc_mean_m(std::cout, n_cells);
     vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
-    //state.m=renormalize_handle_zero_values(state.m);//
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
@@ -95,14 +74,14 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
-    calc_mean_m(state,n_cells,stream);
+    state.calc_mean_m(stream, n_cells);
 
     timer t_hys = af::timer::start();
     double rate = hzee_max/quater_steps; //[T/s]
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
-        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,2)));
+        state.calc_mean_m(stream, n_cells, afvalue(minimizer.llgterms[3]->h(state)(0,0,0,2)));
         state.t+=1.;
         state.steps++;
         if( state.steps % 1 == 0){
