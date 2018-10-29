@@ -7,13 +7,15 @@ cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # relative path to magnum.af/
 magafdir=../..
 
-if [ -e $magafdir/src/main*.cpp ];then
-    echo "Error in check_main_remove.sh: some main*.cpp file in magnum.af/src exists, aborting..."
-    exit 1
-fi
+for file in $magafdir/src/main*.cpp; do
+    [ -e "$file" ] && echo "Warning: in check_main_remove.sh: found main*.cpp in magnum.af/src but it should be empty. Consider cleaning up mainfiles in magnum.af/src."
+    break
+done
 
-if [ -e $magafdir/temp_main/main*.cpp ];then
-    echo "Moving temp_main to /src"
-    mv $magafdir/temp_main/main*.cpp $magafdir/src
-    rmdir $magafdir/temp_main
+if [ -e $magafdir/temp_main ];then
+    for file in $magafdir/temp_main/main*.cpp; do
+        echo "Info: Moving back file $file from temp_main/ to /src"
+        mv $magafdir/temp_main/main*.cpp $magafdir/src
+    done
+    rmdir $magafdir/temp_main 
 fi
