@@ -8,7 +8,6 @@ unsigned long long GetDirSize(std::string filepath)
 {
     FILE *stream;
     char string[ 256 ] = { 0 };
-    int term_status;
     stream = popen(("du --max-depth=0 "+filepath).c_str(), "r" );
     while( NULL != fgets( string, sizeof( string ) - 1, stream ) )
     {
