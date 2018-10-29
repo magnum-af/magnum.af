@@ -13,7 +13,7 @@ String::String(State statein, std::vector<State> inputimages, int n_interp_in, d
     calc_x(inputimages);
 
     for(int i=0;i<n_interp;i++){
-        images.push_back(State(state.mesh, state.param, array(state.mesh.dims,f64)));
+        images.push_back(State(state.mesh, state.param, af::constant(2.,state.mesh.dims,f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
     }
     for(int i=0;i<n_interp;i++){
         int j=0;
