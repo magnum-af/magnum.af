@@ -13,11 +13,13 @@ typedef std::vector<LlgTerm> LlgTerms;
 class NewLlg : public AdaptiveRungeKutta{
     public:
         NewLlg(std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        NewLlg(LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
         double E(const State&);
-        const bool dissipation_term_only;
         LlgTerms llgterms;
+        const bool dissipation_term_only;
         double get_time_heff(){return time_heff;}
         void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
+        long int get_fheff_addr(const State& state);
     private:
         af::array f(const State& state);
         af::array fheff(const State& state);

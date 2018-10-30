@@ -15,7 +15,7 @@ class MicroDemagTest(unittest.TestCase):
         m[:,:,:,0]=1.
         pystate=magnum_af.pyState(mesh,param,m)
         micro_demag=magnum_af.pyDemagSolver(mesh,param)
-        Llg=magnum_af.pyLLG(pystate,micro_demag)
+        Llg=magnum_af.pyLLG(micro_demag)
         self.assertAlmostEqual(Llg.print_E(pystate), 1./6. * (self.nx*self.dx)**3 * param.print_ms()**2 * param.print_mu0())
 
 if __name__ == '__main__':

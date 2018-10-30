@@ -12,6 +12,11 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     }
 }
 
+//long int State::get_m_addr(){
+//    u_out = this->m.copy();
+//    return (long int) m_out.get();
+//}
+//
 State::State (Mesh mesh_in, Param param_in, af::array m_in):
               mesh(mesh_in),param(param_in), m(m_in)
 {

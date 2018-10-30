@@ -26,7 +26,7 @@ class AtomisticDMITest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), 0)
 
@@ -58,7 +58,7 @@ class AtomisticDMITest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), - param.print_D_atom())
 
@@ -91,7 +91,7 @@ class AtomisticDMITest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), 0)
 

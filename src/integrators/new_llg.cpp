@@ -3,6 +3,9 @@
 NewLlg::NewLlg(std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
 };
 
+NewLlg::NewLlg(LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : llgterms(llgterms), AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
+};
+
 af::array NewLlg::fheff(const State& state){
   af::array solution = constant(0.,state.mesh.dims, f64);
   af::timer timer_heff = af::timer::start();
@@ -48,4 +51,14 @@ void NewLlg::relax(State& state, const double precision, const int iloop, const 
         if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
     }
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl; 
+}
+
+long int NewLlg::get_fheff_addr(const State& state){
+    //std::vector<af::array> get_fheff_addr_temp_array;
+    //get_fheff_addr_temp_array.push_back(fheff(state));
+    //get_fheff_addr_temp_array.back().lock(); 
+    //return (long int) get_fheff_addr_temp_array.back().get();
+    //TODO elaborate best way to handle 
+    fheff_tmp=fheff(state);
+    return (long int) fheff_tmp.get();
 }

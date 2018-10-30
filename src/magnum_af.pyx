@@ -10,6 +10,7 @@
 #af.Array.__array__()
 
 import arrayfire as af 
+import copy
 from libc.stdint cimport uintptr_t
 from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
@@ -69,7 +70,7 @@ cdef class pyState:
   def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):
     self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
-  #def __dealloc__(self):
+  #def __dealloc__(self): # causes segfault on every cleanup
   #  del self.thisptr
   def t(self):
     return self.thisptr.t
@@ -89,62 +90,68 @@ cdef class pyState:
     self.thisptr._vtr_reader( outputname ) 
 
   def get_m(self):
-    m_addr = self.thisptr.get_m_addr()
-    m=af.Array()
-    m.arr = ctypes.c_void_p(m_addr)
+    #af.set_backend("cpu")
+    #af.set_device(0)
+    #m1=af.Array()
+    #m.arr = copy.deepcopy ()
     #m.arr = ctypes.c_void_p(m_addr)
     #af.sync()
     #af.device.lock_array(m)
     #af.device.lock_array(m2)
-    return m
+    m1=af.Array()
+    m_addr = self.thisptr.get_m_addr()
+    m1.arr=ctypes.c_void_p(m_addr)
+    #print "test", m1.arr
+    return m1
+    #return m.copy()
     ##Alternative
     #return self.thisptr.get_m_addr()
   def meanxyz(self, i):
     return self.thisptr.meani(i)
 
 
-cdef extern from "../../src/integrators/llg.hpp":
-  cdef cppclass LLG:
-    LLG (State state_in, vector[shared_ptr[LLGTerm]] vector_in);
-    vector[shared_ptr[LLGTerm]] Fieldterms;
-    array llgstep(State& state);
+cdef extern from "../../src/integrators/new_llg.hpp":
+  cdef cppclass NewLlg:
+    NewLlg (vector[shared_ptr[LLGTerm]] vector_in);
+    vector[shared_ptr[LLGTerm]] llgterms;
+    void step(State& state);
     double E(const State& state);
-    long int get_fheff_addr(State& state);
-    double cpu_time();
-    double h_stepped;
-    State state0;
+    long int get_fheff_addr(const State& state);
+    #double cpu_time();
+    #double h_stepped_;
+    #State state0;
 
 cdef class pyLLG:
-  cdef LLG* thisptr
-  def __cinit__(self, pyState state_in, *args):
+  cdef NewLlg* thisptr
+  def __cinit__(self, *args):
     cdef vector[shared_ptr[LLGTerm]] vector_in
     for arg in args:
       vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-    self.thisptr = new LLG (deref(state_in.thisptr), vector_in)  
+    self.thisptr = new NewLlg (vector_in)  
   #def __dealloc__(self):
   #  del self.thisptr
   def llgstep(self, pyState state_in):
-    state_in.thisptr.m=self.thisptr.llgstep(deref(state_in.thisptr))
+    self.thisptr.step(deref(state_in.thisptr))
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
-  def print_stepsize(self):
-    return self.thisptr.h_stepped
+  #def print_stepsize(self):
+  #  return self.thisptr.h_stepped_
   def get_fheff(self, pyState state):
     fheff_addr = self.thisptr.get_fheff_addr(deref(state.thisptr))
     fheff=af.Array()
     fheff.arr = ctypes.c_void_p(fheff_addr)
     return fheff
-  def cpu_time(self):
-    return self.thisptr.cpu_time()
-  def set_state0_alpha(self,value):
-    self.thisptr.state0.param.alpha=value
+  #def cpu_time(self):
+  #  return self.thisptr.cpu_time()
+  #def set_state0_alpha(self,value):
+  #  self.thisptr.state0.param.alpha=value
   def add_terms(self,*args):
     for arg in args:
-      self.thisptr.Fieldterms.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-  #  cdef vector[shared_ptr[LLGTerm]] vector_in
-  #  for term in terms:
-  #    vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.pythisptr()))
-  #  self.thisptr = new LLG (deref(state_in.thisptr), vector_in)  
+      self.thisptr.llgterms.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
+    #cdef vector[shared_ptr[LLGTerm]] vector_in
+    #for term in terms:
+    #  vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.pythisptr()))
+    #self.thisptr = new NewLlg (vector_in)  
     
   
 

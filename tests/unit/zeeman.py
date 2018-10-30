@@ -14,7 +14,7 @@ class ZeemanTest(unittest.TestCase):
     zeefield[1,0,0,1]=1
     zeefield[2,0,0,2]=1
     zee=magnum_af.pyZee(zeefield)
-    Llg=magnum_af.pyLLG(pystate,zee)
+    Llg=magnum_af.pyLLG(zee)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()

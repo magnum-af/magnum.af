@@ -26,7 +26,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=magnum_af.pyLLG(pystate,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -2*param.print_K_atom())
 
@@ -56,7 +56,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=magnum_af.pyLLG(pystate,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -param.print_K_atom())
 
@@ -86,7 +86,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.pyATOMISTIC_ANISOTROPY(mesh, param)
-    Llg=magnum_af.pyLLG(pystate,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(pystate), -2*param.print_K_atom())
 

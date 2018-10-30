@@ -26,7 +26,7 @@ class AtomisticExchangeTest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), -param.print_J_atom())
 
@@ -56,7 +56,7 @@ class AtomisticExchangeTest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), 0)
 
@@ -86,7 +86,7 @@ class AtomisticExchangeTest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), param.print_J_atom())
 
@@ -116,7 +116,7 @@ class AtomisticExchangeTest(unittest.TestCase):
 
     state=magnum_af.pyState(mesh,param,m)
     atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(state,atom_ani)
+    Llg=magnum_af.pyLLG(atom_ani)
 
     self.assertAlmostEqual(Llg.print_E(state), -param.print_J_atom())
 

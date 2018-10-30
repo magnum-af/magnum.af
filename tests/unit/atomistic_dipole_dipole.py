@@ -25,7 +25,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
 
     self.assertEqual(Llg.print_E(pystate), param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
@@ -55,7 +55,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
 
     self.assertAlmostEqual(Llg.print_E(pystate), 0)
 
@@ -85,7 +85,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
 
     self.assertEqual(Llg.print_E(pystate), -param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
@@ -115,7 +115,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
     
     self.assertEqual(Llg.print_E(pystate), param.print_p()**2 * param.print_mu0()/(4.*math.pi)/self.dx**3)
 
@@ -135,7 +135,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
 
     self.assertAlmostEqual(Llg.print_E(pystate), 0)
 
@@ -155,7 +155,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     pystate=magnum_af.pyState(mesh,param,m)
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(pystate,atom_demag)
+    Llg=magnum_af.pyLLG(atom_demag)
 
     self.assertEqual(Llg.print_E(pystate), -param.print_p()**2 * param.print_mu0() /(2.*math.pi) /self.dx**3)
 

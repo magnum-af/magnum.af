@@ -19,6 +19,7 @@ class State{
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     int steps{0};
     long int get_m_addr(){return (long int) m.get();}
+    //af::array m_out;
     //long int get_m_addr(){m.lock(); return (long int) m.get();}
 
     void _vti_writer_micro(std::string outputname);
