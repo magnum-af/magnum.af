@@ -14,6 +14,10 @@ buildfile=$1
 outputpath=$2
 GPU=$3
 # if given, copying plotfile in outputdir
+if [[ "$buildfile" == "" ]]; then
+    echo "Error: missing buildfile as first argument required, aborting..."
+    exit 1
+fi
 if [[ "$4" != "" ]]; then
     cp $4 $outputpath
 fi
@@ -33,16 +37,22 @@ rm $magafdir/src/$(basename $buildfile)
 $magafdir/scripts/bash/check_main_remove.sh
 
 # copying files
-cp $magafdir/bin/magnum.af-* $outputpath
-cp $buildfile $outputpath
+if [[ "$outputpath" != "" ]]; then
+    cp $magafdir/bin/magnum.af-* $outputpath
+    cp $buildfile $outputpath
+fi
 
 # running
 if [ -e $magafdir/bin/magnum.af-cuda ];then
     echo "starting magnum.af-cuda in screen."
+    echo "To follow cout.dat run:"
+    echo "tail -f $outputpath/cout.txt"
     screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $magafdir/bin/magnum.af-cuda $outputpath $GPU $5 > $outputpath/cout.txt 2>&1"
     screen -ls
 elif [ -e $magafdir/bin/magnum.af-opencl ];then
     echo "starting magnum.af-opencl in screen."
+    echo "To follow cout.dat run:"
+    echo "tail -f $outputpath/cout.txt"
     screen -d -S GPU$GPU -m bash -c "$magafdir/bin/magnum.af-opencl $outputpath $GPU $5 > $outputpath/cout.txt 2>&1"
     screen -ls
 else
@@ -50,5 +60,3 @@ else
     $magafdir/bin/magnum.af-cpu $outputpath $GPU $5
 fi
 
-echo "To follow cout.dat run:"
-echo "tail -f $outputpath/cout.txt"
