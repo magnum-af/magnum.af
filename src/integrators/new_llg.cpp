@@ -58,7 +58,9 @@ long int NewLlg::get_fheff_addr(const State& state){
     //get_fheff_addr_temp_array.push_back(fheff(state));
     //get_fheff_addr_temp_array.back().lock(); 
     //return (long int) get_fheff_addr_temp_array.back().get();
-    //TODO elaborate best way to handle 
+    
+    //TODO tempfix for wrapping, elaborate other solution
     fheff_tmp=fheff(state);
     return (long int) fheff_tmp.get();
+    //return (long int) fheff(state).get();
 }

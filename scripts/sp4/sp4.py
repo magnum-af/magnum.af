@@ -21,7 +21,7 @@ pystate=magnum_af.pyState(meshvar,param,m)
 
 demag=magnum_af.pyDemagSolver(meshvar,param)
 exch=magnum_af.pyExchSolver(meshvar,param)
-Llg=magnum_af.pyLLG(pystate,demag,exch)
+Llg=magnum_af.pyLLG(demag,exch)
 
 print "relax --------------------"
 print pystate.t()
@@ -29,7 +29,7 @@ while pystate.t() < 1e-9:
   time1=pystate.t()
   Llg.llgstep(pystate)
   time2=pystate.t()
-  print Llg.print_stepsize(), time2-time1, time1, time2, pystate.t()
+  print time2-time1, time1, time2, pystate.t()
 print pystate.t()
 #pystate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax")
 
@@ -38,7 +38,7 @@ print pystate.t()
 #teststate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_reader")
 
 print "switch --------------------"
-Llg.set_state0_alpha(0.02)# this should be changed in cpp version
+pystate.set_alpha(0.02)
 
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
 zeeswitch[0,0,0,0]=-24.6e-3/param.print_mu0()
@@ -55,16 +55,15 @@ while pystate.t() < 2e-9:
   time1=pystate.t()
   Llg.llgstep(pystate)
   time2=pystate.t()
-  intx+=pystate.meanxyz(0)*Llg.print_stepsize()
-  inty+=pystate.meanxyz(1)*Llg.print_stepsize()
-  intz+=pystate.meanxyz(2)*Llg.print_stepsize()
-  #print Llg.print_stepsize(), time2-time1, time1, time2, pystate.t()
+  stepsize=time2-time1
+  intx+=pystate.meanxyz(0)*stepsize
+  inty+=pystate.meanxyz(1)*stepsize
+  intz+=pystate.meanxyz(2)*stepsize
+  #print time2-time1, time1, time2, pystate.t()
   #print pystate.meanxyz(0), pystate.meanxyz(1), pystate.meanxyz(2)
-  #  std::cout << "cpp h= "<< h << "t2-t1 "<< time2-time1 << " time1 "<< time1<< " time2 " << time2 << "state.t "<< state.t << std::endl;
-  #  std::cout.precision(12);
   print intx, inty, intz
 print pystate.t()
 print "finished  --------------------"
-#TODO second call causes segfault:
 print "af.mean(m_test)=", af.mean(pystate.get_m())
+#TODO second call causes segfault:
 print "af.mean(m_test)=", af.mean(pystate.get_m())

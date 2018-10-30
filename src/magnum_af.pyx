@@ -88,6 +88,8 @@ cdef class pyState:
     self.thisptr._vtr_writer( outputname ) 
   def py_vtr_reader(self, outputname):
     self.thisptr._vtr_reader( outputname ) 
+  def set_alpha(self,value):
+    self.thisptr.param.alpha=value
 
   def get_m(self):
     #af.set_backend("cpu")
