@@ -11,9 +11,12 @@ then
     mkdir $1/build
 fi
 cd $1/build
-cmake ..
-# NOTE: GTO use:
-# cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build ..
+
+if [ "$HOSTNAME" = SERVERGPU1 ]; then
+    /home/paul/Programs/cmake-3.13.0-rc2-Linux-x86_64/bin/cmake -DVTK_DIR:PATH=/home/paul/Programs/VKT-build -DArrayFire_DIR=/usr/local/arrayfire/share/ArrayFire/cmake ..
+else
+    cmake ..
+fi
 
 make -j
 cd $currdir
