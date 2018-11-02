@@ -20,7 +20,7 @@ Callback::Callback(std::string scheme, Controller controller) : AdaptiveRungeKut
 
 TEST(BS45IntegrationTest, n) {
     Callback callback = Callback("BS45",Controller(1e-15, 1e15, 1e-10, 1e-10));
-    array m = constant(1.0,1,f64);
+    af::array m = af::constant(1.0,1,f64);
     State state(Mesh(0,0,0,0,0,0), Param(), m);
     for (int i=0; i<100; i++){
          callback.step(state);
