@@ -2,6 +2,17 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(magnum.af)
 #Note in new projects, set VTK_DIR by export VTK_DIR=/home/.../VTK-build:$VTK_DIR
 
+# Writing compile_commands.json for youcompleteme (YCM) vim-plugin
+# Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
+# Found this hint in https://www.reddit.com/r/emacs/comments/7zxl37/trouble_setting_up_ycmd/
+SET( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
+  EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+  )
+ENDIF()
+
 # Compile with C++11 support.
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
