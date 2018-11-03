@@ -1,3 +1,5 @@
+" make clean 
+nnoremap <F3> :! cd ../build  && make clean && cd - <cr>
 " cmake .. 
 nnoremap <F4> :! cd ../build  && cmake .. && cd - <cr>
 " make
@@ -14,4 +16,4 @@ set makeprg=make\ -C\ ../build\ -j
 " Apply YCM FixIt
 nnoremap <F9> :YcmCompleter FixIt<CR>
 " Goto definition with F3
-nnoremap <F3> :YcmCompleter GoTo<CR>
+nnoremap <F10> :YcmCompleter GoTo<CR>
