@@ -18,15 +18,16 @@ if [[ "$buildfile" == "" ]]; then
     echo "Error: missing buildfile as first argument required, aborting..."
     exit 1
 fi
-if [[ "$4" != "" ]]; then
-    cp $4 $outputpath
-fi
-
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
 
 # creating write dir
 $magafdir/scripts/bash/check_write_dir.sh $outputpath
+
+# copying plotfile if existing
+if [[ "$4" != "" ]]; then
+    cp $4 $outputpath
+fi
 
 # building 
 cp $buildfile $magafdir/src

@@ -133,7 +133,7 @@ int main(int argc, char** argv)
     minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);
-        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[3]->h(state)(0,0,0,0)));//TODO or llgterms[2]?
+        calc_mean_m(state,n_cells,stream,afvalue(minimizer.llgterms[minimizer.llgterms.size()-1]->h(state)(0,0,0,0)));
         state.t+=1.;
         state.steps++;
         if( state.steps % 10 == 0){
