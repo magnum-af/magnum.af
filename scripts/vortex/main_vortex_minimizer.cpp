@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh ,(filepath + "minit_renorm").c_str());
 
     af::timer timer_llgterms = af::timer::start();
-    Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
+    Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100, true);
     minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;

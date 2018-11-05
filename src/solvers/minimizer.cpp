@@ -10,7 +10,7 @@ double Minimizer::E(const State& state){
   return solution;
 }
 
-Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples): scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples)
+Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples, bool info): scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info)
 {
 }
 
@@ -68,6 +68,8 @@ void Minimizer::minimize(State& state){
     af::timer timer = af::timer::start();
 
     while (last_dm_max.size() < samples || *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) > dm_max){
+        af::timer t;
+        if (info) t = af::timer::start();
         af::array m_next = this->m_next(state, tau);
         af::array dm = this->dm(state);
 
@@ -101,8 +103,8 @@ void Minimizer::minimize(State& state){
         else tau = - std::max(std::min(fabs(tau),tau_max),tau_min);
         // Increase step count
         step ++;
-        std::cout << "step "<< step << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
+        if (info) std::cout << "step="<< step <<" rate=" << 1./af::timer::stop(t) << " tau="<< tau << " last_dm_max.size()="<< last_dm_max.size()<< " dm_max=" << dm_max <<" *std::max_element()="<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
         //std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
     }
-    std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
+    if (info) std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
 }; 
