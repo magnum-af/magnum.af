@@ -11,11 +11,11 @@ void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfi
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
 }
 
-void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile, double hzee){
+void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile, const af::array& hzee){
     //TODO test n_cells accuracy
     //myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << "\t" << hzee << std::endl;
     array sum_dim3 = sum(sum(sum(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << afvalue(hzee(0,0,0,0)) << "\t" << afvalue(hzee(0,0,0,1)) << "\t" << afvalue(hzee(0,0,0,2)) << std::endl;
 }
 
 double rate = 0.34e6 ; //[T/s]
@@ -92,6 +92,7 @@ int main(int argc, char** argv)
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
     LLG Llg(state,llgterm);
     //Llg.fdmdt_dissipation_term_only=true;
 
@@ -137,7 +138,7 @@ int main(int argc, char** argv)
     Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          state.m=Llg.llgstep(state);
-         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[2]->h(state)(0,0,0,0)));
+         calc_mean_m(state,n_cells,stream, Llg.Fieldterms[Llg.Fieldterms.size()-1]->h(state)(0,0,0,span));
          if( state.steps % 2000 == 0){
              vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
          }
