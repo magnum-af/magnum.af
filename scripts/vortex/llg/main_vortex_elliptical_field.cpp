@@ -5,9 +5,9 @@
 #include <fstream>
 #include <cmath>
 
-double t_full_rotation = 200e-9;
+double t_full_rotation = 800e-9;
 double A = 0.025/(4e-7 * M_PI); // 0.025 T is half the linear range 
-double B = A; // TODO
+double B = 1.0 * A; 
 af::array zee_func(State state){
     double phi = 2 * M_PI * (state.t / t_full_rotation);
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
