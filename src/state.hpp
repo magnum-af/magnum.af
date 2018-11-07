@@ -17,6 +17,7 @@ class State{
     af::array m;
     af::array Ms; // Saturation magnetization
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
+    void check_discretization();
     int steps{0};
     long int get_m_addr(){return (long int) m.get();}
     //af::array m_out;

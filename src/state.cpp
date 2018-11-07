@@ -12,6 +12,14 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     }
 }
 
+void State::check_discretization(){
+    if ( this->param.A != 0 && this->param.Ku1 != 0) { // TODO implement better way of checking
+        double max_allowed_cellsize = sqrt(this->param.A/this->param.Ku1);
+        if (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize ){
+            std::cout << "Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1) " << std::endl;
+        }
+    }
+}
 //long int State::get_m_addr(){
 //    u_out = this->m.copy();
 //    return (long int) m_out.get();
@@ -21,6 +29,7 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in):
               mesh(mesh_in),param(param_in), m(m_in)
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    check_discretization();
 }
 
 State::State (Mesh mesh_in, Param param_in, long int aptr):
