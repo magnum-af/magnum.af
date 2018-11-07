@@ -12,7 +12,11 @@ set -e
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 buildfile=$1
 outputpath=$2
-GPU=$3
+if [[ "$3" == "" ]]; then
+    GPU=0
+else
+    GPU=$3
+fi
 # if given, copying plotfile in outputdir
 if [[ "$buildfile" == "" ]]; then
     echo "Error: missing buildfile as first argument required, aborting..."
