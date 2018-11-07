@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cmath>
 
-double t_full_rotation = 20e-9;
+double t_full_rotation = 200e-9;
 double A = 0.025/(4e-7 * M_PI); // 0.025 T is half the linear range 
 double B = A; // TODO
 af::array zee_func(State state){
@@ -68,14 +68,14 @@ int main(int argc, char** argv)
         std::cout << "found mrelax. loading magnetization" << std::endl;
         vti_reader(state.m, mesh, filepath+"mrelax.vti");
     }
-    Llg.llgterms.pop_back(); // Remove init zee field 
 
     // Starting Hysteresis loop
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
-    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
+    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));// To checkback H_zee for init
+    Llg.llgterms.pop_back(); // Remove init zee field 
 
     timer t_hys = af::timer::start();
     Llg.llgterms.push_back( LlgTerm (new Zee(&zee_func))); //Rate in T/s
