@@ -85,8 +85,6 @@ int main(int argc, char** argv)
     Llg.llgterms.pop_back(); // Remove init zee field 
 
     timer t_hys = af::timer::start();
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.15; //[T]
     Llg.llgterms.push_back( LlgTerm (new Zee(&zee_func))); //Rate in T/s
     while (state.t < t_full_rotation){
          Llg.step(state);
