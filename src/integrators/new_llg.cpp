@@ -3,7 +3,7 @@
 NewLlg::NewLlg(std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
 };
 
-NewLlg::NewLlg(LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : llgterms(llgterms), AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
+NewLlg::NewLlg(LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
 };
 
 af::array NewLlg::fheff(const State& state){
@@ -50,7 +50,7 @@ void NewLlg::relax(State& state, const double precision, const int iloop, const 
         }
         if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
     }
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl; 
+    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ". Current state.steps= " << state.steps << " and state.t = " << state.t << std::endl; 
 }
 
 long int NewLlg::get_fheff_addr(const State& state){
