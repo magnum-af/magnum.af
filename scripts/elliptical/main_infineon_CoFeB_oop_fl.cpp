@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
     Param param = Param();
-    param.ms    = 1.58e-3/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    param.ms    = 1.58/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     param.A     = 15e-12;//[J/m]
     param.Ku1 = 1.3e-3/z;
     param.alpha = 0.02;
