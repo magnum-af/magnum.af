@@ -3,7 +3,6 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 
 double rate = 0.34e6 ; //[T/s]
 double hzee_max = 0.12; //[T]
@@ -39,48 +38,30 @@ int main(int argc, char** argv)
     param.ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     param.A     = 1.5e-11;//[J/m]
     param.alpha = 0.02;
-    // Initial magnetic field
 
     long int n_cells=0;//Number of cells with Ms!=0
     State state(mesh, param, mesh.init_vortex(n_cells));
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    std::vector<LlgTerm> llgterm;
+    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
     NewLlg Llg(llgterm);
-    //Llg.fdmdt_dissipation_term_only=true;
 
-    //obtaining relaxed magnetization
+    // Calculating relaxed initial magnetization or reading in given magnetization
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
-        vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
-        state.m=renormalize_handle_zero_values(state.m);
         vti_writer_micro(state.m, mesh ,(filepath + "minit_renorm").c_str());
-        timer t = af::timer::start();
-        double E_prev=1e20;
-        double E=0;
-        while (fabs((E_prev-E)/E_prev) > 1e-7){
-            Llg.step(state);
-            if( state.steps % 1000 == 0){
-                E_prev=E;
-                E=Llg.E(state);
-                std::cout << "step " << state.steps << " time= " << state.t << " E= " << E << " fabs= " << fabs((E_prev-E)/E_prev) << std::endl;
-                vti_writer_micro(state.m, mesh ,(filepath + "m_current_relaxation"+std::to_string(state.steps)).c_str());
-            }
-        }
-        std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
+        Llg.relax(state, 1e-7);
         vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
-        std::cout << "state.t= "<< state.t << std::endl;
-        //setting new zero time
-        state.t=0;
+        state.t=0; // Setting t=0 for hysteresis
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
         vti_reader(state.m, mesh, filepath+"mrelax.vti");
     }
-    vti_writer_micro(state.m, mesh ,(filepath + "todel_check_mrelax").c_str());
 
+    // Starting Hysteresis loop
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
@@ -88,7 +69,7 @@ int main(int argc, char** argv)
     state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
 
     timer t_hys = af::timer::start();
-    Llg.llgterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.llgterms.push_back( LlgTerm (new Zee(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          Llg.step(state);
          state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));

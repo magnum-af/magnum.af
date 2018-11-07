@@ -1,4 +1,5 @@
 #include "mesh.hpp"
+#include "func.hpp"
 
 Mesh::Mesh (int inn0, int inn1, int inn2, double indx, double indy, double indz):
              n0(inn0), n1(inn1), n2(inn2),    dx(indx),    dy(indy),    dz(indz), 
@@ -60,7 +61,8 @@ af::array Mesh::ellipse(long int& n_cells, const int xyz, const bool positive_di
                 for(int iz=0;iz<this->n2;iz++){
                     n_cells++;
                 }
-                m(ix,iy,af::span,xyz)=1;
+                if(positive_direction) m(ix,iy,af::span,xyz)=1;
+                else m(ix,iy,af::span,xyz)=-1;
             }
         }
     }
@@ -71,6 +73,7 @@ af::array Mesh::ellipse(long int& n_cells, const int xyz, const bool positive_di
 af::array Mesh::init_vortex(long int& n_cells, const bool positive_direction){
 // Returns an initial vortex magnetization 
 // n_cells gives number of cells with non-zero Ms
+// positive_direction true, core points in +, false in - direction
     af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);
     for(int ix=0;ix<this->n0;ix++){
         for(int iy=0;iy<this->n1;iy++){
@@ -82,17 +85,20 @@ af::array Mesh::init_vortex(long int& n_cells, const bool positive_direction){
                     n_cells++;
                 }
                 if(r==0.){
-                    m(ix,iy,af::span,2)= 1;
+                    if (positive_direction) m(ix,iy,af::span,2)= 1;
+                    else  m(ix,iy,af::span,2)= -1;
                 }
                 else{
                     m(ix,iy,af::span,0)=-ry/r;
                     m(ix,iy,af::span,1)= rx/r;
-                    m(ix,iy,af::span,2)= sqrt(this->n0)/r;
+                    if (positive_direction) m(ix,iy,af::span,2)= sqrt(this->n0)/r;
+                    else m(ix,iy,af::span,2)= - sqrt(this->n0)/r;
                 }
             }
         }
     }
 
     std::cout << "n_cells= " << n_cells << ", should be nx^2*M_PI/4.= " << pow(this->n0,2)*M_PI/4. << std::endl;
+    m=renormalize_handle_zero_values(m);
     return m;
 }
