@@ -71,3 +71,8 @@ void State::calc_mean_m( std::ostream& myfile, const long int n_cells, double hz
     af::array sum_dim3 = af::sum(af::sum(af::sum(this->m,0),1),2);
     myfile << std::setw(12) << this->t << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,0))/n_cells << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,1))/n_cells<< "\t" << afvalue(sum_dim3(af::span,af::span,af::span,2))/n_cells <<  "\t" << hzee << std::endl;
 }
+
+void State::calc_mean_m( std::ostream& myfile, const long int n_cells, const af::array& hzee){
+    af::array sum_dim3 = sum(sum(sum(this->m,0),1),2);
+    myfile << std::setw(12) << this->t << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,0))/n_cells << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,1))/n_cells<< "\t" << afvalue(sum_dim3(af::span,af::span,af::span,2))/n_cells << "\t" << afvalue(hzee(0,0,0,0)) << "\t" << afvalue(hzee(0,0,0,1)) << "\t" << afvalue(hzee(0,0,0,2)) << std::endl;
+}

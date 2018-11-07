@@ -44,7 +44,7 @@ af::array Mesh::skyrmconf(const bool point_up){
 
 af::array Mesh::ellipse(long int& n_cells, const int xyz, const bool positive_direction){
 // Returns an initial elliptical magnetization 
-// n_cells gives number of cells  within ellipse
+// n_cells gives number of cells with non-zero Ms
 // xyz gives direction of initial magnetization direction, 
 // positive_direction true points +, false in - direction
     af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);
@@ -65,5 +65,34 @@ af::array Mesh::ellipse(long int& n_cells, const int xyz, const bool positive_di
         }
     }
     std::cout << "Info: Mesh::ellipse(): n_cells= " << n_cells << ", should be approx a*b*M_PI*this->n2= " << this->n0/2*this->n1/2*M_PI*this->n2 << std::endl;
+    return m;
+}
+
+af::array Mesh::init_vortex(long int& n_cells, const bool positive_direction){
+// Returns an initial vortex magnetization 
+// n_cells gives number of cells with non-zero Ms
+    af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);
+    for(int ix=0;ix<this->n0;ix++){
+        for(int iy=0;iy<this->n1;iy++){
+            const double rx=double(ix)-this->n0/2.;
+            const double ry=double(iy)-this->n1/2.;
+            const double r = sqrt(pow(rx,2)+pow(ry,2));
+            if(r<this->n0/2.){
+                for(int iz=0;iz<this->n2;iz++){
+                    n_cells++;
+                }
+                if(r==0.){
+                    m(ix,iy,af::span,2)= 1;
+                }
+                else{
+                    m(ix,iy,af::span,0)=-ry/r;
+                    m(ix,iy,af::span,1)= rx/r;
+                    m(ix,iy,af::span,2)= sqrt(this->n0)/r;
+                }
+            }
+        }
+    }
+
+    std::cout << "n_cells= " << n_cells << ", should be nx^2*M_PI/4.= " << pow(this->n0,2)*M_PI/4. << std::endl;
     return m;
 }

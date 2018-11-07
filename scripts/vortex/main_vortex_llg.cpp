@@ -5,17 +5,6 @@
 #include <fstream>
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
 
-void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << std::endl;
-}
-
-void calc_mean_m(const State& state, const long int n_cells,  std::ostream& myfile, double hzee){
-    //TODO test n_cells accuracy
-    //myfile << std::setw(12) << state.t << "\t" << afvalue(sum(sum(sum(state.m(span,span,span,0),0),1),2))/n_cells << "\t" << hzee << std::endl;
-    array sum_dim3 = sum(sum(sum(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/n_cells << "\t" << afvalue(sum_dim3(span,span,span,1))/n_cells<< "\t" << afvalue(sum_dim3(span,span,span,2))/n_cells << "\t" << hzee << std::endl;
-}
-
 double rate = 0.34e6 ; //[T/s]
 double hzee_max = 0.12; //[T]
 
@@ -32,19 +21,16 @@ af::array zee_func(State state){
   
 int main(int argc, char** argv)
 {
-    std::cout<<"argc"<<argc<<std::endl;
-    for (int i=0; i<argc; i++) cout << "Parameter " << i << " was " << argv[i] << "\n";
-    std::string filepath(argc>1? argv[1]: "../Data/Testing");
-    if(argc>0)filepath.append("/");
-    std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
-    setDevice(argc>2? std::stoi(argv[2]):0);
+    std::string filepath(argc >= 1? argv[1]: "../Data/Testing");
+    if( argc >= 1 ){ filepath.append("/");}
+    if( argc >= 2 ){ setDevice( std::stoi( argv[2]));}
     std::string path_mrelax(argc>3? argv[3]: "");
-    info();
+    std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     std::cout.precision(24);
+    info();
 
     // Parameter initialization
-    const int nx = 250, ny=250 ,nz=1;
-    //const int nx = 400, ny=400 ,nz=1;
+    const int nx = 250, ny=250 ,nz=1; // Discretization
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
   
     //Generating Objects
@@ -54,42 +40,15 @@ int main(int argc, char** argv)
     param.A     = 1.5e-11;//[J/m]
     param.alpha = 0.02;
     // Initial magnetic field
-    array Ms = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
+
     long int n_cells=0;//Number of cells with Ms!=0
-    for(int ix=0;ix<mesh.n0;ix++){
-        for(int iy=0;iy<mesh.n1;iy++){
-            const double rx=double(ix)-mesh.n0/2.;
-            const double ry=double(iy)-mesh.n1/2.;
-            const double r = sqrt(pow(rx,2)+pow(ry,2));
-            if(r<nx/2.){
-                for(int iz=0;iz<mesh.n2;iz++){
-                    n_cells++;
-                }
-                Ms(ix,iy,span,span)=param.ms;
-                if(r==0.){
-                    m(ix,iy,span,2)= 1;
-                }
-                else{
-                    m(ix,iy,span,0)=-ry/r;
-                    m(ix,iy,span,1)= rx/r;
-                    m(ix,iy,span,2)= sqrt(nx)/r;
-                }
-            }
-        }
-    }
-
-    std::cout << "n_cells= " << n_cells << ", should be nx^2*M_PI/4.= " << pow(nx,2)*M_PI/4. << std::endl;
-
-    State state(mesh,param, m);
-    state.Ms=Ms;
+    State state(mesh, param, mesh.init_vortex(n_cells));
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
-    calc_mean_m(state,n_cells,std::cout);
 
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
     llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    LLG Llg(state,llgterm);
+    NewLlg Llg(llgterm);
     //Llg.fdmdt_dissipation_term_only=true;
 
     //obtaining relaxed magnetization
@@ -102,7 +61,7 @@ int main(int argc, char** argv)
         double E_prev=1e20;
         double E=0;
         while (fabs((E_prev-E)/E_prev) > 1e-7){
-            state.m=Llg.llgstep(state);
+            Llg.step(state);
             if( state.steps % 1000 == 0){
                 E_prev=E;
                 E=Llg.E(state);
@@ -115,12 +74,10 @@ int main(int argc, char** argv)
         std::cout << "state.t= "<< state.t << std::endl;
         //setting new zero time
         state.t=0;
-        Llg.state0.t=0;
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
-        vti_reader(m, mesh, filepath+"mrelax.vti");
-        state.m=m;
+        vti_reader(state.m, mesh, filepath+"mrelax.vti");
     }
     vti_writer_micro(state.m, mesh ,(filepath + "todel_check_mrelax").c_str());
 
@@ -128,17 +85,16 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
-    calc_mean_m(state,n_cells,stream);
+    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
 
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.llgterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
-         state.m=Llg.llgstep(state);
-         calc_mean_m(state,n_cells,stream,afvalue(Llg.Fieldterms[2]->h(state)(0,0,0,0)));
+         Llg.step(state);
+         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
          if( state.steps % 2000 == 0){
              vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
          }
-         //std::cout << state.t << "\t" << afvalue(sum(sum(sum(sum(Llg.Fieldterms[2]->h(state),3),2),1),0))<< std::endl;
     }
     stream.close();
     std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;

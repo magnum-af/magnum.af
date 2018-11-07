@@ -13,5 +13,6 @@ struct Mesh{
     void print(std::ostream& stream);
     af::array skyrmconf(const bool point_up = false);
     af::array ellipse(long int& n_cells, const int xyz = 1, const bool positive_direction = true);
+    af::array init_vortex(long int& n_cells, const bool positive_direction = true);
 };
 #endif

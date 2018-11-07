@@ -32,6 +32,7 @@ class State{
     void calc_mean_m( std::ostream& myfile);
     void calc_mean_m( std::ostream& myfile, const long int n_cells ); // n_cells is number of cells with non_zero_Ms
     void calc_mean_m( std::ostream& myfile, const long int n_cells, double hzee);
+    void calc_mean_m( std::ostream& myfile, const long int n_cells, const af::array& hzee);
 };
 
 #endif
