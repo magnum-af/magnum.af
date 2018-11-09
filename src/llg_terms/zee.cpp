@@ -15,11 +15,20 @@ Zee::Zee(af::array (*callback_func_in)(State state)): callback_func(callback_fun
     callback=true;
 }
 
+Zee::Zee(std::function<af::array(State)> lamda_callback): lamda_callback(lamda_callback){
+    
+    is_lamda=true;
+
+}
+
 af::array Zee::h(const State& state){
     //timer = timer::start();
     //if(param.afsync) sync();
     //time += timer::stop(timer);
-    if(callback){
+    if (is_lamda) {
+        return lamda_callback(state); 
+    }
+    else if(callback){
         return callback_func(state);
     }
     else return zee_field;

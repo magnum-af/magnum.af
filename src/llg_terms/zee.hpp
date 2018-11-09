@@ -1,5 +1,6 @@
 #ifndef ZEE_H
 #define ZEE_H
+#include <functional>
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -13,8 +14,11 @@ class Zee : public LLGTerm {
 
     //time dependent Zeeman field
     Zee(af::array (*callback_func_in)(State state));
+    Zee(std::function<af::array(State)>);
     af::array (*callback_func)(State state);
+    std::function<af::array(State)> lamda_callback;
     bool callback{false};
+    bool is_lamda{false};
 
     //Field contribution
     af::array h(const State& state);
