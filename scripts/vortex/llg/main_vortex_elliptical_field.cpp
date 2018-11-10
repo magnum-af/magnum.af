@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     if( argc > 1 ){ filepath.append("/");}
     setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
     // Input a in mT, 25 == 0.025
-    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3 : (double)(0.025/(4e-7 * M_PI)));
+    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.025/(4e-7 * M_PI)));
     // Input a in percent, B=1.0 == 100%
     const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; 
     const double t_full_rotation = double(argc > 5 ? std::stod(argv[5]) : (double)(800e-9));
