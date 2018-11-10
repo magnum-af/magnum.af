@@ -44,4 +44,5 @@ do
     # creating write dir
     echo $valueAB
     $magafdir/bin/magnum.af-cuda $outputpath/$valueAB $GPU $4 $valueAB > $outputpath/$valueAB/cout.txt 2>&1
+    #$magafdir/bin/magnum.af-cpu $outputpath/$valueAB $GPU $4 $valueAB > $outputpath/$valueAB/cout.txt 2>&1
 done
