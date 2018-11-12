@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     Param param = Param();
     param.ms    = 1.58/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     param.A     = 15e-12;//[J/m]
-    param.Ku1   = 1.056e6;
+    param.Ku1   = 1.056e6;// Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7))
     param.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0
