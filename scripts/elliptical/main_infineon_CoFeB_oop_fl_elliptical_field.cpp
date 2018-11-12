@@ -13,9 +13,9 @@ int main(int argc, char** argv)
     if( argc > 1 ){ filepath.append("/");}
     setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
     // Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
-    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.025/(4e-7 * M_PI)));
+    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.05/(4e-7 * M_PI)));
     const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
-    const double t_full_rotation = double(argc > 5 ? std::stod(argv[5]) : (double)(800e-9));
+    const double t_full_rotation = double(argc > 5 ? std::stod(argv[5]) : (double)(200e-9));
     const std::string path_mrelax(argc>5? argv[5]: "");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     std::cout << "A=" << A << "B= " << B << "t_full_rotation=" << t_full_rotation << std::endl;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     Param param = Param();
     param.ms    = 1.58/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     param.A     = 15e-12;//[J/m]
-    param.Ku1 = 1.3e-3/z;
+    param.Ku1   = 1.056e6;
     param.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0

@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 
 
     // Parameter initialization
-    const double x=800e-9, y=800e-9, z=1.3e-9;//[m] // Physical dimensions
+    const double x=800e-9, y=800e-9, z=1.0e-9;//[m] // Physical dimensions
     const int nx = 250, ny=250 ,nz=1;
   
     //Generating Objects
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     Param param = Param();
     param.ms    = 1.58/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     param.A     = 15e-12;//[J/m]
-    param.Ku1 = 1.3e-3/z;
+    param.Ku1   = 1.056e6;
     param.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0
