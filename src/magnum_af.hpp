@@ -19,6 +19,7 @@
 #include "integrators/new_llg.hpp"
 #include "solvers/minimizer.hpp"
 #include "solvers/cg_minimizer.hpp"
+#include "solvers/lbfgs_minimizer.hpp"
 #include "vtk_IO.hpp"
 #include "pgfplot.hpp"
 #include "misc.hpp"
