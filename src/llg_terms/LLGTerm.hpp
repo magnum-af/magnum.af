@@ -11,8 +11,8 @@ class LLGTerm{
     virtual double get_cpu_time()=0;
 };
 
-// Typedefs used to initialize objects wich inherit from this class
-typedef std::shared_ptr<LLGTerm> LlgTerm; 
-typedef std::vector<LlgTerm> LlgTerms; 
+// Aliases used to initialize objects wich inherit from this class
+using LlgTerm = std::shared_ptr<LLGTerm>; 
+using LlgTerms = std::vector<LlgTerm>; 
 
 #endif
