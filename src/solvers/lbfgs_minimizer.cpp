@@ -21,7 +21,6 @@ af::array LBFGS_Minimizer::h(const State& state){
 
 void LBFGS_Minimizer::minimize(State& state){
     af::timer timer = af::timer::start();
-    af::print("h in minimize", af::mean(h(state)));//TODO
-
-    std::cout << "LBFGS_Minimizer: time = " << af::timer::stop(timer) << std::endl;
+    af::print("h in minimize", af::mean(h(state)));//TODEL
+    std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
