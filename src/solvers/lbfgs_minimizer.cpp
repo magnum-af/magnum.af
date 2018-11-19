@@ -5,22 +5,22 @@ LBFGS_Minimizer::LBFGS_Minimizer()
 }
 
 // Calculation of effective field
-af::array LBFGS_Minimizer::h(const State& state){
-    if( llgterms.size() == 0){
-        std::cout<<"ERROR: minimizer.cpp: Number of llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms! Aborting..."<<std::endl;
+af::array LBFGS_Minimizer::_h(const State& state){
+    if( _llgterms.size() == 0){
+        std::cout<<"ERROR: minimizer.cpp: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer._llgterms! Aborting..."<<std::endl;
         exit (EXIT_FAILURE);
      }
     af::timer timer=af::timer::start();
-    af::array solution = llgterms[0]->h(state);
-    for(unsigned i = 1; i < llgterms.size() ; ++i ){
-        solution+=llgterms[i]->h(state);
+    af::array solution = _llgterms[0]->h(state);
+    for(unsigned i = 1; i < _llgterms.size() ; ++i ){
+        solution+=_llgterms[i]->h(state);
     }
-    time_h+=af::timer::stop(timer);
+    _time_h+=af::timer::stop(timer);
     return solution;
 }
 
 void LBFGS_Minimizer::minimize(State& state){
     af::timer timer = af::timer::start();
-    af::print("h in minimize", af::mean(h(state)));//TODEL
+    af::print("h in minimize", af::mean(_h(state)));//TODEL
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 

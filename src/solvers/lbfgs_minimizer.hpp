@@ -17,15 +17,14 @@ class LBFGS_Minimizer {
     public:
         LBFGS_Minimizer();
 
-        af::array h(const State& m);// Effective Field 
         void minimize(State&); // Minimization routine
 
-        LlgTerms llgterms;
+        LlgTerms _llgterms;
 
-        double get_time_h() const { return time_h;};
+        double get_time_h() const { return _time_h;};
     private:
-        double time_h{0};
-        
+        af::array _h(const State& m);// Effective Field 
+        double _time_h{0};// Timer measuring calls to effective field _h
 };
 
 #endif
