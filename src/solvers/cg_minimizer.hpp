@@ -10,9 +10,6 @@
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 
-typedef std::shared_ptr<LLGTerm> LlgTerm; 
-typedef std::vector<LlgTerm> LlgTerms; 
-
 class CG_Minimizer {
     public:
         CG_Minimizer();

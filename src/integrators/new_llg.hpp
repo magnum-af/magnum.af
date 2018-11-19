@@ -7,9 +7,6 @@
 #include "adaptive_runge_kutta.hpp"
 #include <memory>//shared_ptr
 
-typedef std::shared_ptr<LLGTerm> LlgTerm; 
-typedef std::vector<LlgTerm> LlgTerms; 
-
 class NewLlg : public AdaptiveRungeKutta{
     public:
         NewLlg(std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);

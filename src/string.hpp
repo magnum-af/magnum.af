@@ -5,7 +5,7 @@
 #include "integrators/new_llg.hpp"
 class String {
   public:
-    String(State state, std::vector<State> inputimages, int n_interp, double dt, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in);
+    String(State state, std::vector<State> inputimages, int n_interp, double dt, LlgTerms Fieldterms_in);
     void run(const std::string filepath, const double string_abort_rel_diff = 1e-12, const double string_abort_abs_diff = 1e-27, const int string_steps = 10000);
 
     State state;// TODO remove this state instace
