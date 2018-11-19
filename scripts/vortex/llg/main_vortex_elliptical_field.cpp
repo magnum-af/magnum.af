@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     if( argc > 1 ){ filepath.append("/");}
     setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
     // Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
-    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.025/(4e-7 * M_PI)));
+    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.05/(4e-7 * M_PI)));
     const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
     const double t_full_rotation = double(argc > 5 ? std::stod(argv[5]) : (double)(800e-9));
     const std::string path_mrelax(argc>5? argv[5]: "");
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
         array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
         zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant(-A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     };
 
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
         array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
         zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant(-A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     };
 
