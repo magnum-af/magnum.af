@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "arrayfire.h"
 #include "../state.hpp"
+#include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 
 //For second Method, use interface class:
@@ -14,14 +15,15 @@ class LBFGS_Minimizer {
     public:
         LBFGS_Minimizer();
 
-        void minimize(State&); // Minimization routine
+        void Minimize(State&); // Minimization routine
 
-        LlgTerms _llgterms;
+        LlgTerms llgterms_;
 
-        double get_time_h() const { return _time_h;};
+        double GetTimeCalcHeff() const { return time_calc_heff_;};
     private:
-        af::array _h(const State& m);// Effective Field 
-        double _time_h{0};// Timer measuring calls to effective field _h
+        af::array Gradient(const State&);// Calculate gradient as energy-dissipation term of llg
+        af::array Heff(const State& m);// Effective Field 
+        double time_calc_heff_{0};// Timer measuring calls to effective field _h
 };
 
 #endif
