@@ -15,7 +15,7 @@ class LBFGS_Minimizer {
     public:
         LBFGS_Minimizer();
 
-        void Minimize(State&); // Minimization routine
+        double Minimize(State&); // Minimization routine
 
         LlgTerms llgterms_;
 
@@ -23,7 +23,13 @@ class LBFGS_Minimizer {
     private:
         af::array Gradient(const State&);// Calculate gradient as energy-dissipation term of llg
         af::array Heff(const State& m);// Effective Field 
+        double E(const State&); // Calculate Energy
         double time_calc_heff_{0};// Timer measuring calls to effective field _h
+        int cg(); // TODO define correct cg
+        int cgIni_{1};//TODO investigate definition, init value etc
+        int verbose_{3};//TODO investigate definition, init value etc
+        int maxIter_{10};//TODO investigate definition, init value etc
+        double mxmxhMax(const State& state);// TODO investigate definition, init value etc
 };
 
 #endif
