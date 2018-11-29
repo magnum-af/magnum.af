@@ -85,10 +85,18 @@ double LBFGS_Minimizer::Minimize(State& state){
     size_t iter = 0, globIter = 0; 
     double H0k = 1;
         do {
+            //TODO TODEL
+            //
+            //for (size_t i = 0; i < m; i++){
+            //    printf("size svec = %i \n", sVector.size());
+            //    af::print("svec", af::mean(sVector[i],0));
+            //}
+            //END TODO
             int cgSteps = 0;
             //this->minIterCount_++;
             f_old = f; 
             x_old = x0;
+            //af::print("x0", af::mean(x0,0));
             grad_old = grad;
 
             q = grad;
@@ -105,7 +113,7 @@ double LBFGS_Minimizer::Minimize(State& state){
                 q += sVector[i] * (alpha[i] - beta);
             }
 
-            // Decent = -grad.dot(q) in .fe
+            // line 291 in .fe: decent = -grad.dot(q) 
             double phiPrime0 = -mydot(grad,q);
             if (phiPrime0 > 0) {
                 q = grad;
@@ -117,8 +125,18 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
 
             //TODO objFunc.updateTol(gradNorm);
+            //TODO check version Schrefl vs Flo
+            if ( -mydot(grad, q) > -1e-15){
+               gradNorm = maxnorm(grad); 
+               if (gradNorm < eps*(1.+fabs(f))){
+                   printf("Minimizer: Convergence reached (due to almost zero gradient (|g|=%e < %e)!", (gradNorm, eps*(1.+fabs(f))));
+               }
+            }
             //const double rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
-            const double rate = 1.0; // TODO temp-fix proposed by Flo 
+            const double rate = linesearch(state, f, x_old, x0, grad, -q, tolf);
+            //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
+            //printf("rate=%d \n", rate);
+            state.m = x0;
             if (this->verbose_>3 && rate == 0.0) {
               std::cout << "linesearch failed" << std::endl;
               exit(0);
@@ -140,6 +158,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             y = grad - grad_old;
             double ys = mydot(y,s);
+            //TODO this is somehow always true
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
               if (this->verbose_>2) {
                 std::cout << iter << " skip update!!!!!!!!! " << std::endl;
@@ -147,7 +166,9 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             else { 
               if (iter < m) {
+                //af::print("s", af::mean(s,0));
                 sVector[iter] = s;
+                //af::print("svec", af::mean(sVector[iter],0));
                 yVector[iter] = y;
               } else {
                 std::rotate(sVector.begin(),sVector.begin()+1,sVector.end());
@@ -179,15 +200,23 @@ double LBFGS_Minimizer::Minimize(State& state){
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
 
+Dtype LBFGS_Minimizer::linesearch(const State& state, Dtype &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf) { 
+    Dtype ak = 1.0;
+    //TODO//this in not changing//af::print("x", af::mean(x,0));
+    cvsrch(state, x_old, x, fval, g, ak, searchDir, tolf);
+    //TODO//this in not changing//af::print("x", af::mean(x,0));
+    return ak;
+}
+
 //static int cvsrch(P &objFunc, const vex::vector<Dtype> &wa, vex::vector<Dtype> &x, Dtype &f, vex::vector<Dtype> &g, Dtype &stp, const vex::vector<Dtype> &s, double tolf) {
-int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == Dtype &stp moved into function
+//TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == Dtype &stp moved into function
+int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, Dtype &stp, const af::array &s, double tolf) {
   // we rewrite this from MIN-LAPACK and some MATLAB code
-  double stp=1.0;
 
   int info           = 0;
   int infoc          = 1;
 
-  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
+//  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
   const Dtype xtol   = 1e-15;
   const Dtype ftol   = 1.0e-4;  // c1
   const Dtype gtol   = 0.9;   // c2
@@ -253,15 +282,21 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
     //// x = wa + stp * s;
     //// objFunc.normalizeVector(x);
     //objFunc.update(stp,wa,s,x);
+    //TODO check
     x = wa + stp * s; // this is equivalent to objFunc.update(stp,wa,s,x);
+    //TODO/TODEL//af::print("linesearch x", af::mean(x,0));
     x = renormalize_handle_zero_values(x);
+    //TODO/TODEL//af::print("linesearch x renorm", af::mean(x,0));
 
-    //TODO f = objFunc.both(x, g);
+    // f = objFunc.both(x, g);
     // NOTE: objFunc.both calcs gradient and energy E
     State state_x = state;
     state_x.m = x;
     f = this->E(state_x);
+    //TODEL//This is changing//std::cout<< "in linesearch f= " << f << std::endl;
     g = this->Gradient(state_x);
+    //TODO//TODEL//this ich changing//af::print("g", af::mean(g,0));
+    //END TODO check
     nfev++;
     Dtype dg = mydot(g,s);
     Dtype ftest1 = finit + stp * dgtest;

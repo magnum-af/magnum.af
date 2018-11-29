@@ -31,7 +31,9 @@ class LBFGS_Minimizer {
         int verbose_{3};///<TODO investigate definition, init value etc
         int maxIter_{10};///<TODO investigate definition, init value etc
         double mxmxhMax(const State& state);///< TODO investigate definition, init value etc
-        int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf);
+        Dtype linesearch(const State& state, Dtype &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf);
+        //TODO//TODEL//int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf);
+        int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, Dtype &stp, const af::array &s, double tolf);
         int cstep(Dtype& stx, Dtype& fx, Dtype& dx, Dtype& sty, Dtype& fy, Dtype& dy, Dtype& stp, Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info);
 };
 
