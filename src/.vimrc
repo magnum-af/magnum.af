@@ -17,3 +17,6 @@ set makeprg=make\ -C\ ../build\ -j
 nnoremap <F9> :YcmCompleter FixIt<CR>
 " Goto definition with F3
 nnoremap <F10> :YcmCompleter GoTo<CR>
+
+" Run Doxygen
+nnoremap <F2> :!( cd .. && doxygen .doxygen-config )<CR>
