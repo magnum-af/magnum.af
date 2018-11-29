@@ -32,37 +32,23 @@ af::array LBFGS_Minimizer::Gradient(const State& state){
 }
 
 double mydot (const af::array& a, const af::array& b){
-    //return a*b; // TODO determine exact dot product
-    return 1.0; // TODO !!!
+    return full_inner_product(a, b);
 }
 double mynorm(const af::array &a) {
-  return sqrt( mydot(a,a) );//TODO use correct mydot
+  return sqrt( mydot(a,a) );
 }
 
-//TODO mxmxhMax
 double LBFGS_Minimizer::mxmxhMax(const State& state) {
     return maxnorm(Gradient(state));
 }
 
-int LBFGS_Minimizer::cg() {
-//TODO//int LBFGS_Minimizer::cg(const vex::vector<double> &m, vex::vector<double> &x, vex::vector<double> &b, int k, int itmax) {
-  //TODO// if (precond_==0) {
-  //TODO//   return simplecg(m,x,b,k,itmax);
-  //TODO// }
-  //TODO// else {
-  //TODO//   return pcg(m,x,b,k,itmax);
-  //TODO// }
-  
-    return 1; // TODO
-}
-
-// LBFGS minimizer from Thomas Schrefl's bvec code
+/// LBFGS minimizer from Thomas Schrefl's bvec code
 double LBFGS_Minimizer::Minimize(State& state){
     af::timer timer = af::timer::start();
     //af::print("h in minimize", af::mean(Heff(state)));//TODEL
     //af::print("Gradient", Gradient(state));//TODEL
 
-    double eps  = 1e-12; //TODO find value of CL_DBL_EPSILON;
+    double eps  = 2.22e-16;
     double eps2 = sqrt(eps);
     double epsr = pow(eps,0.9);
     double tolf = 1e-12; //TODO find value of this->settings_.gradTol;
@@ -71,30 +57,33 @@ double LBFGS_Minimizer::Minimize(State& state){
     double f = this->E(state);
     //double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
-    auto grad = this->Gradient(state);
+    af::array grad = this->Gradient(state);
     double gradNorm = maxnorm(grad);
-    af::print("grad", grad);
+    //af::print("grad", grad);
     std::cout << "f= " << f << std::endl;
     if ( gradNorm < (epsr*(1+fabs(f))) ) {
       return f;
     }
-    af::array sVector = af::array(state.mesh.dims, f64);
-    af::array yVector = af::array(state.mesh.dims, f64);
-
     const size_t m = 5;
-    std::array<double,m> alpha = {0.,0.,0.,0.,0.};
-    af::array q = af::array(state.mesh.dims, f64);
-    af::array s = af::array(state.mesh.dims, f64);
-    af::array y = af::array(state.mesh.dims, f64);
+
+    std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims, f64);
+    std::vector<af::array> yVector; //= af::constant(0.0, state.mesh.dims, f64);
+    for (size_t i = 0; i < m; i++){
+        sVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+        yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+    }
+
+    std::array<double, m> alpha = {0.,0.,0.,0.,0.};
+    af::array q = af::constant(0.0, state.mesh.dims, f64);
+    af::array s = af::constant(0.0, state.mesh.dims, f64);
+    af::array y = af::constant(0.0, state.mesh.dims, f64);
     double f_old = 0.0;
-    af::array grad_old = af::array(state.mesh.dims, f64);
+    af::array grad_old = af::constant(0.0, state.mesh.dims, f64);
     af::array x0 = state.m;
     af::array x_old = x0;
 
     size_t iter = 0, globIter = 0; 
     double H0k = 1;
-    // TODO for starting, repalce linesearch with return value 1.0
-
         do {
             int cgSteps = 0;
             //this->minIterCount_++;
@@ -105,27 +94,18 @@ double LBFGS_Minimizer::Minimize(State& state){
             q = grad;
             const int k = std::min(m, iter);
             for (int i = k - 1; i >= 0; i--) {
-                const double rho = 1.0 / mydot(sVector(i),yVector(i));
-                alpha[i] = rho * mydot(sVector(i),q);
-                q -= alpha[i] * yVector(i);
+                const double rho = 1.0 / mydot(sVector[i],yVector[i]);
+                alpha[i] = rho * mydot(sVector[i],q);
+                q -= alpha[i] * yVector[i];
             }
-            //vex::vector<double> q0(x0.queue_list(),DIM);
-            af::array q0 = af::array (state.mesh.dims, f64);
-            if (this->cgIni_ > 0) {
-              q0 = H0k * q;
-              //cgSteps = this->cg(x0, q0, q, iter, this->cgIni_);
-              cgSteps = this->cg();//TODO
-              q = q0;              
-            }
-            else {
-              q = H0k * q;
-            }
+            q = H0k * q; // NOTE: cg step skipped and only used else
             for (int i = 0; i < k; i++) {
-                const double rho = 1.0 / mydot(sVector(i),yVector(i));
-                const double beta = rho * mydot(yVector(i),q);
-                q += sVector(i) * (alpha[i] - beta);
+                const double rho = 1.0 / mydot(sVector[i],yVector[i]);
+                const double beta = rho * mydot(yVector[i],q);
+                q += sVector[i] * (alpha[i] - beta);
             }
 
+            // Decent = -grad.dot(q) in .fe
             double phiPrime0 = -mydot(grad,q);
             if (phiPrime0 > 0) {
                 q = grad;
@@ -167,13 +147,13 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             else { 
               if (iter < m) {
-                sVector(iter) = s;
-                yVector(iter) = y;
+                sVector[iter] = s;
+                yVector[iter] = y;
               } else {
-                //TODO//std::rotate(sVector.begin(),sVector.begin()+1,sVector.end());
-                sVector(m-1) = s;
-                //TODO//std::rotate(yVector.begin(),yVector.begin()+1,yVector.end());
-                yVector(m-1) = y;
+                std::rotate(sVector.begin(),sVector.begin()+1,sVector.end());
+                sVector[m-1] = s;
+                std::rotate(yVector.begin(),yVector.begin()+1,yVector.end());
+                yVector[m-1] = y;
               }
               H0k = ys / mydot(y,y);
               iter++;
