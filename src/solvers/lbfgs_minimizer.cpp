@@ -51,7 +51,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     double eps  = 2.22e-16;
     double eps2 = sqrt(eps);
     double epsr = pow(eps,0.9);
-    double tolf = 1e-12; //TODO find value of this->settings_.gradTol;
+    double tolf = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolf);
     double tolf3 = pow(tolf,0.3333333333333333333333333);
     double f = this->E(state);
@@ -178,3 +178,299 @@ double LBFGS_Minimizer::Minimize(State& state){
 
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
+
+//static int cvsrch(P &objFunc, const vex::vector<Dtype> &wa, vex::vector<Dtype> &x, Dtype &f, vex::vector<Dtype> &g, Dtype &stp, const vex::vector<Dtype> &s, double tolf) {
+int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == Dtype &stp moved into function
+  // we rewrite this from MIN-LAPACK and some MATLAB code
+  double stp=1.0;
+
+  int info           = 0;
+  int infoc          = 1;
+
+  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
+  const Dtype xtol   = 1e-15;
+  const Dtype ftol   = 1.0e-4;  // c1
+  const Dtype gtol   = 0.9;   // c2
+  const Dtype eps    = tolf;
+  const Dtype stpmin = 1e-15;
+  const Dtype stpmax = 1e15;
+  const Dtype xtrapf = 4;
+  const int maxfev   = 20;
+  int nfev           = 0;
+
+  Dtype dginit = mydot(g,s);
+  if (dginit >= 0.0) {
+    // no descent direction
+    // TODO: handle this case
+    std::cout << " no descent " << dginit << std::endl;
+    return -1;
+  }
+
+  bool brackt      = false;
+  bool stage1      = true;
+
+  Dtype finit      = f;
+  Dtype dgtest     = ftol * dginit;
+  Dtype width      = stpmax - stpmin;
+  Dtype width1     = 2 * width;
+  // vex::vector<Dtype> wa(x.queue_list(),x.size());
+  // wa = x;
+
+  Dtype stx        = 0.0;
+  Dtype fx         = finit;
+  Dtype dgx        = dginit;
+  Dtype sty        = 0.0;
+  Dtype fy         = finit;
+  Dtype dgy        = dginit;
+
+  Dtype stmin;
+  Dtype stmax;
+
+  while (true) {
+
+    // make sure we stay in the interval when setting min/max-step-width
+    if (brackt) {
+      stmin = std::min(stx, sty);
+      stmax = std::max(stx, sty);
+    } else {
+      stmin = stx;
+      stmax = stp + xtrapf * (stp - stx);
+    }
+
+    // Force the step to be within the bounds stpmax and stpmin.
+    stp = std::max(stp, stpmin);
+    stp = std::min(stp, stpmax);
+
+    // Oops, let us return the last reliable values
+    if (
+    (brackt && ((stp <= stmin) | (stp >= stmax)))
+    | (nfev >= maxfev - 1 ) | (infoc == 0)
+    | (brackt & (stmax - stmin <= xtol * stmax))) {
+      stp = stx;
+    }
+
+    //// test new point
+    //// x = wa + stp * s;
+    //// objFunc.normalizeVector(x);
+    //objFunc.update(stp,wa,s,x);
+    x = wa + stp * s; // this is equivalent to objFunc.update(stp,wa,s,x);
+    x = renormalize_handle_zero_values(x);
+
+    //TODO f = objFunc.both(x, g);
+    // NOTE: objFunc.both calcs gradient and energy E
+    State state_x = state;
+    state_x.m = x;
+    f = this->E(state_x);
+    g = this->Gradient(state_x);
+    nfev++;
+    Dtype dg = mydot(g,s);
+    Dtype ftest1 = finit + stp * dgtest;
+    Dtype ftest2 = finit + eps*fabs(finit);
+    Dtype ft = 2*ftol-1;
+
+    // all possible convergence tests
+    if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0))
+      info = 6;
+
+    // if ((stp == stpmax) & (f <= ftest1) & (dg <= dgtest))
+    if ((stp == stpmax) & (f <= ftest2) & (dg <= dgtest))
+      info = 5;
+
+    // if ((stp == stpmin) & ((f > ftest1) | (dg >= dgtest)))
+    if ((stp == stpmin) & ((f > ftest2) | (dg >= dgtest)))
+      info = 4;
+
+    if (nfev >= maxfev)
+      info = 3;
+
+    if (brackt & (stmax - stmin <= xtol * stmax))
+      info = 2;
+
+    if ((f <= ftest1) & (fabs(dg) <= gtol * (-dginit)))
+      info = 1;
+
+    if (((f<=ftest2)&&(ft*dginit>=dg)) && (fabs(dg) <= gtol * (-dginit)))
+      info = 1;
+    
+    // terminate when convergence reached
+    if (info != 0) {
+      return -1;
+    }
+
+    // if (stage1 & (f <= ftest1) & (dg >= std::min(ftol, gtol)*dginit))
+    if (stage1 & ((f<=ftest2)&&(ft*dginit>=dg)) & (dg >= std::min(ftol, gtol)*dginit))  // approx wolfe 1
+      stage1 = false;
+
+    // if (stage1 & (f <= fx) & (f > ftest1)) {
+    if (stage1 & (f <= fx) & (not ((f<=ftest2)&&(ft*dginit>=dg)))) { // not wolfe 1 --> not approx wolfe 1
+      Dtype fm = f - stp * dgtest;
+      Dtype fxm = fx - stx * dgtest;
+      Dtype fym = fy - sty * dgtest;
+      Dtype dgm = dg - dgtest;
+      Dtype dgxm = dgx - dgtest;
+      Dtype dgym = dgy - dgtest;
+
+      int rsl = cstep(stx, fxm, dgxm, sty, fym, dgym, stp, fm, dgm, brackt, stmin, stmax, infoc); (void) rsl;
+
+      fx = fxm + stx * dgtest;
+      fy = fym + sty * dgtest;
+      dgx = dgxm + dgtest;
+      dgy = dgym + dgtest;
+    } else {
+      // this is ugly and some variables should be moved to the class scope
+      int rsl = cstep(stx, fx, dgx, sty, fy, dgy, stp, f, dg, brackt, stmin, stmax, infoc); (void) rsl;
+    }
+
+    if (brackt) {
+      if (fabs(sty - stx) >= 0.66 * width1)
+        stp = stx + 0.5 * (sty - stx);
+      width1 = width;
+      width = fabs(sty - stx);
+    }
+  }
+
+  std::cout << " XXXXXXXXXXXXXXXXXXXXXXXXXXXX why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx " << std::endl;
+  exit(0);
+  return 0;
+}
+
+int LBFGS_Minimizer::cstep(Dtype& stx, Dtype& fx, Dtype& dx, Dtype& sty, Dtype& fy, Dtype& dy, Dtype& stp,
+Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
+  info = 0;
+  bool bound = false;
+
+  // Check the input parameters for errors.
+  if ((brackt & ((stp <= std::min(stx, sty) ) | (stp >= std::max(stx, sty)))) | (dx * (stp - stx) >= 0.0)
+  | (stpmax < stpmin)) {
+    return -1;
+  }
+
+  Dtype sgnd = dp * (dx / fabs(dx));
+
+  Dtype stpf = 0;
+  Dtype stpc = 0;
+  Dtype stpq = 0;
+
+  if (fp > fx) {
+    info = 1;
+    bound = true;
+    Dtype theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
+    Dtype s = std::max(theta, std::max(dx, dp));
+    Dtype gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
+    if (stp < stx)
+      gamma = -gamma;
+    Dtype p = (gamma - dx) + theta;
+    Dtype q = ((gamma - dx) + gamma) + dp;
+    Dtype r = p / q;
+    stpc = stx + r * (stp - stx);
+    stpq = stx + ((dx / ((fx - fp) / (stp - stx) + dx)) / 2.) * (stp - stx);
+    if (fabs(stpc - stx) < fabs(stpq - stx))
+      stpf = stpc;
+    else
+      stpf = stpc + (stpq - stpc) / 2;
+    brackt = true;
+  } else if (sgnd < 0.0) {
+    info = 2;
+    bound = false;
+    Dtype theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    Dtype s = std::max(theta, std::max(dx, dp));
+    Dtype gamma = s * sqrt((theta / s) * (theta / s)  - (dx / s) * (dp / s));
+    if (stp > stx)
+      gamma = -gamma;
+
+    Dtype p = (gamma - dp) + theta;
+    Dtype q = ((gamma - dp) + gamma) + dx;
+    Dtype r = p / q;
+    stpc = stp + r * (stx - stp);
+    stpq = stp + (dp / (dp - dx)) * (stx - stp);
+    if (fabs(stpc - stp) > fabs(stpq - stp))
+      stpf = stpc;
+    else
+      stpf = stpq;
+    brackt = true;
+  } else if (fabs(dp) < fabs(dx)) {
+    info = 3;
+    bound = 1;
+    Dtype theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    Dtype s = std::max(theta, std::max( dx, dp));
+    Dtype gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
+    if (stp > stx)
+      gamma = -gamma;
+    Dtype p = (gamma - dp) + theta;
+    Dtype q = (gamma + (dx - dp)) + gamma;
+    Dtype r = p / q;
+    if ((r < 0.0) & (gamma != 0.0)) {
+      stpc = stp + r * (stx - stp);
+    } else if (stp > stx) {
+      stpc = stpmax;
+    } else {
+      stpc = stpmin;
+    }
+    stpq = stp + (dp / (dp - dx)) * (stx - stp);
+    if (brackt) {
+      if (fabs(stp - stpc) < fabs(stp - stpq)) {
+        stpf = stpc;
+      } else {
+        stpf = stpq;
+      }
+    } else {
+      if (fabs(stp - stpc) > fabs(stp - stpq)) {
+        stpf = stpc;
+      } else {
+        stpf = stpq;
+      }
+
+    }
+  } else {
+    info = 4;
+    bound = false;
+    if (brackt) {
+      Dtype theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
+      Dtype s = std::max(theta, std::max(dy, dp));
+      Dtype gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
+      if (stp > sty)
+        gamma = -gamma;
+
+      Dtype p = (gamma - dp) + theta;
+      Dtype q = ((gamma - dp) + gamma) + dy;
+      Dtype r = p / q;
+      stpc = stp + r * (sty - stp);
+      stpf = stpc;
+    } else if (stp > stx)
+      stpf = stpmax;
+    else {
+      stpf = stpmin;
+    }
+  }
+
+  if (fp > fx) {
+    sty = stp;
+    fy = fp;
+    dy = dp;
+  } else {
+    if (sgnd < 0.0) {
+      sty = stx;
+      fy = fx;
+      dy = dx;
+    }
+
+    stx = stp;
+    fx = fp;
+    dx = dp;
+  }
+
+  stpf = std::min(stpmax, stpf);
+  stpf = std::max(stpmin, stpf);
+  stp = stpf;
+
+  if (brackt & bound) {
+    if (sty > stx) {
+      stp = std::min(stx + 0.66 * (sty - stx), stp);
+    } else {
+      stp = std::max(stx + 0.66 * (sty - stx), stp);
+    }
+  }
+
+  return 0;
+
+}

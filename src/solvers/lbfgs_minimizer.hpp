@@ -10,6 +10,9 @@
 
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
+//
+typedef double Dtype;// TODO: replace ?
+  //NOTE: Dtype ak in Schrefl::linesearch is moved into cvsrch
 
 class LBFGS_Minimizer {
     public:
@@ -28,6 +31,8 @@ class LBFGS_Minimizer {
         int verbose_{3};///<TODO investigate definition, init value etc
         int maxIter_{10};///<TODO investigate definition, init value etc
         double mxmxhMax(const State& state);///< TODO investigate definition, init value etc
+        int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf);
+        int cstep(Dtype& stx, Dtype& fx, Dtype& dx, Dtype& sty, Dtype& fy, Dtype& dy, Dtype& stp, Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info);
 };
 
 #endif
