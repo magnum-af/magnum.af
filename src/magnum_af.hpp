@@ -13,7 +13,6 @@
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/zee.hpp"
 #include "string.hpp"
-#include "integrators/llg.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"
 #include "integrators/new_llg.hpp"

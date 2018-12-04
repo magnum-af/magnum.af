@@ -18,3 +18,21 @@ unsigned long long GetDirSize(std::string filepath)
     return std::stoull (dir_size_string,0,0);
 
 }
+
+std::string red(const std::string str){
+    return "\033[;31m"+str+"\033[0m";
+}
+
+std::string bold_red(const std::string str){
+    return "\033[1;31m"+str+"\033[0m";
+}
+
+std::string bold_green(const std::string str){
+    return "\033[1;32m"+str+"\033[0m";
+}
+
+std::string green(const std::string str){
+    return "\033[;32m"+str+"\033[0m";
+}
+
+

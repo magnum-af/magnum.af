@@ -1,22 +1,21 @@
-" make clean 
+" F2: Run Doxygen
+nnoremap <F2> :!( cd .. && doxygen .doxygen-config )<CR>
+" F3: make clean 
 nnoremap <F3> :! cd ../build  && make clean && cd - <cr>
-" cmake .. 
+" F4: cmake .. 
 nnoremap <F4> :! cd ../build  && cmake .. && cd - <cr>
-" make
-nnoremap <F5> :make!<cr>
-" run
-nnoremap <F6> :!../bin/magnum.af-cpu<cr>
-
-" run opencl
-nnoremap <F7> :!../bin/magnum.af-opencl<cr>
-
-set makeprg=make\ -C\ ../build\ -j
-"set makeprg=[[\ -f\ Makefile\ ]]\ &&\ make\ \\\|\\\|\ make\ -C\ .. 
-
-" Apply YCM FixIt
+" F5: make
+nnoremap <F5> :! cd ../build && make -j<cr>
+" F6: run cpu
+nnoremap <F6> :!time ../bin/magnum.af-cpu<cr>
+" F7: run opencl
+nnoremap <F7> :!time ../bin/magnum.af-opencl<cr>
+" F9: Apply YCM FixIt
 nnoremap <F9> :YcmCompleter FixIt<CR>
-" Goto definition with F3
+" F10: Goto definition with F3
 nnoremap <F10> :YcmCompleter GoTo<CR>
 
-" Run Doxygen
-nnoremap <F2> :!( cd .. && doxygen .doxygen-config )<CR>
+" Using makeprg does not provide color output:
+"nnoremap <F5> :make!<cr>
+"set makeprg=make\ -C\ ../build\ -j
+"set makeprg=[[\ -f\ Makefile\ ]]\ &&\ make\ \\\|\\\|\ make\ -C\ .. 
