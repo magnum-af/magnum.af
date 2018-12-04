@@ -28,9 +28,16 @@ af::array LBFGS_Minimizer::Heff(const State& state){
 }
 
 af::array LBFGS_Minimizer::Gradient(const State& state){
-    return cross4(state.m, cross4(state.m, Heff(state)));
+    //TODO//this runs, check correct way//return cross4(state.m, cross4(state.m, Heff(state)));
+    return state.param.mu0 * state.param.ms * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
+
+    //return cross4(state.m, cross4(state.m, state.param.mu0 * state.param.ms * state.mesh.V * Heff(state)));
+    //return state.param.mu0 * state.param.ms * state.mesh.V * cross4(state.m, cross4(state.m, Heff(state)));
+    //TODO//this runs//return cross4(state.m, cross4(state.m, Heff(state)));
     //TODO// this works!!!//return cross4(state.m, cross4(state.m, Heff(state)));
-    //TODO//this is wrong, too slow maybe?//return - state.param.alpha*state.param.gamma/(1.+pow(state.param.alpha,2)) * cross4(state.m, cross4(state.m, Heff(state)));
+    //TODO//this is wrong, too slow maybe?//
+    //return pow(state.param.mu0, 2)/state.mesh.V * state.param.ms * cross4(state.m, cross4(state.m, Heff(state)));
+    //return state.param.ms * cross4(state.m, cross4(state.m, Heff(state)));
 }
 
 double mydot (const af::array& a, const af::array& b){
@@ -45,7 +52,9 @@ double LBFGS_Minimizer::mxmxhMax(const State& state) {
 }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
+//TODO Currently Minimize() fails when called second time, i.e. when m already relaxed linesearch rate is 0 even with changed zeeman field
 double LBFGS_Minimizer::Minimize(State& state){
+    std::cout.precision(24);
     af::timer timer = af::timer::start();
     //af::print("h in minimize", af::mean(Heff(state)));//TODEL
     //af::print("Gradient", Gradient(state));//TODEL
@@ -146,9 +155,12 @@ double LBFGS_Minimizer::Minimize(State& state){
             std::cout.precision(24);
             std::cout << "rate= " << rate << std::endl;
             state.m = x0;
-            if (this->verbose_>3 && rate == 0.0) {
-              std::cout << bold_red("Error: LBFGS_Minimizer: linesearch failed") << std::endl;
-              exit(0);
+            if (rate == 0.0) {
+                if(this->verbose_>3 ){
+                    std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate == 0.0, maybe m is already relaxed?") << std::endl;
+                    //std::cout << bold_red("Error: LBFGS_Minimizer: linesearch failed, rate == 0.0") << std::endl;
+                }
+              //TODO//exit(0);// change to (if necessary)//exit(EXIT_FAILURE);
             }
             double f1 = 1+fabs(f);
             double gradNorm = maxnorm(grad);
