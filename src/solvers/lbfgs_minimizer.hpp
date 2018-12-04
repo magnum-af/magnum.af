@@ -5,13 +5,14 @@
 #include <algorithm>
 #include "arrayfire.h"
 #include "../state.hpp"
+#include "../misc.hpp"
 #include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 //
-typedef double Dtype;// TODO: replace ?
+//typedef double Dtype;// TODO: replace ?
   //NOTE: Dtype ak in Schrefl::linesearch is moved into cvsrch
 
 class LBFGS_Minimizer {
@@ -28,13 +29,13 @@ class LBFGS_Minimizer {
         af::array Heff(const State& m);///< Effective Field 
         double E(const State&); ///< Calculate Energy
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
-        int verbose_{3};///<TODO investigate definition, init value etc
-        int maxIter_{10};///<TODO investigate definition, init value etc
+        int verbose_{5};///< Setting output options
+        size_t maxIter_{200};///< Maximum number of iterations
         double mxmxhMax(const State& state);///< TODO investigate definition, init value etc
-        Dtype linesearch(const State& state, Dtype &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf);
-        //TODO//TODEL//int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf);
-        int cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, Dtype &stp, const af::array &s, double tolf);
-        int cstep(Dtype& stx, Dtype& fx, Dtype& dx, Dtype& sty, Dtype& fy, Dtype& dy, Dtype& stp, Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info);
+        double linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf);
+        //TODO//TODEL//int cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf);
+        int cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, double &stp, const af::array &s, double tolf);
+        int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info);
 };
 
 #endif

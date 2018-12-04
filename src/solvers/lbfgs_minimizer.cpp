@@ -15,7 +15,7 @@ double LBFGS_Minimizer::E(const State& state){
 // Calculation of effective field
 af::array LBFGS_Minimizer::Heff(const State& state){
     if( llgterms_.size() == 0){
-        std::cout<<"ERROR: LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms_! Aborting..."<<std::endl;
+        std::cout<< bold_red("ERROR: LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms_! Aborting...")<<std::endl;
         exit (EXIT_FAILURE);
      }
     af::timer timer=af::timer::start();
@@ -28,7 +28,9 @@ af::array LBFGS_Minimizer::Heff(const State& state){
 }
 
 af::array LBFGS_Minimizer::Gradient(const State& state){
-    return - state.param.alpha*state.param.gamma/(1.+pow(state.param.alpha,2)) * cross4(state.m, cross4(state.m, Heff(state)));
+    return cross4(state.m, cross4(state.m, Heff(state)));
+    //TODO// this works!!!//return cross4(state.m, cross4(state.m, Heff(state)));
+    //TODO//this is wrong, too slow maybe?//return - state.param.alpha*state.param.gamma/(1.+pow(state.param.alpha,2)) * cross4(state.m, cross4(state.m, Heff(state)));
 }
 
 double mydot (const af::array& a, const af::array& b){
@@ -66,12 +68,18 @@ double LBFGS_Minimizer::Minimize(State& state){
     }
     const size_t m = 5;
 
-    std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims, f64);
-    std::vector<af::array> yVector; //= af::constant(0.0, state.mesh.dims, f64);
-    for (size_t i = 0; i < m; i++){
-        sVector.push_back(af::constant(0.0, state.mesh.dims, f64));
-        yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
-    }
+    // array container
+    af::array af_zero = (af::constant(0.0, state.mesh.dims, f64));
+    std::array<af::array, m> sVector {{af_zero, af_zero, af_zero, af_zero, af_zero}};
+    std::array<af::array, m> yVector {{af_zero, af_zero, af_zero, af_zero, af_zero}};
+
+    // vector container
+    //std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims, f64);
+    //std::vector<af::array> yVector; //= af::constant(0.0, state.mesh.dims, f64);
+    //for (size_t i = 0; i < m; i++){
+    //    sVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+    //    yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+    //}
 
     std::array<double, m> alpha = {0.,0.,0.,0.,0.};
     af::array q = af::constant(0.0, state.mesh.dims, f64);
@@ -129,16 +137,17 @@ double LBFGS_Minimizer::Minimize(State& state){
             if ( -mydot(grad, q) > -1e-15){
                gradNorm = maxnorm(grad); 
                if (gradNorm < eps*(1.+fabs(f))){
-                   printf("Minimizer: Convergence reached (due to almost zero gradient (|g|=%e < %e)!", (gradNorm, eps*(1.+fabs(f))));
+                   std::cout << "Minimizer: Convergence reached (due to almost zero gradient (|g|=" << gradNorm << " < " << eps*(1.+fabs(f))<< ")!" << std::endl;
                }
             }
             //const double rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
             const double rate = linesearch(state, f, x_old, x0, grad, -q, tolf);
             //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
-            //printf("rate=%d \n", rate);
+            std::cout.precision(24);
+            std::cout << "rate= " << rate << std::endl;
             state.m = x0;
             if (this->verbose_>3 && rate == 0.0) {
-              std::cout << "linesearch failed" << std::endl;
+              std::cout << bold_red("Error: LBFGS_Minimizer: linesearch failed") << std::endl;
               exit(0);
             }
             double f1 = 1+fabs(f);
@@ -158,7 +167,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             y = grad - grad_old;
             double ys = mydot(y,s);
-            //TODO this is somehow always true
+            //TODO this is always true, ( because rate = 0? )
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
               if (this->verbose_>2) {
                 std::cout << iter << " skip update!!!!!!!!! " << std::endl;
@@ -200,34 +209,44 @@ double LBFGS_Minimizer::Minimize(State& state){
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
 
-Dtype LBFGS_Minimizer::linesearch(const State& state, Dtype &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf) { 
-    Dtype ak = 1.0;
-    //TODO//this in not changing//af::print("x", af::mean(x,0));
+double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf) { 
+    double ak = 1.0;
+    //TODO//this in not changing, (because rate becomes zero an nothing changes//af::print("x", af::mean(x,0));
+    //TODEL//af::print("x_old", af::mean(x_old,0)); 
+    //TODEL//af::print("x", af::mean(x,0)); 
+    //TODEL//af::print("g", af::mean(g,0)); 
+    //TODEL//af::print("searchDir", af::mean(searchDir,0)); 
+    //TODEL//std::cout << "fval= " << fval << " ak= " << ak << std::endl;
     cvsrch(state, x_old, x, fval, g, ak, searchDir, tolf);
-    //TODO//this in not changing//af::print("x", af::mean(x,0));
+    //TODEL//af::print("x_old", af::mean(x_old,0)); 
+    //TODEL//af::print("x", af::mean(x,0)); 
+    //TODEL//af::print("g", af::mean(g,0)); 
+    //TODEL//af::print("searchDir", af::mean(searchDir,0)); 
+    //TODEL//std::cout << "fval= " << fval << " ak= " << ak << std::endl;
+    //TODO//this in not changing, (because rate becomes zero an nothing changes//af::print("x", af::mean(x,0));
     return ak;
 }
 
-//static int cvsrch(P &objFunc, const vex::vector<Dtype> &wa, vex::vector<Dtype> &x, Dtype &f, vex::vector<Dtype> &g, Dtype &stp, const vex::vector<Dtype> &s, double tolf) {
-//TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == Dtype &stp moved into function
-int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, Dtype &f, af::array &g, Dtype &stp, const af::array &s, double tolf) {
+//static int cvsrch(P &objFunc, const vex::vector<double> &wa, vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const vex::vector<double> &s, double tolf) {
+//TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == double &stp moved into function
+int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, double &stp, const af::array &s, double tolf) {
   // we rewrite this from MIN-LAPACK and some MATLAB code
 
   int info           = 0;
   int infoc          = 1;
 
 //  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
-  const Dtype xtol   = 1e-15;
-  const Dtype ftol   = 1.0e-4;  // c1
-  const Dtype gtol   = 0.9;   // c2
-  const Dtype eps    = tolf;
-  const Dtype stpmin = 1e-15;
-  const Dtype stpmax = 1e15;
-  const Dtype xtrapf = 4;
+  const double xtol   = 1e-15;
+  const double ftol   = 1.0e-4;  // c1
+  const double gtol   = 0.9;   // c2
+  const double eps    = tolf;
+  const double stpmin = 1e-15;
+  const double stpmax = 1e15;
+  const double xtrapf = 4;
   const int maxfev   = 20;
   int nfev           = 0;
 
-  Dtype dginit = mydot(g,s);
+  double dginit = mydot(g,s);
   if (dginit >= 0.0) {
     // no descent direction
     // TODO: handle this case
@@ -238,22 +257,22 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
   bool brackt      = false;
   bool stage1      = true;
 
-  Dtype finit      = f;
-  Dtype dgtest     = ftol * dginit;
-  Dtype width      = stpmax - stpmin;
-  Dtype width1     = 2 * width;
-  // vex::vector<Dtype> wa(x.queue_list(),x.size());
+  double finit      = f;
+  double dgtest     = ftol * dginit;
+  double width      = stpmax - stpmin;
+  double width1     = 2 * width;
+  // vex::vector<double> wa(x.queue_list(),x.size());
   // wa = x;
 
-  Dtype stx        = 0.0;
-  Dtype fx         = finit;
-  Dtype dgx        = dginit;
-  Dtype sty        = 0.0;
-  Dtype fy         = finit;
-  Dtype dgy        = dginit;
+  double stx        = 0.0;
+  double fx         = finit;
+  double dgx        = dginit;
+  double sty        = 0.0;
+  double fy         = finit;
+  double dgy        = dginit;
 
-  Dtype stmin;
-  Dtype stmax;
+  double stmin;
+  double stmax;
 
   while (true) {
 
@@ -298,10 +317,10 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
     //TODO//TODEL//this ich changing//af::print("g", af::mean(g,0));
     //END TODO check
     nfev++;
-    Dtype dg = mydot(g,s);
-    Dtype ftest1 = finit + stp * dgtest;
-    Dtype ftest2 = finit + eps*fabs(finit);
-    Dtype ft = 2*ftol-1;
+    double dg = mydot(g,s);
+    double ftest1 = finit + stp * dgtest;
+    double ftest2 = finit + eps*fabs(finit);
+    double ft = 2*ftol-1;
 
     // all possible convergence tests
     if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0))
@@ -338,12 +357,12 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
 
     // if (stage1 & (f <= fx) & (f > ftest1)) {
     if (stage1 & (f <= fx) & (not ((f<=ftest2)&&(ft*dginit>=dg)))) { // not wolfe 1 --> not approx wolfe 1
-      Dtype fm = f - stp * dgtest;
-      Dtype fxm = fx - stx * dgtest;
-      Dtype fym = fy - sty * dgtest;
-      Dtype dgm = dg - dgtest;
-      Dtype dgxm = dgx - dgtest;
-      Dtype dgym = dgy - dgtest;
+      double fm = f - stp * dgtest;
+      double fxm = fx - stx * dgtest;
+      double fym = fy - sty * dgtest;
+      double dgm = dg - dgtest;
+      double dgxm = dgx - dgtest;
+      double dgym = dgy - dgtest;
 
       int rsl = cstep(stx, fxm, dgxm, sty, fym, dgym, stp, fm, dgm, brackt, stmin, stmax, infoc); (void) rsl;
 
@@ -369,8 +388,8 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
   return 0;
 }
 
-int LBFGS_Minimizer::cstep(Dtype& stx, Dtype& fx, Dtype& dx, Dtype& sty, Dtype& fy, Dtype& dy, Dtype& stp,
-Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
+int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp,
+double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) {
   info = 0;
   bool bound = false;
 
@@ -380,23 +399,23 @@ Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
     return -1;
   }
 
-  Dtype sgnd = dp * (dx / fabs(dx));
+  double sgnd = dp * (dx / fabs(dx));
 
-  Dtype stpf = 0;
-  Dtype stpc = 0;
-  Dtype stpq = 0;
+  double stpf = 0;
+  double stpc = 0;
+  double stpq = 0;
 
   if (fp > fx) {
     info = 1;
     bound = true;
-    Dtype theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
-    Dtype s = std::max(theta, std::max(dx, dp));
-    Dtype gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
+    double theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
+    double s = std::max(theta, std::max(dx, dp));
+    double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
     if (stp < stx)
       gamma = -gamma;
-    Dtype p = (gamma - dx) + theta;
-    Dtype q = ((gamma - dx) + gamma) + dp;
-    Dtype r = p / q;
+    double p = (gamma - dx) + theta;
+    double q = ((gamma - dx) + gamma) + dp;
+    double r = p / q;
     stpc = stx + r * (stp - stx);
     stpq = stx + ((dx / ((fx - fp) / (stp - stx) + dx)) / 2.) * (stp - stx);
     if (fabs(stpc - stx) < fabs(stpq - stx))
@@ -407,15 +426,15 @@ Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
   } else if (sgnd < 0.0) {
     info = 2;
     bound = false;
-    Dtype theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
-    Dtype s = std::max(theta, std::max(dx, dp));
-    Dtype gamma = s * sqrt((theta / s) * (theta / s)  - (dx / s) * (dp / s));
+    double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    double s = std::max(theta, std::max(dx, dp));
+    double gamma = s * sqrt((theta / s) * (theta / s)  - (dx / s) * (dp / s));
     if (stp > stx)
       gamma = -gamma;
 
-    Dtype p = (gamma - dp) + theta;
-    Dtype q = ((gamma - dp) + gamma) + dx;
-    Dtype r = p / q;
+    double p = (gamma - dp) + theta;
+    double q = ((gamma - dp) + gamma) + dx;
+    double r = p / q;
     stpc = stp + r * (stx - stp);
     stpq = stp + (dp / (dp - dx)) * (stx - stp);
     if (fabs(stpc - stp) > fabs(stpq - stp))
@@ -426,14 +445,14 @@ Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
   } else if (fabs(dp) < fabs(dx)) {
     info = 3;
     bound = 1;
-    Dtype theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
-    Dtype s = std::max(theta, std::max( dx, dp));
-    Dtype gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
+    double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    double s = std::max(theta, std::max( dx, dp));
+    double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
     if (stp > stx)
       gamma = -gamma;
-    Dtype p = (gamma - dp) + theta;
-    Dtype q = (gamma + (dx - dp)) + gamma;
-    Dtype r = p / q;
+    double p = (gamma - dp) + theta;
+    double q = (gamma + (dx - dp)) + gamma;
+    double r = p / q;
     if ((r < 0.0) & (gamma != 0.0)) {
       stpc = stp + r * (stx - stp);
     } else if (stp > stx) {
@@ -460,15 +479,15 @@ Dtype& fp, Dtype& dp, bool& brackt, Dtype& stpmin, Dtype& stpmax, int& info) {
     info = 4;
     bound = false;
     if (brackt) {
-      Dtype theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
-      Dtype s = std::max(theta, std::max(dy, dp));
-      Dtype gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
+      double theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
+      double s = std::max(theta, std::max(dy, dp));
+      double gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
       if (stp > sty)
         gamma = -gamma;
 
-      Dtype p = (gamma - dp) + theta;
-      Dtype q = ((gamma - dp) + gamma) + dy;
-      Dtype r = p / q;
+      double p = (gamma - dp) + theta;
+      double q = ((gamma - dp) + gamma) + dy;
+      double r = p / q;
       stpc = stp + r * (sty - stp);
       stpf = stpc;
     } else if (stp > stx)
