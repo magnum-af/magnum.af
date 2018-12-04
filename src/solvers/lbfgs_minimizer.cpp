@@ -1,6 +1,6 @@
 #include "lbfgs_minimizer.hpp"
 
-LBFGS_Minimizer::LBFGS_Minimizer()
+LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose_(verbose)
 {
 }
 
@@ -62,9 +62,9 @@ double LBFGS_Minimizer::Minimize(State& state){
     double eps  = 2.22e-16;
     double eps2 = sqrt(eps);
     double epsr = pow(eps,0.9);
-    double tolf = 1e-6; //TODO find value of this->settings_.gradTol;
-    double tolf2 = sqrt(tolf);
-    double tolf3 = pow(tolf,0.3333333333333333333333333);
+    //double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
+    double tolf2 = sqrt(tolerance_);
+    double tolf3 = pow(tolerance_,0.3333333333333333333333333);
     double f = this->E(state);
     //double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
@@ -150,7 +150,7 @@ double LBFGS_Minimizer::Minimize(State& state){
                }
             }
             //const double rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
-            const double rate = linesearch(state, f, x_old, x0, grad, -q, tolf);
+            const double rate = linesearch(state, f, x_old, x0, grad, -q, tolerance_);
             //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
             std::cout.precision(24);
             std::cout << "rate= " << rate << std::endl;
@@ -172,7 +172,7 @@ double LBFGS_Minimizer::Minimize(State& state){
               //std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
               std::cout << "bb> " << globIter << " " << f << " " << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
             }
-            if ( ( (f_old-f)   < (tolf*f1) ) && 
+            if ( ( (f_old-f)   < (tolerance_*f1) ) && 
                  (  maxnorm(s) < (tolf2*(1+maxnorm(x0))) ) && 
                  (  gradNorm  <= (tolf3*f1) ) )  {
               break;
@@ -221,7 +221,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
 
-double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, double tolf) { 
+double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, const double tolf) { 
     double ak = 1.0;
     //TODO//this in not changing, (because rate becomes zero an nothing changes//af::print("x", af::mean(x,0));
     //TODEL//af::print("x_old", af::mean(x_old,0)); 
@@ -241,7 +241,7 @@ double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::a
 
 //static int cvsrch(P &objFunc, const vex::vector<double> &wa, vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const vex::vector<double> &s, double tolf) {
 //TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == double &stp moved into function
-int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, double &stp, const af::array &s, double tolf) {
+int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, double &stp, const af::array &s, const double tolf) {
   // we rewrite this from MIN-LAPACK and some MATLAB code
 
   int info           = 0;
