@@ -28,6 +28,7 @@ class LBFGS_Minimizer {
         af::array Gradient(const State&);///< Calculate gradient as energy-dissipation term of llg
         af::array Heff(const State& m);///< Effective Field 
         double E(const State&); ///< Calculate Energy
+        double EnergyAndGradient(const State& state, af::array& gradient);
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
         const double tolerance_;///< Error tolerance with default 1e-6
         const size_t maxIter_;///< Maximum number of iterations

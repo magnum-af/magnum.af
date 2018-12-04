@@ -8,6 +8,10 @@ double ATOMISTIC_EXCHANGE::E(const State& state){
   return -state.param.mu0/2. *state.param.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 }
 
+double ATOMISTIC_EXCHANGE::E(const State& state, const af::array& h){
+  return -state.param.mu0/2. *state.param.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
+}
+
 ATOMISTIC_EXCHANGE::ATOMISTIC_EXCHANGE (const Mesh& mesh){
 }
 

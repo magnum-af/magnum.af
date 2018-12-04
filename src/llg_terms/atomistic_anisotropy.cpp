@@ -6,8 +6,11 @@ using namespace af;
 
 
 double ATOMISTIC_ANISOTROPY::E(const State& state){
-
   return - (state.param.mu0*state.param.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+}
+
+double ATOMISTIC_ANISOTROPY::E(const State& state, const af::array& h){
+  return - (state.param.mu0*state.param.p/2.) * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
 }
 
 

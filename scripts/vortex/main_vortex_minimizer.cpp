@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
     af::timer timer_llgterms = af::timer::start();
     //Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100, true);
-    LBFGS_Minimizer minimizer = LBFGS_Minimizer();
+    LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000);
     minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;

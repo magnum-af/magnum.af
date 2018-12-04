@@ -8,6 +8,10 @@ double ATOMISTIC_DEMAG::E(const State& state){
   //return -state.param.p/2 * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
 }
 
+double ATOMISTIC_DEMAG::E(const State& state, const af::array& h){
+  return -state.param.mu0/2 * state.param.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
+}
+
 array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
 ATOMISTIC_DEMAG::ATOMISTIC_DEMAG (Mesh mesh){

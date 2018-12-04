@@ -3,7 +3,11 @@ using namespace af;
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
 double ATOMISTIC_DMI::E(const State& state){
-  return - state.param.mu0/2. * state.param.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+  return - state.param.mu0/2. * state.param.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
+}
+
+double ATOMISTIC_DMI::E(const State& state, const af::array& h){
+  return - state.param.mu0/2. * state.param.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
 }
 
 ATOMISTIC_DMI::ATOMISTIC_DMI (const Mesh& mesh, const Param& param){

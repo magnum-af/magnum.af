@@ -8,6 +8,7 @@ class LLGTerm{
   public:
     virtual af::array h (const State& state) =0;
     virtual double E (const State& state)=0;
+    virtual double E (const State& state, const af::array& h)=0;///< Calculating the micromagnetic energy for a already calculated h field (to save computational cost)
     virtual double get_cpu_time()=0;
 };
 

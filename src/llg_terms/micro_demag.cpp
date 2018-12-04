@@ -3,7 +3,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double DemagSolver::E(const State& state){
-  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+}
+
+double DemagSolver::E(const State& state, const af::array& h){
+  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 void DemagSolver::print_Nfft(){

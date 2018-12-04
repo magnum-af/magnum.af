@@ -27,6 +27,25 @@ af::array LBFGS_Minimizer::Heff(const State& state){
     return solution;
 }
 
+double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
+    if( llgterms_.size() == 0){
+        std::cout<< bold_red("ERROR: LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms_! Aborting...")<<std::endl;
+        exit (EXIT_FAILURE);
+     }
+    af::timer timer=af::timer::start();
+    //Avoiding array with zeros, starting loop with second term in llgterms
+    af::array h = llgterms_[0]->h(state);
+    double energy = llgterms_[0]->E(state, h);
+    for(unsigned i = 1; i < llgterms_.size() ; ++i ){
+        af::array temp_h = llgterms_[i]->h(state);
+        h+=temp_h;
+        energy+=llgterms_[i]->E(state,temp_h);
+    }
+    gradient = state.param.mu0 * state.param.ms * cross4(state.m, cross4(state.m, h)); 
+    time_calc_heff_ += af::timer::stop(timer);
+    return energy;
+}
+
 af::array LBFGS_Minimizer::Gradient(const State& state){
     //TODO//this runs, check correct way//return cross4(state.m, cross4(state.m, Heff(state)));
     return state.param.mu0 * state.param.ms * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
@@ -65,10 +84,12 @@ double LBFGS_Minimizer::Minimize(State& state){
     //double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolerance_);
     double tolf3 = pow(tolerance_,0.3333333333333333333333333);
-    double f = this->E(state);
+    //double f = this->E(state);
+    //af::array grad = this->Gradient(state);
+    af::array grad;
+    double f = this->EnergyAndGradient(state, grad);
     //double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
-    af::array grad = this->Gradient(state);
     double gradNorm = maxnorm(grad);
     //af::print("grad", grad);
     std::cout << "f= " << f << std::endl;
@@ -179,10 +200,9 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             y = grad - grad_old;
             double ys = mydot(y,s);
-            //TODO this is always true, ( because rate = 0? )
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
               if (this->verbose_>2) {
-                std::cout << iter << " skip update!!!!!!!!! " << std::endl;
+                std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
               }
             }
             else { 
@@ -262,7 +282,7 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
   if (dginit >= 0.0) {
     // no descent direction
     // TODO: handle this case
-    std::cout << " no descent " << dginit << std::endl;
+    std::cout << red("WARNING: LBFGS_Minimizer:: no descent ") << dginit << std::endl;
     return -1;
   }
 
@@ -321,11 +341,13 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
 
     // f = objFunc.both(x, g);
     // NOTE: objFunc.both calcs gradient and energy E
+    // TODO cleanup
     State state_x = state;
     state_x.m = x;
-    f = this->E(state_x);
-    //TODEL//This is changing//std::cout<< "in linesearch f= " << f << std::endl;
-    g = this->Gradient(state_x);
+    f = this->EnergyAndGradient(state_x, g);
+    //f = this->E(state_x);
+    ////TODEL//This is changing//std::cout<< "in linesearch f= " << f << std::endl;
+    //g = this->Gradient(state_x);
     //TODO//TODEL//this ich changing//af::print("g", af::mean(g,0));
     //END TODO check
     nfev++;
@@ -395,7 +417,7 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
     }
   }
 
-  std::cout << " XXXXXXXXXXXXXXXXXXXXXXXXXXXX why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx " << std::endl;
+  std::cout << bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ") << std::endl;
   exit(0);
   return 0;
 }

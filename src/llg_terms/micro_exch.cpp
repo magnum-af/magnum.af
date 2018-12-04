@@ -7,6 +7,10 @@ double ExchSolver::E(const State& state){
   return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
+double ExchSolver::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
+  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+}
+
 //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
 ExchSolver::ExchSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){
     filtr=constant(0.0,3,3,3,f64);
