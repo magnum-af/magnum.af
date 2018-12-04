@@ -13,12 +13,12 @@ inline bool exists (const std::string& absolute_filepath) {
     return (stat (absolute_filepath.c_str(), &buffer) == 0); 
 }
 
-///> Colorizing std::string for std::cout
+///> Colorizing a std::string for std::cout. Red is for warnings.
 std::string red(const std::string str);
-///> Colorizing std::string for std::cout
+///> Colorizing a std::string for std::cout. Bold red is for errors.
 std::string bold_red(const std::string str);
-///> Colorizing std::string for std::cout
+///> Colorizing a std::string for std::cout. Green is for regular infos.
 std::string bold_green(const std::string str);
-///> Colorizing std::string for std::cout
+///> Colorizing a std::string for std::cout. Bold green is for sucess infos.
 std::string green(const std::string str);
 #endif

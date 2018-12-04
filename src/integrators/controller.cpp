@@ -27,12 +27,12 @@ bool Controller::success(const double err, double& h){
         if (hnext<=hmin) {
             hnext=hmin;
             counter_hmin++;
-            std::cout << "Warning: hnext reached hmin in if, error bounds may be invalid"<<std::endl;
+            std::cout << red("Warning: hnext reached hmin in if, error bounds may be invalid")<<std::endl;
         }
         if (hnext>=hmax) {
             hnext=hmax;
             counter_hmax++;
-            std::cout << "Warning: hnext reached hmax in if, error bounds may be invalid"<<std::endl;
+            std::cout << red("Warning: hnext reached hmax in if, error bounds may be invalid") <<std::endl;
         }
         errold=std::max(err,1.0e-4);//Why?
         reject=false;
@@ -45,13 +45,13 @@ bool Controller::success(const double err, double& h){
         if (h<=hmin) {
             h=hmin;
             counter_hmin++;
-            std::cout << "Warning: hmin reached in else, error bounds may be invalid"<<std::endl;
+            std::cout << red("Warning: hmin reached in else, error bounds may be invalid")<<std::endl;
             return true;
         }
         if (h>=hmax) {
             h=hmax;
             counter_hmax++;
-            std::cout << "Warning: hmax reached in else, error bounds may be invalid"<<std::endl;
+            std::cout << red("Warning: hmax reached in else, error bounds may be invalid")<<std::endl;
             return true;
         }
         reject=true;

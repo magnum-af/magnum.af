@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 #include "arrayfire.h"
+#include "../misc.hpp"
 #include <algorithm>
 #include <iostream>
 
