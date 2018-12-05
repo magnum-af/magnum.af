@@ -1,20 +1,13 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
-
-void calcm(State state, std::ostream& myfile);
-
 int main(int argc, char** argv)
 {
-     std::cout<<"argc"<<argc<<std::endl;
-     for (int i=0; i<argc; i++)
-          cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
-    std::string filepath(argc>1? argv[1]: "../../Data/Testing");
-    if(argc>0)filepath.append("/");
-    std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
-    
+    std::cout<<"argc= "<<argc<<std::endl;
+    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
+    std::string filepath(argc>1? argv[1]: "../Data/Testing");
+    filepath.append("/");
+    std::cout<<"Writing into path "<< filepath <<std::endl;
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
     
@@ -28,21 +21,15 @@ int main(int argc, char** argv)
     param.ms    = 8e5;
     param.A     = 1.3e-11;
     param.alpha = 1;
-    param.afsync  = false;
-    param.T  = 300;
     
     // Initial magnetic field
-    array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    m(seq(1,end-1),span,span,0) = constant(1.0,mesh.n0-2,mesh.n1,mesh.n2,1,f64);
-    m(0,span,span,1 ) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
-    m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
-    State state(mesh,param, m);
+    State state(mesh,param, mesh.init_sp4());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    LLG Llg(state,llgterm);
+    LlgTerms llgterm;
+    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    NewLlg Llg(llgterm);
     
     std::ofstream stream;
     stream.precision(12);
@@ -51,8 +38,8 @@ int main(int argc, char** argv)
     // Relax
     timer t = af::timer::start();
     while (state.t < 5.e-10){
-        state.m=Llg.llgstep(state);
-        calcm(state,stream);
+        Llg.step(state);
+        state.calc_mean_m(stream);
     }
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
@@ -63,24 +50,17 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
-    Llg.Fieldterms=llgterm;
-    Llg.state0.param.alpha=0.02;//TODO remove in llg class
+    Llg.llgterms.push_back( LlgTerm (new Zee(zeeswitch)));
     state.param.alpha=0.02;
 
     // Switch
     t = af::timer::start();
     while (state.t < 1.5e-9){
-        state.m=Llg.llgstep(state);
-        calcm(state,stream);
+        Llg.step(state);
+        state.calc_mean_m(stream);
     }
     std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
     stream.close();
     return 0;
-}
-
-void calcm(State state, std::ostream& myfile){
-    array mean_dim3 = mean(mean(mean(state.m,0),1),2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(mean_dim3(span,span,span,0))<< "\t" << afvalue(mean_dim3(span,span,span,1)) << "\t" << afvalue(mean_dim3(span,span,span,2))<< std::endl;
 }
