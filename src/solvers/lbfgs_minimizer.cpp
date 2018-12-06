@@ -121,8 +121,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     af::array y = af::constant(0.0, state.mesh.dims, f64);
     double f_old = 0.0;
     af::array grad_old = af::constant(0.0, state.mesh.dims, f64);
-    af::array x0 = state.m;
-    af::array x_old = x0;
+    af::array x_old = state.m;
 
     size_t iter = 0, globIter = 0; 
     double H0k = 1;
@@ -137,8 +136,8 @@ double LBFGS_Minimizer::Minimize(State& state){
             int cgSteps = 0;
             //this->minIterCount_++;
             f_old = f; 
-            x_old = x0;
-            //af::print("x0", af::mean(x0,0));
+            x_old = state.m;
+            //af::print("state.m", af::mean(state.m,0));
             grad_old = grad;
 
             q = grad;
@@ -175,9 +174,8 @@ double LBFGS_Minimizer::Minimize(State& state){
                }
             }
             //const double rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
-            const double rate = linesearch(state, f, x_old, x0, grad, -q, tolerance_);
+            const double rate = linesearch(state, f, x_old, grad, -q, tolerance_);
             //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
-            state.m = x0;
             if (rate == 0.0) {
                 if(this->verbose_>3 ){
                     std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate == 0.0. This should not happen, elaborate! (maybe m is already relaxed?)") << std::endl;
@@ -190,17 +188,17 @@ double LBFGS_Minimizer::Minimize(State& state){
             if (gradNorm < (epsr*f1)) {
               return f;
             }
-            s = x0 - x_old;
+            s = state.m - x_old;
             if (this->verbose_ > 1) {
               //std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
               std::cout << std::setprecision(std::numeric_limits<double>::digits10+12);
               std::cout << "bb> " << globIter << " " << f << " " << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
             }
             if (of_convergence.is_open()){
-                of_convergence << (f_old-f)/(tolerance_*f1)<< "\t" << maxnorm(s) / (tolf2*(1+maxnorm(x0)))<< "\t" << gradNorm/(tolf3*f1) << std::endl;
+                of_convergence << (f_old-f)/(tolerance_*f1)<< "\t" << maxnorm(s) / (tolf2*(1+maxnorm(state.m)))<< "\t" << gradNorm/(tolf3*f1) << std::endl;
             }
             if ( ( (f_old-f)   < (tolerance_*f1) ) && 
-                 (  maxnorm(s) < (tolf2*(1+maxnorm(x0))) ) && 
+                 (  maxnorm(s) < (tolf2*(1+maxnorm(state.m))) ) && 
                  (  gradNorm  <= (tolf3*f1) ) )  {
               break;
             }
@@ -247,15 +245,15 @@ double LBFGS_Minimizer::Minimize(State& state){
     std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
 }; 
 
-double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, const double tolf) { 
+double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) { 
     double rate = 1.0;
-    cvsrch(state, x_old, x, fval, g, rate, searchDir, tolf);
+    cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
     return rate;
 }
 
 //static int cvsrch(P &objFunc, const vex::vector<double> &wa, vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const vex::vector<double> &s, double tolf) {
 //TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == double &stp moved into function
-int LBFGS_Minimizer::cvsrch(State state, const af::array &wa, af::array &x, double &f, af::array &g, double &stp, const af::array &s, const double tolf) {
+int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::array &g, double &stp, const af::array &s, const double tolf) {
   // we rewrite this from MIN-LAPACK and some MATLAB code
 
   int info           = 0;
@@ -328,9 +326,8 @@ int LBFGS_Minimizer::cvsrch(State state, const af::array &wa, af::array &x, doub
     //// x = wa + stp * s;
     //// objFunc.normalizeVector(x);
     //objFunc.update(stp,wa,s,x);
-    x = wa + stp * s; //TODO check// this should be equivalent to objFunc.update(stp,wa,s,x);
-    x = renormalize_handle_zero_values(x);
-    state.m = x;
+    state.m = wa + stp * s; //TODO check// this should be equivalent to objFunc.update(stp,wa,s,x);
+    state.m = renormalize_handle_zero_values(state.m);
     f = this->EnergyAndGradient(state, g);
     nfev++;
     double dg = mydot(g,s);
