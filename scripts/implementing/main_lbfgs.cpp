@@ -13,6 +13,7 @@ int main(int argc, char** argv)
     Param param = Param();
     param.ms    = 8e5;
     param.A     = 1.3e-11;
+    param.alpha = 1;
     
     // Initial magnetic field
     State state(mesh, param, mesh.init_sp4());
@@ -20,10 +21,18 @@ int main(int argc, char** argv)
     
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer = LBFGS_Minimizer();
-    minimizer._llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    minimizer._llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));
     std::cout<<"Llgterms assembled in [s]: "<< af::timer::stop(timer_llgterms) <<std::endl;
 
-    minimizer.minimize(state);
+    double f = minimizer.Minimize(state);
+    std::cout << "main: f= "<< f << std::endl;
+    std::cout << green("Starting second run ")<< std::endl;
+    f = minimizer.Minimize(state);
+    std::cout << "main: f= "<< f << std::endl;
+    af::print("minimizer", af::mean(state.m,0));
+    vti_writer_micro(state.m, state.mesh, filepath+"m_minimized");
+    NewLlg llg = NewLlg(minimizer.llgterms_);
+    std::cout << red("E= ") << llg.E(state)  << green(" (as reference)") << std::endl;
     return 0;
 }
