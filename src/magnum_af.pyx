@@ -283,6 +283,17 @@ cdef class pyZee:
       return <size_t><void*>self.thisptr
 #TODO 
 
+cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
+  cdef cppclass LBFGS_Minimizer:
+    double Minimize(State&);
+
+cdef class LbfgsMinimizer:
+  cdef LBFGS_Minimizer* thisptr
+  def __cinit__(self):
+    self.thisptr = new LBFGS_Minimizer()  
+  def Minimize(self, pyState state_in):
+    return self.thisptr.Minimize(deref(state_in.thisptr))
+
 
 #cdef extern from "../../src/llg_terms/func.hpp":
 #    double meani(const State& state_in, const int i);
