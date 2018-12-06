@@ -285,12 +285,13 @@ cdef class pyZee:
 
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
   cdef cppclass LBFGS_Minimizer:
+    LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose_ );
     double Minimize(State&);
 
-cdef class LbfgsMinimizer:
+cdef class pyLbfgsMinimizer:
   cdef LBFGS_Minimizer* thisptr
-  def __cinit__(self):
-    self.thisptr = new LBFGS_Minimizer()  
+  def __cinit__(self, tol, maxiter, verbose):
+    self.thisptr = new LBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
   def Minimize(self, pyState state_in):
     return self.thisptr.Minimize(deref(state_in.thisptr))
 
