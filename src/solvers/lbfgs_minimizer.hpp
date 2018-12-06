@@ -24,6 +24,7 @@ class LBFGS_Minimizer {
         LlgTerms llgterms_;
 
         double GetTimeCalcHeff() const { return time_calc_heff_;}; ///< Accumulated time for calculation of Heff.
+        std::ofstream of_convergence;
     private:
         af::array Gradient(const State&);///< Calculate gradient as energy-dissipation term of llg
         af::array Heff(const State& m);///< Effective Field 

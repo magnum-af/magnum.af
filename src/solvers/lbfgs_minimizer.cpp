@@ -37,18 +37,22 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
     af::array h = llgterms_[0]->h(state);
     double energy = llgterms_[0]->E(state, h);
     for(unsigned i = 1; i < llgterms_.size() ; ++i ){
+    //Alternative:
+    //af::array h = af::constant(0, state.mesh.dims, f64);//llgterms_[0]->h(state);
+    //double energy = 0;//llgterms_[0]->E(state, h);
+    //for(unsigned i = 0; i < llgterms_.size() ; ++i ){
         af::array temp_h = llgterms_[i]->h(state);
         h+=temp_h;
         energy+=llgterms_[i]->E(state,temp_h);
     }
-    gradient = state.param.mu0 * state.param.ms * cross4(state.m, cross4(state.m, h)); 
+    gradient = 1./(state.param.mu0 * state.param.ms) * cross4(state.m, cross4(state.m, h)); 
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }
 
 af::array LBFGS_Minimizer::Gradient(const State& state){
     //TODO//this runs, check correct way//return cross4(state.m, cross4(state.m, Heff(state)));
-    return state.param.mu0 * state.param.ms * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
+    return 1./(state.param.mu0 * state.param.ms) * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
 
     //return cross4(state.m, cross4(state.m, state.param.mu0 * state.param.ms * state.mesh.V * Heff(state)));
     //return state.param.mu0 * state.param.ms * state.mesh.V * cross4(state.m, cross4(state.m, Heff(state)));
@@ -193,6 +197,9 @@ double LBFGS_Minimizer::Minimize(State& state){
               //std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
               std::cout << "bb> " << globIter << " " << f << " " << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
             }
+            if (of_convergence.is_open()){
+                of_convergence << (f_old-f)/(tolerance_*f1)<< "\t" << maxnorm(s) / (tolf2*(1+maxnorm(x0)))<< "\t" << gradNorm/(tolf3*f1) << std::endl;
+            }
             if ( ( (f_old-f)   < (tolerance_*f1) ) && 
                  (  maxnorm(s) < (tolf2*(1+maxnorm(x0))) ) && 
                  (  gradNorm  <= (tolf3*f1) ) )  {
@@ -242,21 +249,9 @@ double LBFGS_Minimizer::Minimize(State& state){
 }; 
 
 double LBFGS_Minimizer::linesearch(const State& state, double &fval, const af::array &x_old, af::array &x, af::array &g, const af::array &searchDir, const double tolf) { 
-    double ak = 1.0;
-    //TODO//this in not changing, (because rate becomes zero an nothing changes//af::print("x", af::mean(x,0));
-    //TODEL//af::print("x_old", af::mean(x_old,0)); 
-    //TODEL//af::print("x", af::mean(x,0)); 
-    //TODEL//af::print("g", af::mean(g,0)); 
-    //TODEL//af::print("searchDir", af::mean(searchDir,0)); 
-    //TODEL//std::cout << "fval= " << fval << " ak= " << ak << std::endl;
-    cvsrch(state, x_old, x, fval, g, ak, searchDir, tolf);
-    //TODEL//af::print("x_old", af::mean(x_old,0)); 
-    //TODEL//af::print("x", af::mean(x,0)); 
-    //TODEL//af::print("g", af::mean(g,0)); 
-    //TODEL//af::print("searchDir", af::mean(searchDir,0)); 
-    //TODEL//std::cout << "fval= " << fval << " ak= " << ak << std::endl;
-    //TODO//this in not changing, (because rate becomes zero an nothing changes//af::print("x", af::mean(x,0));
-    return ak;
+    double rate = 1.0;
+    cvsrch(state, x_old, x, fval, g, rate, searchDir, tolf);
+    return rate;
 }
 
 //static int cvsrch(P &objFunc, const vex::vector<double> &wa, vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const vex::vector<double> &s, double tolf) {
@@ -326,7 +321,8 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
     (brackt && ((stp <= stmin) | (stp >= stmax)))
     | (nfev >= maxfev - 1 ) | (infoc == 0)
     | (brackt & (stmax - stmin <= xtol * stmax))) {
-      stp = stx;
+        stp = stx;
+        std::cout << "Oops, stp= " << stp << std::endl;
     }
 
     //// test new point
@@ -382,6 +378,7 @@ int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &
     
     // terminate when convergence reached
     if (info != 0) {
+        std::cout << "stp info= " << stp << std::endl;
       return -1;
     }
 
