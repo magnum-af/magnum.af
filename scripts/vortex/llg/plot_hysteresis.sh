@@ -36,5 +36,5 @@ gnuplot  -e '
 	plot 
         "m.dat" u 1:($5*3.14159*4*1e-7) w l t "H_x",
         "m.dat" u 1:($6*3.14159*4*1e-7) w l t "H_y",
-        "m.dat" u 1:($7*3.14159*4*1e-7) w l t "H_z";
+        "m.dat" u 1:($7*3.14159*4*1e-7) w l dt 4 t "H_z";
 ' --persist
