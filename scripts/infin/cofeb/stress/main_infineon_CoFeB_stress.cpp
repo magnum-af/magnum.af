@@ -16,10 +16,12 @@ int main(int argc, char** argv)
     // Defining lamdas
     auto zee_func = [ A, B ] ( State state ) -> af::array {
         double phi = 2 * M_PI * (state.t);
-        array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        af::dim4 dim = af::dim4(state.mesh.n0, state.mesh.n1, state.mesh.n2, 1);
+        array zee = array(state.mesh.dims, f64);
+        zee(span, span, span, 0)=constant(A * std::cos(phi), dim, f64);
+        zee(span, span, span, 1)=constant(A * std::sin(phi), dim, f64);
+        zee(span, span, span, 2)=constant(0.0              , dim, f64);
+        //zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     };
 

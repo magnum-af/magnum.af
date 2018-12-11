@@ -21,6 +21,16 @@ Zee::Zee(std::function<af::array(State)> lamda_callback): lamda_callback(lamda_c
 
 }
 
+///< Sets internal af::array to a global field (x, y, z) for all spacial dimensions given by state.mesh.dims().
+void Zee::set_xyz(const State& state, const double x, const double y, const double z){
+    af::dim4 dim = af::dim4(state.mesh.n0, state.mesh.n1, state.mesh.n2, 1);
+    af::array temp = af::array(state.mesh.dims, f64);
+    temp (af::span, af::span, af::span, 0) = af::constant(x, dim, f64);
+    temp (af::span, af::span, af::span, 1) = af::constant(y, dim, f64);
+    temp (af::span, af::span, af::span, 2) = af::constant(z, dim, f64);
+    zee_field = temp;
+}
+
 af::array Zee::h(const State& state){
     //timer = timer::start();
     //if(param.afsync) sync();

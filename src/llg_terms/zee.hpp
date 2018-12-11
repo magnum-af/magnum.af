@@ -8,11 +8,13 @@
 
 class Zee : public LLGTerm {
   public:
-    //static Zeeman field
+    ///< Constant Zeeman field.
     Zee(af::array zee_in);
     Zee(long int zee_in_addr);
+    ///< Setting x,y,z components of static Zeeman field.
+    void set_xyz(const State&, const double x, const double y, const double z);
 
-    //time dependent Zeeman field
+    ///< Time dependent Zeeman field.
     Zee(af::array (*callback_func_in)(State state));
     Zee(std::function<af::array(State)>);
     af::array (*callback_func)(State state);
@@ -25,13 +27,9 @@ class Zee : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
-    //CPU time
-    double get_cpu_time(){return cpu_time;}
-
-    double rate;//[T/s]
-    double hzee_max;//[T]
-    af::array zee_field;
+    double get_cpu_time(){return cpu_time;}//TODO remove or use
     double cpu_time{0.};
+    af::array zee_field;
     af::timer timer;
 };
 
