@@ -78,16 +78,16 @@ cdef class pyState:
       return <size_t><void*>self.thisptr
 
   def py_vti_writer_micro(self, outputname):
-    self.thisptr._vti_writer_micro( outputname ) 
+    self.thisptr._vti_writer_micro( outputname.encode('utf-8')) 
   def py_vti_writer_atom(self, outputname):
-    self.thisptr._vti_writer_atom( outputname ) 
+    self.thisptr._vti_writer_atom( outputname.encode('utf-8')) 
   def py_vti_reader(self, outputname):
-    self.thisptr._vti_reader( outputname ) 
+    self.thisptr._vti_reader( outputname.encode('utf-8')) 
 
   def py_vtr_writer(self, outputname):
-    self.thisptr._vtr_writer( outputname ) 
+    self.thisptr._vtr_writer( outputname.encode('utf-8')) 
   def py_vtr_reader(self, outputname):
-    self.thisptr._vtr_reader( outputname ) 
+    self.thisptr._vtr_reader( outputname.encode('utf-8')) 
   def set_alpha(self,value):
     self.thisptr.param.alpha=value
 
@@ -197,6 +197,24 @@ cdef class pyExchSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
+cdef extern from "../../src/llg_terms/micro_anisotropy.hpp":
+  cdef cppclass ANISOTROPY:
+    ANISOTROPY(Mesh, Param);
+    double E(const State& state);
+    double get_cpu_time();
+
+cdef class pyMicroAniso:
+  cdef ANISOTROPY* thisptr
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in):
+    self.thisptr = new ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def print_E(self,pyState state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
+
 cdef extern from "../../src/llg_terms/atomistic_demag.hpp":
   cdef cppclass ATOMISTIC_DEMAG:
     ATOMISTIC_DEMAG(Mesh);
@@ -270,6 +288,7 @@ cdef extern from "../../src/llg_terms/zee.hpp":
     Zee (long int m_in);
     double E(const State& state);
     double get_cpu_time();
+    void set_xyz(const State&, const double x, const double y, const double z);
 
 cdef class pyZee:
   cdef Zee* thisptr
@@ -279,6 +298,8 @@ cdef class pyZee:
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
+  def set_xyz(self,pyState state_in, x, y, z):
+      self.thisptr.set_xyz(deref(state_in.thisptr), x, y, z)
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 #TODO 
@@ -286,14 +307,32 @@ cdef class pyZee:
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
   cdef cppclass LBFGS_Minimizer:
     LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose_ );
-    double Minimize(State&);
+    vector[shared_ptr[LLGTerm]] llgterms_;
+    #LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose_ = 4);
+    LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose_);
+    double Minimize(State& state);
+    double GetTimeCalcHeff();
 
 cdef class pyLbfgsMinimizer:
   cdef LBFGS_Minimizer* thisptr
-  def __cinit__(self, tol, maxiter, verbose):
-    self.thisptr = new LBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
-  def Minimize(self, pyState state_in):
+  def __cinit__(self, *args):
+    cdef vector[shared_ptr[LLGTerm]] vector_in
+    for arg in args:
+      vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
+    self.thisptr = new LBFGS_Minimizer (vector_in, 1e-6, 230, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
+  def add_terms(self,*args):
+    for arg in args:
+      self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
+  def delete_last_term(self):
+    self.thisptr.llgterms_.pop_back()
+  #not working as set_xyz is not pure virutal:# def set_zee_xyz(self, pyState state, i, x, y, z):
+  #not working as set_xyz is not pure virutal:#     self.thisptr.llgterms_[i].set_xyz(deref(state.thisptr), x, y, z)
+  #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
+  #  self.thisptr = new LBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
+  def pyMinimize(self, pyState state_in):
     return self.thisptr.Minimize(deref(state_in.thisptr))
+  def pyGetTimeCalcHeff(self):
+    return self.thisptr.GetTimeCalcHeff()
 
 
 #cdef extern from "../../src/llg_terms/func.hpp":
@@ -399,6 +438,15 @@ cdef class pyParam:
     for arg in args:
       self.thisptr.K_atom_axis[i]=arg
       i=i+1
+
+  def print_Ku1_axis(self):
+    return self.thisptr.Ku1_axis[0], self.thisptr.Ku1_axis[1], self.thisptr.Ku1_axis[2]
+  def print_Ku1_axis_x(self):
+    return self.thisptr.Ku1_axis[0]
+  def print_Ku1_axis_y(self):
+    return self.thisptr.Ku1_axis[1]
+  def print_Ku1_axis_z(self):
+    return self.thisptr.Ku1_axis[2]
 
   def print_K_atom_axis_x(self):
     return self.thisptr.K_atom_axis[0]

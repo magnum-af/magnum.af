@@ -59,3 +59,9 @@ in src/CMakeLists.txt
 Tower Only:
 Suddenly lost internet connectivity
 Fixed by adding another ethernet network: Edit Connections -> Add -> Choose Ethernet and Create... -> Save (only defaults, omitting a name)
+
+-----------------------------------------------------
+-----------------------------------------------------
+Wrapping:
+
+"Segmentation fault (core dumped)" occurs when a cpp-function writes to cout!!!

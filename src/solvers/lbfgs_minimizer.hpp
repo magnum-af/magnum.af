@@ -18,6 +18,7 @@
 class LBFGS_Minimizer {
     public:
         LBFGS_Minimizer(double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose_ = 4);
+        LBFGS_Minimizer(LlgTerms llgterms, double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose_ = 4);
 
         double Minimize(State&);
 
