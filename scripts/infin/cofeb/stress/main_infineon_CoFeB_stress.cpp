@@ -43,8 +43,8 @@ int main(int argc, char** argv)
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
 
-    long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,param, mesh.ellipse(n_cells, 2));
+    State state(mesh,param, mesh.ellipse(2));
+    std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
         state.t = (double)i/(double)max_i;
         state.steps++;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, n_cells, minimizer.llgterms_.end()[-1]->h(state)(0,0,0,af::span));
+        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0,0,0,af::span));
         vti_writer_micro(state.m, mesh, filepath + "m_"+std::to_string(state.steps));
         vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh, filepath + "check_h_ani_stress"+std::to_string(state.steps));// TODO this looks interesting, value drops at the boundaries of the disc
     }

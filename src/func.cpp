@@ -20,6 +20,14 @@ double afvalue(const array& a){
   return value;
 }
 
+unsigned int afvalue_u32(const array& a){
+  unsigned int *dhost=NULL;
+  dhost = a.host<unsigned int>();
+  unsigned int value = dhost[0];
+  freeHost(dhost);
+  return value;
+}
+
 double full_inner_product(const array& a, const array& b){
   return afvalue(sum(sum(sum(sum(a*b,3),2),1),0));
 }

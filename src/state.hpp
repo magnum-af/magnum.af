@@ -19,7 +19,7 @@ class State{
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     void check_discretization();
     int steps{0};
-    long int get_m_addr(){return (long int) m.get();}
+    long int get_m_addr(){return (long int) m.get();};
     //af::array m_out;
     //long int get_m_addr(){m.lock(); return (long int) m.get();}
 
@@ -31,9 +31,13 @@ class State{
     void _vtr_reader(std::string inputname);
     double meani(const int i);
     void calc_mean_m( std::ostream& myfile);
-    void calc_mean_m( std::ostream& myfile, const long int n_cells ); // n_cells is number of cells with non_zero_Ms
-    void calc_mean_m( std::ostream& myfile, const long int n_cells, double hzee);
-    void calc_mean_m( std::ostream& myfile, const long int n_cells, const af::array& hzee);
+    void calc_mean_m( std::ostream& myfile, double hzee);
+    void calc_mean_m( std::ostream& myfile, const af::array& hzee);
+    unsigned int get_n_cells_(){return n_cells_;};
+
+  private:
+    ///< Number of cells with Ms != 0
+    unsigned int n_cells_{0};
 };
 
 #endif

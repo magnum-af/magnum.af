@@ -43,6 +43,7 @@ int main(int argc, char** argv)
     long int n_cells=0;//Number of cells with Ms!=0
     State state(mesh, param, mesh.init_vortex(n_cells));
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
+    std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
     state.m=renormalize_handle_zero_values(state.m);
@@ -73,7 +74,7 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
-    state.calc_mean_m(stream, n_cells);
+    state.calc_mean_m(stream);
 
     timer t_hys = af::timer::start();
     double rate = hzee_max/quater_steps; //[T/s]
@@ -81,7 +82,7 @@ int main(int argc, char** argv)
     while (state.t < 4* hzee_max/rate){
         state.t+=1.;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, n_cells, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,0,0,0)));
+        state.calc_mean_m(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,0,0,0)));
         state.steps++;
         if( state.steps % 10 == 0){
             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
