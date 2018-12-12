@@ -18,14 +18,13 @@ af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
 
 DemagSolver::DemagSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){
   Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
-  h_field   =af::array (mesh.n0_exp    ,mesh.n1_exp,mesh.n2_exp,3,f64);
-  hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
 }
 
 
 af::array DemagSolver::h(const State&  state){
     timer_demagsolve = af::timer::start();
   // FFT with zero-padding of the m field
+  af::array mfft;
   if (mesh.n2_exp == 1){
       if (state.Ms.isempty()) mfft=af::fftR2C<2>(param.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
       else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
@@ -36,6 +35,7 @@ af::array DemagSolver::h(const State&  state){
   }
 
   // Pointwise product
+  af::array hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
   hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
                                  + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
                                  + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
@@ -47,6 +47,7 @@ af::array DemagSolver::h(const State&  state){
                                  + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
 
   // IFFT reversing padding
+  af::array h_field;
   if (mesh.n2_exp == 1){
     h_field=af::fftC2R<2>(hfft);
     if(param.afsync) af::sync();

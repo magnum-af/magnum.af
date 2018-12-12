@@ -19,10 +19,8 @@ class DemagSolver : public LLGTerm {
     Mesh mesh;
 
     DemagSolver (Mesh, Param);
+    ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
-    af::array h_field;
-    af::array hfft;
-    af::array mfft;
 
     double cpu_time{0.};
     af::timer timer_demagsolve;
