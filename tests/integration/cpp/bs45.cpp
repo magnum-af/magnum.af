@@ -4,6 +4,7 @@
 #include "../../../src/state.cpp"
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
+#include "../../../src/misc.cpp"
 #include "../../../src/vtk_IO.cpp"
  
 class Callback : public AdaptiveRungeKutta{
