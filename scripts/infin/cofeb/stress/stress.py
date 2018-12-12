@@ -13,11 +13,12 @@ if sys.argv[1][-1] != "/":
     print ("Info: Added '/' to sys.arvg[1]: ", sys.argv[1])
 
 filepath = sys.argv[1]
-os.makedirs(filepath)# to overwrite, add: , exist_ok=True
+#os.makedirs(filepath)# to overwrite, add: , exist_ok=True
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
 def disk(n0, n1, n2, xyz = 2): 
+    n_cells=0
     m = np.zeros((n0, n1, n2, 3));
     for ix in range (0, n0):
         for iy in range(0, n1):
@@ -28,7 +29,8 @@ def disk(n0, n1, n2, xyz = 2):
             r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
             if(r<1):
                 m[ix,iy,:,xyz]=1
-    return af.from_ndarray(m)
+                n_cells = n_cells +1
+    return af.from_ndarray(m), n_cells
 
 # Setting GPU number (0-3 aviable on GTO)
 if len(sys.argv) > 2:
@@ -63,7 +65,12 @@ print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
 
 # Create state object with timing
 start = time.time()
-state = pyState(mesh, param, disk(nx, ny, nz))
+disk1, n_cells  = disk(nx, ny, nz)
+x_corrector = (nx * ny * nz)/n_cells
+y_corrector = (nx * ny * nz)/n_cells
+z_corrector = (nx * ny * nz)/n_cells
+state = pyState(mesh, param, disk1)
+print ("n_cells",n_cells)
 print ("Initialize disk configuration [s]= ", time.time() - start)
 
 # Defining interaction terms
@@ -88,7 +95,8 @@ for i in range(0, steps):
     zee.set_xyz(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.pyMinimize(state)
-    stream.write("%d, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2)))
+    stream.write("%d, %e, %e, %e, %e\n" %(i, state.meanxyz(0)*x_corrector, state.meanxyz(1)*y_corrector, state.meanxyz(2)*z_corrector, np.sqrt((state.meanxyz(0)*x_corrector)**2 +(state.meanxyz(1)*y_corrector)**2 +(state.meanxyz(2)*z_corrector)**2)))
+    stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.py_vti_writer_micro(filepath + "m_"+ str(i))
 stream.close()
