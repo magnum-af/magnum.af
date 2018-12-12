@@ -8,6 +8,7 @@ Zee::Zee(long int aptr)
 {
     void **a= (void**)aptr;
     zee_field = *( new af::array( *a ));
+    zee_field.lock();
 }
 
 Zee::Zee(af::array (*callback_func_in)(State state)): callback_func(callback_func_in)
