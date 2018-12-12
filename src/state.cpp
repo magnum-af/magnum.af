@@ -4,7 +4,7 @@
 void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     // Initializes Ms if any entry of initial m has zero norm
     if(minval(vecnorm(m)) == 0){
-        std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;
+        if(this->verbose_ > 0) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
         Ms = af::constant(this->param.ms, nzero.dims(), f64);
@@ -16,7 +16,7 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
 void State::check_discretization(){
     if ( this->param.A != 0 && this->param.Ku1 != 0) { // TODO implement better way of checking
         double max_allowed_cellsize = sqrt(this->param.A/this->param.Ku1);
-        if (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize ){
+        if (this->verbose_ > 0 && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
             std::cout << "Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1) " << std::endl;
         }
     }
@@ -36,9 +36,11 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in):
 State::State (Mesh mesh_in, Param param_in, long int aptr):
               mesh(mesh_in),param(param_in)
 {
-  void **a = (void **)aptr;
-  m = *( new af::array( *a ));
-  m.lock();
+    void **a = (void **)aptr;
+    m = *( new af::array( *a ));
+    m.lock();
+    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    check_discretization();
 }
 
 void State::_vti_writer_micro(std::string outputname){

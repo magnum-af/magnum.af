@@ -35,6 +35,7 @@ class State{
     void calc_mean_m( std::ostream& myfile, const af::array& hzee);
     unsigned int get_n_cells_(){return n_cells_;};
 
+    int verbose_{0};
   private:
     ///< Number of cells with Ms != 0
     unsigned int n_cells_{0};
