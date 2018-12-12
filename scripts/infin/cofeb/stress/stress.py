@@ -1,4 +1,4 @@
-# © Paul Heistracher
+# Paul Heistracher <paul.thomas.heistracher@univie.ac.at>
 import sys
 import os
 import arrayfire as af
