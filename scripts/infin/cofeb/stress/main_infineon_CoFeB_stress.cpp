@@ -45,6 +45,7 @@ int main(int argc, char** argv)
 
     State state(mesh,param, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
+    std::cout << "Mean i for check: " <<  state.meani(0) <<"\t" << state.meani(1) <<"\t" << state.meani(2) << std::endl;
 
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
