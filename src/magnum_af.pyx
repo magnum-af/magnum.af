@@ -43,7 +43,7 @@ cdef class pyMesh:
   def n0(self):
     return self.thisptr.n0
   def print_n0(self):
-    print self.thisptr.n0
+    print (self.thisptr.n0)
 
 
 cdef extern from "../../src/state.hpp":
@@ -479,6 +479,3 @@ cdef class pyParam:
     return self.thisptr.D_atom
   def print_K_atom(self):
     return self.thisptr.K_atom
-  def print_gamma(self):
-    print self.thisptr.gamma
-
