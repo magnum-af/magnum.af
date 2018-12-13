@@ -26,11 +26,24 @@ void State::check_discretization(){
 //    return (long int) m_out.get();
 //}
 //
+
+
 State::State (Mesh mesh_in, Param param_in, af::array m_in):
               mesh(mesh_in),param(param_in), m(m_in)
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
+}
+
+///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
+State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_mean):
+              mesh(mesh_in),param(param_in), m(m_in), evaluate_mean_(evaluate_mean)
+{
+    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    check_discretization();
+    evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
+    evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
+    if (verbose_ > 0) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
 }
 
 State::State (Mesh mesh_in, Param param_in, long int aptr):
@@ -41,6 +54,24 @@ State::State (Mesh mesh_in, Param param_in, long int aptr):
     m.lock();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
+}
+
+///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
+State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr):
+              mesh(mesh_in),param(param_in)
+{
+    void **a = (void **)aptr;
+    m = *( new af::array( *a ));
+    m.lock();
+
+    void **b = (void **)evaluate_mean_ptr;
+    evaluate_mean_ = *( new af::array( *b ));
+    evaluate_mean_.lock();
+
+    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    check_discretization();
+    evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
+    evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
 }
 
 void State::_vti_writer_micro(std::string outputname){
@@ -63,15 +94,22 @@ void State::_vtr_reader(std::string inputname){
 
 double State::meani(const int i){
     double *norm_host=NULL;
-    if(Ms.isempty()){
-        norm_host = af::mean(af::mean(af::mean(m(af::span,af::span,af::span,i),0),1),2).host<double>();
+    if (!evaluate_mean_.isempty()){
+        //af::print ("temp", temp);
+        //std::cout << "tem type = "<< temp.type() << std::endl;
+        ///< Calculates the mean values for the specified values given in evaluate_mean_
+        norm_host = (af::sum(af::sum(af::sum((m * evaluate_mean_)(af::span,af::span,af::span,i),0),1),2)/evaluate_mean_is_1_).host<double>();
     }
-    else{
+    else if(!Ms.isempty()){
         norm_host = (af::sum(af::sum(af::sum(m(af::span,af::span,af::span,i),0),1),2)/n_cells_).host<double>();
     }
-  double norm = norm_host[0];
-  af::freeHost(norm_host);
-  return norm;
+    else{
+        norm_host = af::mean(af::mean(af::mean(m(af::span,af::span,af::span,i),0),1),2).host<double>();
+    }
+    double norm = norm_host[0];
+    //std::cout << "norm_host = "<< norm << std::endl;
+    af::freeHost(norm_host);
+    return norm;
 }
 
 ///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>

@@ -32,6 +32,23 @@ def disk(n0, n1, n2, xyz = 2):
                 n_cells = n_cells +1
     return af.from_ndarray(m), n_cells
 
+# Initializing boolean array where only values with 1 are counted
+def boolean_disk(n0, n1, n2): 
+    n_cells=0
+    boolean = np.zeros((n0, n1, n2), dtype = bool);
+    for ix in range (0, n0):
+        for iy in range(0, n1):
+            for iz in range(0, n2):
+                a= n0/2
+                b= n1/2
+                rx=ix-n0/2.
+                ry=iy-n1/2.
+                r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                if(r<1):
+                    boolean[ix,iy,iz]=1
+                    n_cells = n_cells +1
+    return af.from_ndarray(boolean), n_cells
+
 # Setting GPU number (0-3 aviable on GTO)
 if len(sys.argv) > 2:
     af.set_device(int(sys.argv[2]))
@@ -66,7 +83,10 @@ print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
 # Create state object with timing
 start = time.time()
 disk1, n_cells  = disk(nx, ny, nz)
-state = pyState(mesh, param, disk1)
+boolean, n_boolean  = boolean_disk(nx, ny, nz)
+print ("nboolean=", n_boolean)
+#print(boolean)
+state = pyState(mesh, param, disk1, boolean)
 state.py_vti_writer_micro(filepath + "init_m")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
 print ("n_cells",n_cells)

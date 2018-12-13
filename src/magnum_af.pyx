@@ -49,6 +49,7 @@ cdef class pyMesh:
 cdef extern from "../../src/state.hpp":
   cdef cppclass State:
     State (Mesh mesh_in, Param param_in, long int m_in);
+    State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
     double t;
     array m;
     Mesh mesh;
@@ -67,8 +68,14 @@ cdef extern from "../../src/state.hpp":
 
 cdef class pyState:
   cdef State* thisptr
-  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in):
-    self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
+  def __cinit__(self, pyMesh mesh_in, pyParam param_in, m_in, evaluate_mean = None):
+    # switch for evaluate_mean value
+    if (evaluate_mean is None):
+      self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
+    else:
+      print("pyState __cinit__ using evaluate_mean")
+      self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr), ctypes.addressof(evaluate_mean.arr))  
+      print("pyState __cinit__ State initialized")
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
   #def __dealloc__(self): # causes segfault on every cleanup
   #  del self.thisptr

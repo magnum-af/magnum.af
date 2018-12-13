@@ -9,7 +9,9 @@
 class State{
   public:
     State (Mesh mesh_in, Param param_in, af::array m_in);
+    State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_mean);
     State (Mesh mesh_in, Param param_in, long int aptr);
+    State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
     ~State(){};
     Mesh mesh;
     Param param;
@@ -41,6 +43,11 @@ class State{
   private:
     ///< Number of cells with Ms != 0
     unsigned int n_cells_{0};
+    ///< Boolean array of type b8 and size [x,y,z,1] indicating whether the respective cell is considered in mean value calulation (==1) or not (==0)
+    af::array evaluate_mean_;
+    ///< Number of cells with for which evaluate_mean_ is 1
+    unsigned int evaluate_mean_is_1_{0};
+
 };
 
 #endif
