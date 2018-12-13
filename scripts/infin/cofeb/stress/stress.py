@@ -22,17 +22,18 @@ def disk(n0, n1, n2, xyz = 2):
     m = np.zeros((n0, n1, n2, 3));
     for ix in range (0, n0):
         for iy in range(0, n1):
-            a= n0/2
-            b= n1/2
-            rx=ix-n0/2.
-            ry=iy-n1/2.
-            r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-            if(r<1):
-                m[ix,iy,:,xyz]=1
-                n_cells = n_cells +1
+            for iz in range(0, n2):
+                a= n0/2
+                b= n1/2
+                rx=ix-n0/2.
+                ry=iy-n1/2.
+                r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                if(r<1):
+                    m[ix,iy,iz,xyz]=1
+                    n_cells = n_cells +1
     return af.from_ndarray(m), n_cells
 
-# Initializing boolean array where only values with 1 are counted
+# Initializing boolean array where only values with 1 taken into account in the calculation of the mean magnetization
 def boolean_disk(n0, n1, n2): 
     n_cells=0
     boolean = np.zeros((n0, n1, n2), dtype = bool);
@@ -44,7 +45,7 @@ def boolean_disk(n0, n1, n2):
                 rx=ix-n0/2.
                 ry=iy-n1/2.
                 r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-                if(r<1):
+                if(r<0.9):# NOTE: add respective value here (keep in mind that in general 'r' is not the radius of a circle and for e.g. r2=2*r1, A2 != 4*A1)
                     boolean[ix,iy,iz]=1
                     n_cells = n_cells +1
     return af.from_ndarray(boolean), n_cells
@@ -86,7 +87,7 @@ disk1, n_cells  = disk(nx, ny, nz)
 boolean, n_boolean  = boolean_disk(nx, ny, nz)
 print ("nboolean=", n_boolean)
 #print(boolean)
-state = pyState(mesh, param, disk1, boolean)
+state = pyState(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
 print ("n_cells",n_cells)
