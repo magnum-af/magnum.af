@@ -77,6 +77,9 @@ State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mea
 void State::_vti_writer_micro(std::string outputname){
     vti_writer_micro(m, mesh, outputname); 
 }
+void State::_vti_writer_micro_boolean(std::string outputname){
+    vti_writer_micro(evaluate_mean_(af::span, af::span, af::span, 0).as(f64), mesh, outputname); //NOTE: as evaluate_mean_ is tiles to 3 dims, taking only first
+}
 void State::_vti_writer_atom (std::string outputname){
     vti_writer_atom(m, mesh, outputname); 
 }

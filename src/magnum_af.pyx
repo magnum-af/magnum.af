@@ -57,6 +57,7 @@ cdef extern from "../../src/state.hpp":
     long int get_m_addr();
 
     void _vti_writer_micro(string outputname);
+    void _vti_writer_micro_boolean(string outputname);
     void _vti_writer_atom (string outputname);
     void _vti_reader(string inputname);
 
@@ -86,6 +87,8 @@ cdef class pyState:
 
   def py_vti_writer_micro(self, outputname):
     self.thisptr._vti_writer_micro( outputname.encode('utf-8')) 
+  def py_vti_writer_micro_boolean(self, outputname):
+    self.thisptr._vti_writer_micro_boolean( outputname.encode('utf-8')) 
   def py_vti_writer_atom(self, outputname):
     self.thisptr._vti_writer_atom( outputname.encode('utf-8')) 
   def py_vti_reader(self, outputname):

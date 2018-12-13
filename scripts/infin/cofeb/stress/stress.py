@@ -89,6 +89,7 @@ print ("nboolean=", n_boolean)
 #print(boolean)
 state = pyState(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
+state.py_vti_writer_micro_boolean(filepath + "boolean")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
 print ("n_cells",n_cells)
 print ("Initialize disk configuration [s]= ", time.time() - start)
