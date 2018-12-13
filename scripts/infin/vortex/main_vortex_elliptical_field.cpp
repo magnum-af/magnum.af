@@ -46,7 +46,8 @@ int main(int argc, char** argv)
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     af::timer timer_llgterms = af::timer::start();
-    LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
+    LBFGS_Minimizer minimizer(1e-6, 1000, 0);
+    //LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);// This fails on GTO with current gcc version
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
     minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));

@@ -63,16 +63,16 @@ if [ -e $outputpath/magnum.af-cuda ];then
     echo "starting magnum.af-cuda in screen."
     echo "To follow cout.dat run:"
     echo "tail -f $outputpath/cout.txt"
-    screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 > $outputpath/cout.txt 2>&1"
+    screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
     screen -ls
 elif [ -e $outputpath/magnum.af-opencl ];then
     echo "starting magnum.af-opencl in screen."
     echo "To follow cout.dat run:"
     echo "tail -f $outputpath/cout.txt"
-    screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-opencl $outputpath $GPU $5 > $outputpath/cout.txt 2>&1"
+    screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
     screen -ls
 else
     echo "starting magnum.af-cpu."
-    $outputpath/magnum.af-cpu $outputpath $GPU $5
+    $outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9
 fi
 
