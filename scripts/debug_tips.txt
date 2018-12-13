@@ -65,3 +65,17 @@ Fixed by adding another ethernet network: Edit Connections -> Add -> Choose Ethe
 Wrapping:
 
 "Segmentation fault (core dumped)" occurs when a cpp-function writes to cout!!!
+
+
+-----------------------------------------------------
+Wrapping:
+
+Traceback (most recent call last):
+  File "stress.py", line 6, in <module>
+    from magnum_af import *
+ImportError: dynamic module does not define init function (PyInit_magnum_af)
+
+when called with python3 on GTO
+
+Temp fix: calling with python or python2 runns
+Guess: cmake, cython messing around with python versions?
