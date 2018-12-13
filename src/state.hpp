@@ -33,6 +33,8 @@ class State{
     void calc_mean_m( std::ostream& myfile);
     void calc_mean_m( std::ostream& myfile, double hzee);
     void calc_mean_m( std::ostream& myfile, const af::array& hzee);
+    void calc_mean_m_steps( std::ostream& myfile, double hzee);
+    void calc_mean_m_steps( std::ostream& myfile, const af::array& hzee);
     unsigned int get_n_cells_(){return n_cells_;};
 
     int verbose_{0};
