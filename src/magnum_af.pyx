@@ -74,9 +74,7 @@ cdef class pyState:
     if (evaluate_mean is None):
       self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr))  
     else:
-      print("pyState __cinit__ using evaluate_mean")
       self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr), ctypes.addressof(evaluate_mean.arr))  
-      print("pyState __cinit__ State initialized")
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
   #def __dealloc__(self): # causes segfault on every cleanup
   #  del self.thisptr

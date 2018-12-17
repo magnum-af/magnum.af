@@ -84,7 +84,7 @@ param_stress.Ku1_axis(1, 0, 0) # Setting axis in x-direction
 # Create state object with timing
 start = time.time()
 disk1, n_cells  = disk(nx, ny, nz)
-oolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value here
+boolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value here
 
 state = pyState(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
