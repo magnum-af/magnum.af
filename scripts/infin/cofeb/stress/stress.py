@@ -34,7 +34,7 @@ def disk(n0, n1, n2, xyz = 2):
     return af.from_ndarray(m), n_cells
 
 # Initializing boolean array where only values with 1 taken into account in the calculation of the mean magnetization
-def boolean_disk(n0, n1, n2): 
+def boolean_disk(n0, n1, n2, r_inner = 0.9):
     n_cells=0
     boolean = np.zeros((n0, n1, n2), dtype = bool);
     for ix in range (0, n0):
@@ -45,7 +45,7 @@ def boolean_disk(n0, n1, n2):
                 rx=ix-n0/2.
                 ry=iy-n1/2.
                 r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-                if(r<0.9):# NOTE: add respective value here (keep in mind that in general 'r' is not the radius of a circle and for e.g. r2=2*r1, A2 != 4*A1)
+                if(r < r_inner):# NOTE: (keep in mind that in general 'r' is not the radius of a circle and for e.g. r2=2*r1, A2 != 4*A1)
                     boolean[ix,iy,iz]=1
                     n_cells = n_cells +1
     return af.from_ndarray(boolean), n_cells
@@ -79,20 +79,19 @@ param_stress.ms(1.58/param.print_mu0())
 param_stress.A(15e-12)
 param_stress.Ku1(1400) #TODO guessed worst case value fom Toni, elaborate
 param_stress.Ku1_axis(1, 0, 0) # Setting axis in x-direction
-print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
+#print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
 
 # Create state object with timing
 start = time.time()
 disk1, n_cells  = disk(nx, ny, nz)
-boolean, n_boolean  = boolean_disk(nx, ny, nz)
-print ("nboolean=", n_boolean)
-#print(boolean)
+oolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value here
+
 state = pyState(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
 state.py_vti_writer_micro_boolean(filepath + "boolean")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
-print ("n_cells",n_cells)
-print ("Initialize disk configuration [s]= ", time.time() - start)
+print ("Info: n_cells = ",n_cells, " n_boolean = ", n_boolean)
+print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
 start = time.time()
@@ -101,10 +100,10 @@ exch=pyExchSolver(mesh, param)
 aniso_z = pyMicroAniso(mesh, param)
 aniso_stress = pyMicroAniso(mesh, param_stress)
 zee = pyZee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
-print ("Init terms [s]= ", time.time() - start)
+print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
 # Creating minimizer object
-minimizer = pyLbfgsMinimizer(demag, exch, aniso_z, aniso_stress, zee)
+minimizer = pyLbfgsMinimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol=1e-15, maxiter=1000)
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")

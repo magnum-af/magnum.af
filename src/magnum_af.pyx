@@ -325,11 +325,15 @@ cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
 
 cdef class pyLbfgsMinimizer:
   cdef LBFGS_Minimizer* thisptr
-  def __cinit__(self, *args):
+  def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
     cdef vector[shared_ptr[LLGTerm]] vector_in
-    for arg in args:
-      vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-    self.thisptr = new LBFGS_Minimizer (vector_in, 1e-6, 230, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
+    if not terms:
+      print("LBFGS_Minimizer: no terms provided, please add some either by providing a list terms=[...] or calling add_terms(*args)")
+    else:
+      for arg in terms:
+        #print("Adding term", arg)
+        vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
+      self.thisptr = new LBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
