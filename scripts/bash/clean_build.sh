@@ -2,12 +2,15 @@
 
 currdir=$PWD
 if [ -d $1/bin ]
-then 
+then
     echo "removing files in $1/bin/*"
     rm $1/bin/*
 fi
-if [ ! -d $1/build ]
-then 
+if [ -d $1/build ]
+then
+    echo "cleaning up existing build/ by removing all files in $1/build/*"
+    rm $1/build/*
+else
     mkdir $1/build
 fi
 cd $1/build
