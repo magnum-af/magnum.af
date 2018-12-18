@@ -1,5 +1,5 @@
-#include "cpp_test.h"
 #include <stdio.h>
+#include "cpp_test.h"
 
 Test::Test() { }
 
@@ -8,16 +8,17 @@ Test::~Test()
     printf("Cleanup!\n");
 }
 
-void Test::init_m(long int aptr){
+void Test::initialize_m(long int aptr){
     void **a = (void **)aptr;
     af::array *A = new af::array(*a);
-    m = *A;
+    this->m = *A;
 }
 
-void Test::print_m(){
-    af::print("m=", m);
+void Test::manipulate_m(){
+    this->m *= 2.;
 }
 
 long int Test::get_m() {
-    return (long int) this->m.get();
+    af::array* a = new af::array(this->m);
+    return (long int) a->get();
 }

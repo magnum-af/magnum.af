@@ -4,12 +4,13 @@
 #include<arrayfire.h>
 
 class Test {
-public:
-    af::array m;
+  public:
     Test();
     ~Test();
-    void init_m(long int aptr);
-    void print_m();
+    void initialize_m(long int aptr);
+    void manipulate_m();
     long int get_m();
+  private:
+    af::array m;
 };
 #endif
