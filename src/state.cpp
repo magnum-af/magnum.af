@@ -51,7 +51,7 @@ State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
-    m.lock();
+    //m.lock();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
 }
@@ -61,11 +61,11 @@ State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mea
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
-    m.lock();
+    //m.lock();
 
     void **b = (void **)evaluate_mean_ptr;
     evaluate_mean_ = *( new af::array( *b ));
-    evaluate_mean_.lock();
+    //evaluate_mean_.lock();
 
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
