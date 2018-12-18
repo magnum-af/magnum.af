@@ -73,6 +73,11 @@ State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mea
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
 }
 
+long int State::get_m_addr(){
+    af::array *a = new af::array(m);
+    return (long int) a->get();
+}
+
 void State::_vti_writer_micro(std::string outputname){
     vti_writer_micro(m, mesh, outputname); 
 }

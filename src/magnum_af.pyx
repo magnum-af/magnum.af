@@ -38,8 +38,8 @@ cdef class pyMesh:
   cdef Mesh* thisptr
   def __cinit__(self,int a, int b, int c, double d, double e, double f):
     self.thisptr = new Mesh(a,b,c,d,e,f)
-  #def __dealloc__(self):
-  #  del self.thisptr
+  def __dealloc__(self):
+    del self.thisptr
   def n0(self):
     return self.thisptr.n0
   def print_n0(self):
@@ -76,8 +76,8 @@ cdef class pyState:
     else:
       self.thisptr = new State (deref(mesh_in.thisptr), deref(param_in.thisptr), ctypes.addressof(m_in.arr), ctypes.addressof(evaluate_mean.arr))  
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
-  #def __dealloc__(self): # causes segfault on every cleanup
-  #  del self.thisptr
+  def __dealloc__(self): # causes segfault on every cleanup
+    del self.thisptr
   def t(self):
     return self.thisptr.t
   def pythisptr(self):
@@ -138,6 +138,7 @@ cdef class pyLLG:
     for arg in args:
       vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
     self.thisptr = new NewLlg (vector_in)  
+  # TODO dealloc?
   #def __dealloc__(self):
   #  del self.thisptr
   def llgstep(self, pyState state_in):
@@ -294,6 +295,7 @@ cdef class AtomisticDMI:
 cdef extern from "../../src/llg_terms/zee.hpp":
   cdef cppclass Zee:
     Zee (long int m_in);
+    long int get_m_addr();
     double E(const State& state);
     double get_cpu_time();
     void set_xyz(const State&, const double x, const double y, const double z);
@@ -310,6 +312,11 @@ cdef class pyZee:
       self.thisptr.set_xyz(deref(state_in.thisptr), x, y, z)
   def pythisptr(self):
       return <size_t><void*>self.thisptr
+  def get_zee(self):
+    m1=af.Array()
+    m_addr = self.thisptr.get_m_addr()
+    m1.arr=ctypes.c_void_p(m_addr)
+    return m1
 #TODO 
 
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
@@ -332,6 +339,8 @@ cdef class pyLbfgsMinimizer:
         #print("Adding term", arg)
         vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
       self.thisptr = new LBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
+  def __dealloc__(self):
+    del self.thisptr
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))

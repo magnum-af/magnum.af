@@ -11,6 +11,7 @@ class Zee : public LLGTerm {
     ///< Constant Zeeman field.
     Zee(af::array zee_in);
     Zee(long int zee_in_addr);
+    long int get_m_addr();
     ///< Setting x,y,z components of static Zeeman field.
     void set_xyz(const State&, const double x, const double y, const double z);
 
