@@ -3,7 +3,7 @@ import magnum_af
 import ctypes
 from copy import deepcopy
 
-#af.set_backend("cpu")
+#af.set_backend("cpu")# TODO currently cpu backend segfaults
 af.info()
 meshvar=magnum_af.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
 m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
@@ -26,12 +26,7 @@ Llg=magnum_af.pyLLG(demag,exch)
 print("relax --------------------")
 print(pystate.t())
 while pystate.t() < 1e-9:
-  time1=pystate.t()
   Llg.llgstep(pystate)
-  time2=pystate.t()
-  print(time2-time1, time1, time2, pystate.t())
-print(pystate.t())
-#pystate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax")
 
 #teststate=magnum_af.pyState(meshvar,param,m) # testing wether teststate.m is correctly overwirtten with m_relax
 #teststate.py_vti_reader("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax.vti")
@@ -52,18 +47,9 @@ intx=0
 inty=0
 intz=0
 while pystate.t() < 2e-9:
-  time1=pystate.t()
   Llg.llgstep(pystate)
-  time2=pystate.t()
-  stepsize=time2-time1
-  intx+=pystate.meanxyz(0)*stepsize
-  inty+=pystate.meanxyz(1)*stepsize
-  intz+=pystate.meanxyz(2)*stepsize
-  print(time2-time1, time1, time2, pystate.t())
+  temp = pystate.get_m()
+  temp_mean = af.mean(af.mean(af.mean(temp, dim=0), dim=1), dim=2)
+  print(pystate.t(), temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar())
   #print(pystate.meanxyz(0), pystate.meanxyz(1), pystate.meanxyz(2))
-  #print(intx, inty, intz)
-print(pystate.t())
 print("finished  --------------------")
-print("af.mean(m_test)=", af.mean(pystate.get_m()))
-#TODO second call causes segfault:
-print("af.mean(m_test)=", af.mean(pystate.get_m()))
