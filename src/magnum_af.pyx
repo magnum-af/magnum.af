@@ -15,8 +15,10 @@ from libc.stdint cimport uintptr_t
 from libcpp.memory cimport shared_ptr#, make_shared
 from libcpp.vector cimport vector
 from libcpp.string cimport string
+from libcpp cimport bool
 from cython.operator cimport dereference as deref
 import ctypes
+from math import sqrt
 
 
 cdef extern from "../../src/llg_terms/LLGTerm.hpp":
@@ -370,133 +372,179 @@ cdef class pyLbfgsMinimizer:
 
 cdef extern from "../../src/param.hpp":
   cdef cppclass Param:
+    Param();
+    Param(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
     double mu0;
     double gamma;
-    double ms,A,alpha;
-    double p;
-#    bool afsync;
-    int mode;
+    double alpha;
+    double T;
+
+    double ms;
+    double A;
     double D;
     double Ku1;
     double D_axis[3];
     double Ku1_axis[3];
+
+    double p;
     double J_atom;
     double D_atom;
-    double D_atom_axis[3];
     double K_atom;
+    double D_atom_axis[3];
     double K_atom_axis[3];
+    bool  hexagonal_close_packed;
+
+    int mode;
+    bool afsync;
 
 cdef class pyParam:
   cdef Param* thisptr
-  def __cinit__(self):
-    self.thisptr = new Param ()  
-  #def __dealloc__(self):
-  #  del self.thisptr
+  def __cinit__(self, alpha = 0., T = 0., ms = 0., A = 0., D = 0., Ku1 = 0., D_axis = [0.,0.,-1], Ku1_axis = [0.,0.,1.], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False, mode = 6, afsync = False):
+    Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
+    Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
+    D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
+    D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
+    self.thisptr = new Param (alpha, T, ms, A, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
+  def __dealloc__(self):
+    del self.thisptr
 
-  def gamma(self,value):
+  ## Setter Functions
+  def set_gamma(self,value):
     self.thisptr.gamma=value
-  def ms(self,value):
-    self.thisptr.ms=value
-  def alpha(self,value):
+  def set_alpha(self,value):
     self.thisptr.alpha=value
-  def A(self,value):
+  def set_T(self,value):
+    self.thisptr.T=value
+  def set_ms(self,value):
+    self.thisptr.ms=value
+  def set_A(self,value):
     self.thisptr.A=value
-  def p(self,value):
-    self.thisptr.p=value
-  def mode(self,value):
-    self.thisptr.mode=value
-  def D(self,value):
+  def set_D(self,value):
     self.thisptr.D=value
-  def D_axis_x(self,value):
+  def set_Ku1(self,value):
+    self.thisptr.Ku1=value
+
+  def set_D_axis_x(self,value):
     self.thisptr.D_axis[0]=value
-  def D_axis_y(self,value):
+  def set_D_axis_y(self,value):
     self.thisptr.D_axis[1]=value
-  def D_axis_z(self,value):
+  def set_D_axis_z(self,value):
     self.thisptr.D_axis[2]=value
-  def D_axis(self, *args):
+  def set_D_axis(self, *args):
     i=0
     for arg in args:
       self.thisptr.D_axis[i]=arg
       i=i+1
-  def Ku1(self,value):
-    self.thisptr.Ku1=value
-  def Ku1_axis_x(self,value):
+  def set_Ku1_axis_x(self,value):
     self.thisptr.Ku1_axis[0]=value
-  def Ku1_axis_y(self,value):
+  def set_Ku1_axis_y(self,value):
     self.thisptr.Ku1_axis[1]=value
-  def Ku1_axis_z(self,value):
+  def set_Ku1_axis_z(self,value):
     self.thisptr.Ku1_axis[2]=value
-  def Ku1_axis(self, *args):
+  def set_Ku1_axis(self, *args):
     i=0
     for arg in args:
       self.thisptr.Ku1_axis[i]=arg
       i=i+1
-  def J_atom(self,value):
+
+  def set_p(self,value):
+    self.thisptr.p=value
+  def set_J_atom(self,value):
     self.thisptr.J_atom=value
-  def D_atom(self,value):
+  def set_D_atom(self,value):
     self.thisptr.D_atom=value
-  def D_atom_axis_x(self,value):
+  def set_Ku1_atom(self,value):
+    self.thisptr.K_atom=value
+  def set_D_atom_axis_x(self,value):
     self.thisptr.D_atom_axis[0]=value
-  def D_atom_axis_y(self,value):
+  def set_D_atom_axis_y(self,value):
     self.thisptr.D_atom_axis[1]=value
-  def D_atom_axis_z(self,value):
+  def set_D_atom_axis_z(self,value):
     self.thisptr.D_atom_axis[2]=value
-  def D_atom_axis(self, *args):
+  def set_D_atom_axis(self, *args):
     i=0
     for arg in args:
       self.thisptr.D_atom_axis[i]=arg
       i=i+1
-  def K_atom(self,value):
-    self.thisptr.K_atom=value
-  def K_atom_axis_x(self,value):
+  def set_Ku1_atom_axis_x(self,value):
     self.thisptr.K_atom_axis[0]=value
-  def K_atom_axis_y(self,value):
+  def set_Ku1_atom_axis_y(self,value):
     self.thisptr.K_atom_axis[1]=value
-  def K_atom_axis_z(self,value):
+  def set_Ku1_atom_axis_z(self,value):
     self.thisptr.K_atom_axis[2]=value
-  def K_atom_axis(self, *args):
+  def set_Ku1_atom_axis(self, *args):
     i=0
     for arg in args:
       self.thisptr.K_atom_axis[i]=arg
       i=i+1
+  def set_mode(self,value):
+    self.thisptr.mode=value
 
-  def print_Ku1_axis(self):
+  ## Getter Functions
+  def get_mu0(self):
+    return self.thisptr.mu0
+  def get_gamma(self):
+    return self.thisptr.gamma
+  def get_alpha(self):
+    return self.thisptr.alpha
+  def get_T(self):
+    return self.thisptr.T
+
+  # Micromagnetic
+  def get_ms(self):
+    return self.thisptr.ms
+  def get_A(self):
+    return self.thisptr.A
+
+  def get_D(self):
+    return self.thisptr.D
+  def get_D_axis(self):
+    return self.thisptr.D_axis[0], self.thisptr.D_axis[1], self.thisptr.D_axis[2]
+  def get_D_axis_x(self):
+    return self.thisptr.D_axis[0]
+  def get_D_axis_y(self):
+    return self.thisptr.D_axis[1]
+  def get_D_axis_z(self):
+    return self.thisptr.D_axis[2]
+
+  def get_Ku1(self):
+    return self.thisptr.Ku1
+  def get_Ku1_axis(self):
     return self.thisptr.Ku1_axis[0], self.thisptr.Ku1_axis[1], self.thisptr.Ku1_axis[2]
-  def print_Ku1_axis_x(self):
+  def get_Ku1_axis_x(self):
     return self.thisptr.Ku1_axis[0]
-  def print_Ku1_axis_y(self):
+  def get_Ku1_axis_y(self):
     return self.thisptr.Ku1_axis[1]
-  def print_Ku1_axis_z(self):
+  def get_Ku1_axis_z(self):
     return self.thisptr.Ku1_axis[2]
 
-  def print_K_atom_axis_x(self):
-    return self.thisptr.K_atom_axis[0]
-  def print_K_atom_axis_y(self):
-    return self.thisptr.K_atom_axis[1]
-  def print_K_atom_axis_z(self):
-    return self.thisptr.K_atom_axis[2]
-  #Read only:
-  def print_mu0(self):
-    return self.thisptr.mu0
-  def print_gamma(self):
-    return self.thisptr.gamma
-  def print_ms(self):
-    return self.thisptr.ms
-  def print_alpha(self):
-    return self.thisptr.alpha
-  def print_A(self):
-    return self.thisptr.A
-  def print_p(self):
+  # Atomistic
+  def get_p(self):
     return self.thisptr.p
-  def print_mode(self):
-    return self.thisptr.mode
-  def print_D(self):
-    return self.thisptr.D
-  def print_Ku1(self):
-    return self.thisptr.Ku1
-  def print_J_atom(self):
+  def get_J_atom(self):
     return self.thisptr.J_atom
-  def print_D_atom(self):
+  def get_D_atom(self):
     return self.thisptr.D_atom
-  def print_K_atom(self):
+  def get_Ku1_atom(self):
     return self.thisptr.K_atom
+
+  def get_D_atom_axis(self):
+    return self.thisptr.D_atom_axis[0], self.thisptr.D_atom_axis[1], self.thisptr.D_atom_axis[2]
+  def get_D_atom_axis_x(self):
+    return self.thisptr.D_atom_axis[0]
+  def get_D_atom_axis_y(self):
+    return self.thisptr.D_atom_axis[1]
+  def get_D_atom_axis_z(self):
+    return self.thisptr.D_atom_axis[2]
+
+  def get_Ku1_atom_axis(self):
+    return self.thisptr.K_atom_axis[0], self.thisptr.K_atom_axis[1], self.thisptr.K_atom_axis[2]
+  def get_Ku1_atom_axis_x(self):
+    return self.thisptr.K_atom_axis[0]
+  def get_Ku1_atom_axis_y(self):
+    return self.thisptr.K_atom_axis[1]
+  def get_Ku1_atom_axis_z(self):
+    return self.thisptr.K_atom_axis[2]
+
+  def get_mode(self):
+    return self.thisptr.mode
