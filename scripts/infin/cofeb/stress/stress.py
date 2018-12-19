@@ -53,6 +53,9 @@ def boolean_disk(n0, n1, n2, r_inner = 0.9):
 # Setting GPU number (0-3 aviable on GTO)
 if len(sys.argv) > 2:
     af.set_device(int(sys.argv[2]))
+
+#af.set_backend("cpu")# TODO this segfaults
+#af.set_backend("opencl")#TODO this segfaults on GTO
 af.info()
 
 # Physical dimensions in [m]

@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     param.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
 
     Param param_stress = param;
-    param_stress.Ku1 = 0.1*1.3e-3/z; //TODO 
+    param_stress.Ku1 = 1400; //TODO
     param_stress.Ku1_axis[0]=1;
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
@@ -52,7 +52,8 @@ int main(int argc, char** argv)
     mesh.print(std::cout);
 
     af::timer timer_llgterms = af::timer::start();
-    LBFGS_Minimizer minimizer = LBFGS_Minimizer();
+    LBFGS_Minimizer minimizer;
+    //LBFGS_Minimizer minimizer = LBFGS_Minimizer();//Fails on GTO, maybe due to gcc verions < 7.2
     minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
     minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));
     minimizer.llgterms_.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
