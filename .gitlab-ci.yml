@@ -5,7 +5,7 @@ test_cpu:
     - docker run -t magnum.af.cpu /magnum.af/tests/integration/cpp/runall.sh /magnum.af
     - docker run -t magnum.af.cpu /magnum.af/tests/runall.sh /magnum.af
   tags:
-    - docker
+#    - docker
     - gpu # termporary to only trigger GTO
 
 #test_gpu:
