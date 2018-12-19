@@ -1,21 +1,44 @@
 magnum.af: A finite differences GPU accelerated magnetic simulation software
 =====
+# Physical Methods
+* Micromagnetic Model
+* Atomistic Spin Model
+* Solvers for the time-dependent Landau–Lifshitz–Gilbert equation
+* Micromagnetic and Atomistic Energy Minimization
+* Stochastic Langevin Dynamics
+* String Method for Energy Barrier Calculations
+
 
 ## Main Features:
-* Micromagnetic LLG Solver
-* Atomistic LLG Solver
-* Langevin Dynamics
-* String Method
-
-
-## Prerequisites:
-* A C++14 compiler, like gcc or clang
-* [CMake](http://www.cmake.org) 3.0.0 or newer
-* ArrayFire 3.0.1 or newer via. [pre-built binaries](http://arrayfire.com/download) or
-  [source](https://github.com/arrayfire/arrayfire)
+* Support for CUDA, OpenCL and CPU backends.
+  * This enables a high degree of flexibility in terms of user hardware as the
+    code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
+* C++ Project
+  * Optimized for performance
+* Python bindings 
+  * For an easy user-interface
 
 # Installation Guide:
+## Docker:
+Build the respective Docker images by running the provided dockerfiles in the 
+project directory:
 
+`$docker build -t magnum.af.cpu -f Dockerfile.cpu .` or
+
+`docker build -t magnum.af.opencl -f Dockerfile.opencl .`
+## Build scipt
+Execute the provided installation script
+`$./scripts/install_magnum.af_environment.sh`
+## Manual installation (outdated)
+
+### Prerequisites:
+* A C++11 compiler like gcc or clang
+* [CMake](http://www.cmake.org) 3.0.0 or newer
+* ArrayFire 3.0.1 or higher [pre-built binaries](http://arrayfire.com/download) or
+  [source](https://github.com/arrayfire/arrayfire)
+* Cython
+* VTK-dev
+* 
 
 ## OpenCL Devices (e.g. AMD Graphics Cards):
 * Installation of hardware-specific drivers:
@@ -37,7 +60,7 @@ and executing:
 
 `$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
-## Arrayfire 
+### Arrayfire 
 * from binaries 
 
 http://arrayfire.org/docs/installing.htm
@@ -46,7 +69,7 @@ http://arrayfire.org/docs/installing.htm
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
-## Arrayfire-Python
+### Arrayfire-Python
 
 
 * Install arrayfire-python bindings by
@@ -55,8 +78,8 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 Fore more details see https://github.com/arrayfire/arrayfire-python
 
-## VTK:
-### From Package Manager
+### VTK:
+#### From Package Manager
 * Check current versions:
 
 `$ apt-cache search libvtk`
@@ -84,7 +107,7 @@ add `export VTK_DIR=/path_to_VTK:$VTK_DIR`
 
 `source .bashrc`
 
-### From source (not recommended)
+#### From source (not recommended)
 * follow
 
 https://www.vtk.org/Wiki/VTK/Configure_and_Build
@@ -104,11 +127,11 @@ try
 
 (https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
 
-##  Arrayfire Python and Cython
+###  Arrayfire Python and Cython
 $ pip install arrayfire
 $ pip install Cython
 
-## magnum.af:
+### magnum.af:
 Note: In new projects, set VTK_DIR by
 
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
