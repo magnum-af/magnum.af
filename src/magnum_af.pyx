@@ -145,7 +145,7 @@ cdef class pyLLG:
   #  del self.thisptr
   def llgstep(self, pyState state_in):
     self.thisptr.step(deref(state_in.thisptr))
-  def print_E(self,pyState state_in):
+  def get_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   #def print_stepsize(self):
   #  return self.thisptr.h_stepped_

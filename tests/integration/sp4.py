@@ -8,9 +8,9 @@ class sp4(unittest.TestCase):
   m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
   
   param=magnum_af.pyParam()
-  param.ms    (8e5)
-  param.A     (1.3e-11)
-  param.alpha (1)
+  param.set_ms    (8e5)
+  param.set_A     (1.3e-11)
+  param.set_alpha (1)
   
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
@@ -42,8 +42,8 @@ class sp4(unittest.TestCase):
     self.pystate.set_alpha(0.02)
     
     zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-    zeeswitch[0,0,0,0]=-24.6e-3/self.param.print_mu0()
-    zeeswitch[0,0,0,1]=+4.3e-3/self.param.print_mu0()
+    zeeswitch[0,0,0,0]=-24.6e-3/self.param.get_mu0()
+    zeeswitch[0,0,0,1]= +4.3e-3/self.param.get_mu0()
     zeeswitch[0,0,0,2]=0.0
     zeeswitch = af.tile(zeeswitch,100,25,1)
     zee=magnum_af.pyZee(zeeswitch)
