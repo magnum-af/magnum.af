@@ -1,4 +1,5 @@
-magnum.af: A finite differences GPU accelerated magnetic simulation software
+magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic
+simulation software
 =====
 # Physical Methods
 * Micromagnetic Model
@@ -9,7 +10,7 @@ magnum.af: A finite differences GPU accelerated magnetic simulation software
 * String Method for Energy Barrier Calculations
 
 
-## Main Features
+# Main Features
 * Support for CUDA, OpenCL and CPU backends.
   * This enables a high degree of flexibility in terms of user hardware as the
     code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
