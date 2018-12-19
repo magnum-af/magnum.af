@@ -3,6 +3,7 @@
 
 int main(int argc, char** argv)
 {
+    timer total_time = af::timer::start();
     std::cout<<"argc= "<<argc<<std::endl;
     for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
     std::string filepath(argc>1? argv[1]: "../Data/Testing");
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
     
     // Relax
     timer t = af::timer::start();
-    while (state.t < 5.e-10){
+    while (state.t < 1e-9){
         Llg.step(state);
         state.calc_mean_m(stream);
     }
@@ -55,12 +56,13 @@ int main(int argc, char** argv)
 
     // Switch
     t = af::timer::start();
-    while (state.t < 1.5e-9){
+    while (state.t < 2e-9){
         Llg.step(state);
         state.calc_mean_m(stream);
     }
     std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
     stream.close();
+    std::cout<<"total [af-s]: "<< af::timer::stop(total_time) <<std::endl;
     return 0;
 }
