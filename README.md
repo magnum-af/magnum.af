@@ -9,7 +9,7 @@ magnum.af: A finite differences GPU accelerated magnetic simulation software
 * String Method for Energy Barrier Calculations
 
 
-## Main Features:
+## Main Features
 * Support for CUDA, OpenCL and CPU backends.
   * This enables a high degree of flexibility in terms of user hardware as the
     code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
@@ -18,18 +18,19 @@ magnum.af: A finite differences GPU accelerated magnetic simulation software
 * Python bindings 
   * For an easy user-interface
 
-# Installation Guide:
+# Installation Guide
 ## Docker:
 Build the respective Docker images by running the provided dockerfiles in the 
 project directory:
 
-`$docker build -t magnum.af.cpu -f Dockerfile.cpu .` or
+`$ docker build -t magnum.af.cpu -f Dockerfile.cpu .`
 
-`docker build -t magnum.af.opencl -f Dockerfile.opencl .`
-## Build scipt
-Execute the provided installation script
+`$ docker build -t magnum.af.opencl -f Dockerfile.opencl .`
+## Build scipt:
+Execute the provided installation script:
+
 `$./scripts/install_magnum.af_environment.sh`
-## Manual installation (outdated)
+## Manual installation (outdated):
 
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
@@ -38,9 +39,8 @@ Execute the provided installation script
   [source](https://github.com/arrayfire/arrayfire)
 * Cython
 * VTK-dev
-* 
 
-## OpenCL Devices (e.g. AMD Graphics Cards):
+### OpenCL Devices (e.g. AMD Graphics Cards):
 * Installation of hardware-specific drivers:
 
 http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
