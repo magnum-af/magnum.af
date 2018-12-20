@@ -53,6 +53,7 @@ cdef extern from "../../src/state.hpp":
   cdef cppclass State:
     State (Mesh mesh_in, Param param_in, long int m_in);
     State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
+    void set_m(long int aptr);
     double t;
     array m;
     Mesh mesh;
@@ -82,8 +83,12 @@ cdef class pyState:
   def __dealloc__(self): # causes segfault on every cleanup
     del self.thisptr
     self.thisptr = NULL
+  @property
   def t(self):
     return self.thisptr.t
+  @t.setter
+  def t(self, value):
+    self.thisptr.t = value
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
@@ -103,23 +108,16 @@ cdef class pyState:
   def set_alpha(self,value):
     self.thisptr.param.alpha=value
 
-  def get_m(self):
-    #af.set_backend("cpu")
-    #af.set_device(0)
-    #m1=af.Array()
-    #m.arr = copy.deepcopy ()
-    #m.arr = ctypes.c_void_p(m_addr)
-    #af.sync()
-    #af.device.lock_array(m)
-    #af.device.lock_array(m2)
+  @property
+  def m(self):
     m1=af.Array()
     m_addr = self.thisptr.get_m_addr()
     m1.arr=ctypes.c_void_p(m_addr)
-    #print "test", m1.arr
     return m1
-    #return m.copy()
-    ##Alternative
-    #return self.thisptr.get_m_addr()
+  @m.setter
+  def m(self, m_in):
+    self.thisptr.set_m(ctypes.addressof(m_in.arr))
+
   def meanxyz(self, i):
     return self.thisptr.meani(i)
 
@@ -432,147 +430,124 @@ cdef class pyParam:
     D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
     self.thisptr = new Param (alpha, T, ms, A, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
+    #mu0 = self.thisptr.mu0
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
 
-  ## Setter Functions
-  def set_gamma(self,value):
-    self.thisptr.gamma=value
-  def set_alpha(self,value):
-    self.thisptr.alpha=value
-  def set_T(self,value):
-    self.thisptr.T=value
-  def set_ms(self,value):
-    self.thisptr.ms=value
-  def set_A(self,value):
-    self.thisptr.A=value
-  def set_D(self,value):
-    self.thisptr.D=value
-  def set_Ku1(self,value):
-    self.thisptr.Ku1=value
-
-  def set_D_axis_x(self,value):
-    self.thisptr.D_axis[0]=value
-  def set_D_axis_y(self,value):
-    self.thisptr.D_axis[1]=value
-  def set_D_axis_z(self,value):
-    self.thisptr.D_axis[2]=value
-  def set_D_axis(self, *args):
-    i=0
-    for arg in args:
-      self.thisptr.D_axis[i]=arg
-      i=i+1
-  def set_Ku1_axis_x(self,value):
-    self.thisptr.Ku1_axis[0]=value
-  def set_Ku1_axis_y(self,value):
-    self.thisptr.Ku1_axis[1]=value
-  def set_Ku1_axis_z(self,value):
-    self.thisptr.Ku1_axis[2]=value
-  def set_Ku1_axis(self, *args):
-    i=0
-    for arg in args:
-      self.thisptr.Ku1_axis[i]=arg
-      i=i+1
-
-  def set_p(self,value):
-    self.thisptr.p=value
-  def set_J_atom(self,value):
-    self.thisptr.J_atom=value
-  def set_D_atom(self,value):
-    self.thisptr.D_atom=value
-  def set_Ku1_atom(self,value):
-    self.thisptr.K_atom=value
-  def set_D_atom_axis_x(self,value):
-    self.thisptr.D_atom_axis[0]=value
-  def set_D_atom_axis_y(self,value):
-    self.thisptr.D_atom_axis[1]=value
-  def set_D_atom_axis_z(self,value):
-    self.thisptr.D_atom_axis[2]=value
-  def set_D_atom_axis(self, *args):
-    i=0
-    for arg in args:
-      self.thisptr.D_atom_axis[i]=arg
-      i=i+1
-  def set_Ku1_atom_axis_x(self,value):
-    self.thisptr.K_atom_axis[0]=value
-  def set_Ku1_atom_axis_y(self,value):
-    self.thisptr.K_atom_axis[1]=value
-  def set_Ku1_atom_axis_z(self,value):
-    self.thisptr.K_atom_axis[2]=value
-  def set_Ku1_atom_axis(self, *args):
-    i=0
-    for arg in args:
-      self.thisptr.K_atom_axis[i]=arg
-      i=i+1
-  def set_mode(self,value):
-    self.thisptr.mode=value
-
-  ## Getter Functions
-  def get_mu0(self):
+  ## Getter and setter Functions
+  @property # Note: constant by not providing setter
+  def mu0(self):
     return self.thisptr.mu0
-  def get_gamma(self):
+
+  @property
+  def gamma(self):
     return self.thisptr.gamma
-  def get_alpha(self):
+
+  @property
+  def alpha(self):
     return self.thisptr.alpha
-  def get_T(self):
+  @alpha.setter
+  def alpha(self,value):
+    self.thisptr.alpha=value
+
+  @property
+  def T(self):
     return self.thisptr.T
+  @T.setter
+  def T(self,value):
+    self.thisptr.T=value
 
   # Micromagnetic
-  def get_ms(self):
+  @property
+  def ms(self):
     return self.thisptr.ms
-  def get_A(self):
+  @ms.setter
+  def ms(self,value):
+    self.thisptr.ms=value
+
+  @property
+  def A(self):
     return self.thisptr.A
+  @A.setter
+  def A(self,value):
+    self.thisptr.A=value
 
-  def get_D(self):
+  @property
+  def D(self):
     return self.thisptr.D
-  def get_D_axis(self):
-    return self.thisptr.D_axis[0], self.thisptr.D_axis[1], self.thisptr.D_axis[2]
-  def get_D_axis_x(self):
-    return self.thisptr.D_axis[0]
-  def get_D_axis_y(self):
-    return self.thisptr.D_axis[1]
-  def get_D_axis_z(self):
-    return self.thisptr.D_axis[2]
+  @D.setter
+  def D(self,value):
+    self.thisptr.D=value
 
-  def get_Ku1(self):
+  @property
+  def D_axis(self):
+    return self.thisptr.D_axis[0], self.thisptr.D_axis[1], self.thisptr.D_axis[2]
+  @D_axis.setter
+  def D_axis(self, values):
+    self.thisptr.D_axis[0] = values[0]
+    self.thisptr.D_axis[1] = values[1]
+    self.thisptr.D_axis[2] = values[2]
+
+  @property
+  def Ku1(self):
     return self.thisptr.Ku1
-  def get_Ku1_axis(self):
+  @Ku1.setter
+  def Ku1(self,value):
+    self.thisptr.Ku1=value
+
+  @property
+  def Ku1_axis(self):
     return self.thisptr.Ku1_axis[0], self.thisptr.Ku1_axis[1], self.thisptr.Ku1_axis[2]
-  def get_Ku1_axis_x(self):
-    return self.thisptr.Ku1_axis[0]
-  def get_Ku1_axis_y(self):
-    return self.thisptr.Ku1_axis[1]
-  def get_Ku1_axis_z(self):
-    return self.thisptr.Ku1_axis[2]
+  @Ku1_axis.setter
+  def Ku1_axis(self, values):
+    self.thisptr.Ku1_axis[0] = values[0]
+    self.thisptr.Ku1_axis[1] = values[1]
+    self.thisptr.Ku1_axis[2] = values[2]
 
   # Atomistic
-  def get_p(self):
+  @property
+  def p(self):
     return self.thisptr.p
-  def get_J_atom(self):
+  @p.setter
+  def p(self,value):
+    self.thisptr.p=value
+
+  @property
+  def J_atom(self):
     return self.thisptr.J_atom
-  def get_D_atom(self):
+  @J_atom.setter
+  def J_atom(self,value):
+    self.thisptr.J_atom=value
+
+  @property
+  def D_atom(self):
     return self.thisptr.D_atom
-  def get_Ku1_atom(self):
+  @D_atom.setter
+  def D_atom(self,value):
+    self.thisptr.D_atom=value
+
+  @property
+  def Ku1_atom(self):
     return self.thisptr.K_atom
+  @Ku1_atom.setter
+  def Ku1_atom(self,value):
+    self.thisptr.K_atom=value
 
-  def get_D_atom_axis(self):
+  @property
+  def D_atom_axis(self):
     return self.thisptr.D_atom_axis[0], self.thisptr.D_atom_axis[1], self.thisptr.D_atom_axis[2]
-  def get_D_atom_axis_x(self):
-    return self.thisptr.D_atom_axis[0]
-  def get_D_atom_axis_y(self):
-    return self.thisptr.D_atom_axis[1]
-  def get_D_atom_axis_z(self):
-    return self.thisptr.D_atom_axis[2]
+  @D_atom_axis.setter
+  def D_atom_axis(self, values):
+    self.thisptr.D_atom_axis[0] = values[0]
+    self.thisptr.D_atom_axis[1] = values[1]
+    self.thisptr.D_atom_axis[2] = values[2]
 
-  def get_Ku1_atom_axis(self):
+  @property
+  def Ku1_atom_axis(self):
     return self.thisptr.K_atom_axis[0], self.thisptr.K_atom_axis[1], self.thisptr.K_atom_axis[2]
-  def get_Ku1_atom_axis_x(self):
-    return self.thisptr.K_atom_axis[0]
-  def get_Ku1_atom_axis_y(self):
-    return self.thisptr.K_atom_axis[1]
-  def get_Ku1_atom_axis_z(self):
-    return self.thisptr.K_atom_axis[2]
-
-  def get_mode(self):
-    return self.thisptr.mode
+  @Ku1_atom_axis.setter
+  def Ku1_atom_axis(self, values):
+    self.thisptr.K_atom_axis[0] = values[0]
+    self.thisptr.K_atom_axis[1] = values[1]
+    self.thisptr.K_atom_axis[2] = values[2]

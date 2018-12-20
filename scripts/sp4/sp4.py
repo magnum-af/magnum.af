@@ -27,15 +27,15 @@ mesh=magnum_af.pyMesh(nx, ny, nz, x/nx, y/ny, z/nz)
 m=af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 
 param=magnum_af.pyParam()
-param.set_ms    (8e5)
-param.set_A     (1.3e-11)
-param.set_alpha (1)
+#print (param.mu0)
+param.ms = 8e5
+param.A = 1.3e-11
+param.alpha = 1.
 
 m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 state=magnum_af.pyState(mesh,param,m)
-
 demag=magnum_af.pyDemagSolver(mesh,param)
 exch=magnum_af.pyExchSolver(mesh,param)
 Llg=magnum_af.pyLLG(demag,exch)
@@ -44,19 +44,19 @@ Llg=magnum_af.pyLLG(demag,exch)
 print("relaxing 1ns")
 stream = open(filepath+"m.dat", "w")
 timer = time.time()
-while state.t() < 1e-9:
+while state.t < 1e-9:
   Llg.llgstep(state)
-  temp = state.get_m()
+  temp = state.m
   temp_mean = af.mean(af.mean(af.mean(temp, dim=0), dim=1), dim=2)
   #print(state.t(), temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar())
-  stream.write("%e, %e, %e, %e\n" %(state.t(), temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar()))
+  stream.write("%e, %e, %e, %e\n" %(state.t, temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar()))
 print("relaxed in", time.time() - timer, "[s]")
 
 # Resetting alpha and adding Zeeman field
 state.set_alpha(0.02)
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0]=-24.6e-3/param.get_mu0()
-zeeswitch[0,0,0,1]=+4.3e-3/param.get_mu0()
+zeeswitch[0,0,0,0]=-24.6e-3/param.mu0
+zeeswitch[0,0,0,1]=+4.3e-3/param.mu0
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
 zee=magnum_af.pyZee(zeeswitch)
@@ -65,13 +65,13 @@ Llg.add_terms(zee)
 # Switching
 print("switching 1ns")
 timer = time.time()
-while state.t() < 2e-9:
+while state.t < 2e-9:
   Llg.llgstep(state)
-  temp = state.get_m()
+  temp = state.m
   temp_mean = af.mean(af.mean(af.mean(temp, dim=0), dim=1), dim=2)
   #print(state.t(), temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar())
   #print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2))
-  stream.write("%e, %e, %e, %e\n" %(state.t(), temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar()))
+  stream.write("%e, %e, %e, %e\n" %(state.t, temp_mean[0,0,0,0].scalar(), temp_mean[0,0,0,1].scalar(), temp_mean[0,0,0,2].scalar()))
 stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")

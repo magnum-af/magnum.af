@@ -22,6 +22,13 @@ void State::check_discretization(){
         }
     }
 }
+
+void State::check_m_norm(double tol){
+    double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m),0),1),2),3));
+    if ( fabs(meannorm - 1.) > tol) {
+        printf("%s", (red("Warning: State::check_m_norm: magnetization is not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
+    }
+}
 //long int State::get_m_addr(){
 //    u_out = this->m.copy();
 //    return (long int) m_out.get();
@@ -32,6 +39,7 @@ void State::check_discretization(){
 State::State (Mesh mesh_in, Param param_in, af::array m_in):
               mesh(mesh_in),param(param_in), m(m_in)
 {
+    check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
 }
@@ -42,6 +50,7 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_m
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
+    check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
     if (verbose_) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
@@ -54,6 +63,7 @@ State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param
     //m.lock();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
+    check_m_norm();
 }
 
 ///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
@@ -69,8 +79,17 @@ State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mea
 
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
+    check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
+}
+
+void State::set_m(long int aptr){
+    void **a = (void **)aptr;
+    m = *( new af::array( *a ));
+    check_m_norm();
+    //TODO should these be called?// set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    //TODO should these be called?// check_discretization();
 }
 
 long int State::get_m_addr(){

@@ -13,6 +13,7 @@ class State{
     State (Mesh mesh_in, Param param_in, long int aptr);
     State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
     ~State(){};
+    void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
     Mesh mesh;
     Param param;
     double t{0.};//time
@@ -20,6 +21,7 @@ class State{
     af::array Ms; // Saturation magnetization
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     void check_discretization();
+    void check_m_norm(double tol = 1e-6);
     int steps{0};
     long int get_m_addr();
     //af::array m_out;
