@@ -27,9 +27,9 @@ mesh=magnum_af.pyMesh(nx, ny, nz, x/nx, y/ny, z/nz)
 m=af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 
 param=magnum_af.pyParam()
-param.ms    (8e5)
-param.A     (1.3e-11)
-param.alpha (1)
+param.set_ms    (8e5)
+param.set_A     (1.3e-11)
+param.set_alpha (1)
 
 m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
@@ -55,8 +55,8 @@ print("relaxed in", time.time() - timer, "[s]")
 # Resetting alpha and adding Zeeman field
 state.set_alpha(0.02)
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0]=-24.6e-3/param.print_mu0()
-zeeswitch[0,0,0,1]=+4.3e-3/param.print_mu0()
+zeeswitch[0,0,0,0]=-24.6e-3/param.get_mu0()
+zeeswitch[0,0,0,1]=+4.3e-3/param.get_mu0()
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
 zee=magnum_af.pyZee(zeeswitch)
