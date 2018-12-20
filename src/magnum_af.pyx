@@ -42,6 +42,7 @@ cdef class pyMesh:
     self.thisptr = new Mesh(a,b,c,d,e,f)
   def __dealloc__(self):
     del self.thisptr
+    self.thisptr = NULL
   def n0(self):
     return self.thisptr.n0
   def print_n0(self):
@@ -80,6 +81,7 @@ cdef class pyState:
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
   def __dealloc__(self): # causes segfault on every cleanup
     del self.thisptr
+    self.thisptr = NULL
   def t(self):
     return self.thisptr.t
   def pythisptr(self):
@@ -140,9 +142,11 @@ cdef class pyLLG:
     for arg in args:
       vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
     self.thisptr = new NewLlg (vector_in)  
-  # TODO dealloc?
+  # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
+  # NOTE not happening in minimizer class as it is not derived (i guess)
   #def __dealloc__(self):
   #  del self.thisptr
+  #  self.thisptr = NULL
   def llgstep(self, pyState state_in):
     self.thisptr.step(deref(state_in.thisptr))
   def get_E(self,pyState state_in):
@@ -180,8 +184,9 @@ cdef class pyDemagSolver:
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new DemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   #This would causes double free coruption!
-  #def __dealloc__(self):
-  #  del self.thisptr
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_Nfft(self):
     self.thisptr.print_Nfft()
   def print_E(self,pyState state_in):
@@ -201,6 +206,9 @@ cdef class pyExchSolver:
   cdef ExchSolver* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new ExchSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -218,6 +226,9 @@ cdef class pyMicroAniso:
   cdef ANISOTROPY* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -236,6 +247,9 @@ cdef class pyATOMISTIC_DEMAG:
   cdef ATOMISTIC_DEMAG* thisptr
   def __cinit__(self, pyMesh mesh_in):
     self.thisptr = new ATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -253,6 +267,9 @@ cdef class pyATOMISTIC_ANISOTROPY:
   cdef ATOMISTIC_ANISOTROPY* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new ATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -270,6 +287,9 @@ cdef class AtomisticExchange:
   cdef ATOMISTIC_EXCHANGE* thisptr
   def __cinit__(self, pyMesh mesh_in):
     self.thisptr = new ATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -287,6 +307,9 @@ cdef class AtomisticDMI:
   cdef ATOMISTIC_DMI* thisptr
   def __cinit__(self, pyMesh mesh_in, pyParam param_in):
     self.thisptr = new ATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -306,6 +329,9 @@ cdef class pyZee:
   cdef Zee* thisptr
   def __cinit__(self, array_in):
     self.thisptr = new Zee (ctypes.addressof(array_in.arr))  
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
   def print_E(self,pyState state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
@@ -343,6 +369,7 @@ cdef class pyLbfgsMinimizer:
       self.thisptr = new LBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
   def __dealloc__(self):
     del self.thisptr
+    self.thisptr = NULL
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
@@ -407,6 +434,7 @@ cdef class pyParam:
     self.thisptr = new Param (alpha, T, ms, A, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
   def __dealloc__(self):
     del self.thisptr
+    self.thisptr = NULL
 
   ## Setter Functions
   def set_gamma(self,value):

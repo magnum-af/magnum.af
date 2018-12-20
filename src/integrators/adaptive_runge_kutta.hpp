@@ -10,6 +10,7 @@ class AdaptiveRungeKutta {
         AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(), const bool renormalize_ = true);
         void step(State&);
         double get_time_allsteps(){return time_allsteps_;}
+        virtual ~AdaptiveRungeKutta(){};
     private:
         virtual af::array f(const State& state)=0; // callback function s.a. LLG
         af::array RKF45(const State& state, const double dt, double& err);
