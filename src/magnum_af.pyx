@@ -1,3 +1,6 @@
+#!python
+#cython: language_level=3
+
 #HOTTIPS
 #https://stackoverflow.com/questions/44396749/handling-c-arrays-in-cython-with-numpy-and-pytorch
 #https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
