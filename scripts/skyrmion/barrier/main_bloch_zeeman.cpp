@@ -24,8 +24,6 @@ int main(int argc, char** argv)
   
     double n_interp = 60;
     double string_dt=1e-13;
-    const int string_steps = 10000;
-  
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
@@ -56,12 +54,18 @@ int main(int argc, char** argv)
   
     State state(mesh,param, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+
+    array zee = constant(0.0,1,1,1,3,f64);
+    zee(0,0,0,2)=(argc > 3 ? std::stod(argv[3])/param.mu0 : 0./param.mu0);
+    af::print("zee_pre_tile",zee);
+    zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
   
     NewLlg Llg;
     //demag?//llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    Llg.llgterms.push_back( LlgTerm (new Zee(zee)));
   
     Llg.relax(state);
     vti_writer_micro(state.m, mesh ,filepath + "relax");
