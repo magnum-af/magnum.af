@@ -81,6 +81,11 @@ int main(int argc, char** argv)
     inputimages.push_back(State(mesh,param, last));
   
     String string(state,inputimages, n_interp, string_dt ,Llg.llgterms);
-    string.run(filepath);
+    double barrier = string.run(filepath);
+    std::ofstream myfileE;
+    myfileE.precision(12);
+    myfileE.open ((filepath + "bz_over_J.dat").c_str());
+    myfileE << bz_in_dims_of_J_atom << "\t" <<  barrier <<  std::endl;
+    myfileE.close();
     return 0;
 }

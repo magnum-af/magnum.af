@@ -8,6 +8,25 @@
 # Exit on error 
 set -e
 
+n_flag='' #noscreen
+verbose='false' #todo apply
+
+print_usage() {
+  printf "Usage: ..."
+}
+
+while getopts 'nv' flag; do
+  case "${flag}" in
+    a) a_flag='true' ;;
+    n) n_flag='true' ;;
+    f) files="${OPTARG}" ;;
+    v) verbose='true' ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+shift $((OPTIND-1)) # resetting counting
+
 # Setting (input) variables
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 buildfile=$1
@@ -60,19 +79,36 @@ fi
 
 # running
 if [ -e $outputpath/magnum.af-cuda ];then
-    echo "starting magnum.af-cuda in screen."
-    echo "To follow cout.dat run:"
-    echo "tail -f $outputpath/cout.txt"
-    screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
-    screen -ls
+    if [ "$n_flag" == "true" ];then
+        echo "starting magnum.af-cuda without screen."
+        export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9
+    else
+        echo "starting magnum.af-cuda in screen."
+        echo "To follow cout.dat run:"
+        echo "tail -f $outputpath/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        screen -ls
+    fi
 elif [ -e $outputpath/magnum.af-opencl ];then
-    echo "starting magnum.af-opencl in screen."
-    echo "To follow cout.dat run:"
-    echo "tail -f $outputpath/cout.txt"
-    screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
-    screen -ls
+    if [ "$n_flag" == "true" ];then
+        echo "starting magnum.af-opencl without screen."
+        $outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9
+    else
+        echo "starting magnum.af-opencl in screen."
+        echo "To follow cout.dat run:"
+        echo "tail -f $outputpath/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        screen -ls
+    fi
 else
-    echo "starting magnum.af-cpu."
-    $outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9
+    if [ "$n_flag" == "true" ];then
+        echo "starting magnum.af-cpu."
+        $outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9
+    else
+        echo "starting magnum.af-cpu in screen."
+        echo "To follow cout.dat run:"
+        echo "tail -f $outputpath/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        screen -ls
+    fi
 fi
-

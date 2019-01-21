@@ -24,8 +24,6 @@ int main(int argc, char** argv)
   
     double n_interp = 60;
     double string_dt=1e-13;
-    const int string_steps = 10000;
-  
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
@@ -41,6 +39,8 @@ int main(int argc, char** argv)
     param.K_atom=param.Ku1*pow(dx,3);
     param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
+    double bz_in_dims_of_J_atom(argc > 3 ? std::stod(argv[3]) : 0.);
+    std::cout << "bz_in_dims_of_J_atom = " << bz_in_dims_of_J_atom << std::endl;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -56,12 +56,18 @@ int main(int argc, char** argv)
   
     State state(mesh,param, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+
+    array zee = constant(0.0,1,1,1,3,f64);
+    zee(0,0,0,2)= bz_in_dims_of_J_atom * param.J_atom /(param.ms * pow(dx, 3) * param.mu0);
+    af::print("zee_pre_tile",zee);
+    zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
   
     NewLlg Llg;
-    //Demag?//Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
     Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    Llg.llgterms.push_back( LlgTerm (new Zee(zee)));
   
     Llg.relax(state);
     vti_writer_micro(state.m, mesh ,filepath + "relax");
@@ -75,6 +81,11 @@ int main(int argc, char** argv)
     inputimages.push_back(State(mesh,param, last));
   
     String string(state,inputimages, n_interp, string_dt ,Llg.llgterms);
-    string.run(filepath);
+    double barrier = string.run(filepath);
+    std::ofstream myfileE;
+    myfileE.precision(12);
+    myfileE.open ((filepath + "bz_over_J.dat").c_str());
+    myfileE << bz_in_dims_of_J_atom << "\t" <<  barrier <<  "\t" <<  barrier/(param.J_atom) <<  "\t" <<  afvalue(Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,0)) <<  std::endl;
+    myfileE.close();
     return 0;
 }

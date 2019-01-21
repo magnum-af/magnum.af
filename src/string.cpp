@@ -122,7 +122,7 @@ void String::write_vti(std::string file){
 }
 
 
-void String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
+double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
 
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
@@ -227,6 +227,7 @@ void String::run(const std::string filepath, const double string_abort_rel_diff,
     stream_steps.close();
     stream_E_curves.close();
     stream_max_lowest.close();
+    return max_lowest;
 };
 
 
