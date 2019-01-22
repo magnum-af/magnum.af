@@ -5,7 +5,7 @@
 # determining write directory
 if [ -n "$1" ];then
     if [ -e "$1" ];then
-        echo "Error: Write Directory '$1' exists! Use -d flag to overwrite"
+        echo "Error: Write Directory '$1' exists! Use the '-f' flag to overwrite"
 	exit 1
     else
         if [ -d "$1" ];then
