@@ -4,14 +4,16 @@ import sys
 import os
 import time
 
-#af.set_backend("cpu")# TODO currently cpu backend segfaults when state object is created
-start = time.time()
-af.info()
-
 if sys.argv[1][-1] != "/":
     sys.argv[1] = sys.argv[1] + "/"
 filepath = sys.argv[1]
-os.makedirs(filepath)
+#provided by bash #os.makedirs(filepath)
+af.set_device(int(sys.argv[2]))
+#af.set_backend("cpu")# TODO currently cpu backend segfaults when state object is created
+af.info()
+
+
+start = time.time()
 
 # Physical dimensions in [m]
 x = 5.e-7

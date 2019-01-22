@@ -62,26 +62,44 @@ log "$plotfile"
 log "$s_flag"
 log "$verbose"
 
-log "if given, copying plotfile in outputdir"
+log "checking $inputfile != ''"
 if [[ "$inputfile" == "" ]]; then
     echo "Error: missing inputfile as first argument required, aborting..."
     exit 1
+elif [ ! -e "$inputfile" ]
+then
+    echo "Error: given inputfile does not exist, aborting..."
+    exit 1
+else
+    filename=$(basename -- "$inputfile")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+    if [[ $extension != "cpp" ||  $extension != "py" ]];then
+        echo "Error: wrong extension $extension, expected .cpp or .py"
+        exit 1
+    fi
+    log "extension=$extension"
+    log "filename=$filename"
 fi
-log "checking if other main exists in /src"
-$magafdir/scripts/bash/check_main.sh $verbose
 
-log "building"
-cp $inputfile $magafdir/src
-$magafdir/scripts/bash/build.sh $magafdir $verbose
-rm $magafdir/src/$(basename $inputfile)
+if [ "$extension" == "cpp" ];then
+    log "checking if other main exists in /src"
+    $magafdir/scripts/bash/check_main.sh $verbose
+    
+    log "building"
+    cp $inputfile $magafdir/src
+    $magafdir/scripts/bash/build.sh $magafdir $verbose
+    rm $magafdir/src/$(basename $inputfile)
+    
+    log "moving possible old main back"
+    $magafdir/scripts/bash/check_main_remove.sh $verbose
+fi
 
-log "moving possible old main back"
-$magafdir/scripts/bash/check_main_remove.sh $verbose
-
-log "creating write dir"
+log "checking output dir"
+#TODO check if dir ends with / and add if not
 if [ -z "$outputdir" ]; then
     outputdir="$PWD/output_magnum.af"
-    log "no output dir found, creating '$outputdir' which is in current folder"
+    log "no output dir given, using '$outputdir' which is in current folder"
 fi
 if [ "$d_flag" == "true" ]; then
     if [ ! -e "$outputdir" ];then
@@ -118,45 +136,51 @@ fi
 
 log "checking if inputfile and outputdir are flagged arguments or mass arguments"
 skip=0
-[ "$i_flag" == "" ] && skip="$((skip + 1))"  && log " $skip iflag is not true"
-[ "$o_flag" == "" ] && skip="$((skip + 1))"  && log " $skip oflag is not true"
-shift $skip
+[ "$i_flag" == "" ] && skip="$((skip + 1))"  && log "$skip iflag is not true"
+[ "$o_flag" == "" ] && skip="$((skip + 1))"  && log "$skip oflag is not true"
+min=$( (( $# <= $skip )) && echo "$#" || echo "$skip") # minimum of remaining arguments and skip to prevent overshifting
+log "shifting $min"
+shift $min
 
 log "running magnum.af"
-if [ -e $outputdir/magnum.af-cuda ];then
-    if [ "$s_flag" == "true" ];then
-        echo "starting magnum.af-cuda in screen."
-        echo "To follow cout.dat run:"
-        echo "tail -f $outputdir/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
-        screen -ls
-    else
-        echo "starting magnum.af-cuda without screen."
-        export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $@
-        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
-    fi
-elif [ -e $outputdir/magnum.af-opencl ];then
-    if [ "$s_flag" == "true" ];then
-        echo "starting magnum.af-opencl in screen."
-        echo "To follow cout.dat run:"
-        echo "tail -f $outputdir/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-opencl $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
-        screen -ls
-    else
-        echo "starting magnum.af-opencl without screen."
-        $outputdir/magnum.af-opencl $outputdir $GPU $@
-        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
-    fi
+if [ "$extension" == "py" ];then
+    PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@
 else
-    if [ "$s_flag" == "true" ];then
-        echo "starting magnum.af-cpu in screen."
-        echo "To follow cout.dat run:"
-        echo "tail -f $outputdir/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-cpu $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
-        screen -ls
+    if [ -e $outputdir/magnum.af-cuda ];then
+        if [ "$s_flag" == "true" ];then
+            echo "starting magnum.af-cuda in screen."
+            echo "To follow cout.dat run:"
+            echo "tail -f $outputdir/cout.txt"
+            screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
+            screen -ls
+        else
+            echo "starting magnum.af-cuda without screen."
+            export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $@
+            (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
+        fi
+    elif [ -e $outputdir/magnum.af-opencl ];then
+        if [ "$s_flag" == "true" ];then
+            echo "starting magnum.af-opencl in screen."
+            echo "To follow cout.dat run:"
+            echo "tail -f $outputdir/cout.txt"
+            screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-opencl $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
+            screen -ls
+        else
+            echo "starting magnum.af-opencl without screen."
+            $outputdir/magnum.af-opencl $outputdir $GPU $@
+            (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
+        fi
     else
-        echo "starting magnum.af-cpu."
-        $outputdir/magnum.af-cpu $outputdir $GPU $@
-        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
+        if [ "$s_flag" == "true" ];then
+            echo "starting magnum.af-cpu in screen."
+            echo "To follow cout.dat run:"
+            echo "tail -f $outputdir/cout.txt"
+            screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-cpu $outputdir $GPU $@ > $outputdir/cout.txt 2>&1"
+            screen -ls
+        else
+            echo "starting magnum.af-cpu."
+            $outputdir/magnum.af-cpu $outputdir $GPU $@
+            (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
+        fi
     fi
 fi
