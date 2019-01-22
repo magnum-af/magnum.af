@@ -1,25 +1,36 @@
 #!/bin/bash
 # magnum.af runfile
-# Usage:
-# ./magnum.af $1=main.cpp $2=absolute/new/output/path $3=optional_GPU-number $4=optional_plotfile/path 
-# Example
-# ./magnum.af main.cpp $PWD/run1 0 plotfile 
-
-# Exit on error 
 set -e
 
-n_flag='' #noscreen
-verbose='false' #todo apply
+magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
+d_flag='' 
+GPU='0'
+inputfile=''
+outputdir=''
+plotfile=''
+s_flag='' 
+verbose='false'
 
 print_usage() {
-  printf "Usage: ..."
+  printf "Usage: 
+  -d  overwrite  Accepts already existing output directories and overwrites files if existing.
+  -g: GPU        Expects integer number 0-n to specify the GPU to be used.
+  -i: inputfile  Inputfile for magnum.af. Either a .cpp containing a main() or a .py file.
+  -o: outputdir  Directory to write all output to.
+  -s  screen     Starts script using the terminal multiplexer screen.
+  -p: plot       Expects argument as plotting scpript and executes it in output directory.
+  "
 }
 
-while getopts 'nv' flag; do
+
+while getopts 'dg:i:o:p:sv' flag; do
   case "${flag}" in
-    a) a_flag='true' ;;
-    n) n_flag='true' ;;
-    f) files="${OPTARG}" ;;
+    d) d_flag='true' ;;
+    g) GPU="${OPTARG}" ;;
+    i) inputfile="${OPTARG}" ;;
+    o) outputdir="${OPTARG}" ;;
+    p) plotfile="${OPTARG}" ;;
+    s) s_flag='true' ;;
     v) verbose='true' ;;
     *) print_usage
        exit 1 ;;
@@ -27,88 +38,116 @@ while getopts 'nv' flag; do
 done
 shift $((OPTIND-1)) # resetting counting
 
-# Setting (input) variables
-magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
-buildfile=$1
-outputpath=$2
-if [[ "$3" == "" ]]; then
-    GPU=0
-else
-    GPU=$3
+if [ -z "$inputfile" ]; then
+    inputfile=$1
 fi
-# if given, copying plotfile in outputdir
-if [[ "$buildfile" == "" ]]; then
-    echo "Error: missing buildfile as first argument required, aborting..."
+if [ -z "$outputdir" ]; then
+    outputdir=$2
+fi
+
+function log () {
+    if [[ "$verbose" == "true" ]]; then
+        echo "$@"
+    fi
+}
+
+log "$d_flag"
+log "$GPU"
+log "$inputfile"
+log "$outputdir"
+log "$plotfile"
+log "$s_flag"
+log "$verbose"
+
+log "if given, copying plotfile in outputdir"
+if [[ "$inputfile" == "" ]]; then
+    echo "Error: missing inputfile as first argument required, aborting..."
     exit 1
 fi
-# checking if other main exists in /src
-$magafdir/scripts/bash/check_main.sh
+log "checking if other main exists in /src"
+$magafdir/scripts/bash/check_main.sh $verbose
 
-# building 
-cp $buildfile $magafdir/src
-$magafdir/scripts/bash/build.sh $magafdir
-rm $magafdir/src/$(basename $buildfile)
+log "building"
+cp $inputfile $magafdir/src
+$magafdir/scripts/bash/build.sh $magafdir $verbose
+rm $magafdir/src/$(basename $inputfile)
 
-# moving possible old main back
-$magafdir/scripts/bash/check_main_remove.sh
+log "moving possible old main back"
+$magafdir/scripts/bash/check_main_remove.sh $verbose
 
-# creating write dir
-$magafdir/scripts/bash/check_write_dir.sh $outputpath
+log "creating write dir"
+if [ -z "$outputdir" ]; then
+    outputdir="$PWD/output_magnumaf"
+    log "no output dir found, creating $outputdir"
+fi
+if [ "$d_flag" == "true" ]; then
+    if [ ! -e "$outputdir" ];then
+        log "writing in new directory $outputdir"
+        mkdir --parents $outputdir
+    else
+        log "writing in existing directory $outputdir"
+    fi
+else
+    $magafdir/scripts/bash/check_write_dir.sh $outputdir $verbose
+fi
 
-# Printing bash command and git log in outputpath
-echo "#Command called with:" >> $outputpath/simulation_info.txt
-echo "$0 $@" >> $outputpath/simulation_info.txt
+log "Printing bash command and git log in outputdir"
+echo "#Command called with:" >> $outputdir/simulation_info.txt
+echo "$0 $@" >> $outputdir/simulation_info.txt
 
 if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
-    echo "current git commit hash:" >> $outputpath/simulation_info.txt
-    echo $(git rev-parse HEAD) >> $outputpath/simulation_info.txt
+    echo "current git commit hash:" >> $outputdir/simulation_info.txt
+    echo $(git rev-parse HEAD) >> $outputdir/simulation_info.txt
 else
     echo "Note: current directory is no git dir, omitting git log"
 fi
 
-# copying plotfile if existing
-if [[ "$4" != "" ]]; then
-    cp $4 $outputpath
+log "copying plotfile if existing"
+if [[ -n "$plotfile" ]]; then
+    cp $plotfile $outputdir
 fi
 
-# copying files
-if [[ "$outputpath" != "" ]]; then
-    cp $magafdir/bin/magnum.af-* $outputpath
-    cp $buildfile $outputpath
+log "copying files"
+if [[ "$outputdir" != "" ]]; then
+    cp $magafdir/bin/magnum.af-* $outputdir
+    cp $inputfile $outputdir
 fi
 
-# running
-if [ -e $outputpath/magnum.af-cuda ];then
-    if [ "$n_flag" == "true" ];then
-        echo "starting magnum.af-cuda without screen."
-        export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9
-    else
+log "running magnum.af"
+if [ -e $outputdir/magnum.af-cuda ];then
+    if [ "$s_flag" == "true" ];then
         echo "starting magnum.af-cuda in screen."
         echo "To follow cout.dat run:"
-        echo "tail -f $outputpath/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputpath/magnum.af-cuda $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        echo "tail -f $outputdir/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $5 $6 $7 $8 $9 > $outputdir/cout.txt 2>&1"
         screen -ls
-    fi
-elif [ -e $outputpath/magnum.af-opencl ];then
-    if [ "$n_flag" == "true" ];then
-        echo "starting magnum.af-opencl without screen."
-        $outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9
     else
+        echo "starting magnum.af-cuda without screen."
+        export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir $GPU $5 $6 $7 $8 $9
+        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
+    fi
+elif [ -e $outputdir/magnum.af-opencl ];then
+    if [ "$s_flag" == "true" ];then
         echo "starting magnum.af-opencl in screen."
         echo "To follow cout.dat run:"
-        echo "tail -f $outputpath/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-opencl $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        echo "tail -f $outputdir/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-opencl $outputdir $GPU $5 $6 $7 $8 $9 > $outputdir/cout.txt 2>&1"
         screen -ls
+    else
+        echo "starting magnum.af-opencl without screen."
+        $outputdir/magnum.af-opencl $outputdir $GPU $5 $6 $7 $8 $9
+        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
     fi
 else
-    if [ "$n_flag" == "true" ];then
-        echo "starting magnum.af-cpu."
-        $outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9
-    else
+    if [ "$s_flag" == "true" ];then
         echo "starting magnum.af-cpu in screen."
         echo "To follow cout.dat run:"
-        echo "tail -f $outputpath/cout.txt"
-        screen -d -S GPU$GPU -m bash -c "$outputpath/magnum.af-cpu $outputpath $GPU $5 $6 $7 $8 $9 > $outputpath/cout.txt 2>&1"
+        echo "tail -f $outputdir/cout.txt"
+        screen -d -S GPU$GPU -m bash -c "$outputdir/magnum.af-cpu $outputdir $GPU $5 $6 $7 $8 $9 > $outputdir/cout.txt 2>&1"
         screen -ls
+    else
+        echo "starting magnum.af-cpu."
+        $outputdir/magnum.af-cpu $outputdir $GPU $5 $6 $7 $8 $9
+        (cd $outputdir && if [ -n "$plotfile" ]; then ./$plotfile; fi)
     fi
 fi

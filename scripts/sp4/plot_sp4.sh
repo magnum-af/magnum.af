@@ -1,4 +1,12 @@
 #!/bin/bash
-gnuplot -e 'p "'$1'" u 1:2 w l t "mx","'$1'" u 1:3 w l t "my", "'$1'" u 1:4 w l t "mz"' -persist 
+gnuplot -e 'set terminal pdf enhanced; 
+            set output "m.pdf"; 
+            set xlabel "t [ns]";
+            set ylabel "average magnetization";
+            set title "\muMAG Standard Problem 4";
+            p "m.dat" u ($1*1e9):2 w l t "mx","m.dat" u ($1*1e9):3 w l t "my", "m.dat" u ($1*1e9):4 w l t "mz"'
 
-#',"~/git/magnum.af/Data/Testing/rk4_m.dat" u 1:2 w l t "mx","~/git/magnum.af/Data/Testing/rk4_m.dat" u 1:3 w l t "my", "~/git/magnum.af/Data/Testing/rk4_m.dat" u 1:4 w l t "mz"' -persist
+gnuplot -e 'set xlabel "t [ns]";
+            set ylabel "average magnetization";
+            set title "\muMAG Standard Problem 4";
+            p "m.dat" u ($1*1e9):2 w l t "mx","m.dat" u ($1*1e9):3 w l t "my", "m.dat" u ($1*1e9):4 w l t "mz"' -persist 

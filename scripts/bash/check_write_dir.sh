@@ -1,10 +1,11 @@
 #!/bin/bash
 # this scripts tests wether directory in $1 exists
+# $2 ... verbose flag
 
 # determining write directory
 if [ -n "$1" ];then
     if [ -e "$1" ];then
-        echo "Error: Write Directory exists!" $1
+        echo "Error: Write Directory '$1' exists! Use -d flag to overwrite"
 	exit 1
     else
         if [ -d "$1" ];then
@@ -12,7 +13,9 @@ if [ -n "$1" ];then
         else
             mkdir --parents $1/
         fi
-        echo "writing in new directory " $1
+        if [ "$2" == "true" ];then
+            echo "writing in new directory " $1
+        fi
         exit 0
     fi
 fi
