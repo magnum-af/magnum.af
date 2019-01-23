@@ -10,6 +10,7 @@ inputfile=''
 o_flag=''
 outputdir=''
 plotfile=''
+r_flag='' 
 s_flag='' 
 verbose='false'
 
@@ -32,7 +33,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -i: inputfile  Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
   -o: outputdir  Directory to write output to. Expects directory path.
   -p: plot       Expects argument as plotting script and executes it in the output directory.
-  -r  rebuild    Executes build process even though inputfile is .py.
+  -r  (no)build  Skips build process for .cpp inputfile or executes build for .py inputfile.
   -s  screen     Starts script using the terminal multiplexer screen.
   -v  verbose    Show more details during execution.
 
@@ -49,7 +50,7 @@ and shows how 'inputscript' and 'outputdir' can be either flagged arguments or p
   magnum.af sp4.cpp run1 a b c
 
 Note:
- 'magnum.af sp4.cpp a b c' would interpret 'a' as outputdir, so please specify outputdir when passing arguments.
+  'magnum.af sp4.cpp a b c' would interpret 'a' as outputdir, so please specify outputdir when passing arguments.
 "
 }
 
@@ -115,7 +116,7 @@ else
 fi
 
 log "checking if build is necessary"
-if [ "$extension" == "cpp" ] || [ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ];then
+if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
     $magafdir/scripts/bash/check_main.sh $verbose
     
