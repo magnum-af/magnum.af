@@ -14,32 +14,47 @@ s_flag=''
 verbose='false'
 
 print_usage() {
-  printf "Usage: $(basename "$0") {h|f|g|i|g|s|p} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {h|f|g:|i:|o:|p:|r|s|v} [inputfile outputdir]
 
-Arugments:
-  inputfile      Required input script with .cpp or .py extension. Can be provided either as first positional argument of this script or as argument following the '-i' option.
-  outputdir      Required output directory. If non is given, a directory called 'output_magnum.af' is created in the current dir.
-  \$2 to \$n   Optinal arguments which are passed to the input script.
+Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
-Options:
+Arguments:
+  inputfile      Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
+  outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. 
+                 If non is given, a directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
+  \$n             Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
+
+Options (subsequent ':' indicates that an argument is expected):
   -h  help       Show this help message.
 
   -f  force      Forces output to be written in already existing output directory. This may overwrite files.
-  -g: GPU        Expects integer number n to specify the GPU to be used.
+  -g: GPU        Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile  Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
-  -o: outputdir  Directory to write all output to.
+  -o: outputdir  Directory to write output to. Expects directory path.
+  -p: plot       Expects argument as plotting script and executes it in the output directory.
+  -r  rebuild    Executes build process even though inputfile is .py.
   -s  screen     Starts script using the terminal multiplexer screen.
-  -p: plot       Expects argument as plotting scpript and executes it in output directory.
+  -v  verbose    Show more details during execution.
 
 Examples:
-  magnum.af run.py
-  magnum.af main.cpp
-  magnum.af -fsi main.cpp -o \$PWD/run1 -g 0 -p plotscript.sh
-  "
+  magnum.af sp4.py
+  magnum.af sp4.cpp
+  magnum.af -fsi sp4.cpp -o run1 -g 1 -p plot_sp4.sh
+
+Example passing arguments 'a b c' to the input script.  The behaviour is equivalent for all versions
+and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments. 
+  magnum.af -i sp4.cpp -o run1 a b c
+  magnum.af -i sp4.cpp run1 a b c
+  magnum.af -o run1 sp4.cpp a b c
+  magnum.af sp4.cpp run1 a b c
+
+Note:
+ 'magnum.af sp4.cpp a b c' would interpret 'a' as outputdir, so please specify outputdir when passing arguments.
+"
 }
 
 
-while getopts 'hfg:i:o:p:sv' flag; do
+while getopts 'hfg:i:o:p:rsv' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -48,6 +63,7 @@ while getopts 'hfg:i:o:p:sv' flag; do
     i) i_flag='true'; inputfile="${OPTARG}" ;;
     o) o_flag='true'; outputdir="${OPTARG}" ;;
     p) plotfile="${OPTARG}" ;;
+    r) r_flag='true' ;;
     s) s_flag='true' ;;
     v) verbose='true' ;;
     *) print_usage
@@ -78,7 +94,7 @@ log "$plotfile"
 log "$s_flag"
 log "$verbose"
 
-log "checking $inputfile != ''"
+log "checking $inputfile != '' and extension"
 if [[ "$inputfile" == "" ]]; then
     echo "Error: missing inputfile as first argument required, aborting..."
     exit 1
@@ -98,14 +114,15 @@ else
     fi
 fi
 
-if [ "$extension" == "cpp" ];then
+log "checking if build is necessary"
+if [ "$extension" == "cpp" ] || [ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ];then
     log "checking if other main exists in /src"
     $magafdir/scripts/bash/check_main.sh $verbose
     
     log "building"
-    cp $inputfile $magafdir/src
+    [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src 
     $magafdir/scripts/bash/build.sh $magafdir $verbose
-    rm $magafdir/src/$(basename $inputfile)
+    [ "$extension" == "cpp" ] && rm $magafdir/src/$(basename $inputfile) || rm $magafdir/src/main_empty.cpp
     
     log "moving possible old main back"
     $magafdir/scripts/bash/check_main_remove.sh $verbose
