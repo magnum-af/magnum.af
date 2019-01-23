@@ -12,30 +12,32 @@ outputdir=''
 postprocess=''
 r_flag='' 
 s_flag='' 
+S_flag='' 
 verbose='false'
 
 print_usage() {
-  printf "Usage: $(basename "$0") {h|f|g:|i:|o:|p:|r|s|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
 Arguments:
-  inputfile       Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
-  outputdir       Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. 
-                  If non is given, a directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
-  \$n              Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
+  inputfile     Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
+  outputdir     Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. 
+                If non is given, a directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
+  \$n            Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
 
 Options (subsequent ':' indicates that an argument is expected):
   -h  help       Show this help message.
 
-  -f  force       Forces output to be written in already existing output directory. This may overwrite files.
-  -g: GPU         Expects integer number n to specify the GPU to be used. Default is 0.
-  -i: inputfile   Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
-  -o: outputdir   Directory to write output to. Expects directory path.
-  -p: postprocess Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
-  -r  (no)build   Skips build process for .cpp inputfile or executes build for .py inputfile.
-  -s  screen      Starts script using the terminal multiplexer screen.
-  -v  verbose     Show more details during execution.
+  -f  force          Forces output to be written in already existing output directory. This may overwrite files.
+  -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
+  -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
+  -o: outputdir      Directory to write output to. Expects directory path.
+  -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
+  -r  (no)build      Skips build process for .cpp inputfile or executes build for .py inputfile.
+  -s  screen         Starts script using the terminal multiplexer screen.
+  -S  silent screen  Silently starts script using screen, skipping 'tail -f stdout.txt'.
+  -v  verbose        Show more details during execution.
 
 Examples:
   magnum.af sp4.py
@@ -55,7 +57,7 @@ Note:
 }
 
 
-while getopts 'hfg:i:o:p:rsv' flag; do
+while getopts 'hfg:i:o:p:rsSv' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -66,6 +68,7 @@ while getopts 'hfg:i:o:p:rsv' flag; do
     p) postprocess="${OPTARG}" ;;
     r) r_flag='true' ;;
     s) s_flag='true' ;;
+    S) S_flag='true' ;;
     v) verbose='true' ;;
     *) print_usage
        exit 1 ;;
@@ -211,37 +214,31 @@ if [ "$extension" == "py" ];then
     fi
 else
     if [ -e $outputdir/magnum.af-cuda ];then
-        if [ "$s_flag" == "true" ];then
-            printf "starting magnum.af-cuda in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
-            screen -d -S GPU$GPU -m bash -c "(export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
-            screen -ls
-        else
-            echo "starting magnum.af-cuda without screen."
-            export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda $outputdir_slash $GPU $@
-            if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
-        fi
+        runfile="export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda"
     elif [ -e $outputdir/magnum.af-opencl ];then
+        runfile=$outputdir/magnum.af-opencl
+    else
+        runfile=$outputdir/magnum.af-cpu
+    fi
+    if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
+        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit tail -f' ) > $outputdir/stdout.txt 2>&1"
+        echo "started $(basename $runfile) in screen."
         if [ "$s_flag" == "true" ];then
-            printf "starting magnum.af-opencl in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
-            screen -d -S GPU$GPU -m bash -c "($outputdir/magnum.af-opencl $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
+            log "Running 'screen -ls':"
             screen -ls
-        else
-            echo "starting magnum.af-opencl without screen."
-            $outputdir/magnum.af-opencl $outputdir_slash $GPU $@
-            if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
+            log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
+            sleep_val=0
+            while [ ! -f "$outputdir/stdout.txt" ];
+            do
+                sleep 0.001
+                log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
+                sleep_val=$((val+1))
+            done
+            tail -f $outputdir/stdout.txt
         fi
     else
-        if [ "$s_flag" == "true" ];then
-            printf "starting magnum.af-cpu in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
-            if [ -n "$postprocess" ];then
-                echo "-n postprocess"
-            fi
-            screen -d -S GPU$GPU -m bash -c "($outputdir/magnum.af-cpu $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
-            screen -ls
-        else
-            echo "starting magnum.af-cpu."
-            $outputdir/magnum.af-cpu $outputdir_slash $GPU $@
-            if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
-        fi
+        echo "starting $(basename $runfile)."
+        eval "$runfile $outputdir_slash $GPU $@"
+        if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 fi
