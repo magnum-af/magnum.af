@@ -203,7 +203,7 @@ fi
 log "running magnum.af"
 if [ "$extension" == "py" ];then
     if [ "$s_flag" == "true" ];then
-        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@ && if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi ) > $outputdir/stdout.txt 2>&1"
+        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
     else
         printf "starting magnum.af-cuda in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
         PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@
