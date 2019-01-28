@@ -3,12 +3,10 @@
 
 int main(int argc, char** argv)
 {
+    // Checking input variables and setting GPU Device
     timer total_time = af::timer::start();
-    std::cout<<"argc= "<<argc<<std::endl;
     for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
-    std::string filepath(argc>1? argv[1]: "../Data/Testing");
-    filepath.append("/");
-    std::cout<<"Writing into path "<< filepath <<std::endl;
+    std::string filepath(argc>1? argv[1]: "output_magnum.af/");
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
     
