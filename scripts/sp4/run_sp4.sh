@@ -1,2 +1,7 @@
 #!/bin/bash
-../magnum.af -p plot_sp4.sh main_sp4.cpp $PWD/output_sp4 
+
+# calling this script's directory (to make it executable form everywhere)
+cd $( dirname "${BASH_SOURCE[0]}" )
+
+# running magnum.af
+../magnum.af -p plot_sp4.gpi sp4.cpp $PWD/output_sp4
