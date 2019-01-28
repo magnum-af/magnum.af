@@ -3,6 +3,8 @@
 set -e
 
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
+allargs=$@
+
 f_flag='' 
 GPU='0'
 i_flag=''
@@ -157,15 +159,12 @@ else
 fi
 
 log "Printing bash command and git log in outputdir"
-echo "#Command called with:" >> $outputdir/simulation_info.txt
-echo "$0 $@" >> $outputdir/simulation_info.txt
-
 if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
-    echo "current git commit hash:" >> $outputdir/simulation_info.txt
-    echo $(git rev-parse HEAD) >> $outputdir/simulation_info.txt
+    githash=$(git rev-parse HEAD)
 else
     echo "Note: current directory is no git dir, omitting git log"
 fi
+echo "Script called on $(eval date) with '$0 $allargs', according git hash is $githash" >> $outputdir/simulation_info.txt
 
 log "copying postprocess if existing"
 if [[ -n "$postprocess" ]]; then
@@ -221,13 +220,10 @@ else
         runfile=$outputdir/magnum.af-cpu
     fi
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit tail -f' ) > $outputdir/stdout.txt 2>&1"
-        echo "started $(basename $runfile) in screen."
-        #TODO#problem on GTO: after screen -ls, this script stops
-        #eval "screen -ls"
-        #TODO# tail shows already existing file if existing, elaborate.. 
+        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) > $outputdir/stdout.txt 2>&1"
+        echo "started $(basename $runfile) in screen"
+        [ "$verbose" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
-            #TODO#log "Running 'screen -ls':"
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0
             while [ ! -f "$outputdir/stdout.txt" ];
@@ -236,7 +232,7 @@ else
                 log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
                 sleep_val=$((val+1))
             done
-            tail -f $outputdir/stdout.txt
+            tail -f -n 0 $outputdir/stdout.txt
         fi
     else
         echo "starting $(basename $runfile)"
