@@ -208,13 +208,13 @@ if [ "$extension" == "py" ];then
     if [ "$s_flag" == "true" ];then
         screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
     else
-        printf "starting magnum.af-cuda in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
+        printf "starting magnum.af in screen.\nTo follow stdout.dat run:\ntail -f $outputdir/stdout.txt\n"
         PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else
     if [ -e $outputdir/magnum.af-cuda ];then
-        runfile="export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH && export PATH=/usr/local/cuda-9.0/bin:$PATH && $outputdir/magnum.af-cuda"
+        runfile="$outputdir/magnum.af-cuda"
     elif [ -e $outputdir/magnum.af-opencl ];then
         runfile=$outputdir/magnum.af-opencl
     else
@@ -223,9 +223,11 @@ else
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
         screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit tail -f' ) > $outputdir/stdout.txt 2>&1"
         echo "started $(basename $runfile) in screen."
+        #TODO#problem on GTO: after screen -ls, this script stops
+        #eval "screen -ls"
+        #TODO# tail shows already existing file if existing, elaborate.. 
         if [ "$s_flag" == "true" ];then
-            log "Running 'screen -ls':"
-            screen -ls
+            #TODO#log "Running 'screen -ls':"
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0
             while [ ! -f "$outputdir/stdout.txt" ];
@@ -237,7 +239,7 @@ else
             tail -f $outputdir/stdout.txt
         fi
     else
-        echo "starting $(basename $runfile)."
+        echo "starting $(basename $runfile)"
         eval "$runfile $outputdir_slash $GPU $@"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
