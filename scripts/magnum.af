@@ -159,12 +159,22 @@ else
 fi
 
 log "Printing bash command and git log in outputdir"
-if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
-    githash=$(git rev-parse HEAD)
-else
-    echo "Note: current directory is no git dir, omitting git log"
+git --version 2>&1 >/dev/null
+GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ];then
+    if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
+        githash=$(git rev-parse HEAD)
+    else
+        log "Note: current directory is no git dir, omitting git log"
+    fi
 fi
-echo "Script called on $(eval date) with '$0 $allargs', according git hash is $githash" >> $outputdir/simulation_info.txt
+
+log "writing $outputdir/simulation_info.txt"
+if [[ -n "$githash" ]];then 
+    echo "Script called on $(eval date) with '$0 $allargs', according git hash is $githash" >> $outputdir/simulation_info.txt
+else
+    echo "Script called on $(eval date) with '$0 $allargs'" >> $outputdir/simulation_info.txt
+fi
 
 log "copying postprocess if existing"
 if [[ -n "$postprocess" ]]; then
