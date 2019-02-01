@@ -1,4 +1,3 @@
 .git
-Data/
-data/
-todel/
+build/
+bin/

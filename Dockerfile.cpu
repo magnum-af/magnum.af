@@ -96,26 +96,17 @@ RUN apt-get install libgtest-dev && \
     make && \
     cp *.a /usr/lib
 
-# Add magnum.af repository
-RUN mkdir /tmp/magnum.af
-
-COPY . /tmp/magnum.af
-
-#Setting variable for cmake, shout be set previously by "echo /opt/arrayfire/lib > /etc/ld.so.conf.d/arrayfire.conf && \ ldconfig" but is not working properly
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 
+# Add magnum.af repository
+COPY . /tmp/magnum.af
+
 RUN cd /tmp/magnum.af && \
-    cp scripts/sp4/main_sp4.cpp src/ && \
-    rm -rf build && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make -j12 && \
-    cd .. && \
+    scripts/magnum.af -v scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh . 
 
-RUN mkdir /magnum.af && mkdir /magnum.af/build && mkdir /magnum.af/build/src && \
+RUN mkdir -p /magnum.af/build/src && \
     mv /tmp/magnum.af/build/src/magnum_af.so /magnum.af/build/src/ && \
     mv /tmp/magnum.af/tests /magnum.af && \
     rm -rf /tmp/magnum.af
