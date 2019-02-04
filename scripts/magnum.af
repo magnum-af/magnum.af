@@ -159,7 +159,7 @@ else
 fi
 
 log "printing bash command and git log in outputdir"
-git --version 2>&1 >/dev/null
+command -v git >/dev/null 2>&1 || true # this is allowed to fail, thus '|| true'
 GIT_IS_AVAILABLE=$?
 if [ $GIT_IS_AVAILABLE -eq 0 ];then
     if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
