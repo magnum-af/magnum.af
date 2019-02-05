@@ -214,8 +214,17 @@ fi
 
 log "running magnum.af"
 if [ "$extension" == "py" ];then
+
+    log "simple python/python3 switch depending on 'pip3 show' output"
+    command -v pip3 >/dev/null 2>&1 && pip3_output="$(pip3 show arrayfire)" # Note: output of 'pip3 show' is empty if package not found
+    if [ -n "$pip3_output" ]; then
+        pythonversion="python3"
+    else
+        pythonversion="python"
+    fi
+
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
+        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
         echo "started magnum.af in screen"
         [ "$verbose" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
@@ -230,7 +239,7 @@ if [ "$extension" == "py" ];then
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
-        PYTHONPATH=$magafdir/build/src python3 $inputfile $outputdir $GPU $@
+        PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else
