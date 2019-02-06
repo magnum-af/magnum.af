@@ -74,7 +74,7 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master &
     echo "${AF_PATH}/lib" >> /etc/ld.so.conf.d/arrayfire.conf && \
     echo "/usr/local/cuda/nvvm/lib64" >> /etc/ld.so.conf.d/arrayfire.conf && \
     ldconfig && \
-    cd ../.. && rm -rf arrayfire # saving ~700MB
+    cd ../.. && rm -rf arrayfire # saving >700MB
 
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 

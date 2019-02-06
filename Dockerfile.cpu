@@ -56,7 +56,7 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master &
     mkdir -p ${AF_PATH} && ln -s /opt/arrayfire-3/* ${AF_PATH}/ && \
     echo "${AF_PATH}/lib" >> /etc/ld.so.conf.d/arrayfire.conf && \
     ldconfig && \
-    cd ../.. && rm -rf arrayfire # saving space
+    cd ../.. && rm -rf arrayfire # saving ~700MB
 
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 
