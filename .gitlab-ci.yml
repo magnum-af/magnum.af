@@ -3,7 +3,7 @@ test_cpu:
     - docker build -t magnum.af.cpu -f Dockerfile.cpu .
     - docker run --rm -t magnum.af.cpu /magnum.af/tests/runall.sh /magnum.af
   tags:
-    - gpu
+    - packer
 
 test_gpu:
   script:
