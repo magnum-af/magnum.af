@@ -157,7 +157,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
     Llg=magnum_af.pyLLG(atom_demag)
 
-    self.assertEqual(Llg.get_E(pystate), -param.p**2 * param.mu0 /(2.*math.pi) /self.dx**3)
+    self.assertAlmostEqual(Llg.get_E(pystate), -param.p**2 * param.mu0 /(2.*math.pi) /self.dx**3)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
