@@ -4,10 +4,10 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchSolver::E(const State& state){
-  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
-double ExchSolver::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
+double ExchSolver::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h makes difference
   return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
@@ -25,7 +25,7 @@ ExchSolver::ExchSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin
     filtr(1,1,2)= 1 / pow(mesh.dz,2);
 }
 
-array ExchSolver::h_withedges(const State& state){
+array ExchSolver::h(const State& state){
     timer_exchsolve = timer::start();
     //Convolution
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
@@ -57,18 +57,18 @@ array ExchSolver::h_withedges(const State& state){
 //Terms proportional to m dorp out in the cross product of the LLG and thus is neglected
 //as arrayfire is extremely slow with indexing operations
 //NOTE: This yields no longer the physical exchange field but optimizes the caluclation
-array ExchSolver::h(const State& state){
-    timer_exchsolve = timer::start();
-    array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-    if(param.afsync) sync();
-    cpu_time += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
-    else { 
-        array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
-        return  heff;
-    }
-}
+//array ExchSolver::h(const State& state){
+//    timer_exchsolve = timer::start();
+//    array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
+//    if(param.afsync) sync();
+//    cpu_time += timer::stop(timer_exchsolve);
+//    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
+//    else { 
+//        array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
+//        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+//        return  heff;
+//    }
+//}
 
 
 //void showdims2(const array& a){

@@ -10,6 +10,8 @@
 #include "llg_terms/micro_demag.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/micro_exch.hpp"
+#include "llg_terms/micro_exch_sparse.hpp"
+#include "llg_terms/micro_exch_sparse_nobc.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/zee.hpp"
 #include "string.hpp"
