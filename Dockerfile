@@ -97,12 +97,10 @@ RUN apt-get update && \
     cp *.a /usr/lib
 
 # Add magnum.af repository
-COPY . /tmp/magnum.af
+COPY . /root/magnum.af
 
-RUN cd /tmp/magnum.af && \
-    scripts/magnum.af -v scripts/main_empty.cpp && \
+WORKDIR /root/magnum.af
+
+RUN scripts/magnum.af -v scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
-    ./tests/integration/cpp/maketests.sh . && \
-    mkdir -p /magnum.af/build/src && \
-    cp -r /tmp/magnum.af/build/src/magnum_af.so /magnum.af/build/src/ && \
-    cp -r /tmp/magnum.af/tests /magnum.af
+    ./tests/integration/cpp/maketests.sh .
