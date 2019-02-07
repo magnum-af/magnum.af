@@ -5,8 +5,11 @@ set -e
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 allargs=$@
 
+b_flag='' 
+backend='' 
 f_flag='' 
 GPU='0'
+d_flag=''
 i_flag=''
 inputfile=''
 o_flag=''
@@ -18,7 +21,7 @@ S_flag=''
 verbose='false'
 
 print_usage() {
-  printf "Usage: $(basename "$0") {h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|d|D|h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
@@ -31,6 +34,9 @@ Arguments:
 Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
+  -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -d  docker         Runs the simulation in a detached docker container.
+  -D  docker forgr.  Runs the simulation in a docker container in the foreground.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
@@ -59,10 +65,13 @@ Note:
 }
 
 
-while getopts 'hfg:i:o:p:rsSv' flag; do
+while getopts 'b:dDhfg:i:o:p:rsSv' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
+    b) b_flag='true'; backend="${OPTARG}" ;;
+    d) d_flag='true' ;;
+    D) D_flag='true' ;;
     f) f_flag='true' ;;
     g) GPU="${OPTARG}" ;;
     i) i_flag='true'; inputfile="${OPTARG}" ;;
@@ -92,14 +101,23 @@ function log () {
     fi
 }
 
-log "$f_flag"
-log "$GPU"
-log "$inputfile"
-log "$outputdir"
-log "$postprocess"
-log "$s_flag"
-log "$verbose"
+log "b_flag           $f_flag      "
+log "backend          $backend     "
+log "f_flag           $f_flag      "
+log "GPU              $GPU         "
+log "s_flag           $s_flag      "
+log "d_flag           $d_flag      "
+log "i_flag           $i_flag      "
+log "inputfile        $inputfile   "
+log "o_flag           $o_flag      "
+log "outputdir        $outputdir   "
+log "postprocess      $postprocess "
+log "r_flag           $r_flag      "
+log "s_flag           $s_flag      "
+log "S_flag           $S_flag      "
+log "verbose          $verbose     "
 
+log "checking input arguments"
 log "checking $inputfile != '' and extension"
 if [[ "$inputfile" == "" ]]; then
     echo "Error: missing inputfile as first argument required, aborting..."
@@ -116,6 +134,14 @@ else
     log "\$filename=$filename"
     if [[ $extension != "cpp" &&  $extension != "py" ]];then
         echo "Error: wrong extension $extension, expected .cpp or .py"
+        exit 1
+    fi
+fi
+
+log "checking backend option"
+if [ "$b_flag" == "true" ]; then
+    if [ "$backend" != "cuda" ] && [ "$backend" != "opencl" ] &&  [ "$backend" != "cpu" ] ; then
+        echo "Error: Unknown backend '"$backend"'. Expected {cuda, opencl, cpu} as argument following '-b' flag. Aborting..."
         exit 1
     fi
 fi
@@ -213,6 +239,7 @@ if [ "${outputdir_slash:$((${#str}-1)):1}" != "/" ]; then
 fi
 
 log "running magnum.af"
+#TODO include docker flags here!
 if [ "$extension" == "py" ];then
 
     log "simple python/python3 switch depending on 'pip3 show' output"
@@ -243,6 +270,7 @@ if [ "$extension" == "py" ];then
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else
+    log "Using cpp version"
     if [ -e $outputdir/magnum.af-cuda ];then
         runfile="$outputdir/magnum.af-cuda"
     elif [ -e $outputdir/magnum.af-opencl ];then
@@ -250,6 +278,32 @@ else
     else
         runfile=$outputdir/magnum.af-cpu
     fi
+    log "checking b flag and check default overwriting"
+    if [ "$b_flag" == "true" ]; then
+        if [ "$backend" = "cuda" ]; then
+            if [ ! -f $outputdir/magnum.af-cuda ]; then
+                echo "Error. Requested backend 'cuda' was not compiled. Please verify that CUDA is installed and found by CMake or select an other backend. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-cuda
+            fi
+        elif [ "$backend" = "opencl" ]; then
+            if [ ! -f $outputdir/magnum.af-opencl ]; then
+                echo "Error. Requested backend 'opencl' was not compiled. Please verify that OpenCL is installed and found by CMake or select an other backend. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-opencl
+            fi
+        else
+            if [ ! -f $outputdir/magnum.af-cpu ]; then
+                echo "Error. Strange! Requested backend 'cpu' was not compiled. This should not have happened. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-cpu
+            fi
+        fi
+    fi
+
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
         screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) > $outputdir/stdout.txt 2>&1"
         echo "started $(basename $runfile) in screen"
