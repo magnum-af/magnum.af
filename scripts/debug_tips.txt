@@ -79,3 +79,8 @@ when called with python3 on GTO
 
 Temp fix: calling with python or python2 runns
 Guess: cmake, cython messing around with python versions?
+
+-----------------------------------------------------
+-----------------------------------------------------
+Docker:
+Segfault in for cuda and opencl when using: '$ docker run'  instead of '$ nvidia-docker run'

@@ -1,8 +1,8 @@
 # based on: https://github.com/arrayfire/arrayfire-docker 
 # image: magnum.af
-# build: nvidia-docker build -t magnum.af -f Dockerfile .
+# build: nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .
 # run  : nvidia-docker run --rm -ti magnum.af /bin/bash
-# test : nvidia-docker run --rm -t magnum.af /magnum.af/tests/runall.sh /magnum.af
+# test : nvidia-docker run --rm -t magnum.af ./tests/runall.sh .
 
 FROM nvidia/cuda:9.2-devel-ubuntu18.04
 MAINTAINER none
@@ -97,10 +97,16 @@ RUN apt-get update && \
     cp *.a /usr/lib
 
 # Add magnum.af repository
-COPY . /root/magnum.af
+COPY . /home/magnum.af
 
-WORKDIR /root/magnum.af
+WORKDIR /home/magnum.af
 
-RUN scripts/magnum.af -v scripts/main_empty.cpp && \
+RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh .
+
+# Setting user from build-arg with 999 as default
+ARG user=999
+RUN groupadd -g $user appuser && \
+    useradd -r -u $user -g appuser appuser
+USER appuser

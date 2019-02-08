@@ -2,7 +2,7 @@
 FROM ubuntu:18.04
 MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at> 
 # image:     magnum.af.cpu
-# build:     $ docker build -t magnum.af.cpu -f Dockerfile.cpu .
+# build:     $ docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" .
 # run image: $ docker run --rm -ti magnum.af.cpu /bin/bash
 # run tests: $ docker run --rm -t magnum.af.cpu ./tests/runall.sh .
 
@@ -76,10 +76,16 @@ RUN apt-get update && \
     cp *.a /usr/lib
 
 # Add magnum.af repository
-COPY . /root/magnum.af
+COPY . /home/magnum.af
 
-WORKDIR /root/magnum.af
+WORKDIR /home/magnum.af
 
-RUN scripts/magnum.af -v scripts/main_empty.cpp && \
+RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh .
+
+# Setting user from build-arg with 999 as default
+ARG user=999
+RUN groupadd -g $user appuser && \
+    useradd -r -u $user -g appuser appuser
+USER appuser
