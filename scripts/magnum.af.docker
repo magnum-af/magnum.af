@@ -76,8 +76,7 @@ log $__base
 log $__root
 
 runstring="nvidia-docker run --user ${UID} --rm"
-
-runstring=$runstring" -v ${__root}:/home/magnum.af" #TODO needed as permission problems in image exist. changing user in dockerfile before COPY fails.
+#runstring=$runstring" -v ${__root}:/home/magnum.af" # Note: uncommend if current magnum.af dir is needed
  
 if [ "$o_flag" == "true" ]; then
     mkdir -p $outputdir

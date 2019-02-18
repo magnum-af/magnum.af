@@ -91,17 +91,17 @@ RUN apt-get update && \
     make && \
     cp *.a /usr/lib
 
+# Setting user from build-arg with 999 as default
+ARG user=999
+RUN groupadd -g $user appuser && \
+    useradd -r -u $user -g appuser appuser
+USER appuser
+
 # Add magnum.af repository
-COPY . /home/magnum.af
+COPY --chown=appuser . /home/magnum.af
 
 WORKDIR /home/magnum.af
 
 RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh .
-
-# Setting user from build-arg with 999 as default
-ARG user=999
-RUN groupadd -g $user appuser && \
-    useradd -r -u $user -g appuser appuser
-USER appuser
