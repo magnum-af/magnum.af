@@ -18,10 +18,10 @@ postprocess=''
 r_flag='' 
 s_flag='' 
 S_flag='' 
-verbose='false'
+v_flag='false'
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|d|D|h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
@@ -35,8 +35,6 @@ Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
   -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
-  -d  docker         Runs the simulation in a detached docker container.
-  -D  docker forgr.  Runs the simulation in a docker container in the foreground.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
@@ -45,7 +43,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -r  (no)rebuild    Skips build process for .cpp inputfile or executes build for .py inputfile.
   -s  screen         Starts script using the terminal multiplexer screen.
   -S  silent screen  Silently starts script using screen, skipping 'tail -f stdout.txt'.
-  -v  verbose        Show more details during execution.
+  -v  verbose        Show more details of this script.
 
 Examples:
   magnum.af sp4.py
@@ -70,8 +68,7 @@ while getopts 'b:dDhfg:i:o:p:rsSv' flag; do
     h) print_usage
        exit 0 ;;
     b) b_flag='true'; backend="${OPTARG}" ;;
-    d) d_flag='true' ;;
-    D) D_flag='true' ;;
+    d) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     f) f_flag='true' ;;
     g) GPU="${OPTARG}" ;;
     i) i_flag='true'; inputfile="${OPTARG}" ;;
@@ -80,7 +77,7 @@ while getopts 'b:dDhfg:i:o:p:rsSv' flag; do
     r) r_flag='true' ;;
     s) s_flag='true' ;;
     S) S_flag='true' ;;
-    v) verbose='true' ;;
+    v) v_flag='true' ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -96,7 +93,7 @@ fi
 #fi
 
 function log () {
-    if [[ "$verbose" == "true" ]]; then
+    if [[ "$v_flag" == "true" ]]; then
         echo "$@"
     fi
 }
@@ -115,7 +112,7 @@ log "postprocess      $postprocess "
 log "r_flag           $r_flag      "
 log "s_flag           $s_flag      "
 log "S_flag           $S_flag      "
-log "verbose          $verbose     "
+log "v_flag          $v_flag     "
 
 log "checking input arguments"
 log "checking $inputfile != '' and extension"
@@ -149,15 +146,15 @@ fi
 log "checking if build is necessary"
 if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
-    $magafdir/scripts/bash/check_main.sh $verbose
+    $magafdir/scripts/bash/check_main.sh $v_flag
     
     log "building"
     [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src 
-    $magafdir/scripts/bash/build.sh $magafdir $verbose
+    $magafdir/scripts/bash/build.sh $magafdir $v_flag
     [ "$extension" == "cpp" ] && rm $magafdir/src/$(basename $inputfile) || rm $magafdir/src/main_empty.cpp
     
     log "moving possible old main back"
-    $magafdir/scripts/bash/check_main_remove.sh $verbose
+    $magafdir/scripts/bash/check_main_remove.sh $v_flag
 fi
 
 log "checking outputdir $outputdir"
@@ -181,7 +178,7 @@ if [ "$f_flag" == "true" ]; then
         log "writing in existing directory $outputdir"
     fi
 else
-    $magafdir/scripts/bash/check_write_dir.sh $outputdir $verbose
+    $magafdir/scripts/bash/check_write_dir.sh $outputdir $v_flag
 fi
 
 log "printing bash command and git log in outputdir"
@@ -239,7 +236,6 @@ if [ "${outputdir_slash:$((${#str}-1)):1}" != "/" ]; then
 fi
 
 log "running magnum.af"
-#TODO include docker flags here!
 if [ "$extension" == "py" ];then
 
     log "simple python/python3 switch depending on 'pip3 show' output"
@@ -253,7 +249,7 @@ if [ "$extension" == "py" ];then
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
         screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
         echo "started magnum.af in screen"
-        [ "$verbose" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
+        [ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0
@@ -307,7 +303,7 @@ else
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
         screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) > $outputdir/stdout.txt 2>&1"
         echo "started $(basename $runfile) in screen"
-        [ "$verbose" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
+        [ "$v_flag" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0

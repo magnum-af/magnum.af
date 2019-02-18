@@ -76,17 +76,12 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master &
     ldconfig && \
     cd ../.. && rm -rf arrayfire # saving >700MB
 
-ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV DEBCONF_NONINTERACTIVE_SEEN=true
+ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/ DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 
 RUN apt update && \
-    apt install -y python-pip \
-        libvtk6-dev && \
-    pip install arrayfire Cython numpy
-
-ENV VTK_DIR=$VTK_DIR:/usr/lib/tcltk/vtk-6.2
+    apt install -y python3-pip \
+        libvtk7-dev && \
+    pip3 install arrayfire cython numpy
 
 # Instal Google Tests
 RUN apt-get update && \

@@ -18,3 +18,4 @@ then
 else
     [ "$1" == "true" ] && echo "src/ is clean, building..."
 fi
+exit 0

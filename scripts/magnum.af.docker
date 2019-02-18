@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+# set -o xtrace
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+__root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
+
+
+d_flag=''
+o_flag=''
+v_flag=''
+
+print_usage() {
+    printf "Usage: $(basename "$0") {d|h|i|o|v} [magnum.af arguments and options (see 'magnum.af -h' for more details)]
+
+Script to run 'magnum.af' in a docker container. All arugments passed to this script are forwarded to the 'magnum.af' run script. Use 'magnum.af -h' for information on options of the base script.
+
+Prerequisite: docker for cpu backend, nvidia-docker for opencl/cuda backends.
+
+Options
+  -h  help           Show this help message.
+  -d  detached       Run the simulation in a detached docker container.
+  -i  inputfile      Magnum.af inputfile (.cpp or .py)
+  -o  outputdir      Directory for output data.
+  -v  verbose        Show more details of this script.
+
+Examples:
+  magnum.af.docker scripts/sp4/sp4.cpp
+  magnum.af.docker -d -v scripts/sp4/sp4.cpp
+  magnum.af.docker -vg 1 scripts/sp4/sp4.cpp
+
+Note: the screen flags '-s' and '-S' are not allowed for docker usage.
+"
+}
+
+while getopts 'db:hfg:i:o:p:rsSv' flag; do
+  #Note: only 'd' flag is used in this script, all magnum.af flags are given here to avoid the getopts error as all arguments are passed to magnum.af
+  case "${flag}" in
+    h) print_usage
+       exit 0 ;;
+    b) ;;
+    b) ;; 
+    d) d_flag='true' ;;
+    D) ;; 
+    f) ;; 
+    g) ;; 
+    i) i_flag='true'; inputfile="${OPTARG}" ;;
+    o) o_flag='true'; outputdir="${OPTARG}" ;;
+    p) ;; 
+    r) ;; 
+    s) print_usage; echo "Error: screen option 's' is not allowed with docker. Please discard this flag for usage with docker."
+        exit 1;; 
+    S) print_usage;  echo "Error: screen option 'S' is not allowed with docker. Please discard this flag usage with docker."
+        exit 1;; 
+    v) v_flag='true' ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+function log () {
+    if [[ "$v_flag" == "true" ]]; then
+        echo "$@"
+    fi
+}
+
+log $__dir
+log $__file
+log $__base
+log $__root
+
+runstring="nvidia-docker run --user ${UID} --rm"
+
+runstring=$runstring" -v ${__root}:/home/magnum.af" #TODO needed as permission problems in image exist. changing user in dockerfile before COPY fails.
+ 
+if [ "$o_flag" == "true" ]; then
+    mkdir -p $outputdir
+    runstring=$runstring" -v $outputdir:$outputdir"
+fi
+if [ "$i_flag" == "true" ]; then
+    runstring=$runstring" -v $inputfile:$inputfile"
+fi
+runstring=$runstring" -t magnum.af ./scripts/magnum.af $@"
+log "runstring: "$runstring
+echo $(realpath $inputfile)
+$runstring
