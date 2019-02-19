@@ -84,6 +84,10 @@ while getopts 'b:dDhfg:i:o:p:rsSv' flag; do
 done
 shift $((OPTIND-1)) # resetting counting
 
+if [[ "$v_flag" == "true" ]]; then
+    set -x
+fi
+
 if [ -z "$inputfile" ]; then
     inputfile=$1
 fi
@@ -182,14 +186,18 @@ else
 fi
 
 log "printing bash command and git log in outputdir"
-command -v git >/dev/null 2>&1 || true # this is allowed to fail, thus '|| true'
-GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ];then
-    if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
+git_is_aviable=$(command -v git || true)
+if [[ -n "$git_is_aviable" ]];then
+    log "git aviable"
+    dir_is_gitdir="$(git rev-parse --is-inside-work-tree 2> /dev/null  || true)"
+    log "dir_is_gitdir =${dir_is_gitdir}"
+    if [[ "$dir_is_gitdir" == "true" ]]; then
         githash=$(git rev-parse HEAD)
     else
         log "Note: current directory is no git dir, omitting git log"
     fi
+else
+    log "git not aviable"
 fi
 
 log "writing $outputdir/simulation_info.txt"

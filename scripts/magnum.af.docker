@@ -10,59 +10,16 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 __base="$(basename ${__file} .sh)"
 __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
+saved_args=("$@")
 
 
 d_flag=''
+f_flag=''
+i_flag=''
+inputfile=''
 o_flag=''
+outputdir=''
 v_flag=''
-
-print_usage() {
-    printf "Usage: $(basename "$0") {d|h|i|o|v} [magnum.af arguments and options (see 'magnum.af -h' for more details)]
-
-Script to run 'magnum.af' in a docker container. All arugments passed to this script are forwarded to the 'magnum.af' run script. Use 'magnum.af -h' for information on options of the base script.
-
-Prerequisite: docker for cpu backend, nvidia-docker for opencl/cuda backends.
-
-Options
-  -h  help           Show this help message.
-  -d  detached       Run the simulation in a detached docker container.
-  -i  inputfile      Magnum.af inputfile (.cpp or .py)
-  -o  outputdir      Directory for output data.
-  -v  verbose        Show more details of this script.
-
-Examples:
-  magnum.af.docker scripts/sp4/sp4.cpp
-  magnum.af.docker -d -v scripts/sp4/sp4.cpp
-  magnum.af.docker -vg 1 scripts/sp4/sp4.cpp
-
-Note: the screen flags '-s' and '-S' are not allowed for docker usage.
-"
-}
-
-while getopts 'db:hfg:i:o:p:rsSv' flag; do
-  #Note: only 'd' flag is used in this script, all magnum.af flags are given here to avoid the getopts error as all arguments are passed to magnum.af
-  case "${flag}" in
-    h) print_usage
-       exit 0 ;;
-    b) ;;
-    b) ;; 
-    d) d_flag='true' ;;
-    D) ;; 
-    f) ;; 
-    g) ;; 
-    i) i_flag='true'; inputfile="${OPTARG}" ;;
-    o) o_flag='true'; outputdir="${OPTARG}" ;;
-    p) ;; 
-    r) ;; 
-    s) print_usage; echo "Error: screen option 's' is not allowed with docker. Please discard this flag for usage with docker."
-        exit 1;; 
-    S) print_usage;  echo "Error: screen option 'S' is not allowed with docker. Please discard this flag usage with docker."
-        exit 1;; 
-    v) v_flag='true' ;;
-    *) print_usage
-       exit 1 ;;
-  esac
-done
 
 function log () {
     if [[ "$v_flag" == "true" ]]; then
@@ -70,22 +27,133 @@ function log () {
     fi
 }
 
+print_usage() {
+  printf "Usage: $(basename "$0") {b:|d|f|g:|h|i:|o:|p:|r|v} [inputfile outputdir]
+
+Run script for magnum.af using docker. Manages build process, directory creation and program execution.
+
+Arguments:
+      inputfile      Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
+      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a 
+                     directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
+      \$n             Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
+
+Options (subsequent ':' indicates that an argument is expected):
+  -h  help           Show this help message.
+
+  -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -d  detached       Run the simulation in a detached docker container.
+  -f  force          Forces output to be written in already existing output directory. This may overwrite files.
+  -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
+  -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
+  -o: outputdir      Directory to write output to. Expects directory path.
+  -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
+  -r  (no)rebuild    Skips build process for .cpp inputfile or executes build for .py inputfile.
+  -v  verbose        Show more details of this script.
+
+Examples:
+  $(basename "$0") sp4.py
+  $(basename "$0") -d -v sp4.cpp
+  $(basename "$0") -vg 1 sp4.cpp
+
+Example passing arguments 'a b c' to the input script.  The behaviour is equivalent for all versions
+and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments. 
+  $(basename "$0") -i sp4.cpp -o run1 a b c
+  $(basename "$0") -i sp4.cpp run1 a b c
+  $(basename "$0") -o run1 sp4.cpp a b c
+  $(basename "$0") sp4.cpp run1 a b c
+
+Note:
+  'magnum.af sp4.cpp a b c' would interpret 'a' as outputdir, so please specify outputdir when passing arguments.
+"
+}
+
+while getopts 'db:hfg:i:o:p:rv' flag; do
+  #Note: only 'd' flag is used in this script, all magnum.af flags are given here to avoid the getopts error as all arguments are passed to magnum.af
+  case "${flag}" in
+    h) print_usage
+       exit 0 ;;
+    b) ;; 
+    d) d_flag='true' ;;
+    D) ;; 
+    f) f_flag='true' ;;
+    g) ;; 
+    i) i_flag='true'; inputfile="${OPTARG}" ;;
+    o) o_flag='true'; outputdir="${OPTARG}" ;;
+    p) ;; 
+    r) ;; 
+    v) v_flag='true' ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+shift $((OPTIND-1)) # resetting counting
+
+if [[ "$v_flag" == "true" ]]; then
+    set -x
+fi
+
 log $__dir
 log $__file
 log $__base
 log $__root
 
+if [ -z "$inputfile" ]; then
+    inputfile=$1
+fi
+
+log "checking $inputfile != '' and extension"
+if [[ "$inputfile" == "" ]]; then
+    echo "Error: missing inputfile as first argument required, aborting..."
+    exit 1
+elif [ ! -e "$inputfile" ]
+then
+    echo "Error: given inputfile does not exist, aborting..."
+    exit 1
+else
+    filename=$(basename -- "$inputfile")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+    log "\$extension=$extension"
+    log "\$filename=$filename"
+    if [[ $extension != "cpp" &&  $extension != "py" ]];then
+        echo "Error: wrong extension $extension, expected .cpp or .py"
+        exit 1
+    fi
+    inputfile=$(realpath $inputfile)
+fi
+
+log "checking outputdir $outputdir"
+if [ -z "$outputdir" ]; then
+    if [ "$i_flag" == "true" ] && [ "$o_flag" != "true" ] && [ "${1-}" != "" ]; then
+        log "setting outputdir to \$1=$1"
+        outputdir="$1"
+    elif [ "$i_flag" != "true" ] && [ "$o_flag" != "true" ] && [ "${2-}" != "" ]; then
+        log "setting outputdir to \$2=$2"
+        outputdir="$2"
+    else
+        outputdir="$PWD/output_magnum.af"
+        log "no output dir given, using '$outputdir' which is in current folder"
+    fi
+fi
+if [ "$f_flag" == "true" ]; then
+    if [ ! -e "$outputdir" ];then
+        log "writing in new directory $outputdir"
+        mkdir --parents $outputdir
+    else
+        log "writing in existing directory $outputdir"
+    fi
+else
+    $__root/scripts/bash/check_write_dir.sh $outputdir $v_flag
+fi
+outputdir=$(realpath $outputdir)
+
 runstring="nvidia-docker run --user ${UID} --rm"
-#runstring=$runstring" -v ${__root}:/home/magnum.af" # Note: uncommend if current magnum.af dir is needed
- 
-if [ "$o_flag" == "true" ]; then
-    mkdir -p $outputdir
-    runstring=$runstring" -v $outputdir:$outputdir"
+if [ "$d_flag" == "true" ];then
+    runstring=$runstring" -d" 
 fi
-if [ "$i_flag" == "true" ]; then
-    runstring=$runstring" -v $inputfile:$inputfile"
-fi
-runstring=$runstring" -t magnum.af ./scripts/magnum.af $@"
+runstring=$runstring" -v $outputdir:$outputdir"
+runstring=$runstring" -v $inputfile:$inputfile"
+runstring=$runstring" -t magnum.af ./scripts/magnum.af $saved_args -f -i $inputfile -o $outputdir"
 log "runstring: "$runstring
-echo $(realpath $inputfile)
 $runstring
