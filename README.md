@@ -21,12 +21,18 @@ simulation software
 
 # Installation Guide
 ## Docker:
-Build the respective Docker images by running the provided dockerfiles in the 
-project directory:
+For GPU support build the image provided in the Dockerfile by running the following command in the project's root directory:
 
-`$ docker build -t magnum.af.cpu -f Dockerfile.cpu .`
+`$ nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .`
 
-`$ docker build -t magnum.af.opencl -f Dockerfile.opencl .`
+For CPU support only use:
+
+`$ docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" .`
+
+For running simulations, use the provided script in 'scripts/magnum.af.docker', e.g.:
+
+$ magnum.af.docker sp4.py
+
 ## Build scipt:
 Execute the provided installation script:
 
