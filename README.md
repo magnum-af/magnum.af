@@ -31,7 +31,7 @@ For CPU support only use:
 
 For running simulations, use the provided script in 'scripts/magnum.af.docker', e.g.:
 
-$ magnum.af.docker sp4.py
+`$ magnum.af.docker sp4.py`
 
 ## Build scipt:
 Execute the provided installation script:
