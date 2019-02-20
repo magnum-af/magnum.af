@@ -155,16 +155,18 @@ skip=0
 [ "$o_flag" == "" ] && skip="$((skip + 1))"  && log "$skip oflag is not true"
 min=$( (( $# <= $skip )) && echo "$#" || echo "$skip") # minimum of remaining arguments and skip to prevent overshifting
 log "shifting $min"
-echo "min=" $min
 shift $min
 
-runstring="nvidia-docker run --user ${UID} --rm"
+runstring=""
+command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring"nvidia-docker" || runstring=$runstring"docker"
+runstring=$runstring" run --user ${UID} --rm"
 if [ "$d_flag" == "true" ];then
     runstring=$runstring" -d" 
 fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"
-runstring=$runstring" -t magnum.af ./scripts/magnum.af -f"
+command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu"
+runstring=$runstring" ./scripts/magnum.af -f"
 runstring=$runstring" $saved_flags -i $inputfile -o $outputdir $@"
 
 log "runstring: "$runstring
