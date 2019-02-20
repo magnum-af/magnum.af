@@ -12,14 +12,6 @@ __base="$(basename ${__file} .sh)"
 __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
 
 
-d_flag=''
-f_flag=''
-i_flag=''
-inputfile=''
-o_flag=''
-outputdir=''
-v_flag=''
-
 function log () {
     if [[ "$v_flag" == "true" ]]; then
         echo "$@"
@@ -27,7 +19,7 @@ function log () {
 }
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|d|f|g:|h|i:|o:|p:|r|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|v} [inputfile outputdir]
 
 Run script for magnum.af using docker. Manages build process, directory creation and program execution.
 
@@ -41,13 +33,13 @@ Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
   -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -B  build image    Builds docker image prior to simulation.
   -d  detached       Run the simulation in a detached docker container.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
   -o: outputdir      Directory to write output to. Expects directory path.
   -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
-  -r  (no)rebuild    Skips build process for .cpp inputfile or executes build for .py inputfile.
   -v  verbose        Show more details of this script.
 
 Examples:
@@ -67,14 +59,24 @@ Note:
 "
 }
 
-while getopts 'db:hfg:i:o:p:rv' flag; do
+B_flag=''
+d_flag=''
+f_flag=''
+i_flag=''
+inputfile=''
+o_flag=''
+outputdir=''
+v_flag=''
+
+
+while getopts 'b:Bdhfg:i:o:p:rv' flag; do
   #Note: only 'd' flag is used in this script, all magnum.af flags are given here to avoid the getopts error as all arguments are passed to magnum.af
   case "${flag}" in
     h) print_usage
        exit 0 ;;
     b) ;; 
+    B) B_flag='true' ;; 
     d) d_flag='true' ;;
-    D) ;; 
     f) f_flag='true' ;;
     g) ;; 
     i) i_flag='true'; inputfile="${OPTARG}" ;;
@@ -156,6 +158,15 @@ skip=0
 min=$( (( $# <= $skip )) && echo "$#" || echo "$skip") # minimum of remaining arguments and skip to prevent overshifting
 log "shifting $min"
 shift $min
+
+log "checking if docker images exist (takes ~0.1s)"
+#nvidia_smi=$(command -v nvidia-smi || true)
+command -v nvidia-smi >/dev/null 2>&1 && docker image inspect magnum.af >/dev/null 2>&1 && docker_image_exists="true"  || docker image inspect magnum.af.cpu >/dev/null 2>&1 && docker_image_exists="true"
+
+log "building docker image if not exist or B_flag is set"
+if [[ "$docker_image_exists" != "true" ]] || [[ "$B_flag" == "true" ]]; then
+    command -v nvidia-smi >/dev/null 2>&1 && ( cd $__root && nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" . ) || ( cd $__root &&  docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" . )
+fi
 
 runstring=""
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring"nvidia-docker" || runstring=$runstring"docker"

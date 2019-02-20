@@ -63,11 +63,12 @@ Note:
 }
 
 
-while getopts 'b:dDhfg:i:o:p:rsSv' flag; do
+while getopts 'b:Bdhfg:i:o:p:rsSv' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
     b) b_flag='true'; backend="${OPTARG}" ;;
+    B) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     d) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     f) f_flag='true' ;;
     g) GPU="${OPTARG}" ;;
