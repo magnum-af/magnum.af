@@ -224,7 +224,9 @@ fi
 
 log "copying files"
 if [[ "$outputdir" != "" ]]; then
-    cp $magafdir/bin/magnum.af-* $outputdir
+    if [[ "$extension" == "cpp" ]];then
+        cp $magafdir/bin/magnum.af-* $outputdir
+    fi
     cp $inputfile $outputdir
 fi
 
@@ -256,7 +258,8 @@ if [ "$extension" == "py" ];then
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
+        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion $inputfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command') > $outputdir/stdout.txt 2>&1"
+        #TODO piping into stdout.txt is slow on python and has wrong order, elaborate
         echo "started magnum.af in screen"
         [ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
@@ -271,7 +274,7 @@ if [ "$extension" == "py" ];then
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
-        PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@
+        PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir_slash $GPU $@
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else

@@ -368,9 +368,9 @@ cdef class pyLbfgsMinimizer:
         #print("Adding term", arg)
         vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
       self.thisptr = new LBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
-  def __dealloc__(self):
-    del self.thisptr
-    self.thisptr = NULL
+#TODO#  def __dealloc__(self): #causes segfault on GTO in cleanup
+#TODO#    del self.thisptr
+#TODO#    self.thisptr = NULL
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))

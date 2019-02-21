@@ -9,7 +9,7 @@ if sys.argv[1][-1] != "/":
 filepath = sys.argv[1]
 #provided by bash #os.makedirs(filepath)
 af.set_device(int(sys.argv[2]))
-#af.set_backend("cpu")# TODO currently cpu backend segfaults when state object is created
+#af.set_backend("cpu")# TODO if arrayfire is installed from binaries, currently cpu backend segfaults when state object is created. Not occuring for source installation
 af.info()
 
 

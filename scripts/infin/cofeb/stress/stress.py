@@ -13,7 +13,7 @@ if sys.argv[1][-1] != "/":
     print ("Info: Added '/' to sys.arvg[1]: ", sys.argv[1])
 
 filepath = sys.argv[1]
-os.makedirs(filepath)# to overwrite, add: , exist_ok=True
+#os.makedirs(filepath)# to overwrite, add: , exist_ok=True
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
@@ -72,16 +72,16 @@ mesh=pyMesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
 param=pyParam()
-param.ms(1.58/param.print_mu0()) # Saturation magnetization
-param.A(15e-12) # Exchange constant
-param.Ku1(1.3e-3/z) # Anisotropy constant
+param.ms=1.58/param.mu0 # Saturation magnetization
+param.A=15e-12 # Exchange constant
+param.Ku1=1.3e-3/z # Anisotropy constant
 
 # Second param class for stress
 param_stress=pyParam()
-param_stress.ms(1.58/param.print_mu0())
-param_stress.A(15e-12)
-param_stress.Ku1(1400) #TODO guessed worst case value fom Toni, elaborate
-param_stress.Ku1_axis(1, 0, 0) # Setting axis in x-direction
+param_stress.ms=1.58/param.mu0
+param_stress.A=15e-12
+param_stress.Ku1=1400  #TODO guessed worst case value fom Toni, elaborate
+param_stress.Ku1_axis=[1, 0, 0] # Setting axis in x-direction
 #print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
 
 # Create state object with timing
@@ -110,7 +110,7 @@ minimizer = pyLbfgsMinimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], to
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")
-A = 0.05/param.print_mu0()
+A = 0.05/param.mu0
 steps = 100
 print ("A= ", A)
 for i in range(0, steps):
@@ -118,7 +118,7 @@ for i in range(0, steps):
     zee.set_xyz(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.pyMinimize(state)
-    stream.write("%d, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.py_vti_writer_micro(filepath + "m_"+ str(i))
