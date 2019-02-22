@@ -203,9 +203,9 @@ fi
 
 log "writing $outputdir/simulation_info.txt"
 if [[ -n "$githash" ]];then 
-    echo "Script called on $(eval date) with '$0 $allargs', according git hash is $githash" >> $outputdir/simulation_info.txt
+    echo "Command '$0 $allargs' called at $(eval date). According git hash is $githash" >> $outputdir/command_log.txt
 else
-    echo "Script called on $(eval date) with '$0 $allargs'" >> $outputdir/simulation_info.txt
+    echo "Command '$0 $allargs' called at $(eval date)." >> $outputdir/command_log.txt
 fi
 
 log "copying postprocess if existing"
@@ -258,10 +258,9 @@ if [ "$extension" == "py" ];then
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion $inputfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command') > $outputdir/stdout.txt 2>&1"
-        #TODO piping into stdout.txt is slow on python and has wrong order, elaborate
+        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command') |& tee $outputdir/stdout.txt"
         echo "started magnum.af in screen"
-        [ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
+        [ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls # NOTE: problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0
@@ -274,7 +273,7 @@ if [ "$extension" == "py" ];then
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
-        PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir_slash $GPU $@
+        eval "PYTHONPATH=$magafdir/build/src $pythonversion -u $inputfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else
@@ -313,7 +312,7 @@ else
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) > $outputdir/stdout.txt 2>&1"
+        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) |& tee $outputdir/stdout.txt"
         echo "started $(basename $runfile) in screen"
         [ "$v_flag" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
@@ -329,7 +328,7 @@ else
         fi
     else
         echo "starting $(basename $runfile)"
-        eval "$runfile $outputdir_slash $GPU $@"
+        eval "$runfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 fi
