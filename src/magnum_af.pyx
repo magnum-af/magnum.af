@@ -1,4 +1,5 @@
 #!python
+#distutils: language = c++
 #cython: language_level=3
 
 #HOTTIPS
@@ -39,10 +40,19 @@ cdef extern from "../../src/mesh.hpp":
     int n0_exp, n1_exp, n2_exp;
     Mesh (int, int, int, double, double, double)
 
+
+#NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
+# Docstring does work, todo: check type etc. 
 cdef class pyMesh:
+  """
+  Class defining number of nodes and discretization.
+  """
+  def __init__(self, n0, n1, n2, dx, dy, dz): # todo: For dockstring, but currently does not change signature
+    pass
+
   cdef Mesh* thisptr
-  def __cinit__(self,int a, int b, int c, double d, double e, double f):
-    self.thisptr = new Mesh(a,b,c,d,e,f)
+  def __cinit__(self,int n0, int n1, int n2, double dx, double dy, double dz):
+    self.thisptr = new Mesh(n0, n1, n2, dx, dy, dz)
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
