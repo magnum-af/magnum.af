@@ -18,7 +18,6 @@ cdef extern from "../../src/llg_terms/micro_exch.hpp":
     double get_cpu_time();
 
 cdef extern from "../../src/mesh.hpp":
-#cdef extern from "/home/pth/git/cmakecython/src/mesh.hpp":
   cdef cppclass Mesh:
     int n0,n1,n2;
     double dx,dy,dz;
@@ -86,9 +85,6 @@ cdef extern from "../../src/integrators/new_llg.hpp":
     void step(State& state);
     double E(const State& state);
     long int get_fheff_addr(const State& state);
-    #double cpu_time();
-    #double h_stepped_;
-    #State state0;
 cdef extern from "../../src/llg_terms/micro_demag.hpp":
   cdef cppclass DemagSolver:
     DemagSolver (Mesh mesh_in, Param param_in);
@@ -132,7 +128,6 @@ cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
   cdef cppclass LBFGS_Minimizer:
     LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose_ );
     vector[shared_ptr[LLGTerm]] llgterms_;
-    #LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose_ = 4);
     LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose_);
     double Minimize(State& state);
     double GetTimeCalcHeff();

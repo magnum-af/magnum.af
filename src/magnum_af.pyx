@@ -21,21 +21,23 @@ from libcpp cimport bool
 from cython.operator cimport dereference as deref
 from math import sqrt
 
-from magnum_af_decl cimport ExchSolver as cExchSolver
 from magnum_af_decl cimport Mesh as cMesh
 from magnum_af_decl cimport Param as cParam
 from magnum_af_decl cimport State as cState
-from magnum_af_decl cimport ATOMISTIC_DMI
-from magnum_af_decl cimport NewLlg
-from magnum_af_decl cimport DemagSolver
-from magnum_af_decl cimport ANISOTROPY
-from magnum_af_decl cimport ATOMISTIC_DEMAG
-from magnum_af_decl cimport ATOMISTIC_ANISOTROPY
-from magnum_af_decl cimport ATOMISTIC_EXCHANGE
-from magnum_af_decl cimport Zee
-from magnum_af_decl cimport LBFGS_Minimizer
-from magnum_af_decl cimport LLGTerm
-from magnum_af_decl cimport array
+from magnum_af_decl cimport NewLlg as cNewLlg
+from magnum_af_decl cimport DemagSolver as cDemagSolver
+from magnum_af_decl cimport ANISOTROPY as cANISOTROPY
+from magnum_af_decl cimport ExchSolver as cExchSolver
+#TODO#from magnum_af_decl cimport DMI as cDMI
+
+from magnum_af_decl cimport ATOMISTIC_DEMAG as cATOMISTIC_DEMAG
+from magnum_af_decl cimport ATOMISTIC_EXCHANGE as cATOMISTIC_EXCHANGE
+from magnum_af_decl cimport ATOMISTIC_ANISOTROPY as cATOMISTIC_ANISOTROPY
+from magnum_af_decl cimport ATOMISTIC_DMI as cATOMISTIC_DMI
+from magnum_af_decl cimport Zee as cZee
+from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
+from magnum_af_decl cimport LLGTerm as cLLGTerm
+
 
 #NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
 # Docstring does work, todo: check type etc. 
@@ -112,12 +114,12 @@ cdef class State:
 
 
 cdef class pyLLG:
-  cdef NewLlg* thisptr
+  cdef cNewLlg* thisptr
   def __cinit__(self, *args):
-    cdef vector[shared_ptr[LLGTerm]] vector_in
+    cdef vector[shared_ptr[cLLGTerm]] vector_in
     for arg in args:
-      vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-    self.thisptr = new NewLlg (vector_in)  
+      vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+    self.thisptr = new cNewLlg (vector_in)  
   # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
   # NOTE not happening in minimizer class as it is not derived (i guess)
   #def __dealloc__(self):
@@ -140,18 +142,18 @@ cdef class pyLLG:
   #  self.thisptr.state0.param.alpha=value
   def add_terms(self,*args):
     for arg in args:
-      self.thisptr.llgterms.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-    #cdef vector[shared_ptr[LLGTerm]] vector_in
+      self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+    #cdef vector[shared_ptr[cLLGTerm]] vector_in
     #for term in terms:
-    #  vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>terms.pythisptr()))
-    #self.thisptr = new NewLlg (vector_in)  
+    #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms.pythisptr()))
+    #self.thisptr = new cNewLlg (vector_in)  
     
   
 
 cdef class pyDemagSolver:
-  cdef DemagSolver* thisptr
+  cdef cDemagSolver* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new DemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+    self.thisptr = new cDemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   #This would causes double free coruption!
   def __dealloc__(self):
     del self.thisptr
@@ -180,9 +182,9 @@ cdef class ExchSolver:
       return <size_t><void*>self.thisptr
 
 cdef class pyMicroAniso:
-  cdef ANISOTROPY* thisptr
+  cdef cANISOTROPY* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+    self.thisptr = new cANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -195,9 +197,9 @@ cdef class pyMicroAniso:
 
 
 cdef class pyATOMISTIC_DEMAG:
-  cdef ATOMISTIC_DEMAG* thisptr
+  cdef cATOMISTIC_DEMAG* thisptr
   def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new ATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
+    self.thisptr = new cATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -209,9 +211,9 @@ cdef class pyATOMISTIC_DEMAG:
       return <size_t><void*>self.thisptr
 
 cdef class pyATOMISTIC_ANISOTROPY:
-  cdef ATOMISTIC_ANISOTROPY* thisptr
+  cdef cATOMISTIC_ANISOTROPY* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new ATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+    self.thisptr = new cATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -223,9 +225,9 @@ cdef class pyATOMISTIC_ANISOTROPY:
       return <size_t><void*>self.thisptr
 
 cdef class AtomisticExchange:
-  cdef ATOMISTIC_EXCHANGE* thisptr
+  cdef cATOMISTIC_EXCHANGE* thisptr
   def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new ATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
+    self.thisptr = new cATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -237,9 +239,9 @@ cdef class AtomisticExchange:
       return <size_t><void*>self.thisptr
 
 cdef class AtomisticDMI:
-  cdef ATOMISTIC_DMI* thisptr
+  cdef cATOMISTIC_DMI* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new ATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+    self.thisptr = new cATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -251,9 +253,9 @@ cdef class AtomisticDMI:
       return <size_t><void*>self.thisptr
 
 cdef class pyZee:
-  cdef Zee* thisptr
+  cdef cZee* thisptr
   def __cinit__(self, array_in):
-    self.thisptr = new Zee (addressof(array_in.arr))  
+    self.thisptr = new cZee (addressof(array_in.arr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -273,28 +275,28 @@ cdef class pyZee:
 #TODO 
 
 cdef class pyLbfgsMinimizer:
-  cdef LBFGS_Minimizer* thisptr
+  cdef cLBFGS_Minimizer* thisptr
   def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
-    cdef vector[shared_ptr[LLGTerm]] vector_in
+    cdef vector[shared_ptr[cLLGTerm]] vector_in
     if not terms:
-      print("LBFGS_Minimizer: no terms provided, please add some either by providing a list terms=[...] or calling add_terms(*args)")
+      print("cLBFGS_Minimizer: no terms provided, please add some either by providing a list terms=[...] or calling add_terms(*args)")
     else:
       for arg in terms:
         #print("Adding term", arg)
-        vector_in.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
-      self.thisptr = new LBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
+        vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+      self.thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
 #TODO#  def __dealloc__(self): #causes segfault on GTO in cleanup
 #TODO#    del self.thisptr
 #TODO#    self.thisptr = NULL
   def add_terms(self,*args):
     for arg in args:
-      self.thisptr.llgterms_.push_back(shared_ptr[LLGTerm] (<LLGTerm*><size_t>arg.pythisptr()))
+      self.thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
   def delete_last_term(self):
     self.thisptr.llgterms_.pop_back()
   #not working as set_xyz is not pure virutal:# def set_zee_xyz(self, State state, i, x, y, z):
   #not working as set_xyz is not pure virutal:#     self.thisptr.llgterms_[i].set_xyz(deref(state.thisptr), x, y, z)
   #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
-  #  self.thisptr = new LBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
+  #  self.thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
   def pyMinimize(self, State state_in):
     return self.thisptr.Minimize(deref(state_in.thisptr))
   def pyGetTimeCalcHeff(self):
