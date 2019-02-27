@@ -19,6 +19,7 @@ class State{
     double t{0.};//time
     af::array m;
     af::array Ms; // Saturation magnetization
+    af::array micro_A_field; //!< Spacially varying exchange energy in [J/m] defined at each node.
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     void check_discretization();
     void check_m_norm(double tol = 1e-6);

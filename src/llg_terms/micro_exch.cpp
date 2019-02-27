@@ -42,13 +42,25 @@ array ExchSolver::h_withedges(const State& state){
     exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
     exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
 
-    if(param.afsync) sync();
+    if(param.afsync) af::sync();
     time_edges += timer::stop(timer_edges);
     cpu_time += timer::stop(timer_exchsolve);
-    //return  (2.* param.A)/(param.mu0*param.ms) * exch;
-    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
-    else { 
+    if (state.Ms.isempty() && state.micro_A_field.isempty())
+    {
+        return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    }
+    else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
+    {
         array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
+    else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
+    {
+        return (2.* state.micro_A_field)/(param.mu0*param.ms) * exch;
+    }
+    else {
+        array heff = (2.* state.micro_A_field)/(param.mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -60,16 +72,28 @@ array ExchSolver::h_withedges(const State& state){
 array ExchSolver::h(const State& state){
     timer_exchsolve = timer::start();
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-    if(param.afsync) sync();
+    if(param.afsync) af::sync();
     cpu_time += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty()) return  (2.* param.A)/(param.mu0*param.ms) * exch;
-    else { 
+    if (state.Ms.isempty() && state.micro_A_field.isempty())
+    {
+        return  (2.* param.A)/(param.mu0*param.ms) * exch;
+    }
+    else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
+    {
         array heff = (2.* param.A)/(param.mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
+    else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
+    {
+        return (2.* state.micro_A_field)/(param.mu0*param.ms) * exch;
+    }
+    else {
+        array heff = (2.* state.micro_A_field)/(param.mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
 }
-
 
 //void showdims2(const array& a){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
