@@ -38,9 +38,9 @@ m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 state=magnum_af.State(mesh,param,m)
-demag=magnum_af.pyDemagSolver(mesh,param)
+demag=magnum_af.DemagSolver(mesh,param)
 exch=magnum_af.ExchSolver(mesh,param)
-Llg=magnum_af.pyLLG(demag,exch)
+Llg=magnum_af.NewLlg(demag,exch)
 
 # Relaxing
 print("relaxing 1ns")
@@ -61,7 +61,7 @@ zeeswitch[0,0,0,0]=-24.6e-3/param.mu0
 zeeswitch[0,0,0,1]=+4.3e-3/param.mu0
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
-zee=magnum_af.pyZee(zeeswitch)
+zee=magnum_af.Zee(zeeswitch)
 Llg.add_terms(zee)
 
 # Switching

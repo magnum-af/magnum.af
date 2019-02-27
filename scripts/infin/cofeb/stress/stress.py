@@ -98,15 +98,15 @@ print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
 start = time.time()
-demag = pyDemagSolver(mesh, param)
+demag = DemagSolver(mesh, param)
 exch=ExchSolver(mesh, param)
-aniso_z = pyMicroAniso(mesh, param)
-aniso_stress = pyMicroAniso(mesh, param_stress)
-zee = pyZee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+aniso_z = ANISOTROPY(mesh, param)
+aniso_stress = ANISOTROPY(mesh, param_stress)
+zee = Zee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
 # Creating minimizer object
-minimizer = pyLbfgsMinimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol=1e-15, maxiter=1000)
+minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol=1e-15, maxiter=1000)
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")

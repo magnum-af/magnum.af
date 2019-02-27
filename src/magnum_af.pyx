@@ -113,7 +113,7 @@ cdef class State:
 
 
 
-cdef class pyLLG:
+cdef class NewLlg:
   cdef cNewLlg* thisptr
   def __cinit__(self, *args):
     cdef vector[shared_ptr[cLLGTerm]] vector_in
@@ -150,7 +150,7 @@ cdef class pyLLG:
     
   
 
-cdef class pyDemagSolver:
+cdef class DemagSolver:
   cdef cDemagSolver* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
     self.thisptr = new cDemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
@@ -181,7 +181,7 @@ cdef class ExchSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class pyMicroAniso:
+cdef class ANISOTROPY:
   cdef cANISOTROPY* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
     self.thisptr = new cANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
@@ -196,7 +196,7 @@ cdef class pyMicroAniso:
       return <size_t><void*>self.thisptr
 
 
-cdef class pyATOMISTIC_DEMAG:
+cdef class ATOMISTIC_DEMAG:
   cdef cATOMISTIC_DEMAG* thisptr
   def __cinit__(self, Mesh mesh_in):
     self.thisptr = new cATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
@@ -210,7 +210,7 @@ cdef class pyATOMISTIC_DEMAG:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class pyATOMISTIC_ANISOTROPY:
+cdef class ATOMISTIC_ANISOTROPY:
   cdef cATOMISTIC_ANISOTROPY* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
     self.thisptr = new cATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
@@ -224,7 +224,7 @@ cdef class pyATOMISTIC_ANISOTROPY:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class AtomisticExchange:
+cdef class ATOMISTIC_EXCHANGE:
   cdef cATOMISTIC_EXCHANGE* thisptr
   def __cinit__(self, Mesh mesh_in):
     self.thisptr = new cATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
@@ -238,7 +238,7 @@ cdef class AtomisticExchange:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class AtomisticDMI:
+cdef class ATOMISTIC_DMI:
   cdef cATOMISTIC_DMI* thisptr
   def __cinit__(self, Mesh mesh_in, Param param_in):
     self.thisptr = new cATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
@@ -252,7 +252,7 @@ cdef class AtomisticDMI:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class pyZee:
+cdef class Zee:
   cdef cZee* thisptr
   def __cinit__(self, array_in):
     self.thisptr = new cZee (addressof(array_in.arr))  
@@ -274,7 +274,7 @@ cdef class pyZee:
     return m1
 #TODO 
 
-cdef class pyLbfgsMinimizer:
+cdef class LBFGS_Minimizer:
   cdef cLBFGS_Minimizer* thisptr
   def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
     cdef vector[shared_ptr[cLLGTerm]] vector_in

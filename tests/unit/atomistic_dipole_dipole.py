@@ -24,8 +24,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,2] = 1
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
 
     self.assertEqual(Llg.get_E(pystate), param.p**2 * param.mu0/(4.*math.pi)/self.dx**3)
 
@@ -54,8 +54,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,2] = 0
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
 
     self.assertAlmostEqual(Llg.get_E(pystate), 0)
 
@@ -84,8 +84,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,2] = -1
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
 
     self.assertEqual(Llg.get_E(pystate), -param.p**2 * param.mu0/(4.*math.pi)/self.dx**3)
 
@@ -114,8 +114,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[0,1,0,2] = 1
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
     
     self.assertEqual(Llg.get_E(pystate), param.p**2 * param.mu0/(4.*math.pi)/self.dx**3)
 
@@ -134,8 +134,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[0,1,0,2] = 1
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
 
     self.assertAlmostEqual(Llg.get_E(pystate), 0)
 
@@ -154,8 +154,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,2] = 0
 
     pystate=magnum_af.State(mesh,param,m)
-    atom_demag=magnum_af.pyATOMISTIC_DEMAG(mesh)
-    Llg=magnum_af.pyLLG(atom_demag)
+    atom_demag=magnum_af.ATOMISTIC_DEMAG(mesh)
+    Llg=magnum_af.NewLlg(atom_demag)
 
     self.assertAlmostEqual(Llg.get_E(pystate), -param.p**2 * param.mu0 /(2.*math.pi) /self.dx**3)
 

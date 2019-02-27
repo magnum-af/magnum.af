@@ -17,9 +17,9 @@ class sp4(unittest.TestCase):
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   state=magnum_af.State(meshvar,param,m)
   
-  demag=magnum_af.pyDemagSolver(meshvar,param)
+  demag=magnum_af.DemagSolver(meshvar,param)
   exch=magnum_af.ExchSolver(meshvar,param)
-  Llg=magnum_af.pyLLG(demag,exch)
+  Llg=magnum_af.NewLlg(demag,exch)
 
   def test_relaxation(self):
     intx=0
@@ -46,7 +46,7 @@ class sp4(unittest.TestCase):
     zeeswitch[0,0,0,1]= +4.3e-3/self.param.mu0
     zeeswitch[0,0,0,2]=0.0
     zeeswitch = af.tile(zeeswitch,100,25,1)
-    zee=magnum_af.pyZee(zeeswitch)
+    zee=magnum_af.Zee(zeeswitch)
     self.Llg.add_terms(zee)
     intx=0
     inty=0

@@ -4,7 +4,7 @@ import numpy as np
 import magnum_af
 import math
 
-class AtomisticExchangeTest(unittest.TestCase):
+class ATOMISTIC_EXCHANGETest(unittest.TestCase):
   # arbitrary parameters:
   p  = 1e-12
   J  = 1e-12
@@ -25,8 +25,8 @@ class AtomisticExchangeTest(unittest.TestCase):
     m[1,0,0,2] = 1
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_EXCHANGE(mesh)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), -param.J_atom)
 
@@ -55,8 +55,8 @@ class AtomisticExchangeTest(unittest.TestCase):
     m[1,0,0,2] = 0
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_EXCHANGE(mesh)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), 0)
 
@@ -85,8 +85,8 @@ class AtomisticExchangeTest(unittest.TestCase):
     m[1,0,0,2] =-1
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_EXCHANGE(mesh)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), param.J_atom)
 
@@ -115,8 +115,8 @@ class AtomisticExchangeTest(unittest.TestCase):
     m[0,1,0,2] = 1
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticExchange(mesh)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_EXCHANGE(mesh)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), -param.J_atom)
 

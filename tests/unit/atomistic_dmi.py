@@ -4,7 +4,7 @@ import numpy as np
 import magnum_af
 import math
 
-class AtomisticDMITest(unittest.TestCase):
+class ATOMISTIC_DMITest(unittest.TestCase):
   # arbitrary parameters:
   p  = 1e-20
   D  = 1e20
@@ -25,8 +25,8 @@ class AtomisticDMITest(unittest.TestCase):
     m[1,0,0,2] = 1
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_DMI(mesh,param)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), 0)
 
@@ -57,8 +57,8 @@ class AtomisticDMITest(unittest.TestCase):
     m[1,0,0,2] = 0
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_DMI(mesh,param)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), - param.D_atom)
 
@@ -90,8 +90,8 @@ class AtomisticDMITest(unittest.TestCase):
     m[0,0,1,2] = 0
 
     state=magnum_af.State(mesh,param,m)
-    atom_ani=magnum_af.AtomisticDMI(mesh,param)
-    Llg=magnum_af.pyLLG(atom_ani)
+    atom_ani=magnum_af.ATOMISTIC_DMI(mesh,param)
+    Llg=magnum_af.NewLlg(atom_ani)
 
     self.assertAlmostEqual(Llg.get_E(state), 0)
 
