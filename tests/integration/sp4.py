@@ -4,10 +4,10 @@ import magnum_af
 import math
 
 class sp4(unittest.TestCase):
-  meshvar=magnum_af.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
+  meshvar=magnum_af.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
   m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
   
-  param=magnum_af.pyParam()
+  param=magnum_af.Param()
   param.ms=8e5
   param.A =1.3e-11
   param.alpha=1
@@ -15,10 +15,10 @@ class sp4(unittest.TestCase):
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-  state=magnum_af.pyState(meshvar,param,m)
+  state=magnum_af.State(meshvar,param,m)
   
   demag=magnum_af.pyDemagSolver(meshvar,param)
-  exch=magnum_af.pyExchSolver(meshvar,param)
+  exch=magnum_af.ExchSolver(meshvar,param)
   Llg=magnum_af.pyLLG(demag,exch)
 
   def test_relaxation(self):

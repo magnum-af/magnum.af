@@ -1,2 +1,2 @@
 #!/bin/bash
-time ../../../magnum.af -fSp plot.sh -i stress.py -o output
+../../../magnum.af -fSp plot.sh -i stress.py -o output_magnum.af

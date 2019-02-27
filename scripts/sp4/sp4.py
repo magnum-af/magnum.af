@@ -25,10 +25,10 @@ ny = 25
 nz = 1
 
 # Creating objects
-mesh=magnum_af.pyMesh(nx, ny, nz, x/nx, y/ny, z/nz)
+mesh=magnum_af.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 m=af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 
-param=magnum_af.pyParam()
+param=magnum_af.Param()
 #print (param.mu0)
 param.ms = 8e5
 param.A = 1.3e-11
@@ -37,9 +37,9 @@ param.alpha = 1.
 m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
-state=magnum_af.pyState(mesh,param,m)
+state=magnum_af.State(mesh,param,m)
 demag=magnum_af.pyDemagSolver(mesh,param)
-exch=magnum_af.pyExchSolver(mesh,param)
+exch=magnum_af.ExchSolver(mesh,param)
 Llg=magnum_af.pyLLG(demag,exch)
 
 # Relaxing
@@ -78,6 +78,6 @@ stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
 
-#teststate=magnum_af.pyState(mesh,param,m) # testing wether teststate.m is correctly overwirtten with m_relax
+#teststate=magnum_af.State(mesh,param,m) # testing wether teststate.m is correctly overwirtten with m_relax
 #teststate.py_vti_reader("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax.vti")
 #teststate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_reader")

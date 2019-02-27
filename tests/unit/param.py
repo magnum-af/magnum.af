@@ -19,7 +19,7 @@ class ParamTest(unittest.TestCase):
   D_atom_axis = [1., 1., 1.]
 
   def test_param_initialization(self):
-    param=magnum_af.pyParam(alpha=self.alpha, T=self.T, ms=self.ms, A=self.A, D=self.D, Ku1=self.Ku1, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_axis=self.Ku1_axis, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
+    param=magnum_af.Param(alpha=self.alpha, T=self.T, ms=self.ms, A=self.A, D=self.D, Ku1=self.Ku1, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_axis=self.Ku1_axis, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
 
     self.assertEqual(self.alpha, param.alpha)
     self.assertEqual(self.T, param.T)
@@ -35,7 +35,7 @@ class ParamTest(unittest.TestCase):
     self.assertEqual((1./sqrt(3.),1./sqrt(3.),1./sqrt(3.)), param.D_atom_axis)
 
   def test_param_default_initialization(self):
-    param=magnum_af.pyParam()
+    param=magnum_af.Param()
     self.assertEqual(4e-7*pi, param.mu0           )
     self.assertEqual(221276.1488637255, param.gamma         )
     self.assertEqual((0.,0.,1.), param.Ku1_axis)
