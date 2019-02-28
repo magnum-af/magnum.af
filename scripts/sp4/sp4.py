@@ -1,20 +1,12 @@
 # Example demonstrating the MuMAG Standard Problem 4
-# Run with: magnum.af sp4.py
+# Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
 import arrayfire as af
 from magnum_af import *
 import sys
 import time
 
-# argv[1] is expected to be the full path to the existing output-directory
-if sys.argv[1][-1] != "/":
-    sys.argv[1] = sys.argv[1] + "/"
-filepath = sys.argv[1]
-# argv[2] is expected to be an integer setting the GPU number
-if len(sys.argv) > 2:
-    af.set_device(int(sys.argv[2]))
 af.info()
-
 start = time.time()
 
 # Physical dimensions in [m]
@@ -46,7 +38,7 @@ Llg = LLGIntegrator(demag, exch)
 
 # Relaxing
 print("relaxing 1ns")
-stream = open(filepath+"m.dat", "w")
+stream = open(sys.argv[1]+"m.dat", "w")
 timer = time.time()
 while state.t < 1e-9:
   Llg.llgstep(state)
@@ -55,7 +47,7 @@ while state.t < 1e-9:
 print("relaxed in", time.time() - timer, "[s]")
 
 # Resetting alpha and adding Zeeman field
-state.set_alpha(0.02)
+state.material.alpha=0.02
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
 zeeswitch[0,0,0,0] = -24.6e-3/material.mu0
 zeeswitch[0,0,0,1] = +4.3e-3/material.mu0

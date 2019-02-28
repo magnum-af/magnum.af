@@ -48,5 +48,23 @@ class StateTest(unittest.TestCase):
     self.assertEqual(1., self.state.m[0,0,0,1].scalar())
     self.assertEqual(1., self.state.m[0,0,0,2].scalar())
 
+  def test_material_setter_and_getter_for_ms(self):
+    state=magnum_af.State(magnum_af.Mesh(0,0,0,0,0,0), magnum_af.Material(), self.m_af)
+    material=magnum_af.Material()
+    material.ms=1000
+    state.material=material
+    self.assertEqual(material.ms, state.material.ms)
+
+  def test_mesh_setter_and_getter(self):
+    state=magnum_af.State(magnum_af.Mesh(0,0,0,0,0,0), magnum_af.Material(), self.m_af)
+    mesh = magnum_af.Mesh(1,2,3,4,5,6)
+    state.mesh=mesh
+    self.assertEqual(1, state.mesh.n0)
+    self.assertEqual(2, state.mesh.n1)
+    self.assertEqual(3, state.mesh.n2)
+    self.assertEqual(4, state.mesh.dx)
+    self.assertEqual(5, state.mesh.dy)
+    self.assertEqual(6, state.mesh.dz)
+
 if __name__ == '__main__':
   unittest.main()

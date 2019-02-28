@@ -2,6 +2,8 @@
 #distutils: language = c++
 #cython: language_level=3
 
+# Links
+# [1] https://stackoverflow.com/questions/33764094/cython-how-do-i-wrap-a-c-class-where-public-member-variables-are-custom-objec
 #HOTTIPS
 #https://stackoverflow.com/questions/44396749/handling-c-arrays-in-cython-with-numpy-and-pytorch
 #https://stackoverflow.com/questions/44686590/initializing-cython-objects-with-existing-c-objects
@@ -49,15 +51,63 @@ cdef class Mesh:
     pass
 
   cdef cMesh* thisptr
+  cdef object owner # None if this is our own # From [1]
   def __cinit__(self,int n0, int n1, int n2, double dx, double dy, double dz):
     self.thisptr = new cMesh(n0, n1, n2, dx, dy, dz)
+    owner = None # see [1]
+  cdef set_ptr(self, cMesh* ptr, owner):
+    if self.owner is None:
+      del self.thisptr
+    self.thisptr = ptr
+    self.owner = owner
   def __dealloc__(self):
-    del self.thisptr
-    self.thisptr = NULL
-  def n0(self):
-    return self.thisptr.n0
+    if self.owner is None: # only free if we own it: see [1]
+      del self.thisptr
+      self.thisptr = NULL
   def print_n0(self):
     print (self.thisptr.n0)
+
+  @property
+  def n0(self):
+    return self.thisptr.n0
+  @n0.setter
+  def n0(self,value):
+    self.thisptr.n0=value
+
+  @property
+  def n1(self):
+    return self.thisptr.n1
+  @n1.setter
+  def n1(self,value):
+    self.thisptr.n1=value
+
+  @property
+  def n2(self):
+    return self.thisptr.n2
+  @n2.setter
+  def n2(self,value):
+    self.thisptr.n2=value
+
+  @property
+  def dx(self):
+    return self.thisptr.dx
+  @dx.setter
+  def dx(self,value):
+    self.thisptr.dx=value
+
+  @property
+  def dy(self):
+    return self.thisptr.dy
+  @dy.setter
+  def dy(self,value):
+    self.thisptr.dy=value
+
+  @property
+  def dz(self):
+    return self.thisptr.dz
+  @dz.setter
+  def dz(self,value):
+    self.thisptr.dz=value
 
 
 
@@ -97,6 +147,22 @@ cdef class State:
     self.thisptr._vtr_reader( outputname.encode('utf-8')) 
   def set_alpha(self,value):
     self.thisptr.material.alpha=value
+
+  property mesh:
+    def __get__(self):
+      mesh = Mesh(0,0,0,0,0,0)
+      mesh.set_ptr(&self.thisptr.mesh,self)
+      return mesh
+    def __set__(self, Mesh mesh_in):
+      self.thisptr.mesh = deref(mesh_in.thisptr)
+
+  property material:
+    def __get__(self):
+      material = Material()
+      material.set_ptr(&self.thisptr.material,self)
+      return material
+    def __set__(self, Material material_in):
+      self.thisptr.material = deref(material_in.thisptr)
 
   @property
   def m(self):
@@ -304,16 +370,24 @@ cdef class LBFGS_Minimizer:
 
 cdef class Material:
   cdef cParam* thisptr
+  cdef object owner # None if this is our own # From [1]
   def __cinit__(self, alpha = 0., T = 0., ms = 0., A = 0., D = 0., Ku1 = 0., D_axis = [0.,0.,-1], Ku1_axis = [0.,0.,1.], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False, mode = 6, afsync = False):
     Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
     Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
     D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
     self.thisptr = new cParam (alpha, T, ms, A, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
+    owner = None # see [1]
     #mu0 = self.thisptr.mu0
+  cdef set_ptr(self, cParam* ptr, owner):
+    if self.owner is None:
+      del self.thisptr
+    self.thisptr = ptr
+    self.owner = owner
   def __dealloc__(self):
-    del self.thisptr
-    self.thisptr = NULL
+    if self.owner is None: # only free if we own it: see [1]
+      del self.thisptr
+      self.thisptr = NULL
 
   ## Getter and setter Functions
   @property # Note: constant by not providing setter
