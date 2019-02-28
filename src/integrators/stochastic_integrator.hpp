@@ -12,7 +12,7 @@ class Stochastic_Integrator {
     public:
         Stochastic_Integrator (State, std::vector<std::shared_ptr<LLGTerm> >, const double, std::string );
         std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
-        Param param;
+        Material material;
         Mesh mesh;
         void step(State& state, const double dt);
         double cpu_time();

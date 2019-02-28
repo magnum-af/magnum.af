@@ -18,7 +18,7 @@ af::array zee_func(State state){
     double field_Tesla = 0;
     field_Tesla = rate *state.t; 
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.material.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -43,12 +43,12 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -62,15 +62,15 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     // Relax
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
     
     LLG Llg(state,llgterm);
   

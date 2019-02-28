@@ -30,17 +30,17 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.alpha = 1;
-    param.D=2*5.76e-3;
-    param.Ku1=6.4e6;
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.alpha = 1;
+    material.D=2*5.76e-3;
+    material.Ku1=6.4e6;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
+    material.K_atom=material.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
      // Initial magnetic field
@@ -55,20 +55,20 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    //llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    //llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+    //llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+    //llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+    //llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
     
     //TODO//run with demag?
-    //llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    //llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
   
     LLG Llg(state,llgterm);
   
@@ -92,11 +92,11 @@ int main(int argc, char** argv)
         mm=shift(mm,i);
         mm(seq(0,i),span,span,span)=0;
         mm(seq(0,i),span,span,2)=1.;
-        inputimages.push_back(State(mesh, param, mm));
+        inputimages.push_back(State(mesh, material, mm));
     }
    
 
-    //inputimages.push_back(State(mesh,param, last));
+    //inputimages.push_back(State(mesh,material, last));
   
     String string(state, inputimages, n_interp, string_dt ,llgterm);
 
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
         std::cout   <<i<<"\t"<<*max-string.E[0]<<"\t"<<string.E[0]<<"\t"<<*max-string.E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
         stream_steps<<i<<"\t"<<*max-string.E[0]<<"\t"<<string.E[0]<<"\t"<<*max-string.E[-1]<< "\t"<<*max<<"\t"<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
         stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-        stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
+        stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<material.D<<"\t"<<material.Ku1<<"\t"<<material.K_atom<<"\t"<<material.D_atom<<std::endl;
         stream_E_barrier.close();
         for(unsigned j=0;j<string.E.size();++j)
         {
@@ -182,9 +182,9 @@ int main(int argc, char** argv)
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.K_atom<<"\t"<<param.D_atom<<std::endl;
+    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<material.D<<"\t"<<material.Ku1<<"\t"<<material.K_atom<<"\t"<<material.D_atom<<std::endl;
     stream_E_barrier.close();
-    //OLD: stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.D_atom<<"\t"<<param.K_atom<<"\t"<<std::endl;
+    //OLD: stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<material.D<<"\t"<<material.Ku1<<"\t"<<material.D_atom<<"\t"<<material.K_atom<<"\t"<<std::endl;
   
     std::ofstream myfileE;
     myfileE.precision(12);

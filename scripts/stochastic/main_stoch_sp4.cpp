@@ -46,25 +46,25 @@ int main(int argc, char** argv)
   
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-  Param param = Param();
-  param.ms    = 8e5;
-  param.A     = 1.3e-11;
-  param.alpha = 1;
-  param.afsync  = false;
-  param.T  = 300;
+  Material material = Material();
+  material.ms    = 8e5;
+  material.A     = 1.3e-11;
+  material.alpha = 1;
+  material.afsync  = false;
+  material.T  = 300;
 
   // Initial magnetic field
   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
   m(seq(1,end-1),span,span,0) = constant(1.0,mesh.n0-2,mesh.n1,mesh.n2,1,f64);
   m(0,span,span,1 ) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
   m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
-  State state(mesh,param, m);
+  State state(mesh,material, m);
   vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   //vti_reader(state.m,mesh,"/home/pth/git/magnum.af/Data/Testing/minit.vti");
 
   std::vector<llgt_ptr> llgterm;
-  llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-  llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+  llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
 //  LLG Llg(state,llgterm);
   Stochastic_LLG Stoch(state,llgterm,dt,"Heun");
   //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
@@ -92,15 +92,15 @@ int main(int argc, char** argv)
 
   // Prepare switch
   array zeeswitch = constant(0.0,1,1,1,3,f64);
-  zeeswitch(0,0,0,0)=-24.6e-3/param.mu0;
-  zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
+  zeeswitch(0,0,0,0)=-24.6e-3/material.mu0;
+  zeeswitch(0,0,0,1)=+4.3e-3/material.mu0;
   zeeswitch(0,0,0,2)=0.0;
   zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
+  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
   //Llg.Fieldterms=llgterm;
   Stoch.Fieldterms=llgterm;
   //TODO remove state0 in LLG!
-  Stoch.param.alpha=0.02;
+  Stoch.material.alpha=0.02;
 
   //for (int i = 0; i < 50; i++){
   while (state.t < 1.5e-9){

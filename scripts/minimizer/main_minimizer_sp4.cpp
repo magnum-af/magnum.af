@@ -14,17 +14,17 @@ int main(int argc, char** argv)
     
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 8e5;
-    param.A     = 1.3e-11;
-    param.alpha = 1;
+    Material material = Material();
+    material.ms    = 8e5;
+    material.A     = 1.3e-11;
+    material.alpha = 1;
     
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(seq(1,end-1),span,span,0) = constant(1.0,mesh.n0-2,mesh.n1,mesh.n2,1,f64);
     m(0,span,span,1 ) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
     m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     if(exists (path_mrelax)){
         std::cout << "found mrelax. loading magnetization" << std::endl;
         vti_reader(state.m, mesh, path_mrelax);
@@ -32,8 +32,8 @@ int main(int argc, char** argv)
 
     //LlgTerms llgterms;
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 10);
-    minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    minimizer.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
+    minimizer.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
     vti_writer_micro(state.m, mesh ,(filepath + "init").c_str());
     minimizer.minimize(state);
     vti_writer_micro(state.m, mesh ,(filepath + "minimized").c_str());

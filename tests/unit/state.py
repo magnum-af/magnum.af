@@ -18,8 +18,8 @@ class StateTest(unittest.TestCase):
   m_af = af.reorder(af.from_ndarray(m_np),1,2,3,0)
 
   mesh=magnum_af.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-  param=magnum_af.Param()
-  state=magnum_af.State(mesh, param, m_af)
+  material=magnum_af.Material()
+  state=magnum_af.State(mesh, material, m_af)
   
   def test_state_initialization(self):
     self.assertEqual(1., self.state.m[0,0,0,0].scalar())

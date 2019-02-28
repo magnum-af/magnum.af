@@ -2,7 +2,7 @@
 
 template <class T>  T Stochastic_Integrator::Heun(const T& m, const double dt)
 {
-    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    const double D = (material.alpha * material.kb * material.T)/ (material.gamma * material.mu0 * material.ms * mesh.V);
     const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     T k1 = dt * stochfdmdt(m, h_th_prev);
     T k2 = dt * stochfdmdt(m + k1, h_th);
@@ -12,7 +12,7 @@ template <class T>  T Stochastic_Integrator::Heun(const T& m, const double dt)
 
 template <class T>  T Stochastic_Integrator::SemiImplicitHeun(const T& m, const double dt)
 {
-    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    const double D = (material.alpha * material.kb * material.T)/ (material.gamma * material.mu0 * material.ms * mesh.V);
     const array h_th_init = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t
     const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     T m1= dt/2. * stochfdmdt (m   , h_th_init);
@@ -51,9 +51,9 @@ void Stochastic_Integrator::step(State& state, const double dt){//TODO remove dt
 }
 
 Stochastic_Integrator::Stochastic_Integrator (State in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, const double dt, std::string smode):
-  Fieldterms(Fieldterms_in),  param(in.param), mesh(in.mesh), m_prev(in.m)
+  Fieldterms(Fieldterms_in),  material(in.material), mesh(in.mesh), m_prev(in.m)
 {
-    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+    const double D = (material.alpha * material.kb * material.T)/ (material.gamma * material.mu0 * material.ms * mesh.V);
     unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now().time_since_epoch()).count();
     rand_engine=af::randomEngine(af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed));
     h_th_prev = sqrt ((2. * D)/dt) * randn(mesh.dims, f64, rand_engine);// Initial random thermal field at t=0
@@ -90,7 +90,7 @@ double Stochastic_Integrator::cpu_time(){
 //{
 //    T m_it = 1.5 * m - m_prev/2.;
 //    m_prev = m;
-//    const double D = (param.alpha * param.kb * param.T)/ (param.gamma * param.mu0 * param.ms * mesh.V);
+//    const double D = (material.alpha * material.kb * material.T)/ (material.gamma * material.mu0 * material.ms * mesh.V);
 //    const array h_th = sqrt ((2. * D)/dt) * randn(mesh.dims, f64);
 //    for (int i = 0; i < 5; i++){
 //        m_it = m + stochfdmdt(m_it, h_th) * dt/2.;
@@ -160,7 +160,7 @@ double Stochastic_Integrator::cpu_time(){
 
 //array Stochastic_Integrator::fdmdt(const array& m, const array& heff){
 //    array cross_temp = cross4(m, heff);
-//    return - param.gamma/(1.+pow(param.alpha,2)) * cross4(m, heff) - param.alpha*param.gamma/(1.+pow(param.alpha,2)) * cross4(m, cross4(m, heff));
+//    return - material.gamma/(1.+pow(material.alpha,2)) * cross4(m, heff) - material.alpha*material.gamma/(1.+pow(material.alpha,2)) * cross4(m, cross4(m, heff));
 //}
 //
 //array Stochastic_Integrator::rk4(const array& m, const double dt)

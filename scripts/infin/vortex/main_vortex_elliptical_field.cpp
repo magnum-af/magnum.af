@@ -37,20 +37,20 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1.75/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    param.A     = 1.5e-11;//[J/m]
+    Material material = Material();
+    material.ms    = 1.75/material.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A     = 1.5e-11;//[J/m]
     std::cout << "A=" << A << "B= " << B << "steps_full_rotation=" << steps_full_rotation << std::endl;
 
-    State state(mesh, param, mesh.init_vortex());
+    State state(mesh, material, mesh.init_vortex());
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer(1e-6, 1000, 0);
     //LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);// This fails on GTO with current gcc version
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
-    minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
     minimizer.llgterms_.push_back( LlgTerm (new Zee(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 

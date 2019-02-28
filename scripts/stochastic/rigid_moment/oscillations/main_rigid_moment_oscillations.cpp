@@ -52,11 +52,11 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1281197;
-    param.Ku1   = 6.9e6;
-    param.alpha = 0.1;
-    param.T = 0;
+    Material material = Material();
+    material.ms    = 1281197;
+    material.Ku1   = 6.9e6;
+    material.alpha = 0.1;
+    material.T = 0;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -64,13 +64,13 @@ int main(int argc, char** argv)
     m(0,0,0,0)=sin(tile);
     m(0,0,0,1)=0.;
     m(0,0,0,2)=cos(tile);
-    State state(mesh,param, m);//ATTENTION, to be set in each loop
+    State state(mesh,material, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
   
     double dt = 5e-16;
 
-    std::cout << "T_analytic (=1/f) = " << 2*M_PI/param.gamma/(2*param.Ku1/(param.mu0*param.ms)) << " [s]" << std::endl;
+    std::cout << "T_analytic (=1/f) = " << 2*M_PI/material.gamma/(2*material.Ku1/(material.mu0*material.ms)) << " [s]" << std::endl;
 
     int count_zero_x=0;
     double prev_x=0;
@@ -79,8 +79,8 @@ int main(int argc, char** argv)
     double prev_y=0;
     double prev_y_t=0;
 
-    state=State(mesh,param,m);
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    state=State(mesh,material,m);
+    llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
     Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
     while (state.t < 30e-12){
         prev_x=meani(state.m,0);

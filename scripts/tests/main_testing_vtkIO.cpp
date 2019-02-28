@@ -44,11 +44,11 @@ int main(int argc, char** argv)
   
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-  Param param = Param();
-  param.ms    = 8e5;
-  param.A     = 1.3e-11;
-  param.alpha = 1;
-  param.afsync  = false;
+  Material material = Material();
+  material.ms    = 8e5;
+  material.A     = 1.3e-11;
+  material.alpha = 1;
+  material.afsync  = false;
 
   // Initial magnetic field
   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
   m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
   m=iota(dim4(nx,ny,nz,3),dim4(1,1,1,1),f64);
   print("A",m);
-  State state(mesh,param, m);
+  State state(mesh,material, m);
   vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   array A = array();
   Mesh newmesh = Mesh(0,0,0,0,0,0);
@@ -81,8 +81,8 @@ int main(int argc, char** argv)
   print("C",C);
   std::cout<<cmesh.n0<<"  "<<cmesh.n1<<"  "<<cmesh.n2<<"  "<<cmesh.dx<<"  "<<cmesh.dy<<"  "<<cmesh.dz<<"  "<<std::endl;
 //  std::vector<llgt_ptr> llgterm;
-//  llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-//  llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+//  llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+//  llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
 //  LLG Llg(state,llgterm);
 //  //LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 //
@@ -103,14 +103,14 @@ int main(int argc, char** argv)
 //
 //  // Prepare switch
 //  array zeeswitch = constant(0.0,1,1,1,3,f64);
-//  zeeswitch(0,0,0,0)=-24.6e-3/param.mu0;
-//  zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
+//  zeeswitch(0,0,0,0)=-24.6e-3/material.mu0;
+//  zeeswitch(0,0,0,1)=+4.3e-3/material.mu0;
 //  zeeswitch(0,0,0,2)=0.0;
 //  zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-//  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
+//  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
 //  Llg.Fieldterms=llgterm;
 //  //TODO remove state0 in LLG!
-//  Llg.state0.param.alpha=0.02;
+//  Llg.state0.material.alpha=0.02;
 //
 //  while (state.t < 2.e-9){
 //    state.m=Llg.llgstep(state);

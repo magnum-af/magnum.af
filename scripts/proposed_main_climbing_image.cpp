@@ -28,51 +28,51 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.alpha = 1;
-    param.afsync  = false;
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.alpha = 1;
+    material.afsync  = false;
   
-    //param.D=2*5.76e-3;
-    param.D=std::stod(argv[3]);
-    std::cout<<"D="<<param.D<<std::endl;
-    //param.D_axis[2]=-1;
+    //material.D=2*5.76e-3;
+    material.D=std::stod(argv[3]);
+    std::cout<<"D="<<material.D<<std::endl;
+    //material.D_axis[2]=-1;
   
-    //param.Ku1=6.4e6;
-    param.Ku1=std::stod(argv[4]);
-    std::cout<<"Ku1="<<param.Ku1<<std::endl;
-    //param.Ku1_axis[2]=1;
+    //material.Ku1=6.4e6;
+    material.Ku1=std::stod(argv[4]);
+    std::cout<<"Ku1="<<material.Ku1<<std::endl;
+    //material.Ku1_axis[2]=1;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
     //old values in prev versions, this is now wrong in pthmag: 
-    //const double wrong_J_atom=4.*param.A*dx;
-    const double wrong_D_atom= 2.* param.D * pow(dx,2);
-    std::cout<<"D_atom="<<param.D_atom<<std::endl;
-    param.K_atom=param.Ku1*pow(dx,3);
-    std::cout<<"Ku1_atom="<<param.K_atom<<std::endl;
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    //const double wrong_J_atom=4.*material.A*dx;
+    const double wrong_D_atom= 2.* material.D * pow(dx,2);
+    std::cout<<"D_atom="<<material.D_atom<<std::endl;
+    material.K_atom=material.Ku1*pow(dx,3);
+    std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
     array m; 
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     //vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
   
     LLG Llg(state,llgterm);
     
     std::vector<State> inputimages; 
     for(int i=0; i < n_interp; i++){
         vti_reader(m, testmesh, std::string("/home/paul/git/magnum.af/Data/phasespace/1n/hotfix_sign/d")+argv[3]+"/k"+argv[4]+"/skyrm_image"+std::to_string(i)+".vti");
-        inputimages.push_back(State(mesh, param, m));
+        inputimages.push_back(State(mesh, material, m));
     }
   
     String string(state,inputimages, n_interp, string_dt ,llgterm);

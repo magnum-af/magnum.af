@@ -71,14 +71,14 @@ nz = 1
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
-param=Param()
-param.ms=1.58/param.mu0 # Saturation magnetization
-param.A=15e-12 # Exchange constant
-param.Ku1=1.3e-3/z # Anisotropy constant
+material=Material()
+material.ms=1.58/material.mu0 # Saturation magnetization
+material.A=15e-12 # Exchange constant
+material.Ku1=1.3e-3/z # Anisotropy constant
 
-# Second param class for stress
-param_stress=Param()
-param_stress.ms=1.58/param.mu0
+# Second material class for stress
+param_stress=Material()
+param_stress.ms=1.58/material.mu0
 param_stress.A=15e-12
 param_stress.Ku1=1400  #TODO guessed worst case value fom Toni, elaborate
 param_stress.Ku1_axis=[1, 0, 0] # Setting axis in x-direction
@@ -89,7 +89,7 @@ start = time.time()
 disk1, n_cells  = disk(nx, ny, nz)
 boolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value here
 
-state = State(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
+state = State(mesh, material, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
 state.py_vti_writer_micro_boolean(filepath + "boolean")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
@@ -98,10 +98,10 @@ print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
 start = time.time()
-demag = DemagSolver(mesh, param)
-exch=ExchSolver(mesh, param)
-aniso_z = ANISOTROPY(mesh, param)
-aniso_stress = ANISOTROPY(mesh, param_stress)
+demag = DemagField(mesh, material)
+exch=ExchangeField(mesh, material)
+aniso_z = UniaxialAnisotropyField(mesh, material)
+aniso_stress = UniaxialAnisotropyField(mesh, param_stress)
 zee = Zee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
@@ -110,7 +110,7 @@ minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")
-A = 0.05/param.mu0
+A = 0.05/material.mu0
 steps = 100
 print ("A= ", A)
 for i in range(0, steps):

@@ -2,20 +2,20 @@
 #define STATE_H
 #include "arrayfire.h"
 #include "mesh.hpp"
-#include "param.hpp"
+#include "material.hpp"
 #include "vtk_IO.hpp"
 
 
 class State{
   public:
-    State (Mesh mesh_in, Param param_in, af::array m_in);
-    State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_mean);
-    State (Mesh mesh_in, Param param_in, long int aptr);
-    State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
+    State (Mesh mesh_in, Material param_in, af::array m_in);
+    State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean);
+    State (Mesh mesh_in, Material param_in, long int aptr);
+    State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
     ~State(){};
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
     Mesh mesh;
-    Param param;
+    Material material;
     double t{0.};//time
     af::array m;
     af::array Ms; // Saturation magnetization

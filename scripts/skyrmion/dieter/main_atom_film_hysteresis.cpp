@@ -18,7 +18,7 @@ af::array zee_func(State state){
     double field_Tesla = 0;
     field_Tesla = rate *state.t; 
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,2)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,2)=constant(field_Tesla/state.material.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -44,28 +44,28 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 580000;
-    param.alpha = 1;
-    param.A     = 15e-12;
-    //param.D=3e-3;
-    //param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.alpha = 1;
+    material.A     = 15e-12;
+    //material.D=3e-3;
+    //material.Ku1=0.6e6;
   
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
-    param.J_atom=2.*param.A*dx;
-    //param.D_atom= param.D * pow(dx,2);
-    //param.K_atom=param.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    //material.D_atom= material.D * pow(dx,2);
+    //material.K_atom=material.Ku1*pow(dx,3);
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      m(span,span,span,0) = 1.;
 
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     
     LLG Llg(state,llgterm);
   

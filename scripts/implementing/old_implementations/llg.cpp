@@ -45,10 +45,10 @@ array LLG::fdmdt(const array& m, const array& heff){
   calls_fdmdt++;
   timer_fdmdt=timer::start();
   if(fdmdt_dissipation_term_only){
-    dmdt = - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, cross4(m, heff));
+    dmdt = - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, cross4(m, heff));
   }
   else{
-    dmdt = - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, heff) - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, cross4(m, heff));
+    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, cross4(m, heff));
   }
   time_fdmdt+=af::timer::stop(timer_fdmdt);
   return dmdt;
@@ -56,7 +56,7 @@ array LLG::fdmdt(const array& m, const array& heff){
 
 array LLG::fdmdtminimal(array m, array heff){ //array LLG::fdmdt(array& m, array& heff){
   dmdt  =  cross4(m, heff);
-  return - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, heff) - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, dmdt);
+  return - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, dmdt);
 }
 
 
@@ -66,7 +66,7 @@ array LLG::fheff(const array& m){
   timer_heff=timer::start();
 
   state0.m=m; //TODO avoid state0 in the first place
-  //TODO avoid this line  State temp(state0.mesh,state0.param,m);
+  //TODO avoid this line  State temp(state0.mesh,state0.material,m);
   for(unsigned i=0;i<Fieldterms.size();++i){
     solution+=Fieldterms[i]->h(state0);
   }
@@ -187,19 +187,19 @@ array LLG::llgstep(State& state){
     //h=1e-12;
     //hnext=h;
     //Fixed Stepsize Integrators
-    if (state.param.mode == 0){
+    if (state.material.mode == 0){
       mtemp= explicitEuler(state.m,h);
     }
-    else if (state.param.mode == 1){
+    else if (state.material.mode == 1){
       mtemp= rk4(state.m,h);
     }
-    else if (state.param.mode == 2){
+    else if (state.material.mode == 2){
       mtemp= rk4minimal(state.m,h);
     }
-    else if (state.param.mode == 3){
+    else if (state.material.mode == 3){
       mtemp= rk4_3o8(state.m,h);
     }
-    else if (state.param.mode == 5){
+    else if (state.material.mode == 5){
       mtemp= RKF5(state.m,h);
     }
     //Adaptive Stepsize Integrators
@@ -209,36 +209,36 @@ array LLG::llgstep(State& state){
         while_break++;
         if(while_break>100) std::cout<<"Warning: While_break > 100, break called"<<std::endl;
         //BS3
-        if (state.param.mode == 4){
+        if (state.material.mode == 4){
           mtemp = BS23(state.m,h,err);
         }
         //RKF
-        else if (state.param.mode == 6){
+        else if (state.material.mode == 6){
           mtemp = RKF45(state.m,h,err);
         }
         //CK5
-        else if (state.param.mode == 7){
+        else if (state.material.mode == 7){
           mtemp = CK45(state.m,h,err);
         }
         //Tsit45
-        else if (state.param.mode == 8){
+        else if (state.material.mode == 8){
           mtemp = tsit45(state.m,h,err);
         }
         //DP5
-        else if (state.param.mode == 9){
+        else if (state.material.mode == 9){
           //rk_rel_tol_error=5.e-2; 
           mtemp= DP45(state.m,h,err);
         }
         //BS5
-        else if (state.param.mode == 10){
+        else if (state.material.mode == 10){
           mtemp = BS45(state.m,h,err);
         }
         //BS45 double error
-        else if (state.param.mode == 11){
+        else if (state.material.mode == 11){
           mtemp = BS45de(state.m,h,err);
         }
         //DP8
-        else if (state.param.mode == 12){
+        else if (state.material.mode == 12){
           mtemp = DP78(state.m,h,err);
         }
         if(controller.success(err,h))
@@ -251,7 +251,7 @@ array LLG::llgstep(State& state){
     state0.t+=h;//TODO avoid state0
     mtemp+=state.m;
     h=controller.get_hnext();
-    if(state0.param.afsync) af::sync();
+    if(state0.material.afsync) af::sync();
     time_integrator += timer::stop(timer_integrator);
     //mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
     state.steps ++;
@@ -676,7 +676,7 @@ array LLG::DP78(const array& m, const double dt , double& err)
 LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in){
 //LLG::LLG (State state0_in, double atol_in, double  rtol_in, double  hmax_in, double  hmin_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in), atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){
 
-  if ((state0.param.mode == 0) || (state0.param.mode == 1) || (state0.param.mode == 2) || (state0.param.mode == 3) || (state0.param.mode == 5)){
+  if ((state0.material.mode == 0) || (state0.material.mode == 1) || (state0.material.mode == 2) || (state0.material.mode == 3) || (state0.material.mode == 5)){
     h=controller.hmax;
     hnext=controller.hmax;
   }
@@ -684,7 +684,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     h=1.01*controller.hmin;
 
   //Tsit45
-  if (state0.param.mode == 8){
+  if (state0.material.mode == 8){
     s=7;
     //const int s=7;
     //Declare arrays and init with zeros
@@ -738,7 +738,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
   }
   //DP45
-  if (state0.param.mode == 9){
+  if (state0.material.mode == 9){
     s=7;
     //Declare arrays and init with zeros
     //double a[s+1][s+1],e[s+1];//, c[s+1]
@@ -762,7 +762,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
   
    }
   //BS5 and BS5de
-  if (state0.param.mode == 10 || state0.param.mode == 11){
+  if (state0.material.mode == 10 || state0.material.mode == 11){
     s=8;
     FSAL=true;
     a[2][1] = 1.0e0/6.0e0;
@@ -813,7 +813,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     b[7] = 79937.e0/1113912.e0;
     b[8] = 3293.e0/556956.e0;
   }
-  if (state0.param.mode == 12){
+  if (state0.material.mode == 12){
     s=13;
     FSAL=false;
     a[2][1] = 5.55555555555555555555555555556e-2;
@@ -961,9 +961,9 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m);
 //    crosstemp  =  cross4(m, heff);
-//    array dmdt = - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, heff) - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, crosstemp);
+//    array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp);
 //    m += dt * dmdt;
-//    if(state0.param.afsync) af::sync();
+//    if(state0.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 ////    std::cout << "T: heff.dims " << heff.dims() << " m.dims " << m.dims() << " cross4 " << crosstemp.dims()  << std::endl;
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
@@ -971,13 +971,13 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::llgstepEEold(array& m,double dt, array& h_zee){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m) + h_zee;
-//    crosstemp  =  cross4(m, heff); array dmdt = - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, heff) - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.param.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m,3)),1,1,1,3); };
+//    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m,3)),1,1,1,3); };
 //
 ////Explicit Euler LLG stpe without zeeman field
 //array LLG::llgstepEE(array& m){
 //    timer_integrator = timer::start();
-//    m += explicitEuler(m, state0.param.dt);
-//    if(state0.param.afsync) af::sync();
+//    m += explicitEuler(m, state0.material.dt);
+//    if(state0.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
 //};
@@ -1234,8 +1234,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 ////RK4
 //array LLG::llgstep(array& m){
 //    timer_integrator = timer::start();
-//    m += rk4(m,state0.param.dt);
-//    if(state0.param.afsync) af::sync();
+//    m += rk4(m,state0.material.dt);
+//    if(state0.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    mean(m); //TODO this is needed to avoid cuda crash?!?
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
@@ -1245,7 +1245,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::llgstepEtesting(array& m,double dt){
 //    timer_integrator = timer::start();
 //    m += explicitEuler(m, dt);
-//    if(state0.param.afsync) af::sync();
+//    if(state0.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    std::cout << "TEST:bef" << " m.dims = "  << m.dims() << " heff.dims = "<< heff.dims() << std::endl;
 //    m/=tile(sqrt(sum(m*m,3)),1,1,1,3);
@@ -1254,17 +1254,17 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //};
 
 
-//    else if (state0.param.mode == 3){
+//    else if (state0.material.mode == 3){
 //      double *mdiff=NULL;
 //      array mtemp = m;
-//      //m += RKF45(m,state0.param.dt,rk_abs_error);
+//      //m += RKF45(m,state0.material.dt,rk_abs_error);
 //      m += RKF45(m,h,rk_abs_error);
 //      mdiff=max(max(max(max(abs(m-mtemp),0),1),2),3).host<double>();
 //      //mdiff=max(abs(m-mtemp)).host<double>();
 //      rk_rel_error=rk_abs_error/(mdiff[0]);
 //      freeHost(mdiff);
-//      //For fixed stepsize: h_abs = state0.param.dt * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); 
-//      //For fixed stepsize: h_rel = state0.param.dt * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.)));    
+//      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); 
+//      //For fixed stepsize: h_rel = state0.material.dt * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.)));    
 //      h_abs = h * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); //TODO is s=6?
 //      h_rel = h * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.))); //TODO is s=6?
 //      (h_abs < h_rel) ? h=h_abs : h=h_rel ;
@@ -1318,7 +1318,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //With this in llgstep
 //    cross4b(m,heff);
 //    cross4b(m,crosstemp);
-//    dmdt = - state0.param.gamma/(1.+pow(state0.param.alpha,2)) * heff - state0.param.alpha*state0.param.gamma/(1.+pow(state0.param.alpha,2)) * crosstemp;
+//    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * heff - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * crosstemp;
 
 
 

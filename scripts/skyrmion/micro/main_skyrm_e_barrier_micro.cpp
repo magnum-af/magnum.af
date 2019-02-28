@@ -39,23 +39,23 @@ int main(int argc, char** argv)
 
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-  Param param = Param();
-  param.gamma = 2.211e5;
-  param.ms    = 1.1e6;
-  param.A     = 1.6e-11;
-  param.alpha = 1;
-  param.afsync  = false;
+  Material material = Material();
+  material.gamma = 2.211e5;
+  material.ms    = 1.1e6;
+  material.A     = 1.6e-11;
+  material.alpha = 1;
+  material.afsync  = false;
 
-  param.D=2*5.76e-3;
-  //param.D_axis[2]=-1;
+  material.D=2*5.76e-3;
+  //material.D_axis[2]=-1;
 
-  param.Ku1=6.4e6;
-  //param.Ku1_axis[2]=1;
+  material.Ku1=6.4e6;
+  //material.Ku1_axis[2]=1;
 
-  param.J_atom=4.*param.A*dx;
-  param.D_atom= 2.* param.D * pow(dx,2);
-  param.K_atom=4.* param.Ku1/param.ms;
-  param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+  material.J_atom=4.*material.A*dx;
+  material.D_atom= 2.* material.D * pow(dx,2);
+  material.K_atom=4.* material.Ku1/material.ms;
+  material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 
 
    // Initial magnetic field
@@ -70,22 +70,22 @@ int main(int argc, char** argv)
      }
    }
 
-  State state(mesh,param, m);
+  State state(mesh,material, m);
   std::cout << "test" << std::endl;
   vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
 
   std::cout << "test" << std::endl;
   std::vector<llgt_ptr> llgterm;
-  llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
+  llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
   std::cout << "test" << std::endl;
-  llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-  llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-  llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+  llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
   
-  //llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-  //llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-  //llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-  //llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+  //llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+  //llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+  //llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
 
   LLG Llg(state,llgterm);
 
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
   
   std::vector<State> inputimages; 
   inputimages.push_back(state);
-  inputimages.push_back(State(mesh,param, last));
+  inputimages.push_back(State(mesh,material, last));
 
   String string(state,inputimages, n_interp, string_dt ,llgterm);
   //String* string = new String(state,inputimages, n_interp ,llgterm);

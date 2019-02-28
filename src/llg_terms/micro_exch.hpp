@@ -5,7 +5,7 @@
 #include "../state.hpp"
 #include "../func.hpp"
 
-class ExchSolver : public LLGTerm {
+class ExchangeField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -18,9 +18,9 @@ class ExchSolver : public LLGTerm {
     double get_cpu_time(){return cpu_time;}
 
 
-    Param param;
+    Material material;
     Mesh mesh;
-    ExchSolver (Mesh, Param);
+    ExchangeField (Mesh, Material);
     af::array filtr;
 
     double     cpu_time{0.};

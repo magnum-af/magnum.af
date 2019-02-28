@@ -2,35 +2,35 @@
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
-double DemagSolver::E(const State& state){
-  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+double DemagField::E(const State& state){
+  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
-double DemagSolver::E(const State& state, const af::array& h){
-  return -param.mu0/2. * param.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+double DemagField::E(const State& state, const af::array& h){
+  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
-void DemagSolver::print_Nfft(){
+void DemagField::print_Nfft(){
     af::print("Nfft=", Nfft);
 }
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-DemagSolver::DemagSolver (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){
+DemagField::DemagField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
   Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
 }
 
 
-af::array DemagSolver::h(const State&  state){
+af::array DemagField::h(const State&  state){
     timer_demagsolve = af::timer::start();
   // FFT with zero-padding of the m field
   af::array mfft;
   if (mesh.n2_exp == 1){
-      if (state.Ms.isempty()) mfft=af::fftR2C<2>(param.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<2>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
       else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
   }
   else {
-      if (state.Ms.isempty()) mfft=af::fftR2C<3>(param.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<3>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
       else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
   }
 
@@ -50,13 +50,13 @@ af::array DemagSolver::h(const State&  state){
   af::array h_field;
   if (mesh.n2_exp == 1){
     h_field=af::fftC2R<2>(hfft);
-    if(param.afsync) af::sync();
+    if(material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
   }
   else {
     h_field=af::fftC2R<3>(hfft);
-    if(param.afsync) af::sync();
+    if(material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
   }

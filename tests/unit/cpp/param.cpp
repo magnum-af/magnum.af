@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <math.h>
-#include "../../../src/param.cpp"
+#include "../../../src/material.cpp"
  
 // Exemplary unit test
 TEST(ParamInitTest, mu0) {
-    Param param;
-    ASSERT_EQ(4e-7 * M_PI, param.mu0);
+    Material material;
+    ASSERT_EQ(4e-7 * M_PI, material.mu0);
 }
 
 int main(int argc, char **argv) {

@@ -8,15 +8,15 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
         if(verbose_) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
-        Ms = af::constant(this->param.ms, nzero.dims(), f64);
+        Ms = af::constant(this->material.ms, nzero.dims(), f64);
         Ms *= nzero;
         Ms = af::tile(Ms,1,1,1,3);
     }
 }
 
 void State::check_discretization(){
-    if ( this->param.A != 0 && this->param.Ku1 != 0) { // TODO implement better way of checking
-        double max_allowed_cellsize = sqrt(this->param.A/this->param.Ku1);
+    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
+        double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
         if (verbose_ && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
             std::cout << red("Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)") << std::endl;
         }
@@ -36,8 +36,8 @@ void State::check_m_norm(double tol){
 //
 
 
-State::State (Mesh mesh_in, Param param_in, af::array m_in):
-              mesh(mesh_in),param(param_in), m(m_in)
+State::State (Mesh mesh_in, Material param_in, af::array m_in):
+              mesh(mesh_in),material(param_in), m(m_in)
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
@@ -45,8 +45,8 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in):
 }
 
 ///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_mean):
-              mesh(mesh_in),param(param_in), m(m_in), evaluate_mean_(evaluate_mean)
+State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean):
+              mesh(mesh_in),material(param_in), m(m_in), evaluate_mean_(evaluate_mean)
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
@@ -56,7 +56,7 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_m
     if (verbose_) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
 }
 
-State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose_(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
@@ -67,7 +67,7 @@ State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param
 }
 
 ///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), param(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), material(param_in), verbose_(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "../../../src/mesh.cpp"
-#include "../../../src/param.cpp"
+#include "../../../src/material.cpp"
 #include "../../../src/state.cpp"
 #include "../../../src/func.cpp"
 #include "../../../src/vtk_IO.cpp"
@@ -11,20 +11,20 @@
 #include "../../../src/integrators/controller.cpp"
 #include "../../../src/llg_terms/micro_exch.cpp"
 
-// Testing whether param.A and state.micro_A_field yield same result
+// Testing whether material.A and state.micro_A_field yield same result
 TEST(MicroAFieldTest, n) {
     Mesh mesh(3,3,3,0.1,0.2,0.3);
-    Param param = Param();
-    param.ms    = 8e5;
-    param.A     = 1.3e-11;
-    param.alpha = 1;
-    State state(mesh,param, mesh.init_sp4());
+    Material material = Material();
+    material.ms    = 8e5;
+    material.A     = 1.3e-11;
+    material.alpha = 1;
+    State state(mesh,material, mesh.init_sp4());
     LlgTerms llgterm;
-    llgterm.push_back(  std::shared_ptr<LLGTerm> (new ExchSolver(mesh,param)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(mesh,material)));
+    LLGIntegrator Llg(llgterm);
     af::array constantA = Llg.llgterms[0]->h(state);
 
-    state.micro_A_field=af::constant(param.A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    state.micro_A_field=af::constant(material.A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
 
     af::array variableA = Llg.llgterms[0]->h(state);
 

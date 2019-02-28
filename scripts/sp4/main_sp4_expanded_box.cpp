@@ -75,10 +75,10 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,5.e-7/100,1.25e-7/25,3.e-9);
-    Param param = Param();
-    param.ms    = 8e5;
-    param.A     = 1.3e-11;
-    param.alpha = 1;
+    Material material = Material();
+    material.ms    = 8e5;
+    material.A     = 1.3e-11;
+    material.alpha = 1;
   
     // Initial magnetic field
     //CASE 1
@@ -99,23 +99,23 @@ int main(int argc, char** argv)
     //print ("case 2 m:",m);
     //CASE 2
 
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
 
     //CASE 1
-    //state.Ms=constant(param.ms, state.mesh.dims, f64);
+    //state.Ms=constant(material.ms, state.mesh.dims, f64);
     //CASE 1
 
     //CASE 2
     state.Ms =constant(0.0, state.mesh.dims, f64);
-    state.Ms(seq((nx-spnx)/2,end-(nx-spnx)/2),seq((ny-spny)/2,end-(ny-spny)/2),seq((nz-spnz)/2,end-(nz-spnz)/2),span) = constant(state.param.ms,spnx,spny,spnz,3,f64);
+    state.Ms(seq((nx-spnx)/2,end-(nx-spnx)/2),seq((ny-spny)/2,end-(ny-spny)/2),seq((nz-spnz)/2,end-(nz-spnz)/2),span) = constant(state.material.ms,spnx,spny,spnz,3,f64);
     //CASE 2
     
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     //testing MS
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
-    //state.Ms=constant(param.ms, state.mesh.dims, f64);
+    //state.Ms=constant(material.ms, state.mesh.dims, f64);
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
     //(state.Ms.isempty()? std::cout << "TRUE" << true <<std::endl : std::cout << "flase" << false <<std::endl);
     //if (state.Ms.isempty()){std::cout << "state.MS.isempts()"<<std::endl;}
@@ -142,8 +142,8 @@ int main(int argc, char** argv)
     //print("Div",Div);
 
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
     LLG Llg(state,llgterm);
   
     std::ofstream stream;
@@ -163,13 +163,13 @@ int main(int argc, char** argv)
   
     // Prepare switch
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,0)=-24.6e-3/param.mu0;
-    zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
+    zeeswitch(0,0,0,0)=-24.6e-3/material.mu0;
+    zeeswitch(0,0,0,1)=+4.3e-3/material.mu0;
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
+    llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
     Llg.Fieldterms=llgterm;
-    Llg.state0.param.alpha=0.02;
+    Llg.state0.material.alpha=0.02;
   
     while (state.t < 1.5e-9){
       state.m=Llg.llgstep(state);

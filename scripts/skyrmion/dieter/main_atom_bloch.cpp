@@ -23,23 +23,23 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
-    param.set_atomistic_from_micromagnetic(mesh.dx);
+    material.set_atomistic_from_micromagnetic(mesh.dx);
 
-    State state(mesh, param, mesh.skyrmconf());
+    State state(mesh, material, mesh.skyrmconf());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
-    NewLlg Llg;
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    LLGIntegrator Llg;
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
     
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     
     std::vector<State> inputimages; 
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh,param, last));
+    inputimages.push_back(State(mesh,material, last));
   
     String string(state, inputimages, n_interp, string_dt , Llg.llgterms);
     string.run(filepath, 1e-13, 1e-28, 10000);

@@ -28,19 +28,19 @@ nz = 1
 mesh=magnum_af.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 m=af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 
-param=magnum_af.Param()
-#print (param.mu0)
-param.ms = 8e5
-param.A = 1.3e-11
-param.alpha = 1.
+material=magnum_af.Material()
+#print (material.mu0)
+material.ms = 8e5
+material.A = 1.3e-11
+material.alpha = 1.
 
 m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
-state=magnum_af.State(mesh,param,m)
-demag=magnum_af.DemagSolver(mesh,param)
-exch=magnum_af.ExchSolver(mesh,param)
-Llg=magnum_af.NewLlg(demag,exch)
+state=magnum_af.State(mesh,material,m)
+demag=magnum_af.DemagField(mesh,material)
+exch=magnum_af.ExchangeField(mesh,material)
+Llg=magnum_af.LLGIntegrator(demag,exch)
 
 # Relaxing
 print("relaxing 1ns")
@@ -57,8 +57,8 @@ print("relaxed in", time.time() - timer, "[s]")
 # Resetting alpha and adding Zeeman field
 state.set_alpha(0.02)
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0]=-24.6e-3/param.mu0
-zeeswitch[0,0,0,1]=+4.3e-3/param.mu0
+zeeswitch[0,0,0,0]=-24.6e-3/material.mu0
+zeeswitch[0,0,0,1]=+4.3e-3/material.mu0
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
 zee=magnum_af.Zee(zeeswitch)
@@ -78,6 +78,6 @@ stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
 
-#teststate=magnum_af.State(mesh,param,m) # testing wether teststate.m is correctly overwirtten with m_relax
+#teststate=magnum_af.State(mesh,material,m) # testing wether teststate.m is correctly overwirtten with m_relax
 #teststate.py_vti_reader("/home/paul/git/pth-mag/Data/Testing/py_interf/m_relax.vti")
 #teststate.py_vti_writer_micro("/home/paul/git/pth-mag/Data/Testing/py_interf/m_reader")

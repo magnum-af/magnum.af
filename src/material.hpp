@@ -2,7 +2,7 @@
 #define PARAM_H
 #include<math.h>
 ///Struct holding all simulation parameters.
-struct Param{
+struct Material{
     double mu0 = 4e-7 * M_PI;		//!< [H/m] 	// vaccum permeability	//= pi/2500000 [N/A^2] //TODO const leads to error in string.cpp
     double kb = 1.38064852e-23;		//!< [J/K]  	// Boltzmann Constant
     double gamma = 221276.1488637255;	//!< [m/A/s]	// gyromagnetic ratio	// gamma = gamma_e * mu0; electron gyromagnetic ratio multiplied by magnetic constant
@@ -29,12 +29,12 @@ struct Param{
 
     // non-physical-parameters
     int mode{6};  			//!< Inegration method	//TODO skipp inparam 0 -> rk4, 1 -> rk4_3o8, 2 -> rkf, 3 -> explicitEuler
-    bool afsync{false};			//!< activate af::sync for timings //TODO skipp in param
+    bool afsync{false};			//!< activate af::sync for timings //TODO skipp in material
 
     // Default constructor
-    Param(){};
+    Material(){};
     // For wrapping only
-    Param(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
+    Material(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
 };
 #endif
 

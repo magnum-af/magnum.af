@@ -19,21 +19,21 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.J_atom=2.*param.A*dx;
-    param.p=param.ms*pow(dx,3);
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.J_atom=2.*material.A*dx;
+    material.p=material.ms*pow(dx,3);
   
     //-------------------------------------------------------
     array m = randu(mesh.n0,mesh.n1,mesh.n2,3,f64);
-    State state(mesh,param, m);
+    State state(mesh,material, m);
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     LLG Llg(state,llgterm);
     std::vector<llgt_ptr> llgterm2;
-    llgterm2.push_back( llgt_ptr (new ExchSolver(mesh,param)));
+    llgterm2.push_back( llgt_ptr (new ExchangeField(mesh,material)));
     LLG Llg2(state,llgterm2);
     
     for (int x=0; x < nx; x++){

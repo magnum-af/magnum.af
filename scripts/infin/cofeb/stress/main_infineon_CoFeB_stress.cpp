@@ -32,18 +32,18 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
-    Param param = Param();
-    param.ms    = 1.58/param.mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
-    param.A     = 15e-12;        // [J/m]
-    param.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    Material material = Material();
+    material.ms    = 1.58/material.mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
+    material.A     = 15e-12;        // [J/m]
+    material.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
 
-    Param param_stress = param;
+    Material param_stress = material;
     param_stress.Ku1 = 1400; //TODO
     param_stress.Ku1_axis[0]=1;
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
 
-    State state(mesh,param, mesh.ellipse(2));
+    State state(mesh,material, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
     std::cout << "Mean i for check: " <<  state.meani(0) <<"\t" << state.meani(1) <<"\t" << state.meani(2) << std::endl;
 
@@ -54,10 +54,10 @@ int main(int argc, char** argv)
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer;
     //LBFGS_Minimizer minimizer = LBFGS_Minimizer();//Fails on GTO, maybe due to gcc verions < 7.2
-    minimizer.llgterms_.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    minimizer.llgterms_.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
-    minimizer.llgterms_.push_back( LlgTerm (new ANISOTROPY(mesh,param_stress)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,param_stress)));
     minimizer.llgterms_.push_back( LlgTerm (new Zee(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 

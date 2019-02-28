@@ -52,30 +52,30 @@ int main(int argc, char** argv)
 
   //Generating Objects
   Mesh mesh(nx,ny,nz,dx,dx,dx);
-  Param param = Param();
-  param.ms    = 1.1e6;
-  param.A     = 1.5e-11;//TODO why this value? Check!
-  param.alpha = 1;
-  param.afsync  = false;
+  Material material = Material();
+  material.ms    = 1.1e6;
+  material.A     = 1.5e-11;//TODO why this value? Check!
+  material.alpha = 1;
+  material.afsync  = false;
 
-  //param.D=2*5.76e-3;
-  //param.D=3.0e-3;
-  param.D=std::stod(argv[3]);
-  std::cout<<"D="<<param.D<<std::endl;
-  //param.D_axis[2]=-1;
+  //material.D=2*5.76e-3;
+  //material.D=3.0e-3;
+  material.D=std::stod(argv[3]);
+  std::cout<<"D="<<material.D<<std::endl;
+  //material.D_axis[2]=-1;
 
-  //param.Ku1=510e3;
-  //param.Ku1=800399;
-  param.Ku1=std::stod(argv[4]);
-  std::cout<<"Ku1="<<param.Ku1<<std::endl;
-  //param.Ku1_axis[2]=1;
+  //material.Ku1=510e3;
+  //material.Ku1=800399;
+  material.Ku1=std::stod(argv[4]);
+  std::cout<<"Ku1="<<material.Ku1<<std::endl;
+  //material.Ku1_axis[2]=1;
 
-  param.J_atom=2.*param.A*dx;
-  param.D_atom= param.D * pow(dx,2);
-  std::cout<<"D_atom="<<param.D_atom<<std::endl;
-  param.K_atom=param.Ku1*pow(dx,3);
-  std::cout<<"Ku1_atom="<<param.K_atom<<std::endl;
-  param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+  material.J_atom=2.*material.A*dx;
+  material.D_atom= material.D * pow(dx,2);
+  std::cout<<"D_atom="<<material.D_atom<<std::endl;
+  material.K_atom=material.Ku1*pow(dx,3);
+  std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
+  material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 
 
    // Initial magnetic field
@@ -90,19 +90,19 @@ int main(int argc, char** argv)
      }
    }
 
-  State state(mesh,param, m);
+  State state(mesh,material, m);
   af_to_vti(state.m, mesh ,(filepath + "minit").c_str());
 
   std::vector<llgt_ptr> llgterm;
-  //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-  //llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-  //llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-  //llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+  //llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
   
-  llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-  llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-  llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-  llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+  llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+  llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+  llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
 
   LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
 
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
   
   std::vector<State> inputimages; 
   inputimages.push_back(state);
-  inputimages.push_back(State(mesh,param, last));
+  inputimages.push_back(State(mesh,material, last));
 
   String string(state,inputimages, n_interp, string_dt ,llgterm);
   //String* string = new String(state,inputimages, n_interp ,llgterm);
@@ -206,7 +206,7 @@ int main(int argc, char** argv)
   }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<param.D<<"\t"<<param.Ku1<<"\t"<<param.D_atom<<"\t"<<param.K_atom<<"\t"<<std::endl;
+    stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<material.D<<"\t"<<material.Ku1<<"\t"<<material.D_atom<<"\t"<<material.K_atom<<"\t"<<std::endl;
 
   std::ofstream myfileE;
   myfileE.precision(12);

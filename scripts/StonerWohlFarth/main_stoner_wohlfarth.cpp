@@ -29,19 +29,19 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1/param.mu0;
-    param.alpha = 0.008;
-    param.T = 1;
+    Material material = Material();
+    material.ms    = 1/material.mu0;
+    material.alpha = 0.008;
+    material.T = 1;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
     std::vector<llgt_ptr> llgterm;
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,2)=1./param.mu0;
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,param)));
-    State state(mesh, param, m);
+    zeeswitch(0,0,0,2)=1./material.mu0;
+    llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
+    State state(mesh, material, m);
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
   
     while (state.t < 100e-9){

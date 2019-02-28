@@ -1,10 +1,10 @@
-#ifndef MICRO_ANISOTROPY_H
-#define MICRO_ANISOTROPY_H
+#ifndef MICRO_UniaxialAnisotropyField_H
+#define MICRO_UniaxialAnisotropyField_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
-class ANISOTROPY : public LLGTerm {
+class UniaxialAnisotropyField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -14,8 +14,8 @@ class ANISOTROPY : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    ANISOTROPY (Mesh, Param);
-    Param param;
+    UniaxialAnisotropyField (Mesh, Material);
+    Material material;
     Mesh mesh;
 
     af::array eu;//Uniaxial anisotropy normal vector

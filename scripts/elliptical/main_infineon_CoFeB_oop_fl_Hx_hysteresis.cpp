@@ -14,7 +14,7 @@ af::array zee_func(State state){
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.material.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
   
@@ -36,24 +36,24 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
-    Param param = Param();
-    param.ms    = 1.58/param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    param.A     = 15e-12;//[J/m]
-    param.Ku1   = 1.3e-3/z;// [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
-    param.alpha = 0.02;
+    Material material = Material();
+    material.ms    = 1.58/material.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A     = 15e-12;//[J/m]
+    material.Ku1   = 1.3e-3/z;// [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    material.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,param, mesh.ellipse(n_cells, 2));
+    State state(mesh,material, mesh.ellipse(n_cells, 2));
 
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
 
     std::vector<LlgTerm> llgterm;
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    LLGIntegrator Llg(llgterm);
 
     // Relaxation
     if(!exists (path_mrelax)){

@@ -22,7 +22,7 @@ Callback::Callback(std::string scheme, Controller controller) : AdaptiveRungeKut
 TEST(DP78IntegrationTest, n) {
     Callback callback = Callback("DP78",Controller(1e-15, 1e15, 1e-14, 1e-14));
     af::array m = af::constant(1.0,1,f64);
-    State state(Mesh(0,0,0,0,0,0), Param(), m);
+    State state(Mesh(0,0,0,0,0,0), Material(), m);
     for (int i=0; i<100; i++){
          callback.step(state);
          //std::cout << "i=" << i << ", state.m= " << afvalue(state.m) << "; ";

@@ -38,7 +38,7 @@ void Zee::set_xyz(const State& state, const double x, const double y, const doub
 
 af::array Zee::h(const State& state){
     //timer = timer::start();
-    //if(param.afsync) sync();
+    //if(material.afsync) sync();
     //time += timer::stop(timer);
     if (is_lamda) {
         return lamda_callback(state); 
@@ -51,9 +51,9 @@ af::array Zee::h(const State& state){
 
 //Zeeman energy term
 double Zee::E(const State& state){
-    return - state.param.mu0 * state.param.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
+    return - state.material.mu0 * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
 }
 
 double Zee::E(const State& state, const af::array& h){
-    return - state.param.mu0 * state.param.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
+    return - state.material.mu0 * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
 }

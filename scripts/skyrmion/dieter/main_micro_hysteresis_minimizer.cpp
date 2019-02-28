@@ -20,7 +20,7 @@ af::array zee_func(State state){
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.material.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -45,12 +45,12 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -64,16 +64,16 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     // Relax
     af::timer timer_llgterms = af::timer::start();
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
-    //minimizer.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    minimizer.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    minimizer.llgterms.push_back( LlgTerm (new DMI(mesh,param)));
-    minimizer.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
+    //minimizer.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
+    minimizer.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    minimizer.llgterms.push_back( LlgTerm (new DmiField(mesh,material)));
+    minimizer.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     //obtaining relaxed magnetization

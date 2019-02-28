@@ -1,11 +1,11 @@
-#ifndef ATOMISTIC_DEMAG_H
-#define ATOMISTIC_DEMAG_H
+#ifndef AtomisticDipoleDipoleField_H
+#define AtomisticDipoleDipoleField_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
 
-class ATOMISTIC_DEMAG: public LLGTerm{
+class AtomisticDipoleDipoleField: public LLGTerm{
   public:
     //Field contribution
     af::array h(const State& state);
@@ -15,7 +15,7 @@ class ATOMISTIC_DEMAG: public LLGTerm{
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    ATOMISTIC_DEMAG (Mesh);
+    AtomisticDipoleDipoleField (Mesh);
 
     af::array Nfft;
     double cpu_time{0.};

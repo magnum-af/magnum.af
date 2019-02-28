@@ -47,22 +47,22 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    param.A     = 1.5e-11;//[J/m]
-    param.alpha = 0.02;
+    Material material = Material();
+    material.ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A     = 1.5e-11;//[J/m]
+    material.alpha = 0.02;
 
     std::cout << "A=" << A << "B= " << B << "t_full_rotation=" << t_full_rotation << std::endl;
 
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh, param, mesh.init_vortex(n_cells));
+    State state(mesh, material, mesh.init_vortex(n_cells));
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     std::vector<LlgTerm> llgterm;
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
     llgterm.push_back( LlgTerm (new Zee( zee_func_for_relax_in_init)));
-    NewLlg Llg(llgterm);
+    LLGIntegrator Llg(llgterm);
 
     // Calculating relaxed initial magnetization or reading in given magnetization
     if(!exists (path_mrelax)){

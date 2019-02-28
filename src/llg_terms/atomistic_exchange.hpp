@@ -1,11 +1,11 @@
-#ifndef ATOMISTIC_EXCHANGE_H
-#define ATOMISTIC_EXCHANGE_H
+#ifndef AtomisticExchangeField_H
+#define AtomisticExchangeField_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
 
-class ATOMISTIC_EXCHANGE : public LLGTerm {
+class AtomisticExchangeField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -15,7 +15,7 @@ class ATOMISTIC_EXCHANGE : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    ATOMISTIC_EXCHANGE (const Mesh& mesh);
+    AtomisticExchangeField (const Mesh& mesh);
 
     double     cpu_time{0.};
     af::timer timer_solve;

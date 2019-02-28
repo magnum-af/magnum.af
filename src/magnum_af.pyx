@@ -22,18 +22,18 @@ from cython.operator cimport dereference as deref
 from math import sqrt
 
 from magnum_af_decl cimport Mesh as cMesh
-from magnum_af_decl cimport Param as cParam
+from magnum_af_decl cimport Material as cParam
 from magnum_af_decl cimport State as cState
-from magnum_af_decl cimport NewLlg as cNewLlg
-from magnum_af_decl cimport DemagSolver as cDemagSolver
-from magnum_af_decl cimport ANISOTROPY as cANISOTROPY
-from magnum_af_decl cimport ExchSolver as cExchSolver
-#TODO#from magnum_af_decl cimport DMI as cDMI
+from magnum_af_decl cimport LLGIntegrator as cLLGIntegrator
+from magnum_af_decl cimport DemagField as cDemagField
+from magnum_af_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
+from magnum_af_decl cimport ExchangeField as cExchangeField
+#TODO#from magnum_af_decl cimport DmiField as cDMI
 
-from magnum_af_decl cimport ATOMISTIC_DEMAG as cATOMISTIC_DEMAG
-from magnum_af_decl cimport ATOMISTIC_EXCHANGE as cATOMISTIC_EXCHANGE
-from magnum_af_decl cimport ATOMISTIC_ANISOTROPY as cATOMISTIC_ANISOTROPY
-from magnum_af_decl cimport ATOMISTIC_DMI as cATOMISTIC_DMI
+from magnum_af_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
+from magnum_af_decl cimport AtomisticExchangeField as cAtomisticExchangeField
+from magnum_af_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
+from magnum_af_decl cimport AtomisticDmiField as cAtomisticDmiField
 from magnum_af_decl cimport Zee as cZee
 from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnum_af_decl cimport LLGTerm as cLLGTerm
@@ -63,7 +63,7 @@ cdef class Mesh:
 
 cdef class State:
   cdef cState* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in, m_in, evaluate_mean = None):
+  def __cinit__(self, Mesh mesh_in, Material param_in, m_in, evaluate_mean = None):
     # switch for evaluate_mean value
     if (evaluate_mean is None):
       self.thisptr = new cState (deref(mesh_in.thisptr), deref(param_in.thisptr), addressof(m_in.arr))  
@@ -96,7 +96,7 @@ cdef class State:
   def py_vtr_reader(self, outputname):
     self.thisptr._vtr_reader( outputname.encode('utf-8')) 
   def set_alpha(self,value):
-    self.thisptr.param.alpha=value
+    self.thisptr.material.alpha=value
 
   @property
   def m(self):
@@ -113,13 +113,13 @@ cdef class State:
 
 
 
-cdef class NewLlg:
-  cdef cNewLlg* thisptr
+cdef class LLGIntegrator:
+  cdef cLLGIntegrator* thisptr
   def __cinit__(self, *args):
     cdef vector[shared_ptr[cLLGTerm]] vector_in
     for arg in args:
       vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
-    self.thisptr = new cNewLlg (vector_in)  
+    self.thisptr = new cLLGIntegrator (vector_in)  
   # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
   # NOTE not happening in minimizer class as it is not derived (i guess)
   #def __dealloc__(self):
@@ -139,21 +139,21 @@ cdef class NewLlg:
   #def cpu_time(self):
   #  return self.thisptr.cpu_time()
   #def set_state0_alpha(self,value):
-  #  self.thisptr.state0.param.alpha=value
+  #  self.thisptr.state0.material.alpha=value
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
     #cdef vector[shared_ptr[cLLGTerm]] vector_in
     #for term in terms:
     #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms.pythisptr()))
-    #self.thisptr = new cNewLlg (vector_in)  
+    #self.thisptr = new cLLGIntegrator (vector_in)  
     
   
 
-cdef class DemagSolver:
-  cdef cDemagSolver* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new cDemagSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+cdef class DemagField:
+  cdef cDemagField* thisptr
+  def __cinit__(self, Mesh mesh_in, Material param_in):
+    self.thisptr = new cDemagField (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   #This would causes double free coruption!
   def __dealloc__(self):
     del self.thisptr
@@ -167,10 +167,10 @@ cdef class DemagSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class ExchSolver:
-  cdef cExchSolver* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new cExchSolver (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+cdef class ExchangeField:
+  cdef cExchangeField* thisptr
+  def __cinit__(self, Mesh mesh_in, Material param_in):
+    self.thisptr = new cExchangeField (deref(mesh_in.thisptr), deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -181,10 +181,10 @@ cdef class ExchSolver:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class ANISOTROPY:
-  cdef cANISOTROPY* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new cANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+cdef class UniaxialAnisotropyField:
+  cdef cUniaxialAnisotropyField* thisptr
+  def __cinit__(self, Mesh mesh_in, Material param_in):
+    self.thisptr = new cUniaxialAnisotropyField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -196,10 +196,10 @@ cdef class ANISOTROPY:
       return <size_t><void*>self.thisptr
 
 
-cdef class ATOMISTIC_DEMAG:
-  cdef cATOMISTIC_DEMAG* thisptr
+cdef class AtomisticDipoleDipoleField:
+  cdef cAtomisticDipoleDipoleField* thisptr
   def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new cATOMISTIC_DEMAG (deref(mesh_in.thisptr))  
+    self.thisptr = new cAtomisticDipoleDipoleField (deref(mesh_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -210,10 +210,10 @@ cdef class ATOMISTIC_DEMAG:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class ATOMISTIC_ANISOTROPY:
-  cdef cATOMISTIC_ANISOTROPY* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new cATOMISTIC_ANISOTROPY (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+cdef class AtomisticUniaxialAnisotropyField:
+  cdef cAtomisticUniaxialAnisotropyField* thisptr
+  def __cinit__(self, Mesh mesh_in, Material param_in):
+    self.thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -224,10 +224,10 @@ cdef class ATOMISTIC_ANISOTROPY:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class ATOMISTIC_EXCHANGE:
-  cdef cATOMISTIC_EXCHANGE* thisptr
+cdef class AtomisticExchangeField:
+  cdef cAtomisticExchangeField* thisptr
   def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new cATOMISTIC_EXCHANGE (deref(mesh_in.thisptr))  
+    self.thisptr = new cAtomisticExchangeField (deref(mesh_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -238,10 +238,10 @@ cdef class ATOMISTIC_EXCHANGE:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class ATOMISTIC_DMI:
-  cdef cATOMISTIC_DMI* thisptr
-  def __cinit__(self, Mesh mesh_in, Param param_in):
-    self.thisptr = new cATOMISTIC_DMI (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+cdef class AtomisticDmiField:
+  cdef cAtomisticDmiField* thisptr
+  def __cinit__(self, Mesh mesh_in, Material param_in):
+    self.thisptr = new cAtomisticDmiField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -302,7 +302,7 @@ cdef class LBFGS_Minimizer:
   def pyGetTimeCalcHeff(self):
     return self.thisptr.GetTimeCalcHeff()
 
-cdef class Param:
+cdef class Material:
   cdef cParam* thisptr
   def __cinit__(self, alpha = 0., T = 0., ms = 0., A = 0., D = 0., Ku1 = 0., D_axis = [0.,0.,-1], Ku1_axis = [0.,0.,1.], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False, mode = 6, afsync = False):
     Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]

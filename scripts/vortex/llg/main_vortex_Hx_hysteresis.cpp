@@ -14,7 +14,7 @@ af::array zee_func(State state){
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.material.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
   
@@ -34,19 +34,19 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    param.A     = 1.5e-11;//[J/m]
-    param.alpha = 0.02;
+    Material material = Material();
+    material.ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A     = 1.5e-11;//[J/m]
+    material.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh, param, mesh.init_vortex(n_cells));
+    State state(mesh, material, mesh.init_vortex(n_cells));
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     std::vector<LlgTerm> llgterm;
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    LLGIntegrator Llg(llgterm);
 
     // Calculating relaxed initial magnetization or reading in given magnetization
     if(!exists (path_mrelax)){

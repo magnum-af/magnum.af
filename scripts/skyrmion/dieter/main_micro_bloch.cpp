@@ -19,21 +19,21 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nxy,nxy,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
-    State state(mesh, param, mesh.skyrmconf());
+    State state(mesh, material, mesh.skyrmconf());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
-    NewLlg Llg;
-    Llg.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new DMI(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
+    LLGIntegrator Llg;
+    Llg.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new DmiField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
   
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     
     std::vector<State> inputimages; 
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh,param, last));
+    inputimages.push_back(State(mesh,material, last));
   
     String string(state, inputimages, 60, 5e-14, Llg.llgterms);
     string.run(filepath, 1e-13, 1e-28, 10000);

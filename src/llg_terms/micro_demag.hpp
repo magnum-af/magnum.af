@@ -5,7 +5,7 @@
 #include "../state.hpp"
 #include "../func.hpp"
 
-class DemagSolver : public LLGTerm {
+class DemagField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -15,10 +15,10 @@ class DemagSolver : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    Param param;
+    Material material;
     Mesh mesh;
 
-    DemagSolver (Mesh, Param);
+    DemagField (Mesh, Material);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
 

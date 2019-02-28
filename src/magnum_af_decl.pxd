@@ -12,8 +12,8 @@ cdef extern from "<arrayfire.h>" namespace "af":
     array()
 
 cdef extern from "../../src/llg_terms/micro_exch.hpp":
-  cdef cppclass ExchSolver:
-    ExchSolver (Mesh mesh_in, Param param_in);
+  cdef cppclass ExchangeField:
+    ExchangeField (Mesh mesh_in, Material param_in);
     double E(const State& state);
     double get_cpu_time();
 
@@ -27,13 +27,13 @@ cdef extern from "../../src/mesh.hpp":
 cdef extern from "../../src/state.hpp":
   cdef cppclass State:
     State ()
-    State (Mesh mesh_in, Param param_in, long int m_in);
-    State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr);
+    State (Mesh mesh_in, Material param_in, long int m_in);
+    State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
     void set_m(long int aptr);
     double t;
     array m;
     Mesh mesh;
-    Param param;
+    Material material;
     long int get_m_addr();
 
     void _vti_writer_micro(string outputname);
@@ -45,10 +45,10 @@ cdef extern from "../../src/state.hpp":
     void _vtr_reader(string inputname);
     double meani(const int i);
 
-cdef extern from "../../src/param.hpp":
-  cdef cppclass Param:
-    Param();
-    Param(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
+cdef extern from "../../src/material.hpp":
+  cdef cppclass Material:
+    Material();
+    Material(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
     double mu0;
     double gamma;
     double alpha;
@@ -73,46 +73,46 @@ cdef extern from "../../src/param.hpp":
     bool afsync;
 
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp":
-  cdef cppclass ATOMISTIC_DMI:
-    ATOMISTIC_DMI(Mesh, Param);
+  cdef cppclass AtomisticDmiField:
+    AtomisticDmiField(Mesh, Material);
     double E(const State& state);
     double get_cpu_time();
 
 cdef extern from "../../src/integrators/new_llg.hpp":
-  cdef cppclass NewLlg:
-    NewLlg (vector[shared_ptr[LLGTerm]] vector_in);
+  cdef cppclass LLGIntegrator:
+    LLGIntegrator (vector[shared_ptr[LLGTerm]] vector_in);
     vector[shared_ptr[LLGTerm]] llgterms;
     void step(State& state);
     double E(const State& state);
     long int get_fheff_addr(const State& state);
 cdef extern from "../../src/llg_terms/micro_demag.hpp":
-  cdef cppclass DemagSolver:
-    DemagSolver (Mesh mesh_in, Param param_in);
+  cdef cppclass DemagField:
+    DemagField (Mesh mesh_in, Material param_in);
     double E(const State& state);
     void print_Nfft();
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/micro_anisotropy.hpp":
-  cdef cppclass ANISOTROPY:
-    ANISOTROPY(Mesh, Param);
+  cdef cppclass UniaxialAnisotropyField:
+    UniaxialAnisotropyField(Mesh, Material);
     double E(const State& state);
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_demag.hpp":
-  cdef cppclass ATOMISTIC_DEMAG:
-    ATOMISTIC_DEMAG(Mesh);
+  cdef cppclass AtomisticDipoleDipoleField:
+    AtomisticDipoleDipoleField(Mesh);
     double E(const State& state);
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_anisotropy.hpp":
-  cdef cppclass ATOMISTIC_ANISOTROPY:
-    ATOMISTIC_ANISOTROPY(Mesh, Param);
+  cdef cppclass AtomisticUniaxialAnisotropyField:
+    AtomisticUniaxialAnisotropyField(Mesh, Material);
     double E(const State& state);
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_exchange.hpp":
-  cdef cppclass ATOMISTIC_EXCHANGE:
-    ATOMISTIC_EXCHANGE(Mesh);
+  cdef cppclass AtomisticExchangeField:
+    AtomisticExchangeField(Mesh);
     double E(const State& state);
     double get_cpu_time();
 

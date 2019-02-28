@@ -28,18 +28,18 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.p    = 1;
-    param.alpha = 1;
-    param.J_atom= 1;
+    Material material = Material();
+    material.p    = 1;
+    material.alpha = 1;
+    material.J_atom= 1;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     std::cout << "test " << std::endl;
     LLG Llg(state,llgterm);
     std::cout << "test " << std::endl;
