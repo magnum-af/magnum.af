@@ -31,7 +31,12 @@ af::array UniaxialAnisotropyField::h(const State& state){
 
   if(material.afsync) af::sync();
   cpu_time += af::timer::stop(timer_anisotropy);
-  return  2.* material.Ku1/(material.mu0 * material.ms) * (eu* anisotropy);
+  if (state.micro_Ku1_field.isempty()){
+    return  2.* material.Ku1/(material.mu0 * material.ms) * (eu* anisotropy); //TODO: change to state. values and check performance of setting eu in h
+  }
+  else {
+    return  2.* state.micro_Ku1_field/(material.mu0 * material.ms) * (eu* anisotropy);
+  }
 }
 
 

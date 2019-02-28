@@ -97,6 +97,36 @@ long int State::get_m_addr(){
     return (long int) a->get();
 }
 
+void State::set_micro_Ms_field(long int aptr){
+    void **a = (void **)aptr;
+    Ms = *( new af::array( *a )); // TODO rename Ms -> micro_Ms_field
+}
+
+long int State::get_micro_Ms_field(){
+    af::array *a = new af::array(Ms);
+    return (long int) a->get();
+}
+
+void State::set_micro_A_field(long int aptr){
+    void **a = (void **)aptr;
+    micro_A_field = *( new af::array( *a ));
+}
+
+long int State::get_micro_A_field(){
+    af::array *a = new af::array(micro_A_field);
+    return (long int) a->get();
+}
+
+void State::set_micro_Ku1_field(long int aptr){
+    void **a = (void **)aptr;
+    micro_Ku1_field = *( new af::array( *a ));
+}
+
+long int State::get_micro_Ku1_field(){
+    af::array *a = new af::array(micro_Ku1_field);
+    return (long int) a->get();
+}
+
 void State::_vti_writer_micro(std::string outputname){
     vti_writer_micro(m, mesh, outputname); 
 }

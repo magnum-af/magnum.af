@@ -29,12 +29,23 @@ cdef extern from "../../src/state.hpp":
     State ()
     State (Mesh mesh_in, Material param_in, long int m_in);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
-    void set_m(long int aptr);
-    double t;
+
     array m;
+    void set_m(long int aptr);
+    long int get_m_addr();
+    array Ms;
+    void set_micro_Ms_field(long int aptr);
+    long int get_micro_Ms_field();
+    array micro_A_field;
+    void set_micro_A_field(long int aptr);
+    long int get_micro_A_field();
+    array micro_Ku1_field;
+    void set_micro_Ku1_field(long int aptr);
+    long int get_micro_Ku1_field();
+
+    double t;
     Mesh mesh;
     Material material;
-    long int get_m_addr();
 
     void _vti_writer_micro(string outputname);
     void _vti_writer_micro_boolean(string outputname);

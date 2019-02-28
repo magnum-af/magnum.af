@@ -14,17 +14,24 @@ class State{
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
     ~State(){};
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
+    long int get_m_addr();
     Mesh mesh;
     Material material;
     double t{0.};//time
     af::array m;
-    af::array Ms; // Saturation magnetization
+    af::array Ms; // Saturation magnetization. Is impicitly set and used when magnetization has values of norm 0.
+    void set_micro_Ms_field(long int aptr);
+    long int get_micro_Ms_field();
     af::array micro_A_field; //!< Spacially varying exchange energy in [J/m] defined at each node.
+    void set_micro_A_field(long int aptr); ///< For wrapping only: Setting af::array micro_A_field.
+    long int get_micro_A_field();
+    af::array micro_Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node.
+    void set_micro_Ku1_field(long int aptr); ///< For wrapping only: Setting af::array micro_Ku1_field.
+    long int get_micro_Ku1_field();
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     void check_discretization();
     void check_m_norm(double tol = 1e-6);
     int steps{0};
-    long int get_m_addr();
     //af::array m_out;
     //long int get_m_addr(){m.lock(); return (long int) m.get();}
 

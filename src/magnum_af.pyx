@@ -174,6 +174,36 @@ cdef class State:
   def m(self, m_in):
     self.thisptr.set_m(addressof(m_in.arr))
 
+  @property
+  def micro_Ms_field(self):
+    micro_Ms_field1=Array()
+    micro_Ms_field_addr = self.thisptr.get_micro_Ms_field()
+    micro_Ms_field1.arr=c_void_p(micro_Ms_field_addr)
+    return micro_Ms_field1
+  @micro_Ms_field.setter
+  def micro_Ms_field(self, micro_Ms_field_in):
+    self.thisptr.set_micro_Ms_field(addressof(micro_Ms_field_in.arr))
+
+  @property
+  def micro_A_field(self):
+    micro_A_field1=Array()
+    micro_A_field_addr = self.thisptr.get_micro_A_field()
+    micro_A_field1.arr=c_void_p(micro_A_field_addr)
+    return micro_A_field1
+  @micro_A_field.setter
+  def micro_A_field(self, micro_A_field_in):
+    self.thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
+
+  @property
+  def micro_Ku1_field(self):
+    micro_Ku1_field1=Array()
+    micro_Ku1_field_addr = self.thisptr.get_micro_Ku1_field()
+    micro_Ku1_field1.arr=c_void_p(micro_Ku1_field_addr)
+    return micro_Ku1_field1
+  @micro_Ku1_field.setter
+  def micro_Ku1_field(self, micro_Ku1_field_in):
+    self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
+
   def meanxyz(self, i):
     return self.thisptr.meani(i)
 
