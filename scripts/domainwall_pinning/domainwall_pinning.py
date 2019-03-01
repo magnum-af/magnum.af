@@ -17,8 +17,8 @@ z = 1.e-9
 
 # Discretization 
 nx = 100 #TODO set proper values
-ny = 6
-nz = 6
+ny = 1
+nz = 1
 
 # Material
 soft_Aex        = 0.25e-11
@@ -122,7 +122,7 @@ i = 0
 while state.t < 1e-7:
   if i%2000 == 0:
     state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
-  zee_field.set_xyz(state, 0.0, 0.0, state.t/50e-9/Constants.mu0)
+  zee_field.set_xyz(state, state.t/50e-9/Constants.mu0, 0.0, 0.0)
   Llg.llgstep(state)
   mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
   stream.write("%e, %e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar(), state.t/50e-9/Constants.mu0))
