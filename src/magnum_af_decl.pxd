@@ -29,6 +29,7 @@ cdef extern from "../../src/state.hpp":
     State ()
     State (Mesh mesh_in, Material param_in, long int m_in);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
+    void Normalize();
 
     array m;
     void set_m(long int aptr);

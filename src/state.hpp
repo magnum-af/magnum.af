@@ -32,6 +32,7 @@ class State{
     void check_discretization();
     void check_m_norm(double tol = 1e-6);
     int steps{0};
+    void Normalize(); ///< normalize the magnetization to 1
     //af::array m_out;
     //long int get_m_addr(){m.lock(); return (long int) m.get();}
 

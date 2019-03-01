@@ -84,6 +84,11 @@ State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
 }
 
+
+void State::Normalize(){
+    this->m = renormalize(this->m);
+}
+
 void State::set_m(long int aptr){
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
