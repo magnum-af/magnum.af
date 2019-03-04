@@ -17,9 +17,7 @@ class FieldlikeTorque : public LLGTerm {
     FieldlikeTorque (af::array polarization_field, double nu_field, double j_e);
     FieldlikeTorque (long int polarization_field_ptr, double nu_field, double j_e);
 
-    af::array polarization_field;
-    void set_polarization_field(long int aptr);
-    long int get_polarization_field_addr();
+    WrappedArray polarization_field;
 
     double nu_field;
     double j_e;

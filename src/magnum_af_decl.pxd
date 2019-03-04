@@ -144,17 +144,23 @@ cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
     double Minimize(State& state);
     double GetTimeCalcHeff();
 
+cdef extern from "../../src/func.hpp":
+  cdef cppclass WrappedArray:
+    WrappedArray(array);
+    WrappedArray(long int array_ptr);
+    void set_array(long int array_ptr);
+    long int get_array_addr();
+
 cdef extern from "../../src/llg_terms/micro_dampinglike.hpp":
   cdef cppclass DampinglikeTorque:
-    #DampinglikeTorque (af::array polarization_field, double nu_field, double j_e);
+    DampinglikeTorque (long int polarization_field_ptr, double nu_field, double j_e);
     double E(const State& state);
     double get_cpu_time();
+    WrappedArray polarization_field;
 
 cdef extern from "../../src/llg_terms/micro_fieldlike.hpp":
   cdef cppclass FieldlikeTorque:
     FieldlikeTorque (long int polarization_field_ptr, double nu_field, double j_e);
     double E(const State& state);
     double get_cpu_time();
-    array polarization_field;
-    void set_polarization_field(long int aptr);
-    long int get_polarization_field_addr();
+    WrappedArray polarization_field;

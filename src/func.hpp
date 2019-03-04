@@ -5,7 +5,7 @@
 class WrappedArray {
     public:
         WrappedArray(af::array array);
-        WrappedArray(long int  array_ptr);
+        WrappedArray(long int array_ptr);
         ~WrappedArray(){};
         af::array array;
         void set_array(long int array_ptr);

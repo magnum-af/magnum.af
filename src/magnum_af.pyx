@@ -570,9 +570,9 @@ cdef class FieldlikeTorque:
   @property
   def polarization_field(self):
     polarization_field1=Array()
-    polarization_field_addr = self.thisptr.get_polarization_field_addr()
+    polarization_field_addr = self.thisptr.polarization_field.get_array_addr()
     polarization_field1.arr=c_void_p(polarization_field_addr)
     return polarization_field1
   @polarization_field.setter
   def polarization_field(self, polarization_field_in):
-    self.thisptr.set_polarization_field(addressof(polarization_field_in.arr))
+    self.thisptr.polarization_field.set_array(addressof(polarization_field_in.arr))
