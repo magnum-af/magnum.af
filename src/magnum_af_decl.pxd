@@ -151,16 +151,9 @@ cdef extern from "../../src/func.hpp":
     void set_array(long int array_ptr);
     long int get_array_addr();
 
-cdef extern from "../../src/llg_terms/micro_dampinglike.hpp":
-  cdef cppclass DampinglikeTorque:
-    DampinglikeTorque (long int polarization_field_ptr, double nu_field, double j_e);
-    double E(const State& state);
-    double get_cpu_time();
-    WrappedArray polarization_field;
-
-cdef extern from "../../src/llg_terms/micro_fieldlike.hpp":
-  cdef cppclass FieldlikeTorque:
-    FieldlikeTorque (long int polarization_field_ptr, double nu_field, double j_e);
+cdef extern from "../../src/llg_terms/micro_spintransfertorque.hpp":
+  cdef cppclass SpinTransferTorqueField:
+    SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e);
     double E(const State& state);
     double get_cpu_time();
     WrappedArray polarization_field;

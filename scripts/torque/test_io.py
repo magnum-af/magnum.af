@@ -20,7 +20,7 @@ def test(a, b, verbose = True):
 polarization = af.constant(1.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 test(polarization, polarization)
 
-fieldlike = FieldlikeTorque(polarization, 1., 1.)
+fieldlike = SpinTransferTorqueField(polarization, 1., 1., 1.)
 test(polarization, fieldlike.polarization_field)
 fieldlike.polarization_field = af.constant(2.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 test(2*polarization, fieldlike.polarization_field)
