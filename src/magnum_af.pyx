@@ -31,6 +31,8 @@ from magnum_af_decl cimport LLGIntegrator as cLLGIntegrator
 from magnum_af_decl cimport DemagField as cDemagField
 from magnum_af_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
 from magnum_af_decl cimport ExchangeField as cExchangeField
+from magnum_af_decl cimport FieldlikeTorque as cFieldlikeTorque
+from magnum_af_decl cimport DampinglikeTorque as cDampinglikeTorque
 #TODO#from magnum_af_decl cimport DmiField as cDMI
 
 from magnum_af_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
@@ -559,3 +561,18 @@ class Constants:
   kb = 1.38064852e-23
 
   hbar = 1.0545718e-34
+
+cdef class FieldlikeTorque:
+  cdef cFieldlikeTorque* thisptr
+  def __cinit__(self, polarization_field, nu_field, j_e):
+    self.thisptr = new cFieldlikeTorque (addressof(polarization_field.arr), nu_field, j_e) 
+
+  @property
+  def polarization_field(self):
+    polarization_field1=Array()
+    polarization_field_addr = self.thisptr.get_polarization_field_addr()
+    polarization_field1.arr=c_void_p(polarization_field_addr)
+    return polarization_field1
+  @polarization_field.setter
+  def polarization_field(self, polarization_field_in):
+    self.thisptr.set_polarization_field(addressof(polarization_field_in.arr))

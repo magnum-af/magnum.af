@@ -2,6 +2,17 @@
 #define FUNC_H
 #include "arrayfire.h"
 
+class WrappedArray {
+    public:
+        WrappedArray(af::array array);
+        WrappedArray(long int  array_ptr);
+        ~WrappedArray(){};
+        af::array array;
+        void set_array(long int array_ptr);
+        long int get_array_addr();
+    private:
+};
+
 af::array cross4(const af::array& a,const af::array& b);
 af::array dotproduct(const af::array& a,const af::array& b);
 af::array renormalize(const af::array& a);
