@@ -22,6 +22,7 @@ from libcpp.vector cimport vector
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
 from math import sqrt
+from math import pi
 
 from magnum_af_decl cimport Mesh as cMesh
 from magnum_af_decl cimport Material as cParam
@@ -539,20 +540,22 @@ cdef class Material:
     self.thisptr.K_atom_axis[2] = values[2]
 
 class Constants:
-  mu0 = 1.2566370614e-6
-  """magnetic constant mu_0"""
+  """Common physical constants. Values were obtained from CODATA/NIST.
+     Attributes:
+     mu0 [H/m] magnetic constant mu_0
+     gamma [m A^-1 s^-1] gyromagnetic ratio gamma
+     mu_b [J/T] Bohr magneton mu_bohr
+     e [C] elementary charge e
+     kb [J/K] Boltzmann constant kb
+     hbar [J s] reduced Planck constant"""
+  mu0 = 4e-7 * pi
 
-  gamma = 2.21276157e5
-  """gyromagnetic ratio gamma"""
+  gamma = 1.760859644e11 * mu0
 
-  mu_b = 9.2740154e-24
-  """Bohr magneton mu_bohr"""
+  mu_b = 9.274009994e-24
 
-  e = - 1.602176487e-19
-  """elementary charge e"""
+  e = - 1.6021766208e-19
 
-  kb = 1.380648813e-23
-  """Boltzmann constant kb"""
+  kb = 1.38064852e-23
 
   hbar = 1.0545718e-34
-  """reduced Planck constant"""
