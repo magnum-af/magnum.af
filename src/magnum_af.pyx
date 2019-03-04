@@ -16,6 +16,9 @@
 #af.Array.__array__()
 
 from arrayfire import Array
+from arrayfire import constant
+from arrayfire import tile
+from arrayfire import Dtype
 from ctypes import addressof, c_void_p
 from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
@@ -42,6 +45,19 @@ from magnum_af_decl cimport Zee as cZee
 from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnum_af_decl cimport LLGTerm as cLLGTerm
 
+def array_from_addr(array_addr):
+  array=Array()
+  array.arr=c_void_p(array_addr)
+  return array
+
+def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0]):
+  """Returns a homogeneous field of dimension [nx, ny, nz, 3] and dtype=af.Dtype.f64 pointing into the direction of axis and normed to 1."""
+  norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
+  array = constant(0.0, 1, 1, 1, 3, dtype=Dtype.f64)
+  array [0,0,0,0] = axis[0]/norm
+  array [0,0,0,1] = axis[1]/norm
+  array [0,0,0,2] = axis[2]/norm
+  return tile(array, nx, ny, nz)
 
 #NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
 # Docstring does work, todo: check type etc. 
@@ -170,40 +186,28 @@ cdef class State:
 
   @property
   def m(self):
-    m1=Array()
-    m_addr = self.thisptr.get_m_addr()
-    m1.arr=c_void_p(m_addr)
-    return m1
+    return array_from_addr(self.thisptr.get_m_addr())
   @m.setter
   def m(self, m_in):
     self.thisptr.set_m(addressof(m_in.arr))
 
   @property
   def micro_Ms_field(self):
-    micro_Ms_field1=Array()
-    micro_Ms_field_addr = self.thisptr.get_micro_Ms_field()
-    micro_Ms_field1.arr=c_void_p(micro_Ms_field_addr)
-    return micro_Ms_field1
+    return array_from_addr(self.thisptr.get_micro_Ms_field())
   @micro_Ms_field.setter
   def micro_Ms_field(self, micro_Ms_field_in):
     self.thisptr.set_micro_Ms_field(addressof(micro_Ms_field_in.arr))
 
   @property
   def micro_A_field(self):
-    micro_A_field1=Array()
-    micro_A_field_addr = self.thisptr.get_micro_A_field()
-    micro_A_field1.arr=c_void_p(micro_A_field_addr)
-    return micro_A_field1
+    return array_from_addr(self.thisptr.get_micro_A_field())
   @micro_A_field.setter
   def micro_A_field(self, micro_A_field_in):
     self.thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
 
   @property
   def micro_Ku1_field(self):
-    micro_Ku1_field1=Array()
-    micro_Ku1_field_addr = self.thisptr.get_micro_Ku1_field()
-    micro_Ku1_field1.arr=c_void_p(micro_Ku1_field_addr)
-    return micro_Ku1_field1
+    return array_from_addr(self.thisptr.get_micro_Ku1_field())
   @micro_Ku1_field.setter
   def micro_Ku1_field(self, micro_Ku1_field_in):
     self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
@@ -232,10 +236,7 @@ cdef class LLGIntegrator:
   #def print_stepsize(self):
   #  return self.thisptr.h_stepped_
   def get_fheff(self, State state):
-    fheff_addr = self.thisptr.get_fheff_addr(deref(state.thisptr))
-    fheff=Array()
-    fheff.arr = c_void_p(fheff_addr)
-    return fheff
+    return array_from_addr(self.thisptr.get_fheff_addr(deref(state.thisptr)))
   #def cpu_time(self):
   #  return self.thisptr.cpu_time()
   #def set_state0_alpha(self,value):
@@ -368,11 +369,7 @@ cdef class Zee:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
   def get_zee(self):
-    m1=Array()
-    m_addr = self.thisptr.get_m_addr()
-    m1.arr=c_void_p(m_addr)
-    return m1
-#TODO 
+    return array_from_addr(self.thisptr.get_m_addr())
 
 cdef class LBFGS_Minimizer:
   cdef cLBFGS_Minimizer* thisptr
@@ -565,13 +562,17 @@ cdef class SpinTransferTorqueField:
   cdef cSpinTransferTorqueField* thisptr
   def __cinit__(self, polarization_field, nu_dampinglike,  nu_fieldlike, j_e):
     self.thisptr = new cSpinTransferTorqueField (addressof(polarization_field.arr), nu_dampinglike, nu_fieldlike, j_e) 
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
+  def print_E(self,State state):
+    return self.thisptr.E(deref(state.thisptr))
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
 
   @property
   def polarization_field(self):
-    polarization_field1=Array()
-    polarization_field_addr = self.thisptr.polarization_field.get_array_addr()
-    polarization_field1.arr=c_void_p(polarization_field_addr)
-    return polarization_field1
+    return array_from_addr(self.thisptr.polarization_field.get_array_addr())
   @polarization_field.setter
-  def polarization_field(self, polarization_field_in):
-    self.thisptr.polarization_field.set_array(addressof(polarization_field_in.arr))
+  def polarization_field(self, array):
+    self.thisptr.polarization_field.set_array(addressof(array.arr))
