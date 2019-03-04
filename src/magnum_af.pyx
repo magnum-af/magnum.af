@@ -15,10 +15,8 @@
 ## arrayfire to numpy
 #af.Array.__array__()
 
-from arrayfire import Array
-from arrayfire import constant
-from arrayfire import tile
-from arrayfire import Dtype
+import arrayfire as af
+
 from ctypes import addressof, c_void_p
 from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
@@ -46,18 +44,36 @@ from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnum_af_decl cimport LLGTerm as cLLGTerm
 
 def array_from_addr(array_addr):
-  array=Array()
+  array=af.Array()
   array.arr=c_void_p(array_addr)
   return array
 
-def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0]):
-  """Returns a homogeneous field of dimension [nx, ny, nz, 3] and dtype=af.Dtype.f64 pointing into the direction of axis and normed to 1."""
-  norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
-  array = constant(0.0, 1, 1, 1, 3, dtype=Dtype.f64)
-  array [0,0,0,0] = axis[0]/norm
-  array [0,0,0,1] = axis[1]/norm
-  array [0,0,0,2] = axis[2]/norm
-  return tile(array, nx, ny, nz)
+class Util:
+  @staticmethod
+  def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0]):
+    """Returns a homogeneous field of dimension [nx, ny, nz, 3] and dtype=af.Dtype.f64 pointing into the direction of axis and normed to 1."""
+    norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
+    array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
+    array [0,0,0,0] = axis[0]/norm
+    array [0,0,0,1] = axis[1]/norm
+    array [0,0,0,2] = axis[2]/norm
+    return af.tile(array, nx, ny, nz)
+ 
+  @classmethod
+  def sum_of_difference_of_abs(cls, a, b):
+    return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b),0),1),2),3).scalar()
+ 
+  @classmethod
+  def test_sum_of_difference_of_abs(cls, a, b, verbose = True):
+      c = cls.sum_of_difference_of_abs(a, b)
+      if (c != 0.):
+          if (verbose == True):
+              print ("Error")
+          return False
+      else:
+          if (verbose == True):
+              print ("Success")
+          return True
 
 #NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
 # Docstring does work, todo: check type etc. 
