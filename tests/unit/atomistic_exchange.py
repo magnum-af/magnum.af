@@ -35,10 +35,10 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0,0,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
 
   def test_atomistic_exchange_2_1_1_z_x(self):
     mesh=magnum_af.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -63,12 +63,12 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     af_heff = Llg.get_fheff(state)
     np_heff = af_heff.__array__()
 
-    self.assertAlmostEqual(np_heff[0,0,0,0], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0,0,0,0], material.J_atom/magnum_af.Constants.mu0/material.p )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,2], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
 
   def test_atomistic_exchange_2_1_1_z_minusz(self):
     mesh=magnum_af.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -95,10 +95,10 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], -material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0,0,0,2], -material.J_atom/magnum_af.Constants.mu0/material.p )
     self.assertAlmostEqual(np_heff[1,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[1,0,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
 
   def test_atomistic_exchange_1_2_1_z_z(self):
     mesh=magnum_af.Mesh(1, 2, 1, self.dx, self.dx, self.dx)
@@ -125,10 +125,10 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0,0,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
     self.assertAlmostEqual(np_heff[0,1,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,1,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,1,0,2], material.J_atom/material.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0,1,0,2], material.J_atom/magnum_af.Constants.mu0/material.p )
 
 if __name__ == '__main__':
   unittest.main()

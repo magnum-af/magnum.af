@@ -3,9 +3,6 @@
 #include<math.h>
 ///Struct holding all simulation parameters.
 struct Material{
-    double mu0 = 4e-7 * M_PI;		//!< [H/m] 	// vaccum permeability	//= pi/2500000 [N/A^2] //TODO const leads to error in string.cpp
-    double kb = 1.38064852e-23;		//!< [J/K]  	// Boltzmann Constant
-    double gamma = 221276.1488637255;	//!< [m/A/s]	// gyromagnetic ratio	// gamma = gamma_e * mu0; electron gyromagnetic ratio multiplied by magnetic constant
     double alpha{0};			//!< []		// Unitless Damping constant
     double T{0};			//!< [K]  	// Temperature 				//in stochastic.cpp: Temperature in Stochastic Integrator
 

@@ -5,11 +5,11 @@ using namespace af;
 //Eex=-mu0/2 integral(M . Hex) dx
 
 double AtomisticExchangeField::E(const State& state){
-  return -state.material.mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 }
 
 double AtomisticExchangeField::E(const State& state, const af::array& h){
-  return -state.material.mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
 }
 
 AtomisticExchangeField::AtomisticExchangeField (const Mesh& mesh){
@@ -51,10 +51,10 @@ array AtomisticExchangeField::h(const State& state){
 
   if(state.material.afsync) sync();
   cpu_time += timer::stop(timer_solve);
-  return state.material.J_atom/(state.material.mu0*state.material.p)* mj;
+  return state.material.J_atom/(constants::mu0*state.material.p)* mj;
 }
-  //return state.material.J/(state.mesh.dx*state.material.mu0) * mj;
-  //return state.material.J/(state.mesh.dx*state.material.mu0*state.material.p) * mj;
+  //return state.material.J/(state.mesh.dx*constants::mu0) * mj;
+  //return state.material.J/(state.mesh.dx*constants::mu0*state.material.p) * mj;
   //return state.material.J/state.mesh.dx * mj;
 
 
@@ -126,7 +126,7 @@ array AtomisticExchangeField::h(const State& state){
 //  if(material.afsync) sync();
 //  time_edges += timer::stop(timer_edges);
 //  time_exchsolve += timer::stop(timer_exchsolve);
-//  return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //}
 //
 //void showdims2(const array& a){
@@ -271,7 +271,7 @@ array AtomisticExchangeField::h(const State& state){
 //  if(material.afsync) sync();
 //  time_exchsolve += timer::stop(timer_exchsolve);
 //
-//  return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //}
 //
 //

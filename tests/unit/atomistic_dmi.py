@@ -33,12 +33,12 @@ class AtomisticDmiFieldTest(unittest.TestCase):
     af_heff = Llg.get_fheff(state)
     np_heff = af_heff.__array__()
 
-    self.assertAlmostEqual(np_heff[0,0,0,0], -material.D_atom/material.mu0/material.p )
-    self.assertLess(math.fabs((np_heff[0,0,0,0] - (-material.D_atom/material.mu0/material.p))/np_heff[0,0,0,0]), 1e-15 )
+    self.assertAlmostEqual(np_heff[0,0,0,0], -material.D_atom/magnum_af.Constants.mu0/material.p )
+    self.assertLess(math.fabs((np_heff[0,0,0,0] - (-material.D_atom/magnum_af.Constants.mu0/material.p))/np_heff[0,0,0,0]), 1e-15 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,2], 0 )
-    self.assertAlmostEqual(np_heff[1,0,0,0], material.D_atom/material.mu0/material.p)
-    self.assertLess(math.fabs((np_heff[1,0,0,0] - material.D_atom/material.mu0/material.p)/np_heff[1,0,0,0]), 1e-15)
+    self.assertAlmostEqual(np_heff[1,0,0,0], material.D_atom/magnum_af.Constants.mu0/material.p)
+    self.assertLess(math.fabs((np_heff[1,0,0,0] - material.D_atom/magnum_af.Constants.mu0/material.p)/np_heff[1,0,0,0]), 1e-15)
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 
@@ -67,11 +67,11 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
     self.assertAlmostEqual(np_heff[0,0,0,1], 0 )
-    self.assertAlmostEqual(np_heff[0,0,0,2], material.D_atom/material.mu0/material.p )
-    self.assertLess(math.fabs((np_heff[0,0,0,2] - material.D_atom/material.mu0/material.p)/np_heff[0,0,0,2]), 1e-15 )
+    self.assertAlmostEqual(np_heff[0,0,0,2], material.D_atom/magnum_af.Constants.mu0/material.p )
+    self.assertLess(math.fabs((np_heff[0,0,0,2] - material.D_atom/magnum_af.Constants.mu0/material.p)/np_heff[0,0,0,2]), 1e-15 )
 
-    self.assertAlmostEqual(np_heff[1,0,0,0], material.D_atom/material.mu0/material.p)
-    self.assertLess(math.fabs((np_heff[1,0,0,0] - material.D_atom/material.mu0/material.p)/np_heff[1,0,0,0]), 1e-15)
+    self.assertAlmostEqual(np_heff[1,0,0,0], material.D_atom/magnum_af.Constants.mu0/material.p)
+    self.assertLess(math.fabs((np_heff[1,0,0,0] - material.D_atom/magnum_af.Constants.mu0/material.p)/np_heff[1,0,0,0]), 1e-15)
     self.assertAlmostEqual(np_heff[1,0,0,1], 0 )
     self.assertAlmostEqual(np_heff[1,0,0,2], 0 )
 

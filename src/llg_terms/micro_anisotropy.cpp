@@ -6,11 +6,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double UniaxialAnisotropyField::E(const State& state){
-  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
 double UniaxialAnisotropyField::E(const State& state, const af::array& h){
-  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
 
@@ -32,10 +32,10 @@ af::array UniaxialAnisotropyField::h(const State& state){
   if(material.afsync) af::sync();
   cpu_time += af::timer::stop(timer_anisotropy);
   if (state.micro_Ku1_field.isempty()){
-    return  2.* material.Ku1/(material.mu0 * material.ms) * (eu* anisotropy); //TODO: change to state. values and check performance of setting eu in h
+    return  2.* material.Ku1/(constants::mu0 * material.ms) * (eu* anisotropy); //TODO: change to state. values and check performance of setting eu in h
   }
   else {
-    return  2.* state.micro_Ku1_field/(material.mu0 * material.ms) * (eu* anisotropy);
+    return  2.* state.micro_Ku1_field/(constants::mu0 * material.ms) * (eu* anisotropy);
   }
 }
 

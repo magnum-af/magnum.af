@@ -22,11 +22,11 @@ af::array LLGIntegrator::f(const State& state){
   //timer_fdmdt=timer::start();
   if(dissipation_term_only){
     af::array heff=fheff(state);
-    return - state.material.alpha*state.material.gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - state.material.alpha*constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
   }
   else{
     af::array heff=fheff(state);
-    return - state.material.gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, heff) - state.material.alpha*state.material.gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, heff) - state.material.alpha*constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
   }
   //time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

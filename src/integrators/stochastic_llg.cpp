@@ -22,13 +22,13 @@ array Stochastic_LLG::detfdmdt(const array& m){
     fdmdt_calls++;
     const array heff = fheff(m);
     const array cross_temp = cross4(m, heff);
-    return - material.gamma/(1.+pow(material.alpha,2)) * cross_temp - material.alpha*material.gamma/(1.+pow(material.alpha,2)) * cross4(m, cross_temp);
+    return - constants::gamma/(1.+pow(material.alpha,2)) * cross_temp - material.alpha*constants::gamma/(1.+pow(material.alpha,2)) * cross4(m, cross_temp);
 }
 
 array Stochastic_LLG::stochfdmdt(const array& m, const array& h_th){
     stochfdmdt_calls++;
     const array h = fheff(m) + h_th;
     const array cross_temp = cross4(m, h);
-    return  - material.gamma/(1.+pow(material.alpha,2)) * cross_temp - material.alpha*material.gamma/(1.+pow(material.alpha,2)) * cross4(m, cross_temp);
+    return  - constants::gamma/(1.+pow(material.alpha,2)) * cross_temp - material.alpha*constants::gamma/(1.+pow(material.alpha,2)) * cross4(m, cross_temp);
 }
  

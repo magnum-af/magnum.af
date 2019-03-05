@@ -36,8 +36,8 @@ class ParamTest(unittest.TestCase):
 
   def test_param_default_initialization(self):
     material=magnum_af.Material()
-    self.assertEqual(4e-7*pi, material.mu0           )
-    self.assertEqual(221276.1488637255, material.gamma         )
+    self.assertEqual(4e-7*pi, magnum_af.Constants.mu0           )
+    self.assertEqual(221276.14886372554, magnum_af.Constants.gamma         )
     self.assertEqual((0.,0.,1.), material.Ku1_axis)
     self.assertEqual(0., material.ms            )
     self.assertEqual(0., material.alpha         )

@@ -3,11 +3,11 @@ using namespace af;
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
 double AtomisticDmiField::E(const State& state){
-  return - state.material.mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
+  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
 }
 
 double AtomisticDmiField::E(const State& state, const af::array& h){
-  return - state.material.mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
+  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
 }
 
 AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){
@@ -48,7 +48,7 @@ array AtomisticDmiField::h(const State& state){
     second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
     if(state.material.afsync) sync();
     cpu_time += timer::stop(timer_dmi);
-    return state.material.D_atom/(state.material.mu0*state.material.p) * (first-second);
+    return state.material.D_atom/(constants::mu0*state.material.p) * (first-second);
     //return -state.material.D/2. * res;
 }
 
@@ -81,7 +81,7 @@ array AtomisticDmiField::h(const State& state){
 //    
 //    if(state.material.afsync) sync();
 //    cpu_time += timer::stop(timer_dmi);
-//    return -2. * state.material.D_atom/(state.material.mu0 * state.material.p) * join(3, Hdx, Hdy, Hdz); // TODO FACTOR 2?
+//    return -2. * state.material.D_atom/(constants::mu0 * state.material.p) * join(3, Hdx, Hdy, Hdz); // TODO FACTOR 2?
 //    //print ("H", H);
 //    //return H;
 //}
@@ -94,9 +94,9 @@ array AtomisticDmiField::h(const State& state){
 ////Energy calculation
 ////E=-mu0/2 integral(M . H) dx
 //double AtomisticDmiField::E(const State& state){
-//  return - state.material.mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//  //return -state.material.mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//  //return -state.material.mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+//  //return -constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+//  //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 //}
 //
 //AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){
@@ -144,6 +144,6 @@ array AtomisticDmiField::h(const State& state){
 //  //print("res",res);
 //  if(state.material.afsync) sync();
 //  cpu_time += timer::stop(timer_dmi);
-//  return -state.material.D_atom/(2.*state.material.mu0*state.material.p) * res;
+//  return -state.material.D_atom/(2.*constants::mu0*state.material.p) * res;
 //  //return -state.material.D/2. * res;
 //}

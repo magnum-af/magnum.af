@@ -42,8 +42,8 @@ class sp4(unittest.TestCase):
     self.state.set_alpha(0.02)
     
     zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-    zeeswitch[0,0,0,0]=-24.6e-3/self.material.mu0
-    zeeswitch[0,0,0,1]= +4.3e-3/self.material.mu0
+    zeeswitch[0,0,0,0]=-24.6e-3/magnum_af.Constants.mu0
+    zeeswitch[0,0,0,1]= +4.3e-3/magnum_af.Constants.mu0
     zeeswitch[0,0,0,2]=0.0
     zeeswitch = af.tile(zeeswitch,100,25,1)
     zee=magnum_af.Zee(zeeswitch)

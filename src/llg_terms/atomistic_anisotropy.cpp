@@ -6,11 +6,11 @@ using namespace af;
 
 
 double AtomisticUniaxialAnisotropyField::E(const State& state){
-  return - (state.material.mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+  return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 }
 
 double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
-  return - (state.material.mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
+  return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
 }
 
 
@@ -31,7 +31,7 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 
   if(state.material.afsync) sync();
   cpu_time += timer::stop(timer_anisotropy);
-  return  2*state.material.K_atom/(state.material.mu0*state.material.p) * anisotropy * eu;
+  return  2*state.material.K_atom/(constants::mu0*state.material.p) * anisotropy * eu;
 }
 
 
@@ -51,8 +51,8 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 ////Energy calculation
 ////Edemag=-mu0/2 integral(M . Hdemag) dx
 //double AtomisticUniaxialAnisotropyField::E(const State& state){
-//  return - state.material.mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//   //return -state.material.mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//  return - constants::mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+//   //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 //}
 //
 //

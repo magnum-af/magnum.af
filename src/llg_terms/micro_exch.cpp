@@ -4,11 +4,11 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchangeField::E(const State& state){
-  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 }
 
 double ExchangeField::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
-  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
@@ -47,20 +47,20 @@ array ExchangeField::h_withedges(const State& state){
     cpu_time += timer::stop(timer_exchsolve);
     if (state.Ms.isempty() && state.micro_A_field.isempty())
     {
-        return  (2.* material.A)/(material.mu0*material.ms) * exch;
+        return  (2.* material.A)/(constants::mu0*material.ms) * exch;
     }
     else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
     {
-        array heff = (2.* material.A)/(material.mu0*state.Ms) * exch;
+        array heff = (2.* material.A)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
     else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
     {
-        return (2.* state.micro_A_field)/(material.mu0*material.ms) * exch;
+        return (2.* state.micro_A_field)/(constants::mu0*material.ms) * exch;
     }
     else {
-        array heff = (2.* state.micro_A_field)/(material.mu0*state.Ms) * exch;
+        array heff = (2.* state.micro_A_field)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -76,20 +76,20 @@ array ExchangeField::h(const State& state){
     cpu_time += timer::stop(timer_exchsolve);
     if (state.Ms.isempty() && state.micro_A_field.isempty())
     {
-        return  (2.* material.A)/(material.mu0*material.ms) * exch;
+        return  (2.* material.A)/(constants::mu0*material.ms) * exch;
     }
     else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
     {
-        array heff = (2.* material.A)/(material.mu0*state.Ms) * exch;
+        array heff = (2.* material.A)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
     else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
     {
-        return (2.* state.micro_A_field)/(material.mu0*material.ms) * exch;
+        return (2.* state.micro_A_field)/(constants::mu0*material.ms) * exch;
     }
     else {
-        array heff = (2.* state.micro_A_field)/(material.mu0*state.Ms) * exch;
+        array heff = (2.* state.micro_A_field)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -113,7 +113,7 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+//  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 //}
 //
 ////Function returns index 
@@ -251,7 +251,7 @@ array ExchangeField::h(const State& state){
 //    if(material.afsync) sync();
 //    //time_edges += timer::stop(timer_edges);
 //    cpu_time += timer::stop(timer_exchsolve);
-//    return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //  else{
 //    timer_exchsolve = timer::start();
@@ -262,7 +262,7 @@ array ExchangeField::h(const State& state){
 //    if(material.afsync) sync();
 //    cpu_time += timer::stop(timer_exchsolve);
 //
-//    return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //}
 
@@ -281,7 +281,7 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -material.mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+//  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
 //}
 //
 ////Function returns index 
@@ -419,7 +419,7 @@ array ExchangeField::h(const State& state){
 //    if(material.afsync) sync();
 //    time_edges += timer::stop(timer_edges);
 //    cpu_time += timer::stop(timer_exchsolve);
-//    return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //  else{
 //    timer_exchsolve = timer::start();
@@ -430,6 +430,6 @@ array ExchangeField::h(const State& state){
 //    if(material.afsync) sync();
 //    cpu_time += timer::stop(timer_exchsolve);
 //
-//    return  (2.* material.A)/(material.mu0*material.ms) * exch;
+//    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //}

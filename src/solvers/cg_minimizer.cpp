@@ -33,7 +33,7 @@ double CG_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
         h+=temp_h;
         energy+=llgterms_[i]->E(state,temp_h);
     }
-    gradient = 1./(state.material.mu0 * state.material.ms) * cross4(state.m, cross4(state.m, h)); 
+    gradient = 1./(constants::mu0 * state.material.ms) * cross4(state.m, cross4(state.m, h)); 
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }

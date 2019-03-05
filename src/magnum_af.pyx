@@ -425,7 +425,6 @@ cdef class Material:
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
     self.thisptr = new cParam (alpha, T, ms, A, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
     owner = None # see [1]
-    #mu0 = self.thisptr.mu0
   cdef set_ptr(self, cParam* ptr, owner):
     if self.owner is None:
       del self.thisptr
@@ -435,15 +434,6 @@ cdef class Material:
     if self.owner is None: # only free if we own it: see [1]
       del self.thisptr
       self.thisptr = NULL
-
-  ## Getter and setter Functions
-  @property # Note: constant by not providing setter
-  def mu0(self):
-    return self.thisptr.mu0
-
-  @property
-  def gamma(self):
-    return self.thisptr.gamma
 
   @property
   def alpha(self):
