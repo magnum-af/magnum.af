@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
 
     // Keff 
-    const double Keff = - 0.5 * pow(material.ms,2) * material.mu0 * pow(mesh.dx,3) * mesh.n0 * mesh.n1 * mesh.n2;
+    const double Keff = - 0.5 * pow(material.ms,2) * constants::mu0 * pow(mesh.dx,3) * mesh.n0 * mesh.n1 * mesh.n2;
 
     const double g_electron = 2.002319;
     const double correction = 1.07831;

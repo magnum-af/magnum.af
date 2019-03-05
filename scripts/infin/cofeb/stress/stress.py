@@ -72,13 +72,13 @@ mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
 material=Material()
-material.ms=1.58/material.mu0 # Saturation magnetization
+material.ms=1.58/Constants.mu0 # Saturation magnetization
 material.A=15e-12 # Exchange constant
 material.Ku1=1.3e-3/z # Anisotropy constant
 
 # Second material class for stress
 param_stress=Material()
-param_stress.ms=1.58/material.mu0
+param_stress.ms=1.58/Constants.mu0
 param_stress.A=15e-12
 param_stress.Ku1=1400  #TODO guessed worst case value fom Toni, elaborate
 param_stress.Ku1_axis=[1, 0, 0] # Setting axis in x-direction
@@ -110,7 +110,7 @@ minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")
-A = 0.05/material.mu0
+A = 0.05/Constants.mu0
 steps = 100
 print ("A= ", A)
 for i in range(0, steps):

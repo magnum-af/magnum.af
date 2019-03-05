@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     array zee = constant(0.0,1,1,1,3,f64);
-    zee(0,0,0,2)= bz_in_dims_of_J_atom * material.J_atom /(material.ms * pow(dx, 3) * material.mu0);
+    zee(0,0,0,2)= bz_in_dims_of_J_atom * material.J_atom /(material.ms * pow(dx, 3) * constants::mu0);
     af::print("zee_pre_tile",zee);
     zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
   

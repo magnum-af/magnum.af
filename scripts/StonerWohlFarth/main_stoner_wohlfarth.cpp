@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1/material.mu0;
+    material.ms    = 1/constants::mu0;
     material.alpha = 0.008;
     material.T = 1;
   
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     m(0,0,0,2)=1.;
     std::vector<llgt_ptr> llgterm;
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,2)=1./material.mu0;
+    zeeswitch(0,0,0,2)=1./constants::mu0;
     llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
     State state(mesh, material, m);
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");

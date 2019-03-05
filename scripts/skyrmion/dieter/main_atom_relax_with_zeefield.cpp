@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
 
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,2)= - 0.07 * pow(material.ms,2) * material.mu0;
+    zeeswitch(0,0,0,2)= - 0.07 * pow(material.ms,2) * constants::mu0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
     llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
     

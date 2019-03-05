@@ -24,6 +24,7 @@ from libcpp cimport bool
 from cython.operator cimport dereference as deref
 from math import sqrt
 from math import pi
+from numpy import zeros as np_zeros
 
 from magnum_af_decl cimport Mesh as cMesh
 from magnum_af_decl cimport Material as cParam
@@ -59,6 +60,23 @@ class Util:
     array [0,0,0,2] = axis[2]/norm
     return af.tile(array, nx, ny, nz)
  
+  @staticmethod
+  def disk(n0, n1, n2, xyz = 2): 
+    n_cells=0
+    m = np_zeros((n0, n1, n2, 3));
+    for ix in range (0, n0):
+      for iy in range(0, n1):
+        for iz in range(0, n2):
+          a= n0/2
+          b= n1/2
+          rx=ix-n0/2.
+          ry=iy-n1/2.
+          r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+          if(r<1):
+              m[ix,iy,iz,xyz]=1
+              n_cells = n_cells +1
+    return af.from_ndarray(m), n_cells
+
   @classmethod
   def sum_of_difference_of_abs(cls, a, b):
     return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b),0),1),2),3).scalar()

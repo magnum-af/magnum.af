@@ -41,9 +41,9 @@ int main(int argc, char** argv)
   
     //std::cout.precision(12);
     //std::cout << "E_d_micro  = " << Llg.E(state) << std::endl;
-    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(material.ms,2) * material.mu0 << std::endl;
+    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(material.ms,2) * constants::mu0 << std::endl;
   
-    if (compare(Llg.E(state),1./6. * x * y * z * pow(material.ms,2) * material.mu0)){
+    if (compare(Llg.E(state),1./6. * x * y * z * pow(material.ms,2) * constants::mu0)){
         std::cout << "!!! Test FAILED !!!" << std::endl;
         return 1;
     }

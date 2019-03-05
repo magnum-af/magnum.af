@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   
     double dt = 5e-16;
 
-    std::cout << "T_analytic (=1/f) = " << 2*M_PI/material.gamma/(2*material.Ku1/(material.mu0*material.ms)) << " [s]" << std::endl;
+    std::cout << "T_analytic (=1/f) = " << 2*M_PI/material.gamma/(2*material.Ku1/(constants::mu0*material.ms)) << " [s]" << std::endl;
 
     int count_zero_x=0;
     double prev_x=0;
