@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 
     double A = pow(10,9);
     double k = pow(10,8);
-    double T = e_barrier/(material.kb*(log(A)-log(k)));
+    double T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
     
