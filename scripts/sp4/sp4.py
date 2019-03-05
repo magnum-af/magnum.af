@@ -49,8 +49,8 @@ print("relaxed in", time.time() - timer, "[s]")
 # Resetting alpha and adding Zeeman field
 state.material.alpha=0.02
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0] = -24.6e-3/material.mu0
-zeeswitch[0,0,0,1] = +4.3e-3/material.mu0
+zeeswitch[0,0,0,0] = -24.6e-3/Constants.mu0
+zeeswitch[0,0,0,1] = +4.3e-3/Constants.mu0
 zeeswitch[0,0,0,2] = 0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
 zee = Zee(zeeswitch)
