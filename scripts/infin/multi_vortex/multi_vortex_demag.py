@@ -38,7 +38,7 @@ m[0:nx_disk, ny_disk+1+int(ny_disk*1.7):ny_disk+1+int(ny_disk*1.7)+ny_disk, :, :
 m[0:nx_disk, -ny_disk-1:-1, :, :] = disk
 
 m[nx_disk+1+int(nx_disk*1.7):nx_disk+1+int(nx_disk*1.7)+nx_disk, 0:ny_disk, :, :] = disk
-m[nx_disk+1+int(nx_disk*1.7):nx_disk+1+int(nx_disk*1.7)+nx_disk, ny_disk+1+int(ny_disk*1.7):ny_disk+1+int(ny_disk*1.7)+ny_disk, :, :] = disk
+#m[nx_disk+1+int(nx_disk*1.7):nx_disk+1+int(nx_disk*1.7)+nx_disk, ny_disk+1+int(ny_disk*1.7):ny_disk+1+int(ny_disk*1.7)+ny_disk, :, :] = disk
 m[nx_disk+1+int(nx_disk*1.7):nx_disk+1+int(nx_disk*1.7)+nx_disk, -ny_disk-1:-1, :, :] = disk
 
 m[-nx_disk-1:-1, 0:ny_disk, :, :] = disk
@@ -55,3 +55,6 @@ print (demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,
 stream = open(filepath+"demag.dat", "w")
 stream.write("%d, %d, %e, %e, %e" %(nx, nx_disk, demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0))
 stream.close()
+
+dirty_workaround = State(mesh, material, demagfield)
+dirty_workaround.py_vti_writer_micro(filepath+"demagfield")
