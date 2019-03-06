@@ -7,14 +7,18 @@ import time
 
 print ("The arguments are: " , str(sys.argv))
 filepath = sys.argv[1]
+if len(sys.argv) > 2:
+    af.set_device(int(sys.argv[2]))
 
+#a = 1.7e-6
+#a_factor = 1.7
 x = 3*1e-6 + 2*1.7e-6
 y = 3*1e-6 + 2*1.7e-6
 z = 80e-9
 
 
-nx_disk = 250
-ny_disk = 250
+nx_disk = int(sys.argv[3]) if len(sys.argv) > 3 else 250
+ny_disk = nx_disk
 nz_disk = 1
 
 disk, n_cells = Util.disk(nx_disk, ny_disk, nz_disk, 0)
@@ -48,3 +52,6 @@ llg = LLGIntegrator(demag)
 demagfield = llg.get_fheff(state)
 #print (demagfield[nx/2, ny/2,:,:])
 print (demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0)
+stream = open(filepath+"demag.dat", "w")
+stream.write("%d, %d, %e, %e, %e" %(nx, nx_disk, demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0))
+stream.close()
