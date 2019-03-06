@@ -1,7 +1,7 @@
 #!/bin/bash
 #$1 path to write to (ending with "/")
 
-for i in {10..20..10}; do
+for i in {10..250..10}; do
     echo $i
     ../../magnum.af multi_vortex_demag.py $1$i $i
 done
