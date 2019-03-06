@@ -23,10 +23,11 @@ void State::check_discretization(){
     }
 }
 
-void State::check_m_norm(double tol){
-    double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m),0),1),2),3));
+void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
+    af::array one_when_value_is_zero = af::iszero(vecnorm(m));
+    double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m)+1.*one_when_value_is_zero,0),1),2),3));
     if ( fabs(meannorm - 1.) > tol) {
-        printf("%s", (red("Warning: State::check_m_norm: magnetization is not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
+        printf("%s", (red("Warning: State::check_m_norm: non-zero parts of the magnetization are not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
     }
 }
 //long int State::get_m_addr(){
