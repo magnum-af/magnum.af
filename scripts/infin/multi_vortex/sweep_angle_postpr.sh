@@ -8,11 +8,14 @@ for dir in $(ls -dv */); do
     echo "" >> demag_values.dat
 done
 
+Hx_0degree=$(awk -F ', ' 'NR==1{print $4}' demag_values.dat)
+echo "$Hx_0degree"
+
 gnuplot -e '
     set terminal pdfcairo enhanced;
     set output "h_demag_x_over_angle.pdf";
     set xlabel "angle [°]";
     set ylabel "Hx_{demag} [mT]";
     set grid;
-    plot "demag_values.dat" u 8:($4*1e3) w lp notitle
+    plot "demag_values.dat" u 8:($4*1e3) w lp title "simulation", "demag_values.dat" u 8:(1e3*'"$Hx_0degree"'*cos($8/180*3.141)) w lp t "Hx(phi=0) * cos(phi)"
 '

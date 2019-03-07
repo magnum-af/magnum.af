@@ -9,7 +9,6 @@ ms=1750
 for degree in {0..90..10}; do # a is the spacing in nm between disks
     echo "degree = $degree"
     selectgpu=$(($iterategpu % 4))
-    echo "iterate gpu = $iterategpu"
     echo "select gpu  = $selectgpu"
     ../../magnum.af -S -g "$selectgpu" multi_vortex_demag.py "$1"/"$degree" "$nx_disk" "$a" "$ms" "$degree"
     ((iterategpu++))
