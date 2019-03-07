@@ -3,7 +3,7 @@
 
 for a in {500..2000..100}; do # a is the spacing in nm between disks
     echo $a
-    ../../magnum.af multi_vortex_demag.py $1$a 100 $a
+    ../../magnum.af multi_vortex_demag.py $1/$a 100 $a
 done
 
 cd $1

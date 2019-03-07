@@ -5,7 +5,16 @@ import numpy as np
 from magnum_af import *
 import time
 
+# expected: 
+#argv[1] filepath
+#argv[2] GPU number
+#argv[3] nx_disk
+#argv[4] a [nm]
+#argv[5] Ms*mu_0
+#argv[6] angle of m w.r.t. x-plane
+
 print ("The arguments are: " , str(sys.argv))
+print ("len(sys.argv)= " , len(sys.argv))
 filepath = sys.argv[1]
 if len(sys.argv) > 2:
     af.set_device(int(sys.argv[2]))
@@ -25,7 +34,10 @@ nx_disk = int(sys.argv[3]) if len(sys.argv) > 3 else 250
 ny_disk = nx_disk
 nz_disk = 1
 
-disk, n_cells = Util.disk(nx_disk, ny_disk, nz_disk, 0)
+angle_degree = float(sys.argv[6]) if len(sys.argv) > 6 else 0
+angle_rad = angle_degree/360. * 2 * np.pi
+
+disk, n_cells = Util.disk(nx_disk, ny_disk, nz_disk, axis=[np.cos(angle_rad), np.sin(angle_rad), 0])
 print (n_cells)
 #print (disk)
 
@@ -35,7 +47,8 @@ nz = nz_disk
 print (nx, ny, nz)
 
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-material = Material(ms=1.75/Constants.mu0, A = 1.5e-11)
+ms_in = float(sys.argv[5])*1e-3/Constants.mu0 if len(sys.argv) > 5 else 1.75/Constants.mu0
+material = Material(ms=ms_in)#TODO, confirm removal, A = 1.5e-11
 m = af.constant(0., nx, ny, nz, 3, dtype=af.Dtype.f64)
 m[0:nx_disk, 0:ny_disk, :, :] = disk
 m[0:nx_disk, ny_disk+1+int(ny_disk*a_factor):ny_disk+1+int(ny_disk*a_factor)+ny_disk, :, :] = disk
@@ -57,7 +70,7 @@ demagfield = llg.get_fheff(state)
 #print (demagfield[nx/2, ny/2,:,:])
 print (demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0)
 stream = open(filepath+"demag.dat", "w")
-stream.write("%d, %d, %e, %e, %e, %e" %(nx, nx_disk, a*1e9, demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0))
+stream.write("%d, %d, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a*1e9, demagfield[nx/2, ny/2,:,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,:,2].scalar()*Constants.mu0, state.material.ms, angle_degree))
 stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)
