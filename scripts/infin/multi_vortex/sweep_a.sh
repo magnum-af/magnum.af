@@ -1,24 +1,15 @@
 #!/bin/bash
 #$1 path to write to (ending with "/")
-
+nx_disk=100
+iterategpu=0
 for a in {500..2000..100}; do # a is the spacing in nm between disks
     echo $a
-    ../../magnum.af multi_vortex_demag.py $1/$a 100 $a
+    selectgpu=$(($iterategpu % 4))
+    echo "iterate gpu = $iterategpu"
+    echo "select gpu  = $selectgpu"
+    ../../magnum.af -S -g "$selectgpu" multi_vortex_demag.py "$1"/"$a" "$nx_disk" "$a"
+    ((iterategpu++))
 done
 
-cd $1
-for dir in $(ls -dv */); do
-    echo $dir
-    cat $dir/demag.dat >> demag_values.dat
-    echo "" >> demag_values.dat
-done
-
-gnuplot -e '
-    set terminal pdfcairo enhanced;
-    set output "h_demag_x_over_a.pdf";
-    set xlabel "a [nm]";
-    set ylabel "Hx_{demag} [mT]";
-    set grid;
-    set title "x-component of H_{demag} at (0,0)";
-    plot "demag_values.dat" u 3:($4*1e3) w lp notitle
-'
+cp sweep_a_postpr.sh "$1"/
+sed -i "/gnuplot/ a \ \ \ \ set title \"Hx_{demag} as function of spacing a.\";" "$1"/sweep_a_postpr.sh

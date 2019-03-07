@@ -13,6 +13,8 @@ import time
 #argv[5] Ms*mu_0
 #argv[6] angle of m w.r.t. x-plane
 
+start = time.time()
+timer = time.time()
 print ("The arguments are: " , str(sys.argv))
 print ("len(sys.argv)= " , len(sys.argv))
 filepath = sys.argv[1]
@@ -30,7 +32,7 @@ print("a_factor", a_factor)
 print ("x,y,z:", x, y, z)
 
 
-nx_disk = int(sys.argv[3]) if len(sys.argv) > 3 else 250
+nx_disk = int(sys.argv[3]) if len(sys.argv) > 3 else 100
 ny_disk = nx_disk
 nz_disk = 1
 
@@ -64,7 +66,11 @@ m[-nx_disk-1:-1, -ny_disk-1:-1, :, :] = disk
 
 state = State(mesh, material, m)
 state.py_vti_writer_micro(filepath+"init")
+print("setup in ", time.time() - timer, "[s]")
+timer = time.time()
 demag = DemagField(mesh, material)
+print("demagtensor in ", time.time() - timer, "[s]")
+timer = time.time()
 llg = LLGIntegrator(demag)
 demagfield = llg.get_fheff(state)
 #print (demagfield[nx/2, ny/2,:,:])
@@ -75,3 +81,5 @@ stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)
 dirty_workaround.py_vti_writer_micro(filepath+"demagfield")
+print("demagfield and output in ", time.time() - timer, "[s]")
+print("total time =", time.time() - start, "[s]")
