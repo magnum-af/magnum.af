@@ -99,7 +99,7 @@ cdef extern from "../../src/integrators/new_llg.hpp":
     long int get_fheff_addr(const State& state);
 cdef extern from "../../src/llg_terms/micro_demag.hpp":
   cdef cppclass DemagField:
-    DemagField (Mesh mesh_in, Material param_in);
+    DemagField (Mesh mesh_in, Material param_in, bool verbose, bool caching);
     double E(const State& state);
     void print_Nfft();
     double get_cpu_time();
