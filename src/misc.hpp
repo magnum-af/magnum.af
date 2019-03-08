@@ -6,6 +6,11 @@
 #include <string>
 #include <cstring>
 #include <pwd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 unsigned long long GetDirSize(std::string filepath);
 ///> Returns true if file "name" exists, false otherwise
@@ -16,6 +21,9 @@ inline bool exists (const std::string& absolute_filepath) {
 
 inline bool createdir(const std::string& absolute_filepath);
 std::string setup_magafdir();
+
+//void directoryManager(char *dir, int maxNumberOfFiles);
+void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumberOfBytes, bool verbose = true);
 
 ///> Colorizing a std::string for std::cout. Red is for warnings.
 std::string red(const std::string str);
