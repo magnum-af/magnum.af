@@ -587,8 +587,8 @@ class Constants:
 
 cdef class SpinTransferTorqueField:
   cdef cSpinTransferTorqueField* thisptr
-  def __cinit__(self, polarization_field, nu_dampinglike,  nu_fieldlike, j_e):
-    self.thisptr = new cSpinTransferTorqueField (addressof(polarization_field.arr), nu_dampinglike, nu_fieldlike, j_e) 
+  def __cinit__(self, pol, nu_damp,  nu_field, j_e):
+    self.thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
