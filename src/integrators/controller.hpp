@@ -3,7 +3,7 @@
 #include "arrayfire.h"
 #include "../misc.hpp"
 #include <algorithm>
-#include <iostream>
+#include <stdio.h>
 
 
 class Controller{
