@@ -36,8 +36,8 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
             }
         }
         if(checkarray > -1){
-            Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
             if (verbose) std::cout << "Reading demag tensor from '"<< path_to_nfft_cached << "'." << std::endl;
+            Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
         }
         else{
             Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
@@ -49,8 +49,8 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
             }
             if (GetDirSize(magafdir) < 1e6){
                 try{
-                    af::saveArray("", Nfft, path_to_nfft_cached.c_str());
                     if (verbose) std::cout << "Saving demag tensor to'"<< path_to_nfft_cached << "'." << std::endl;
+                    af::saveArray("", Nfft, path_to_nfft_cached.c_str());
                 }
                 catch (const af::exception& e){
                     std::cout << "Warning, af::saveArray failed, omit saving demag tensor.\n"<< e.what() << std::endl;
