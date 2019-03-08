@@ -19,9 +19,10 @@ r_flag=''
 s_flag='' 
 S_flag='' 
 v_flag='false'
+x_flag=''
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|h|f|g:|i:|o:|p:|r|s|S|v|x} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
@@ -44,6 +45,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -s  screen         Starts script using the terminal multiplexer screen.
   -S  silent screen  Silently starts script using screen, skipping 'tail -f stdout.txt'.
   -v  verbose        Show more details of this script.
+  -x  xtrace         Debugging: print every command.
 
 Examples:
   magnum.af sp4.py
@@ -63,7 +65,7 @@ Note:
 }
 
 
-while getopts 'b:Bdhfg:i:o:p:rsSv' flag; do
+while getopts 'b:Bdhfg:i:o:p:rsSvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -79,14 +81,15 @@ while getopts 'b:Bdhfg:i:o:p:rsSv' flag; do
     s) s_flag='true' ;;
     S) S_flag='true' ;;
     v) v_flag='true' ;;
+    x) x_flag='true' ;;
     *) print_usage
        exit 1 ;;
   esac
 done
 shift $((OPTIND-1)) # resetting counting
 
-if [[ "$v_flag" == "true" ]]; then
-    set -x
+if [[ "$x_flag" == "true" ]]; then
+    set -o xtrace
 fi
 
 if [ -z "$inputfile" ]; then

@@ -3,7 +3,7 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-# set -o xtrace
+#set -o xtrace [when x_flag = true]
 
 # Set magic variables for current file & dir
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -19,7 +19,7 @@ function log () {
 }
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|v|x} [inputfile outputdir]
 
 Run script for magnum.af using docker. Manages build process, directory creation and program execution.
 
@@ -41,6 +41,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -o: outputdir      Directory to write output to. Expects directory path.
   -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
   -v  verbose        Show more details of this script.
+  -x  xtrace         Debugging: print every command.
 
 Examples:
   $(basename "$0") sp4.py
@@ -67,10 +68,11 @@ inputfile=''
 o_flag=''
 outputdir=''
 v_flag=''
+x_flag=''
 
 
-while getopts 'b:Bdhfg:i:o:p:rv' flag; do
-  #Note: only 'd' flag is used in this script, all magnum.af flags are given here to avoid the getopts error as all arguments are passed to magnum.af
+while getopts 'b:Bdhfg:i:o:p:rvx' flag; do
+  #Note: some arguments are passed to magnum.af script
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -84,6 +86,7 @@ while getopts 'b:Bdhfg:i:o:p:rv' flag; do
     p) ;; 
     r) ;; 
     v) v_flag='true' ;;
+    x) x_flag='true' ;;
     *) print_usage
        exit 1 ;;
   esac
@@ -92,8 +95,8 @@ done
 saved_flags="${@:1:$((OPTIND-1))}"
 shift $((OPTIND-1)) # resetting counting
 
-if [[ "$v_flag" == "true" ]]; then
-    set -x
+if [[ "$x_flag" == "true" ]]; then
+    set -o xtrace
 fi
 
 log $__dir
