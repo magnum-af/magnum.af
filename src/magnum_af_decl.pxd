@@ -90,9 +90,13 @@ cdef extern from "../../src/llg_terms/atomistic_dmi.hpp":
     double E(const State& state);
     double get_cpu_time();
 
+cdef extern from "../../src/integrators/controller.hpp":
+  cdef cppclass Controller:
+    Controller(double hmin, double hmax, double atol, double rtol);
+
 cdef extern from "../../src/integrators/new_llg.hpp":
   cdef cppclass LLGIntegrator:
-    LLGIntegrator (vector[shared_ptr[LLGTerm]] vector_in);
+    LLGIntegrator (vector[shared_ptr[LLGTerm]] vector_in, string mode, Controller);
     vector[shared_ptr[LLGTerm]] llgterms;
     void step(State& state);
     double E(const State& state);

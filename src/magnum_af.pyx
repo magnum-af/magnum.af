@@ -29,6 +29,7 @@ from numpy import zeros as np_zeros
 from magnum_af_decl cimport Mesh as cMesh
 from magnum_af_decl cimport Material as cParam
 from magnum_af_decl cimport State as cState
+from magnum_af_decl cimport Controller as cController
 from magnum_af_decl cimport LLGIntegrator as cLLGIntegrator
 from magnum_af_decl cimport DemagField as cDemagField
 from magnum_af_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
@@ -51,13 +52,13 @@ def array_from_addr(array_addr):
 
 class Util:
   @staticmethod
-  def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0]):
-    """Returns a homogeneous field of dimension [nx, ny, nz, 3] and dtype=af.Dtype.f64 pointing into the direction of axis and normed to 1."""
+  def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0], factor = 1.):
+    """Returns a homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis and normed to factor."""
     norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
     array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
-    array [0,0,0,0] = axis[0]/norm
-    array [0,0,0,1] = axis[1]/norm
-    array [0,0,0,2] = axis[2]/norm
+    array [0,0,0,0] = factor * axis[0]/norm
+    array [0,0,0,1] = factor * axis[1]/norm
+    array [0,0,0,2] = factor * axis[2]/norm
     return af.tile(array, nx, ny, nz)
  
   @staticmethod
@@ -256,11 +257,14 @@ cdef class State:
 
 cdef class LLGIntegrator:
   cdef cLLGIntegrator* thisptr
-  def __cinit__(self, *args):
+  def __cinit__(self, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
     cdef vector[shared_ptr[cLLGTerm]] vector_in
-    for arg in args:
-      vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
-    self.thisptr = new cLLGIntegrator (vector_in)  
+    if not terms:
+      print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
+    else:
+      for arg in terms:
+        vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+      self.thisptr = new cLLGIntegrator (vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
   # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
   # NOTE not happening in minimizer class as it is not derived (i guess)
   #def __dealloc__(self):

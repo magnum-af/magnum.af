@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     
     // Parameter initialization
     const double x=1.e-9, y=1e-9, z=0.6e-9;
-    const int nx = 10, ny=10 ,nz=10;
+    const int nx = 2, ny=2 ,nz=2;
     //const int nx = 1, ny=1 ,nz=1;
     
     //Generating Objects
