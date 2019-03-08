@@ -18,7 +18,7 @@ class DemagField : public LLGTerm {
     Material material;
     Mesh mesh;
 
-    DemagField (Mesh, Material);
+    DemagField (Mesh, Material, bool verbose = false, bool caching = true);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
 

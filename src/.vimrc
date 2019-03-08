@@ -6,10 +6,12 @@ nnoremap <F3> :! cd ../build  && make clean && cd - <cr>
 nnoremap <F4> :! cd ../build  && cmake .. && cd - <cr>
 " F5: make
 nnoremap <F5> :! cd ../build && make -j<cr>
-" F6: run cpu
-nnoremap <F6> :!time ../bin/magnum.af-cpu<cr>
-" F7: run opencl
-nnoremap <F7> :!time ../bin/magnum.af-opencl<cr>
+" F6: make + run cpu 
+map <F6> <F5> <F7>
+" F7: run cpu
+nnoremap <F7> :!time ../bin/magnum.af-cpu<cr>
+" F8: run opencl
+nnoremap <F8> :!time ../bin/magnum.af-opencl<cr>
 " F9: Apply YCM FixIt
 nnoremap <F9> :YcmCompleter FixIt<CR>
 " F10: Goto definition with F3

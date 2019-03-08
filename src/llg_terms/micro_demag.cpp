@@ -1,4 +1,5 @@
 #include "micro_demag.hpp"
+#include "../misc.hpp"
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
@@ -16,8 +17,48 @@ void DemagField::print_Nfft(){
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-DemagField::DemagField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
-  Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool caching) : material(paramin),mesh(meshin){
+    af::timer demagtimer = af::timer::start();
+    if (caching == false){
+        Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+    }
+    else{
+        std::string magafdir = setup_magafdir();
+        std::string nfft_id = "n0_exp="+std::to_string(mesh.n0_exp)+",n1_exp="+std::to_string(mesh.n1_exp)+",n2_exp="+std::to_string(mesh.n2_exp)+",dx="+std::to_string(1e9*mesh.dx)+",dy="+std::to_string(1e9*mesh.dy)+",dz="+std::to_string(1e9*mesh.dz);
+        std::string path_to_nfft_cached = magafdir+nfft_id;
+        int checkarray=-1;
+        if (exists(path_to_nfft_cached)){
+            try{
+                checkarray = af::readArrayCheck(path_to_nfft_cached.c_str(), "");
+            }
+            catch (const af::exception& e){
+                std::cout << "Warning, af::readArrayCheck failed, omit reading array.\n"<< e.what() << std::endl;
+            }
+        }
+        if(checkarray > -1){
+            Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
+            if (verbose) std::cout << "Reading demag tensor from '"<< path_to_nfft_cached << "'." << std::endl;
+        }
+        else{
+            Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+            unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
+            if (verbose) std::cout << "current size of ~/.magnum.af.cache = " << magafdir_size_in_bytes << " bytes." << std::endl;
+            if (magafdir_size_in_bytes > 1e6){
+                if (verbose) std::cout << "Warning: ~/.magnum.af.cache is larger than 1GB, omitting to save demag tensor" << std::endl;
+                //TODO reduce size
+            }
+            if (GetDirSize(magafdir) < 1e6){
+                try{
+                    af::saveArray("", Nfft, path_to_nfft_cached.c_str());
+                    if (verbose) std::cout << "Saving demag tensor to'"<< path_to_nfft_cached << "'." << std::endl;
+                }
+                catch (const af::exception& e){
+                    std::cout << "Warning, af::saveArray failed, omit saving demag tensor.\n"<< e.what() << std::endl;
+                }
+            }
+        }
+        if (verbose) std::cout<<"time demag init [af-s]: "<< af::timer::stop(demagtimer) <<std::endl;
+    }
 }
 
 

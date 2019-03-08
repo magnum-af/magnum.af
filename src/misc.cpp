@@ -1,5 +1,6 @@
-#include <string>
+#include "misc.hpp"
 #include <iostream>
+#include <string>
 
 unsigned long long GetDirSize(std::string filepath)
 // Retuns size of directory in bytes
@@ -17,6 +18,34 @@ unsigned long long GetDirSize(std::string filepath)
     std::string dir_size_string=charstring.substr(0,charstring.find("/")-1);
     return std::stoull (dir_size_string,0,0);
 
+}
+
+inline bool createdir(const std::string& absolute_filepath){
+// Creating a directory
+    if (mkdir(absolute_filepath.c_str(), 0777) == -1){
+        std::cerr << "Error in createdir for " << absolute_filepath<< " : " << std::strerror(errno) << std::endl;
+        return false;
+    }
+
+    else{
+        //printf("Directory ~/.magnum_af/ created.");
+        std::cout << "Directory"+absolute_filepath+"created" << std::endl;
+        return true;
+    }
+
+}
+
+std::string setup_magafdir(){
+    const char *homedir;
+    if ((homedir = getenv("HOME")) == NULL) {
+        homedir = getpwuid(getuid())->pw_dir;
+    }
+    std::string magafdir(homedir);
+    magafdir = magafdir +"/.magnum.af.cache/";
+    if (exists(magafdir) == false){
+       createdir(magafdir); 
+    }
+    return magafdir;
 }
 
 std::string red(const std::string str){
