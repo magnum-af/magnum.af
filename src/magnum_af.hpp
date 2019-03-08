@@ -12,6 +12,7 @@
 #include "llg_terms/micro_exch.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/zee.hpp"
+#include "llg_terms/micro_spintransfertorque.hpp"
 #include "string.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"

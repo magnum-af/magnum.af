@@ -19,20 +19,21 @@ ny = 25
 nz = 1
 
 # Creating objects
-mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
+mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
+
 m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
+m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
+m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 
 material = Material()
 material.ms = 8e5
 material.A = 1.3e-11
 material.alpha = 1.
 
-m[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
-m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
-m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 
 state = State(mesh, material, m)
-demag = DemagField(mesh, material)
+demag = DemagField(mesh, material, verbose = True, caching = True)
 exch = ExchangeField(mesh, material)
 Llg = LLGIntegrator(demag, exch)
 
