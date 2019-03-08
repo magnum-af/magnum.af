@@ -24,6 +24,8 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
     }
     else{
         std::string magafdir = setup_magafdir();
+        unsigned long long maxsize = 2000000;
+        unsigned long long reducedsize = 1000000;
         std::string nfft_id = "n0exp_"+std::to_string(mesh.n0_exp)+"_n1exp_"+std::to_string(mesh.n1_exp)+"_n2exp_"+std::to_string(mesh.n2_exp)+"_dx_"+std::to_string(1e9*mesh.dx)+"_dy_"+std::to_string(1e9*mesh.dy)+"_dz_"+std::to_string(1e9*mesh.dz);
         std::string path_to_nfft_cached = magafdir+nfft_id;
         int checkarray=-1;
@@ -44,15 +46,14 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
         else{
             Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
-            if (verbose) printf("current size of ~/.magnum.af.cache = %f GB\n", (double) magafdir_size_in_bytes/1e6);
             //if (verbose) std::cout << "current size of ~/.magnum.af.cache = " << magafdir_size_in_bytes << " bytes." << std::endl;
-            if (magafdir_size_in_bytes > 1e6){
-                if (verbose) printf("Maintainance: '%s' is larger than 2GB, removing oldest files until <1GB\n", magafdir.c_str());
+            if (magafdir_size_in_bytes > maxsize){
+                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
                 //if (verbose) std::cout << "Warning: ~/.magnum.af.cache is larger than 1GB, omitting to save demag tensor" << std::endl;
-                remove_oldest_files_until_size(magafdir.c_str(), 0.5e6, verbose);
+                remove_oldest_files_until_size(magafdir.c_str(), reducedsize, verbose);
                 if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (double)GetDirSize(magafdir)/1e6);
             }
-            if (GetDirSize(magafdir) < 1e6){
+            if (GetDirSize(magafdir) < maxsize){
                 try{
                     if (verbose) printf("Saving demag tensor to'%s'\n", path_to_nfft_cached.c_str());
                     //if (verbose) std::cout << "Saving demag tensor to'"<< path_to_nfft_cached << "'." << std::endl;
