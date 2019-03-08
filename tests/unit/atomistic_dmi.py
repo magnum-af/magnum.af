@@ -26,7 +26,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnum_af.State(mesh,material,m)
     atom_ani=magnum_af.AtomisticDmiField(mesh,material)
-    Llg=magnum_af.LLGIntegrator(atom_ani)
+    Llg=magnum_af.LLGIntegrator([atom_ani])
 
     self.assertAlmostEqual(Llg.get_E(state), 0)
 
@@ -58,7 +58,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnum_af.State(mesh,material,m)
     atom_ani=magnum_af.AtomisticDmiField(mesh,material)
-    Llg=magnum_af.LLGIntegrator(atom_ani)
+    Llg=magnum_af.LLGIntegrator([atom_ani])
 
     self.assertAlmostEqual(Llg.get_E(state), - material.D_atom)
 
@@ -91,7 +91,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnum_af.State(mesh,material,m)
     atom_ani=magnum_af.AtomisticDmiField(mesh,material)
-    Llg=magnum_af.LLGIntegrator(atom_ani)
+    Llg=magnum_af.LLGIntegrator([atom_ani])
 
     self.assertAlmostEqual(Llg.get_E(state), 0)
 

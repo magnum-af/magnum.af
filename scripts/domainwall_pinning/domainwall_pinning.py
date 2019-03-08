@@ -97,7 +97,7 @@ demag = DemagField(mesh, material)
 exch = ExchangeField(mesh, material)
 aniso_field = UniaxialAnisotropyField(mesh, material)
 zee_field = Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
-Llg = LLGIntegrator(demag, exch, aniso_field, zee_field)
+Llg = LLGIntegrator([demag, exch, aniso_field, zee_field])
 
 #stream = open(sys.argv[1]+"m_relax.dat", "w")
 #print("Relaxing 2.2e-10 [s]")

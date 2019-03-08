@@ -24,7 +24,7 @@ print(fieldlike.polarization_field)
 print(m)
 
 state = State(Mesh(nx, ny, nz, x/nx, y/ny, z/nz), Material(ms = 8e5, A = 1.3e-11, alpha = 1.), m)
-llg = LLGIntegrator(fieldlike)
+llg = LLGIntegrator([fieldlike])
 heff = llg.get_fheff(state)
 print(heff[0,0,0,0].scalar())
 print(heff[0,0,0,1].scalar())

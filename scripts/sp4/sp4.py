@@ -35,7 +35,7 @@ material.alpha = 1.
 state = State(mesh, material, m)
 demag = DemagField(mesh, material, verbose = True, caching = True)
 exch = ExchangeField(mesh, material)
-Llg = LLGIntegrator(demag, exch)
+Llg = LLGIntegrator([demag, exch])
 
 # Relaxing
 print("relaxing 1ns")

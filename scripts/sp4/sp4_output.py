@@ -28,7 +28,7 @@ pystate.py_vti_writer_micro(path+"minit")
 
 demag=magnum_af.DemagField(meshvar,material)
 exch=magnum_af.ExchangeField(meshvar,material)
-Llg=magnum_af.LLGIntegrator(pystate,demag,exch)
+Llg=magnum_af.LLGIntegrator([pystate,demag,exch])
 
 print "relax --------------------"
 while pystate.t() < 1e-9:

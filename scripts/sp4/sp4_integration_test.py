@@ -19,7 +19,7 @@ class sp4(unittest.TestCase):
   
   demag=magnum_af.DemagField(meshvar,material)
   exch=magnum_af.ExchangeField(meshvar,material)
-  Llg=magnum_af.LLGIntegrator(pystate,demag,exch)
+  Llg=magnum_af.LLGIntegrator([pystate,demag,exch])
 
   def test_relaxation(self):
     intx=0
