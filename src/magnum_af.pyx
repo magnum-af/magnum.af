@@ -285,6 +285,8 @@ cdef class LLGIntegrator:
   def add_terms(self,*args):
     for arg in args:
       self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+  def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
+      self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
     #cdef vector[shared_ptr[cLLGTerm]] vector_in
     #for term in terms:
     #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms.pythisptr()))

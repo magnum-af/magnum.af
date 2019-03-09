@@ -48,9 +48,9 @@ void LLGIntegrator::relax(State& state, const double precision, const int iloop,
         for ( int i = 0; i<iloop; i++){
             step(state);
         }
-        if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
+        if( iwritecout > 0 and state.steps % iwritecout == 0) printf("LLGIntegrator: Relax: step %d, rdiff= %e", state.steps, fabs((E_prev - E(state))/E_prev));
     }
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ". Current state.steps= " << state.steps << " and state.t = " << state.t << std::endl; 
+    printf("timerelax [af-s]: %e . Current state.steps= %d and state.t = %e", state.t, state.steps, af::timer::stop(t)); 
 }
 
 long int LLGIntegrator::get_fheff_addr(const State& state){

@@ -100,6 +100,7 @@ cdef extern from "../../src/integrators/new_llg.hpp":
     vector[shared_ptr[LLGTerm]] llgterms;
     void step(State& state);
     double E(const State& state);
+    void relax(State& state, double precision, const int iloop, const int iwritecout);
     long int get_fheff_addr(const State& state);
 cdef extern from "../../src/llg_terms/micro_demag.hpp":
   cdef cppclass DemagField:
