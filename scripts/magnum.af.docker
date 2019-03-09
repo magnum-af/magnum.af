@@ -185,13 +185,15 @@ if [ "$d_flag" == "true" ];then
 fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"
-#[[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
+[[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
 # EXPERIMENTAL:
 #TODO#fails in writeArray#
 #runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu"
 runstring=$runstring" ./scripts/magnum.af -f"
-runstring=$runstring" $saved_flags -i $inputfile -o $outputdir $@"
+runstring=$runstring" $saved_flags"
+[[ -n "$postprocess" ]] && runstring=$runstring" -p $postprocess"
+runstring=$runstring" -i $inputfile -o $outputdir $@"
 
 log "runstring: "$runstring
 $runstring

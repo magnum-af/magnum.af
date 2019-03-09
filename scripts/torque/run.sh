@@ -4,5 +4,6 @@ nstep=1000 # mean every nth step
 
 ../magnum.af -sg 3 -p plot.gnu offset_sensor.py "$1" "$simtime" "$nstep"
 
-## or use docker
+## or alternatively use docker
+
 #../magnum.af.docker -dtg 3 offset_sensor.py "$1" "$simtime" "$nstep"
