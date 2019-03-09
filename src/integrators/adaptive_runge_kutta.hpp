@@ -4,6 +4,7 @@
 #include "controller.hpp"
 #include "../func.hpp"
 #include "../state.hpp"
+#include <stdio.h>
 
 class AdaptiveRungeKutta {
     public:

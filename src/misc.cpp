@@ -63,18 +63,19 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumb
 
         time(&t_oldest);
         if((dp = opendir(dir)) != NULL) {
-           chdir(dir);
-           while((entry = readdir(dp)) != NULL) {
-              lstat(entry->d_name, &statbuf);
-              if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
-                 continue;
-              if (maxiter == 0 && verbose) printf("Entry: ~/.magnum.af.cache/%s\t%s", entry->d_name, ctime(&statbuf.st_mtime));
-                 numberOfEntries++;
-              if(difftime(statbuf.st_mtime, t_oldest) < 0){
-                    t_oldest = statbuf.st_mtime;
-                 oldestFile = entry;
-              }
-          }
+             if(chdir(dir)==0){
+                 while((entry = readdir(dp)) != NULL) {
+                    lstat(entry->d_name, &statbuf);
+                    if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
+                       continue;
+                    if (maxiter == 0 && verbose) printf("Entry: ~/.magnum.af.cache/%s\t%s", entry->d_name, ctime(&statbuf.st_mtime));
+                       numberOfEntries++;
+                    if(difftime(statbuf.st_mtime, t_oldest) < 0){
+                          t_oldest = statbuf.st_mtime;
+                       oldestFile = entry;
+                    }
+                 }
+             }
         }
         if (verbose) printf("Removing oldest file '~/.magnum.af.cache/%s'  %s'\n", oldestFile->d_name, ctime(&t_oldest));
         remove(oldestFile->d_name);
