@@ -65,7 +65,7 @@ Note:
 }
 
 
-while getopts 'b:Bdhfg:i:o:p:rsSvx' flag; do
+while getopts 'b:Bdhfg:i:o:p:rsStvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -80,6 +80,7 @@ while getopts 'b:Bdhfg:i:o:p:rsSvx' flag; do
     r) r_flag='true' ;;
     s) s_flag='true' ;;
     S) S_flag='true' ;;
+    t) ;;
     v) v_flag='true' ;;
     x) x_flag='true' ;;
     *) print_usage
@@ -272,7 +273,7 @@ if [ "$extension" == "py" ];then
             do
                 sleep 0.001
                 log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
-                sleep_val=$((val+1))
+                sleep_val=$((sleep_val+1))
             done
             tail -f -n 0 $outputdir/stdout.txt
         fi
@@ -326,7 +327,7 @@ else
             do
                 sleep 0.001
                 log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
-                sleep_val=$((val+1))
+                sleep_val=$((sleep_val+1))
             done
             tail -f -n 0 $outputdir/stdout.txt
         fi

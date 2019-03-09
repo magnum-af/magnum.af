@@ -19,7 +19,7 @@ function log () {
 }
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|v|x} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|t|v|x} [inputfile outputdir]
 
 Run script for magnum.af using docker. Manages build process, directory creation and program execution.
 
@@ -40,6 +40,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
   -o: outputdir      Directory to write output to. Expects directory path.
   -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
+  -t  tail           Use 'tail -f' to follow simulation output in 'outputdir/stdout.txt'
   -v  verbose        Show more details of this script.
   -x  xtrace         Debugging: print every command.
 
@@ -67,11 +68,13 @@ i_flag=''
 inputfile=''
 o_flag=''
 outputdir=''
+postprocess=''
+t_flag=''
 v_flag=''
 x_flag=''
 
 
-while getopts 'b:Bdhfg:i:o:p:rvx' flag; do
+while getopts 'b:Bdhfg:i:o:p:rtvx' flag; do
   #Note: some arguments are passed to magnum.af script
   case "${flag}" in
     h) print_usage
@@ -83,8 +86,9 @@ while getopts 'b:Bdhfg:i:o:p:rvx' flag; do
     g) ;; 
     i) i_flag='true'; inputfile="${OPTARG}" ;;
     o) o_flag='true'; outputdir="${OPTARG}" ;;
-    p) ;; 
+    p) postprocess="${OPTARG}" ;;
     r) ;; 
+    t) t_flag='true' ;;
     v) v_flag='true' ;;
     x) x_flag='true' ;;
     *) print_usage
@@ -171,6 +175,8 @@ if [[ "$docker_image_exists" != "true" ]] || [[ "$B_flag" == "true" ]]; then
     command -v nvidia-smi >/dev/null 2>&1 && ( cd $__root && nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" . ) || ( cd $__root &&  docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" . )
 fi
 
+[[ -n "$postprocess" ]] && cp $postprocess $outputdir
+
 runstring=""
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring"nvidia-docker" || runstring=$runstring"docker"
 runstring=$runstring" run --user ${UID} --rm"
@@ -179,11 +185,25 @@ if [ "$d_flag" == "true" ];then
 fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"
+#[[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
 # EXPERIMENTAL:
-#TODO#fails in writeArray#runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
+#TODO#fails in writeArray#
+#runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu"
 runstring=$runstring" ./scripts/magnum.af -f"
 runstring=$runstring" $saved_flags -i $inputfile -o $outputdir $@"
 
 log "runstring: "$runstring
 $runstring
+
+if [ "$t_flag" == "true" ];then
+    log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
+    sleep_val=0
+    while [ ! -f "$outputdir/stdout.txt" ];
+    do
+        sleep 3.0
+        echo "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
+        sleep_val=$((sleep_val+1))
+    done
+    tail -f -n 0 $outputdir/stdout.txt
+fi
