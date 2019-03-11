@@ -45,6 +45,7 @@ m[:nx/2,:,:,0] = af.constant( 1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 m[:nx/2,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 m[nx/2:,:,:,0] = af.constant(-1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 m[nx/2:,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
+
 #m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 #m[:nx/2-5,:,:,0] = af.constant(1.0, int(nx/2)-5 , ny, nz, 1, dtype=af.Dtype.f64)
 #m[nx/2-5:nx/2+5,:,:,2] = af.constant(1.0, 10 , ny, nz, 1, dtype=af.Dtype.f64)
@@ -93,11 +94,13 @@ state.micro_Ku1_field = Ku1_field
 #print (state.micro_Ku1_field)
 #print (A_field)
 #print (state.micro_A_field)
-demag = DemagField(mesh, material)
-exch = ExchangeField(mesh, material)
-aniso_field = UniaxialAnisotropyField(mesh, material)
-zee_field = Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
-Llg = LLGIntegrator([demag, exch, aniso_field, zee_field])
+fields = [
+    Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    ExchangeField(mesh, material),
+    UniaxialAnisotropyField(mesh, material),
+    #DemagField(mesh, material),
+]
+Llg = LLGIntegrator(terms=fields)
 
 #stream = open(sys.argv[1]+"m_relax.dat", "w")
 #print("Relaxing 2.2e-10 [s]")
@@ -122,10 +125,11 @@ i = 0
 while state.t < 1e-7:
   if i%2000 == 0:
     state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
-  zee_field.set_xyz(state, state.t/50e-9/Constants.mu0, 0.0, 0.0)
+  fields[0].set_xyz(state, state.t/50e-9/Constants.mu0, 0.0, 0.0)
   Llg.llgstep(state)
   mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
-  stream.write("%e, %e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar(), state.t/50e-9/Constants.mu0))
+  printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar(), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()))
   stream.flush()
   i = i + 1
 print("100 [ns] hysteresis in ", time.time() - timer, "[s]")

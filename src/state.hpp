@@ -22,12 +22,15 @@ class State{
     af::array Ms; // Saturation magnetization. Is impicitly set and used when magnetization has values of norm 0.
     void set_micro_Ms_field(long int aptr);
     long int get_micro_Ms_field();
-    af::array micro_A_field; //!< Spacially varying exchange energy in [J/m] defined at each node.
+
+    af::array micro_A_field; //!< Spacially varying exchange energy in [J/m] defined at each node.//TODO move to material or exchange
     void set_micro_A_field(long int aptr); ///< For wrapping only: Setting af::array micro_A_field.
     long int get_micro_A_field();
-    af::array micro_Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node.
+
+    af::array micro_Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node.//TODO move to material or exchange
     void set_micro_Ku1_field(long int aptr); ///< For wrapping only: Setting af::array micro_Ku1_field.
     long int get_micro_Ku1_field();
+
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
     void check_discretization();
     void check_m_norm(double tol = 1e-6);

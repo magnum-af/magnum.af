@@ -162,7 +162,8 @@ double State::meani(const int i){
         ///< Calculates the mean values for the specified values given in evaluate_mean_
         norm_host = (af::sum(af::sum(af::sum((m * evaluate_mean_)(af::span,af::span,af::span,i),0),1),2)/evaluate_mean_is_1_).host<double>();
     }
-    else if(!Ms.isempty()){
+    else if(!Ms.isempty() && n_cells_ != 0){
+        if (n_cells_ == 0) printf("%s State::meani: n_cells_ is empty and will be divieded by 0!\n", red("Warning:").c_str());
         norm_host = (af::sum(af::sum(af::sum(m(af::span,af::span,af::span,i),0),1),2)/n_cells_).host<double>();
     }
     else{
