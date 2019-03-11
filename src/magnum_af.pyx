@@ -250,6 +250,10 @@ cdef class State:
   def micro_Ku1_field(self, micro_Ku1_field_in):
     self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
+  @property
+  def steps(self):
+    return self.thisptr.steps
+
   def meanxyz(self, i):
     return self.thisptr.meani(i)
 

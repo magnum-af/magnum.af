@@ -39,14 +39,31 @@ print (fields)
 
 # LLG version
 llg = LLGIntegrator(terms=fields, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)
-llg.relax(state)
+#llg.relax(state)
+
+stream = open(sys.argv[1]+"m.dat", "w")
+timer = time.time()
+itcount=0
+simtime = float(sys.argv[3])*1e-9 if len(sys.argv) > 3 else 1e-9
+nstep = int(sys.argv[4]) if len(sys.argv) > 4 else 100
+print ("Starting integration for", simtime, " [ns]. Calculating mean every ", nstep, "step.")
+while state.t < simtime:
+    llg.llgstep(state)
+    print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.steps)
+    stream.write("%e, %e, %e, %e, %d\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.steps))
+    stream.flush()
+    if itcount % nstep == 0:
+        state.py_vti_writer_micro(sys.argv[1] + "step" + str(itcount))
+    itcount=itcount+1
+print("Simulated ", simtime, " [ns] in ", time.time() - timer, "[s]")
+stream.close()
 
 # Minimizer version
 #timer = time.time()
 #minimizer = LBFGS_Minimizer(terms=fields, tol=1e-15, maxiter=1000)
 #minimizer.pyMinimize(state)
 #print("Minimized in ", time.time() - timer, "[s]")
+#state.py_vti_writer_micro(sys.argv[1] + "minimized")
 
-state.py_vti_writer_micro(sys.argv[1] + "minimized")
 mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
 print("Mean magnetization: ",  state.meanxyz(0), state.meanxyz(1), state.meanxyz(2))

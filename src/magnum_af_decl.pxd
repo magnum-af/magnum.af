@@ -45,6 +45,7 @@ cdef extern from "../../src/state.hpp":
     long int get_micro_Ku1_field();
 
     double t;
+    unsigned long long steps;
     Mesh mesh;
     Material material;
 
