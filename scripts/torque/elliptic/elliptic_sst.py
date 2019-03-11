@@ -26,10 +26,10 @@ material = Material(ms = 8.6e5, A = 30e-12, alpha = 0.1)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 state = State(mesh, material, m)
 
-polarization = Util.normed_homogeneous_field(nx, ny, nz, [0, 1, 0])
+polarization = Util.normed_homogeneous_field(nx, ny, nz, [1, 0, 0]) # Current in pinned layer along y-axis creates polarization in ellipse (which is in positive z dir) in (+/-)? x-dir
 
 fields = [
-    DemagField(mesh, material),
+    DemagField(mesh, material, verbose = True, caching = True),
     ExchangeField(mesh, material),
     SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=1.6e11),
     #UniaxialAnisotropyField(mesh, material),
