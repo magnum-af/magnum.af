@@ -35,13 +35,17 @@ af::array UniaxialAnisotropyField::h(const State& state){
         return  2.* material.Ku1/(constants::mu0 * material.ms) * (eu* anisotropy);
     }
     else if ( ! state.Ms.isempty() && state.micro_Ku1_field.isempty()){
-        return  2.* material.Ku1/(constants::mu0 * state.Ms) * (eu* anisotropy);
+        af::array result =  2.* material.Ku1/(constants::mu0 * state.Ms) * (eu* anisotropy);
+        af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
+        return result;
     }
     else if ( state.Ms.isempty() && ! state.micro_Ku1_field.isempty()){
         return  2.* state.micro_Ku1_field/(constants::mu0 * material.ms) * (eu* anisotropy);
     }
     else {
-        return  2.* state.micro_Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
+        af::array result =  2.* state.micro_Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
+        af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
+        return result;
     }
 }
 
