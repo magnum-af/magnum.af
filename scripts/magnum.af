@@ -6,6 +6,7 @@ magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 allargs=$@
 
 b_flag='' 
+c_flag=''
 backend='' 
 f_flag='' 
 GPU='0'
@@ -22,7 +23,7 @@ v_flag='false'
 x_flag=''
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|h|f|g:|i:|o:|p:|r|s|S|v|x} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|c:|h|f|g:|i:|o:|p:|r|s|S|v|x} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
@@ -36,6 +37,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
   -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -c: copy           Expects an existing file to be copied into outputdir.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
@@ -65,11 +67,12 @@ Note:
 }
 
 
-while getopts 'b:Bdhfg:i:o:p:rsStvx' flag; do
+while getopts 'b:Bc:dhfg:i:o:p:rsStvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
     b) b_flag='true'; backend="${OPTARG}" ;;
+    c) c_flag='true'; copyfile="${OPTARG}" ;;
     B) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     d) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     f) f_flag='true' ;;
@@ -188,6 +191,15 @@ if [ "$f_flag" == "true" ]; then
     fi
 else
     $magafdir/scripts/bash/check_write_dir.sh $outputdir $v_flag
+fi
+
+log "checking copy file"
+if [ "$c_flag" == "true" ]; then
+    if [ -f "$copyfile" ]; then
+        cp "$copyfile" "$outputdir"
+    else
+        echo "Warning: file to copy given by the flag '-c $copyfile' is not a regular file. Copy instuction is not attempted."
+    fi
 fi
 
 log "printing bash command and git log in outputdir"

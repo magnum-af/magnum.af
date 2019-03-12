@@ -81,6 +81,34 @@ class Util:
               n_cells = n_cells +1
     return af.from_ndarray(m), n_cells
 
+  @staticmethod
+  def vortex(mesh, positive_z = True):
+    """Returns a vortex configuration of dimension [mesh.n0, mesh.n1, mesh.n2, 3]. The option positive_z decides whether the vortex core points in positive (=True) or negative (=False) z-direction."""
+    m = np_zeros((mesh.n0, mesh.n1, mesh.n2, 3));
+    for ix in range (0, mesh.n0):
+      for iy in range(0, mesh.n1):
+        rx=float(ix)-mesh.n0/2.
+        ry=float(iy)-mesh.n1/2.
+        r = sqrt(pow(rx,2)+pow(ry,2))
+
+        if r < mesh.n0/2.:
+          for iz in range(0, mesh.n2):
+            if r==0.:
+              if positive_z==True:
+                m[ix,iy,:,2]= 1.
+              else:
+                m[ix,iy,:,2]= -1
+            else:
+              m[ix,iy,:,0]=-ry/r
+              m[ix,iy,:,1]= rx/r
+              if positive_z==True:
+                m[ix,iy,:,2]= sqrt(mesh.n0)/r
+              else:
+                m[ix,iy,:,2]= - sqrt(mesh.n0)/r
+            norm = sqrt(m[ix, iy, iz,0]**2+m[ix, iy, iz,1]**2+m[ix, iy, iz,2]**2)
+            m[ix, iy, iz,:]=m[ix, iy, iz,:]/norm
+    return af.from_ndarray(m)
+
   @classmethod
   def sum_of_difference_of_abs(cls, a, b):
     return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b),0),1),2),3).scalar()
