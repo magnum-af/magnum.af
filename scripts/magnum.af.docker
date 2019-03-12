@@ -19,7 +19,7 @@ function log () {
 }
 
 print_usage() {
-  printf "Usage: $(basename "$0") {b:|B|d|f|g:|h|i:|o:|p:|t|v|x} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|c|B|d|f|g:|h|i:|o:|p:|t|v|x} [inputfile outputdir]
 
 Run script for magnum.af using docker. Manages build process, directory creation and program execution.
 
@@ -34,6 +34,7 @@ Options (subsequent ':' indicates that an argument is expected):
 
   -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
   -B  build image    Builds docker image prior to simulation.
+  -c: copy           Copy a given file into outputdir.
   -d  detached       Run the simulation in a detached docker container.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
@@ -62,6 +63,7 @@ Note:
 }
 
 B_flag=''
+c_flag=''
 d_flag=''
 f_flag=''
 i_flag=''
@@ -74,7 +76,7 @@ v_flag=''
 x_flag=''
 
 
-while getopts 'b:Bdhfg:i:o:p:rtvx' flag; do
+while getopts 'b:Bc:dhfg:i:o:p:rtvx' flag; do
   #Note: some arguments are passed to magnum.af script
   case "${flag}" in
     h) print_usage
@@ -82,6 +84,7 @@ while getopts 'b:Bdhfg:i:o:p:rtvx' flag; do
     b) ;; 
     B) B_flag='true' ;; 
     d) d_flag='true' ;;
+    c) c_flag='true'; copyfile="${OPTARG}" ;;
     f) f_flag='true' ;;
     g) ;; 
     i) i_flag='true'; inputfile="${OPTARG}" ;;
@@ -186,6 +189,7 @@ fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"
 [[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
+[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
 runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu" # TODO better swtich
 runstring=$runstring" ./scripts/magnum.af -f"

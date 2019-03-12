@@ -37,7 +37,7 @@ Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
   -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
-  -c: copy           Expects an existing file to be copied into outputdir.
+  -c: copy           Copy a given file into outputdir.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
