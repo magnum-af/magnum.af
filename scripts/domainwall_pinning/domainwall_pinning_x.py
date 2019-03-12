@@ -16,7 +16,7 @@ y = 1.e-9
 z = 1.e-9
 
 # Discretization 
-nx = 100 #TODO set proper values
+nx = 100
 ny = 1
 nz = 1
 
@@ -24,10 +24,12 @@ nz = 1
 soft_Aex        = 0.25e-11
 soft_ms         = 0.25 / Constants.mu0
 soft_K_uni      = 1e5
+soft_Ku1_axis   = [0, 0, 1]
 
 hard_Aex        = 1.0e-11
 hard_ms         = 1.0 / Constants.mu0
 hard_K_uni      = 1e6
+hard_Ku1_axis   = [0, 0, 1]
 
 # Analytical Result
 def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
@@ -46,6 +48,11 @@ m[:nx/2,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 m[nx/2:,:,:,0] = af.constant(-1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 m[nx/2:,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 
+mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
+material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
+state = State(mesh, material, m)
+state.Normalize()
+state.py_vti_writer_micro("minit")
 #m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 #m[:nx/2-5,:,:,0] = af.constant(1.0, int(nx/2)-5 , ny, nz, 1, dtype=af.Dtype.f64)
 #m[nx/2-5:nx/2+5,:,:,2] = af.constant(1.0, 10 , ny, nz, 1, dtype=af.Dtype.f64)
@@ -74,15 +81,10 @@ Ku1_field[:nx/2,:,:,:] = af.constant(soft_K_uni, int(nx/2) , ny, nz, 3, dtype=af
 # hard
 Ku1_field[nx/2:,:,:,:] = af.constant(hard_K_uni, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 
-mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-
-material = Material(alpha=1.0, ms=0.25/Constants.mu0, Ku1_axis=[1., 0., 0.])
 #print ("material:", material.alpha, material.ms, material.A, material.Ku1, material.Ku1_axis)
 #TODO# string: setting ms=0 or not setting ms leads to segfault!: #material = Material(alpha=1.0, ms=0, Ku1_axis=[1., 0., 0.])
 #also not setting ms: material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
 
-state = State(mesh, material, m)
-state.Normalize()
 #print (state.m)
 state.micro_A_field = A_field
 state.micro_Ms_field = Ms_field
@@ -96,9 +98,8 @@ state.micro_Ku1_field = Ku1_field
 #print (state.micro_A_field)
 fields = [
     Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    ExchangeField(mesh, material),
-    UniaxialAnisotropyField(mesh, material),
-    #DemagField(mesh, material),
+    ExchangeField(state.mesh, state.material),
+    UniaxialAnisotropyField(state.mesh, state.material),
 ]
 Llg = LLGIntegrator(terms=fields)
 
@@ -118,21 +119,25 @@ Llg = LLGIntegrator(terms=fields)
 #state.py_vti_writer_micro(sys.argv[1] + "m_relax")
 #stream.close()
 
+fastenup = 10
 print("Start 100 [ns] hysteresis")
 stream = open(sys.argv[1]+"m.dat", "w")
 timer = time.time()
 i = 0
-while state.t < 1e-7:
+while (state.t < 1e-7/fastenup and state.meanxyz(0) < (1. - 1e-6)):
   if i%2000 == 0:
     state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
-  fields[0].set_xyz(state, state.t/50e-9/Constants.mu0, 0.0, 0.0)
+  fields[0].set_xyz(state, fastenup * state.t/50e-9/Constants.mu0, 0.0, 0.0)
   Llg.llgstep(state)
-  mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
+  #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
   printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar(), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()))
+  print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()*Constants.mu0)
+  printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()))
   stream.flush()
   i = i + 1
 print("100 [ns] hysteresis in ", time.time() - timer, "[s]")
 
 stream.close()
+print("switched at Hext=", printzee[0,0,0,0].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
 print("total time =", time.time() - start, "[s]")
