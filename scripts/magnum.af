@@ -7,6 +7,7 @@ allargs=$@
 
 b_flag='' 
 c_flag=''
+copyfile=''
 backend='' 
 f_flag='' 
 GPU='0'

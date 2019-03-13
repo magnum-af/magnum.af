@@ -64,6 +64,7 @@ Note:
 
 B_flag=''
 c_flag=''
+copyfile=''
 d_flag=''
 f_flag=''
 i_flag=''
@@ -189,12 +190,13 @@ fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"
 [[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
-[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
+[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath $copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
 runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu" # TODO better swtich
 runstring=$runstring" ./scripts/magnum.af -f"
 runstring=$runstring" $saved_flags"
 [[ -n "$postprocess" ]] && runstring=$runstring" -p $postprocess"
+[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && runstring=$runstring" -c $copyfile"
 runstring=$runstring" -i $inputfile -o $outputdir $@"
 
 log "runstring: "$runstring
