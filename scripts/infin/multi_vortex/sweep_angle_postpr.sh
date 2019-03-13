@@ -19,3 +19,19 @@ gnuplot -e '
     set grid;
     plot "demag_values.dat" u 8:($4*1e3) w lp title "simulation", "demag_values.dat" u 8:(1e3*'"$Hx_0degree"'*cos($8/180*3.141)) w lp t "Hx(phi=0) * cos(phi)"
 '
+gnuplot -e '
+    set terminal pdfcairo enhanced;
+    set output "h_demag_y_over_angle.pdf";
+    set xlabel "angle [°]";
+    set ylabel "Hy_{demag} [mT]";
+    set grid;
+    plot "demag_values.dat" u 8:($5*1e3) w lp title "simulation", "demag_values.dat" u 8:(1e3*'"$Hx_0degree"'*sin($8/180*3.141)) w lp t "Hx(phi=0) * sin(p    hi)"
+'
+gnuplot -e '
+    set terminal pdfcairo enhanced;
+    set output "h_norm_over_angle.pdf";
+    set xlabel "angle [°]";
+    set ylabel "|H_{demag}| [mT]";
+    set grid;
+    plot "demag_values.dat" u 8:(sqrt(($4*1e3)**2+($5*1e3)**2+($6*1e3)**2)) w lp notitle
+'
