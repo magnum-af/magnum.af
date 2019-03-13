@@ -24,12 +24,10 @@ nz = 1
 soft_Aex        = 0.25e-11
 soft_ms         = 0.25 / Constants.mu0
 soft_K_uni      = 1e5
-soft_Ku1_axis   = [0, 0, 1]
 
 hard_Aex        = 1.0e-11
 hard_ms         = 1.0 / Constants.mu0
 hard_K_uni      = 1e6
-hard_Ku1_axis   = [0, 0, 1]
 
 # Analytical Result
 def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
@@ -52,7 +50,7 @@ mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
 state = State(mesh, material, m)
 state.Normalize()
-state.py_vti_writer_micro("minit")
+state.py_vti_writer_micro(sys.argv[1] + "minit")
 #m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 #m[:nx/2-5,:,:,0] = af.constant(1.0, int(nx/2)-5 , ny, nz, 1, dtype=af.Dtype.f64)
 #m[nx/2-5:nx/2+5,:,:,2] = af.constant(1.0, 10 , ny, nz, 1, dtype=af.Dtype.f64)
