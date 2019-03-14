@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 100, ny=25 ,nz=10;
+    const int nx = 100, ny=25 ,nz=1;
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     DemagField Demag (mesh, material, true, false);

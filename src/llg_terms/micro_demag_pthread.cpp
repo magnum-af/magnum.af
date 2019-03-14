@@ -1,21 +1,6 @@
 #include "micro_demag_pthread.hpp"
 #include "../misc.hpp"
 
-//Energy calculation
-//Edemag=-mu0/2 integral(M . Hdemag) dx
-double DemagFieldMultithread::E(const State& state){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
-}
-
-double DemagFieldMultithread::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
-}
-
-void DemagFieldMultithread::print_Nfft(){
-    af::print("Nfft=", Nfft);
-}
-
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
 DemagFieldMultithread::DemagFieldMultithread (Mesh meshin, Material paramin, bool verbose, bool caching) : material(paramin),mesh(meshin){
     af::timer demagtimer = af::timer::start();
@@ -71,178 +56,263 @@ DemagFieldMultithread::DemagFieldMultithread (Mesh meshin, Material paramin, boo
     }
 }
 
+//Energy calculation
+//Edemag=-mu0/2 integral(M . Hdemag) dx
+double DemagFieldMultithread::E(const State& state){
+    return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+}
+
+double DemagFieldMultithread::E(const State& state, const af::array& h){
+    return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+}
+
+void DemagFieldMultithread::print_Nfft(){
+    af::print("Nfft=", Nfft);
+}
+
 
 af::array DemagFieldMultithread::h(const State&  state){
     timer_demagsolve = af::timer::start();
-  // FFT with zero-padding of the m field
-  af::array mfft;
-  if (mesh.n2_exp == 1){
-      if (state.Ms.isempty()) mfft=af::fftR2C<2>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
-      else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
-  }
-  else {
-      if (state.Ms.isempty()) mfft=af::fftR2C<3>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
-      else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
-  }
-
-  // Pointwise product
-  af::array hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
-  hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
-                                 + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
-                                 + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
-
-  // IFFT reversing padding
-  af::array h_field;
-  if (mesh.n2_exp == 1){
-    h_field=af::fftC2R<2>(hfft);
-    if(material.afsync) af::sync();
-    cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
-  }
-  else {
-    h_field=af::fftC2R<3>(hfft);
-    if(material.afsync) af::sync();
-    cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
-  }
-}
-
-double newellf(double x, double y, double z){
-  x=fabs(x);
-  y=fabs(y);
-  z=fabs(z);
-  const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-  const double xx = pow(x,2);
-  const double yy = pow(y,2);
-  const double zz = pow(z,2);
-
-  double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
-  if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
-  if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
-  if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
-  return result;
-}
-
-double newellg(double x, double y, double z){
-  z=fabs(z);
-  const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-  const double xx = pow(x,2);
-  const double yy = pow(y,2);
-  const double zz = pow(z,2);
-
-  double result = - x*y * R / 3.0;
-  if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
-  if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
-  if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-  if(z  *  R > 0) result += - pow(z,3) / 6.0     * atan(x*y / (z * R));
-  if(y  *  R!= 0) result += - z * yy / 2.0 * atan(x*z / (y * R));
-  if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
-  return result;
-}
-
-double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
-  double x = dx*ix;
-  double y = dy*iy;
-  double z = dz*iz;
-  double result = 8.0 * newellf( x,    y,    z   ) \
-         - 4.0 * newellf( x+dx, y,    z   ) \
-         - 4.0 * newellf( x-dx, y,    z   ) \
-         - 4.0 * newellf( x,    y+dy, z   ) \
-         - 4.0 * newellf( x,    y-dy, z   ) \
-         - 4.0 * newellf( x,    y   , z+dz) \
-         - 4.0 * newellf( x,    y   , z-dz) \
-         + 2.0 * newellf( x+dx, y+dy, z   ) \
-         + 2.0 * newellf( x+dx, y-dy, z   ) \
-         + 2.0 * newellf( x-dx, y+dy, z   ) \
-         + 2.0 * newellf( x-dx, y-dy, z   ) \
-         + 2.0 * newellf( x+dx, y   , z+dz) \
-         + 2.0 * newellf( x+dx, y   , z-dz) \
-         + 2.0 * newellf( x-dx, y   , z+dz) \
-         + 2.0 * newellf( x-dx, y   , z-dz) \
-         + 2.0 * newellf( x   , y+dy, z+dz) \
-         + 2.0 * newellf( x   , y+dy, z-dz) \
-         + 2.0 * newellf( x   , y-dy, z+dz) \
-         + 2.0 * newellf( x   , y-dy, z-dz) \
-         - 1.0 * newellf( x+dx, y+dy, z+dz) \
-         - 1.0 * newellf( x+dx, y+dy, z-dz) \
-         - 1.0 * newellf( x+dx, y-dy, z+dz) \
-         - 1.0 * newellf( x+dx, y-dy, z-dz) \
-         - 1.0 * newellf( x-dx, y+dy, z+dz) \
-         - 1.0 * newellf( x-dx, y+dy, z-dz) \
-         - 1.0 * newellf( x-dx, y-dy, z+dz) \
-         - 1.0 * newellf( x-dx, y-dy, z-dz);
-  return - result / (4.0 * M_PI * dx * dy * dz);
-}
-
-double Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
-  double x = dx*ix;
-  double y = dy*iy;
-  double z = dz*iz;
-  double result = 8.0 * newellg( x,    y,    z   ) \
-                - 4.0 * newellg( x+dx, y,    z   ) \
-                - 4.0 * newellg( x-dx, y,    z   ) \
-                - 4.0 * newellg( x,    y+dy, z   ) \
-                - 4.0 * newellg( x,    y-dy, z   ) \
-                - 4.0 * newellg( x,    y   , z+dz) \
-                - 4.0 * newellg( x,    y   , z-dz) \
-                + 2.0 * newellg( x+dx, y+dy, z   ) \
-                + 2.0 * newellg( x+dx, y-dy, z   ) \
-                + 2.0 * newellg( x-dx, y+dy, z   ) \
-                + 2.0 * newellg( x-dx, y-dy, z   ) \
-                + 2.0 * newellg( x+dx, y   , z+dz) \
-                + 2.0 * newellg( x+dx, y   , z-dz) \
-                + 2.0 * newellg( x-dx, y   , z+dz) \
-                + 2.0 * newellg( x-dx, y   , z-dz) \
-                + 2.0 * newellg( x   , y+dy, z+dz) \
-                + 2.0 * newellg( x   , y+dy, z-dz) \
-                + 2.0 * newellg( x   , y-dy, z+dz) \
-                + 2.0 * newellg( x   , y-dy, z-dz) \
-                - 1.0 * newellg( x+dx, y+dy, z+dz) \
-                - 1.0 * newellg( x+dx, y+dy, z-dz) \
-                - 1.0 * newellg( x+dx, y-dy, z+dz) \
-                - 1.0 * newellg( x+dx, y-dy, z-dz) \
-                - 1.0 * newellg( x-dx, y+dy, z+dz) \
-                - 1.0 * newellg( x-dx, y+dy, z-dz) \
-                - 1.0 * newellg( x-dx, y-dy, z+dz) \
-                - 1.0 * newellg( x-dx, y-dy, z-dz);
-  result = - result / (4.0 * M_PI * dx * dy * dz);
-  return result;
-}
-
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-  double* N = NULL;
-  N = new double[n0_exp*n1_exp*n2_exp*6];
-  for (int i0 = 0; i0 < n0_exp; i0++){
-    const int j0 = (i0 + n0_exp/2) % n0_exp - n0_exp/2;
-    for (int i1 = 0; i1 < n1_exp; i1++){
-      const int j1 = (i1 + n1_exp/2) % n1_exp - n1_exp/2;
-      for (int i2 = 0; i2 < n2_exp; i2++ ){
-        const int j2 = (i2 + n2_exp/2) % n2_exp - n2_exp/2;
-        const int idx = 6*(i2+n2_exp*(i1+n1_exp*i0));
-        N[idx+0] = Nxxf(j0, j1, j2, dx, dy, dz);
-        N[idx+1] = Nxxg(j0, j1, j2, dx, dy, dz);
-        N[idx+2] = Nxxg(j0, j2, j1, dx, dz, dy);
-        N[idx+3] = Nxxf(j1, j2, j0, dy, dz, dx);
-        N[idx+4] = Nxxg(j1, j2, j0, dy, dz, dx);
-        N[idx+5] = Nxxf(j2, j0, j1, dz, dx, dy);
-      }
+    // FFT with zero-padding of the m field
+    af::array mfft;
+    if (mesh.n2_exp == 1){
+        if (state.Ms.isempty()) mfft=af::fftR2C<2>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+        else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
     }
-  }
-  af::array Naf(6,n2_exp,n1_exp,n0_exp,N);
-  Naf=af::reorder(Naf,3,2,1,0);
-  delete [] N;
-  N = NULL;
-  if (n2_exp == 1){
-    Naf = af::fftR2C<2>(Naf);
-  }
-  else {
-    Naf = af::fftR2C<3>(Naf);
-  }
-  return Naf;
+    else {
+        if (state.Ms.isempty()) mfft=af::fftR2C<3>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+        else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+    }
+  
+    // Pointwise product
+    af::array hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
+    hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
+                                   + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
+    hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
+                                   + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
+    hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
+                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
+  
+    // IFFT reversing padding
+    af::array h_field;
+    if (mesh.n2_exp == 1){
+        h_field=af::fftC2R<2>(hfft);
+        if(material.afsync) af::sync();
+        cpu_time += af::timer::stop(timer_demagsolve);
+        return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
+    }
+    else {
+        h_field=af::fftC2R<3>(hfft);
+        if(material.afsync) af::sync();
+        cpu_time += af::timer::stop(timer_demagsolve);
+        return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
+    }
+}
+
+struct LoopInfo {
+    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp):
+        i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp){}
+    int i0_start;
+    int i0_end;
+    int n0_exp;
+    int n1_exp;
+    int n2_exp;
+    double dx;
+    double dy;
+    double dz;
+};
+
+double* N = NULL;
+int step_i = 0;
+
+void* DemagFieldMultithread::setup_N(void* arg) 
+{ 
+    //LoopInfo* lptr= arg;
+    //LoopInfo loopinfo = *lptr;
+    LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
+    int core = step_i++; 
+
+    for (int i0 = 0; i0 < loopinfo->n0_exp; i0++){
+        const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
+        for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
+            const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
+            for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
+                const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
+                const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+                N[idx+0] = Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N[idx+1] = Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N[idx+2] = Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                N[idx+3] = Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N[idx+4] = Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N[idx+5] = Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+            }
+        }
+    }
+    //for (int i = core * MAX / 4; i < (core + 1) * MAX / 4; i++)  
+    //    for (int j = 0; j < MAX; j++)  
+    //        for (int k = 0; k < MAX; k++)  
+    //            matC[i][j] += matA[i][k] * matB[k][j]; 
+} 
+
+af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
+    const int nthreads = 10;
+    pthread_t threads[nthreads];
+    std::cout << "n0_exp= " <<  n0_exp << ", n_0_exp/nthreads= " << n0_exp/nthreads <<  std::endl;
+
+    //LoopInfo loopinfo(i0_start, i0_end, n0_exp, n1_exp, n2_exp);
+    //LoopInfo* loopinfo = malloc(sizeof(LoopInfo)); 
+    LoopInfo* loopinfo = (LoopInfo *)malloc(sizeof(LoopInfo *)); 
+    loopinfo->i0_start = 0;
+    loopinfo->i0_end   = n0_exp;
+    loopinfo->n0_exp   = n0_exp;
+    loopinfo->n1_exp   = n1_exp;
+    loopinfo->n2_exp   = n2_exp;
+    loopinfo->dx = dx;
+    loopinfo->dy = dz;
+    loopinfo->dz = dy;
+
+    N = new double[n0_exp*n1_exp*n2_exp*6];
+
+    printf("\nStarting treads:\n\n");
+    for (int i = 0; i < 1; i++){
+    //for (int i = 0; i < nthreads; i++){
+        int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo);
+        if(iret)
+        {
+            fprintf(stderr,"Error - pthread_create() return code: %d\n",iret);
+            exit(EXIT_FAILURE);
+        }
+     }
+
+    //TODO for (int i = 0; i < nthreads; i++){
+    for (int i = 0; i < 1; i++){
+    /* Waiting for all threads to be joined.*/
+        int iret = pthread_join( threads[i], NULL);
+        if(iret)
+        {
+            fprintf(stderr,"Error - pthread_join return code: %d\n",iret);
+            exit(EXIT_FAILURE);
+        }
+     }
+
+
+
+    //double N [n0_exp*n1_exp*n2_exp*6];
+    af::array Naf(6,n2_exp,n1_exp,n0_exp,N);
+    Naf=af::reorder(Naf,3,2,1,0);
+    delete [] N;
+    N = NULL;
+    if (n2_exp == 1){
+        Naf = af::fftR2C<2>(Naf);
+    }
+    else {
+        Naf = af::fftR2C<3>(Naf);
+    }
+    return Naf;
+}
+
+
+double DemagFieldMultithread::newellf(double x, double y, double z){
+    x=fabs(x);
+    y=fabs(y);
+    z=fabs(z);
+    const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
+    const double xx = pow(x,2);
+    const double yy = pow(y,2);
+    const double zz = pow(z,2);
+  
+    double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
+    if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
+    if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
+    if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
+    return result;
+}
+
+double DemagFieldMultithread::newellg(double x, double y, double z){
+    z=fabs(z);
+    const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
+    const double xx = pow(x,2);
+    const double yy = pow(y,2);
+    const double zz = pow(z,2);
+  
+    double result = - x*y * R / 3.0;
+    if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
+    if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
+    if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
+    if(z  *  R > 0) result += - pow(z,3) / 6.0     * atan(x*y / (z * R));
+    if(y  *  R!= 0) result += - z * yy / 2.0 * atan(x*z / (y * R));
+    if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
+    return result;
+}
+
+double DemagFieldMultithread::Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
+    double x = dx*ix;
+    double y = dy*iy;
+    double z = dz*iz;
+    double result = 8.0 * newellf( x,    y,    z   ) \
+           - 4.0 * newellf( x+dx, y,    z   ) \
+           - 4.0 * newellf( x-dx, y,    z   ) \
+           - 4.0 * newellf( x,    y+dy, z   ) \
+           - 4.0 * newellf( x,    y-dy, z   ) \
+           - 4.0 * newellf( x,    y   , z+dz) \
+           - 4.0 * newellf( x,    y   , z-dz) \
+           + 2.0 * newellf( x+dx, y+dy, z   ) \
+           + 2.0 * newellf( x+dx, y-dy, z   ) \
+           + 2.0 * newellf( x-dx, y+dy, z   ) \
+           + 2.0 * newellf( x-dx, y-dy, z   ) \
+           + 2.0 * newellf( x+dx, y   , z+dz) \
+           + 2.0 * newellf( x+dx, y   , z-dz) \
+           + 2.0 * newellf( x-dx, y   , z+dz) \
+           + 2.0 * newellf( x-dx, y   , z-dz) \
+           + 2.0 * newellf( x   , y+dy, z+dz) \
+           + 2.0 * newellf( x   , y+dy, z-dz) \
+           + 2.0 * newellf( x   , y-dy, z+dz) \
+           + 2.0 * newellf( x   , y-dy, z-dz) \
+           - 1.0 * newellf( x+dx, y+dy, z+dz) \
+           - 1.0 * newellf( x+dx, y+dy, z-dz) \
+           - 1.0 * newellf( x+dx, y-dy, z+dz) \
+           - 1.0 * newellf( x+dx, y-dy, z-dz) \
+           - 1.0 * newellf( x-dx, y+dy, z+dz) \
+           - 1.0 * newellf( x-dx, y+dy, z-dz) \
+           - 1.0 * newellf( x-dx, y-dy, z+dz) \
+           - 1.0 * newellf( x-dx, y-dy, z-dz);
+    return - result / (4.0 * M_PI * dx * dy * dz);
+}
+
+double DemagFieldMultithread::Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
+    double x = dx*ix;
+    double y = dy*iy;
+    double z = dz*iz;
+    double result = 8.0 * newellg( x,    y,    z   ) \
+                  - 4.0 * newellg( x+dx, y,    z   ) \
+                  - 4.0 * newellg( x-dx, y,    z   ) \
+                  - 4.0 * newellg( x,    y+dy, z   ) \
+                  - 4.0 * newellg( x,    y-dy, z   ) \
+                  - 4.0 * newellg( x,    y   , z+dz) \
+                  - 4.0 * newellg( x,    y   , z-dz) \
+                  + 2.0 * newellg( x+dx, y+dy, z   ) \
+                  + 2.0 * newellg( x+dx, y-dy, z   ) \
+                  + 2.0 * newellg( x-dx, y+dy, z   ) \
+                  + 2.0 * newellg( x-dx, y-dy, z   ) \
+                  + 2.0 * newellg( x+dx, y   , z+dz) \
+                  + 2.0 * newellg( x+dx, y   , z-dz) \
+                  + 2.0 * newellg( x-dx, y   , z+dz) \
+                  + 2.0 * newellg( x-dx, y   , z-dz) \
+                  + 2.0 * newellg( x   , y+dy, z+dz) \
+                  + 2.0 * newellg( x   , y+dy, z-dz) \
+                  + 2.0 * newellg( x   , y-dy, z+dz) \
+                  + 2.0 * newellg( x   , y-dy, z-dz) \
+                  - 1.0 * newellg( x+dx, y+dy, z+dz) \
+                  - 1.0 * newellg( x+dx, y+dy, z-dz) \
+                  - 1.0 * newellg( x+dx, y-dy, z+dz) \
+                  - 1.0 * newellg( x+dx, y-dy, z-dz) \
+                  - 1.0 * newellg( x-dx, y+dy, z+dz) \
+                  - 1.0 * newellg( x-dx, y+dy, z-dz) \
+                  - 1.0 * newellg( x-dx, y-dy, z+dz) \
+                  - 1.0 * newellg( x-dx, y-dy, z-dz);
+    result = - result / (4.0 * M_PI * dx * dy * dz);
+    return result;
 }
