@@ -21,6 +21,7 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
     af::timer demagtimer = af::timer::start();
     if (caching == false){
         Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+        if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
     else{
         std::string magafdir = setup_magafdir();

@@ -2,10 +2,11 @@
 #include "../misc.hpp"
 
 
-DemagFieldMultithread::DemagFieldMultithread (Mesh meshin, Material paramin, bool verbose, bool caching) : material(paramin),mesh(meshin){
+DemagFieldMultithread::DemagFieldMultithread (Mesh meshin, Material paramin, bool verbose, bool caching, int nthreads) : material(paramin),mesh(meshin), nthreads(nthreads){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
         Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+        if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
     else{
         std::string magafdir = setup_magafdir();
@@ -113,6 +114,7 @@ af::array DemagFieldMultithread::h(const State&  state){
 }
 
 struct LoopInfo {
+    LoopInfo(){}
     LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
         i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
     int i0_start;
@@ -128,7 +130,7 @@ struct LoopInfo {
 //https://stackoverflow.com/questions/22657770/using-c-11-multithreading-on-non-static-member-function
 
 double* N = NULL;
-int step_i = 0;
+//int step_i = 0;
 
 //void DemagFieldMultithread::setup_N(Mesh mesh) 
 //void* DemagFieldMultithread::setup_N(void* arg) 
@@ -145,15 +147,15 @@ void* setup_N(void* arg)
     
     //LoopInfo* loopinfo = static_cast<LoopInfo>(arg);
     LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n0_exp << std::endl;
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n1_exp << std::endl;
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n2_exp << std::endl;
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dx << std::endl;
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dy << std::endl;
-    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dz << std::endl;
-    int core = step_i++; 
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n0_exp << std::endl;
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n1_exp << std::endl;
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n2_exp << std::endl;
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dx << std::endl;
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dy << std::endl;
+    //std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dz << std::endl;
+    //int core = step_i++; 
 
-    for (int i0 = 0; i0 < loopinfo->n0_exp; i0++){
+    for (int i0 = loopinfo->i0_start; i0 < loopinfo->i0_end; i0++){
         const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
         for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
             const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
@@ -169,7 +171,7 @@ void* setup_N(void* arg)
             }
         }
     }
-    std::cout << "finished all loops " << std::endl;
+    //std::cout << "finished all loops " << std::endl;
     //TODO//delete [] loopinfo;
     //loopinfo=NULL;
     
@@ -180,10 +182,9 @@ void* setup_N(void* arg)
 } 
 
 af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-    const int nthreads = 1;
     pthread_t threads[nthreads];
     //std::thread t[nthreads];
-    std::cout << "n0_exp= " <<  n0_exp << ", n_0_exp/nthreads= " << n0_exp/nthreads <<  std::endl;
+    //std::cout << "n0_exp= " <<  n0_exp << ", n_0_exp/nthreads= " << n0_exp/nthreads <<  std::endl;
 
     //LoopInfo loopinfo(i0_start, i0_end, n0_exp, n1_exp, n2_exp);
     //LoopInfo* loopinfo = malloc(sizeof(LoopInfo)); 
@@ -198,7 +199,23 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
     //loopinfo = new LoopInfo()[0]; 
     ////why not 1? //loopinfo = new LoopInfo[1]; 
     
-    LoopInfo* loopinfo = new LoopInfo(0, n0_exp, n0_exp, n1_exp, n2_exp, dx, dy, dz); 
+    //LoopInfo* test_loopinfo = new LoopInfo(0, n0_exp, n0_exp, n1_exp, n2_exp, dx, dy, dz); 
+    //LoopInfo* test_loopinfo = new LoopInfo()[10];
+    struct LoopInfo loopinfo[nthreads];
+    for (int i = 0; i < nthreads; i++){
+        int start = i * n0_exp/nthreads;
+        int end = (i +1) * n0_exp/nthreads;
+        loopinfo[i]=LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
+        //test_loopinfo[i].i0_start = 0;
+        //test_loopinfo[i].i0_end = n0_exp;
+        //test_loopinfo[i].n0_exp = n0_exp;
+        //test_loopinfo[i].n1_exp = n1_exp;
+        //test_loopinfo[i].n2_exp = n2_exp;
+        //test_loopinfo[i].dx = dx;
+        //test_loopinfo[i].dy = dz;
+        //test_loopinfo[i].dz = dy;
+    }
+    //RUNNING//LoopInfo* loopinfo = new LoopInfo(0, n0_exp, n0_exp, n1_exp, n2_exp, dx, dy, dz); 
 
     
     //loopinfo->i0_start = 0;
@@ -209,16 +226,16 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
     //loopinfo->dx = dx;
     //loopinfo->dy = dz;
     //loopinfo->dz = dy;
-    std::cout << "setupt with loopinfo->n0_exp" << loopinfo->n0_exp << std::endl;
+    //std::cout << "setupt with loopinfo->n0_exp" << loopinfo->n0_exp << std::endl;
 
     N = new double[n0_exp*n1_exp*n2_exp*6];
 
-    printf("\nStarting treads:\n\n");
+    //printf("\nStarting treads:\n\n");
     for (int i = 0; i < nthreads; i++){
         //t[i] = std::thread(&this->setup_N, this, this->mesh);
         //t[i] = std::thread(this->setup_N,  this->mesh);
         //t[i] = std::thread(setup_N, i);
-        int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo[0]);
+        int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo[i]);
         //int iret = pthread_create( &threads[i], NULL, setup_N, loopinfo);
         //TODO//int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo);
         if(iret)
@@ -229,7 +246,7 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
      }
 
     //for (int i = 0; i < 1; i++){
-    printf("\n Waiting for threads:\n\n");
+    //printf("\n Waiting for threads:\n\n");
     for (int i = 0; i < nthreads; i++){
         //t[i].join();
     /* Waiting for all threads to be joined.*/
@@ -240,13 +257,12 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
             exit(EXIT_FAILURE);
         }
      }
-    delete [] loopinfo;
-    loopinfo = NULL;
+    //delete [] loopinfo;
+    //loopinfo = NULL;
 
     //double N [n0_exp*n1_exp*n2_exp*6];
     af::array Naf(6,n2_exp,n1_exp,n0_exp,N);
     Naf=af::reorder(Naf,3,2,1,0);
-    af::print("Naf", Naf);
     delete [] N;
     N = NULL;
     if (n2_exp == 1){
