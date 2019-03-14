@@ -171,6 +171,7 @@ void* setup_N(void* arg)
             }
         }
     }
+    return NULL;
     //std::cout << "finished all loops " << std::endl;
     //TODO//delete [] loopinfo;
     //loopinfo=NULL;
@@ -203,8 +204,8 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
     //LoopInfo* test_loopinfo = new LoopInfo()[10];
     struct LoopInfo loopinfo[nthreads];
     for (int i = 0; i < nthreads; i++){
-        int start = i * n0_exp/nthreads;
-        int end = (i +1) * n0_exp/nthreads;
+        int start = i * (double)n0_exp/nthreads;
+        int end = (i +1) * (double)n0_exp/nthreads;
         loopinfo[i]=LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
         //test_loopinfo[i].i0_start = 0;
         //test_loopinfo[i].i0_end = n0_exp;
