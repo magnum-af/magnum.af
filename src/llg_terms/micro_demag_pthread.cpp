@@ -113,8 +113,8 @@ af::array DemagFieldMultithread::h(const State&  state){
 }
 
 struct LoopInfo {
-    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp):
-        i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp){}
+    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
+        i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
     int i0_start;
     int i0_end;
     int n0_exp;
@@ -125,14 +125,32 @@ struct LoopInfo {
     double dz;
 };
 
+//https://stackoverflow.com/questions/22657770/using-c-11-multithreading-on-non-static-member-function
+
 double* N = NULL;
 int step_i = 0;
 
-void* DemagFieldMultithread::setup_N(void* arg) 
+//void DemagFieldMultithread::setup_N(Mesh mesh) 
+//void* DemagFieldMultithread::setup_N(void* arg) 
+
+double thread_newellg(double x, double y, double z);
+double thread_newellf(double x, double y, double z);
+double thread_Nxxg(int ix, int iy, int iz, double dx, double dy, double dz);
+double thread_Nxxf(int ix, int iy, int iz, double dx, double dy, double dz);
+
+void* setup_N(void* arg) 
 { 
     //LoopInfo* lptr= arg;
     //LoopInfo loopinfo = *lptr;
+    
+    //LoopInfo* loopinfo = static_cast<LoopInfo>(arg);
     LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n0_exp << std::endl;
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n1_exp << std::endl;
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->n2_exp << std::endl;
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dx << std::endl;
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dy << std::endl;
+    std::cout << "called setup_N with loopinfo->>n0_exp " << loopinfo->dz << std::endl;
     int core = step_i++; 
 
     for (int i0 = 0; i0 < loopinfo->n0_exp; i0++){
@@ -142,15 +160,19 @@ void* DemagFieldMultithread::setup_N(void* arg)
             for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
                 const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
                 const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
-                N[idx+0] = Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N[idx+1] = Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N[idx+2] = Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
-                N[idx+3] = Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                N[idx+4] = Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                N[idx+5] = Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+                N[idx+0] = thread_Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N[idx+1] = thread_Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N[idx+2] = thread_Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                N[idx+3] = thread_Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N[idx+4] = thread_Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N[idx+5] = thread_Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
             }
         }
     }
+    std::cout << "finished all loops " << std::endl;
+    //TODO//delete [] loopinfo;
+    //loopinfo=NULL;
+    
     //for (int i = core * MAX / 4; i < (core + 1) * MAX / 4; i++)  
     //    for (int j = 0; j < MAX; j++)  
     //        for (int k = 0; k < MAX; k++)  
@@ -158,28 +180,47 @@ void* DemagFieldMultithread::setup_N(void* arg)
 } 
 
 af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-    const int nthreads = 10;
+    const int nthreads = 1;
     pthread_t threads[nthreads];
+    //std::thread t[nthreads];
     std::cout << "n0_exp= " <<  n0_exp << ", n_0_exp/nthreads= " << n0_exp/nthreads <<  std::endl;
 
     //LoopInfo loopinfo(i0_start, i0_end, n0_exp, n1_exp, n2_exp);
     //LoopInfo* loopinfo = malloc(sizeof(LoopInfo)); 
-    LoopInfo* loopinfo = (LoopInfo *)malloc(sizeof(LoopInfo *)); 
-    loopinfo->i0_start = 0;
-    loopinfo->i0_end   = n0_exp;
-    loopinfo->n0_exp   = n0_exp;
-    loopinfo->n1_exp   = n1_exp;
-    loopinfo->n2_exp   = n2_exp;
-    loopinfo->dx = dx;
-    loopinfo->dy = dz;
-    loopinfo->dz = dy;
+    //LoopInfo* loopinfo = (LoopInfo *)malloc(sizeof(LoopInfo *)); 
+    
+    //LoopInfo* loopinfo = NULL;
+
+    //LoopInfo* loopinfo = new LoopInfo[1]; 
+    //LoopInfo* loopinfo = new LoopInfo[nthreads]; 
+    
+    //LoopInfo* loopinfo = NULL;
+    //loopinfo = new LoopInfo()[0]; 
+    ////why not 1? //loopinfo = new LoopInfo[1]; 
+    
+    LoopInfo* loopinfo = new LoopInfo(0, n0_exp, n0_exp, n1_exp, n2_exp, dx, dy, dz); 
+
+    
+    //loopinfo->i0_start = 0;
+    //loopinfo->i0_end   = n0_exp;
+    //loopinfo->n0_exp   = n0_exp;
+    //loopinfo->n1_exp   = n1_exp;
+    //loopinfo->n2_exp   = n2_exp;
+    //loopinfo->dx = dx;
+    //loopinfo->dy = dz;
+    //loopinfo->dz = dy;
+    std::cout << "setupt with loopinfo->n0_exp" << loopinfo->n0_exp << std::endl;
 
     N = new double[n0_exp*n1_exp*n2_exp*6];
 
     printf("\nStarting treads:\n\n");
-    for (int i = 0; i < 1; i++){
-    //for (int i = 0; i < nthreads; i++){
-        int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo);
+    for (int i = 0; i < nthreads; i++){
+        //t[i] = std::thread(&this->setup_N, this, this->mesh);
+        //t[i] = std::thread(this->setup_N,  this->mesh);
+        //t[i] = std::thread(setup_N, i);
+        int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo[0]);
+        //int iret = pthread_create( &threads[i], NULL, setup_N, loopinfo);
+        //TODO//int iret = pthread_create( &threads[i], NULL, setup_N, (void*) &loopinfo);
         if(iret)
         {
             fprintf(stderr,"Error - pthread_create() return code: %d\n",iret);
@@ -187,8 +228,10 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
         }
      }
 
-    //TODO for (int i = 0; i < nthreads; i++){
-    for (int i = 0; i < 1; i++){
+    //for (int i = 0; i < 1; i++){
+    printf("\n Waiting for threads:\n\n");
+    for (int i = 0; i < nthreads; i++){
+        //t[i].join();
     /* Waiting for all threads to be joined.*/
         int iret = pthread_join( threads[i], NULL);
         if(iret)
@@ -197,12 +240,13 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
             exit(EXIT_FAILURE);
         }
      }
-
-
+    delete [] loopinfo;
+    loopinfo = NULL;
 
     //double N [n0_exp*n1_exp*n2_exp*6];
     af::array Naf(6,n2_exp,n1_exp,n0_exp,N);
     Naf=af::reorder(Naf,3,2,1,0);
+    af::print("Naf", Naf);
     delete [] N;
     N = NULL;
     if (n2_exp == 1){
@@ -215,7 +259,7 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
 }
 
 
-double DemagFieldMultithread::newellf(double x, double y, double z){
+double thread_newellf(double x, double y, double z){
     x=fabs(x);
     y=fabs(y);
     z=fabs(z);
@@ -231,7 +275,7 @@ double DemagFieldMultithread::newellf(double x, double y, double z){
     return result;
 }
 
-double DemagFieldMultithread::newellg(double x, double y, double z){
+double thread_newellg(double x, double y, double z){
     z=fabs(z);
     const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
     const double xx = pow(x,2);
@@ -248,71 +292,71 @@ double DemagFieldMultithread::newellg(double x, double y, double z){
     return result;
 }
 
-double DemagFieldMultithread::Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
+double thread_Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
     double x = dx*ix;
     double y = dy*iy;
     double z = dz*iz;
-    double result = 8.0 * newellf( x,    y,    z   ) \
-           - 4.0 * newellf( x+dx, y,    z   ) \
-           - 4.0 * newellf( x-dx, y,    z   ) \
-           - 4.0 * newellf( x,    y+dy, z   ) \
-           - 4.0 * newellf( x,    y-dy, z   ) \
-           - 4.0 * newellf( x,    y   , z+dz) \
-           - 4.0 * newellf( x,    y   , z-dz) \
-           + 2.0 * newellf( x+dx, y+dy, z   ) \
-           + 2.0 * newellf( x+dx, y-dy, z   ) \
-           + 2.0 * newellf( x-dx, y+dy, z   ) \
-           + 2.0 * newellf( x-dx, y-dy, z   ) \
-           + 2.0 * newellf( x+dx, y   , z+dz) \
-           + 2.0 * newellf( x+dx, y   , z-dz) \
-           + 2.0 * newellf( x-dx, y   , z+dz) \
-           + 2.0 * newellf( x-dx, y   , z-dz) \
-           + 2.0 * newellf( x   , y+dy, z+dz) \
-           + 2.0 * newellf( x   , y+dy, z-dz) \
-           + 2.0 * newellf( x   , y-dy, z+dz) \
-           + 2.0 * newellf( x   , y-dy, z-dz) \
-           - 1.0 * newellf( x+dx, y+dy, z+dz) \
-           - 1.0 * newellf( x+dx, y+dy, z-dz) \
-           - 1.0 * newellf( x+dx, y-dy, z+dz) \
-           - 1.0 * newellf( x+dx, y-dy, z-dz) \
-           - 1.0 * newellf( x-dx, y+dy, z+dz) \
-           - 1.0 * newellf( x-dx, y+dy, z-dz) \
-           - 1.0 * newellf( x-dx, y-dy, z+dz) \
-           - 1.0 * newellf( x-dx, y-dy, z-dz);
+    double result = 8.0 * thread_newellf( x,    y,    z   ) \
+           - 4.0 * thread_newellf( x+dx, y,    z   ) \
+           - 4.0 * thread_newellf( x-dx, y,    z   ) \
+           - 4.0 * thread_newellf( x,    y+dy, z   ) \
+           - 4.0 * thread_newellf( x,    y-dy, z   ) \
+           - 4.0 * thread_newellf( x,    y   , z+dz) \
+           - 4.0 * thread_newellf( x,    y   , z-dz) \
+           + 2.0 * thread_newellf( x+dx, y+dy, z   ) \
+           + 2.0 * thread_newellf( x+dx, y-dy, z   ) \
+           + 2.0 * thread_newellf( x-dx, y+dy, z   ) \
+           + 2.0 * thread_newellf( x-dx, y-dy, z   ) \
+           + 2.0 * thread_newellf( x+dx, y   , z+dz) \
+           + 2.0 * thread_newellf( x+dx, y   , z-dz) \
+           + 2.0 * thread_newellf( x-dx, y   , z+dz) \
+           + 2.0 * thread_newellf( x-dx, y   , z-dz) \
+           + 2.0 * thread_newellf( x   , y+dy, z+dz) \
+           + 2.0 * thread_newellf( x   , y+dy, z-dz) \
+           + 2.0 * thread_newellf( x   , y-dy, z+dz) \
+           + 2.0 * thread_newellf( x   , y-dy, z-dz) \
+           - 1.0 * thread_newellf( x+dx, y+dy, z+dz) \
+           - 1.0 * thread_newellf( x+dx, y+dy, z-dz) \
+           - 1.0 * thread_newellf( x+dx, y-dy, z+dz) \
+           - 1.0 * thread_newellf( x+dx, y-dy, z-dz) \
+           - 1.0 * thread_newellf( x-dx, y+dy, z+dz) \
+           - 1.0 * thread_newellf( x-dx, y+dy, z-dz) \
+           - 1.0 * thread_newellf( x-dx, y-dy, z+dz) \
+           - 1.0 * thread_newellf( x-dx, y-dy, z-dz);
     return - result / (4.0 * M_PI * dx * dy * dz);
 }
 
-double DemagFieldMultithread::Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
+double thread_Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
     double x = dx*ix;
     double y = dy*iy;
     double z = dz*iz;
-    double result = 8.0 * newellg( x,    y,    z   ) \
-                  - 4.0 * newellg( x+dx, y,    z   ) \
-                  - 4.0 * newellg( x-dx, y,    z   ) \
-                  - 4.0 * newellg( x,    y+dy, z   ) \
-                  - 4.0 * newellg( x,    y-dy, z   ) \
-                  - 4.0 * newellg( x,    y   , z+dz) \
-                  - 4.0 * newellg( x,    y   , z-dz) \
-                  + 2.0 * newellg( x+dx, y+dy, z   ) \
-                  + 2.0 * newellg( x+dx, y-dy, z   ) \
-                  + 2.0 * newellg( x-dx, y+dy, z   ) \
-                  + 2.0 * newellg( x-dx, y-dy, z   ) \
-                  + 2.0 * newellg( x+dx, y   , z+dz) \
-                  + 2.0 * newellg( x+dx, y   , z-dz) \
-                  + 2.0 * newellg( x-dx, y   , z+dz) \
-                  + 2.0 * newellg( x-dx, y   , z-dz) \
-                  + 2.0 * newellg( x   , y+dy, z+dz) \
-                  + 2.0 * newellg( x   , y+dy, z-dz) \
-                  + 2.0 * newellg( x   , y-dy, z+dz) \
-                  + 2.0 * newellg( x   , y-dy, z-dz) \
-                  - 1.0 * newellg( x+dx, y+dy, z+dz) \
-                  - 1.0 * newellg( x+dx, y+dy, z-dz) \
-                  - 1.0 * newellg( x+dx, y-dy, z+dz) \
-                  - 1.0 * newellg( x+dx, y-dy, z-dz) \
-                  - 1.0 * newellg( x-dx, y+dy, z+dz) \
-                  - 1.0 * newellg( x-dx, y+dy, z-dz) \
-                  - 1.0 * newellg( x-dx, y-dy, z+dz) \
-                  - 1.0 * newellg( x-dx, y-dy, z-dz);
+    double result = 8.0 * thread_newellg( x,    y,    z   ) \
+                  - 4.0 * thread_newellg( x+dx, y,    z   ) \
+                  - 4.0 * thread_newellg( x-dx, y,    z   ) \
+                  - 4.0 * thread_newellg( x,    y+dy, z   ) \
+                  - 4.0 * thread_newellg( x,    y-dy, z   ) \
+                  - 4.0 * thread_newellg( x,    y   , z+dz) \
+                  - 4.0 * thread_newellg( x,    y   , z-dz) \
+                  + 2.0 * thread_newellg( x+dx, y+dy, z   ) \
+                  + 2.0 * thread_newellg( x+dx, y-dy, z   ) \
+                  + 2.0 * thread_newellg( x-dx, y+dy, z   ) \
+                  + 2.0 * thread_newellg( x-dx, y-dy, z   ) \
+                  + 2.0 * thread_newellg( x+dx, y   , z+dz) \
+                  + 2.0 * thread_newellg( x+dx, y   , z-dz) \
+                  + 2.0 * thread_newellg( x-dx, y   , z+dz) \
+                  + 2.0 * thread_newellg( x-dx, y   , z-dz) \
+                  + 2.0 * thread_newellg( x   , y+dy, z+dz) \
+                  + 2.0 * thread_newellg( x   , y+dy, z-dz) \
+                  + 2.0 * thread_newellg( x   , y-dy, z+dz) \
+                  + 2.0 * thread_newellg( x   , y-dy, z-dz) \
+                  - 1.0 * thread_newellg( x+dx, y+dy, z+dz) \
+                  - 1.0 * thread_newellg( x+dx, y+dy, z-dz) \
+                  - 1.0 * thread_newellg( x+dx, y-dy, z+dz) \
+                  - 1.0 * thread_newellg( x+dx, y-dy, z-dz) \
+                  - 1.0 * thread_newellg( x-dx, y+dy, z+dz) \
+                  - 1.0 * thread_newellg( x-dx, y+dy, z-dz) \
+                  - 1.0 * thread_newellg( x-dx, y-dy, z+dz) \
+                  - 1.0 * thread_newellg( x-dx, y-dy, z-dz);
     result = - result / (4.0 * M_PI * dx * dy * dz);
     return result;
 }
