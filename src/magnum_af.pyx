@@ -125,6 +125,45 @@ class Util:
               print ("Success")
           return True
 
+
+# From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/
+class dictproperty(object):
+
+    class _proxy(object):
+
+        def __init__(self, obj, fget, fset, fdel):
+            self._obj = obj
+            self._fget = fget
+            self._fset = fset
+            self._fdel = fdel
+
+        def __getitem__(self, key):
+            if self._fget is None:
+                raise TypeError, "can't read item"
+            return self._fget(self._obj, key)
+
+        def __setitem__(self, key, value):
+            if self._fset is None:
+                raise TypeError, "can't set item"
+            self._fset(self._obj, key, value)
+
+        def __delitem__(self, key):
+            if self._fdel is None:
+                raise TypeError, "can't delete item"
+            self._fdel(self._obj, key)
+
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        self._fget = fget
+        self._fset = fset
+        self._fdel = fdel
+        self.__doc__ = doc
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return self._proxy(obj, self._fget, self._fset, self._fdel)
+
+
 #NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
 # Docstring does work, todo: check type etc. 
 cdef class Mesh:
@@ -256,6 +295,28 @@ cdef class State:
   @m.setter
   def m(self, m_in):
     self.thisptr.set_m(addressof(m_in.arr))
+
+  def get_m_partial(self, key):
+    return array_from_addr(self.thisptr.get_m_addr())[key]
+
+  def set_m_partial(self, key, value):
+    if value.dims() == self.m[key].dims():
+      temp = self.m
+      temp[key] = value
+      self.thisptr.set_m(addressof(temp.arr))
+    else:
+        print("Error: State.m_partial: Dimensions do not match. m_partial[key].dims()=",self.m[key].dims()," != rhs.dims()=",value.dims(),". Setting m_partial is ignored.")
+  # setting dictionary as property
+  m_partial = dictproperty(get_m_partial, set_m_partial, None)
+
+  # Method for setting parts of m[key] to given af.array
+  # Should be overloading m.setter, not completed
+  #def __setitem__(self, key, m_in):
+  #  temp = self.m
+  #  temp[key] = m_in
+  #  self.thisptr.set_m(addressof(temp.arr))
+  #  print("min", self.m[key].dims(),"min", m_in.dims(), "m", self.m.dims(), "temp", temp.dims())
+  #  #self.thisptr.set_m(addressof(m_in.arr))
 
   @property
   def micro_Ms_field(self):
