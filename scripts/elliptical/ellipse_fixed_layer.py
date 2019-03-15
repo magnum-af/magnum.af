@@ -30,9 +30,9 @@ mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 material=Material()
 material.ms=1.58/Constants.mu0 # Saturation magnetization
 material.A=15e-12 # Exchange constant
-material.Ku1=0 # Anisotropy constant
-material.Ku1_axis=[1, 0, 0] # TODO
 material.alpha = 0.02
+#material.Ku1=0 # Anisotropy constant
+#material.Ku1_axis=[1, 0, 0]
 
 # Create state object with timing
 start = time.time()
@@ -44,15 +44,13 @@ if fixed_is_elliptical == True:
   fixed_layer, n_cells_2  = Util.disk(nx, ny, 1, axis=[0,0,1])
   disk[:, :, 0 , :] = fixed_layer 
 else:
-  disk[:, :, 0 , :] = af.constant(0., nx, ny, 1, 3, dtype=af.Dtype.f64)
-  disk[:, :, 0 , 2] = af.constant(1., nx, ny, 1, 1, dtype=af.Dtype.f64)
+  fixed_layer = af.constant(0., nx, ny, 1, 3, dtype=af.Dtype.f64)
+  fixed_layer[:, :, 0 , 2] = af.constant(1., nx, ny, 1, 1, dtype=af.Dtype.f64)
+  disk[:, :, 0 , :] = fixed_layer
 
 
-#print ("Info: n_cells = ",n_cells, " n_boolean = ", n_boolean)
 state = State(mesh, material, disk)
-#state.m[:, :, 0 , :] = fixed_layer # TODO does this work in wrapping? maybe this is not passed to cpp but gets stuck in wrapping
 state.py_vti_writer_micro(filepath + "init_m")
-print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
 print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
@@ -67,7 +65,6 @@ print ("Initialized interaction terms in ", time.time() - start, "[s]")
 Llg = LLGIntegrator(terms = fields)
 
 # Relaxing
-print("relaxing 1ns")
 stream = open(sys.argv[1]+"m.dat", "w")
 timer = time.time()
 i = 0
@@ -79,13 +76,7 @@ while E_diff > 1e-10 and state.t < 3e-8:
   Llg.llgstep(state)
 
   # Fixing layer to +z direction
-  temp_m = state.m
-  if fixed_is_elliptical == True:
-    temp_m[:, :, 0 , :] = fixed_layer 
-  else:
-    temp_m[:, :, 0 , :] = af.constant(0., nx, ny, 1, 3, dtype=af.Dtype.f64)
-    temp_m[:, :, 0 , 2] = af.constant(1., nx, ny, 1, 1, dtype=af.Dtype.f64)
-  state.m = temp_m
+  state.m_partial[:, :, 0, :] = fixed_layer
   
   # check energy difference every 100th step
   if i % 100 == 0:
@@ -100,5 +91,3 @@ while E_diff > 1e-10 and state.t < 3e-8:
     state.py_vti_writer_micro(filepath + "m_step_" + str(i))
   i = i +1
 print("relaxed in", time.time() - timer, "[s], state.t=", state.t)
-
-#TODO#figure out how to implement:# state.m[:, :, 0 , :] = fixed_layer
