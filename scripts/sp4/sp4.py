@@ -33,7 +33,7 @@ material.alpha = 1.
 
 
 state = State(mesh, material, m)
-demag = DemagField(mesh, material, verbose = True, caching = True)
+demag = DemagField(mesh, material, verbose = True, caching = True, nthreads = 6)
 exch = ExchangeField(mesh, material)
 Llg = LLGIntegrator([demag, exch])
 
