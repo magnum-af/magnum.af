@@ -83,5 +83,5 @@ set_source_files_properties(
   PROPERTIES CYTHON_IS_CXX TRUE )
 
 
-cython_add_module_w_AF_VTK( magnum_af magnum_af.pyx ${SOURCE} )
+cython_add_module_w_AF_VTK( magnum_af magnum_af.pyx ${magnum.af_CORE} )
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
