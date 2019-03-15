@@ -3,6 +3,7 @@
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
+#include "../misc.hpp"
 #include "../func.hpp"
 
 class DemagField : public LLGTerm {

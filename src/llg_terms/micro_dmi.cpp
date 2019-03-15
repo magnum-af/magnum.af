@@ -64,7 +64,7 @@ array DmiField::h(const State& state){
   //correct_edges(second,state.m);
   apply_boundary_condition(second, state);
 
-  if(material.afsync) sync();
+  if(material.afsync) af::sync();
   cpu_time += timer::stop(timer_dmi);
   return 2.* material.D/(constants::mu0*material.ms) * (first-second);//Note: Js=mu0*Ms
 }

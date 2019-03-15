@@ -1,6 +1,4 @@
 #include "state.hpp"
-#include "func.hpp"
-#include "misc.hpp"
 
 void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     // Initializes Ms if any entry of initial m has zero norm

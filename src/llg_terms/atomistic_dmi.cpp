@@ -46,7 +46,7 @@ array AtomisticDmiField::h(const State& state){
     //Expand for fd1 convolution
     second = tile(second,1,1,1,3);
     second = convolve(second,filtr_fd1,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-    if(state.material.afsync) sync();
+    if(state.material.afsync) af::sync();
     cpu_time += timer::stop(timer_dmi);
     return state.material.D_atom/(constants::mu0*state.material.p) * (first-second);
     //return -state.material.D/2. * res;

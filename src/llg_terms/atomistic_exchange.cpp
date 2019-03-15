@@ -49,7 +49,7 @@ array AtomisticExchangeField::h(const State& state){
   //convolution
   array mj = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 
-  if(state.material.afsync) sync();
+  if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_solve);
   return state.material.J_atom/(constants::mu0*state.material.p)* mj;
 }

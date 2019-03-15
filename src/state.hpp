@@ -4,6 +4,8 @@
 #include "mesh.hpp"
 #include "material.hpp"
 #include "vtk_IO.hpp"
+#include "func.hpp"
+#include "misc.hpp"
 
 
 class State{

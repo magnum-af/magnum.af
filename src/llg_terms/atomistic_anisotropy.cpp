@@ -29,7 +29,7 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
   anisotropy=sum(anisotropy,3);
   anisotropy=tile(anisotropy,1,1,1,3);
 
-  if(state.material.afsync) sync();
+  if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_anisotropy);
   return  2*state.material.K_atom/(constants::mu0*state.material.p) * anisotropy * eu;
 }

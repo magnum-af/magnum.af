@@ -1,6 +1,4 @@
 #include "misc.hpp"
-#include <iostream>
-#include <string>
 
 unsigned long long GetDirSize(std::string filepath)
 // Retuns size of directory in bytes
@@ -83,20 +81,3 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumb
         maxiter++;
     }
 }
-std::string red(const std::string str){
-    return "\033[;31m"+str+"\033[0m";
-}
-
-std::string bold_red(const std::string str){
-    return "\033[1;31m"+str+"\033[0m";
-}
-
-std::string bold_green(const std::string str){
-    return "\033[1;32m"+str+"\033[0m";
-}
-
-std::string green(const std::string str){
-    return "\033[;32m"+str+"\033[0m";
-}
-
-
