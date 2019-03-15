@@ -66,6 +66,7 @@ B_flag=''
 c_flag=''
 copyfile=''
 d_flag=''
+D_flag='' # magnum.af-dev image for devel
 f_flag=''
 i_flag=''
 inputfile=''
@@ -77,7 +78,7 @@ v_flag=''
 x_flag=''
 
 
-while getopts 'b:Bc:dhfg:i:o:p:rtvx' flag; do
+while getopts 'b:Bc:Ddhfg:i:o:p:rtvx' flag; do
   #Note: some arguments are passed to magnum.af script
   case "${flag}" in
     h) print_usage
@@ -85,6 +86,7 @@ while getopts 'b:Bc:dhfg:i:o:p:rtvx' flag; do
     b) ;; 
     B) B_flag='true' ;; 
     d) d_flag='true' ;;
+    D) D_flag='true' ;;
     c) c_flag='true'; copyfile="${OPTARG}" ;;
     f) f_flag='true' ;;
     g) ;; 
@@ -193,6 +195,7 @@ runstring=$runstring" -v $inputfile:$inputfile"
 [[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath $copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
 runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu" # TODO better swtich
+[[ "$D_flag" == "true" ]] && runstring=$runstring"-dev"
 runstring=$runstring" ./scripts/magnum.af -f"
 runstring=$runstring" $saved_flags"
 [[ -n "$postprocess" ]] && runstring=$runstring" -p $postprocess"

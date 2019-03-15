@@ -68,7 +68,7 @@ Note:
 }
 
 
-while getopts 'b:Bc:dhfg:i:o:p:rsStvx' flag; do
+while getopts 'b:Bc:dDhfg:i:o:p:rsStvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
@@ -76,6 +76,7 @@ while getopts 'b:Bc:dhfg:i:o:p:rsStvx' flag; do
     c) c_flag='true'; copyfile="${OPTARG}" ;;
     B) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     d) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
+    D) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     f) f_flag='true' ;;
     g) GPU="${OPTARG}" ;;
     i) i_flag='true'; inputfile="${OPTARG}" ;;
