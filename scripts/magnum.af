@@ -277,10 +277,10 @@ if [ "$extension" == "py" ];then
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
         workaround_for_gto="(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
         screen -d -S GPU$GPU -m bash -c "$workaround_for_gto"
-        echo "started magnum.af in screen"
+        echo "started magnum.af in screen. Track with 'screen -ls'."
         #[ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls # NOTE: problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
-            log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
+            echo -e "running tail -f 'stdout.txt'. Press <ctrl+c> to exit, the screen will continue."
             sleep_val=0
             while [ ! -f "$outputdir/stdout.txt" ];
             do
