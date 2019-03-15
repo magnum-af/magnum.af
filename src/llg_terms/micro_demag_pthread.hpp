@@ -5,7 +5,6 @@
 #include "../state.hpp"
 #include "../func.hpp"
 #include "../misc.hpp"
-//#include <pthread.h>
 #include <thread>
 
 class DemagFieldMultithread : public LLGTerm {
@@ -31,7 +30,6 @@ class DemagFieldMultithread : public LLGTerm {
     //For wrapping
     void print_Nfft();
     private:
-        const unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
         const unsigned nthreads;
         af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 };

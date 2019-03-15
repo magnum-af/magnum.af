@@ -16,10 +16,11 @@ void DemagField::print_Nfft(){
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool caching) : material(paramin),mesh(meshin){
+DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool caching, unsigned nthreads) : material(paramin),mesh(meshin), nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
         Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+        if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
         if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
     else{
@@ -44,6 +45,7 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
             Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
         }
         else{
+            if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
             Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             //if (verbose) std::cout << "current size of ~/.magnum.af.cache = " << magafdir_size_in_bytes << " bytes." << std::endl;
@@ -215,34 +217,74 @@ double Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
   return result;
 }
 
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-  double* N = NULL;
-  N = new double[n0_exp*n1_exp*n2_exp*6];
-  for (int i0 = 0; i0 < n0_exp; i0++){
-    const int j0 = (i0 + n0_exp/2) % n0_exp - n0_exp/2;
-    for (int i1 = 0; i1 < n1_exp; i1++){
-      const int j1 = (i1 + n1_exp/2) % n1_exp - n1_exp/2;
-      for (int i2 = 0; i2 < n2_exp; i2++ ){
-        const int j2 = (i2 + n2_exp/2) % n2_exp - n2_exp/2;
-        const int idx = 6*(i2+n2_exp*(i1+n1_exp*i0));
-        N[idx+0] = Nxxf(j0, j1, j2, dx, dy, dz);
-        N[idx+1] = Nxxg(j0, j1, j2, dx, dy, dz);
-        N[idx+2] = Nxxg(j0, j2, j1, dx, dz, dy);
-        N[idx+3] = Nxxf(j1, j2, j0, dy, dz, dx);
-        N[idx+4] = Nxxg(j1, j2, j0, dy, dz, dx);
-        N[idx+5] = Nxxf(j2, j0, j1, dz, dx, dy);
-      }
+struct LoopInfo {
+    LoopInfo(){}
+    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
+        i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
+    int i0_start;
+    int i0_end;
+    int n0_exp;
+    int n1_exp;
+    int n2_exp;
+    double dx;
+    double dy;
+    double dz;
+};
+
+
+double* N_setup = NULL;
+
+
+void* setup_N(void* arg)
+{
+    LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
+    for (int i0 = loopinfo->i0_start; i0 < loopinfo->i0_end; i0++){
+        const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
+        for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
+            const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
+            for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
+                const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
+                const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+                N_setup[idx+0] = Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N_setup[idx+1] = Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N_setup[idx+2] = Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                N_setup[idx+3] = Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N_setup[idx+4] = Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N_setup[idx+5] = Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+            }
+        }
     }
-  }
-  af::array Naf(6,n2_exp,n1_exp,n0_exp,N);
-  Naf=af::reorder(Naf,3,2,1,0);
-  delete [] N;
-  N = NULL;
-  if (n2_exp == 1){
-    Naf = af::fftR2C<2>(Naf);
-  }
-  else {
-    Naf = af::fftR2C<3>(Naf);
-  }
-  return Naf;
+    return NULL;
+} 
+
+
+af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
+    std::thread t[nthreads];
+    struct LoopInfo loopinfo[nthreads];
+    for (unsigned i = 0; i < nthreads; i++){
+        unsigned start = i * (double)n0_exp/nthreads;
+        unsigned end = (i +1) * (double)n0_exp/nthreads;
+        loopinfo[i]=LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
+    }
+
+    N_setup = new double[n0_exp*n1_exp*n2_exp*6];
+
+    for (unsigned i = 0; i < nthreads; i++){
+        t[i] = std::thread(setup_N, &loopinfo[i]);
+     }
+
+    for (unsigned i = 0; i < nthreads; i++){
+        t[i].join();
+     }
+    af::array Naf(6,n2_exp,n1_exp,n0_exp,N_setup);
+    Naf=af::reorder(Naf,3,2,1,0);
+    delete [] N_setup;
+    N_setup = NULL;
+    if (n2_exp == 1){
+        Naf = af::fftR2C<2>(Naf);
+    }
+    else {
+        Naf = af::fftR2C<3>(Naf);
+    }
+    return Naf;
 }

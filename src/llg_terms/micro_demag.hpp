@@ -5,6 +5,7 @@
 #include "../state.hpp"
 #include "../misc.hpp"
 #include "../func.hpp"
+#include <thread>
 
 class DemagField : public LLGTerm {
   public:
@@ -19,7 +20,7 @@ class DemagField : public LLGTerm {
     Material material;
     Mesh mesh;
 
-    DemagField (Mesh, Material, bool verbose = false, bool caching = true);
+    DemagField (Mesh, Material, bool verbose = false, bool caching = true, unsigned nthreads = 0);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
 
@@ -28,5 +29,8 @@ class DemagField : public LLGTerm {
     
     //For wrapping
     void print_Nfft();
+    private:
+        const unsigned nthreads;
+        af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 };
 #endif

@@ -134,7 +134,7 @@ double thread_newellf(double x, double y, double z);
 double thread_Nxxg(int ix, int iy, int iz, double dx, double dy, double dz);
 double thread_Nxxf(int ix, int iy, int iz, double dx, double dy, double dz);
 
-void* setup_N(void* arg) 
+void* f_setup_N(void* arg)
 { 
     LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
     for (int i0 = loopinfo->i0_start; i0 < loopinfo->i0_end; i0++){
@@ -168,7 +168,7 @@ af::array DemagFieldMultithread::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp,
     N = new double[n0_exp*n1_exp*n2_exp*6];
 
     for (unsigned i = 0; i < nthreads; i++){
-        t[i] = std::thread(setup_N, &loopinfo[i]);
+        t[i] = std::thread(f_setup_N, &loopinfo[i]);
      }
 
     for (unsigned i = 0; i < nthreads; i++){
