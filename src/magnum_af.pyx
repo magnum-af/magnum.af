@@ -363,7 +363,7 @@ cdef class LLGIntegrator:
   #def __dealloc__(self):
   #  del self.thisptr
   #  self.thisptr = NULL
-  def llgstep(self, State state_in):
+  def step(self, State state_in):
     self.thisptr.step(deref(state_in.thisptr))
   def get_E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))

@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
   timer t = af::timer::start();
   while (state.t < 2.e-10){
-    state.m=Llg.llgstep(state);
+    state.m=Llg.step(state);
   }
   double timerelax= af::timer::stop(t);
   vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());

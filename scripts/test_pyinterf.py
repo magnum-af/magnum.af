@@ -26,7 +26,7 @@ Llg=magnum_af.LLGIntegrator([pystate,demag,exch])
 print "relax --------------------"
 print pystate.t()
 while pystate.t() < 1e-9:
-  Llg.llgstep(pystate)
+  Llg.step(pystate)
 print pystate.t()
 pystate.py_vti_writer_micro("/home/pth/git/magnum.af/Data/Testing/py_interf/m_relax")
 
@@ -46,7 +46,7 @@ zee=magnum_af.ExternalField(zeeswitch)
 Llg.add_terms(zee)
 print pystate.t()
 while pystate.t() < 2e-9:
-  Llg.llgstep(pystate)
+  Llg.step(pystate)
 print pystate.t()
 print "end    --------------------"
 print "af.mean(m_test)=", af.mean(pystate.get_m())

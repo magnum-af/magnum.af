@@ -27,7 +27,7 @@ class sp4(unittest.TestCase):
     intz=0
     while self.state.t < 1e-9:
       t1=self.state.t
-      self.Llg.llgstep(self.state)
+      self.Llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
       intx+=self.state.meanxyz(0)*stepsize
@@ -53,7 +53,7 @@ class sp4(unittest.TestCase):
     intz=0
     while self.state.t < 2e-9:
       t1=self.state.t
-      self.Llg.llgstep(self.state)
+      self.Llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
       intx+= self.state.meanxyz(0) * stepsize

@@ -52,7 +52,7 @@ simtime = float(sys.argv[3])*1e-9 if len(sys.argv) > 3 else 1e-9
 nstep = int(sys.argv[4]) if len(sys.argv) > 4 else 100
 print ("Starting integration for", simtime, " [ns]. Calculating mean every ", nstep, "step.")
 while state.t < simtime:
-    llg.llgstep(state)
+    llg.step(state)
     stream.flush()
     if itcount % nstep == 0:
         state.py_vti_writer_micro(sys.argv[1] + "step" + str(itcount))

@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 //  
 //  timer t = af::timer::start();
 //  while (state.t < 1.e-9){
-//    state.m=Llg.llgstep(state);
+//    state.m=Llg.step(state);
 //    calcm(state,stream);
 //  }
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 //  Llg.state0.material.alpha=0.02;
 //
 //  while (state.t < 2.e-9){
-//    state.m=Llg.llgstep(state);
+//    state.m=Llg.step(state);
 //    calcm(state,stream);
 //  }
 //  af_to_vti(state.m, mesh ,(filepath + "2ns").c_str());

@@ -26,7 +26,7 @@ class sp4(unittest.TestCase):
     inty=0
     intz=0
     while self.pystate.t() < 1e-9:
-      self.Llg.llgstep(self.pystate)
+      self.Llg.step(self.pystate)
       intx+=self.pystate.meanxyz(0)*self.Llg.print_stepsize()
       inty+=self.pystate.meanxyz(1)*self.Llg.print_stepsize()
       intz+=self.pystate.meanxyz(2)*self.Llg.print_stepsize()
@@ -51,7 +51,7 @@ class sp4(unittest.TestCase):
      
     with open('../../Data/sp4.dat', 'w') as f:
       while self.pystate.t() < 2e-9:
-        self.Llg.llgstep(self.pystate)
+        self.Llg.step(self.pystate)
         intx+= self.pystate.meanxyz(0) * self.Llg.print_stepsize()
         inty+= self.pystate.meanxyz(1) * self.Llg.print_stepsize()
         intz+= self.pystate.meanxyz(2) * self.Llg.print_stepsize()

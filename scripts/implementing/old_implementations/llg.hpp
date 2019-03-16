@@ -43,14 +43,14 @@ class LLG {
     //Alternative: 
     //array get_fheff_addr_temp_array;
 
-    array llgstep(State& state);
-    bool llg_wasnormalized{true};//set true after normalization in llgstep, false if not normalized
+    array step(State& state);
+    bool llg_wasnormalized{true};//set true after normalization in step, false if not normalized
                                  // DP45 uses this to decide wether k1 and heff has to be calculated
                                  // -> leave the value true if normalization is on default
     double llg_normtol{1e-5};// If maxnorm(vecnorm(mtemp)) exceedes this value, renormalize is called
     int  llg_normalize_counter{0};// number of normalizations performed
 
-    // Counting llgstep calls
+    // Counting step calls
     int calls{0};
 
     // Computation Arrays
@@ -84,7 +84,7 @@ class LLG {
     //double h_rel{0.}; 
     
     double h; // working variable in Controller, actual stepsize and next stepsize, min of h_abs and h_rel
-    double h_stepped; // step size set after llgstep is called
+    double h_stepped; // step size set after step is called
     //int counter_abs{0};
     //int counter_rel{0};
     //int counter_abs_reject{0};

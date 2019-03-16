@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     double E_prev=1e20;
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-20){
         E_prev=Llg.E(state);
-        state.m=Llg.llgstep(state);
+        state.m=Llg.step(state);
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << std::endl;
     }
     std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;

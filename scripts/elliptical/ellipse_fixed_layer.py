@@ -73,7 +73,7 @@ E_prev = 1
 while E_diff > 1e-10 and state.t < 3e-8:
 
   # integrate one step
-  Llg.llgstep(state)
+  Llg.step(state)
 
   # Fixing layer to +z direction
   state.m_partial[:, :, 0, :] = fixed_layer

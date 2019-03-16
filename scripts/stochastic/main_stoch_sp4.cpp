@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   //for (int i = 0; i < 50; i++){
   while (state.t < 5.e-10){
     Stoch.step(state,dt); 
-    //state.m=Llg.llgstep(state);
+    //state.m=Llg.step(state);
     calcm(state,stream);
   }
   std::cout<<"prelim fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 
   //for (int i = 0; i < 50; i++){
   while (state.t < 1.5e-9){
-    //state.m=Llg.llgstep(state);
+    //state.m=Llg.step(state);
     Stoch.step(state,dt); 
     calcm(state,stream);
   }

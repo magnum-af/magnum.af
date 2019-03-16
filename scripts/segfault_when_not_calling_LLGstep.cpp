@@ -43,8 +43,8 @@ int main(int argc, char** argv)
     std::cout << "test " << std::endl;
     LLG Llg(state,llgterm);
     std::cout << "test " << std::endl;
-    //TODO: not calling llgstep or llgterm->h causes segfault in cleanup
+    //TODO: not calling step or llgterm->h causes segfault in cleanup
     //af::print("h",llgterm[0]->h(state));
-    //state.m=Llg.llgstep(state);
+    //state.m=Llg.step(state);
     return 0;
 }

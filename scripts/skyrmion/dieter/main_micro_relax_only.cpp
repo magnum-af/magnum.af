@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
     timer t = af::timer::start();
     while (state.t < 15.e-10){
-        state.m=Llg.llgstep(state);
+        state.m=Llg.step(state);
     }
     double timerelax= af::timer::stop(t);
     vti_writer_micro(state.m, mesh ,filepath + "relax");

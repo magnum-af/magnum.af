@@ -153,7 +153,7 @@ int main(int argc, char** argv)
     timer t = af::timer::start();
     //for (int i = 0; i<5; i++){
     while (state.t < 5.e-10){
-      state.m=Llg.llgstep(state);
+      state.m=Llg.step(state);
       calcm(state,std::cout, nx, ny, nz, spnx, spny, spnz);
       calcm(state,stream   , nx, ny, nz, spnx, spny, spnz);
     }
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
     Llg.state0.material.alpha=0.02;
   
     while (state.t < 1.5e-9){
-      state.m=Llg.llgstep(state);
+      state.m=Llg.step(state);
       calcm(state,std::cout, nx, ny, nz, spnx, spny, spnz);
       calcm(state,stream   , nx, ny, nz, spnx, spny, spnz);
     }

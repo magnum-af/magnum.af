@@ -34,7 +34,7 @@ void LLG::relax(State& state, const double precision, const int iloop, const int
     while (fabs((E_prev-E(state))/E_prev) > precision){
         E_prev=E(state);
         for ( int i = 0; i<iloop; i++){
-            state.m=llgstep(state);
+            state.m=step(state);
         }
         if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
     }
@@ -182,7 +182,7 @@ long int LLG::get_fheff_addr(const State& state){
 //  }
 //}
 
-array LLG::llgstep(State& state){
+array LLG::step(State& state){
     timer_integrator = timer::start();
     //h=1e-12;
     //hnext=h;
@@ -603,7 +603,7 @@ array LLG::BS45de(const array& m, const double dt , double& err)
 if(err>1.)
   std::cout<<"RKErr>1"<<std::endl;
 
-  //We now check this error with the controller, if it passes (cont returns true), hnext is changed temporary but then overwritten in llgstep after passing second controlling
+  //We now check this error with the controller, if it passes (cont returns true), hnext is changed temporary but then overwritten in step after passing second controlling
   //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages 
   if(controller.success(err,h)==false){
     std::cout<<"CONTROOOL"<<std::endl;
@@ -1232,7 +1232,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //
 
 ////RK4
-//array LLG::llgstep(array& m){
+//array LLG::step(array& m){
 //    timer_integrator = timer::start();
 //    m += rk4(m,state0.material.dt);
 //    if(state0.material.afsync) af::sync();
@@ -1315,7 +1315,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  b(span,span,span,1)=a(span,span,span,2)*b(span,span,span,0)-a(span,span,span,0)*b(span,span,span,2);
 //  b(span,span,span,2)=a(span,span,span,0)*b(span,span,span,1)-a(span,span,span,1)*b(span,span,span,0);
 //};
-//With this in llgstep
+//With this in step
 //    cross4b(m,heff);
 //    cross4b(m,crosstemp);
 //    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * heff - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * crosstemp;

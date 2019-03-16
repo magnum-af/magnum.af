@@ -32,7 +32,7 @@ Llg=magnum_af.LLGIntegrator([pystate,demag,exch])
 
 print "relax --------------------"
 while pystate.t() < 1e-9:
-  Llg.llgstep(pystate)
+  Llg.step(pystate)
 pystate.py_vti_writer_micro(path+"mrelax")
 
 print "switch --------------------"
@@ -48,7 +48,7 @@ Llg.add_terms(zee)
 
 with open(path + 'm.dat', 'w') as f:
   while pystate.t() < 2e-9:
-    Llg.llgstep(pystate)
+    Llg.step(pystate)
     f.write("%10.12f %10.12f %10.12f %10.12f\n" % (pystate.t(), pystate.meanxyz(0), pystate.meanxyz(1), pystate.meanxyz(2)))
 
 # pyplot fails:

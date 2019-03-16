@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-10){
         E_prev=Llg.E(state);
         for ( int i = 0; i<100; i++){
-            state.m=Llg.llgstep(state);
+            state.m=Llg.step(state);
         }
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     timer t_hys = af::timer::start();
     Llg.Fieldterms.push_back( llgt_ptr (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
-         state.m=Llg.llgstep(state);
+         state.m=Llg.step(state);
          if( state.steps % 2000 == 0){
              calc_mean_m(state, stream, afvalue(Llg.Fieldterms[4]->h(state)(0,0,0,0)));
              vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());

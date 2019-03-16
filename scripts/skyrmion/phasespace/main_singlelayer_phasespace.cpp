@@ -111,7 +111,7 @@ int main(int argc, char** argv)
   int irel=0;
   timer t = af::timer::start();
   while (state.t < 1.e-8){
-    state.m=Llg.llgstep(state);
+    state.m=Llg.step(state);
     irel++;
     if(irel%100==0) std::cout<<"irel: "<<irel<<" at time: "<<state.t<<" Energy: "<<Llg.E(state)<<std::endl;
     energy_n1=Llg.E(state);

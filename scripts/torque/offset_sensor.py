@@ -48,7 +48,7 @@ timer = time.time()
 itcount=0
 print ("Starting integration for", simtime, " [ns]. Calculating mean every ", nstep, "step.")
 while state.t < simtime:
-    Llg.llgstep(state)
+    Llg.step(state)
     if itcount % nstep == 0:
         mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2) # calculates spacially averaged <mx>, <my>, <mz>
         print(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar())
