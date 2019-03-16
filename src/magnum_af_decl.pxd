@@ -135,8 +135,8 @@ cdef extern from "../../src/llg_terms/atomistic_exchange.hpp":
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/zee.hpp":
-  cdef cppclass Zee:
-    Zee (long int m_in);
+  cdef cppclass ExternalField:
+    ExternalField (long int m_in);
     long int get_m_addr();
     double E(const State& state);
     double get_cpu_time();

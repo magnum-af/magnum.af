@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 
     timer t_hys = af::timer::start();
     double rate = hzee_max/quater_steps; //[T/s]
-    minimizer.llgterms_.push_back( LlgTerm (new Zee(zee_func)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     while (state.t < 4* hzee_max/rate){
         state.t+=1.;
         minimizer.Minimize(state);

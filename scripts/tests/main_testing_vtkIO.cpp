@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 //  zeeswitch(0,0,0,1)=+4.3e-3/constants::mu0;
 //  zeeswitch(0,0,0,2)=0.0;
 //  zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-//  llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
+//  llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch,mesh,material)));
 //  Llg.Fieldterms=llgterm;
 //  //TODO remove state0 in LLG!
 //  Llg.state0.material.alpha=0.02;

@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
     llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
     llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
-    llgterm.push_back( LlgTerm (new Zee( zee_func_for_relax_in_init)));
+    llgterm.push_back( LlgTerm (new ExternalField( zee_func_for_relax_in_init)));
     LLGIntegrator Llg(llgterm);
 
     // Relaxation
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     Llg.llgterms.pop_back(); // Remove init zee field 
 
     timer t_hys = af::timer::start();
-    Llg.llgterms.push_back( LlgTerm (new Zee(zee_func))); //Rate in T/s
+    Llg.llgterms.push_back( LlgTerm (new ExternalField(zee_func))); //Rate in T/s
     while (state.t < t_full_rotation){
          Llg.step(state);
          state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));

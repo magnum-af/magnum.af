@@ -32,7 +32,7 @@ fields = [
     ExchangeField(mesh, material),
     SpinTransferTorqueField(polarization, nu_damp=.3, nu_field=.4, j_e=2e10),
     UniaxialAnisotropyField(mesh, material),
-    Zee(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
+    ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
 ]
 print (fields)
 Llg = LLGIntegrator(terms=fields, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)

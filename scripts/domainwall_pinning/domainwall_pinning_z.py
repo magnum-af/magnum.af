@@ -108,7 +108,7 @@ state.micro_Ku1_field = Ku1_field
 #print (A_field)
 #print (state.micro_A_field)
 fields = [
-    Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
     ExchangeField(state.mesh, state.material),
     UniaxialAnisotropyField(state.mesh, state.material),
     #DemagField(mesh, material),

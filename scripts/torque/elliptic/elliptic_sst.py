@@ -37,7 +37,7 @@ fields = [
     SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=4.5e7 * 1.6e11 * spin_diffusion_length / z),
     #SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=1.6e11),
     #UniaxialAnisotropyField(mesh, material),
-    #Zee(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
+    #ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
 ]
 print (fields)
 

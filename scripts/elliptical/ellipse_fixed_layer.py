@@ -59,7 +59,7 @@ fields = [
     DemagField(mesh, material, verbose = True),
     ExchangeField(mesh, material),
     #UniaxialAnisotropyField(mesh, material),
-    #Zee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+    #ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
 ]
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 Llg = LLGIntegrator(terms = fields)

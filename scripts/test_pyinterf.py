@@ -42,7 +42,7 @@ zeeswitch[0,0,0,0]=-24.6e-3/material.print_mu0()
 zeeswitch[0,0,0,1]=+4.3e-3/material.print_mu0()
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch,100,25,1)
-zee=magnum_af.Zee(zeeswitch)
+zee=magnum_af.ExternalField(zeeswitch)
 Llg.add_terms(zee)
 print pystate.t()
 while pystate.t() < 2e-9:

@@ -54,7 +54,7 @@ zeeswitch[0,0,0,0] = -24.6e-3/Constants.mu0
 zeeswitch[0,0,0,1] = +4.3e-3/Constants.mu0
 zeeswitch[0,0,0,2] = 0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
-zee = Zee(zeeswitch)
+zee = ExternalField(zeeswitch)
 Llg.add_terms(zee)
 
 # Switching

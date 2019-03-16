@@ -41,7 +41,7 @@ from magnum_af_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipole
 from magnum_af_decl cimport AtomisticExchangeField as cAtomisticExchangeField
 from magnum_af_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
 from magnum_af_decl cimport AtomisticDmiField as cAtomisticDmiField
-from magnum_af_decl cimport Zee as cZee
+from magnum_af_decl cimport ExternalField as cZee
 from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnum_af_decl cimport LLGTerm as cLLGTerm
 
@@ -489,7 +489,7 @@ cdef class AtomisticDmiField:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-cdef class Zee:
+cdef class ExternalField:
   cdef cZee* thisptr
   def __cinit__(self, array_in):
     self.thisptr = new cZee (addressof(array_in.arr))  

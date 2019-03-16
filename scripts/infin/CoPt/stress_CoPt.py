@@ -72,7 +72,7 @@ demag = DemagField(mesh, param)
 exch = ExchangeField(mesh, param)
 aniso_z = UniaxialAnisotropyField(mesh, param)
 aniso_stress = UniaxialAnisotropyField(mesh, param_stress)
-zee = Zee(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
+zee = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 print ("Init terms [s]= ", time.time() - start)
 
 # Creating minimizer object

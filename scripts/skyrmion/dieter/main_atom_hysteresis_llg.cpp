@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 
     //timer t_hys = af::timer::start();
     //double rate = hzee_max/quater_steps; //[T/s]
-    //minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
+    //minimizer.llgterms.push_back( LlgTerm (new ExternalField(&zee_func)));
     //while (state.t < 4* hzee_max/rate){
     //    minimizer.minimize(state);
     //    calc_mean_m(state, stream, afvalue(minimizer.llgterms[4]->h(state)(0,0,0,0)));
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
     //}
     //std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.Fieldterms.push_back( llgt_ptr (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          state.m=Llg.llgstep(state);
          if( state.steps % 2000 == 0){

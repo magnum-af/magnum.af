@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,1)=+4.3e-3/constants::mu0;
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    Llg.llgterms.push_back( LlgTerm (new Zee(zeeswitch)));
+    Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
     state.material.alpha=0.02;
 
     // Switch

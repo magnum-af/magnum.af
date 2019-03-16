@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     calc_mean_m(state, stream, 0);
 
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.Fieldterms.push_back( llgt_ptr (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t <  simtime){
          state.m=Llg.llgstep(state);
          if( state.steps % 1000 == 0){

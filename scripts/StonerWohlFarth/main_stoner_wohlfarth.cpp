@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     std::vector<llgt_ptr> llgterm;
     array zeeswitch = constant(0.0,1,1,1,3,f64);
     zeeswitch(0,0,0,2)=1./constants::mu0;
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch,mesh,material)));
+    llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch,mesh,material)));
     State state(mesh, material, m);
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
   

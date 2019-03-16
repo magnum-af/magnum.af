@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
     minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
     minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,param_stress)));
-    minimizer.llgterms_.push_back( LlgTerm (new Zee(zee_func)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     // Checking aniso

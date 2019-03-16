@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
     minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
     minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new Zee(zee_func)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     std::ofstream stream;

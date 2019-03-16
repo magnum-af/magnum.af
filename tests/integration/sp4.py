@@ -46,7 +46,7 @@ class sp4(unittest.TestCase):
     zeeswitch[0,0,0,1]= +4.3e-3/magnum_af.Constants.mu0
     zeeswitch[0,0,0,2]=0.0
     zeeswitch = af.tile(zeeswitch,100,25,1)
-    zee=magnum_af.Zee(zeeswitch)
+    zee=magnum_af.ExternalField(zeeswitch)
     self.Llg.add_terms(zee)
     intx=0
     inty=0
