@@ -49,7 +49,7 @@ m[:,:,nz/2:,1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 material = Material(alpha=1.0, ms=0, Ku1_axis=[0, 0, 1])
 state = State(mesh, material, m)
-state.Normalize()
+state.normalize()
 state.py_vti_writer_micro(sys.argv[1] + "minit")
 #print("m", state.m)
 

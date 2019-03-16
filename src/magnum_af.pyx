@@ -270,7 +270,7 @@ cdef class State:
     self.thisptr._vtr_reader( outputname.encode('utf-8')) 
   def set_alpha(self,value):
     self.thisptr.material.alpha=value
-  def Normalize(self):
+  def normalize(self):
     self.thisptr.Normalize()
 
   property mesh:
