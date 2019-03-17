@@ -1,6 +1,6 @@
 import unittest
 import arrayfire as af
-import magnum_af
+import magnumaf
 from math import pi, sqrt
 
 class ParamTest(unittest.TestCase):
@@ -19,7 +19,7 @@ class ParamTest(unittest.TestCase):
   D_atom_axis = [1., 1., 1.]
 
   def test_param_initialization(self):
-    material=magnum_af.Material(alpha=self.alpha, T=self.T, ms=self.ms, A=self.A, D=self.D, Ku1=self.Ku1, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_axis=self.Ku1_axis, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
+    material=magnumaf.Material(alpha=self.alpha, T=self.T, ms=self.ms, A=self.A, D=self.D, Ku1=self.Ku1, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_axis=self.Ku1_axis, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
 
     self.assertEqual(self.alpha, material.alpha)
     self.assertEqual(self.T, material.T)
@@ -35,9 +35,9 @@ class ParamTest(unittest.TestCase):
     self.assertEqual((1./sqrt(3.),1./sqrt(3.),1./sqrt(3.)), material.D_atom_axis)
 
   def test_param_default_initialization(self):
-    material=magnum_af.Material()
-    self.assertEqual(4e-7*pi, magnum_af.Constants.mu0           )
-    self.assertEqual(221276.14886372554, magnum_af.Constants.gamma         )
+    material=magnumaf.Material()
+    self.assertEqual(4e-7*pi, magnumaf.Constants.mu0           )
+    self.assertEqual(221276.14886372554, magnumaf.Constants.gamma         )
     self.assertEqual((0.,0.,1.), material.Ku1_axis)
     self.assertEqual(0., material.ms            )
     self.assertEqual(0., material.alpha         )

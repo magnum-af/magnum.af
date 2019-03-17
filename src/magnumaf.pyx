@@ -26,24 +26,24 @@ from math import sqrt
 from math import pi
 from numpy import zeros as np_zeros
 
-from magnum_af_decl cimport Mesh as cMesh
-from magnum_af_decl cimport Material as cParam
-from magnum_af_decl cimport State as cState
-from magnum_af_decl cimport Controller as cController
-from magnum_af_decl cimport LLGIntegrator as cLLGIntegrator
-from magnum_af_decl cimport DemagField as cDemagField
-from magnum_af_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
-from magnum_af_decl cimport ExchangeField as cExchangeField
-from magnum_af_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
+from magnumaf_decl cimport Mesh as cMesh
+from magnumaf_decl cimport Material as cParam
+from magnumaf_decl cimport State as cState
+from magnumaf_decl cimport Controller as cController
+from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
+from magnumaf_decl cimport DemagField as cDemagField
+from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
+from magnumaf_decl cimport ExchangeField as cExchangeField
+from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 #TODO#from magnum_af_decl cimport DmiField as cDMI
 
-from magnum_af_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
-from magnum_af_decl cimport AtomisticExchangeField as cAtomisticExchangeField
-from magnum_af_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
-from magnum_af_decl cimport AtomisticDmiField as cAtomisticDmiField
-from magnum_af_decl cimport ExternalField as cZee
-from magnum_af_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
-from magnum_af_decl cimport LLGTerm as cLLGTerm
+from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
+from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
+from magnumaf_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
+from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
+from magnumaf_decl cimport ExternalField as cZee
+from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
+from magnumaf_decl cimport LLGTerm as cLLGTerm
 
 def array_from_addr(array_addr):
   array=af.Array()

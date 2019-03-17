@@ -2,7 +2,7 @@ import sys
 import os
 import arrayfire as af
 import numpy as np
-from magnum_af import *
+from magnumaf import *
 import time
 
 # expected arguments:

@@ -1,6 +1,6 @@
 import unittest
 import arrayfire as af
-import magnum_af
+import magnumaf
 from numpy import zeros, ones
 from math import pi, sqrt
 
@@ -17,9 +17,9 @@ class StateTest(unittest.TestCase):
   m_np[0] = 1.0
   m_af = af.reorder(af.from_ndarray(m_np),1,2,3,0)
 
-  mesh=magnum_af.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-  material=magnum_af.Material()
-  state=magnum_af.State(mesh, material, m_af)
+  mesh=magnumaf.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
+  material=magnumaf.Material()
+  state=magnumaf.State(mesh, material, m_af)
   
   def test_state_initialization(self):
     self.assertEqual(1., self.state.m[0,0,0,0].scalar())
@@ -49,15 +49,15 @@ class StateTest(unittest.TestCase):
     self.assertEqual(1., self.state.m[0,0,0,2].scalar())
 
   def test_material_setter_and_getter_for_ms(self):
-    state=magnum_af.State(magnum_af.Mesh(0,0,0,0,0,0), magnum_af.Material(), self.m_af)
-    material=magnum_af.Material()
+    state=magnumaf.State(magnumaf.Mesh(0,0,0,0,0,0), magnumaf.Material(), self.m_af)
+    material=magnumaf.Material()
     material.ms=1000
     state.material=material
     self.assertEqual(material.ms, state.material.ms)
 
   def test_mesh_setter_and_getter(self):
-    state=magnum_af.State(magnum_af.Mesh(0,0,0,0,0,0), magnum_af.Material(), self.m_af)
-    mesh = magnum_af.Mesh(1,2,3,4,5,6)
+    state=magnumaf.State(magnumaf.Mesh(0,0,0,0,0,0), magnumaf.Material(), self.m_af)
+    mesh = magnumaf.Mesh(1,2,3,4,5,6)
     state.mesh=mesh
     self.assertEqual(1, state.mesh.n0)
     self.assertEqual(2, state.mesh.n1)

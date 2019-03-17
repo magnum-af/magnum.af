@@ -2,7 +2,7 @@
 # Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
 import arrayfire as af
-from magnum_af import *
+from magnumaf import *
 import sys
 import time
 

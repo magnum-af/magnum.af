@@ -3,7 +3,7 @@
 # argv[3] simtime [ns] (1)
 
 import arrayfire as af
-from magnum_af import *
+from magnumaf import *
 import sys
 import time
 

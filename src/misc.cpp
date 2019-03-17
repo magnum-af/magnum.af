@@ -27,7 +27,7 @@ inline bool createdir(const std::string& absolute_filepath){
     }
 
     else{
-        //printf("Directory ~/.magnum_af/ created.");
+        //printf("Directory ~/.magnum.af.cache/ created.");
         //std::cout << "Directory"+absolute_filepath+"created" << std::endl;
         printf("Directory '%s' created \n", absolute_filepath.c_str());
         return true;

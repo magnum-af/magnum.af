@@ -2,7 +2,7 @@
 # argv[2] GPU number [0-3] (0)
 
 import arrayfire as af
-from magnum_af import *
+from magnumaf import *
 import sys
 import time
 

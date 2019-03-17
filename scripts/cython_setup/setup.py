@@ -5,7 +5,7 @@ from Cython.Build import cythonize
 #check: https://github.com/r9y9/pypcl/blob/master/setup.py for vtk settings
 
 extensions = [
-    Extension("magnum_af_cython_setup", ["magnum_af.pyx"],
+    Extension("magnum_af_cython_setup", ["magnumaf.pyx"],
         include_dirs = ["/opt/include", "/usr/include/vtk-7.1"],
         #libraries = ["afcuda"],
         #libraries = ["afopencl"],

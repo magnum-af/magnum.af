@@ -1,5 +1,5 @@
 import arrayfire as af
-from magnum_af import *
+from magnumaf import *
 from numpy import pi
 from math import sqrt
 import sys

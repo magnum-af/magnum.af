@@ -1,13 +1,13 @@
 import unittest
 import arrayfire as af
-import magnum_af
+import magnumaf
 import math
 
 class sp4(unittest.TestCase):
-  meshvar=magnum_af.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
+  meshvar=magnumaf.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
   m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
   
-  material=magnum_af.Material()
+  material=magnumaf.Material()
   material.ms=8e5
   material.A =1.3e-11
   material.alpha=1
@@ -15,11 +15,11 @@ class sp4(unittest.TestCase):
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-  state=magnum_af.State(meshvar,material,m)
+  state=magnumaf.State(meshvar,material,m)
   
-  demag=magnum_af.DemagField(meshvar,material)
-  exch=magnum_af.ExchangeField(meshvar,material)
-  Llg=magnum_af.LLGIntegrator([demag,exch])
+  demag=magnumaf.DemagField(meshvar,material)
+  exch=magnumaf.ExchangeField(meshvar,material)
+  Llg=magnumaf.LLGIntegrator([demag,exch])
 
   def test_relaxation(self):
     intx=0
@@ -42,11 +42,11 @@ class sp4(unittest.TestCase):
     self.state.set_alpha(0.02)
     
     zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-    zeeswitch[0,0,0,0]=-24.6e-3/magnum_af.Constants.mu0
-    zeeswitch[0,0,0,1]= +4.3e-3/magnum_af.Constants.mu0
+    zeeswitch[0,0,0,0]=-24.6e-3/magnumaf.Constants.mu0
+    zeeswitch[0,0,0,1]= +4.3e-3/magnumaf.Constants.mu0
     zeeswitch[0,0,0,2]=0.0
     zeeswitch = af.tile(zeeswitch,100,25,1)
-    zee=magnum_af.ExternalField(zeeswitch)
+    zee=magnumaf.ExternalField(zeeswitch)
     self.Llg.add_terms(zee)
     intx=0
     inty=0

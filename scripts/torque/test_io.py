@@ -1,5 +1,5 @@
 import arrayfire as af
-from magnum_af import *
+from magnumaf import *
 
 # Physical dimensions in [m]
 x = 1e-9

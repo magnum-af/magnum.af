@@ -1,6 +1,6 @@
 import unittest
 import arrayfire as af
-from magnum_af import Mesh
+from magnumaf import Mesh
 
 class MeshTest(unittest.TestCase):
     n0 = 100

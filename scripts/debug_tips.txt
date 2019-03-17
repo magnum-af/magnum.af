@@ -8,7 +8,7 @@ Troubleshooting:
 
 * Forgetting to mention a file in sources in setup.py results in error like:
 
-ImportError: /home/pth/git/magnum.af/interface/magnum_af.so: undefined symbol: _ZN4MeshC1Eiiiddd
+ImportError: /home/pth/git/magnum.af/interface/magnumaf.so: undefined symbol: _ZN4MeshC1Eiiiddd
 
 Include respective file in src/CMakeLists cython_add_module_w_AF_VTK() to solve
 
@@ -72,7 +72,7 @@ Wrapping:
 
 Traceback (most recent call last):
   File "stress.py", line 6, in <module>
-    from magnum_af import *
+    from magnumaf import *
 ImportError: dynamic module does not define init function (PyInit_magnum_af)
 
 when called with python3 on GTO

@@ -158,7 +158,7 @@ if [ "$b_flag" == "true" ]; then
 fi
 
 log "checking if build is necessary"
-if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ]));then
+if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
     $magafdir/scripts/bash/check_main.sh $v_flag
     
