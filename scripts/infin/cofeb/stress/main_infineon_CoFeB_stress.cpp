@@ -42,6 +42,7 @@ int main(int argc, char** argv)
     param_stress.Ku1_axis[0]=1;
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
+    param_stress.ms = material.ms;//TODO should be taken form state in the future
 
     State state(mesh,material, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
