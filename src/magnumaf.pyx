@@ -74,7 +74,7 @@ class Util:
           rx=ix-n0/2.
           ry=iy-n1/2.
           r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
-          if(r<1):
+          if(r<=1):
               m[ix,iy,iz,0]=axis[0]/norm
               m[ix,iy,iz,1]=axis[1]/norm
               m[ix,iy,iz,2]=axis[2]/norm
