@@ -273,6 +273,8 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
     Naf=af::reorder(Naf,3,2,1,0);
     delete [] N_setup;
     N_setup = NULL;
+    af::print("Full Naf", Naf);
+    //af::print("Full Naf", Naf(af::span, af::span, 0, af::span));
     if (n2_exp == 1){
         Naf = af::fftR2C<2>(Naf);
     }

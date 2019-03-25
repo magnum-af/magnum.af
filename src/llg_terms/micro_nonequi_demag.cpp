@@ -238,16 +238,19 @@ void* nonequi_setup_N(void* arg)
         const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
         for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
             const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
-            for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
-                const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
-                const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+            //for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
+                //const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
+                //const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+                //std::cout << "j2=" << j2 << std::endl;
+                const int idx = 6*(loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+                const int j2 = 1;
                 N_nonequi_setup[idx+0] = Newell::Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
                 N_nonequi_setup[idx+1] = Newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
                 N_nonequi_setup[idx+2] = Newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
                 N_nonequi_setup[idx+3] = Newell::Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
                 N_nonequi_setup[idx+4] = Newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
                 N_nonequi_setup[idx+5] = Newell::Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
-            }
+            //}
         }
     }
     return NULL;
@@ -276,11 +279,14 @@ af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, dou
     Naf=af::reorder(Naf,3,2,1,0);
     delete [] N_nonequi_setup;
     N_nonequi_setup = NULL;
-    if (n2_exp == 1){
-        Naf = af::fftR2C<2>(Naf);
-    }
-    else {
-        Naf = af::fftR2C<3>(Naf);
-    }
+    af::print("Nonequi Naf", Naf);
+    Naf = af::fftR2C<2>(Naf);
+    af::print("Nonequi Nfft", Naf);
+    //if (n2_exp == 1){
+    //    Naf = af::fftR2C<2>(Naf);
+    //}
+    //else {
+    //    Naf = af::fftR2C<3>(Naf);
+    //}
     return Naf;
 }
