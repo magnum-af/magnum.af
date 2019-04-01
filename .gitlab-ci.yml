@@ -1,4 +1,9 @@
+stages:
+  - test
+  - deploy
+
 test_cpu: 
+  stage: test
   script:
     - docker build -t magnum.af.cpu-dev -f Dockerfile.cpu .
     - docker run --rm -t magnum.af.cpu-dev ./tests/runall.sh .
@@ -6,6 +11,7 @@ test_cpu:
     - packer
 
 test_gpu:
+  stage: test
   script:
     - nvidia-docker build -t magnum.af-dev -f Dockerfile .
     - nvidia-docker run --rm -t magnum.af-dev ./tests/runall.sh .
