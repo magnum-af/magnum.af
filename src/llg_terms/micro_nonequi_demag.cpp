@@ -213,6 +213,8 @@ namespace Newell{
     }
 
 }
+
+
 struct LoopInfo {
     LoopInfo(){}
     LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):

@@ -2,11 +2,15 @@
 #include "llg_terms/micro_demag.hpp"
 #include "llg_terms/micro_nonequi_demag.hpp"
 
-unsigned int zero_if_equal(af::array first, af::array second, double precision = 4e-12){
-    unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(af::abs(first - second) < precision), 0), 1), 2), 3));
-    if (!zero_if_equal) std::cout << "\33[1;32mSucess:\33[0m zero_if_equal = " << zero_if_equal << std::endl;
-    else std::cout << "\33[1;31mError!\33[0m zero_if_equal =" << zero_if_equal << std::endl;
-    return zero_if_equal;
+/////< Checks absolute value of point-wise difference: returns 0 if | x - y | < precision, 1 otherwise
+//unsigned int zero_if_equal(af::array first, af::array second, double precision = 4e-12, bool verbose = true){
+//    unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(af::abs(first - second) < precision), 0), 1), 2), 3));
+//    if (verbose){
+//        if (!zero_if_equal) std::cout << "\33[1;32mSucess:\33[0m zero_if_equal = " << zero_if_equal << std::endl;
+//        else std::cout << "\33[1;31mError!\33[0m zero_if_equal =" << zero_if_equal << std::endl;
+//    }
+//    return zero_if_equal;
+//}
     //unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum(first != second, 0), 1), 2), 3));
     //af::array temp = af::abs(first - second);
     //af::print("temp", temp);
@@ -19,7 +23,6 @@ unsigned int zero_if_equal(af::array first, af::array second, double precision =
     //if(first.isrealfloating()) std::cout << "isrealfloating" << std::endl;
     //std::cout.precision(24);
     //std::cout << "first=" << afvalue(first(0, 0, 0, 1)) << ", second=" << afvalue(second(0, 0, 0, 1))<< std::endl;
-}
 
 
 int main(int argc, char** argv)
@@ -66,7 +69,9 @@ int main(int argc, char** argv)
     //af::print("nonequi_demag.Nfft", nonequi_demag.Nfft);
     //unsigned int zero_if_equal_var = zero_if_equal(demag.Nfft, nonequi_demag.Nfft);
     
-    zero_if_equal(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi));
+    abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi));
+    //if (abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), 2*nonequi_demag.h(state_nonequi))) std::cout << "test true" << std::endl;
+    //else std::cout << "test false" << std::endl;
     //zero_if_equal(demag.Nfft, nonequi_demag.Nfft);
     //zero_if_equal(demag.Nfft(af::span, af::span, 2, af::span), nonequi_demag.Nfft);
     return 0;

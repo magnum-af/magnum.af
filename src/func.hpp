@@ -1,5 +1,6 @@
 #ifndef FUNC_H
 #define FUNC_H
+#include <iostream>
 #include "arrayfire.h"
 
 class WrappedArray {
@@ -28,4 +29,5 @@ double FrobeniusNorm(const af::array& a);
 //TODO void calcm(State state, LLG Llg, std::ostream& myfile);
 double euclnorm(const af::array& a);
 //TODO auto rk4(af::array f(double, af::array));
+bool abs_diff_lt_precision(af::array first, af::array second, double precision = 4e-12, bool verbose = true); //!< Absolute difference less than precision
 #endif
