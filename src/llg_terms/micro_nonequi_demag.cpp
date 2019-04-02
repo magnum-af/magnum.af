@@ -108,7 +108,7 @@ af::array NonEquiDemagField::h(const State&  state){
   }
 }
 
-namespace Newell{
+namespace newell{
 
     double newellf(double x, double y, double z){
       x=fabs(x);
@@ -141,6 +141,30 @@ namespace Newell{
       if(y  *  R!= 0) result += - z * yy / 2.0 * atan(x*z / (y * R));
       if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
       return result;
+    }
+
+    double F2(const double x, const double y, const double z){
+        return newellf(x, y, z) - newellf(x, 0, z) - newellf(x, y, 0) + newellf(x, 0, 0);
+    }
+
+    double F1(const double x, const double y, const double z, const double dz, const double dZ){
+        return F2(x, y, z + dZ) - F2(x, y, z) - F2(x, y, z - dz + dZ) + F2(x, y, z - dz);//TODO check dz vs dZ in first and last term
+    }
+
+    double F0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){
+        return F1(x, y + dY, z, dz, dZ) - F1(x, y, z, dz, dZ) - F1(x, y - dy + dY, z, dz, dZ) + F1(x, y - dy, z, dz, dZ);//TODO check dz vs dZ in first and last term
+    }
+    double Nxx_nonequi(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+        //TODO check def of xyz and tau
+        const double x = dx*ix;
+        const double y = dy*iy;
+        const double z = dz*iz;
+        const double tau = dx * dy * dz;//TODO check
+        return -1./(4.0 * M_PI * tau) * ( \
+                  F0(x          , y, z, dy, dY, dz, dZ) \
+                - F0(x - dx     , y, z, dy, dY, dz, dZ) \
+                - F0(x + dX     , y, z, dy, dY, dz, dZ) \
+                + F0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
     
     double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
@@ -245,13 +269,21 @@ void* nonequi_setup_N(void* arg)
                 //const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
                 //std::cout << "j2=" << j2 << std::endl;
                 const int idx = 6*(loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
-                const int j2 = 1;
-                N_nonequi_setup[idx+0] = Newell::Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N_nonequi_setup[idx+1] = Newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N_nonequi_setup[idx+2] = Newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
-                N_nonequi_setup[idx+3] = Newell::Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                N_nonequi_setup[idx+4] = Newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                N_nonequi_setup[idx+5] = Newell::Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+                const int j2 = 1;//TODO data structure for all j
+                //TODO test with dx = dX, dy = dY, dz = dZ
+                N_nonequi_setup[idx+0] = newell::Nxx_nonequi(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N_nonequi_setup[idx+1] = newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N_nonequi_setup[idx+2] = newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                N_nonequi_setup[idx+3] = newell::Nxx_nonequi(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N_nonequi_setup[idx+4] = newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N_nonequi_setup[idx+5] = newell::Nxx_nonequi(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+
+                //N_nonequi_setup[idx+0] = newell::Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                //N_nonequi_setup[idx+1] = newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                //N_nonequi_setup[idx+2] = newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                //N_nonequi_setup[idx+3] = newell::Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                //N_nonequi_setup[idx+4] = newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                //N_nonequi_setup[idx+5] = newell::Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
             //}
         }
     }
