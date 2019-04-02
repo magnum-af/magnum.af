@@ -108,6 +108,21 @@ bool abs_diff_lt_precision(af::array first, af::array second, double precision, 
     else return false;
 }
 
+/// Relative difference less than precision: Element-wise comparision of relative difference of two arrays. Checks whether | 2(x-y)/(x+y) | < precision. Returns true if all values are below precision and false otherwise.
+bool rel_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));//set element to zero if both input elements are zero
+    unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(temp < precision), 0), 1), 2), 3));
+    if (verbose){
+        if (zero_if_equal == 0) std::cout << "\33[1;32mSucess:\33[0m All " << first.elements() << " relative values of element-wise differences are below precision of " << precision << std::endl;
+        else {
+            std::cout << "\33[1;31mError!\33[0m " << zero_if_equal << " out of " << first.elements() << " relative values of element-wise differences are above precision of " << precision << std::endl;
+        }
+    }
+    if (zero_if_equal == 0) return true;
+    else return false;
+}
+
 //Experimental: eucledian norm
 //double maxnorm(const af::array& a){
 //  double *maxnorm_host=NULL;

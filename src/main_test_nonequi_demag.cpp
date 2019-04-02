@@ -122,9 +122,18 @@ int main(int argc, char** argv)
 
         af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
-        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi));
-        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi), 2e-8);
+        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi), 3.9e-8);
         abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi), 4e-8);
+        rel_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi), 1e-03);
+        rel_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi), 2e-03);
+
+        //test
+        //rel_diff_lt_precision(af::constant(1., 1, f64), af::constant(1.1, 1, f64), 0.1);
+        //rel_diff_lt_precision(af::constant(1., 1, f64), af::constant(1.1, 1, f64), 0.099);
+        //rel_diff_lt_precision(af::constant(1., 1, f64), af::constant(1.1, 1, f64), 0.09);
+        //rel_diff_lt_precision(af::constant(-1., 1, f64), af::constant(-1.1, 1, f64), 0.1);
+        //rel_diff_lt_precision(af::constant(1., 1, f64), af::constant(1.1, 1, f64), 0.1);
+        //rel_diff_lt_precision(af::constant(10., 1, f64), af::constant(10.1, 1, f64), 0.1);
     }
     //Test 3: Testing heff with extendend newell  for sp4, not yet working
     if (run_test == 0 || run_test == 3)
