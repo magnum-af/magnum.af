@@ -27,7 +27,7 @@
 
 int main(int argc, char** argv)
 {
-    const int run_test = 2; // specify test no., 0 is all
+    const int run_test = 3; // specify test no., 0 is all
 
     //Test 1: Testing heff for 
     if (run_test == 0 || run_test == 1)
@@ -139,9 +139,10 @@ int main(int argc, char** argv)
     if (run_test == 0 || run_test == 3)
     {
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
-        //const int nx = 100, ny=25 ,nz=1;
-        const int nx = 3, ny=1 ,nz=2;
-        const int nz_nonequi = 1;
+        const int nx = 100, ny=25 ,nz=1;
+        //const int nx = 3, ny=1 ,nz=2;
+        //const int nx = 3, ny=1 ,nz=1;
+        //const int nx = 3, ny=3 ,nz=3;
         
         Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
         Material material = Material();
@@ -161,9 +162,33 @@ int main(int argc, char** argv)
 
         af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi));
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 6e-9);
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 8e-9);
+        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 8e-4);
+        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 4e-3);
+
+        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 5e-4);
+        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 6e-4);
+        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 7e-4);
+
+        double prec = 1e0;
+        double prec_prev = prec;
+        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false))
+        {
+            std::cout << "prec = " <<prec << std::endl;
+            prec_prev = prec;
+            prec = 0.1 * prec;
+        }
+        //std::cout << "finished width prec_prev = " <<prec_prev << std::endl;
+        //std::cout << "finished width prec = " <<prec << std::endl;
+
+        prec = prec_prev;
+        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false))
+        {
+            std::cout << "prec = " <<prec << std::endl;
+            prec_prev = prec;
+            prec = 0.9 * prec;
+        }
+        std::cout << "finished width prec_prev = " <<prec_prev << " First false with " << prec << std::endl;
+        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec_prev, true);
     }
     return 0;
 }

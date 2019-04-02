@@ -264,13 +264,15 @@ void* nonequi_setup_N(void* arg)
         const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
         for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
             const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
-            //for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
-                //const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
-                //const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+            for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
+                const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
+                const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+
+                //const int j2 = 1;//TODO data structure for all j
                 //std::cout << "j2=" << j2 << std::endl;
-                const int idx = 6*(loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
-                const int j2 = 1;//TODO data structure for all j
+                //const int idx = 6*(loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
                 //TODO test with dx = dX, dy = dY, dz = dZ
+
                 N_nonequi_setup[idx+0] = newell::Nxx_nonequi(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
                 N_nonequi_setup[idx+1] = newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
                 N_nonequi_setup[idx+2] = newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
@@ -284,7 +286,7 @@ void* nonequi_setup_N(void* arg)
                 //N_nonequi_setup[idx+3] = newell::Nxxf(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
                 //N_nonequi_setup[idx+4] = newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
                 //N_nonequi_setup[idx+5] = newell::Nxxf(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
-            //}
+            }
         }
     }
     return NULL;
