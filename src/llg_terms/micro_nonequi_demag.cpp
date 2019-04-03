@@ -143,13 +143,13 @@ namespace newell{
       return result;
     }
 
-    double F2(const double x, const double y, const double z){
-        return newellf(x, y, z);
-        //return newellf(x, y, z) - newellf(x, 0, z) - newellf(x, y, 0) + newellf(x, 0, 0);
-    }
+    //double F2(const double x, const double y, const double z){
+    //    return newellf(x, y, z);
+    //    //Last three terms cancel out//return newellf(x, y, z) - newellf(x, 0, z) - newellf(x, y, 0) + newellf(x, 0, 0);
+    //}
 
     double F1(const double x, const double y, const double z, const double dz, const double dZ){
-        return F2(x, y, z + dZ) - F2(x, y, z) - F2(x, y, z - dz + dZ) + F2(x, y, z - dz);//TODO check dz vs dZ in first and last term
+        return newellf(x, y, z + dZ) - newellf(x, y, z) - newellf(x, y, z - dz + dZ) + newellf(x, y, z - dz);//TODO check dz vs dZ in first and last term
     }
 
     double F0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){

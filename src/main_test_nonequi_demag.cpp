@@ -152,11 +152,20 @@ int main(int argc, char** argv)
         //std::cout << "rel diff = " << reldiff << std::endl;
         //std::cout << "abs diff = " << absdiff << std::endl;
 
-        std::cout << "abs diff heff = " << max_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
-        std::cout << "rel diff heff = " << max_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
+        std::cout << "heff mean abs diff = " << mean_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
+        std::cout << "heff mean rel diff = " << mean_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
 
-        std::cout << "abs diff N = " << max_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
-        std::cout << "rel diff N = " << max_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "N[000] abs diff = " << max_abs_diff(demag.todel_N(0, 0, 0), nonequi_demag.todel_N(0, 0, 0)) << std::endl;
+        std::cout << "N[000] rel diff = " << max_rel_diff(demag.todel_N(0, 0, 0), nonequi_demag.todel_N(0, 0, 0)) << std::endl << std::endl;
+
+        std::cout << "heff max abs diff = " << max_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
+        std::cout << "heff max rel diff = " << max_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
+
+        std::cout << "N mean abs diff = " << mean_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "N mean rel diff = " << mean_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl << std::endl;
+
+        std::cout << "N max abs diff = " << max_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "N max rel diff = " << max_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
     }
     return 0;
 }

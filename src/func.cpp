@@ -94,6 +94,18 @@ double euclnorm(const af::array& a){
   return norm;
 }
 
+/// Mean of absolute difference
+double mean_abs_diff(const af::array& a, const af::array& b){
+    return afvalue(af::mean(af::mean(af::mean(af::mean(af::abs(a - b), 0), 1), 2), 3));
+}
+
+/// Mean of relative difference
+double mean_rel_diff(const af::array& first, const af::array& second){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    return afvalue(af::mean(af::mean(af::mean(af::mean(temp, 0), 1), 2), 3));
+}
+
 /// Max of absolute difference
 double max_abs_diff(const af::array& a, const af::array& b){
     return afvalue(af::max(af::abs(a - b)));

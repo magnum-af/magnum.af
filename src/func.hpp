@@ -29,6 +29,8 @@ double FrobeniusNorm(const af::array& a);
 //TODO void calcm(State state, LLG Llg, std::ostream& myfile);
 double euclnorm(const af::array& a);
 //TODO auto rk4(af::array f(double, af::array));
+double mean_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
+double mean_rel_diff(const af::array& a, const af::array& b); //!< relative difference
 double max_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
 double max_rel_diff(const af::array& a, const af::array& b); //!< relative difference
 bool abs_diff_lt_precision(af::array first, af::array second, double precision = 4e-8, bool verbose = true); //!< Absolute difference less than precision
