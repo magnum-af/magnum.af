@@ -94,6 +94,17 @@ double euclnorm(const af::array& a){
   return norm;
 }
 
+/// Max of absolute difference
+double max_abs_diff(const af::array& a, const af::array& b){
+    return afvalue(af::max(af::abs(a - b)));
+}
+
+/// Max of relative difference
+double max_rel_diff(const af::array& first, const af::array& second){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    return afvalue(af::max(temp));
+}
 
 /// Absolute difference less than precision: Element-wise comparision of absolute difference of two arrays. Checks whether | x - y | < precision. Returns true if all values are below precision and false otherwise.
 bool abs_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
