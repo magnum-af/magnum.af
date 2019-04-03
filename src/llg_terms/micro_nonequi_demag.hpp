@@ -5,6 +5,7 @@
 #include "../state.hpp"
 #include "../misc.hpp"
 #include "../func.hpp"
+#include <iostream>
 #include <thread>
 
 class NonEquiDemagField : public LLGTerm {

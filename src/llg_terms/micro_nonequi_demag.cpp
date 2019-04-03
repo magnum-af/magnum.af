@@ -168,56 +168,146 @@ namespace newell{
                 + F0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
 
+    double G2(const double x, const double y, const double z){
+        return newellg(x, y, z);
+        //return newellg(x, y, z) - newellg(x, y, 0);
+        //return newellg(x, y, z) - newellg(x, 0, z) - newellg(x, y, 0) + newellg(x, 0, 0);
+    }
+
+    double G1(const double x, const double y, const double z, const double dz, const double dZ){
+        return G2(x, y, z + dZ) - G2(x, y, z) - G2(x, y, z - dz + dZ) + G2(x, y, z - dz);//TODO check dz vs dZ in first and last term
+    }
+
+    double G0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){
+        return G1(x, y + dY, z, dz, dZ) - G1(x, y, z, dz, dZ) - G1(x, y - dy + dY, z, dz, dZ) + G1(x, y - dy, z, dz, dZ);//TODO check dz vs dZ in first and last term
+    }
+    double Nxy_nonequi(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+        //TODO check def of xyz and tau
+        const double x = dx*ix;
+        const double y = dy*iy;
+        const double z = dz*iz;
+        const double tau = dx * dy * dz;//TODO check
+        return -1./(4.0 * M_PI * tau) * ( \
+                  G0(x          , y, z, dy, dY, dz, dZ) \
+                - G0(x - dx     , y, z, dy, dY, dz, dZ) \
+                - G0(x + dX     , y, z, dy, dY, dz, dZ) \
+                + G0(x - dx + dX, y, z, dy, dY, dz, dZ));
+    }
+
     //NOTE: in equispaced newell writing first 8 terms explicitly (not by mulitplication by 8*) changes the values for the sp4 demag as follows:
     //abs diff heff = 0.000740021
     //rel diff heff = 3.65449e-07
     //abs diff N = 1.02174e-10
     //rel diff N = 0.00097692
 
-    //double Nxx_nonequi(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
-    //  double x = dx*ix;
-    //  double y = dy*iy;
-    //  double z = dz*iz;
-//  //    double result = 8.0 * newellf( x,    y,    z   ) \
-
-    //  double result = \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-    //         + newellf( x,    y,    z   ) \
-
-    //         - 4.0 * newellf( x+dx, y,    z   ) \
-    //         - 4.0 * newellf( x-dx, y,    z   ) \
-    //         - 4.0 * newellf( x,    y+dy, z   ) \
-    //         - 4.0 * newellf( x,    y-dy, z   ) \
-    //         - 4.0 * newellf( x,    y   , z+dz) \
-    //         - 4.0 * newellf( x,    y   , z-dz) \
-    //         + 2.0 * newellf( x+dx, y+dy, z   ) \
-    //         + 2.0 * newellf( x+dx, y-dy, z   ) \
-    //         + 2.0 * newellf( x-dx, y+dy, z   ) \
-    //         + 2.0 * newellf( x-dx, y-dy, z   ) \
-    //         + 2.0 * newellf( x+dx, y   , z+dz) \
-    //         + 2.0 * newellf( x+dx, y   , z-dz) \
-    //         + 2.0 * newellf( x-dx, y   , z+dz) \
-    //         + 2.0 * newellf( x-dx, y   , z-dz) \
-    //         + 2.0 * newellf( x   , y+dy, z+dz) \
-    //         + 2.0 * newellf( x   , y+dy, z-dz) \
-    //         + 2.0 * newellf( x   , y-dy, z+dz) \
-    //         + 2.0 * newellf( x   , y-dy, z-dz) \
-    //         - 1.0 * newellf( x+dx, y+dy, z+dz) \
-    //         - 1.0 * newellf( x+dx, y+dy, z-dz) \
-    //         - 1.0 * newellf( x+dx, y-dy, z+dz) \
-    //         - 1.0 * newellf( x+dx, y-dy, z-dz) \
-    //         - 1.0 * newellf( x-dx, y+dy, z+dz) \
-    //         - 1.0 * newellf( x-dx, y+dy, z-dz) \
-    //         - 1.0 * newellf( x-dx, y-dy, z+dz) \
-    //         - 1.0 * newellf( x-dx, y-dy, z-dz);
-    //  return - result / (4.0 * M_PI * dx * dy * dz);
-    //}
+//    double Nxy_nonequi(int ix, int iy, int iz, double dx, double dy, double dz, const double dX, const double dY, const double dZ){
+//      double x = dx*ix;
+//      double y = dy*iy;
+//      double z = dz*iz;
+//      //double result = 8.0 * newellg( x,    y,    z   ) \
+//      
+//      double result = 
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    + newellg( x,    y,    z   ) \
+//                    - newellg( x+dx, y,    z   ) \
+//                    - newellg( x+dx, y,    z   ) \
+//                    - newellg( x+dx, y,    z   ) \
+//                    - newellg( x-dx, y,    z   ) \
+//                    - newellg( x,    y+dy, z   ) \
+//                    - newellg( x,    y-dy, z   ) \
+//                    - newellg( x,    y   , z+dz) \
+//                    - newellg( x,    y   , z-dz) \
+//                    - newellg( x-dx, y,    z   ) \
+//                    - newellg( x,    y+dy, z   ) \
+//                    - newellg( x,    y-dy, z   ) \
+//                    - newellg( x,    y   , z+dz) \
+//                    - newellg( x,    y   , z-dz) \
+//                    - newellg( x-dx, y,    z   ) \
+//                    - newellg( x,    y+dy, z   ) \
+//                    - newellg( x,    y-dy, z   ) \
+//                    - newellg( x,    y   , z+dz) \
+//                    - newellg( x,    y   , z-dz) \
+//                    - newellg( x+dx, y,    z   ) \
+//                    - newellg( x-dx, y,    z   ) \
+//                    - newellg( x,    y+dy, z   ) \
+//                    - newellg( x,    y-dy, z   ) \
+//                    - newellg( x,    y   , z+dz) \
+//                    - newellg( x,    y   , z-dz) \
+//                    + newellg( x+dx, y+dy, z   ) \
+//                    + newellg( x+dx, y-dy, z   ) \
+//                    + newellg( x-dx, y+dy, z   ) \
+//                    + newellg( x-dx, y-dy, z   ) \
+//                    + newellg( x+dx, y   , z+dz) \
+//                    + newellg( x+dx, y   , z-dz) \
+//                    + newellg( x-dx, y   , z+dz) \
+//                    + newellg( x-dx, y   , z-dz) \
+//                    + newellg( x   , y+dy, z+dz) \
+//                    + newellg( x   , y+dy, z-dz) \
+//                    + newellg( x   , y-dy, z+dz) \
+//                    + newellg( x   , y-dy, z-dz) \
+//                    + newellg( x+dx, y+dy, z   ) \
+//                    + newellg( x+dx, y-dy, z   ) \
+//                    + newellg( x-dx, y+dy, z   ) \
+//                    + newellg( x-dx, y-dy, z   ) \
+//                    + newellg( x+dx, y   , z+dz) \
+//                    + newellg( x+dx, y   , z-dz) \
+//                    + newellg( x-dx, y   , z+dz) \
+//                    + newellg( x-dx, y   , z-dz) \
+//                    + newellg( x   , y+dy, z+dz) \
+//                    + newellg( x   , y+dy, z-dz) \
+//                    + newellg( x   , y-dy, z+dz) \
+//                    + newellg( x   , y-dy, z-dz) \
+//                    - 1.0 * newellg( x+dx, y+dy, z+dz) \
+//                    - 1.0 * newellg( x+dx, y+dy, z-dz) \
+//                    - 1.0 * newellg( x+dx, y-dy, z+dz) \
+//                    - 1.0 * newellg( x+dx, y-dy, z-dz) \
+//                    - 1.0 * newellg( x-dx, y+dy, z+dz) \
+//                    - 1.0 * newellg( x-dx, y+dy, z-dz) \
+//                    - 1.0 * newellg( x-dx, y-dy, z+dz) \
+//                    - 1.0 * newellg( x-dx, y-dy, z-dz);
+//      result = - result / (4.0 * M_PI * dx * dy * dz);
+//      return result;
+//    }
+//
+//    double Nxx_nonequi(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+//      double x = dx*ix;
+//      double y = dy*iy;
+//      double z = dz*iz;
+//      double result = 8.0 * newellf( x,    y,    z   ) \
+//             - 4.0 * newellf( x+dx, y,    z   ) \
+//             - 4.0 * newellf( x-dx, y,    z   ) \
+//             - 4.0 * newellf( x,    y+dy, z   ) \
+//             - 4.0 * newellf( x,    y-dy, z   ) \
+//             - 4.0 * newellf( x,    y   , z+dz) \
+//             - 4.0 * newellf( x,    y   , z-dz) \
+//             + 2.0 * newellf( x+dx, y+dy, z   ) \
+//             + 2.0 * newellf( x+dx, y-dy, z   ) \
+//             + 2.0 * newellf( x-dx, y+dy, z   ) \
+//             + 2.0 * newellf( x-dx, y-dy, z   ) \
+//             + 2.0 * newellf( x+dx, y   , z+dz) \
+//             + 2.0 * newellf( x+dx, y   , z-dz) \
+//             + 2.0 * newellf( x-dx, y   , z+dz) \
+//             + 2.0 * newellf( x-dx, y   , z-dz) \
+//             + 2.0 * newellf( x   , y+dy, z+dz) \
+//             + 2.0 * newellf( x   , y+dy, z-dz) \
+//             + 2.0 * newellf( x   , y-dy, z+dz) \
+//             + 2.0 * newellf( x   , y-dy, z-dz) \
+//             - 1.0 * newellf( x+dx, y+dy, z+dz) \
+//             - 1.0 * newellf( x+dx, y+dy, z-dz) \
+//             - 1.0 * newellf( x+dx, y-dy, z+dz) \
+//             - 1.0 * newellf( x+dx, y-dy, z-dz) \
+//             - 1.0 * newellf( x-dx, y+dy, z+dz) \
+//             - 1.0 * newellf( x-dx, y+dy, z-dz) \
+//             - 1.0 * newellf( x-dx, y-dy, z+dz) \
+//             - 1.0 * newellf( x-dx, y-dy, z-dz);
+//      return - result / (4.0 * M_PI * dx * dy * dz);
+//    }
     
     double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
       double x = dx*ix;
@@ -291,9 +381,9 @@ namespace newell{
 }
 
 
-struct LoopInfo {
-    LoopInfo(){}
-    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
+struct NonequiLoopInfo {
+    NonequiLoopInfo(){}
+    NonequiLoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
         i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
     int i0_start;
     int i0_end;
@@ -311,7 +401,7 @@ double* N_nonequi_setup = NULL;
 
 void* nonequi_setup_N(void* arg)
 {
-    LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
+    NonequiLoopInfo* loopinfo = static_cast<NonequiLoopInfo*>(arg);
     for (int i0 = loopinfo->i0_start; i0 < loopinfo->i0_end; i0++){
         const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
         for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
@@ -326,10 +416,10 @@ void* nonequi_setup_N(void* arg)
                 //TODO test with dx = dX, dy = dY, dz = dZ
 
                 N_nonequi_setup[idx+0] = newell::Nxx_nonequi(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N_nonequi_setup[idx+1] = newell::Nxxg(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                N_nonequi_setup[idx+2] = newell::Nxxg(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                N_nonequi_setup[idx+1] = newell::Nxy_nonequi(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                N_nonequi_setup[idx+2] = newell::Nxy_nonequi(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy, loopinfo->dx, loopinfo->dz, loopinfo->dy);
                 N_nonequi_setup[idx+3] = newell::Nxx_nonequi(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                N_nonequi_setup[idx+4] = newell::Nxxg(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                N_nonequi_setup[idx+4] = newell::Nxy_nonequi(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx);
                 N_nonequi_setup[idx+5] = newell::Nxx_nonequi(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy);
 
                 //N_nonequi_setup[idx+0] = newell::Nxxf(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
@@ -346,12 +436,26 @@ void* nonequi_setup_N(void* arg)
 
 
 af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
+    std::cout.precision(16);
+    double Nxy_non = newell::Nxy_nonequi(1, 2, 300, 1, 2, 3, 1, 2, 3);
+    double Nxyg = newell::Nxxg(1, 2, 300, 1, 2, 3);
+    double Nxx_non = newell::Nxx_nonequi(1, 2, 300, 1, 2, 3, 1, 2, 3);
+    double Nxxf = newell::Nxxf(1, 2, 300, 1, 2, 3);
+
+    std::cout << "Nxy_nonequi: " << Nxy_non << std::endl;
+    std::cout << "Nxy        : " << Nxyg << std::endl;
+    std::cout << "Nxy_diff   : " << 2*(Nxy_non-Nxyg)/(Nxy_non+Nxyg) << std::endl << std::endl;
+
+    std::cout << "Nxx_nonequi: " << Nxx_non << std::endl;
+    std::cout << "Nxx        : " << Nxxf << std::endl;
+    std::cout << "Nxx_diff   : " << 2*(Nxx_non-Nxxf)/(Nxx_non+Nxxf) << std::endl << std::endl;
+
     std::thread t[nthreads];
-    struct LoopInfo loopinfo[nthreads];
+    struct NonequiLoopInfo loopinfo[nthreads];
     for (unsigned i = 0; i < nthreads; i++){
         unsigned start = i * (double)n0_exp/nthreads;
         unsigned end = (i +1) * (double)n0_exp/nthreads;
-        loopinfo[i]=LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
+        loopinfo[i]=NonequiLoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
     }
 
     N_nonequi_setup = new double[n0_exp*n1_exp*n2_exp*6];
