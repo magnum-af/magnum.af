@@ -123,6 +123,48 @@ bool rel_diff_lt_precision(af::array first, af::array second, double precision, 
     else return false;
 }
 
+/// Upper bound for absolute difference
+double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
+    double prec = start_precision;
+    double prec_prev = prec;
+    while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor1 * prec;
+    }
+    
+    prec = prec_prev;
+    while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor2 * prec;
+    }
+    return prec_prev;
+}
+
+/// Upper bound for relative difference
+double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
+    double prec = start_precision;
+    double prec_prev = prec;
+    while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor1 * prec;
+    }
+    
+    prec = prec_prev;
+    while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor2 * prec;
+    }
+    return prec_prev;
+}
+
 //Experimental: eucledian norm
 //double maxnorm(const af::array& a){
 //  double *maxnorm_host=NULL;
