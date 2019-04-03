@@ -27,7 +27,7 @@
 
 int main(int argc, char** argv)
 {
-    const int run_test = 3; // specify test no., 0 is all
+    const int run_test = 4; // specify test no., 0 is all
 
     //Test 1: Testing heff for 
     if (run_test == 0 || run_test == 1)
@@ -162,8 +162,8 @@ int main(int argc, char** argv)
 
         af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 8e-4);
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 4e-3);
+        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 2e-3);
+        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 3e-3);
 
         rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 5e-4);
         rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 6e-4);
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
 
         double prec = 1e0;
         double prec_prev = prec;
-        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false))
+        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false) and prec > 1e-300)
         {
             std::cout << "prec = " <<prec << std::endl;
             prec_prev = prec;
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
         //std::cout << "finished width prec = " <<prec << std::endl;
 
         prec = prec_prev;
-        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false))
+        while(rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec, false) and prec > 1e-300)
         {
             std::cout << "prec = " <<prec << std::endl;
             prec_prev = prec;
@@ -190,5 +190,48 @@ int main(int argc, char** argv)
         std::cout << "finished width prec_prev = " <<prec_prev << " First false with " << prec << std::endl;
         rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec_prev, true);
     }
+    //Negative check with using old newell sucessfull
+
+    if (run_test == 0 || run_test == 4)
+    {
+        const double x=5.e-7, y=1.25e-7, z=3.e-9;
+        const int nx = 100, ny=25 ,nz=1;
+        
+        Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+        Material material = Material();
+        material.ms    = 8e5;
+        material.A     = 1.3e-11;
+        material.alpha = 1;
+
+        State state_nonequi(mesh, material, mesh.init_sp4());
+
+        State state_full(mesh, material, mesh.init_sp4());
+
+        DemagField demag = DemagField(mesh, material, true, false, 1);
+
+        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh, material, true, false, 1);
+
+        double prec = 1e0;
+        double prec_prev = prec;
+        while(rel_diff_lt_precision(demag.Nfft, nonequi_demag.Nfft, prec, false) and prec > 1e-300)
+        {
+            std::cout << "prec = " <<prec << std::endl;
+            prec_prev = prec;
+            prec = 0.1 * prec;
+        }
+        //std::cout << "finished width prec_prev = " <<prec_prev << std::endl;
+        //std::cout << "finished width prec = " <<prec << std::endl;
+
+        prec = prec_prev;
+        while(rel_diff_lt_precision(demag.Nfft, nonequi_demag.Nfft, prec, false) and prec > 1e-300)
+        {
+            std::cout << "prec = " <<prec << std::endl;
+            prec_prev = prec;
+            prec = 0.9 * prec;
+        }
+        std::cout << "finished width prec_prev = " <<prec_prev << " First false with " << prec << std::endl;
+        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), prec_prev, true);
+    }
+    //Negative check with using old newell sucessfull
     return 0;
 }
