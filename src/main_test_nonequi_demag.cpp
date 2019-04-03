@@ -117,7 +117,7 @@ int main(int argc, char** argv)
     if (run_test == 0 || run_test == 3)
     {
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
-        const int nx = 100, ny=25 ,nz=1;
+        const int nx = 100, ny=25 ,nz=2;
         //const int nx = 3, ny=1 ,nz=2;
         //const int nx = 3, ny=1 ,nz=1;
         //const int nx = 3, ny=3 ,nz=3;
@@ -128,9 +128,7 @@ int main(int argc, char** argv)
         material.A     = 1.3e-11;
         material.alpha = 1;
 
-        State state_nonequi(mesh, material, mesh.init_sp4());
-
-        State state_full(mesh, material, mesh.init_sp4());
+        State state(mesh, material, mesh.init_sp4());
 
         DemagField demag = DemagField(mesh, material, true, false, 1);
 
@@ -158,11 +156,11 @@ int main(int argc, char** argv)
         std::cout.precision(16);
         std::cout << std::endl;
 
-        std::cout << "heff mean abs diff = " << mean_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
-        std::cout << "heff mean rel diff = " << mean_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
+        std::cout << "heff mean abs diff = " << mean_abs_diff(demag.h(state), nonequi_demag.h(state)) << std::endl;
+        std::cout << "heff mean rel diff = " << mean_rel_diff(demag.h(state), nonequi_demag.h(state)) << std::endl << std::endl;
 
-        std::cout << "heff max abs diff = " << max_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
-        std::cout << "heff max rel diff = " << max_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
+        std::cout << "heff max abs diff = " << max_abs_diff(demag.h(state), nonequi_demag.h(state)) << std::endl;
+        std::cout << "heff max rel diff = " << max_rel_diff(demag.h(state), nonequi_demag.h(state)) << std::endl << std::endl;
 
         std::cout << "N mean abs diff = " << mean_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
         std::cout << "N mean rel diff = " << mean_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl << std::endl;

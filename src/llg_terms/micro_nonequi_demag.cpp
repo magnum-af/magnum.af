@@ -473,13 +473,14 @@ af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, dou
     delete [] N_nonequi_setup;
     N_nonequi_setup = NULL;
     //af::print("Nonequi Naf", Naf);
-    Naf = af::fftR2C<2>(Naf);
+    //TODO//Naf = af::fftR2C<2>(Naf);
     //af::print("Nonequi Nfft", Naf);
-    //if (n2_exp == 1){
-    //    Naf = af::fftR2C<2>(Naf);
-    //}
-    //else {
-    //    Naf = af::fftR2C<3>(Naf);
-    //}
+
+    if (n2_exp == 1){
+        Naf = af::fftR2C<2>(Naf);
+    }
+    else {
+        Naf = af::fftR2C<3>(Naf);
+    }
     return Naf;
 }
