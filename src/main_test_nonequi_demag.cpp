@@ -140,14 +140,23 @@ int main(int argc, char** argv)
 
         //af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 2e-3);
-        abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 3e-3);
+        //abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 2e-3);
+        //abs_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 3e-3);
 
-        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 5e-4);
-        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 6e-4);
-        rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 7e-4);
+        //rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 5e-4);
+        //rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 6e-4);
+        //rel_diff_lt_precision(demag.h(state_full), nonequi_demag.h(state_nonequi), 7e-4);
 
-        rel_diff_upperbound(demag.h(state_full), nonequi_demag.h(state_nonequi), true, 1e0, 0.1, 0.9);
+        //double reldiff = rel_diff_upperbound(demag.h(state_full), nonequi_demag.h(state_nonequi), false, 1e0, 0.1, 0.9);
+        //double absdiff = abs_diff_upperbound(demag.h(state_full), nonequi_demag.h(state_nonequi), false, 1e0, 0.1, 0.9);
+        //std::cout << "rel diff = " << reldiff << std::endl;
+        //std::cout << "abs diff = " << absdiff << std::endl;
+
+        std::cout << "abs diff heff = " << max_abs_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl;
+        std::cout << "rel diff heff = " << max_rel_diff(demag.h(state_full), nonequi_demag.h(state_nonequi)) << std::endl << std::endl;
+
+        std::cout << "abs diff N = " << max_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "rel diff N = " << max_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
     }
     return 0;
 }

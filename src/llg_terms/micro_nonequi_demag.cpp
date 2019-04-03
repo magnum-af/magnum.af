@@ -144,7 +144,8 @@ namespace newell{
     }
 
     double F2(const double x, const double y, const double z){
-        return newellf(x, y, z) - newellf(x, 0, z) - newellf(x, y, 0) + newellf(x, 0, 0);
+        return newellf(x, y, z);
+        //return newellf(x, y, z) - newellf(x, 0, z) - newellf(x, y, 0) + newellf(x, 0, 0);
     }
 
     double F1(const double x, const double y, const double z, const double dz, const double dZ){
@@ -166,6 +167,57 @@ namespace newell{
                 - F0(x + dX     , y, z, dy, dY, dz, dZ) \
                 + F0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
+
+    //NOTE: in equispaced newell writing first 8 terms explicitly (not by mulitplication by 8*) changes the values for the sp4 demag as follows:
+    //abs diff heff = 0.000740021
+    //rel diff heff = 3.65449e-07
+    //abs diff N = 1.02174e-10
+    //rel diff N = 0.00097692
+
+    //double Nxx_nonequi(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+    //  double x = dx*ix;
+    //  double y = dy*iy;
+    //  double z = dz*iz;
+//  //    double result = 8.0 * newellf( x,    y,    z   ) \
+
+    //  double result = \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+    //         + newellf( x,    y,    z   ) \
+
+    //         - 4.0 * newellf( x+dx, y,    z   ) \
+    //         - 4.0 * newellf( x-dx, y,    z   ) \
+    //         - 4.0 * newellf( x,    y+dy, z   ) \
+    //         - 4.0 * newellf( x,    y-dy, z   ) \
+    //         - 4.0 * newellf( x,    y   , z+dz) \
+    //         - 4.0 * newellf( x,    y   , z-dz) \
+    //         + 2.0 * newellf( x+dx, y+dy, z   ) \
+    //         + 2.0 * newellf( x+dx, y-dy, z   ) \
+    //         + 2.0 * newellf( x-dx, y+dy, z   ) \
+    //         + 2.0 * newellf( x-dx, y-dy, z   ) \
+    //         + 2.0 * newellf( x+dx, y   , z+dz) \
+    //         + 2.0 * newellf( x+dx, y   , z-dz) \
+    //         + 2.0 * newellf( x-dx, y   , z+dz) \
+    //         + 2.0 * newellf( x-dx, y   , z-dz) \
+    //         + 2.0 * newellf( x   , y+dy, z+dz) \
+    //         + 2.0 * newellf( x   , y+dy, z-dz) \
+    //         + 2.0 * newellf( x   , y-dy, z+dz) \
+    //         + 2.0 * newellf( x   , y-dy, z-dz) \
+    //         - 1.0 * newellf( x+dx, y+dy, z+dz) \
+    //         - 1.0 * newellf( x+dx, y+dy, z-dz) \
+    //         - 1.0 * newellf( x+dx, y-dy, z+dz) \
+    //         - 1.0 * newellf( x+dx, y-dy, z-dz) \
+    //         - 1.0 * newellf( x-dx, y+dy, z+dz) \
+    //         - 1.0 * newellf( x-dx, y+dy, z-dz) \
+    //         - 1.0 * newellf( x-dx, y-dy, z+dz) \
+    //         - 1.0 * newellf( x-dx, y-dy, z-dz);
+    //  return - result / (4.0 * M_PI * dx * dy * dz);
+    //}
     
     double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
       double x = dx*ix;
@@ -313,6 +365,7 @@ af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, dou
      }
     af::array Naf(6,n2_exp,n1_exp,n0_exp,N_nonequi_setup);
     Naf=af::reorder(Naf,3,2,1,0);
+    todel_N = Naf;//TODO todel
     delete [] N_nonequi_setup;
     N_nonequi_setup = NULL;
     //af::print("Nonequi Naf", Naf);
