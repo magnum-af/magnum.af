@@ -28,12 +28,16 @@ af::array dotproduct(const af::array& a, const af::array& b){
   return sum(a*b,3);
 }
 
+/// Returns the value of array with only one element
 double afvalue(const af::array& a){
-  double *dhost=NULL;
-  dhost = a.host<double>();
-  double value = dhost[0];
-  af::freeHost(dhost);
-  return value;
+    if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1){
+        std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array with dim4 != [1,1,1,1]. Only first entry will be returned. This may lead to unexpected behaviour." << std::endl;
+    }
+    double *dhost=NULL;
+    dhost = a.host<double>();
+    double value = dhost[0];
+    af::freeHost(dhost);
+    return value;
 }
 
 unsigned int afvalue_u32(const af::array& a){
@@ -108,14 +112,14 @@ double mean_rel_diff(const af::array& first, const af::array& second){
 
 /// Max of absolute difference
 double max_abs_diff(const af::array& a, const af::array& b){
-    return afvalue(af::max(af::abs(a - b)));
+    return afvalue(af::max(af::max(af::max(af::max(af::abs(a - b), 0), 1), 2), 3));
 }
 
 /// Max of relative difference
 double max_rel_diff(const af::array& first, const af::array& second){
     af::array temp = af::abs(2*(first - second)/(first + second));
     af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
-    return afvalue(af::max(temp));
+    return afvalue(af::max(af::max(af::max(af::max(temp, 0), 1), 2), 3));
 }
 
 /// Absolute difference less than precision: Element-wise comparision of absolute difference of two arrays. Checks whether | x - y | < precision. Returns true if all values are below precision and false otherwise.
