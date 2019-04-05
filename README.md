@@ -42,8 +42,9 @@ Execute the provided installation script:
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
 * [CMake](http://www.cmake.org) 3.0.0 or newer
+* pip3
 
-### NVIDIA dirver:
+### NVIDIA dirver and CUDA:
 following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 `$ ubuntu-drivers devices`
@@ -54,16 +55,27 @@ don't forget to add your user to the video group
 
 `$ sudo usermod -a -G video $LOGNAME`
 
-### Intall Arrayfire
- For version 3.6.2
+install CUDA with
+`$ sudo apt install nvidia-cuda-toolkit`
+
+### Install Arrayfire
+ For version 3.6.2:
+ 
 `$ wget https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_Linux_x86_64.sh .`
-chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh
 
-`$`
-`$`
-`$`
-`$`
+`$ chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh`
 
+`$ sudo ./ArrayFire-v3.6.2_Linux_x86_64.sh  --include-subdir --prefix=/opt`
+
+`$ sudo pip3 install arrayfire`
+
+### Install VTK
+`$ sudo apt install libvtk7-dev`
+
+### Install Cython
+`$ sudo pip3 install cython`
+
+--------------------
 
 ### OpenCL Devices (e.g. AMD Graphics Cards):
 * Installation of hardware-specific drivers:
