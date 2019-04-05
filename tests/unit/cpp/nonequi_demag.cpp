@@ -2,7 +2,7 @@
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
 #include "../../../src/misc.cpp"
-#include "../../../src/llg_terms/micro_nonequi_demag.cpp"
+#include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
  
 // Exemplary unit test

@@ -1,6 +1,6 @@
 #include "magnum_af.hpp"
 #include "llg_terms/micro_demag.hpp"
-#include "llg_terms/micro_nonequi_demag.hpp"
+#include "llg_terms/micro_demag_nonequi.hpp"
 
 int main(int argc, char** argv)
 {
