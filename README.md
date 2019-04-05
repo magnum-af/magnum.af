@@ -37,14 +37,15 @@ For running simulations, use the provided script in 'scripts/magnum.af.docker', 
 Execute the provided installation script:
 
 `$./scripts/install_magnum.af_environment.sh`
-## Manual installation (outdated):
+
+## Manual installation:
 
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
 * [CMake](http://www.cmake.org) 3.0.0 or newer
 * pip3
 
-### NVIDIA dirver and CUDA:
+### NVIDIA driver and CUDA:
 following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 `$ ubuntu-drivers devices`
@@ -56,6 +57,7 @@ don't forget to add your user to the video group
 `$ sudo usermod -a -G video $LOGNAME`
 
 install CUDA with
+
 `$ sudo apt install nvidia-cuda-toolkit`
 
 ### Install Arrayfire
