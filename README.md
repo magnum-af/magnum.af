@@ -48,13 +48,21 @@ Execute the provided installation script:
 ### NVIDIA driver and CUDA:
 following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
-`$ ubuntu-drivers devices`
-
 `$ sudo ubuntu-drivers autoinstall`
 
-don't forget to add your user to the video group
+add your user to the video group
 
 `$ sudo usermod -a -G video $LOGNAME`
+
+Note: 
+if the driver version provided by the repo is not sufficient, use a ppa instead:
+
+`$ sudo add-apt-repository ppa:graphics-drivers && sudo apt-get update`
+
+And select the proper driver version, e.g.:
+
+`$ sudo apt install nvidia-driver-418 nvidia-settings`
+
 
 install CUDA with
 
