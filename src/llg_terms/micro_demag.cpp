@@ -124,7 +124,7 @@ double newellf(double x, double y, double z){
   return result;
 }
 
-double newellg(double x, double y, double z){
+double newellg(const double x, const double y, double z){
   z=fabs(z);
   const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
   const double xx = pow(x,2);
@@ -141,10 +141,10 @@ double newellg(double x, double y, double z){
   return result;
 }
 
-double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
-  double x = dx*ix;
-  double y = dy*iy;
-  double z = dz*iz;
+double Nxxf(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
+  const double x = dx*ix;
+  const double y = dy*iy;
+  const double z = dz*iz;
   double result = 8.0 * newellf( x,    y,    z   ) \
          - 4.0 * newellf( x+dx, y,    z   ) \
          - 4.0 * newellf( x-dx, y,    z   ) \
@@ -175,10 +175,10 @@ double Nxxf(int ix, int iy, int iz, double dx, double dy, double dz){
   return - result / (4.0 * M_PI * dx * dy * dz);
 }
 
-double Nxxg(int ix, int iy, int iz, double dx, double dy, double dz){
-  double x = dx*ix;
-  double y = dy*iy;
-  double z = dz*iz;
+double Nxxg(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
+  const double x = dx*ix;
+  const double y = dy*iy;
+  const double z = dz*iz;
   double result = 8.0 * newellg( x,    y,    z   ) \
                 - 4.0 * newellg( x+dx, y,    z   ) \
                 - 4.0 * newellg( x-dx, y,    z   ) \
