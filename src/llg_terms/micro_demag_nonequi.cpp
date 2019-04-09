@@ -3,11 +3,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){
-  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 double NonEquiDemagField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 void NonEquiDemagField::print_Nfft(){
@@ -69,43 +69,43 @@ NonEquiDemagField::NonEquiDemagField (Mesh meshin, bool verbose, bool caching, u
 
 af::array NonEquiDemagField::h(const State&  state){
     timer_demagsolve = af::timer::start();
-  // FFT with zero-padding of the m field
-  af::array mfft;
-  if (mesh.n2_exp == 1){
-      if (state.Ms.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
-      else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
-  }
-  else {
-      if (state.Ms.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
-      else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
-  }
+    // FFT with zero-padding of the m field
+    af::array mfft;
+    if (mesh.n2_exp == 1){
+        if (state.Ms.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+        else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+    }
+    else {
+        if (state.Ms.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+        else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+    }
 
-  // Pointwise product
-  af::array hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
-  hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
-                                 + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
-                                 + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
+    // Pointwise product
+    af::array hfft=af::array (mesh.n0_exp/2+1,mesh.n1_exp,mesh.n2_exp,3,c64);
+    hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
+                                   + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
+    hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
+                                   + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
+    hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
+                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
+                                   + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
 
-  // IFFT reversing padding
-  af::array h_field;
-  if (mesh.n2_exp == 1){
-    h_field=af::fftC2R<2>(hfft);
-    if(state.material.afsync) af::sync();
-    cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
-  }
-  else {
-    h_field=af::fftC2R<3>(hfft);
-    if(state.material.afsync) af::sync();
-    cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
-  }
+    // IFFT reversing padding
+    af::array h_field;
+    if (mesh.n2_exp == 1){
+        h_field=af::fftC2R<2>(hfft);
+        if(state.material.afsync) af::sync();
+        cpu_time += af::timer::stop(timer_demagsolve);
+        return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
+    }
+    else {
+        h_field=af::fftC2R<3>(hfft);
+        if(state.material.afsync) af::sync();
+        cpu_time += af::timer::stop(timer_demagsolve);
+        return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
+    }
 }
 
 namespace newell_nonequi{
