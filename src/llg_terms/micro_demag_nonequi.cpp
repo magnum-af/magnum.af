@@ -170,14 +170,14 @@ namespace newell_nonequi{
                 + F0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
 
-    double G2(const double x, const double y, const double z){
-        return g(x, y, z);
-        //return g(x, y, z) - g(x, y, 0);
-        //return g(x, y, z) - g(x, 0, z) - g(x, y, 0) + g(x, 0, 0);
-    }
+    //double G2(const double x, const double y, const double z){
+    //    return g(x, y, z);
+    //    //return g(x, y, z) - g(x, y, 0);
+    //    //return g(x, y, z) - g(x, 0, z) - g(x, y, 0) + g(x, 0, 0);
+    //}
 
     double G1(const double x, const double y, const double z, const double dz, const double dZ){
-        return G2(x, y, z + dZ) - G2(x, y, z) - G2(x, y, z - dz + dZ) + G2(x, y, z - dz);//TODO check dz vs dZ in first and last term
+        return g(x, y, z + dZ) - g(x, y, z) - g(x, y, z - dz + dZ) + g(x, y, z - dz);//TODO check dz vs dZ in first and last term
     }
 
     double G0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){
