@@ -3,11 +3,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 double NonEquiDemagField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 void NonEquiDemagField::print_Nfft(){
@@ -16,7 +16,7 @@ void NonEquiDemagField::print_Nfft(){
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-NonEquiDemagField::NonEquiDemagField (Mesh meshin, Material paramin, bool verbose, bool caching, unsigned nthreads) : material(paramin),mesh(meshin), nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
+NonEquiDemagField::NonEquiDemagField (Mesh meshin, bool verbose, bool caching, unsigned nthreads) : mesh(meshin), nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
         Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
@@ -72,11 +72,11 @@ af::array NonEquiDemagField::h(const State&  state){
   // FFT with zero-padding of the m field
   af::array mfft;
   if (mesh.n2_exp == 1){
-      if (state.Ms.isempty()) mfft=af::fftR2C<2>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
       else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp));
   }
   else {
-      if (state.Ms.isempty()) mfft=af::fftR2C<3>(material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
+      if (state.Ms.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
       else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp));
   }
 
@@ -96,13 +96,13 @@ af::array NonEquiDemagField::h(const State&  state){
   af::array h_field;
   if (mesh.n2_exp == 1){
     h_field=af::fftC2R<2>(hfft);
-    if(material.afsync) af::sync();
+    if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1));
   }
   else {
     h_field=af::fftC2R<3>(hfft);
-    if(material.afsync) af::sync();
+    if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     return h_field(af::seq(0,mesh.n0_exp/2-1),af::seq(0,mesh.n1_exp/2-1),af::seq(0,mesh.n2_exp/2-1),af::span);
   }

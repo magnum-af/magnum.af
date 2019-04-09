@@ -18,10 +18,9 @@ class NonEquiDemagField : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    Material material;
     Mesh mesh;
 
-    NonEquiDemagField (Mesh, Material, bool verbose = false, bool caching = true, unsigned nthreads = 0);
+    NonEquiDemagField (Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
     af::array todel_N;// TODO todel
