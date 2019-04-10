@@ -6,6 +6,7 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 #include <iostream>
+#include <vector>
 #include <thread>
 
 class NonEquiDemagField : public LLGTerm {
@@ -18,7 +19,7 @@ class NonEquiDemagField : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    NonEquiDemagField (Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
+    NonEquiDemagField (Mesh, std::vector<double> z_spacing, bool verbose = false, bool caching = true, unsigned nthreads = 0);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
     af::array todel_N;// TODO todel
@@ -28,6 +29,9 @@ class NonEquiDemagField : public LLGTerm {
     
     //For wrapping
     void print_Nfft();
+
+    std::vector<double> z_spacing;
+    double nonequi_index_distance(const std::vector<double>, const unsigned i, const unsigned j);
     private:
         const unsigned nthreads;
         af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
