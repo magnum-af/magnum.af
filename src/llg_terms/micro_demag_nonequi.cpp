@@ -14,27 +14,11 @@ void NonEquiDemagField::print_Nfft(){
     af::print("Nfft=", Nfft);
 }
 
-double NonEquiDemagField::nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j){
-    //Calculates the distance beween indices i and j
-    //TODO check alternative definition
-    // Examples describing definition:
-    // d(i,i) = 0
-    // d(i,i+1) = z_spacing[i]
-    // d(i,i+2) = z_spacing[i] + z_spacing[i+1]
 
-    double result = 0;
-    for (unsigned k = i; k < j; k++){
-        result += spacings.at(k);
-        std::cout << k << "  " << spacings[k] << "  " << result <<  std::endl;
-    }
-    return result;
-}
-
-
-NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, bool verbose, bool caching, unsigned nthreads) : z_spacing(z_spacing), nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
+NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
-        Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+        Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2, mesh.dx, mesh.dy, mesh.dz, z_spacing);
         if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
         if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
@@ -59,7 +43,7 @@ NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, 
         }
         else{
             if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+            Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz, z_spacing);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize){
                 if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
@@ -206,19 +190,46 @@ namespace newell_nonequi{
                 + G0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
 
-    struct NonequiLoopInfo {
+    class NonequiLoopInfo {
+        public:
         NonequiLoopInfo(){}
-        NonequiLoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
-            i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
+        NonequiLoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2,  double dx,  double dy,  double dz):
+            i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy), dz(dz){}
         int i0_start;
         int i0_end;
         int n0_exp;
         int n1_exp;
-        int n2_exp;
+        int n2;
         double dx;
         double dy;
         double dz;
+        static std::vector<double> z_spacing;
     };
+
+    std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; //Initialize static member
+
+    double nonequi_index_distance(const std::vector<double> spacings, unsigned i, unsigned j){
+        // symmetrize:
+        if(i > j){
+            unsigned temp_i = j; 
+            j = i;
+            i = temp_i;
+        }
+        //Calculates the distance beween indices i and j
+        //TODO check alternative definition
+        // Examples describing definition:
+        // d(i,i) = 0
+        // d(i,i+1) = z_spacing[i]
+        // d(i,i+2) = z_spacing[i] + z_spacing[i+1]
+    
+        double result = 0;
+        for (unsigned k = i; k < j; k++){
+            result += spacings.at(k);
+            //std::cout << k << "  " << spacings[k] << "  " << result <<  std::endl;
+        }
+        return result;
+    }
+
     
     double* N_nonequi_setup = NULL;
     
@@ -229,24 +240,30 @@ namespace newell_nonequi{
             const int j0 = (i0 + loopinfo->n0_exp/2) % loopinfo->n0_exp - loopinfo->n0_exp/2;
             for (int i1 = 0; i1 < loopinfo->n1_exp; i1++){
                 const int j1 = (i1 + loopinfo->n1_exp/2) % loopinfo->n1_exp - loopinfo->n1_exp/2;
-                for (int i2 = 0; i2 < loopinfo->n2_exp; i2++ ){
-                    const int j2 = (i2 + loopinfo->n2_exp/2) % loopinfo->n2_exp - loopinfo->n2_exp/2;
-                    const int idx = 6*(i2+loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
+                for (int i2 = 0; i2 < loopinfo->n2; i2++ ){
+                    for (int i3 = 0; i3 < loopinfo->n2; i3++ ){
+                        //const int j2 = (i2 + loopinfo->n2/2) % loopinfo->n2 - loopinfo->n2/2;
+                        //const int idx = 6*(i2+loopinfo->n2*(i1+loopinfo->n1_exp*i0));
+                        const int idx = 6*(i3+loopinfo->n2*(i2+loopinfo->n2*(i1+loopinfo->n1_exp*i0)));
     
-                    const double x = loopinfo->dx*j0;
-                    const double y = loopinfo->dy*j1;
-                    const double z = loopinfo->dz*j2;
-                    //const int j2 = 1;//TODO data structure for all j
-                    //std::cout << "j2=" << j2 << std::endl;
-                    //const int idx = 6*(loopinfo->n2_exp*(i1+loopinfo->n1_exp*i0));
-                    //TODO test with dx = dX, dy = dY, dz = dZ
+                        const double x = loopinfo->dx * (double)j0;
+                        const double y = loopinfo->dy * (double)j1;
+                        const double z = nonequi_index_distance(loopinfo->z_spacing, i2, i3);//loopinfo->dz * (double)j2;
+                        //const int j2 = 1;//TODO data structure for all j
+                        //std::cout << "j2=" << j2 << std::endl;
+                        //const int idx = 6*(loopinfo->n2*(i1+loopinfo->n1_exp*i0));
+                        //TODO test with dx = dX, dy = dY, dz = dZ
     
-                    newell_nonequi::N_nonequi_setup[idx+0] = newell_nonequi::Nxx_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                    newell_nonequi::N_nonequi_setup[idx+1] = newell_nonequi::Nxy_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                    newell_nonequi::N_nonequi_setup[idx+2] = newell_nonequi::Nxy_nonequi(x, z, y, loopinfo->dx, loopinfo->dz, loopinfo->dy, loopinfo->dx, loopinfo->dz, loopinfo->dy);
-                    newell_nonequi::N_nonequi_setup[idx+3] = newell_nonequi::Nxx_nonequi(y, z, x, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                    newell_nonequi::N_nonequi_setup[idx+4] = newell_nonequi::Nxy_nonequi(y, z, x, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                    newell_nonequi::N_nonequi_setup[idx+5] = newell_nonequi::Nxx_nonequi(z, x, y, loopinfo->dz, loopinfo->dx, loopinfo->dy, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+                        //TODO: check i2 == dz
+                        //TODO: check i3 == dZ
+                        //std::cout << i0 <<  " " << i1 <<  " " << i2 <<  " " << i3 <<  " " << z <<  " " << std::endl;
+                        newell_nonequi::N_nonequi_setup[idx+0] = newell_nonequi::Nxx_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3]);
+                        newell_nonequi::N_nonequi_setup[idx+1] = newell_nonequi::Nxy_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3]);
+                        newell_nonequi::N_nonequi_setup[idx+2] = newell_nonequi::Nxy_nonequi(x, z, y, loopinfo->dx, loopinfo->z_spacing[i2], loopinfo->dy, loopinfo->dx, loopinfo->z_spacing[i3], loopinfo->dy);
+                        newell_nonequi::N_nonequi_setup[idx+3] = newell_nonequi::Nxx_nonequi(y, z, x, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3], loopinfo->dx);
+                        newell_nonequi::N_nonequi_setup[idx+4] = newell_nonequi::Nxy_nonequi(y, z, x, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3], loopinfo->dx);
+                        newell_nonequi::N_nonequi_setup[idx+5] = newell_nonequi::Nxx_nonequi(z, x, y, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3], loopinfo->dx, loopinfo->dy);
+                    }
                 }
             }
         }
@@ -255,16 +272,17 @@ namespace newell_nonequi{
 }
 
 
-af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
+af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2, double dx, double dy, double dz, const std::vector<double> z_spacing){
     std::thread t[nthreads];
     struct newell_nonequi::NonequiLoopInfo loopinfo[nthreads];
+    newell_nonequi::NonequiLoopInfo::z_spacing = z_spacing;
     for (unsigned i = 0; i < nthreads; i++){
         unsigned start = i * (double)n0_exp/nthreads;
         unsigned end = (i +1) * (double)n0_exp/nthreads;
-        loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
+        loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy, dz);
     }
 
-    newell_nonequi::N_nonequi_setup = new double[n0_exp*n1_exp*n2_exp*6];
+    newell_nonequi::N_nonequi_setup = new double[n0_exp * n1_exp * n2 * n2 * 6];
 
     for (unsigned i = 0; i < nthreads; i++){
         t[i] = std::thread(newell_nonequi::nonequi_setup_N, &loopinfo[i]);
@@ -273,7 +291,7 @@ af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, dou
     for (unsigned i = 0; i < nthreads; i++){
         t[i].join();
      }
-    af::array Naf(6,n2_exp,n1_exp,n0_exp,newell_nonequi::N_nonequi_setup);
+    af::array Naf(6, n2 * n2, n1_exp, n0_exp, newell_nonequi::N_nonequi_setup);
     Naf=af::reorder(Naf,3,2,1,0);
     todel_N = Naf;//TODO todel
     delete [] newell_nonequi::N_nonequi_setup;
@@ -282,11 +300,12 @@ af::array NonEquiDemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, dou
     //TODO//Naf = af::fftR2C<2>(Naf);
     //af::print("Nonequi Nfft", Naf);
 
-    if (n2_exp == 1){
-        Naf = af::fftR2C<2>(Naf);
-    }
-    else {
-        Naf = af::fftR2C<3>(Naf);
-    }
+    //if (n2_exp == 1){
+    std::cout << "Naf.dims() = " << Naf.dims() << std::endl;
+    Naf = af::fftR2C<2>(Naf);
+    //}
+    //else {
+    //    Naf = af::fftR2C<3>(Naf);
+    //}
     return Naf;
 }

@@ -30,10 +30,14 @@ class NonEquiDemagField : public LLGTerm {
     //For wrapping
     void print_Nfft();
 
-    std::vector<double> z_spacing;
-    double nonequi_index_distance(const std::vector<double>, const unsigned i, const unsigned j);
+    //std::vector<double> z_spacing;
+    //double nonequi_index_distance(const std::vector<double>, const unsigned i, const unsigned j);
     private:
         const unsigned nthreads;
-        af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
+        af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, const std::vector<double> z_spacing);
 };
+
+//namespace newell_nonequi{
+//    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j);
+//}
 #endif
