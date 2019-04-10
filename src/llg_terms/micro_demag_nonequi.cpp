@@ -80,16 +80,16 @@ af::array NonEquiDemagField::h(const State&  state){
     }
 
     // Pointwise product
-    af::array hfft=af::array (state.mesh.n0_exp/2+1,state.mesh.n1_exp,state.mesh.n2_exp,3,c64);
-    hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
-                                   + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
-                                   + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
-    hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
-                                   + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
-                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
-    hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
-                                   + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
-                                   + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
+    af::array hfft=af::array (state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2_exp, 3, c64);
+    hfft(af::span, af::span, af::span, 0) = Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0)
+                                          + Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1)
+                                          + Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 2);
+    hfft(af::span, af::span, af::span, 1) = Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 0)
+                                          + Nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, af::span, 1)
+                                          + Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 2);
+    hfft(af::span, af::span, af::span, 2) = Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 0)
+                                          + Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1)
+                                          + Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
 
     // IFFT reversing padding
     af::array h_field;
@@ -208,24 +208,33 @@ namespace newell_nonequi{
 
     std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; //Initialize static member
 
-    double nonequi_index_distance(const std::vector<double> spacings, unsigned i, unsigned j){
-        // symmetrize:
-        if(i > j){
-            unsigned temp_i = j; 
-            j = i;
-            i = temp_i;
-        }
+    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j){
         //Calculates the distance beween indices i and j
-        //TODO check alternative definition
+        //TODO check alternative definition, define way to count
+        //Now: 1_|2__|3_
+        //Now: °_|°__|°_
+        //1:2   _
+        //1:3   _  __
+        //2:3      __
+        //but dz3 is never used, TODO check!
         // Examples describing definition:
         // d(i,i) = 0
-        // d(i,i+1) = z_spacing[i]
-        // d(i,i+2) = z_spacing[i] + z_spacing[i+1]
+        // d(i,i+1) =  z_spacing[i]
+        // d(i,i-1) = -z_spacing[i]
+        // d(i,i+2) =  z_spacing[i] + z_spacing[i+1]
     
         double result = 0;
-        for (unsigned k = i; k < j; k++){
-            result += spacings.at(k);
-            //std::cout << k << "  " << spacings[k] << "  " << result <<  std::endl;
+        if(i > j){
+            for (unsigned k = i; k > j; k--){
+                result -= spacings.at(k-1);//TODO taking minus_index value
+                //std::cout << "k-1=" << k-1 << "  " << spacings[k] << "  " << result <<  std::endl;
+            }
+        }
+        else {
+            for (unsigned k = i; k < j; k++){
+                result += spacings.at(k);
+                //std::cout << k << "  " << spacings[k] << "  " << result <<  std::endl;
+            }
         }
         return result;
     }
@@ -257,6 +266,8 @@ namespace newell_nonequi{
                         //TODO: check i2 == dz
                         //TODO: check i3 == dZ
                         //std::cout << i0 <<  " " << i1 <<  " " << i2 <<  " " << i3 <<  " " << z <<  " " << std::endl;
+                        //std::cout << x << " "  << y << " " << z << std::endl;
+                        //std::cout << z << std::endl;
                         newell_nonequi::N_nonequi_setup[idx+0] = newell_nonequi::Nxx_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3]);
                         newell_nonequi::N_nonequi_setup[idx+1] = newell_nonequi::Nxy_nonequi(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i2], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i3]);
                         newell_nonequi::N_nonequi_setup[idx+2] = newell_nonequi::Nxy_nonequi(x, z, y, loopinfo->dx, loopinfo->z_spacing[i2], loopinfo->dy, loopinfo->dx, loopinfo->z_spacing[i3], loopinfo->dy);
