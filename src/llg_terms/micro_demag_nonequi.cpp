@@ -74,37 +74,25 @@ af::array NonEquiDemagField::h(const State&  state){
     else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
 
     // Pointwise product
-    //std::cout << "DIMS=" << Nfft.dims() << "  " << mfft.dims() << "  " << state.m.dims() << std::endl;
-    af::array hfft=af::array (state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2 * state.mesh.n2, 3, c64);
+    af::array hfft = af::constant(0.0, state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2, 3, c64);
     for (int i2 = 0; i2 < state.mesh.n2; i2++ ){//source loop
         for (int i3 = 0; i3 < state.mesh.n2; i3++ ){// target loop
-
             const int zindex = i2 + state.mesh.n2 * i3;
-            //std::cout << "zindex=" << zindex << std::endl;
-            hfft(af::span, af::span, zindex, 0) = Nfft(af::span, af::span, zindex, 0) * mfft(af::span, af::span, i2, 0)
-                                                + Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i2, 1)
-                                                + Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i2, 2);
-            hfft(af::span, af::span, zindex, 1) = Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i2, 0)
-                                                + Nfft(af::span, af::span, zindex, 3) * mfft(af::span, af::span, i2, 1)
-                                                + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i2, 2);
-            hfft(af::span, af::span, zindex, 2) = Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i2, 0)
-                                                + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i2, 1)
-                                                + Nfft(af::span, af::span, zindex, 5) * mfft(af::span, af::span, i2, 2);
-        }
-    }
-
-    af::array hfft_sum_per_source = af::constant(0.0, state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2, 3, c64);
-    for (int i2 = 0; i2 < state.mesh.n2; i2++ ){//source loop
-        for (int i3 = 0; i3 < state.mesh.n2; i3++ ){// target loop
-            //std::cout << "zindex=" << zindex << std::endl;
-            const int zindex = i2 + state.mesh.n2 * i3;
-            hfft_sum_per_source(af::span, af::span, i2, af::span) += hfft(af::span, af::span, zindex, af::span);
+            hfft(af::span, af::span, i2, 0) += Nfft(af::span, af::span, zindex, 0) * mfft(af::span, af::span, i2, 0)
+                                             + Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i2, 1)
+                                             + Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i2, 2);
+            hfft(af::span, af::span, i2, 1) += Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i2, 0)
+                                             + Nfft(af::span, af::span, zindex, 3) * mfft(af::span, af::span, i2, 1)
+                                             + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i2, 2);
+            hfft(af::span, af::span, i2, 2) += Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i2, 0)
+                                             + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i2, 1)
+                                             + Nfft(af::span, af::span, zindex, 5) * mfft(af::span, af::span, i2, 2);
         }
     }
 
     // IFFT reversing padding
     af::array h_field;
-    h_field=af::fftC2R<2>(hfft_sum_per_source);
+    h_field=af::fftC2R<2>(hfft);
     if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     return h_field(af::seq(0,state.mesh.n0_exp/2-1),af::seq(0,state.mesh.n1_exp/2-1));
