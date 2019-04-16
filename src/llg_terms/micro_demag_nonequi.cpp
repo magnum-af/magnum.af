@@ -148,8 +148,8 @@ namespace newell_nonequi{
 
 
     double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
-        //TODO check def of xyz and tau
-        const double tau = dx * dy * dz;//TODO check
+        // dx, dy, dz are source dimensions, dX, dY, dZ target dimensions
+        const double tau = dX * dY * dZ;// Volume of the target cell
         return -1./(4.0 * M_PI * tau) * ( \
                   F0(x          , y, z, dy, dY, dz, dZ) \
                 - F0(x - dx     , y, z, dy, dY, dz, dZ) \
