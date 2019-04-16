@@ -12,11 +12,11 @@ if [ -n "$pip3_output" ]; then
 else
     python="python"
 fi
-for filename in $1/tests/unit/*.py; do
+for filename in $1/tests/unit/python/*.py; do
     PYTHONPATH=$1/build/src/ $python $filename
 done
 
 # py integration
-for filename in $1/tests/integration/*.py; do
+for filename in $1/tests/integration/python/*.py; do
     PYTHONPATH=$1/build/src/ $python $filename
 done
