@@ -146,10 +146,21 @@ namespace newell_nonequi{
         return F1(x, y + dY, z, dz, dZ) - F1(x, y, z, dz, dZ) - F1(x, y - dy + dY, z, dz, dZ) + F1(x, y - dy, z, dz, dZ);//TODO check dz vs dZ in first and last term
     }
 
+    double F_test(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+        // dx, dy, dz are source dimensions, dX, dY, dZ target dimensions
+        //const double tau = dX * dY * dZ;// Volume of the target cell
+        return    F0(x          , y, z, dy, dY, dz, dZ) \
+                - F0(x - dx     , y, z, dy, dY, dz, dZ) \
+                - F0(x + dX     , y, z, dy, dY, dz, dZ) \
+                + F0(x - dx + dX, y, z, dy, dY, dz, dZ);
+    }
+
 
     double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
-        // dx, dy, dz are source dimensions, dX, dY, dZ target dimensions
-        const double tau = dX * dY * dZ;// Volume of the target cell
+        // x, y, z is vector from source cuboid to target cuboid
+        // dx, dy, dz are source cuboid dimensions
+        // dX, dY, dZ are target cuboid dimensions
+        const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
         return -1./(4.0 * M_PI * tau) * ( \
                   F0(x          , y, z, dy, dY, dz, dZ) \
                 - F0(x - dx     , y, z, dy, dY, dz, dZ) \
@@ -172,8 +183,10 @@ namespace newell_nonequi{
     }
 
     double Nxy(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
-        //TODO check def of xyz and tau
-        const double tau = dx * dy * dz;//TODO check
+        // x, y, z is vector from source cuboid to target cuboid
+        // dx, dy, dz are source cuboid dimensions
+        // dX, dY, dZ are target cuboid dimensions
+        const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
         return -1./(4.0 * M_PI * tau) * ( \
                   G0(x          , y, z, dy, dY, dz, dZ) \
                 - G0(x - dx     , y, z, dy, dY, dz, dZ) \
@@ -199,7 +212,7 @@ namespace newell_nonequi{
 
     std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; //Initialize static member
 
-    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j){
+    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j, const bool verbose = true){
         //Calculates the distance beween indices i and j
         //TODO check alternative definition, define way to count
         //Now: 1_|2__|3_
@@ -213,6 +226,11 @@ namespace newell_nonequi{
         // d(i,i+1) =  z_spacing[i]
         // d(i,i-1) = -z_spacing[i]
         // d(i,i+2) =  z_spacing[i] + z_spacing[i+1]
+
+        //std::cout << spacings.size() << " i,j=" << i << "," << j << std::endl;
+        if (verbose and (i == spacings.size() or j == spacings.size())){
+            printf("%s in nonequi_index_distance: index == vector.size(), the distance includes the last element which is not wanted behaviour\n", Warning());
+        }
     
         double result = 0;
         if(i > j){
