@@ -26,7 +26,7 @@ TEST(NonEquiDemagSP4LayerTest, n) {
     //causes error of 1e-2//m(af::span, af::span, 0, af::span) = 0;
 
     State state_ed(mesh_ed, material_ed, m);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 0);
+    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -40,7 +40,7 @@ TEST(NonEquiDemagSP4LayerTest, n) {
     //causes error of 1e-2//m2(af::span, af::span, 0, af::span) = 0;
 
     State state_ne(mesh_ne, material_ne, m2);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, z_spacing, true, false, 0);
+    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, z_spacing, false, false, 1);
 
     EXPECT_NEAR( max_abs_diff(constants::mu0 * demag_ed.h(state_ed)(af::span, af::span, 0, af::span), constants::mu0 * demag_ne.h(state_ne)(af::span, af::span, 0, af::span)), 0, 1e-08);
     EXPECT_NEAR(mean_abs_diff(constants::mu0 * demag_ed.h(state_ed)(af::span, af::span, 0, af::span), constants::mu0 * demag_ne.h(state_ne)(af::span, af::span, 0, af::span)), 0, 1e-08);
@@ -64,7 +64,7 @@ TEST(NonEquiDemagHomogenLayerTest, n) {
     m(af::span, af::span, af::span, 2) = 1;
 
     State state_ed(mesh_ed, material_ed, m);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 0);
+    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -75,7 +75,7 @@ TEST(NonEquiDemagHomogenLayerTest, n) {
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state_ne(mesh_ne, material_ne, m2);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, z_spacing, false, false, 0);
+    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, z_spacing, false, false, 1);
 
     EXPECT_NEAR(max_abs_diff(demag_ed.h(state_ed)(af::span, af::span, 0, af::span), demag_ne.h(state_ne)(af::span, af::span, 0, af::span)) * constants::mu0, 0, 1e-8);
     EXPECT_NEAR(mean_abs_diff(constants::mu0 * demag_ed.h(state_ed)(af::span, af::span, 0, af::span), constants::mu0 * demag_ne.h(state_ne)(af::span, af::span, 0, af::span)), 0, 1e-08);
