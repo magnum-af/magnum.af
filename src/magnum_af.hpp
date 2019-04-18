@@ -8,6 +8,7 @@
 #include "llg_terms/atomistic_dmi.hpp"
 #include "llg_terms/micro_anisotropy.hpp"
 #include "llg_terms/micro_demag.hpp"
+#include "llg_terms/micro_demag_nonequi.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/micro_exch.hpp"
 #include "llg_terms/micro_dmi.hpp"
