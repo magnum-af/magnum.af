@@ -7,7 +7,7 @@
 #include "../../../src/llg_terms/micro_demag.cpp"
  
 // Exemplary unit test
-TEST(NonEquiDemagNxxNxyNearTest, n) {
+TEST(NonEquiDemag, NxxNxyNearTest) {
     int ix = 1;
     int iy = 2;
     int iz = 3;
@@ -35,7 +35,7 @@ TEST(NonEquiDemagNxxNxyNearTest, n) {
     EXPECT_NEAR(Nxy_rel_diff, 0, 1e-10);
 }
 
-TEST(NonEquiDemagNxxNxyFarTest, n) {
+TEST(NonEquiDemag, NxxNxyFarTest) {
     int ix = 1;
     int iy = 2;
     int iz = 300;
@@ -67,24 +67,30 @@ TEST(NonEquiDemagNxxNxyFarTest, n) {
     EXPECT_NEAR(Nxy_abs_diff, 0, 1e-12);
 }
 
-TEST(NonEquiDemagDistanceFromIndexTest, n) {
-    std::vector<double> vz = {1, 1, 1};
+TEST(NonEquiDemag, DistanceFromIndexTest) {
+    std::vector<double> vz = {1, 2, 3};
     EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 1), 1);
-    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 2), 2);
+    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 2), 1 + 2);
     EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 1, 0), -1);
-    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 2, 0), -2);
-    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 3, false), 3);//Note: No bound error as the last element is not included by design.
+    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 2, 0), -1 - 2);
+    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 3, false), 1 + 2 + 3);//Note: 
+    //This is not out of bound because distance is from i to j-1. The arising warning is surpressed here.
 }
 
-TEST(NonEquiDemagUnitCubeTest, n) {
+TEST(NonEquiDemag, UnitCubeTest) {
     const double a = 2;
     const int  ix = 2;
     double Nxx = newell::Nxx(ix, 0, 0, a, a, a);
     double Nxx_ne = newell_nonequi::Nxx(ix * a, 0, 0, a, a, a, a, a, a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-16);
+
+    double Nxy = newell::Nxy(ix, 0, 0, a, a, a);
+    double Nxy_ne = newell_nonequi::Nxy(ix * a, 0, 0, a, a, a, a, a, a);
+    EXPECT_EQ(Nxy, 0);
+    EXPECT_EQ(Nxy_ne, 0);
 }
 
-TEST(NonEquiDemagSymmetryTest, n) {
+TEST(NonEquiDemag, SymmetryTest) {
     const double dx = 2, dy = 3, dz = 4;
     const double dX = 3, dY = 4, dZ = 5;
     const double x = 20, y = 22, z = 24;
@@ -100,7 +106,7 @@ TEST(NonEquiDemagSymmetryTest, n) {
 }
 
 //Testing layout in x: #|##
-TEST(NonEquiDemagTwoCubesVersusOneCubeTest_x, n) {
+TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_x) {
     const double a = 2;
     const int ix = 1;
 
@@ -129,7 +135,7 @@ TEST(NonEquiDemagTwoCubesVersusOneCubeTest_x, n) {
 }
 
 //Testing layout in y: #|##
-TEST(NonEquiDemagTwoCubesVersusOneCubeTest_y, n) {
+TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_y) {
     const double a = 2;
     const int iy = 1;
 
@@ -147,7 +153,7 @@ TEST(NonEquiDemagTwoCubesVersusOneCubeTest_y, n) {
 }
 
 //Testing layout in z: #|##
-TEST(NonEquiDemagTwoCubesVersusOneCubeTest_z, n) {
+TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_z) {
     const double a = 2;
     const int iz = 1;
 
@@ -160,7 +166,7 @@ TEST(NonEquiDemagTwoCubesVersusOneCubeTest_z, n) {
 
 //                             |#
 //Testing layout in x and +y: #|#
-TEST(NonEquiDemagTwoCubesVersusOneCubeTest_xy, n) {
+TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_xy) {
     const double a = 2;
     const int ixy = 1;
 
@@ -179,7 +185,7 @@ TEST(NonEquiDemagTwoCubesVersusOneCubeTest_xy, n) {
 
 //Testing layout in x and -y: #|#
 //                             |#
-TEST(NonEquiDemagTwoCubesVersusOneCubeTest_x_minus_y, n) {
+TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_x_minus_y) {
     const double a = 2;
     const int ixy = 1;
 

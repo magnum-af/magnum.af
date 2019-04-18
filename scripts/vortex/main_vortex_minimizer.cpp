@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     std::cout<<"Writing into path "<< filepath <<std::endl;
     setDevice(argc>2? std::stoi(argv[2]):0);
     const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
-    const int steps_full_hysteresis =(argc > 4 ? std::stoi(argv[4]) : 200); 
+    const unsigned int steps_full_hysteresis =(argc > 4 ? std::stoi(argv[4]) : 200);
 
     af::info();
     std::cout.precision(24);
@@ -30,9 +30,9 @@ int main(int argc, char** argv)
         else {
             field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
         }
-        std::cout << "fild= "<< field_Tesla << std::endl;
+        //std::cout << "fild= "<< field_Tesla << std::endl;
         array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        zee(span,span,span,0)=constant(field_Tesla/constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     };
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
     timer t_hys = af::timer::start();
-    for (int i = 0; i < steps_full_hysteresis; i++){
+    for (unsigned i = 0; i < steps_full_hysteresis; i++){
         minimizer.Minimize(state);
         state.calc_mean_m_steps(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,0,0,0)));
         if( state.steps % 10 == 0){
