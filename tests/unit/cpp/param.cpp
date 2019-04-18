@@ -3,10 +3,10 @@
 #include "../../../src/material.cpp"
 #include "../../../src/constants.hpp"
  
-// Exemplary unit test
-TEST(ParamInitTest, mu0) {
+TEST(Material, Init_p_Test) {
     Material material;
-    ASSERT_EQ(4e-7 * M_PI, constants::mu0);
+    material.p = 2.5;
+    ASSERT_EQ(material.p, 2.5);
 }
 
 int main(int argc, char **argv) {

@@ -1,22 +1,22 @@
 #include "adaptive_runge_kutta.hpp"
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_): 
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_, const bool verbose): 
   scheme_ (scheme_), controller_(controller_), renormalize_(renormalize_)
-    {
+{
     if (scheme_ == "RKF45") {
-        printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
+        if(verbose) printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
     }
     else if (scheme_ == "DP45") {
-        printf("Adaptive Runge Kutta: Initializing DP45 method.\n");
+        if(verbose) printf("Adaptive Runge Kutta: Initializing DP45 method.\n");
     }
     else if (scheme_ == "BS45") {
-        printf("Adaptive Runge Kutta: Initializing BS45 method.\n");
+        if(verbose) printf("Adaptive Runge Kutta: Initializing BS45 method.\n");
     }
     else if (scheme_ == "DP78") {
-        printf("Adaptive Runge Kutta: Initializing DP78 method.\n");
+        if(verbose) printf("Adaptive Runge Kutta: Initializing DP78 method.\n");
     }
     else if (scheme_ == "BS23") {
-        printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
+        if(verbose) printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
     }
     else {
         printf("%s Integration method not found. Valide arguments are 'RKF45' (default) ,'DP45','BS45','DP78','BS23'\n", bold_red("Error:").c_str());

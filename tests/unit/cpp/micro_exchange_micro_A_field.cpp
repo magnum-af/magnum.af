@@ -12,7 +12,7 @@
 #include "../../../src/llg_terms/micro_exch.cpp"
 
 // Testing whether material.A and state.micro_A_field yield same result
-TEST(MicroAFieldTest, n) {
+TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
     Mesh mesh(3,3,3,0.1,0.2,0.3);
     Material material = Material();
     material.ms    = 8e5;

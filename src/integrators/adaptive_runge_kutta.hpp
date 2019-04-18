@@ -8,7 +8,7 @@
 
 class AdaptiveRungeKutta {
     public:
-        AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(), const bool renormalize_ = true);
+        AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(), const bool renormalize_ = true, const bool verbose = false);
         void step(State&);
         double get_time_allsteps(){return time_allsteps_;}
         virtual ~AdaptiveRungeKutta(){};
