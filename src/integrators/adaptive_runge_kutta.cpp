@@ -19,7 +19,7 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controlle
         if(verbose) printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
     }
     else {
-        printf("%s Integration method not found. Valide arguments are 'RKF45' (default) ,'DP45','BS45','DP78','BS23'\n", bold_red("Error:").c_str());
+        printf("%s Integration method not found. Valid arguments are 'RKF45' (default) ,'DP45','BS45','DP78','BS23'\n", bold_red("Error:").c_str());
         exit (EXIT_FAILURE);
     }
 }
