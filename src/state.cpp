@@ -145,12 +145,12 @@ void State::_vti_reader(std::string inputname){
 }
 
 
-void State::_vtr_writer(std::string outputname){
-    vtr_writer(m, mesh, outputname); 
-}
-void State::_vtr_reader(std::string inputname){
-    vtr_reader(m, mesh, inputname); 
-}
+//void State::_vtr_writer(std::string outputname){
+//    vtr_writer(m, mesh, outputname);
+//}
+//void State::_vtr_reader(std::string inputname){
+//    vtr_reader(m, mesh, inputname);
+//}
 
 double State::meani(const int i){
     double *norm_host=NULL;
