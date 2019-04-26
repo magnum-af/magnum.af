@@ -33,5 +33,5 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath);
 
 //void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname);//Rectilinear grid writer
 void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<double> z_spacing, std::string outputname, const bool verbose = false);//Rectilinear grid writer
-void vtr_reader(af::array& field, Mesh& mesh, std::vector<double> z_spacing, std::string filepath);
+void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, std::string filepath, const bool verbose = true);
 #endif
