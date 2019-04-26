@@ -264,10 +264,10 @@ cdef class State:
   def py_vti_reader(self, outputname):
     self.thisptr._vti_reader( outputname.encode('utf-8')) 
 
-  def py_vtr_writer(self, outputname):
-    self.thisptr._vtr_writer( outputname.encode('utf-8')) 
-  def py_vtr_reader(self, outputname):
-    self.thisptr._vtr_reader( outputname.encode('utf-8')) 
+  #def py_vtr_writer(self, outputname):
+  #  self.thisptr._vtr_writer( outputname.encode('utf-8'))
+  #def py_vtr_reader(self, outputname):
+  #  self.thisptr._vtr_reader( outputname.encode('utf-8'))
   def set_alpha(self,value):
     self.thisptr.material.alpha=value
   def normalize(self):
