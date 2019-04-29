@@ -3,9 +3,8 @@
 #include "../../../src/func.cpp"
 #include "../../../src/vtk_IO.cpp"
  
-// Exemplary unit test
 TEST(vtkIO, vtrWriteReadTest) {
-    af::array a = af::randu(6, 5, 4, 3, f64);
+    af::array a = af::randu(6, 5, 4, 10, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
 
@@ -15,7 +14,7 @@ TEST(vtkIO, vtrWriteReadTest) {
     Mesh read_mesh(0, 0, 0, 0, 0, 0);
     std::vector<double> read_z_spacing;
 
-    vtr_reader(read_a, read_mesh, read_z_spacing, "vtr_unittest.vtr", false);
+    vtr_reader(read_a, read_mesh, read_z_spacing, "vtr_unittest", false);
 
     ASSERT_EQ(read_mesh.n0, 6);
     ASSERT_EQ(read_mesh.n1, 5);
@@ -29,6 +28,42 @@ TEST(vtkIO, vtrWriteReadTest) {
     }
 
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
+}
+
+
+TEST(vtkIO, vtrWriteReadScalarFieldTest) {
+    af::array a = af::randu(6, 5, 4, 1, f64);
+    Mesh mesh(6, 5, 4, 0.1, 0.2, 0);
+    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+
+    vtr_writer(a, mesh, z_spacing, "vtr_unittest", false);
+
+    af::array read_a;
+
+    vtr_reader(read_a, mesh, z_spacing, "vtr_unittest", false);
+
+    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+}
+
+
+TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
+    af::array a = af::randu(6, 5, 4, 1, f64);
+    Mesh mesh(6, 5, 4, 0.1, 0.2, 0);
+    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+
+    vtr_writer(a, mesh, z_spacing, "unittesting_a", false);
+
+    af::array read_a;
+
+    vtr_reader(read_a, mesh, z_spacing, "unittesting_a.vtr", false);
+
+    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+
+    vtr_writer(a, mesh, z_spacing, "unittesting_b.vtr", false);
+    af::array read_b;
+    vtr_reader(read_b, mesh, z_spacing, "unittesting_b", false);
+
+    ASSERT_EQ(max_abs_diff(read_b, a), 0);
 }
 
 int main(int argc, char **argv) {
