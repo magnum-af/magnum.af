@@ -180,16 +180,17 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
 
 
 void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<double> z_spacing, std::string outputname, const bool verbose){
-    // writes data from af::array into file outputname.vtr
-    // uses vtkRectilinearGrid with cell data dimensions field.dims(0)+1, field.dims(1)+1, field.dims(2)+1 and field.dims(3) field-components
+    // writes af::array field as vtkRectilinearGrid to file outputname.vtr
+    // Uses cell data, thus xyz dimensions are increased by 1:  field.dims(0)+1, field.dims(1)+1, field.dims(2)+1
+    // supports arbitrary field.dims(3) (e.g. 3 for vector field, 1 for scalar field)
   
+    // Creating vtk Object and setting dimensions obtained from af::array
     vtkSmartPointer<vtkRectilinearGrid> grid = vtkSmartPointer<vtkRectilinearGrid>::New();
-  
     grid->SetDimensions(field.dims(0)+1, field.dims(1)+1, field.dims(2)+1);// Adding one node per dimension as we use cell data
   
-    vtkDataArray* coords[3];
   
     // declare xyz coordinate vectors
+    vtkDataArray* coords[3];
     for(int i=0; i < 3; ++i){
         coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
         coords[i]->SetNumberOfTuples(field.dims(i)+1);
@@ -201,6 +202,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
         double val = (double)j * mesh.dx;
         coords[0]->SetTuple(j, &val);
     }
+
     //y
     for(int j=0; j < field.dims(1)+1; ++j){
         double val = (double)j * mesh.dy;
@@ -216,10 +218,10 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
         }
         else{
           add_val += z_spacing.at(j-1);
-          //std::cout << "val=" << add_val << std::endl;
         }
         coords[2]->SetTuple(j, &add_val);
     }
+
     grid->SetXCoordinates( coords[0] );
     grid->SetYCoordinates( coords[1] );
     grid->SetZCoordinates( coords[2] );
@@ -228,10 +230,8 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     coords[1]->Delete();
     coords[2]->Delete();
   
-    // compute & populate XYZ field
-    
-    const double* host_a = field.host<double>();//af::array raw data
-  
+    // Write af::array data as vtk cell data
+    const double* host_a = field.host<double>();// accesses af::array raw data
     const vtkIdType ncells = grid->GetNumberOfCells();
 
     vtkDoubleArray* data = vtkDoubleArray::New();
@@ -240,10 +240,8 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     data->SetNumberOfTuples( ncells );
   
     for(vtkIdType cellId=0; cellId < ncells; ++cellId){
-        //std::cout << "cellId: " <<  cellId << std::endl;
         for(int i=0; i < field.dims(3); ++i){
             data->SetValue(field.dims(3) * cellId + i, host_a[cellId+i*ncells]);
-            //std::cout << "cellId: " <<  host_a[cellId+i*ncells] << std::endl;
         }
     }
   
@@ -251,20 +249,16 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
 
     // Writing output
     vtkXMLRectilinearGridWriter* writer = vtkXMLRectilinearGridWriter::New();
-    //if (outputname.substr(outputname.find_last_of(".") + 1) != "vtr") {
-    //    std::cout << outputname.substr(outputname.find_last_of(".") + 1) << std::endl;
-    //    outputname.append(".vtr");
-    //    std::cout << outputname.substr(outputname.find_last_of(".") + 1) << std::endl;
-    //    std::cout << std::string(outputname.end()-4, outputname.end()) << std::endl;
-    //}
-    if (std::string(outputname.end()-4, outputname.end()) != ".vtr") outputname.append(".vtr");
+    if (std::string(outputname.end()-4, outputname.end()) != ".vtr") outputname.append(".vtr");// adding file extensions if needed
 
-    if (verbose) std::cout<<"vtk_writer: writing array of dimension ["<< field.dims(0) << " " << field.dims(1) << " " << field.dims(2) << " " << field.dims(3)<< "] to '" << outputname << "'" << std::endl;
+    if (verbose) std::cout<<"vtk_writer: writing array of dimension ["<< field.dims(0) << " " << field.dims(1) << \
+        " " << field.dims(2) << " " << field.dims(3)<< "] to '" << outputname << "'" << std::endl;
   
     writer->SetFileName(outputname.c_str());
     writer->SetInputData( grid );
     writer->Write();
   
+
     writer->Delete();
     data->Delete();
     delete[] host_a;
@@ -272,15 +266,14 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
 
 
 void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, std::string filepath, const bool verbose){
-    // vtkRectilinearGrid Reader
-    // Reads vktRectilinearGrid as written in vtr_writer
-    // Expects Cell Data with grid_dims nx, ny, nz on grid with grid_dims nx+1, ny+1, nz+1
+    // Counterpart to vtr_writer()
+    // Reads vktRectilinearGrid cell data from file
     // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
-    // https://public.kitware.com/pipermail/paraview/2012-July/025678.html
     // https://vtk.org/gitweb?p=VTK.git;a=blob;f=Filters/Extraction/Testing/Cxx/TestExtractRectilinearGrid.cxx
 
-    if (std::string(filepath.end()-4, filepath.end()) != ".vtr") filepath.append(".vtr");
-    // Obtain vktRectilinearGrid from reader
+    if (std::string(filepath.end()-4, filepath.end()) != ".vtr") filepath.append(".vtr");// adding file extension if needed
+
+    // Obtain vktRectilinearGrid object from reader
     vtkSmartPointer<vtkXMLRectilinearGridReader> reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
     reader->SetFileName(filepath.c_str());
     reader->Update();
@@ -314,7 +307,6 @@ void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, st
     vtkDoubleArray* xyz_data = vtkArrayDownCast<vtkDoubleArray>(output_data->GetCellData()->GetArray(0));///("xyz")
     const int data_dim = xyz_data->GetNumberOfComponents();
     double* xyz = static_cast<double*>( xyz_data->GetVoidPointer(0));
-    double* range = xyz_data->GetRange();
     double* A_host = NULL;
     A_host = new double[data_dim * output_data->GetNumberOfCells()];
 
