@@ -1,6 +1,8 @@
 #ifndef PTH_MAG_H
 #define PTH_MAG_H
 #include "Faddeeva.hh"
+#include "mesh.hpp"
+#include "nonequispaced_mesh.hpp"
 #include "llg_terms/atomistic_anisotropy.hpp"
 #include "llg_terms/atomistic_demag.hpp"
 #include "llg_terms/atomistic_dmi.hpp"

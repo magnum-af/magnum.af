@@ -3,11 +3,15 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){
-    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    printf("Warning: NonequiDemag Energy calculation not yet implemented, returning -1!");
+    return -1;
 }
 
 double NonEquiDemagField::E(const State& state, const af::array& h){
-    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    printf("Warning: NonequiDemag Energy calculation not yet implemented, returning -1!");
+    return -1;
+    //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 void NonEquiDemagField::print_Nfft(){
@@ -15,10 +19,10 @@ void NonEquiDemagField::print_Nfft(){
 }
 
 
-NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
+NonEquiDemagField::NonEquiDemagField (NonequispacedMesh mesh, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
-        Nfft=calculate_N(mesh.n0_exp, mesh.n1_exp, mesh.n2, mesh.dx, mesh.dy, mesh.dz, z_spacing);
+        Nfft=calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing);
         if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
         if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
@@ -26,7 +30,13 @@ NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, 
         std::string magafdir = setup_magafdir();
         unsigned long long maxsize = 2000000;
         unsigned long long reducedsize = 1000000;
-        std::string nfft_id = "n0exp_"+std::to_string(mesh.n0_exp)+"_n1exp_"+std::to_string(mesh.n1_exp)+"_n2exp_"+std::to_string(mesh.n2_exp)+"_dx_"+std::to_string(1e9*mesh.dx)+"_dy_"+std::to_string(1e9*mesh.dy)+"_dz_"+std::to_string(1e9*mesh.dz);
+        //+std::to_string(1e9*mesh.dz);
+        std::string dz_string;
+        for (auto const& dz : mesh.z_spacing){
+            dz_string.append(std::to_string(1e9 * dz));
+        }
+        std::string nfft_id = "n0exp_"+std::to_string(mesh.nx_expanded)+"_n1exp_"+std::to_string(mesh.ny_expanded)+"_nz_"+std::to_string(mesh.nz)+"_dx_"+std::to_string(1e9*mesh.dx)+"_dy_"+std::to_string(1e9*mesh.dy)+"_dz_"+dz_string;
+
         std::string path_to_nfft_cached = magafdir+nfft_id;
         int checkarray=-1;
         if (exists(path_to_nfft_cached)){
@@ -43,7 +53,7 @@ NonEquiDemagField::NonEquiDemagField (Mesh mesh, std::vector<double> z_spacing, 
         }
         else{
             if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft=calculate_N(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz, z_spacing);
+            Nfft=calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize){
                 if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
@@ -78,10 +88,10 @@ af::array NonEquiDemagField::h(const State&  state){
     }
 
     // Pointwise product
-    af::array hfft = af::constant(0.0, state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2, 3, c64);
-    for (int i_source = 0; i_source < state.mesh.n2; i_source++ ){
-        for (int i_target = 0; i_target < state.mesh.n2; i_target++ ){
-            const int zindex = i_target + state.mesh.n2 * i_source;
+    af::array hfft = af::constant(0.0, state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2, 3, c64);//TODO mesh.n2 -> z_spacing.size() which should be part of new mesh class
+    for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++ ){
+        for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++ ){
+            const int zindex = i_target + state.nonequimesh.nz * i_source;
             hfft(af::span, af::span, i_target, 0) += Nfft(af::span, af::span, zindex, 0) * mfft(af::span, af::span, i_source, 0)
                                                    + Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i_source, 1)
                                                    + Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i_source, 2);
@@ -201,8 +211,8 @@ namespace newell_nonequi{
     class NonequiLoopInfo {
         public:
         NonequiLoopInfo(){}
-        NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2,  double dx,  double dy,  double dz):
-            ix_start(ix_start), ix_end(ix_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy), dz(dz){}
+        NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2,  double dx,  double dy):
+            ix_start(ix_start), ix_end(ix_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy){}
         int ix_start;
         int ix_end;
         int n0_exp;
@@ -210,7 +220,6 @@ namespace newell_nonequi{
         int n2;
         double dx;
         double dy;
-        double dz;
         static std::vector<double> z_spacing;
     };
 
@@ -270,14 +279,14 @@ namespace newell_nonequi{
 }
 
 
-af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy, double dz, const std::vector<double> z_spacing){
+af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy, const std::vector<double> z_spacing){
     std::thread t[nthreads];
     struct newell_nonequi::NonequiLoopInfo loopinfo[nthreads];
     newell_nonequi::NonequiLoopInfo::z_spacing = z_spacing;
     for (unsigned i = 0; i < nthreads; i++){
         unsigned start = i * (double)n0_exp/nthreads;
         unsigned end = (i +1) * (double)n0_exp/nthreads;
-        loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy, dz);
+        loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy);
     }
 
     newell_nonequi::N_ptr = new double[n0_exp * n1_exp * n2 * n2 * 6];

@@ -2,6 +2,7 @@
 #define STATE_H
 #include "arrayfire.h"
 #include "mesh.hpp"
+#include "nonequispaced_mesh.hpp"
 #include "material.hpp"
 #include "vtk_IO.hpp"
 #include "func.hpp"
@@ -11,6 +12,7 @@
 class State{
   public:
     State (Mesh mesh_in, Material param_in, af::array m_in);
+    State (NonequispacedMesh nonequimesh, af::array m);
     State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean);
     State (Mesh mesh_in, Material param_in, long int aptr);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
@@ -18,6 +20,7 @@ class State{
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
     long int get_m_addr();
     Mesh mesh;
+    NonequispacedMesh nonequimesh;
     Material material;
     double t{0.};//time
     af::array m;
@@ -34,7 +37,6 @@ class State{
     long int get_micro_Ku1_field();
 
     void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
-    void check_discretization();
     void check_m_norm(double tol = 1e-6);
     unsigned long long steps{0};
     void Normalize(); ///< normalize the magnetization to 1
@@ -65,6 +67,8 @@ class State{
     ///< Number of cells with for which evaluate_mean_ is 1
     unsigned int evaluate_mean_is_1_{0};
 
+    void check_discretization();
+    void check_nonequispaced_discretization();
 };
 
 #endif
