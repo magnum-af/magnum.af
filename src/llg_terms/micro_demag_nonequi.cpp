@@ -81,14 +81,14 @@ af::array NonEquiDemagField::h(const State&  state){
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms.isempty()){
-        mfft = af::fftR2C<2>(state.material.ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+        mfft = af::fftR2C<2>(state.material.ms * state.m, af::dim4(state.nonequimesh.nx_expanded, state.nonequimesh.ny_expanded));
     }
     else {
-        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(state.nonequimesh.nx_expanded, state.nonequimesh.ny_expanded));
     }
 
     // Pointwise product
-    af::array hfft = af::constant(0.0, state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2, 3, c64);//TODO mesh.n2 -> z_spacing.size() which should be part of new mesh class
+    af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded/2+1, state.nonequimesh.ny_expanded, state.nonequimesh.nz, 3, c64);//TODO mesh.n2 -> z_spacing.size() which should be part of new mesh class
     for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++ ){
         for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++ ){
             const int zindex = i_target + state.nonequimesh.nz * i_source;
@@ -109,7 +109,7 @@ af::array NonEquiDemagField::h(const State&  state){
     h_field=af::fftC2R<2>(hfft);
     if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,state.mesh.n0_exp/2-1),af::seq(0,state.mesh.n1_exp/2-1));
+    return h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
 }
 
 namespace newell_nonequi{
