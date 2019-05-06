@@ -88,7 +88,7 @@ af::array NonEquiDemagField::h(const State&  state){
     }
 
     // Pointwise product
-    af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded/2+1, state.nonequimesh.ny_expanded, state.nonequimesh.nz, 3, c64);//TODO mesh.n2 -> z_spacing.size() which should be part of new mesh class
+    af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded/2+1, state.nonequimesh.ny_expanded, state.nonequimesh.nz, 3, c64);
     for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++ ){
         for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++ ){
             const int zindex = i_target + state.nonequimesh.nz * i_source;
@@ -104,12 +104,22 @@ af::array NonEquiDemagField::h(const State&  state){
         }
     }
 
+    af::array one_over_tau_vec = af::array(1, 1, state.nonequimesh.nz, 1, f64);
+    for (int i = 0; i < state.nonequimesh.nz; i++){
+        one_over_tau_vec(0, 0, i, 0) = 1./(state.nonequimesh.dx * state.nonequimesh.dy * state.nonequimesh.z_spacing[i]);
+        //std::cout << afvalue(one_over_tau_vec(0, 0, i, 0)) << "\n";
+    }
+    //af::print("tau", one_over_tau_vec);
+    one_over_tau_vec = af::tile(one_over_tau_vec, state.nonequimesh.nx, state.nonequimesh.ny, 1, 3);
+    //af::print("tau", one_over_tau_vec);
+
     // IFFT reversing padding
     af::array h_field;
     h_field=af::fftC2R<2>(hfft);
     if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
+    //return h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
+    return one_over_tau_vec * h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
 }
 
 namespace newell_nonequi{
@@ -160,22 +170,14 @@ namespace newell_nonequi{
         return F1(x, y + dY, z, dz, dZ) - F1(x, y, z, dz, dZ) - F1(x, y - dy + dY, z, dz, dZ) + F1(x, y - dy, z, dz, dZ);
     }
 
-    double F_test(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
-        // dx, dy, dz are source dimensions, dX, dY, dZ target dimensions
-        //const double tau = dX * dY * dZ;// Volume of the target cell
-        return    F0(x          , y, z, dy, dY, dz, dZ) \
-                - F0(x - dx     , y, z, dy, dY, dz, dZ) \
-                - F0(x + dX     , y, z, dy, dY, dz, dZ) \
-                + F0(x - dx + dX, y, z, dy, dY, dz, dZ);
-    }
-
 
     double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
         // x, y, z is vector from source cuboid to target cuboid
         // dx, dy, dz are source cuboid dimensions
         // dX, dY, dZ are target cuboid dimensions
-        const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
-        return -1./(4.0 * M_PI * tau) * ( \
+        //const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
+        //return -1./(4.0 * M_PI * tau) * (
+        return -1./(4.0 * M_PI) * ( \
                   F0(x          , y, z, dy, dY, dz, dZ) \
                 - F0(x - dx     , y, z, dy, dY, dz, dZ) \
                 - F0(x + dX     , y, z, dy, dY, dz, dZ) \
@@ -200,8 +202,9 @@ namespace newell_nonequi{
         // x, y, z is vector from source cuboid to target cuboid
         // dx, dy, dz are source cuboid dimensions
         // dX, dY, dZ are target cuboid dimensions
-        const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
-        return -1./(4.0 * M_PI * tau) * ( \
+        //const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
+        //return -1./(4.0 * M_PI * tau) * (
+        return -1./(4.0 * M_PI) * ( \
                   G0(x          , y, z, dy, dY, dz, dZ) \
                 - G0(x - dx     , y, z, dy, dY, dz, dZ) \
                 - G0(x + dX     , y, z, dy, dY, dz, dZ) \
