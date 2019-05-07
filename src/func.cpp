@@ -237,6 +237,16 @@ double minval(const af::array& a){
   return minval;
 }
 
+std::pair<int, int> util::k2ij(const int k, const int n){
+    const int i = n - 1 - std::floor(std::sqrt(-8*k + 4*n*(n+1)-7)/2.0 - 0.5);
+    const int j = k + i - n*(n+1)/2 + (n-i)*((n-i)+1)/2;
+    return std::make_pair(i, j);
+}
+
+int util::ij2k(const int i, const int j, const int n){
+    return (n*(n+1)/2) - (n-i)*((n-i)+1)/2 + j - i;
+}
+
 
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method

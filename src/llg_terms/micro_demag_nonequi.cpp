@@ -94,7 +94,7 @@ af::array NonEquiDemagField::h(const State&  state){
 
             int zindex;
             af::array nfft;
-            if (i_source >= i_target){
+            if (i_source >= i_target){//TODO taking ">=" by definition, could also be "<(=)" or just ">". However, this defines the data structure of newell_nonequi::N_ptr
                 zindex = i_target + state.nonequimesh.nz * i_source;
                 nfft = Nfft(af::span, af::span, zindex, af::span);
             }
@@ -105,7 +105,8 @@ af::array NonEquiDemagField::h(const State&  state){
                 nfft (af::span, af::span, af::span, 2) = -1 * Nfft(af::span, af::span, zindex, 2);
                 nfft (af::span, af::span, af::span, 4) = -1 * Nfft(af::span, af::span, zindex, 4);
             }
-            //std::cout << i_source << ", " << i_target << ", " << zindex << std::endl;
+            //TODO//int k = util::ij2k(i_source, i_target, state.nonequimesh.nz);
+            //TODO//std::cout << i_source << ", " << i_target << ", " << zindex << ", " << k << std::endl;
 
 
             hfft(af::span, af::span, i_target, 0) += nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, i_source, 0)
