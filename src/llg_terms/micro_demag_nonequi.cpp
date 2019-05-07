@@ -91,16 +91,32 @@ af::array NonEquiDemagField::h(const State&  state){
     af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded/2+1, state.nonequimesh.ny_expanded, state.nonequimesh.nz, 3, c64);
     for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++ ){
         for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++ ){
-            const int zindex = i_target + state.nonequimesh.nz * i_source;
-            hfft(af::span, af::span, i_target, 0) += Nfft(af::span, af::span, zindex, 0) * mfft(af::span, af::span, i_source, 0)
-                                                   + Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i_source, 1)
-                                                   + Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i_source, 2);
-            hfft(af::span, af::span, i_target, 1) += Nfft(af::span, af::span, zindex, 1) * mfft(af::span, af::span, i_source, 0)
-                                                   + Nfft(af::span, af::span, zindex, 3) * mfft(af::span, af::span, i_source, 1)
-                                                   + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i_source, 2);
-            hfft(af::span, af::span, i_target, 2) += Nfft(af::span, af::span, zindex, 2) * mfft(af::span, af::span, i_source, 0)
-                                                   + Nfft(af::span, af::span, zindex, 4) * mfft(af::span, af::span, i_source, 1)
-                                                   + Nfft(af::span, af::span, zindex, 5) * mfft(af::span, af::span, i_source, 2);
+
+            int zindex;
+            af::array nfft;
+            if (i_source >= i_target){
+                zindex = i_target + state.nonequimesh.nz * i_source;
+                nfft = Nfft(af::span, af::span, zindex, af::span);
+            }
+            else {
+                //swap indices to acces symmetric element ij -> ji
+                zindex = i_source + state.nonequimesh.nz * i_target;
+                nfft = Nfft(af::span, af::span, zindex, af::span);
+                nfft (af::span, af::span, af::span, 2) = -1 * Nfft(af::span, af::span, zindex, 2);
+                nfft (af::span, af::span, af::span, 4) = -1 * Nfft(af::span, af::span, zindex, 4);
+            }
+            //std::cout << i_source << ", " << i_target << ", " << zindex << std::endl;
+
+
+            hfft(af::span, af::span, i_target, 0) += nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, i_source, 0)
+                                                   + nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, i_source, 1)
+                                                   + nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, i_source, 2);
+            hfft(af::span, af::span, i_target, 1) += nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, i_source, 0)
+                                                   + nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, i_source, 1)
+                                                   + nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, i_source, 2);
+            hfft(af::span, af::span, i_target, 2) += nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, i_source, 0)
+                                                   + nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, i_source, 1)
+                                                   + nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, i_source, 2);
         }
     }
 
@@ -262,17 +278,19 @@ namespace newell_nonequi{
                 for (int i_source = 0; i_source < loopinfo->n2; i_source++ ){
                     for (int i_target = 0; i_target < loopinfo->n2; i_target++ ){
 
-                        const int idx = 6*(i_target+loopinfo->n2*(i_source+loopinfo->n2*(iy+loopinfo->n1_exp*ix)));
-                        const double x = loopinfo->dx * (double)jx;
-                        const double y = loopinfo->dy * (double)jy;
-                        const double z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
+                        //if (i_source >= i_target){
+                            const int idx = 6*(i_target+loopinfo->n2*(i_source+loopinfo->n2*(iy+loopinfo->n1_exp*ix)));
+                            const double x = loopinfo->dx * (double)jx;
+                            const double y = loopinfo->dy * (double)jy;
+                            const double z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
 
-                        newell_nonequi::N_ptr[idx+0] = newell_nonequi::Nxx(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
-                        newell_nonequi::N_ptr[idx+1] = newell_nonequi::Nxy(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
-                        newell_nonequi::N_ptr[idx+2] = newell_nonequi::Nxy(x, z, y, loopinfo->dx, loopinfo->z_spacing[i_source], loopinfo->dy, loopinfo->dx, loopinfo->z_spacing[i_target], loopinfo->dy);
-                        newell_nonequi::N_ptr[idx+3] = newell_nonequi::Nxx(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
-                        newell_nonequi::N_ptr[idx+4] = newell_nonequi::Nxy(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
-                        newell_nonequi::N_ptr[idx+5] = newell_nonequi::Nxx(z, x, y, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx, loopinfo->dy);
+                            newell_nonequi::N_ptr[idx+0] = newell_nonequi::Nxx(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
+                            newell_nonequi::N_ptr[idx+1] = newell_nonequi::Nxy(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
+                            newell_nonequi::N_ptr[idx+2] = newell_nonequi::Nxy(x, z, y, loopinfo->dx, loopinfo->z_spacing[i_source], loopinfo->dy, loopinfo->dx, loopinfo->z_spacing[i_target], loopinfo->dy);
+                            newell_nonequi::N_ptr[idx+3] = newell_nonequi::Nxx(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
+                            newell_nonequi::N_ptr[idx+4] = newell_nonequi::Nxy(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
+                            newell_nonequi::N_ptr[idx+5] = newell_nonequi::Nxx(z, x, y, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx, loopinfo->dy);
+                        //}
                     }
                 }
             }
@@ -292,6 +310,7 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
         loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy);
     }
 
+    //TODO//newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
     newell_nonequi::N_ptr = new double[n0_exp * n1_exp * n2 * n2 * 6];
 
     for (unsigned i = 0; i < nthreads; i++){
