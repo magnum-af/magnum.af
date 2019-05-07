@@ -10,33 +10,6 @@
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
 
-TEST(NonEquiDemag, NfftSymmetryTest) {
-    // Testing the symmetry (N_ij <-> N_ji) of the xy-layers of the Fourier transformed demag Tensor 
-    const double x=5.e-7, y=1.25e-7;
-    const int nx=10, ny=10, nz=10;
-    std::vector<double> z_spacing;
-    for (unsigned i = 0; i < nz; i++){
-        z_spacing.push_back(nz * 1e-9);
-    }
-
-    NonequispacedMesh nemesh(nx, ny, x/nx, y/ny, z_spacing);
-    NonEquiDemagField nedemag = NonEquiDemagField(nemesh, false, false, 1);
-    nedemag.Nfft *= 1e23; //Note: Scaling Demag tensor s.t. it is around the order of tau for getting non-zero values with magnitude ofof  1
-    for (int i_source = 0; i_source < nemesh.nz; i_source++ ){
-        for (int i_target = 0; i_target < nemesh.nz; i_target++ ){
-            if (i_source > i_target){// get triangulary matrix elements without diagonal
-                int zindex = i_target + nemesh.nz * i_source;
-                const int zindex_swapped = i_source + nemesh.nz * i_target;
-
-                // Compensate xy displacement when taking a_ji (compared to a_ij)
-                nedemag.Nfft(af::span, af::span, zindex_swapped, 2) = -1 * nedemag.Nfft(af::span, af::span, zindex_swapped, 2);
-                nedemag.Nfft(af::span, af::span, zindex_swapped, 4) = -1 * nedemag.Nfft(af::span, af::span, zindex_swapped, 4);
-                EXPECT_NEAR(max_abs_diff(nedemag.Nfft(af::span, af::span, zindex, af::span), nedemag.Nfft(af::span, af::span, zindex_swapped, af::span)), 0, 2e-11);
-            }
-        }
-    }
-}
-
 
 TEST(NonEquiDemag, SP4LayerRandomMagnetizationHeffTest) {
     // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization

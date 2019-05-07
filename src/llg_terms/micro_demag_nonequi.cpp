@@ -92,22 +92,17 @@ af::array NonEquiDemagField::h(const State&  state){
     for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++ ){
         for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++ ){
 
-            int zindex;
+            int zindex = util::ij2k(i_source, i_target, state.nonequimesh.nz);
             af::array nfft;
-            if (i_source >= i_target){//TODO taking ">=" by definition, could also be "<(=)" or just ">". However, this defines the data structure of newell_nonequi::N_ptr
-                zindex = i_target + state.nonequimesh.nz * i_source;
+            if (i_source <= i_target){// This reflects the data structure of newell_nonequi::N_ptr. "<=" choosen by definition, could also be ">(=)" or just "<" when reconsidering N_ptr
                 nfft = Nfft(af::span, af::span, zindex, af::span);
             }
             else {
                 //swap indices to acces symmetric element ij -> ji
-                zindex = i_source + state.nonequimesh.nz * i_target;
                 nfft = Nfft(af::span, af::span, zindex, af::span);
                 nfft (af::span, af::span, af::span, 2) = -1 * Nfft(af::span, af::span, zindex, 2);
                 nfft (af::span, af::span, af::span, 4) = -1 * Nfft(af::span, af::span, zindex, 4);
             }
-            //TODO//int k = util::ij2k(i_source, i_target, state.nonequimesh.nz);
-            //TODO//std::cout << i_source << ", " << i_target << ", " << zindex << ", " << k << std::endl;
-
 
             hfft(af::span, af::span, i_target, 0) += nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, i_source, 0)
                                                    + nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, i_source, 1)
@@ -279,8 +274,9 @@ namespace newell_nonequi{
                 for (int i_source = 0; i_source < loopinfo->n2; i_source++ ){
                     for (int i_target = 0; i_target < loopinfo->n2; i_target++ ){
 
-                        //if (i_source >= i_target){
-                            const int idx = 6*(i_target+loopinfo->n2*(i_source+loopinfo->n2*(iy+loopinfo->n1_exp*ix)));
+                        if (i_source <= i_target){
+                            const int idx = 6*(util::ij2k(i_source, i_target, loopinfo->n2) + ((loopinfo->n2 * (loopinfo->n2 + 1))/2)*(iy+loopinfo->n1_exp*ix));
+                            //std::cout << "idx=" << idx << " of " << loopinfo->n0_exp * loopinfo->n1_exp * (loopinfo->n2 * (loopinfo->n2 + 1))/2 * 6 << std::endl;
                             const double x = loopinfo->dx * (double)jx;
                             const double y = loopinfo->dy * (double)jy;
                             const double z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
@@ -291,7 +287,7 @@ namespace newell_nonequi{
                             newell_nonequi::N_ptr[idx+3] = newell_nonequi::Nxx(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
                             newell_nonequi::N_ptr[idx+4] = newell_nonequi::Nxy(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
                             newell_nonequi::N_ptr[idx+5] = newell_nonequi::Nxx(z, x, y, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx, loopinfo->dy);
-                        //}
+                        }
                     }
                 }
             }
@@ -311,8 +307,7 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
         loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy);
     }
 
-    //TODO//newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
-    newell_nonequi::N_ptr = new double[n0_exp * n1_exp * n2 * n2 * 6];
+    newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
 
     for (unsigned i = 0; i < nthreads; i++){
         t[i] = std::thread(newell_nonequi::init_N, &loopinfo[i]);
@@ -321,7 +316,7 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
     for (unsigned i = 0; i < nthreads; i++){
         t[i].join();
      }
-    af::array Naf(6, n2 * n2, n1_exp, n0_exp, newell_nonequi::N_ptr);
+    af::array Naf(6, (n2 * (n2 + 1))/2, n1_exp, n0_exp, newell_nonequi::N_ptr);
     Naf=af::reorder(Naf,3,2,1,0);
     delete [] newell_nonequi::N_ptr;
     newell_nonequi::N_ptr = NULL;
