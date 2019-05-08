@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../../../src/func.cpp"
- 
+
 TEST(Util, SerialTriangularMatrixTest) {
     // serialized index k, matrix indices i,j
     for (int n = 1; n < 20; n++){
@@ -28,7 +28,7 @@ TEST(Util, SerialTriangularMatrixTest) {
                     EXPECT_EQ(i, ij_l.first);
                     EXPECT_EQ(j, ij_l.second);
                     EXPECT_EQ(k, kk_l);
-                    
+
                     k++;
                 }
             }

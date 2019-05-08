@@ -11,7 +11,7 @@
 #include "../../../src/llg_terms/micro_demag.cpp"
 
 
-TEST(NonEquiDemag, SP4LayerRandomMagnetizationHeffTest) {
+TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
     // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     // NOTE: this test is only sensitive to i_source >= i_target (in NonEquiDemagField::h() method)
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
@@ -54,7 +54,7 @@ TEST(NonEquiDemag, SP4LayerRandomMagnetizationHeffTest) {
 }
 
 
-TEST(NonEquiDemag, SP4LayerRandomMagnetizationHeffZindexSwappedTest) {
+TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     // Same as above but testing else{} in nedemag.h(state) method
     // NOTE: this test is only sensitive to i_source < i_target (in NonEquiDemagField::h() method)
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
@@ -96,7 +96,7 @@ TEST(NonEquiDemag, SP4LayerRandomMagnetizationHeffZindexSwappedTest) {
     EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0009);
 }
 
-TEST(NonEquiDemag, SP4LayerRandomMagnetizationWithZeroLayerHeffTest) {
+TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25, nz=3, nz_ne=2;
@@ -132,7 +132,7 @@ TEST(NonEquiDemag, SP4LayerRandomMagnetizationWithZeroLayerHeffTest) {
 }
 
  
-TEST(NonEquiDemag, SP4LayerUMagnetizationHeffTest) {
+TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     // Compare SP4 layer (with ↑ → → → → ↑ magnetization) once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25, nz=3, nz_ne=2;
@@ -171,7 +171,7 @@ TEST(NonEquiDemag, SP4LayerUMagnetizationHeffTest) {
 }
 
 
-TEST(NonEquiDemag, SP4LayerHomogenuousMagnetizationHeffTest) {
+TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest) {
     // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25, nz=3, nz_ne=2;
