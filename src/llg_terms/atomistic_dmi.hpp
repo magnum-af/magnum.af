@@ -1,10 +1,10 @@
-#ifndef ATOMISTIC_DMI_H
-#define ATOMISTIC_DMI_H
+#ifndef AtomisticDmiField_H
+#define AtomisticDmiField_H
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
-class ATOMISTIC_DMI : public LLGTerm {
+class AtomisticDmiField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -14,8 +14,8 @@ class ATOMISTIC_DMI : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    //ATOMISTIC_DMI ();
-    ATOMISTIC_DMI (const Mesh& mesh, const Param& param);
+    //AtomisticDmiField ();
+    AtomisticDmiField (const Mesh& mesh, const Material& material);
     af::array n;
     af::array filtr_fd1;
     //af::array filtr_atom_dmi_x;

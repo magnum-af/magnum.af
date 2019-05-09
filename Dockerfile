@@ -1,8 +1,8 @@
 # based on: https://github.com/arrayfire/arrayfire-docker 
 # image: magnum.af
-# build: nvidia-docker build -t magnum.af -f Dockerfile .
+# build: nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .
 # run  : nvidia-docker run --rm -ti magnum.af /bin/bash
-# test : nvidia-docker run --rm -t magnum.af /magnum.af/tests/runall.sh /magnum.af
+# test : nvidia-docker run --rm -t magnum.af ./tests/runall.sh .
 
 FROM nvidia/cuda:9.2-devel-ubuntu18.04
 MAINTAINER none
@@ -76,17 +76,12 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master &
     ldconfig && \
     cd ../.. && rm -rf arrayfire # saving >700MB
 
-ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV DEBCONF_NONINTERACTIVE_SEEN=true
+ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/ DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 
 RUN apt update && \
-    apt install -y python-pip \
-        libvtk6-dev && \
-    pip install arrayfire Cython numpy
-
-ENV VTK_DIR=$VTK_DIR:/usr/lib/tcltk/vtk-6.2
+    apt install -y python3-pip \
+        libvtk7-dev && \
+    pip3 install arrayfire cython numpy
 
 # Instal Google Tests
 RUN apt-get update && \
@@ -96,11 +91,20 @@ RUN apt-get update && \
     make && \
     cp *.a /usr/lib
 
+# Setting user from build-arg with 999 as default
+ARG user=999
+RUN groupadd -g $user magnum.af.user && \
+    useradd -r -u $user -g magnum.af.user magnum.af.user && \
+    mkdir /home/magnum.af.user && \
+    chown -R magnum.af.user /home/magnum.af.user
+USER magnum.af.user
+ENV HOME=/home/magnum.af.user
+
 # Add magnum.af repository
-COPY . /root/magnum.af
+COPY --chown=magnum.af.user . /home/magnum.af
 
-WORKDIR /root/magnum.af
+WORKDIR /home/magnum.af
 
-RUN scripts/magnum.af -v scripts/main_empty.cpp && \
+RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh . && \
     ./tests/integration/cpp/maketests.sh .

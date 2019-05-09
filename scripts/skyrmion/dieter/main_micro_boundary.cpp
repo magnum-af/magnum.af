@@ -19,21 +19,21 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
-    State state(mesh, param, mesh.skyrmconf());
+    State state(mesh, material, mesh.skyrmconf());
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
-    NewLlg Llg;
-    Llg.llgterms.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new DMI(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
+    LLGIntegrator Llg;
+    Llg.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new DmiField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
   
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
@@ -50,13 +50,13 @@ int main(int argc, char** argv)
 
     // Direct x-boundary
     // TODO temp fix: going to left boundary to check boundary annihilatoin. In relax skyrm, top and right boundary seems wrong
-    inputimages.push_back(State(mesh, param, state.m));
+    inputimages.push_back(State(mesh, material, state.m));
     for(int i=1; i < mesh.n0; i++){
         array mm = array(state.m);
         mm=shift(mm,-i);
         mm(seq(-i,-1),span,span,span)=0;
         mm(seq(-i,-1),span,span,2)=1.;
-        inputimages.push_back(State(mesh, param, mm));
+        inputimages.push_back(State(mesh, material, mm));
     }
 
     // Corner
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     //    mm(seq(0,i),span,span,2)=1.;
     //    mm(span,seq(0,i),span,span)=0;
     //    mm(span,seq(0,i),span,2)=1.;
-    //    inputimages.push_back(State(mesh, param, mm));
+    //    inputimages.push_back(State(mesh, material, mm));
     //}
    
     String string(state, inputimages, 60, 5e-14, Llg.llgterms);

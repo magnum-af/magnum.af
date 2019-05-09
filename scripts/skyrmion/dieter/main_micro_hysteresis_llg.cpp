@@ -18,7 +18,7 @@ af::array zee_func(State state){
     double field_Tesla = 0;
     field_Tesla = rate *state.t; 
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -43,12 +43,12 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -62,15 +62,15 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     // Relax
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
     
     LLG Llg(state,llgterm);
   
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-8){
         E_prev=Llg.E(state);
         for ( int i = 0; i<100; i++){
-            state.m=Llg.llgstep(state);
+            state.m=Llg.step(state);
         }
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
@@ -94,9 +94,9 @@ int main(int argc, char** argv)
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
 
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.Fieldterms.push_back( llgt_ptr (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t <  simtime){
-         state.m=Llg.llgstep(state);
+         state.m=Llg.step(state);
          if( state.steps % 1000 == 0){
              calc_mean_m(state, stream, afvalue(Llg.Fieldterms[Llg.Fieldterms.size()-1]->h(state)(0,0,0,0)));
              vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());

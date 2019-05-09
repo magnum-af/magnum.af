@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
 #include <math.h>
-#include "../../../src/param.cpp"
+#include "../../../src/material.cpp"
+#include "../../../src/constants.hpp"
  
-// Exemplary unit test
-TEST(ParamInitTest, mu0) {
-    Param param;
-    ASSERT_EQ(4e-7 * M_PI, param.mu0);
+TEST(Material, Init_p_Test) {
+    Material material;
+    material.p = 2.5;
+    ASSERT_EQ(material.p, 2.5);
 }
 
 int main(int argc, char **argv) {

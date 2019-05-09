@@ -6,7 +6,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 using namespace af;
-using namespace std::complex_literals;
+//TODO//compilererror//using namespace std::complex_literals;
 using Faddeeva::erfi;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
@@ -42,12 +42,12 @@ int main(int argc, char** argv)
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
   
-    //Integration param
+    //Integration material
     unsigned long int measure_steps = 6e4;
 
     stream2<<"#measure_steps = "<<measure_steps<<std::endl;
-    stream2<<"# dt << Stoch.param.T<<  mean_mz <<  abs_mean_mz << mean_mz_analytical(chi) <<Stoch.param.T<<";
-    stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.param.T<<  mean_mz";
+    stream2<<"# dt << Stoch.material.T<<  mean_mz <<  abs_mean_mz << mean_mz_analytical(chi) <<Stoch.material.T<<";
+    stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.material.T<<  mean_mz";
     stream2<<" abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
@@ -55,16 +55,16 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1281197;
-    param.Ku1   = 6.9e6;
-    param.alpha = 0.1;
-    param.T = 10;
+    Material material = Material();
+    material.ms    = 1281197;
+    material.Ku1   = 6.9e6;
+    material.alpha = 0.1;
+    material.T = 10;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
-    State state(mesh,param, m);//ATTENTION, to be set in each loop
+    State state(mesh,material, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
   
@@ -80,9 +80,9 @@ int main(int argc, char** argv)
     for(int i=0;i<25;i++){
         std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
         //T=10
-        param.T=10.;
-        state=State(mesh,param,m);
-        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        material.T=10.;
+        state=State(mesh,material,m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
@@ -95,17 +95,17 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< std::setw(6)<< dt << "\t" << Stoch.param.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+        stream2<< std::setw(6)<< dt << "\t" << Stoch.material.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=50
-        param.T=50.;
-        state=State(mesh,param,m);
-        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        material.T=50.;
+        state=State(mesh,material,m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
@@ -118,17 +118,17 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< Stoch.param.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+        stream2<< Stoch.material.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=200
-        param.T=200.;
-        state=State(mesh,param,m);
-        llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+        material.T=200.;
+        state=State(mesh,material,m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
@@ -141,12 +141,12 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.param.Ku1 * state.mesh.V) / (state.param.kb * Stoch.param.T);
-        std::cout<<"at "<<Stoch.param.T<<" K" << std::endl; 
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< Stoch.param.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<<"\t"<<measure_steps<<std::endl;
+        stream2<< Stoch.material.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<<"\t"<<measure_steps<<std::endl;
 
         dt*=1.35;
     }

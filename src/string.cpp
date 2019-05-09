@@ -13,7 +13,7 @@ String::String(State statein, std::vector<State> inputimages, int n_interp_in, d
     calc_x(inputimages);
 
     for(int i=0;i<n_interp;i++){
-        images.push_back(State(state.mesh, state.param, af::constant(2.,state.mesh.dims,f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
+        images.push_back(State(state.mesh, state.material, af::constant(2.,state.mesh.dims,f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
     }
     for(int i=0;i<n_interp;i++){
         int j=0;
@@ -170,7 +170,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             break;
         }
         stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].param.D<<"\t"<<this->images[0].param.Ku1<<"\t"<<this->images[0].param.K_atom<<"\t"<<this->images[0].param.D_atom<<std::endl;
+        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.D<<"\t"<<this->images[0].material.Ku1<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
         stream_E_barrier.close();
         for(unsigned j=0;j<this->E.size();++j)
         {
@@ -244,7 +244,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //
 //  calc_x();
 //  for(int i=0;i<n_interp;i++){
-//    images_interp.push_back(State(state.mesh, state.param, array(state.mesh.dims,f64)));
+//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims,f64)));
 //  }
 //  lin_interpolate();
 //}

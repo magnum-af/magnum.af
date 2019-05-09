@@ -3,7 +3,7 @@ import sys
 import os
 import arrayfire as af
 import numpy as np
-from magnum_af import *
+from magnumaf import *
 import time
 
 # Setting filepath
@@ -13,7 +13,7 @@ if sys.argv[1][-1] != "/":
     print ("Info: Added '/' to sys.arvg[1]: ", sys.argv[1])
 
 filepath = sys.argv[1]
-os.makedirs(filepath)# to overwrite, add: , exist_ok=True
+#os.makedirs(filepath)# to overwrite, add: , exist_ok=True
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
@@ -68,20 +68,20 @@ ny = 250
 nz = 1
 
 ## Creating mesh
-mesh=pyMesh(nx, ny, nz, x/nx, y/ny, z/nz)
+mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
-param=pyParam()
-param.ms(1.58/param.print_mu0()) # Saturation magnetization
-param.A(15e-12) # Exchange constant
-param.Ku1(1.3e-3/z) # Anisotropy constant
+material=Material()
+material.ms=1.58/Constants.mu0 # Saturation magnetization
+material.A=15e-12 # Exchange constant
+material.Ku1=1.3e-3/z # Anisotropy constant
 
-# Second param class for stress
-param_stress=pyParam()
-param_stress.ms(1.58/param.print_mu0())
-param_stress.A(15e-12)
-param_stress.Ku1(1400) #TODO guessed worst case value fom Toni, elaborate
-param_stress.Ku1_axis(1, 0, 0) # Setting axis in x-direction
+# Second material class for stress
+param_stress=Material()
+param_stress.ms=1.58/Constants.mu0
+param_stress.A=15e-12
+param_stress.Ku1=1400  #TODO guessed worst case value fom Toni, elaborate
+param_stress.Ku1_axis=[1, 0, 0] # Setting axis in x-direction
 #print ("Check: Ku1 axis =", param_stress.print_Ku1_axis())
 
 # Create state object with timing
@@ -89,7 +89,7 @@ start = time.time()
 disk1, n_cells  = disk(nx, ny, nz)
 boolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value here
 
-state = pyState(mesh, param, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
+state = State(mesh, material, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.py_vti_writer_micro(filepath + "init_m")
 state.py_vti_writer_micro_boolean(filepath + "boolean")
 print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
@@ -98,19 +98,19 @@ print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
 start = time.time()
-demag = pyDemagSolver(mesh, param)
-exch=pyExchSolver(mesh, param)
-aniso_z = pyMicroAniso(mesh, param)
-aniso_stress = pyMicroAniso(mesh, param_stress)
-zee = pyZee(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+demag = DemagField(mesh, material)
+exch=ExchangeField(mesh, material)
+aniso_z = UniaxialAnisotropyField(mesh, material)
+aniso_stress = UniaxialAnisotropyField(mesh, param_stress)
+zee = ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
 # Creating minimizer object
-minimizer = pyLbfgsMinimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol=1e-15, maxiter=1000)
+minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_z, aniso_stress, zee], tol=1e-15, maxiter=1000)
 
 # Starting minimizer loop
 stream = open(filepath+"m.dat", "w")
-A = 0.05/param.print_mu0()
+A = 0.05/Constants.mu0
 steps = 100
 print ("A= ", A)
 for i in range(0, steps):
@@ -118,7 +118,7 @@ for i in range(0, steps):
     zee.set_xyz(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.pyMinimize(state)
-    stream.write("%d, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.py_vti_writer_micro(filepath + "m_"+ str(i))

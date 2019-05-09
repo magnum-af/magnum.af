@@ -1,7 +1,7 @@
 # run with: 
 #PYTHONPATH=../../build/src/ python sp4_output.py path/to/write/in
 import arrayfire as af
-import magnum_af
+import magnumaf
 import os
 import sys
 import matplotlib.pyplot as plt
@@ -12,43 +12,43 @@ if os.path.exists(path) is False:
     exit()
 af.info()
 
-meshvar=magnum_af.pyMesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
+meshvar=magnumaf.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
 m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
 
-param=magnum_af.pyParam()
-param.ms    (8e5)
-param.A     (1.3e-11)
-param.alpha (1)
+material=magnumaf.Material()
+material.ms    (8e5)
+material.A     (1.3e-11)
+material.alpha (1)
 
 m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-pystate=magnum_af.pyState(meshvar,param,m)
+pystate=magnumaf.State(meshvar,material,m)
 pystate.py_vti_writer_micro(path+"minit")
 
-demag=magnum_af.pyDemagSolver(meshvar,param)
-exch=magnum_af.pyExchSolver(meshvar,param)
-Llg=magnum_af.pyLLG(pystate,demag,exch)
+demag=magnumaf.DemagField(meshvar,material)
+exch=magnumaf.ExchangeField(meshvar,material)
+Llg=magnumaf.LLGIntegrator([pystate,demag,exch])
 
 print "relax --------------------"
 while pystate.t() < 1e-9:
-  Llg.llgstep(pystate)
+  Llg.step(pystate)
 pystate.py_vti_writer_micro(path+"mrelax")
 
 print "switch --------------------"
 Llg.set_state0_alpha(0.02)# this should be changed in cpp version
 
 zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0]=-24.6e-3/param.print_mu0()
-zeeswitch[0,0,0,1]=+4.3e-3/param.print_mu0()
+zeeswitch[0,0,0,0]=-24.6e-3/material.print_mu0()
+zeeswitch[0,0,0,1]=+4.3e-3/material.print_mu0()
 zeeswitch[0,0,0,2]=0.0
 zeeswitch = af.tile(zeeswitch,100,25,1)
-zee=magnum_af.pyZee(zeeswitch)
+zee=magnumaf.ExternalField(zeeswitch)
 Llg.add_terms(zee)
 
 with open(path + 'm.dat', 'w') as f:
   while pystate.t() < 2e-9:
-    Llg.llgstep(pystate)
+    Llg.step(pystate)
     f.write("%10.12f %10.12f %10.12f %10.12f\n" % (pystate.t(), pystate.meanxyz(0), pystate.meanxyz(1), pystate.meanxyz(2)))
 
 # pyplot fails:

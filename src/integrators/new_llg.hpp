@@ -7,10 +7,10 @@
 #include "adaptive_runge_kutta.hpp"
 #include <memory>//shared_ptr
 
-class NewLlg : public AdaptiveRungeKutta{
+class LLGIntegrator : public AdaptiveRungeKutta{
     public:
-        NewLlg(std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
-        NewLlg(LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        LLGIntegrator(std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        LLGIntegrator(LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
         double E(const State&);
         LlgTerms llgterms;
         const bool dissipation_term_only;

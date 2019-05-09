@@ -25,12 +25,12 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -44,14 +44,14 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    //llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ExchSolver(mesh,param)));
-    llgterm.push_back( llgt_ptr (new DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ANISOTROPY(mesh,param)));
+    //llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
     
     
     LLG Llg(state,llgterm);
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
     timer t = af::timer::start();
     while (state.t < 15.e-10){
-        state.m=Llg.llgstep(state);
+        state.m=Llg.step(state);
     }
     double timerelax= af::timer::stop(t);
     vti_writer_micro(state.m, mesh ,filepath + "relax");

@@ -1,6 +1,8 @@
 #ifndef PTH_MAG_H
 #define PTH_MAG_H
 #include "Faddeeva.hh"
+#include "mesh.hpp"
+#include "nonequispaced_mesh.hpp"
 #include "llg_terms/atomistic_anisotropy.hpp"
 #include "llg_terms/atomistic_demag.hpp"
 #include "llg_terms/atomistic_dmi.hpp"
@@ -8,12 +10,14 @@
 #include "llg_terms/atomistic_dmi.hpp"
 #include "llg_terms/micro_anisotropy.hpp"
 #include "llg_terms/micro_demag.hpp"
+#include "llg_terms/micro_demag_nonequi.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/micro_exch.hpp"
 #include "llg_terms/micro_exch_sparse.hpp"
 #include "llg_terms/micro_exch_sparse_nobc.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/zee.hpp"
+#include "llg_terms/micro_spintransfertorque.hpp"
 #include "string.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"

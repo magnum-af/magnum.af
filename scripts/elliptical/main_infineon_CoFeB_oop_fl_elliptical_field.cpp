@@ -49,25 +49,25 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
-    Param param = Param();
-    param.ms    = 1.58/param.mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
-    param.A     = 15e-12;        // [J/m]
-    param.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
-    param.alpha = 0.02;
+    Material material = Material();
+    material.ms    = 1.58/constants::mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
+    material.A     = 15e-12;        // [J/m]
+    material.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    material.alpha = 0.02;
 
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,param, mesh.ellipse(n_cells, 2));
+    State state(mesh,material, mesh.ellipse(n_cells, 2));
 
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     mesh.print(std::cout);
 
     std::vector<LlgTerm> llgterm;
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
-    llgterm.push_back( LlgTerm (new Zee( zee_func_for_relax_in_init)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExternalField( zee_func_for_relax_in_init)));
+    LLGIntegrator Llg(llgterm);
 
     // Relaxation
     if(!exists (path_mrelax)){
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     Llg.llgterms.pop_back(); // Remove init zee field 
 
     timer t_hys = af::timer::start();
-    Llg.llgterms.push_back( LlgTerm (new Zee(zee_func))); //Rate in T/s
+    Llg.llgterms.push_back( LlgTerm (new ExternalField(zee_func))); //Rate in T/s
     while (state.t < t_full_rotation){
          Llg.step(state);
          state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));

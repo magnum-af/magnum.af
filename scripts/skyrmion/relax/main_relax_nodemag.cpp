@@ -31,17 +31,17 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.alpha = 1;
-    param.D=2*5.76e-3;
-    param.Ku1=6.4e6;
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.alpha = 1;
+    material.D=2*5.76e-3;
+    material.Ku1=6.4e6;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
+    material.K_atom=material.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
      // Initial magnetic field
@@ -56,21 +56,21 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
     
-    //llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    //llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
   
     LLG Llg(state,llgterm);
   
     timer t = af::timer::start();
     while (state.t < 8.e-10){
-        state.m=Llg.llgstep(state);
+        state.m=Llg.step(state);
     }
     double timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());

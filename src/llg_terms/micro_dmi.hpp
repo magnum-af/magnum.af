@@ -4,7 +4,7 @@
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
-class DMI : public LLGTerm {
+class DmiField : public LLGTerm {
   public:
     //Field contribution
     af::array h(const State& state);
@@ -14,9 +14,9 @@ class DMI : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    Param param;
+    Material material;
     Mesh mesh;
-    DMI (Mesh, Param);
+    DmiField (Mesh, Material);
     af::array filtr_fd1;
     void correct_edges(af::array& out, const af::array& in);
     af::array n;

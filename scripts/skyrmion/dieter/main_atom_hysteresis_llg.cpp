@@ -20,7 +20,7 @@ double hzee_max = 2; //[T]
 //    else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
 //    else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
 //    array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-//    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+//    zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
 //    return  zee;
 //}
 
@@ -31,7 +31,7 @@ af::array zee_func(State state){
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -57,17 +57,17 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
+    material.K_atom=material.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -81,14 +81,14 @@ int main(int argc, char** argv)
          }
      }
 
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
     
     LLG Llg(state,llgterm);
   
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-10){
         E_prev=Llg.E(state);
         for ( int i = 0; i<100; i++){
-            state.m=Llg.llgstep(state);
+            state.m=Llg.step(state);
         }
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
@@ -105,16 +105,16 @@ int main(int argc, char** argv)
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", steps = " << state.steps << std::endl; 
     vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
   
-    //State state(mesh,param, m);
+    //State state(mesh,material, m);
     //vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     //// Relax
     //af::timer timer_llgterms = af::timer::start();
     //Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
-    ////minimizer.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
-    //minimizer.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
-    //minimizer.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
-    //minimizer.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    ////minimizer.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    //minimizer.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
+    //minimizer.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
+    //minimizer.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
     //std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     ////obtaining relaxed magnetization
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 
     //timer t_hys = af::timer::start();
     //double rate = hzee_max/quater_steps; //[T/s]
-    //minimizer.llgterms.push_back( LlgTerm (new Zee(&zee_func)));
+    //minimizer.llgterms.push_back( LlgTerm (new ExternalField(&zee_func)));
     //while (state.t < 4* hzee_max/rate){
     //    minimizer.minimize(state);
     //    calc_mean_m(state, stream, afvalue(minimizer.llgterms[4]->h(state)(0,0,0,0)));
@@ -144,9 +144,9 @@ int main(int argc, char** argv)
     //}
     //std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back( llgt_ptr (new Zee(&zee_func))); //Rate in T/s
+    Llg.Fieldterms.push_back( llgt_ptr (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
-         state.m=Llg.llgstep(state);
+         state.m=Llg.step(state);
          if( state.steps % 2000 == 0){
              calc_mean_m(state, stream, afvalue(Llg.Fieldterms[4]->h(state)(0,0,0,0)));
              vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());

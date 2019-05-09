@@ -25,29 +25,29 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.alpha = 1;
-    param.afsync  = false;
-    param.D = (argc >= 3 ? std::stod(argv[3]) : 0.01152);
-    param.Ku1=(argc >= 4 ? std::stod(argv[4]) : 6400000);
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.alpha = 1;
+    material.afsync  = false;
+    material.D = (argc >= 3 ? std::stod(argv[3]) : 0.01152);
+    material.Ku1=(argc >= 4 ? std::stod(argv[4]) : 6400000);
 
-    param.set_atomistic_from_micromagnetic(mesh.dx);
+    material.set_atomistic_from_micromagnetic(mesh.dx);
   
-    std::cout<<"D="<<param.D<<std::endl;
-    std::cout<<"Ku1="<<param.Ku1<<std::endl;
-    std::cout<<"D_atom="<<param.D_atom<<std::endl;
-    std::cout<<"Ku1_atom="<<param.K_atom<<std::endl;
+    std::cout<<"D="<<material.D<<std::endl;
+    std::cout<<"Ku1="<<material.Ku1<<std::endl;
+    std::cout<<"D_atom="<<material.D_atom<<std::endl;
+    std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
   
-    State state(mesh, param, mesh.skyrmconf());
+    State state(mesh, material, mesh.skyrmconf());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
   
-    NewLlg Llg;
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    LLGIntegrator Llg;
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh ,filepath + "relax");
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
             mm(span,span,span,span)=0;
             mm(span,span,span,2)=1.;
         }
-        inputimages.push_back(State(mesh, param, mm));
+        inputimages.push_back(State(mesh, material, mm));
     }
   
     String string(state, inputimages, n_interp, string_dt , Llg.llgterms);

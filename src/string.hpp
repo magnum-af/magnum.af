@@ -10,7 +10,7 @@ class String {
 
     State state;// TODO remove this state instace
     //Mesh mesh;
-    NewLlg Llg;//(state_relax,atol,rtol,hmax,hmin);
+    LLGIntegrator Llg;//(state_relax,atol,rtol,hmax,hmin);
     const int n_interp;
     const double dt;
     double time{0};

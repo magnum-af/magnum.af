@@ -1,6 +1,4 @@
 #include "state.hpp"
-#include "func.hpp"
-#include "misc.hpp"
 
 void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     // Initializes Ms if any entry of initial m has zero norm
@@ -8,25 +6,36 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
         if(verbose_) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
-        Ms = af::constant(this->param.ms, nzero.dims(), f64);
+        Ms = af::constant(this->material.ms, nzero.dims(), f64);
         Ms *= nzero;
         Ms = af::tile(Ms,1,1,1,3);
     }
 }
 
 void State::check_discretization(){
-    if ( this->param.A != 0 && this->param.Ku1 != 0) { // TODO implement better way of checking
-        double max_allowed_cellsize = sqrt(this->param.A/this->param.Ku1);
+    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
+        double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
         if (verbose_ && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
             std::cout << red("Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)") << std::endl;
         }
     }
 }
 
-void State::check_m_norm(double tol){
-    double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m),0),1),2),3));
+void State::check_nonequispaced_discretization(){
+    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
+        const double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
+        const double max_dz = *std::max_element(nonequimesh.z_spacing.begin(), nonequimesh.z_spacing.end());
+        if (verbose_ && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz > max_allowed_cellsize )){
+            std::cout << red("Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)") << std::endl;
+        }
+    }
+}
+
+void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
+    af::array one_when_value_is_zero = af::iszero(vecnorm(m));
+    double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m)+1.*one_when_value_is_zero,0),1),2),3));
     if ( fabs(meannorm - 1.) > tol) {
-        printf("%s", (red("Warning: State::check_m_norm: magnetization is not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
+        printf("%s", (red("Warning: State::check_m_norm: non-zero parts of the magnetization are not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
     }
 }
 //long int State::get_m_addr(){
@@ -36,17 +45,24 @@ void State::check_m_norm(double tol){
 //
 
 
-State::State (Mesh mesh_in, Param param_in, af::array m_in):
-              mesh(mesh_in),param(param_in), m(m_in)
+State::State (Mesh mesh, Material param, af::array m): mesh(mesh), material(param), m(m)
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
 }
 
+State::State (NonequispacedMesh nonequimesh, af::array m):
+              nonequimesh(nonequimesh), m(m)
+{
+    check_m_norm();
+    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    check_nonequispaced_discretization();
+}
+
 ///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_mean):
-              mesh(mesh_in),param(param_in), m(m_in), evaluate_mean_(evaluate_mean)
+State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean):
+              mesh(mesh_in),material(param_in), m(m_in), evaluate_mean_(evaluate_mean)
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
@@ -56,7 +72,7 @@ State::State (Mesh mesh_in, Param param_in, af::array m_in, af::array evaluate_m
     if (verbose_) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
 }
 
-State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose_(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
@@ -67,7 +83,7 @@ State::State (Mesh mesh_in, Param param_in, long int aptr): mesh(mesh_in), param
 }
 
 ///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), param(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), material(param_in), verbose_(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
@@ -84,6 +100,11 @@ State::State (Mesh mesh_in, Param param_in, long int aptr, long int evaluate_mea
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
 }
 
+
+void State::Normalize(){
+    this->m = renormalize(this->m);
+}
+
 void State::set_m(long int aptr){
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
@@ -94,6 +115,36 @@ void State::set_m(long int aptr){
 
 long int State::get_m_addr(){
     af::array *a = new af::array(m);
+    return (long int) a->get();
+}
+
+void State::set_micro_Ms_field(long int aptr){
+    void **a = (void **)aptr;
+    Ms = *( new af::array( *a )); // TODO rename Ms -> micro_Ms_field
+}
+
+long int State::get_micro_Ms_field(){
+    af::array *a = new af::array(Ms);
+    return (long int) a->get();
+}
+
+void State::set_micro_A_field(long int aptr){
+    void **a = (void **)aptr;
+    micro_A_field = *( new af::array( *a ));
+}
+
+long int State::get_micro_A_field(){
+    af::array *a = new af::array(micro_A_field);
+    return (long int) a->get();
+}
+
+void State::set_micro_Ku1_field(long int aptr){
+    void **a = (void **)aptr;
+    micro_Ku1_field = *( new af::array( *a ));
+}
+
+long int State::get_micro_Ku1_field(){
+    af::array *a = new af::array(micro_Ku1_field);
     return (long int) a->get();
 }
 
@@ -111,12 +162,12 @@ void State::_vti_reader(std::string inputname){
 }
 
 
-void State::_vtr_writer(std::string outputname){
-    vtr_writer(m, mesh, outputname); 
-}
-void State::_vtr_reader(std::string inputname){
-    vtr_reader(m, mesh, inputname); 
-}
+//void State::_vtr_writer(std::string outputname){
+//    vtr_writer(m, mesh, outputname);
+//}
+//void State::_vtr_reader(std::string inputname){
+//    vtr_reader(m, mesh, inputname);
+//}
 
 double State::meani(const int i){
     double *norm_host=NULL;
@@ -126,7 +177,8 @@ double State::meani(const int i){
         ///< Calculates the mean values for the specified values given in evaluate_mean_
         norm_host = (af::sum(af::sum(af::sum((m * evaluate_mean_)(af::span,af::span,af::span,i),0),1),2)/evaluate_mean_is_1_).host<double>();
     }
-    else if(!Ms.isempty()){
+    else if(!Ms.isempty() && n_cells_ != 0){
+        if (n_cells_ == 0) printf("%s State::meani: n_cells_ is empty and will be divieded by 0!\n", red("Warning:").c_str());
         norm_host = (af::sum(af::sum(af::sum(m(af::span,af::span,af::span,i),0),1),2)/n_cells_).host<double>();
     }
     else{

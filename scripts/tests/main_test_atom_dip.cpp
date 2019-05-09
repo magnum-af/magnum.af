@@ -18,11 +18,11 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.alpha = 1;
-    param.afsync  = false;
-    //param.p=1;
-    param.p=9.274009994e-24;
+    Material material = Material();
+    material.alpha = 1;
+    material.afsync  = false;
+    //material.p=1;
+    material.p=9.274009994e-24;
   
     // Initial magnetic field
     //
@@ -35,19 +35,19 @@ int main(int argc, char** argv)
     m(1,0,0,0) = 0;
     m(1,0,0,1) = 0;
     m(1,0,0,2) = 1;
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "/minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     LLG Llg(state,llgterm);
-    double analytical=- pow(param.p,2)*param.mu0/(4.*M_PI)/pow(dx,3);
+    double analytical=- pow(material.p,2)*constants::mu0/(4.*M_PI)/pow(dx,3);
     //std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
     std::cout << "Analytical= " << analytical <<std::endl;
     if(compare(Llg.E(state),analytical)) std::cout <<"!!! TEST FAILED !!!"<< std::endl;
-    //std::cout << "Analytical= " << - pow(param.p,2)*param.mu0/(4.*M_PI)/pow(dx,3) <<std::endl;
-    std::cout << "H_dip_1   = " <<0<<","<<0<<","<< param.p/(4*M_PI*pow(dx,3)) <<std::endl;
-    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< param.p/(4*M_PI*pow(dx,3)) <<std::endl;
+    //std::cout << "Analytical= " << - pow(material.p,2)*constants::mu0/(4.*M_PI)/pow(dx,3) <<std::endl;
+    std::cout << "H_dip_1   = " <<0<<","<<0<<","<< material.p/(4*M_PI*pow(dx,3)) <<std::endl;
+    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< material.p/(4*M_PI*pow(dx,3)) <<std::endl;
 
     //-------------------------------------------------------
     m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "/minit2").c_str());
     std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
     std::cout << "Analytical= " << 0 <<std::endl;
-    std::cout << "H_dip_1   = " << -2*param.p/(4*M_PI*pow(dx,3))<<"," <<0<<","<<0<<std::endl;
-    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< param.p/(4*M_PI*pow(dx,3)) <<std::endl;
+    std::cout << "H_dip_1   = " << -2*material.p/(4*M_PI*pow(dx,3))<<"," <<0<<","<<0<<std::endl;
+    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< material.p/(4*M_PI*pow(dx,3)) <<std::endl;
     //-------------------------------------------------------
     m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,0) = 0;
@@ -77,9 +77,9 @@ int main(int argc, char** argv)
     state.m=m;
     vti_writer_atom(state.m, mesh ,(filepath + "/minit2").c_str());
     std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
-    std::cout << "Analytical= " <<  pow(param.p,2)*param.mu0/(4.*M_PI)/pow(dx,3) <<std::endl;
-    std::cout << "H_dip_1   = " <<0<<","<<0<<","<<-param.p/(4*M_PI*pow(dx,3)) <<std::endl;
-    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< param.p/(4*M_PI*pow(dx,3)) <<std::endl;
+    std::cout << "Analytical= " <<  pow(material.p,2)*constants::mu0/(4.*M_PI)/pow(dx,3) <<std::endl;
+    std::cout << "H_dip_1   = " <<0<<","<<0<<","<<-material.p/(4*M_PI*pow(dx,3)) <<std::endl;
+    std::cout << "H_dip_2   = " <<0<<","<<0<<","<< material.p/(4*M_PI*pow(dx,3)) <<std::endl;
     //-------------------------------------------------------
 
     nx = 1, ny=2 ,nz=1;
@@ -92,16 +92,16 @@ int main(int argc, char** argv)
     m(0,1,0,0) = 0;
     m(0,1,0,1) = 0;
     m(0,1,0,2) = 1;
-    state = State (mesh,param, m);
+    state = State (mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "/minit").c_str());
   
     llgterm.pop_back();
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     //TODO this leads to compiler error
     //Llg=LLG(state,llgterm);
     LLG Llg2(state,llgterm);
     std::cout << "ENERGY    = " << Llg2.E(state) <<std::endl;
-    std::cout << "Analytical= " << - pow(param.p,2)*param.mu0/(4.*M_PI)/pow(dx,3) <<std::endl;//TODO calc on paper, but should be like case 1
+    std::cout << "Analytical= " << - pow(material.p,2)*constants::mu0/(4.*M_PI)/pow(dx,3) <<std::endl;//TODO calc on paper, but should be like case 1
     //-------------------------------------------------------
     m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,0) = 1;

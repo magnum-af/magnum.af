@@ -18,7 +18,7 @@ af::array zee_func(State state){
     double field_Tesla = 0;
     field_Tesla = rate *state.t; 
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,0)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
 
@@ -44,25 +44,25 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 580000;
-    param.alpha = 1;
-    param.A     = 15e-12;
+    Material material = Material();
+    material.ms    = 580000;
+    material.alpha = 1;
+    material.A     = 15e-12;
   
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
-    param.J_atom=2.*param.A*dx;
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      m(span,span,span,0) = 1. / sqrt(2);
      m(span,span,span,2) = 1. / sqrt(2);
 
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     
     LLG Llg(state,llgterm);
   
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-8){
         E_prev=Llg.E(state);
         for ( int i = 0; i<100; i++){
-            state.m=Llg.llgstep(state);
+            state.m=Llg.step(state);
         }
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }

@@ -13,7 +13,7 @@ af::array zee_func(State state){
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,2)=constant(field_Tesla/state.param.mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    zee(span,span,span,2)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
   
@@ -28,11 +28,11 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    Param param = Param();
-    param.ms    = 2./param.mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    param.A     = 1.5e-11;//[J/m]
-    param.Ku1 = 1.4e6;
-    param.alpha = 0.02;
+    Material material = Material();
+    material.ms    = 2./constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A     = 1.5e-11;//[J/m]
+    material.Ku1 = 1.4e6;
+    material.alpha = 0.02;
 
     const double x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
     const int nx = 343;
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,param, mesh.ellipse(n_cells));
+    State state(mesh,material, mesh.ellipse(n_cells));
 
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
@@ -50,11 +50,11 @@ int main(int argc, char** argv)
 
     std::vector<LlgTerm> llgterm;
     timer t_demag = af::timer::start();
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
     std::cout<<"Demag assembled in "<< af::timer::stop(t_demag) <<std::endl;
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ANISOTROPY(mesh,param)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    LLGIntegrator Llg(llgterm);
 
     // Relaxation
     if(!exists (path_mrelax)){
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     timer t_hys = af::timer::start();
     double rate = 0.34e6 ; //[T/s]
     double hzee_max = 0.25; //[T]
-    Llg.llgterms.push_back( LlgTerm (new Zee(&zee_func))); //Rate in T/s
+    Llg.llgterms.push_back( LlgTerm (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          Llg.step(state);
          state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));

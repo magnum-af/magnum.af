@@ -6,18 +6,18 @@
 #include "../state.hpp"
 #include "../func.hpp"
 
-class Zee : public LLGTerm {
+class ExternalField : public LLGTerm {
   public:
     ///< Constant Zeeman field.
-    Zee(af::array zee_in);
-    Zee(long int zee_in_addr);
+    ExternalField(af::array zee_in);
+    ExternalField(long int zee_in_addr);
     long int get_m_addr();
     ///< Setting x,y,z components of static Zeeman field.
     void set_xyz(const State&, const double x, const double y, const double z);
 
     ///< Time dependent Zeeman field.
-    Zee(af::array (*callback_func_in)(State state));
-    Zee(std::function<af::array(State)>);
+    ExternalField(af::array (*callback_func_in)(State state));
+    ExternalField(std::function<af::array(State)>);
     af::array (*callback_func)(State state);
     std::function<af::array(State)> lamda_callback;
     bool callback{false};

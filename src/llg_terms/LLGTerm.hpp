@@ -3,6 +3,7 @@
 #include <memory>
 #include "arrayfire.h"
 #include "../state.hpp"
+#include "../constants.hpp"
 // Abstract basis class for all terms in the LLG equation.
 class LLGTerm{
   public:

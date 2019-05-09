@@ -4,21 +4,21 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 
-double ATOMISTIC_EXCHANGE::E(const State& state){
-  return -state.param.mu0/2. *state.param.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+double AtomisticExchangeField::E(const State& state){
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 }
 
-double ATOMISTIC_EXCHANGE::E(const State& state, const af::array& h){
-  return -state.param.mu0/2. *state.param.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
+double AtomisticExchangeField::E(const State& state, const af::array& h){
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
 }
 
-ATOMISTIC_EXCHANGE::ATOMISTIC_EXCHANGE (const Mesh& mesh){
+AtomisticExchangeField::AtomisticExchangeField (const Mesh& mesh){
 }
 
-array ATOMISTIC_EXCHANGE::h(const State& state){
+array AtomisticExchangeField::h(const State& state){
 
     array filtr=constant(0.0,3,3,3,3,f64);
-    if(state.param.hexagonal_close_packed == true){
+    if(state.material.hexagonal_close_packed == true){
         std::cout << "WARNING: Experimental hcp exchange" << std::endl;
         filtr(0,1,1,span)= 1.;
         filtr(0,2,1,span)= 1.;// hex lattice 
@@ -33,7 +33,7 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
         af::print("filtr",filtr);
          
     }
-    //else if(state.param.atom_fcc=true){
+    //else if(state.material.atom_fcc=true){
     //    //https://www.physics-in-a-nutshell.com/article/11/close-packed-structures-fcc-and-hcp 
     //}
     else{
@@ -49,13 +49,13 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
   //convolution
   array mj = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 
-  if(state.param.afsync) sync();
+  if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_solve);
-  return state.param.J_atom/(state.param.mu0*state.param.p)* mj;
+  return state.material.J_atom/(constants::mu0*state.material.p)* mj;
 }
-  //return state.param.J/(state.mesh.dx*state.param.mu0) * mj;
-  //return state.param.J/(state.mesh.dx*state.param.mu0*state.param.p) * mj;
-  //return state.param.J/state.mesh.dx * mj;
+  //return state.material.J/(state.mesh.dx*constants::mu0) * mj;
+  //return state.material.J/(state.mesh.dx*constants::mu0*state.material.p) * mj;
+  //return state.material.J/state.mesh.dx * mj;
 
 
 
@@ -77,15 +77,15 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 
 
 
-  //return -state.param.J/(2. * state.mesh.dx) * mj;//TODO not dx 
-  //array result =-state.param.J/(2. * state.mesh.dx) * mj;
-  //Wrong: this would be the Energy, not the field:   array result =tile(-state.param.J/2. * sum(state.m*mj,3),1,1,1,3);
+  //return -state.material.J/(2. * state.mesh.dx) * mj;//TODO not dx 
+  //array result =-state.material.J/(2. * state.mesh.dx) * mj;
+  //Wrong: this would be the Energy, not the field:   array result =tile(-state.material.J/2. * sum(state.m*mj,3),1,1,1,3);
   //return result;
-  //return  -state.param.J/2. * sum(state.m*mj,3);
+  //return  -state.material.J/2. * sum(state.m*mj,3);
 
 
 
-//ATOMISTIC_EXCHANGE::ATOMISTIC_EXCHANGE (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){
+//AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
 //  array exch = array(mesh.n0,mesh.n1,mesh.n2,3,f64);
 //  //initialize filters
 //  filtr=constant(0.0,3,3,3,f64);
@@ -100,7 +100,7 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 //  filtr(1,1,0)= 1 / pow(mesh.dz,2);
 //  filtr(1,1,2)= 1 / pow(mesh.dz,2);
 //}
-//array ATOMISTIC_EXCHANGE::solve(array m){
+//array AtomisticExchangeField::solve(array m){
 //  timer_exchsolve = timer::start();
 //
 //  timer_conv = timer::start();
@@ -109,7 +109,7 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 //  //exch = convolve(m,filtr);
 //  exch = convolve(m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 //
-//  if(param.afsync) sync();
+//  if(material.afsync) sync();
 //  time_conv += timer::stop(timer_conv);
 //
 //  //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
@@ -123,10 +123,10 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 //  
 //  exch(span,span,0 ,span)+=m(span,span,0 ,span)/ pow(mesh.dz,2);
 //  exch(span,span,-1,span)+=m(span,span,-1,span)/ pow(mesh.dz,2);
-//  if(param.afsync) sync();
+//  if(material.afsync) sync();
 //  time_edges += timer::stop(timer_edges);
 //  time_exchsolve += timer::stop(timer_exchsolve);
-//  return  (2.* param.A)/(param.mu0*param.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //}
 //
 //void showdims2(const array& a){
@@ -134,16 +134,16 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 //}
 //
 ////Function returns index 
-//int ATOMISTIC_EXCHANGE::findex(int i0, int i1, int i2, int im, int id){
+//int AtomisticExchangeField::findex(int i0, int i1, int i2, int im, int id){
 //  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
 //}
 //
 ////Inner index (index per matrix column)
-//int ATOMISTIC_EXCHANGE::findex(int i0, int i1, int i2, int im){
+//int AtomisticExchangeField::findex(int i0, int i1, int i2, int im){
 //  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
 //}
 //
-//ATOMISTIC_EXCHANGE::ATOMISTIC_EXCHANGE (Mesh meshin, Param paramin) : param(paramin),mesh(meshin){
+//AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
 //  const int dimension=mesh.n0*mesh.n1*mesh.n2*3;
 //  double* vmatr = NULL;
 //  vmatr = new double[dimension*dimension];
@@ -259,7 +259,7 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 //
 //
 //
-//array ATOMISTIC_EXCHANGE::solve(array m){
+//array AtomisticExchangeField::solve(array m){
 ////print("m",flat(m));
 //  timer_exchsolve = timer::start();
 //  array exch = matmul(matr,flat(m));
@@ -268,10 +268,10 @@ array ATOMISTIC_EXCHANGE::h(const State& state){
 ////print("ex1",flat(exch));
 //
 //  exch.eval();
-//  if(param.afsync) sync();
+//  if(material.afsync) sync();
 //  time_exchsolve += timer::stop(timer_exchsolve);
 //
-//  return  (2.* param.A)/(param.mu0*param.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //}
 //
 //

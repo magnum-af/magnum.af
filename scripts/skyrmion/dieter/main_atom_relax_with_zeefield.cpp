@@ -26,17 +26,17 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 580000;
-    param.A     = 15e-12;
-    param.alpha = 1;
-    param.D=3e-3;
-    param.Ku1=0.6e6;
+    Material material = Material();
+    material.ms    = 580000;
+    material.A     = 15e-12;
+    material.alpha = 1;
+    material.D=3e-3;
+    material.Ku1=0.6e6;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
+    material.K_atom=material.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -50,19 +50,19 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DEMAG(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_EXCHANGE(mesh)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_DMI(mesh,param)));
-    llgterm.push_back( llgt_ptr (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
 
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,2)= - 0.07 * pow(param.ms,2) * param.mu0;
+    zeeswitch(0,0,0,2)= - 0.07 * pow(material.ms,2) * constants::mu0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    llgterm.push_back( llgt_ptr (new Zee(zeeswitch)));
+    llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch)));
     
     LLG Llg(state,llgterm);
     Llg.write_fieldterms_micro(state, filepath + "init_field_micro_");
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-10){
         E_prev=Llg.E(state);
         for ( int i = 0; i < 100; i++){
-            state.m=Llg.llgstep(state);
+            state.m=Llg.step(state);
         }
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }

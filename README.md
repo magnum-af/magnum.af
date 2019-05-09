@@ -21,25 +21,71 @@ simulation software
 
 # Installation Guide
 ## Docker:
-Build the respective Docker images by running the provided dockerfiles in the 
-project directory:
+For GPU support build the image provided in the Dockerfile by running the following command in the project's root directory:
 
-`$ docker build -t magnum.af.cpu -f Dockerfile.cpu .`
+`$ nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .`
 
-`$ docker build -t magnum.af.opencl -f Dockerfile.opencl .`
+For CPU support only use:
+
+`$ docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" .`
+
+For running simulations, use the provided script in 'scripts/magnum.af.docker', e.g.:
+
+`$ magnum.af.docker sp4.py`
+
 ## Build scipt:
 Execute the provided installation script:
 
 `$./scripts/install_magnum.af_environment.sh`
-## Manual installation (outdated):
+
+## Manual installation:
 
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
 * [CMake](http://www.cmake.org) 3.0.0 or newer
-* ArrayFire 3.0.1 or higher [pre-built binaries](http://arrayfire.com/download) or
-  [source](https://github.com/arrayfire/arrayfire)
-* Cython
-* VTK-dev
+* pip3
+
+### NVIDIA driver and CUDA:
+following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
+
+`$ sudo ubuntu-drivers autoinstall`
+
+add your user to the video group
+
+`$ sudo usermod -a -G video $LOGNAME`
+
+Note: 
+if the driver version provided by the repo is not sufficient, use a ppa instead:
+
+`$ sudo add-apt-repository ppa:graphics-drivers && sudo apt-get update`
+
+And select the proper driver version, e.g.:
+
+`$ sudo apt install nvidia-driver-418 nvidia-settings`
+
+
+install CUDA with
+
+`$ sudo apt install nvidia-cuda-toolkit`
+
+### Install Arrayfire
+ For version 3.6.2:
+ 
+`$ wget https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_Linux_x86_64.sh .`
+
+`$ chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh`
+
+`$ sudo ./ArrayFire-v3.6.2_Linux_x86_64.sh  --include-subdir --prefix=/opt`
+
+`$ sudo pip3 install arrayfire`
+
+### Install VTK
+`$ sudo apt install libvtk7-dev`
+
+### Install Cython
+`$ sudo pip3 install cython`
+
+--------------------
 
 ### OpenCL Devices (e.g. AMD Graphics Cards):
 * Installation of hardware-specific drivers:

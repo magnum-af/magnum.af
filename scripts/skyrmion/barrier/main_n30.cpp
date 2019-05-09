@@ -29,17 +29,17 @@ int main(int argc, char** argv)
   
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
-    Param param = Param();
-    param.ms    = 1.1e6;
-    param.A     = 1.6e-11;
-    param.alpha = 1;
-    param.D=2*5.76e-3;
-    param.Ku1=6.4e6;
+    Material material = Material();
+    material.ms    = 1.1e6;
+    material.A     = 1.6e-11;
+    material.alpha = 1;
+    material.D=2*5.76e-3;
+    material.Ku1=6.4e6;
   
-    param.J_atom=2.*param.A*dx;
-    param.D_atom= param.D * pow(dx,2);
-    param.K_atom=param.Ku1*pow(dx,3);
-    param.p=param.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.J_atom=2.*material.A*dx;
+    material.D_atom= material.D * pow(dx,2);
+    material.K_atom=material.Ku1*pow(dx,3);
+    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
      // Initial magnetic field
@@ -54,14 +54,14 @@ int main(int argc, char** argv)
          }
      }
   
-    State state(mesh,param, m);
+    State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
   
-    NewLlg Llg;
-    //Demag?//Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DEMAG(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_EXCHANGE(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_DMI(mesh,param)));
-    Llg.llgterms.push_back( LlgTerm (new ATOMISTIC_ANISOTROPY(mesh,param)));
+    LLGIntegrator Llg;
+    //Demag?//Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
   
     Llg.relax(state);
     vti_writer_micro(state.m, mesh ,filepath + "relax");
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     
     std::vector<State> inputimages; 
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh,param, last));
+    inputimages.push_back(State(mesh,material, last));
   
     String string(state,inputimages, n_interp, string_dt ,Llg.llgterms);
     string.run(filepath);

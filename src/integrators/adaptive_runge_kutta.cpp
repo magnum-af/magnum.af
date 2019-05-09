@@ -1,25 +1,25 @@
 #include "adaptive_runge_kutta.hpp"
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_): 
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_, const bool verbose): 
   scheme_ (scheme_), controller_(controller_), renormalize_(renormalize_)
-    {
+{
     if (scheme_ == "RKF45") {
-        //std::cout << "Integrators: Initializing RKF45 method." << std::endl;
+        if(verbose) printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
     }
     else if (scheme_ == "DP45") {
-        //std::cout << "Integrators: Initializing DP45 method." << std::endl;
+        if(verbose) printf("Adaptive Runge Kutta: Initializing DP45 method.\n");
     }
     else if (scheme_ == "BS45") {
-        //std::cout << "Integrators: Initializing BS45 method." << std::endl;
+        if(verbose) printf("Adaptive Runge Kutta: Initializing BS45 method.\n");
     }
     else if (scheme_ == "DP78") {
-        //std::cout << "Integrators: Initializing DP78 method." << std::endl;
+        if(verbose) printf("Adaptive Runge Kutta: Initializing DP78 method.\n");
     }
     else if (scheme_ == "BS23") {
-        //std::cout << "Integrators: Initializing BS23 method." << std::endl;
+        if(verbose) printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
     }
     else {
-        std::cout<< "Error: Integration method not found, please check the documantation" << std::endl;
+        printf("%s Integration method not found. Valid arguments are 'RKF45' (default) ,'DP45','BS45','DP78','BS23'\n", bold_red("Error:").c_str());
         exit (EXIT_FAILURE);
     }
 }

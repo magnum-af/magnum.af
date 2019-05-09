@@ -5,8 +5,13 @@ set -e
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 allargs=$@
 
+b_flag='' 
+c_flag=''
+copyfile=''
+backend='' 
 f_flag='' 
 GPU='0'
+d_flag=''
 i_flag=''
 inputfile=''
 o_flag=''
@@ -15,10 +20,11 @@ postprocess=''
 r_flag='' 
 s_flag='' 
 S_flag='' 
-verbose='false'
+v_flag='false'
+x_flag=''
 
 print_usage() {
-  printf "Usage: $(basename "$0") {h|f|g:|i:|o:|p:|r|s|S|v} [inputfile outputdir]
+  printf "Usage: $(basename "$0") {b:|c:|h|f|g:|i:|o:|p:|r|s|S|v|x} [inputfile outputdir]
 
 Simulation script for magnum.af. Manages build process, directory creation and program execution.
 
@@ -31,6 +37,8 @@ Arguments:
 Options (subsequent ':' indicates that an argument is expected):
   -h  help           Show this help message.
 
+  -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -c: copy           Copy a given file into outputdir.
   -f  force          Forces output to be written in already existing output directory. This may overwrite files.
   -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
   -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
@@ -39,7 +47,8 @@ Options (subsequent ':' indicates that an argument is expected):
   -r  (no)rebuild    Skips build process for .cpp inputfile or executes build for .py inputfile.
   -s  screen         Starts script using the terminal multiplexer screen.
   -S  silent screen  Silently starts script using screen, skipping 'tail -f stdout.txt'.
-  -v  verbose        Show more details during execution.
+  -v  verbose        Show more details of this script.
+  -x  xtrace         Debugging: print every command.
 
 Examples:
   magnum.af sp4.py
@@ -59,10 +68,15 @@ Note:
 }
 
 
-while getopts 'hfg:i:o:p:rsSv' flag; do
+while getopts 'b:Bc:dDhfg:i:o:p:rsStvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
+    b) b_flag='true'; backend="${OPTARG}" ;;
+    c) c_flag='true'; copyfile="${OPTARG}" ;;
+    B) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
+    d) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
+    D) ;; #Note: passed from magnum.af.docker script to avoid additional parsing
     f) f_flag='true' ;;
     g) GPU="${OPTARG}" ;;
     i) i_flag='true'; inputfile="${OPTARG}" ;;
@@ -71,12 +85,18 @@ while getopts 'hfg:i:o:p:rsSv' flag; do
     r) r_flag='true' ;;
     s) s_flag='true' ;;
     S) S_flag='true' ;;
-    v) verbose='true' ;;
+    t) ;;
+    v) v_flag='true' ;;
+    x) x_flag='true' ;;
     *) print_usage
        exit 1 ;;
   esac
 done
 shift $((OPTIND-1)) # resetting counting
+
+if [[ "$x_flag" == "true" ]]; then
+    set -o xtrace
+fi
 
 if [ -z "$inputfile" ]; then
     inputfile=$1
@@ -87,19 +107,28 @@ fi
 #fi
 
 function log () {
-    if [[ "$verbose" == "true" ]]; then
+    if [[ "$v_flag" == "true" ]]; then
         echo "$@"
     fi
 }
 
-log "$f_flag"
-log "$GPU"
-log "$inputfile"
-log "$outputdir"
-log "$postprocess"
-log "$s_flag"
-log "$verbose"
+log "b_flag           $f_flag      "
+log "backend          $backend     "
+log "f_flag           $f_flag      "
+log "GPU              $GPU         "
+log "s_flag           $s_flag      "
+log "d_flag           $d_flag      "
+log "i_flag           $i_flag      "
+log "inputfile        $inputfile   "
+log "o_flag           $o_flag      "
+log "outputdir        $outputdir   "
+log "postprocess      $postprocess "
+log "r_flag           $r_flag      "
+log "s_flag           $s_flag      "
+log "S_flag           $S_flag      "
+log "v_flag          $v_flag     "
 
+log "checking input arguments"
 log "checking $inputfile != '' and extension"
 if [[ "$inputfile" == "" ]]; then
     echo "Error: missing inputfile as first argument required, aborting..."
@@ -120,18 +149,26 @@ else
     fi
 fi
 
+log "checking backend option"
+if [ "$b_flag" == "true" ]; then
+    if [ "$backend" != "cuda" ] && [ "$backend" != "opencl" ] &&  [ "$backend" != "cpu" ] ; then
+        echo "Error: Unknown backend '"$backend"'. Expected {cuda, opencl, cpu} as argument following '-b' flag. Aborting..."
+        exit 1
+    fi
+fi
+
 log "checking if build is necessary"
-if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnum_af.so" ] || [ "$r_flag" == "true" ]));then
+if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
-    $magafdir/scripts/bash/check_main.sh $verbose
+    $magafdir/scripts/bash/check_main.sh $v_flag
     
     log "building"
     [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src 
-    $magafdir/scripts/bash/build.sh $magafdir $verbose
+    $magafdir/scripts/bash/build.sh $magafdir $v_flag
     [ "$extension" == "cpp" ] && rm $magafdir/src/$(basename $inputfile) || rm $magafdir/src/main_empty.cpp
     
     log "moving possible old main back"
-    $magafdir/scripts/bash/check_main_remove.sh $verbose
+    $magafdir/scripts/bash/check_main_remove.sh $v_flag
 fi
 
 log "checking outputdir $outputdir"
@@ -155,25 +192,38 @@ if [ "$f_flag" == "true" ]; then
         log "writing in existing directory $outputdir"
     fi
 else
-    $magafdir/scripts/bash/check_write_dir.sh $outputdir $verbose
+    $magafdir/scripts/bash/check_write_dir.sh $outputdir $v_flag
+fi
+
+log "checking copy file"
+if [ "$c_flag" == "true" ]; then
+    if [ -f "$copyfile" ]; then
+        cp "$copyfile" "$outputdir"
+    else
+        echo "Warning: file to copy given by the flag '-c $copyfile' is not a regular file. Copy instuction is not attempted."
+    fi
 fi
 
 log "printing bash command and git log in outputdir"
-command -v git >/dev/null 2>&1 || true # this is allowed to fail, thus '|| true'
-GIT_IS_AVAILABLE=$?
-if [ $GIT_IS_AVAILABLE -eq 0 ];then
-    if (( $(git rev-parse --is-inside-work-tree) == "true" )); then
+git_is_aviable=$(command -v git || true)
+if [[ -n "$git_is_aviable" ]];then
+    log "git aviable"
+    dir_is_gitdir="$(git rev-parse --is-inside-work-tree 2> /dev/null  || true)"
+    log "dir_is_gitdir =${dir_is_gitdir}"
+    if [[ "$dir_is_gitdir" == "true" ]]; then
         githash=$(git rev-parse HEAD)
     else
         log "Note: current directory is no git dir, omitting git log"
     fi
+else
+    log "git not aviable"
 fi
 
 log "writing $outputdir/simulation_info.txt"
 if [[ -n "$githash" ]];then 
-    echo "Script called on $(eval date) with '$0 $allargs', according git hash is $githash" >> $outputdir/simulation_info.txt
+    echo "Command '$0 $allargs' called at $(eval date). According git hash is $githash" >> $outputdir/command_log.txt
 else
-    echo "Script called on $(eval date) with '$0 $allargs'" >> $outputdir/simulation_info.txt
+    echo "Command '$0 $allargs' called at $(eval date)." >> $outputdir/command_log.txt
 fi
 
 log "copying postprocess if existing"
@@ -192,7 +242,9 @@ fi
 
 log "copying files"
 if [[ "$outputdir" != "" ]]; then
-    cp $magafdir/bin/magnum.af-* $outputdir
+    if [[ "$extension" == "cpp" ]];then
+        cp $magafdir/bin/magnum.af-* $outputdir
+    fi
     cp $inputfile $outputdir
 fi
 
@@ -224,25 +276,27 @@ if [ "$extension" == "py" ];then
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "(PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi ) > $outputdir/stdout.txt 2>&1"
-        echo "started magnum.af in screen"
-        [ "$verbose" == "true" ] && log "Running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
+        workaround_for_gto="(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
+        screen -d -S GPU$GPU -m bash -c "$workaround_for_gto"
+        echo "started magnum.af in screen. Track with 'screen -ls'."
+        #[ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls # NOTE: problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
-            log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
+            echo -e "running tail -f 'stdout.txt'. Press <ctrl+c> to exit, the screen will continue."
             sleep_val=0
             while [ ! -f "$outputdir/stdout.txt" ];
             do
                 sleep 0.001
                 log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
-                sleep_val=$((val+1))
+                sleep_val=$((sleep_val+1))
             done
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
-        PYTHONPATH=$magafdir/build/src $pythonversion $inputfile $outputdir $GPU $@
+        eval "PYTHONPATH=$magafdir/build/src $pythonversion -u $inputfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 else
+    log "Using cpp version"
     if [ -e $outputdir/magnum.af-cuda ];then
         runfile="$outputdir/magnum.af-cuda"
     elif [ -e $outputdir/magnum.af-opencl ];then
@@ -250,10 +304,36 @@ else
     else
         runfile=$outputdir/magnum.af-cpu
     fi
+    log "checking b flag and check default overwriting"
+    if [ "$b_flag" == "true" ]; then
+        if [ "$backend" = "cuda" ]; then
+            if [ ! -f $outputdir/magnum.af-cuda ]; then
+                echo "Error. Requested backend 'cuda' was not compiled. Please verify that CUDA is installed and found by CMake or select an other backend. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-cuda
+            fi
+        elif [ "$backend" = "opencl" ]; then
+            if [ ! -f $outputdir/magnum.af-opencl ]; then
+                echo "Error. Requested backend 'opencl' was not compiled. Please verify that OpenCL is installed and found by CMake or select an other backend. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-opencl
+            fi
+        else
+            if [ ! -f $outputdir/magnum.af-cpu ]; then
+                echo "Error. Strange! Requested backend 'cpu' was not compiled. This should not have happened. Aborting..."
+                exit 1
+            else
+                runfile=$outputdir/magnum.af-cpu
+            fi
+        fi
+    fi
+
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) > $outputdir/stdout.txt 2>&1"
+        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) |& tee $outputdir/stdout.txt"
         echo "started $(basename $runfile) in screen"
-        [ "$verbose" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
+        #[ "$v_flag" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
             log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
             sleep_val=0
@@ -261,13 +341,13 @@ else
             do
                 sleep 0.001
                 log "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
-                sleep_val=$((val+1))
+                sleep_val=$((sleep_val+1))
             done
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
         echo "starting $(basename $runfile)"
-        eval "$runfile $outputdir_slash $GPU $@"
+        eval "$runfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
     fi
 fi

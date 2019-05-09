@@ -1,138 +1,263 @@
 #include "func.hpp"
-using namespace af;
-array cross4(const array& a,const array& b){
-  array c= array(a.dims(0),a.dims(1),a.dims(2),3,f64);
-  c(span,span,span,0)=a(span,span,span,1)*b(span,span,span,2)-a(span,span,span,2)*b(span,span,span,1);
-  c(span,span,span,1)=a(span,span,span,2)*b(span,span,span,0)-a(span,span,span,0)*b(span,span,span,2);
-  c(span,span,span,2)=a(span,span,span,0)*b(span,span,span,1)-a(span,span,span,1)*b(span,span,span,0);
+WrappedArray::WrappedArray(af::array array) : array(array) {
+}
+
+WrappedArray::WrappedArray(long int  array_ptr){
+    set_array(array_ptr); 
+}
+
+void WrappedArray::set_array(long int array_ptr){
+    void **a = (void **)array_ptr;
+    this->array = *( new af::array( *a ));
+}
+
+long int WrappedArray::get_array_addr(){
+    af::array *a = new af::array(this->array);
+    return (long int) a->get();
+}
+
+af::array cross4(const af::array& a,const af::array& b){
+  af::array c= af::array(a.dims(0),a.dims(1),a.dims(2),3,f64);
+  c(af::span,af::span,af::span,0)=a(af::span,af::span,af::span,1)*b(af::span,af::span,af::span,2)-a(af::span,af::span,af::span,2)*b(af::span,af::span,af::span,1);
+  c(af::span,af::span,af::span,1)=a(af::span,af::span,af::span,2)*b(af::span,af::span,af::span,0)-a(af::span,af::span,af::span,0)*b(af::span,af::span,af::span,2);
+  c(af::span,af::span,af::span,2)=a(af::span,af::span,af::span,0)*b(af::span,af::span,af::span,1)-a(af::span,af::span,af::span,1)*b(af::span,af::span,af::span,0);
   return c;
 };
 
-array dotproduct(const array& a, const array& b){
+af::array dotproduct(const af::array& a, const af::array& b){
   return sum(a*b,3);
 }
 
-double afvalue(const array& a){
-  double *dhost=NULL;
-  dhost = a.host<double>();
-  double value = dhost[0];
-  freeHost(dhost);
-  return value;
+/// Returns the value of array with only one element
+double afvalue(const af::array& a){
+    if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1){
+        std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array with dim4 != [1,1,1,1]. Only first entry will be returned. This may lead to unexpected behaviour." << std::endl;
+    }
+    double *dhost=NULL;
+    dhost = a.host<double>();
+    double value = dhost[0];
+    af::freeHost(dhost);
+    return value;
 }
 
-unsigned int afvalue_u32(const array& a){
+unsigned int afvalue_u32(const af::array& a){
   unsigned int *dhost=NULL;
   dhost = a.host<unsigned int>();
   unsigned int value = dhost[0];
-  freeHost(dhost);
+  af::freeHost(dhost);
   return value;
 }
 
-double full_inner_product(const array& a, const array& b){
+double full_inner_product(const af::array& a, const af::array& b){
   return afvalue(sum(sum(sum(sum(a*b,3),2),1),0));
 }
 
-array renormalize(const array& a){
+af::array renormalize(const af::array& a){
   return a/tile(sqrt(sum(a*a,3)),1,1,1,3); 
 }
 
 //Renormalization where values with Ms zero are set from inf to zero
-array renormalize_handle_zero_values(const array& a){
-    array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3); 
-    array renorm = a/norm_a;
+af::array renormalize_handle_zero_values(const af::array& a){
+    af::array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3); 
+    af::array renorm = a/norm_a;
     replace(renorm,norm_a!=0,0);
     return renorm;
     
-    //TODO for (array& a) only: return replace(a/tile(sqrt(sum(a*a,3)),1,1,1,3), a!=0., 0.);
+    //TODO for (af::array& a) only: return replace(a/tile(sqrt(sum(a*a,3)),1,1,1,3), a!=0., 0.);
 }
 
-array vecnorm(const array& a){
+af::array vecnorm(const af::array& a){
   return sqrt(sum(a*a,3)); 
 }
 
 
 //Mean value of i = 0,1,2 entry entry
-double meani(const array& a, const int i){
+double meani(const af::array& a, const int i){
   double *norm_host=NULL;
-  norm_host = mean(mean(mean(a(span,span,span,i),0),1),2).host<double>();
+  norm_host = mean(mean(mean(a(af::span,af::span,af::span,i),0),1),2).host<double>();
   double norm = norm_host[0];
-  freeHost(norm_host);
+  af::freeHost(norm_host);
   return norm;
 }
 //Frobenius Norm
 //||A||=sqrt(sum(fabs(a)))
-double FrobeniusNorm(const array& a){
+double FrobeniusNorm(const af::array& a){
   double *norm_host=NULL;
   norm_host = sqrt(mean(mean(mean(mean(a*a,0),1),2),3)).host<double>();
   double norm = norm_host[0];
-  freeHost(norm_host);
+  af::freeHost(norm_host);
   return norm;
 }
 
 //Experimental: eucledian norm
-double euclnorm(const array& a){
+double euclnorm(const af::array& a){
   double *norm_host=NULL;
   norm_host = mean(mean(mean(mean((a*a),0),1),2),3).host<double>();
   double norm = norm_host[0];
-  freeHost(norm_host);
+  af::freeHost(norm_host);
   return norm;
 }
+
+/// Mean of absolute difference
+double mean_abs_diff(const af::array& a, const af::array& b){
+    return afvalue(af::mean(af::mean(af::mean(af::mean(af::abs(a - b), 0), 1), 2), 3));
+}
+
+/// Mean of relative difference
+double mean_rel_diff(const af::array& first, const af::array& second){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    return afvalue(af::mean(af::mean(af::mean(af::mean(temp, 0), 1), 2), 3));
+}
+
+/// Max of absolute difference
+double max_abs_diff(const af::array& a, const af::array& b){
+    return afvalue(af::max(af::max(af::max(af::max(af::abs(a - b), 0), 1), 2), 3));
+}
+
+/// Max of relative difference
+double max_rel_diff(const af::array& first, const af::array& second){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    return afvalue(af::max(af::max(af::max(af::max(temp, 0), 1), 2), 3));
+}
+
+/// Absolute difference less than precision: Element-wise comparision of absolute difference of two arrays. Checks whether | x - y | < precision. Returns true if all values are below precision and false otherwise.
+bool abs_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
+    unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(af::abs(first - second) < precision), 0), 1), 2), 3));
+    if (verbose){
+        if (zero_if_equal == 0) std::cout << "\33[1;32mSucess:\33[0m All " << first.elements() << " absolute values of element-wise differences are below precision of " << precision << std::endl;
+        else {
+            std::cout << "\33[1;31mError!\33[0m " << zero_if_equal << " out of " << first.elements() << " absolute values of element-wise differences are above precision of " << precision << std::endl;
+        }
+    }
+    if (zero_if_equal == 0) return true;
+    else return false;
+}
+
+/// Relative difference less than precision: Element-wise comparision of relative difference of two arrays. Checks whether | 2(x-y)/(x+y) | < precision. Returns true if all values are below precision and false otherwise.
+bool rel_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
+    af::array temp = af::abs(2*(first - second)/(first + second));
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));//set element to zero if both input elements are zero
+    unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(temp < precision), 0), 1), 2), 3));
+    if (verbose){
+        if (zero_if_equal == 0) std::cout << "\33[1;32mSucess:\33[0m All " << first.elements() << " relative values of element-wise differences are below precision of " << precision << std::endl;
+        else {
+            std::cout << "\33[1;31mError!\33[0m " << zero_if_equal << " out of " << first.elements() << " relative values of element-wise differences are above precision of " << precision << std::endl;
+        }
+    }
+    if (zero_if_equal == 0) return true;
+    else return false;
+}
+
+/// Upper bound for absolute difference
+double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
+    double prec = start_precision;
+    double prec_prev = prec;
+    while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor1 * prec;
+    }
+    
+    prec = prec_prev;
+    while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor2 * prec;
+    }
+    return prec_prev;
+}
+
+/// Upper bound for relative difference
+double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
+    double prec = start_precision;
+    double prec_prev = prec;
+    while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor1 * prec;
+    }
+    
+    prec = prec_prev;
+    while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
+    {
+        if (verbose) std::cout << "prec = " <<prec << std::endl;
+        prec_prev = prec;
+        prec = factor2 * prec;
+    }
+    return prec_prev;
+}
+
 //Experimental: eucledian norm
-//double maxnorm(const array& a){
+//double maxnorm(const af::array& a){
 //  double *maxnorm_host=NULL;
 //  maxnorm_host = mean(mean(mean(mean((a*a),0),1),2),3).host<double>();
 //  //maxnorm_host = max(max(max(max(abs(a),0),1),2),3).host<double>();
 //  double maxnorm = maxnorm_host[0];
-//  freeHost(maxnorm_host);
+//  af::freeHost(maxnorm_host);
 //  return maxnorm;
 //}
 
 //void calcm(State state, LLG Llg, std::ostream& myfile){
 //  double *host_mx=NULL, *host_my=NULL, *host_mz=NULL;
-//  host_mx = mean(mean(mean(state.m(span,span,span,0),0),1),2).host<double>();
-//  host_my = mean(mean(mean(state.m(span,span,span,1),0),1),2).host<double>();
-//  host_mz = mean(mean(mean(state.m(span,span,span,2),0),1),2).host<double>();
+//  host_mx = mean(mean(mean(state.m(af::span,af::span,af::span,0),0),1),2).host<double>();
+//  host_my = mean(mean(mean(state.m(af::span,af::span,af::span,1),0),1),2).host<double>();
+//  host_mz = mean(mean(mean(state.m(af::span,af::span,af::span,2),0),1),2).host<double>();
 //  myfile << std::setw(12) << state.t << "\t";
 //  myfile << std::setw(12) << state.t*1e9 << "\t" << host_mx[0] << "\t"<< host_my[0] << "\t";
 //  myfile << host_mz[0] <<"\t" << Llg.E(state) <<std::endl;
 //
-//  freeHost(host_mx);
-//  freeHost(host_my);
-//  freeHost(host_mz);
+//  af::freeHost(host_mx);
+//  af::freeHost(host_my);
+//  af::freeHost(host_mz);
 //
 //}
 
 
 
 // Maximum value norm
-double maxnorm(const array& a){
+double maxnorm(const af::array& a){
   double *maxnorm_host=NULL;
   maxnorm_host = max(max(max(max(abs(a),0),1),2),3).host<double>();
   double maxnorm = maxnorm_host[0];
-  freeHost(maxnorm_host);
+  af::freeHost(maxnorm_host);
   return maxnorm;
 }
 
 // Minimum value 
-double minval(const array& a){
+double minval(const af::array& a){
   double *minval_host=NULL;
   minval_host = min(min(min(min(a,0),1),2),3).host<double>();
   double minval = minval_host[0];
-  freeHost(minval_host);
+  af::freeHost(minval_host);
   return minval;
+}
+
+std::pair<int, int> util::k2ij(const int k, const int n){
+    const int i = n - 1 - std::floor(std::sqrt(-8*k + 4*n*(n+1)-7)/2.0 - 0.5);
+    const int j = k + i - n*(n+1)/2 + (n-i)*((n-i)+1)/2;
+    return std::make_pair(i, j);
+}
+
+int util::ij2k(const int i, const int j, const int n){
+    return (n*(n+1)/2) - (n-i)*((n-i)+1)/2 + j - i;
 }
 
 
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
-//auto rk4(array f(double, array))
+//auto rk4(af::array f(double, af::array))
 //{
 //        return
-//        [       f            ](double t,  array y, double dt ) -> array { return
-//        [t,y,dt,f            ](                    array  dy1) -> array { return
-//        [t,y,dt,f,dy1        ](                    array  dy2) -> array { return
-//        [t,y,dt,f,dy1,dy2    ](                    array  dy3) -> array { return
-//        [t,y,dt,f,dy1,dy2,dy3](                    array  dy4) -> array { return
+//        [       f            ](double t,  af::array y, double dt ) -> af::array { return
+//        [t,y,dt,f            ](                    af::array  dy1) -> af::array { return
+//        [t,y,dt,f,dy1        ](                    af::array  dy2) -> af::array { return
+//        [t,y,dt,f,dy1,dy2    ](                    af::array  dy3) -> af::array { return
+//        [t,y,dt,f,dy1,dy2,dy3](                    af::array  dy4) -> af::array { return
 //        ( dy1 + 2*dy2 + 2*dy3 + dy4 ) / 6   ;} (
 //        dt * f( t+dt  , y+dy3   )          );} (
 //        dt * f( t+dt/2, y+dy2/2 )          );} (

@@ -16,19 +16,19 @@ int main(int argc, char** argv)
     
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 8e5;
-    param.A     = 1.3e-11;
-    param.alpha = 1;
+    Material material = Material();
+    material.ms    = 8e5;
+    material.A     = 1.3e-11;
+    material.alpha = 1;
     
     // Initial magnetic field
-    State state(mesh,param, mesh.init_sp4());
+    State state(mesh,material, mesh.init_sp4());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
     LlgTerms llgterm;
-    llgterm.push_back( LlgTerm (new DemagSolver(mesh,param)));
-    llgterm.push_back( LlgTerm (new ExchSolver(mesh,param)));
-    NewLlg Llg(llgterm);
+    llgterm.push_back( LlgTerm (new DemagField(mesh,material, true)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    LLGIntegrator Llg(llgterm);
     
     std::ofstream stream;
     stream.precision(12);
@@ -45,12 +45,12 @@ int main(int argc, char** argv)
 
     // Prepare switch
     array zeeswitch = constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,0)=-24.6e-3/param.mu0;
-    zeeswitch(0,0,0,1)=+4.3e-3/param.mu0;
+    zeeswitch(0,0,0,0)=-24.6e-3/constants::mu0;
+    zeeswitch(0,0,0,1)=+4.3e-3/constants::mu0;
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
-    Llg.llgterms.push_back( LlgTerm (new Zee(zeeswitch)));
-    state.param.alpha=0.02;
+    Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
+    state.material.alpha=0.02;
 
     // Switch
     t = af::timer::start();

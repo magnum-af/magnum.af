@@ -3,7 +3,7 @@
 #include "../../../src/func.cpp"
  
 // Exemplary unit test
-TEST(MeshInitTest, n) {
+TEST(Mesh, InitTest) {
     Mesh mesh(1,2,3,0.1,0.2,0.3);
     ASSERT_EQ(1, mesh.n0);
     ASSERT_EQ(2, mesh.n1);

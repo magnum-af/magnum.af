@@ -26,24 +26,24 @@ int main(int argc, char** argv)
     
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Param param = Param();
-    param.ms    = 1e5;
+    Material material = Material();
+    material.ms    = 1e5;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(span,span,span,0) = 1;
-    State state(mesh,param, m);
+    State state(mesh,material, m);
   
     //MICROMAGNETIC
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back( llgt_ptr (new DemagSolver(mesh,param)));
+    llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
     LLG Llg(state,llgterm);
   
     //std::cout.precision(12);
     //std::cout << "E_d_micro  = " << Llg.E(state) << std::endl;
-    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(param.ms,2) * param.mu0 << std::endl;
+    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(material.ms,2) * constants::mu0 << std::endl;
   
-    if (compare(Llg.E(state),1./6. * x * y * z * pow(param.ms,2) * param.mu0)){
+    if (compare(Llg.E(state),1./6. * x * y * z * pow(material.ms,2) * constants::mu0)){
         std::cout << "!!! Test FAILED !!!" << std::endl;
         return 1;
     }
