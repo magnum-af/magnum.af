@@ -1,5 +1,5 @@
-#ifndef PTH_MAG_H
-#define PTH_MAG_H
+#ifndef MAGNUM_AF_H
+#define MAGNUM_AF_H
 #include "Faddeeva.hh"
 #include "mesh.hpp"
 #include "nonequispaced_mesh.hpp"
@@ -13,6 +13,7 @@
 #include "llg_terms/micro_demag_nonequi.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/micro_exch.hpp"
+#include "llg_terms/micro_exch_sparse.hpp"
 #include "llg_terms/micro_dmi.hpp"
 #include "llg_terms/zee.hpp"
 #include "llg_terms/micro_spintransfertorque.hpp"
