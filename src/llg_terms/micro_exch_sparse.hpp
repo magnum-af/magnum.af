@@ -18,7 +18,6 @@ class SparseExchangeField : public LLGTerm {
 
   private:
     af::array matr;
-    int findex(int i0, int i1, int i2, int im, int id, Mesh mesh);
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
     double af_time{0.};
 };
