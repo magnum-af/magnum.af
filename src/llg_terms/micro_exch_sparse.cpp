@@ -32,21 +32,17 @@ SparseExchangeField::SparseExchangeField (Mesh mesh, Material material){
                 //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
                 //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
                 //x
-                if(i0==0){
-                  if (mesh.n0>1){
+                if(i0 == 0 && mesh.n0 > 1 ){
                     CSR_values.push_back( 1./pow( mesh.dx, 2) );
                     CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
                     csr_ia++;
-                  }
                 }
-                if (i0==mesh.n0-1){
-                  if (mesh.n0>1){
+                if (i0 == mesh.n0 - 1 && mesh.n0 > 1){
                     CSR_values.push_back( 1./pow(mesh.dx, 2) );
                     CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
                     csr_ia++;
-                  }
                 }
-                if(i0>0 && i0< mesh.n0-1){
+                if(i0>0 && i0< mesh.n0 - 1 ){
                   CSR_values.push_back( 1./pow(mesh.dx, 2) );
                   CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
                   csr_ia++;
@@ -57,19 +53,15 @@ SparseExchangeField::SparseExchangeField (Mesh mesh, Material material){
                 }
   
                 //y
-                if(i1==0){
-                  if (mesh.n1>1){
+                if(i1 == 0 && mesh.n1 > 1 ){
                     CSR_values.push_back( 1./pow(mesh.dy, 2) );
                     CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
                     csr_ia++;
-                  }
                 }
-                if (i1==mesh.n1-1){
-                  if (mesh.n1>1){
+                if (i1 == mesh.n1 - 1 && mesh.n1 > 1){
                   CSR_values.push_back( 1./pow(mesh.dy, 2) );
                   CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
                   csr_ia++;
-                  }
                 }
                 if(i1>0 && i1< mesh.n1-1){
                   CSR_values.push_back( 1./pow(mesh.dy, 2) );
@@ -81,21 +73,17 @@ SparseExchangeField::SparseExchangeField (Mesh mesh, Material material){
                 }
   
                 //z
-                if (i2==0){
-                  if (mesh.n2>1){
+                if (i2 == 0 && mesh.n2 > 1 ){
                   CSR_values.push_back( 1./pow(mesh.dz, 2) );
                   CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                   csr_ia++;
-                  }
                 }
-                if (i2==mesh.n2-1){
-                  if (mesh.n2>1){
+                if (i2 == mesh.n2 - 1 && mesh.n2 > 1){
                   CSR_values.push_back( 1./pow(mesh.dz, 2) );
                   CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                   csr_ia++;
-                  }
                 }
-                if(i2>0 && i2< mesh.n2-1){
+                if( i2 > 0 && i2 < mesh.n2 - 1){
                   CSR_values.push_back( 1./pow(mesh.dz, 2) );
                   CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                   csr_ia++;
@@ -122,7 +110,6 @@ af::array SparseExchangeField::h(const State& state){
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
-    exch.eval();//TODO check if can be skipped
     if(state.material.afsync) sync();
     af_time += af::timer::stop(aftimer);
     return  (2.* state.material.A)/(constants::mu0 * state.material.ms) * exch;
