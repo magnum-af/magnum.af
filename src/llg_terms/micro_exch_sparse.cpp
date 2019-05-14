@@ -4,10 +4,14 @@ SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool ver
 }
 
 
+SparseExchangeField::SparseExchangeField (const af::array& A_exchange_field, Mesh mesh, bool verbose) : A_exchange_field(A_exchange_field), matr(calc_CSR_matrix(A_exchange_field, mesh, verbose)) {
+}
+
+
 af::array SparseExchangeField::h(const State& state){
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
-    exch = moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
+    exch = af::moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
     if(state.afsync) af::sync();
     af_time += af::timer::stop(aftimer);
     return  (2.* A_exchange)/(constants::mu0 * state.material.ms) * exch;
@@ -121,4 +125,10 @@ af::array SparseExchangeField::calc_CSR_matrix(const Mesh& mesh, const bool verb
     af::array result = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if(verbose) printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(matr) / (float)matr.elements());
     return result;
+}
+
+af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field, const Mesh&, const bool verbose){
+    printf("Warning: SparseExchangeField::calc_CSR_matrix not yet implemented\n");
+    fflush(stdout);
+    return af::array();
 }
