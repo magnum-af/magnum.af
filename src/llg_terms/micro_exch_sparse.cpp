@@ -15,7 +15,7 @@ int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh){
     return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
 }
 
-SparseExchangeField::SparseExchangeField (Mesh mesh, Material material){
+SparseExchangeField::SparseExchangeField (double exchange_constant_A, Mesh mesh) : exchange_constant_A(exchange_constant_A) {
     const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"

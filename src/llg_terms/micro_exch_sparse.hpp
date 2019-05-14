@@ -7,13 +7,15 @@
 
 class SparseExchangeField : public LLGTerm {
   public:
-    SparseExchangeField (Mesh, Material);
+    SparseExchangeField (double exchange_constant_A, Mesh);
 
     af::array h(const State& state);//Field contribution
     double E(const State& state);//Energy contribution
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
 
     double get_cpu_time(){return af_time;}//af time
+
+    const double exchange_constant_A;
 
 
   private:
