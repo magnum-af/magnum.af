@@ -7,7 +7,7 @@
 
 class SparseExchangeField : public LLGTerm {
   public:
-    SparseExchangeField (double exchange_constant_A, Mesh);
+    SparseExchangeField (double A_exchange, Mesh);
 
     af::array h(const State& state);//Field contribution
     double E(const State& state);//Energy contribution
@@ -15,7 +15,8 @@ class SparseExchangeField : public LLGTerm {
 
     double get_cpu_time(){return af_time;}//af time
 
-    const double exchange_constant_A;
+    const double A_exchange;
+    const af::array A_exchange_field;
 
 
   private:

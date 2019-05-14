@@ -15,7 +15,7 @@ int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh){
     return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
 }
 
-SparseExchangeField::SparseExchangeField (double exchange_constant_A, Mesh mesh) : exchange_constant_A(exchange_constant_A) {
+SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh) : A_exchange(A_exchange) {
     const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
@@ -110,7 +110,29 @@ af::array SparseExchangeField::h(const State& state){
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
-    if(state.material.afsync) sync();
+    if(state.afsync) af::sync();
     af_time += af::timer::stop(aftimer);
-    return  (2.* state.material.A)/(constants::mu0 * state.material.ms) * exch;
+
+    // switch constant or varying Ms and A_exchange
+    //TODO implement optional Ms/Ms_field and A/A_field into the sparse matrix
+    //this will reduce the matrix elements if regions have zero ms/A
+    if (state.Ms.isempty() && A_exchange_field.isempty())
+    {
+        return  (2.* A_exchange)/(constants::mu0 * state.material.ms) * exch;
+    }
+    else if ( !state.Ms.isempty() && A_exchange_field.isempty())
+    {
+        af::array heff = (2.* A_exchange)/(constants::mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
+    else if ( state.Ms.isempty() && !A_exchange_field.isempty())
+    {
+        return (2.* A_exchange_field)/(constants::mu0 * state.material.ms) * exch;
+    }
+    else {
+        af::array heff = (2.* A_exchange_field)/(constants::mu0*state.Ms) * exch;
+        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
 }
