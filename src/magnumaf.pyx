@@ -34,6 +34,7 @@ from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
 from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
+from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 #TODO#from magnum_af_decl cimport DmiField as cDMI
 
@@ -407,7 +408,21 @@ cdef class DemagField:
 cdef class ExchangeField:
   cdef cExchangeField* thisptr
   def __cinit__(self, Mesh mesh_in, Material param_in):
-    self.thisptr = new cExchangeField (deref(mesh_in.thisptr), deref(param_in.thisptr))  
+    self.thisptr = new cExchangeField (deref(mesh_in.thisptr), deref(param_in.thisptr))
+  def __dealloc__(self):
+    del self.thisptr
+    self.thisptr = NULL
+  def print_E(self,State state_in):
+    return self.thisptr.E(deref(state_in.thisptr))
+  def cpu_time(self):
+    return self.thisptr.get_cpu_time()
+  def pythisptr(self):
+      return <size_t><void*>self.thisptr
+
+cdef class SparseExchangeField:
+  cdef cSparseExchangeField* thisptr
+  def __cinit__(self, A, Ms, Mesh mesh_in, verbose = True):
+    self.thisptr = new cSparseExchangeField (A, Ms, deref(mesh_in.thisptr), verbose)
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL

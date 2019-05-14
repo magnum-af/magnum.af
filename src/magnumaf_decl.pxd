@@ -17,6 +17,13 @@ cdef extern from "../../src/llg_terms/micro_exch.hpp":
     double E(const State& state);
     double get_cpu_time();
 
+cdef extern from "../../src/llg_terms/micro_exch_sparse.hpp":
+  cdef cppclass SparseExchangeField:
+    SparseExchangeField (double A_exchange, double Ms, Mesh mesh, bool verbose);
+    #TODO SparseExchangeField (long int A_exchange_field, double Ms, Mesh mesh, bool verbose);
+    double E(const State& state);
+    double get_cpu_time();
+
 cdef extern from "../../src/mesh.hpp":
   cdef cppclass Mesh:
     int n0,n1,n2;

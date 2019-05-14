@@ -31,7 +31,7 @@ af::array dotproduct(const af::array& a, const af::array& b){
 /// Returns the value of array with only one element
 double afvalue(const af::array& a){
     if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1){
-        std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array with dim4 != [1,1,1,1]. Only first entry will be returned. This may lead to unexpected behaviour." << std::endl;
+        std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array with dim4 =[" << a.dims() <<"] != [1 1 1 1]. Only first entry will be returned. This may lead to unexpected behaviour." << std::endl;
     }
     double *dhost=NULL;
     dhost = a.host<double>();
