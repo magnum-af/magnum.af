@@ -62,7 +62,7 @@ DemagField::DemagField (Mesh meshin, Material paramin, bool verbose, bool cachin
                 }
             }
         }
-        if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
+        if (verbose) printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     }
 }
 

@@ -7,7 +7,7 @@
 
 class SparseExchangeField : public LLGTerm {
   public:
-    SparseExchangeField (double A_exchange, Mesh);
+    SparseExchangeField (double A_exchange, Mesh, bool verbose = true);
 
     af::array h(const State& state);//Field contribution
     double E(const State& state);//Energy contribution
@@ -20,7 +20,8 @@ class SparseExchangeField : public LLGTerm {
 
 
   private:
-    af::array matr;
+    const af::array matr;
+    af::array calc_CSR_matrix(const Mesh&, const bool verbose);
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
     double af_time{0.};
 };

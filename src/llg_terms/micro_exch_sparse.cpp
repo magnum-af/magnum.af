@@ -1,21 +1,40 @@
 #include "micro_exch_sparse.hpp"
 
-//Energy calculation
-//Eex=-mu0/2 integral(M . Hex) dx
+SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool verbose) : A_exchange(A_exchange), matr(calc_CSR_matrix(mesh, verbose)) {
+}
+
+
+af::array SparseExchangeField::h(const State& state){
+    af::timer aftimer = af::timer::start();
+    af::array exch = af::matmul(matr, af::flat(state.m));
+    exch = moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
+    if(state.afsync) af::sync();
+    af_time += af::timer::stop(aftimer);
+    return  (2.* A_exchange)/(constants::mu0 * state.material.ms) * exch;
+
+    //TODO implement optional Ms/Ms_field and A/A_field into the sparse matrix
+    //this will reduce the matrix elements if regions have zero ms/A
+}
+
+
+// Energy calculation: E_ex = -mu0/2 * integral(M * Hex) dx
 double SparseExchangeField::E(const State& state){
     return -constants::mu0/2. * state.material.ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 }
 
+
 double SparseExchangeField::E(const State& state, const af::array& h){
     return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
-
-//Inner index (index per matrix column)
+// Get inner index (index per matrix column)
 int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh){
     return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
 }
 
-SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh) : A_exchange(A_exchange) {
+
+af::array SparseExchangeField::calc_CSR_matrix(const Mesh& mesh, const bool verbose){
+    af::timer t;
+    if(verbose) af::timer::start();
     const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
@@ -99,40 +118,7 @@ SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh) : A_exch
       CSR_IA[id + 1] = CSR_IA[id] + csr_ia;
     }
 
-    matr = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
-
-    std::cout << "Sparsity of CSR_matrix = "
-              << (float)af::sparseGetNNZ(matr) / (float)matr.elements()
-              << std::endl;
-}
-
-af::array SparseExchangeField::h(const State& state){
-    af::timer aftimer = af::timer::start();
-    af::array exch = af::matmul(matr, af::flat(state.m));
-    exch = moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
-    if(state.afsync) af::sync();
-    af_time += af::timer::stop(aftimer);
-
-    // switch constant or varying Ms and A_exchange
-    //TODO implement optional Ms/Ms_field and A/A_field into the sparse matrix
-    //this will reduce the matrix elements if regions have zero ms/A
-    if (state.Ms.isempty() && A_exchange_field.isempty())
-    {
-        return  (2.* A_exchange)/(constants::mu0 * state.material.ms) * exch;
-    }
-    else if ( !state.Ms.isempty() && A_exchange_field.isempty())
-    {
-        af::array heff = (2.* A_exchange)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
-        return  heff;
-    }
-    else if ( state.Ms.isempty() && !A_exchange_field.isempty())
-    {
-        return (2.* A_exchange_field)/(constants::mu0 * state.material.ms) * exch;
-    }
-    else {
-        af::array heff = (2.* A_exchange_field)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
-        return  heff;
-    }
+    af::array result = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    if(verbose) printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(matr) / (float)matr.elements());
+    return result;
 }
