@@ -1,4 +1,5 @@
 #include "stochastic_llg.hpp"
+using namespace af;
 
 //Energy calculation
 double Stochastic_LLG::E(const State& state){

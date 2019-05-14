@@ -6,7 +6,6 @@
 #include "../llg_terms/LLGTerm.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
-using namespace af;
 
 class Stochastic_Integrator {
     public:
@@ -33,11 +32,11 @@ class Stochastic_Integrator {
         unsigned long int stochfdmdt_calls{0};
         double time{0.};
     private:
-        virtual array detfdmdt(const array& m)=0;
-        virtual array stochfdmdt(const array& m, const array& h_th)=0;
+        virtual af::array detfdmdt(const af::array& m)=0;
+        virtual af::array stochfdmdt(const af::array& m, const af::array& h_th)=0;
 
-        array m_prev;
-        array h_th_prev;
+        af::array m_prev;
+        af::array h_th_prev;
         af::timer timer_stoch;
        
         int mode; //Integration mode

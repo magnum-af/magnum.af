@@ -1,4 +1,5 @@
 #include "stochastic_integrator.hpp"
+using namespace af;
 
 template <class T>  T Stochastic_Integrator::Heun(const T& m, const double dt)
 {
