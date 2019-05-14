@@ -421,8 +421,8 @@ cdef class ExchangeField:
 
 cdef class SparseExchangeField:
   cdef cSparseExchangeField* thisptr
-  def __cinit__(self, A, Ms, Mesh mesh_in, verbose = True):
-    self.thisptr = new cSparseExchangeField (A, Ms, deref(mesh_in.thisptr), verbose)
+  def __cinit__(self, A, Mesh mesh_in, verbose = True):
+    self.thisptr = new cSparseExchangeField (addressof(A.arr), deref(mesh_in.thisptr), verbose)
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
