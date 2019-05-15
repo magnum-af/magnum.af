@@ -5,7 +5,6 @@ SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool ver
 }
 
 
-//TODO do not include regions where Ms == 0 (where A_field must also be 0 by definition)
 SparseExchangeField::SparseExchangeField (const af::array& A_exchange_field, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange_field, mesh, verbose))
 {
 }
@@ -164,64 +163,100 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                 // x
                 // Note: poor indexing performace. TODO improve performance: directly accessing values with afvalue increades sp4 assembly from ~0.4 s to ~1.4 s! maybe access full host array once?
                 // is host data then in correct order for adapted findex for scalar field, i.e. i0 + mesh.n0 * (i1 + mesh.n1 * i2)?
-                if(i0 == 0 && mesh.n0 > 1 ){
-                    CSR_values.push_back( (2.* afvalue(A_exchange_field(i0+1, i1, i2)))/(constants::mu0) * 1./pow( mesh.dx, 2) );
-                    CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
-                    csr_ia++;
+                if(i0 == 0 && mesh.n0 > 1){
+                    double A_exch = afvalue(A_exchange_field(i0+1, i1, i2));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow( mesh.dx, 2) );
+                        CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
+                        csr_ia++;
+                    }
                 }
                 if (i0 == mesh.n0 - 1 && mesh.n0 > 1){
-                    CSR_values.push_back( (2.* afvalue(A_exchange_field(i0-1, i1, i2)))/(constants::mu0) * 1./pow(mesh.dx, 2) );
-                    CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
-                    csr_ia++;
+                    double A_exch = afvalue(A_exchange_field(i0-1, i1, i2));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
                 if(i0>0 && i0< mesh.n0 - 1 ){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0-1, i1, i2)))/(constants::mu0) * 1./pow(mesh.dx, 2) );
-                  CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
-                  csr_ia++;
+                    double A_exch_m = afvalue(A_exchange_field(i0-1, i1, i2));
+                    if (A_exch_m != 0){
+                        CSR_values.push_back( (2.* A_exch_m)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
 
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0+1, i1, i2)))/(constants::mu0) * 1./pow(mesh.dx, 2) );
-                  CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
-                  csr_ia++;
+                    double A_exch_p = afvalue(A_exchange_field(i0+1, i1, i2));
+                    if (A_exch_p != 0){
+                        CSR_values.push_back( (2.* A_exch_p)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
+                        csr_ia++;
+                    }
                 }
 
                 // y
                 if(i1 == 0 && mesh.n1 > 1 ){
-                    CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1+1, i2)))/(constants::mu0) * 1./pow(mesh.dy, 2) );
-                    CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
-                    csr_ia++;
+                    double A_exch = afvalue(A_exchange_field(i0, i1+1, i2));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
                 if (i1 == mesh.n1 - 1 && mesh.n1 > 1){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1-1, i2)))/(constants::mu0) * 1./pow(mesh.dy, 2) );
-                  CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
-                  csr_ia++;
+                    double A_exch = afvalue(A_exchange_field(i0, i1-1, i2));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
                 if(i1>0 && i1< mesh.n1-1){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1-1, i2)))/(constants::mu0) * 1./pow(mesh.dy, 2) );
-                  CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
-                  csr_ia++;
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1+1, i2)))/(constants::mu0) * 1./pow(mesh.dy, 2) );
-                  CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
-                  csr_ia++;
+                    double A_exch_m = afvalue(A_exchange_field(i0, i1-1, i2));
+                    if (A_exch_m != 0){
+                        CSR_values.push_back( (2.* A_exch_m)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
+                    double A_exch_p = afvalue(A_exchange_field(i0, i1+1, i2));
+                    if (A_exch_p != 0){
+                        CSR_values.push_back( (2.* A_exch_p)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
 
                 // z
                 if (i2 == 0 && mesh.n2 > 1 ){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1, i2+1)))/(constants::mu0) * 1./pow(mesh.dz, 2) );
-                  CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
-                  csr_ia++;
+                    double A_exch = afvalue(A_exchange_field(i0, i1, i2+1));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow(mesh.dz, 2) );
+                        CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
                 if (i2 == mesh.n2 - 1 && mesh.n2 > 1){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1, i2-1)))/(constants::mu0) * 1./pow(mesh.dz, 2) );
-                  CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
-                  csr_ia++;
+                    double A_exch = afvalue(A_exchange_field(i0, i1, i2-1));
+                    if (A_exch != 0){
+                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./pow(mesh.dz, 2) );
+                        CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
                 if( i2 > 0 && i2 < mesh.n2 - 1){
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1, i2-1)))/(constants::mu0) * 1./pow(mesh.dz, 2) );
-                  CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
-                  csr_ia++;
-                  CSR_values.push_back( (2.* afvalue(A_exchange_field(i0, i1, i2+1)))/(constants::mu0) * 1./pow(mesh.dz, 2) );
-                  CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
-                  csr_ia++;
+                    double A_exch_m = afvalue(A_exchange_field(i0, i1, i2-1));
+                    if (A_exch_m != 0){
+                        CSR_values.push_back( (2.* A_exch_m)/(constants::mu0) * 1./pow(mesh.dz, 2) );
+                        CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                        csr_ia++;
+                    }
+                    double A_exch_p = afvalue(A_exchange_field(i0, i1, i2+1));
+                    if (A_exch_p != 0){
+                        CSR_values.push_back( (2.* A_exch_p)/(constants::mu0) * 1./pow(mesh.dz, 2) );
+                        CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                        csr_ia++;
+                    }
                 }
               }
             }
