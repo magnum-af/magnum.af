@@ -38,6 +38,60 @@ TEST(Util, SerialTriangularMatrixTest) {
     }
 }
 
+
+TEST(Util, 2DimStrideAccessTest) {
+    const int ni = 5, nj = 4, nk = 1, nl = 1;
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+
+    double *host=NULL;
+    host = a.host<double>();
+
+    for (int i = 0; i < ni; i ++){
+        for (int j = 0; j < nj; j ++){
+            EXPECT_EQ(afvalue(a(i, j)), util::stride(i, j, ni));
+        }
+    }
+    af::freeHost(host);
+}
+
+
+TEST(Util, 3DimStrideAccessTest) {
+    const int ni = 5, nj = 4, nk = 3, nl = 1;
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+
+    double *host=NULL;
+    host = a.host<double>();
+
+    for (int i = 0; i < ni; i ++){
+        for (int j = 0; j < nj; j ++){
+            for (int k = 0; k < nk; k ++){
+                EXPECT_EQ(afvalue(a(i, j, k)), util::stride(i, j, k, ni, nj));
+            }
+        }
+    }
+    af::freeHost(host);
+}
+
+
+TEST(Util, 4DimStrideAccessTest) {
+    const int ni = 5, nj = 4, nk = 3, nl = 2;
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+
+    double *host=NULL;
+    host = a.host<double>();
+
+    for (int i = 0; i < ni; i ++){
+        for (int j = 0; j < nj; j ++){
+            for (int k = 0; k < nk; k ++){
+                for (int l = 0; l < nl; l ++){
+                    EXPECT_EQ(afvalue(a(i, j, k, l)), util::stride(i, j, k, l, ni, nj, nk));
+                }
+            }
+        }
+    }
+    af::freeHost(host);
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
