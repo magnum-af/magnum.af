@@ -9,7 +9,7 @@ class SparseExchangeField : public LLGTerm {
   public:
     SparseExchangeField (double A_exchange, Mesh, bool verbose = true);
     SparseExchangeField (const af::array& A_exchange_field, Mesh, bool verbose = true);
-    SparseExchangeField (const long int A_exchange_field_ptr, Mesh mesh, bool verbose = true);
+    SparseExchangeField (long int A_exchange_field_ptr, Mesh mesh, bool verbose = true);
 
     af::array h(const State& state);//Field contribution
     double E(const State& state);//Energy contribution

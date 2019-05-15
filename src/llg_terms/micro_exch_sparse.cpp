@@ -1,15 +1,19 @@
 #include "micro_exch_sparse.hpp"
 
-SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose)) {
+SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
+{
 }
 
 
-SparseExchangeField::SparseExchangeField (const af::array& A_exchange_field, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange_field, mesh, verbose)) {
+//TODO do not include regions where Ms == 0 (where A_field must also be 0 by definition)
+SparseExchangeField::SparseExchangeField (const af::array& A_exchange_field, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange_field, mesh, verbose))
+{
 }
 
 
-// For wrapping
-SparseExchangeField::SparseExchangeField (const long int A_exchange_field_ptr, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(*( new af::array( (void **) A_exchange_field_ptr )), mesh, verbose)) {
+// For wrapping only: constructor version taking A_exchange_field
+SparseExchangeField::SparseExchangeField (long int A_exchange_field_ptr, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(*(new af::array( *((void **) A_exchange_field_ptr))), mesh, verbose))
+{
 }
 
 
@@ -27,9 +31,6 @@ af::array SparseExchangeField::h(const State& state){
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return heff;
     }
-
-    //TODO implement optional Ms/Ms_field and A/A_field into the sparse matrix
-    //this will reduce the matrix elements if regions have zero ms/A
 }
 
 
@@ -231,6 +232,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     }
 
     af::array result = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
-    if(verbose) printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(matr) / (float)matr.elements());
+    if(verbose) {
+        printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(result) / (float)result.elements());
+        fflush(stdout);
+    }
     return result;
 }
