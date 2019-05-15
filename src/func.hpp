@@ -42,9 +42,8 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose 
 namespace util{
     std::pair<int, int> k2ij(const int k, const int n);//!< returns indices i,j from a serialized triangular matrix index k
     int ij2k(const int i, const int j, const int n);//!< returns the serialized triangular matrix index k from regular indices i,j
-    int stride(const int i, const int j, const int ni){return i + ni * j;}
-    int stride(const int i, const int j, const int k, const int ni, const int nj){return i + ni * (j + nj * k);}
-    int stride(const int i, const int j, const int k, const int l, const int ni, const int nj, const int nk)
-    {return i + ni * (j + nj * (k + nk * l));}
+    unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int ni);
+    unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni, const unsigned int nj);
+    unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l, const unsigned int ni, const unsigned int nj, const unsigned int nk);
 }
 #endif

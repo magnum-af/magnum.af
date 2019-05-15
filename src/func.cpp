@@ -247,6 +247,9 @@ int util::ij2k(const int i, const int j, const int n){
     return (n*(n+1)/2) - (n-i)*((n-i)+1)/2 + j - i;
 }
 
+unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int ni){return i + ni * j;}
+unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni, const unsigned int nj){return i + ni * (j + nj * k);}
+unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l, const unsigned int ni, const unsigned int nj, const unsigned int nk){return i + ni * (j + nj * (k + nk * l));}
 
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
