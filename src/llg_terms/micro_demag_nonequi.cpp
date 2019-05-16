@@ -1,18 +1,35 @@
 #include "micro_demag_nonequi.hpp"
 
-//Energy calculation
-//Edemag=-mu0/2 integral(M . Hdemag) dx
+//Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){
-    //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    printf("Warning: NonequiDemag Energy calculation not yet implemented, returning -1!");
-    return -1;
+    return energy_integral(state, h(state) * state.m);
 }
 
+
 double NonEquiDemagField::E(const State& state, const af::array& h){
-    printf("Warning: NonequiDemag Energy calculation not yet implemented, returning -1!");
-    return -1;
-    //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    return energy_integral(state, h * state.m);
 }
+
+
+double NonEquiDemagField::energy_integral(const State& state, const af::array& h_times_m){
+    af::array z_spacing_afarray = af::array(1, 1, state.nonequimesh.nz, 1, state.nonequimesh.z_spacing.data());
+    af::array mu0_h_times_m = - constants::mu0/2. * h_times_m;
+
+    // Global or local Ms switch
+    if (state.Ms.isempty() == true){
+        mu0_h_times_m *= state.material.ms;
+    }
+    else {
+        mu0_h_times_m *= state.Ms;
+    }
+
+    af::array temp_integral = af::sum(af::sum(af::sum(mu0_h_times_m, 0), 1), 3) * state.nonequimesh.dx * state.nonequimesh.dy;
+    temp_integral = temp_integral * z_spacing_afarray;
+    double sum = afvalue( af::sum(temp_integral, 2));
+    return sum;
+
+}
+
 
 void NonEquiDemagField::print_Nfft(){
     af::print("Nfft=", Nfft);

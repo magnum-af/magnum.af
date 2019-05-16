@@ -251,6 +251,16 @@ unsigned int util::stride(const unsigned int i, const unsigned int j, const unsi
 unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni, const unsigned int nj){return i + ni * (j + nj * k);}
 unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l, const unsigned int ni, const unsigned int nj, const unsigned int nk){return i + ni * (j + nj * (k + nk * l));}
 
+
+
+af::randomEngine util::rand_engine_current_time(){
+    unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >\
+                                  (std::chrono::system_clock::now().time_since_epoch()).count();
+    return af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed);
+}
+
+
+
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
 //auto rk4(af::array f(double, af::array))

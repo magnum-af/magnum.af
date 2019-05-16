@@ -1,6 +1,7 @@
 #ifndef FUNC_H
 #define FUNC_H
 #include <iostream>
+#include <chrono> //for af::randomEngine
 #include "arrayfire.h"
 
 class WrappedArray {
@@ -45,5 +46,7 @@ namespace util{
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int ni);
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni, const unsigned int nj);
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l, const unsigned int ni, const unsigned int nj, const unsigned int nk);
+
+    af::randomEngine rand_engine_current_time();
 }
 #endif
