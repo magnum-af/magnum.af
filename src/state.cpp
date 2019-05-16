@@ -252,3 +252,23 @@ void State::calc_mean_m_steps( std::ostream& myfile, const af::array& hzee){
         myfile << std::setw(12) << this->steps << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,0))/n_cells_ << "\t" << afvalue(sum_dim3(af::span,af::span,af::span,1))/n_cells_<< "\t" << afvalue(sum_dim3(af::span,af::span,af::span,2))/n_cells_ << "\t" << afvalue(hzee(0,0,0,0)) << "\t" << afvalue(hzee(0,0,0,1)) << "\t" << afvalue(hzee(0,0,0,2)) << std::endl;
     }
 }
+
+
+// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where M = Ms * m
+double State::integral_nonequimesh(const af::array& h_times_m) const{
+    af::array z_spacing_afarray = af::array(1, 1, this->nonequimesh.nz, 1, this->nonequimesh.z_spacing.data());
+    af::array ms_h_times_m;
+
+    // Global or local Ms switch
+    if (this->Ms.isempty() == true){
+        ms_h_times_m = this->material.ms * h_times_m;
+;
+    }
+    else {
+        ms_h_times_m = this->Ms * h_times_m;
+    }
+
+    af::array xy_integral = af::sum( af::sum( af::sum( ms_h_times_m, 0), 1), 3) * this->nonequimesh.dx * this->nonequimesh.dy;
+    af::array xyz_integral = af::sum(xy_integral * z_spacing_afarray, 2);
+    return afvalue( xyz_integral );
+}

@@ -60,6 +60,7 @@ class State{
 
     bool verbose_{ true };
     bool afsync { false };
+    double integral_nonequimesh(const af::array& h_times_m) const;
   private:
     ///< Number of cells with Ms != 0
     unsigned int n_cells_{0};

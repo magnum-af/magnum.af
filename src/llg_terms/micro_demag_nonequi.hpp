@@ -33,6 +33,5 @@ class NonEquiDemagField : public LLGTerm {
     private:
         const unsigned nthreads;
         af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, const std::vector<double> z_spacing);
-        double energy_integral(const State&, const af::array&);
 };
 #endif
