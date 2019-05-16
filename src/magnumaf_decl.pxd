@@ -151,9 +151,9 @@ cdef extern from "../../src/llg_terms/zee.hpp":
 
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
   cdef cppclass LBFGS_Minimizer:
-    LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose_ );
+    LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose );
     vector[shared_ptr[LLGTerm]] llgterms_;
-    LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose_);
+    LBFGS_Minimizer(vector[shared_ptr[LLGTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
     double Minimize(State& state);
     double GetTimeCalcHeff();
 

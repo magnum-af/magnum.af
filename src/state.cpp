@@ -3,7 +3,7 @@
 void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     // Initializes Ms if any entry of initial m has zero norm
     if(minval(vecnorm(m)) == 0){
-        if(verbose_) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
+        if(verbose) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
         Ms = af::constant(this->material.ms, nzero.dims(), f64);
@@ -15,8 +15,8 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
 void State::check_discretization(){
     if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
         double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
-        if (verbose_ && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
-            std::cout << red("Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)") << std::endl;
+        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
+            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
         }
     }
 }
@@ -25,8 +25,8 @@ void State::check_nonequispaced_discretization(){
     if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
         const double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
         const double max_dz = *std::max_element(nonequimesh.z_spacing.begin(), nonequimesh.z_spacing.end());
-        if (verbose_ && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz > max_allowed_cellsize )){
-            std::cout << red("Warning: State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)") << std::endl;
+        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz > max_allowed_cellsize )){
+            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
         }
     }
 }
@@ -34,8 +34,8 @@ void State::check_nonequispaced_discretization(){
 void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
     af::array one_when_value_is_zero = af::iszero(vecnorm(m));
     double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m)+1.*one_when_value_is_zero,0),1),2),3));
-    if ( fabs(meannorm - 1.) > tol) {
-        printf("%s", (red("Warning: State::check_m_norm: non-zero parts of the magnetization are not normalized to 1! Results won't be physically meaningfull.")+"\n").c_str());
+    if ( (fabs(meannorm - 1.) > tol) && ( this->mute_warning == false )) {
+        printf("%s State::check_m_norm: non-zero parts of the magnetization are not normalized to 1! Results won't be physically meaningfull.\n", Warning());
     }
 }
 //long int State::get_m_addr(){
@@ -45,15 +45,15 @@ void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
 //
 
 
-State::State (Mesh mesh, Material param, af::array m): mesh(mesh), material(param), m(m)
+State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_warning): mesh(mesh), material(param), m(m), verbose(verbose), mute_warning(mute_warning)
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
     check_discretization();
 }
 
-State::State (NonequispacedMesh nonequimesh, af::array m):
-              nonequimesh(nonequimesh), m(m)
+State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mute_warning):
+              nonequimesh(nonequimesh), m(m), verbose(verbose), mute_warning(mute_warning)
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
@@ -69,10 +69,10 @@ State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluat
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
-    if (verbose_) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
+    if (verbose) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
 }
 
-State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
@@ -83,7 +83,7 @@ State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), ma
 }
 
 ///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), material(param_in), verbose_(false)
+State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), material(param_in), verbose(false)
 {
     void **a = (void **)aptr;
     m = *( new af::array( *a ));

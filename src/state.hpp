@@ -11,8 +11,8 @@
 
 class State{
   public:
-    State (Mesh mesh_in, Material param_in, af::array m_in);
-    State (NonequispacedMesh nonequimesh, af::array m);
+    State (Mesh mesh_in, Material param_in, af::array m_in, bool verbose = true, bool mute_warning = false);
+    State (NonequispacedMesh nonequimesh, af::array m, bool verbose = true, bool mute_warning = false);
     State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean);
     State (Mesh mesh_in, Material param_in, long int aptr);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
@@ -58,7 +58,8 @@ class State{
     void calc_mean_m_steps( std::ostream& myfile, const af::array& hzee);
     unsigned int get_n_cells_(){return n_cells_;};
 
-    bool verbose_{ true };
+    const bool verbose { true };
+    const bool mute_warning { false };
     bool afsync { false };
     double integral_nonequimesh(const af::array& h_times_m) const;
   private:

@@ -1,10 +1,10 @@
 #include "lbfgs_minimizer.hpp"
 
-LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose_(verbose)
+LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {
 }
 
-LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance, size_t maxIter, int verbose): llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose_(verbose)
+LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance, size_t maxIter, int verbose): llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {
 }
 
@@ -101,7 +101,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     // NOTE: objFunc.both calcs gradient and energy E
     double gradNorm = maxnorm(grad);
     //af::print("grad", grad);
-    if(this->verbose_ > 0){std::cout << "f= " << f << std::endl;}
+    if(this->verbose > 0){std::cout << "f= " << f << std::endl;}
     if ( gradNorm < (epsr*(1+fabs(f))) ) {
       return f;
     }
@@ -164,7 +164,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             if (phiPrime0 > 0) {
                 q = grad;
                 iter = 0;
-                if (this->verbose_>2) {
+                if (this->verbose>2) {
                   std::cout << "descent " << std::endl;
                 }
                 phiPrime0 = -mydot(grad,q);
@@ -174,7 +174,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             //TODO check version Schrefl vs Flo
             if ( -mydot(grad, q) > -1e-15){
                gradNorm = maxnorm(grad); 
-               if (gradNorm < eps*(1.+fabs(f)) and this->verbose_ > 0){
+               if (gradNorm < eps*(1.+fabs(f)) and this->verbose > 0){
                    std::cout << "Minimizer: Convergence reached (due to almost zero gradient (|g|=" << gradNorm << " < " << eps*(1.+fabs(f))<< ")!" << std::endl;
                }
             }
@@ -182,7 +182,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             const double rate = linesearch(state, f, x_old, grad, -q, tolerance_);
             //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
             if (rate == 0.0) {
-                if(this->verbose_>0 ){
+                if(this->verbose>0 ){
                     std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate == 0.0. This should not happen, elaborate! (maybe m is already relaxed?)") << std::endl;
                     //std::cout << bold_red("Error: LBFGS_Minimizer: linesearch failed, rate == 0.0") << std::endl;
                 }
@@ -194,7 +194,7 @@ double LBFGS_Minimizer::Minimize(State& state){
               return f;
             }
             s = state.m - x_old;
-            if (this->verbose_ > 1) {
+            if (this->verbose > 1) {
               //std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
               std::cout << std::setprecision(std::numeric_limits<double>::digits10+12);
               std::cout << "bb> " << globIter << " " << f << " " << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
@@ -210,7 +210,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             y = grad - grad_old;
             double ys = mydot(y,s);
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
-              if (this->verbose_>2) {
+              if (this->verbose>2) {
                 std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
               }
             }
@@ -233,10 +233,10 @@ double LBFGS_Minimizer::Minimize(State& state){
             globIter++;
 
         } while (globIter < this->maxIter_); 
-        if (globIter >= this->maxIter_ && this->maxIter_ > 99 and this->verbose_ > 0) {
+        if (globIter >= this->maxIter_ && this->maxIter_ > 99 and this->verbose > 0) {
           std::cout << "WARNING : maximum number of iterations exceeded in LBFGS" << std::endl;
         }
-        if (this->verbose_ > 0) {
+        if (this->verbose > 0) {
             State temp = state;
             temp.m = grad;
           auto mxh = this->mxmxhMax(temp);
@@ -247,7 +247,7 @@ double LBFGS_Minimizer::Minimize(State& state){
 
 
 
-    if( this->verbose_ > 0) {std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;}
+    if( this->verbose > 0) {std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;}
 }; 
 
 double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) { 
@@ -324,7 +324,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
     | (nfev >= maxfev - 1 ) | (infoc == 0)
     | (brackt & (stmax - stmin <= xtol * stmax))) {
         stp = stx;
-        if( this->verbose_ > 0) std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
+        if( this->verbose > 0) std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
     }
 
     //// test new point
