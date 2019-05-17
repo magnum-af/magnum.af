@@ -28,10 +28,6 @@ class State{
     void set_micro_Ms_field(long int aptr);
     long int get_micro_Ms_field();
 
-    af::array micro_A_field; //!< Spacially varying exchange energy in [J/m] defined at each node.//TODO move to material or exchange
-    void set_micro_A_field(long int aptr); ///< For wrapping only: Setting af::array micro_A_field.
-    long int get_micro_A_field();
-
     af::array micro_Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node.//TODO move to material or exchange
     void set_micro_Ku1_field(long int aptr); ///< For wrapping only: Setting af::array micro_Ku1_field.
     long int get_micro_Ku1_field();
@@ -70,8 +66,8 @@ class State{
     ///< Number of cells with for which evaluate_mean_ is 1
     unsigned int evaluate_mean_is_1_{0};
 
-    void check_discretization();
-    void check_nonequispaced_discretization();
+    //void check_discretization();
+    //void check_nonequispaced_discretization();
 };
 
 #endif

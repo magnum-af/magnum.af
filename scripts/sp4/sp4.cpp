@@ -13,12 +13,12 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 ,nz=1;
+    const double A = 1.3e-11;
     
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     material.ms    = 8e5;
-    material.A     = 1.3e-11;
     material.alpha = 1;
     
     // Initial magnetic field
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     
     LlgTerms llgterm;
     llgterm.push_back( LlgTerm (new DemagField(mesh, material, true, true, 0)));
-    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(A)));
     LLGIntegrator Llg(llgterm);
     
     std::ofstream stream;

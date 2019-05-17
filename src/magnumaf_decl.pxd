@@ -13,13 +13,14 @@ cdef extern from "<arrayfire.h>" namespace "af":
 
 cdef extern from "../../src/llg_terms/micro_exch.hpp":
   cdef cppclass ExchangeField:
-    ExchangeField (Mesh mesh_in, Material param_in);
+    ExchangeField (double A);
+    ExchangeField (long int A_field_ptr);
     double E(const State& state);
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/micro_exch_sparse.hpp":
   cdef cppclass SparseExchangeField:
-    #SparseExchangeField (double A_exchange, double Ms, Mesh mesh, bool verbose);
+    SparseExchangeField (double A_exchange, double Ms, Mesh mesh, bool verbose);
     SparseExchangeField (long int A_exchange_field_ptr, Mesh mesh, bool verbose);
     double E(const State& state);
     double get_cpu_time();
@@ -68,14 +69,13 @@ cdef extern from "../../src/state.hpp":
 cdef extern from "../../src/material.hpp":
   cdef cppclass Material:
     Material();
-    Material(double alpha, double T, double ms, double A, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
+    Material(double alpha, double T, double ms, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
     double mu0;
     double gamma;
     double alpha;
     double T;
 
     double ms;
-    double A;
     double D;
     double Ku1;
     double D_axis[3];

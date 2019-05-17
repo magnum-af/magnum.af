@@ -4,63 +4,72 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchangeField::E(const State& state){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 }
 
 double ExchangeField::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
-//filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
-ExchangeField::ExchangeField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
-    filtr=constant(0.0,3,3,3,f64);
-  
-    filtr(0,1,1)= 1 / pow(mesh.dx,2);
-    filtr(2,1,1)= 1 / pow(mesh.dx,2);
-  
-    filtr(1,0,1)= 1 / pow(mesh.dy,2);
-    filtr(1,2,1)= 1 / pow(mesh.dy,2);
-  
-    filtr(1,1,0)= 1 / pow(mesh.dz,2);
-    filtr(1,1,2)= 1 / pow(mesh.dz,2);
+
+/// Constructor for a global exchange constant
+ExchangeField::ExchangeField (double A) : A(A){
+}
+
+
+/// Constructor taking spacially varying exchange constant af af::array
+ExchangeField::ExchangeField (af::array A_field) : A_field(A_field){
+}
+
+
+// For wrapping only
+ExchangeField::ExchangeField (long int A_field_ptr) : A_field(*(new af::array( *((void **) A_field_ptr)))){
 }
 
 array ExchangeField::h_withedges(const State& state){
     timer_exchsolve = timer::start();
+    af::array filtr = af::constant(0.0,3,3,3,f64);
+    // Note: skipped as this term falls out int cross product: //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
+    filtr(0,1,1)= 1 / pow(state.mesh.dx,2);
+    filtr(2,1,1)= 1 / pow(state.mesh.dx,2);
+    filtr(1,0,1)= 1 / pow(state.mesh.dy,2);
+    filtr(1,2,1)= 1 / pow(state.mesh.dy,2);
+    filtr(1,1,0)= 1 / pow(state.mesh.dz,2);
+    filtr(1,1,2)= 1 / pow(state.mesh.dz,2);
     //Convolution
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 
     //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
     timer_edges = timer::start();
-    exch(0, span,span,span)+=state.m(0 ,span,span,span)/ pow(mesh.dx,2);
-    exch(-1,span,span,span)+=state.m(-1,span,span,span)/ pow(mesh.dx,2);
+    exch(0, span,span,span)+=state.m(0 ,span,span,span)/ pow(state.mesh.dx,2);
+    exch(-1,span,span,span)+=state.m(-1,span,span,span)/ pow(state.mesh.dx,2);
     
     
-    exch(span,0 ,span,span)+=state.m(span,0 ,span,span)/ pow(mesh.dy,2);
-    exch(span,-1,span,span)+=state.m(span,-1,span,span)/ pow(mesh.dy,2);
+    exch(span,0 ,span,span)+=state.m(span,0 ,span,span)/ pow(state.mesh.dy,2);
+    exch(span,-1,span,span)+=state.m(span,-1,span,span)/ pow(state.mesh.dy,2);
     
-    exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
-    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
+    exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(state.mesh.dz,2);
+    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(state.mesh.dz,2);
 
-    if(material.afsync) af::sync();
+    if(state.afsync) af::sync();
     time_edges += timer::stop(timer_edges);
     cpu_time += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty() && state.micro_A_field.isempty())
+    if (state.Ms.isempty() && this->A_field.isempty())
     {
-        return  (2.* material.A)/(constants::mu0*material.ms) * exch;
+        return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
     }
-    else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
+    else if ( !state.Ms.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* material.A)/(constants::mu0*state.Ms) * exch;
+        array heff = (2.* this->A)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
-    else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
+    else if ( state.Ms.isempty() && !this->A_field.isempty())
     {
-        return (2.* state.micro_A_field)/(constants::mu0*material.ms) * exch;
+        return (2.* this->A_field)/(constants::mu0 * state.material.ms) * exch;
     }
     else {
-        array heff = (2.* state.micro_A_field)/(constants::mu0*state.Ms) * exch;
+        array heff = (2.* this->A_field)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -71,25 +80,33 @@ array ExchangeField::h_withedges(const State& state){
 //NOTE: This yields no longer the physical exchange field but optimizes the caluclation
 array ExchangeField::h(const State& state){
     timer_exchsolve = timer::start();
+    af::array filtr = af::constant(0.0,3,3,3,f64);
+    // Note: skipped as this term falls out int cross product: //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
+    filtr(0,1,1)= 1 / pow(state.mesh.dx,2);
+    filtr(2,1,1)= 1 / pow(state.mesh.dx,2);
+    filtr(1,0,1)= 1 / pow(state.mesh.dy,2);
+    filtr(1,2,1)= 1 / pow(state.mesh.dy,2);
+    filtr(1,1,0)= 1 / pow(state.mesh.dz,2);
+    filtr(1,1,2)= 1 / pow(state.mesh.dz,2);
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
-    if(material.afsync) af::sync();
+    if(state.afsync) af::sync();
     cpu_time += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty() && state.micro_A_field.isempty())
+    if (state.Ms.isempty() && this->A_field.isempty())
     {
-        return  (2.* material.A)/(constants::mu0*material.ms) * exch;
+        return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
     }
-    else if ( !state.Ms.isempty() && state.micro_A_field.isempty())
+    else if ( !state.Ms.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* material.A)/(constants::mu0*state.Ms) * exch;
+        array heff = (2.* this->A)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
-    else if ( state.Ms.isempty() && !state.micro_A_field.isempty())
+    else if ( state.Ms.isempty() && !this->A_field.isempty())
     {
-        return (2.* state.micro_A_field)/(constants::mu0*material.ms) * exch;
+        return (2.* this->A_field)/(constants::mu0 * state.material.ms) * exch;
     }
     else {
-        array heff = (2.* state.micro_A_field)/(constants::mu0*state.Ms) * exch;
+        array heff = (2.* this->A_field)/(constants::mu0*state.Ms) * exch;
         replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }

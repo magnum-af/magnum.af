@@ -9,7 +9,7 @@ class sp4(unittest.TestCase):
   
   material=magnumaf.Material()
   material.ms=8e5
-  material.A =1.3e-11
+  A =1.3e-11
   material.alpha=1
   
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
@@ -18,7 +18,7 @@ class sp4(unittest.TestCase):
   state=magnumaf.State(meshvar,material,m)
   
   demag=magnumaf.DemagField(meshvar,material)
-  exch=magnumaf.ExchangeField(meshvar,material)
+  exch=magnumaf.ExchangeField(A)
   Llg=magnumaf.LLGIntegrator([demag,exch])
 
   def test_relaxation(self):

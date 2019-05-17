@@ -7,6 +7,9 @@
 
 class ExchangeField : public LLGTerm {
   public:
+    ExchangeField (double A);
+    ExchangeField (af::array A_field);
+    ExchangeField (long int A_field_ptr);
     //Field contribution
     af::array h(const State& state);
     //Field contribution with edges for Energy calculation
@@ -14,14 +17,11 @@ class ExchangeField : public LLGTerm {
     //Energy contribution
     double E(const State& state);
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
-    //CPU time
-    double get_cpu_time(){return cpu_time;}
+    
+    double get_cpu_time(){return cpu_time;}//!< accumulated heff computation time in [s]
 
-
-    Material material;
-    Mesh mesh;
-    ExchangeField (Mesh, Material);
-    af::array filtr;
+    const double A{0}; //!< Exchange energy in [J/m]
+    const af::array A_field{af::array()};
 
     double     cpu_time{0.};
     af::timer timer_exchsolve;
@@ -29,9 +29,5 @@ class ExchangeField : public LLGTerm {
     af::timer timer_conv;
     double     time_edges{0.};
     af::timer timer_edges;
-
-    af::array matr;
-    int findex(int i0, int i1, int i2, int im, int id);
-    int findex(int i0, int i1, int i2, int im);
 };
 #endif

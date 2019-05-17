@@ -12,24 +12,24 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
     }
 }
 
-void State::check_discretization(){
-    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
-        double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
-        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
-            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
-        }
-    }
-}
+//void State::check_discretization(){
+//    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
+//        double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
+//        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
+//            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
+//        }
+//    }
+//}
 
-void State::check_nonequispaced_discretization(){
-    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
-        const double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
-        const double max_dz = *std::max_element(nonequimesh.z_spacing.begin(), nonequimesh.z_spacing.end());
-        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz > max_allowed_cellsize )){
-            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
-        }
-    }
-}
+//void State::check_nonequispaced_discretization(){
+//    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement better way of checking
+//        const double max_allowed_cellsize = sqrt(this->material.A/this->material.Ku1);
+//        const double max_dz = *std::max_element(nonequimesh.z_spacing.begin(), nonequimesh.z_spacing.end());
+//        if (verbose && (this->mesh.dx > max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz > max_allowed_cellsize )){
+//            if( ! mute_warning) printf("%s State::check_discretization: cell size is too large (greater than sqrt(A/Ku1)\n", Warning());
+//        }
+//    }
+//}
 
 void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
     af::array one_when_value_is_zero = af::iszero(vecnorm(m));
@@ -49,7 +49,7 @@ State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_wa
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    check_discretization();
+    //check_discretization();
 }
 
 State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mute_warning):
@@ -57,7 +57,7 @@ State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mut
 {
     check_m_norm();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    check_nonequispaced_discretization();
+    //check_nonequispaced_discretization();
 }
 
 ///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
@@ -65,7 +65,7 @@ State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluat
               mesh(mesh_in),material(param_in), m(m_in), evaluate_mean_(evaluate_mean)
 {
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    check_discretization();
+    //check_discretization();
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
@@ -78,7 +78,7 @@ State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), ma
     m = *( new af::array( *a ));
     //m.lock();
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    check_discretization();
+    //check_discretization();
     check_m_norm();
 }
 
@@ -94,7 +94,7 @@ State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_
     //evaluate_mean_.lock();
 
     set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    check_discretization();
+    //check_discretization();
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
@@ -125,16 +125,6 @@ void State::set_micro_Ms_field(long int aptr){
 
 long int State::get_micro_Ms_field(){
     af::array *a = new af::array(Ms);
-    return (long int) a->get();
-}
-
-void State::set_micro_A_field(long int aptr){
-    void **a = (void **)aptr;
-    micro_A_field = *( new af::array( *a ));
-}
-
-long int State::get_micro_A_field(){
-    af::array *a = new af::array(micro_A_field);
     return (long int) a->get();
 }
 

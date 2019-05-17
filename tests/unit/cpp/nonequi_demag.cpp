@@ -2,7 +2,9 @@
 #include <vector>
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
+#include "../../../src/state.cpp"
 #include "../../../src/misc.cpp"
+#include "../../../src/vtk_IO.cpp"
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
  

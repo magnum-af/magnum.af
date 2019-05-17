@@ -13,20 +13,25 @@
 
 // Testing whether material.A and state.micro_A_field yield same result
 TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
+    double A = 1.3e-11;
     Mesh mesh(3,3,3,0.1,0.2,0.3);
     Material material = Material();
     material.ms    = 8e5;
-    material.A     = 1.3e-11;
     material.alpha = 1;
     State state(mesh,material, mesh.init_sp4());
-    LlgTerms llgterm;
-    llgterm.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(mesh,material)));
-    LLGIntegrator Llg(llgterm);
-    af::array constantA = Llg.llgterms[0]->h(state);
+    LlgTerms llgterms;
+    llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A)));
 
-    state.micro_A_field=af::constant(material.A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    LLGIntegrator llg_global(llgterms);
+    af::array constantA = llg_global.llgterms[0]->h(state);
 
-    af::array variableA = Llg.llgterms[0]->h(state);
+    llgterms.clear();
+
+    af::array A_field = af::constant(A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A_field)));
+    LLGIntegrator llg_local(llgterms);
+
+    af::array variableA = llg_local.llgterms[0]->h(state);
 
     for (int n0 = 0; n0 < mesh.n0; n0++){
         for (int n1 = 0; n1 < mesh.n1; n1++){
