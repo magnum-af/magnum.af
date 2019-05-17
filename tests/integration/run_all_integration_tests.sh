@@ -1,9 +1,11 @@
 #!/bin/bash -e
-#usage: ./runall /path/to/gitdirectory(magnum.af)
+# script running all integration tests: i.e. the previously compiled (!) binaries in ./cpp and the python scripts in ./python
 
-# cpp
-$1/tests/integration/cpp/runall.sh $1
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
 
+./cpp/runall.sh
+
+# switch between python2 and python3
 command -v pip3 >/dev/null 2>&1 && pip3_output="$(pip3 show arrayfire)" # Note: output of 'pip3 show' is empty if package not found
 if [ -n "$pip3_output" ]; then
     python="python3"
@@ -11,6 +13,7 @@ else
     python="python"
 fi
 
-for filename in $1/tests/integration/python/*.py; do
-    PYTHONPATH=$1/build/src/ $python $filename
+# running all python tests
+for filename in ./python/*.py; do
+    PYTHONPATH=../../build/src/ $python $filename
 done

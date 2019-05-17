@@ -1,8 +1,10 @@
 #!/bin/bash -e
-# $1 is supposed to be /path/to/magnum.af
+# builds and runns all cpp unit tests
+
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
 
 # building tests
-$1/tests/integration/cpp/maketests.sh $1
+./maketests.sh
 
 # running all test binaries
-$1/tests/integration/cpp/runall.sh $1
+./runall.sh

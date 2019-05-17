@@ -1,5 +1,4 @@
 #!/bin/bash -e
-# $1 is supposed to be /path/to/magnum.af
-
-# running all test binaries
-for file in $1/tests/integration/cpp/bin/*; do $file; done
+# running all cpp integration test binaries
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
+for file in bin/*; do $file; done
