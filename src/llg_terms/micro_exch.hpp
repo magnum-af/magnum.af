@@ -18,12 +18,12 @@ class ExchangeField : public LLGTerm {
     double E(const State& state);
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
     
-    double get_cpu_time(){return cpu_time;}//!< accumulated heff computation time in [s]
+    double get_cpu_time(){return computation_time_heff;}//!< accumulated heff computation time in [s]
 
     const double A{0}; //!< Exchange energy in [J/m]
     const af::array A_field{af::array()};
 
-    double     cpu_time{0.};
+    double computation_time_heff{0.};
     af::timer timer_exchsolve;
     double     time_conv{0.};
     af::timer timer_conv;

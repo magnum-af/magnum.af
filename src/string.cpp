@@ -170,7 +170,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             break;
         }
         stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
-        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.D<<"\t"<<this->images[0].material.Ku1<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
+        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.D<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
         stream_E_barrier.close();
         for(unsigned j=0;j<this->E.size();++j)
         {

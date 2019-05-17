@@ -414,12 +414,20 @@ cdef class ExchangeField:
     return self.thisptr.get_cpu_time()
   def pythisptr(self):
       return <size_t><void*>self.thisptr
-  # Add when needed #@property
-  # Add when needed #def micro_A_field(self):
-  # Add when needed #  return array_from_addr(self.thisptr.get_micro_A_field())
-  # Add when needed #@micro_A_field.setter
-  # Add when needed #def micro_A_field(self, micro_A_field_in):
-  # Add when needed #  self.thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
+  ## Add when needed:
+  # @property
+  # def A(self):
+  #   return self.thisptr.A
+  # @A.setter
+  # def A(self,value):
+  #   self.thisptr.A=value
+  # @property
+  # def micro_A_field(self):
+  #   return array_from_addr(self.thisptr.get_micro_A_field())
+  # @micro_A_field.setter
+  # def micro_A_field(self, micro_A_field_in):
+  #   self.thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
+
 
 
 cdef class SparseExchangeField:
@@ -442,8 +450,8 @@ cdef class SparseExchangeField:
 
 cdef class UniaxialAnisotropyField:
   cdef cUniaxialAnisotropyField* thisptr
-  def __cinit__(self, Mesh mesh, Material param_in):
-    self.thisptr = new cUniaxialAnisotropyField (deref(mesh.thisptr),deref(param_in.thisptr))  
+  def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
+    self.thisptr = new cUniaxialAnisotropyField (Ku1, Ku1_axis[0], Ku1_axis[1], Ku1_axis[2])  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -453,6 +461,22 @@ cdef class UniaxialAnisotropyField:
     return self.thisptr.get_cpu_time()
   def pythisptr(self):
       return <size_t><void*>self.thisptr
+  @property
+  def Ku1(self):
+    return self.thisptr.Ku1
+  #@Ku1.setter
+  #def Ku1(self,value):
+  #  self.thisptr.Ku1=value
+
+  @property
+  def Ku1_axis(self):
+    return self.thisptr.get_ku1_axis(0), self.thisptr.get_ku1_axis(1), self.thisptr.get_ku1_axis(2)
+  #@Ku1_axis.setter
+  #def Ku1_axis(self, values):
+  #  self.thisptr.Ku1_axis[0] = values[0]
+  #  self.thisptr.Ku1_axis[1] = values[1]
+  #  self.thisptr.Ku1_axis[2] = values[2]
+
 
 
 cdef class AtomisticDipoleDipoleField:
@@ -560,12 +584,12 @@ cdef class LBFGS_Minimizer:
 cdef class Material:
   cdef cParam* thisptr
   cdef object owner # None if this is our own # From [1]
-  def __cinit__(self, alpha = 0., T = 0., ms = 0., D = 0., Ku1 = 0., D_axis = [0.,0.,-1], Ku1_axis = [0.,0.,1.], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False, mode = 6, afsync = False):
-    Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
+  def __cinit__(self, alpha = 0., T = 0., ms = 0., D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False, mode = 6, afsync = False):
+    # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
     Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
     D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
-    self.thisptr = new cParam (alpha, T, ms, D, Ku1, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], Ku1_axis_renormed[0], Ku1_axis_renormed[1], Ku1_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
+    self.thisptr = new cParam (alpha, T, ms, D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed , mode , afsync)
     owner = None # see [1]
   cdef set_ptr(self, cParam* ptr, owner):
     if self.owner is None:
@@ -599,13 +623,6 @@ cdef class Material:
   def ms(self,value):
     self.thisptr.ms=value
 
-  #TODO move to ExchangeField # @property
-  #TODO move to ExchangeField # def A(self):
-  #TODO move to ExchangeField #   return self.thisptr.A
-  #TODO move to ExchangeField # @A.setter
-  #TODO move to ExchangeField # def A(self,value):
-  #TODO move to ExchangeField #   self.thisptr.A=value
-
   @property
   def D(self):
     return self.thisptr.D
@@ -621,22 +638,6 @@ cdef class Material:
     self.thisptr.D_axis[0] = values[0]
     self.thisptr.D_axis[1] = values[1]
     self.thisptr.D_axis[2] = values[2]
-
-  @property
-  def Ku1(self):
-    return self.thisptr.Ku1
-  @Ku1.setter
-  def Ku1(self,value):
-    self.thisptr.Ku1=value
-
-  @property
-  def Ku1_axis(self):
-    return self.thisptr.Ku1_axis[0], self.thisptr.Ku1_axis[1], self.thisptr.Ku1_axis[2]
-  @Ku1_axis.setter
-  def Ku1_axis(self, values):
-    self.thisptr.Ku1_axis[0] = values[0]
-    self.thisptr.Ku1_axis[1] = values[1]
-    self.thisptr.Ku1_axis[2] = values[2]
 
   # Atomistic
   @property

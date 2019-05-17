@@ -5,23 +5,23 @@ int main(int argc, char** argv)
 {
     std::string filepath(argc > 1? argv[1]: "../Data/Testing");
     if( argc > 1 ){ filepath.append("/");}
-    setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
+    af::setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
     const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.05/(4e-7 * M_PI)));// Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
     const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     std::cout << "A=" << A << "B= " << B << std::endl;
     std::cout.precision(24);
-    info();
+    af::info();
 
     // Defining lamdas
     auto zee_func = [ A, B ] ( State state ) -> af::array {
         double phi = 2 * M_PI * (state.t);
         af::dim4 dim = af::dim4(state.mesh.n0, state.mesh.n1, state.mesh.n2, 1);
-        array zee = array(state.mesh.dims, f64);
-        zee(span, span, span, 0)=constant(A * std::cos(phi), dim, f64);
-        zee(span, span, span, 1)=constant(A * std::sin(phi), dim, f64);
-        zee(span, span, span, 2)=constant(0.0              , dim, f64);
-        //zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        af::array zee = af::array(state.mesh.dims, f64);
+        zee(af::span, af::span, af::span, 0)=constant(A * std::cos(phi), dim, f64);
+        zee(af::span, af::span, af::span, 1)=constant(A * std::sin(phi), dim, f64);
+        zee(af::span, af::span, af::span, 2)=constant(0.0              , dim, f64);
+        //zee(af::span,af::span,af::span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
         return  zee;
     };
 
@@ -34,15 +34,10 @@ int main(int argc, char** argv)
     mesh.print(std::cout);
     Material material = Material();
     material.ms    = 1.58/constants::mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
-    material.A     = 15e-12;        // [J/m]
-    material.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    double A_ex = 15e-12;// [J/m]
+    double Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
 
-    Material param_stress = material;
-    param_stress.Ku1 = 1400; //TODO
-    param_stress.Ku1_axis[0]=1;
-    param_stress.Ku1_axis[1]=0;
-    param_stress.Ku1_axis[2]=0;
-    param_stress.ms = material.ms;//TODO should be taken form state in the future
+    double Ku1_stress = 1400; //TODO
 
     State state(mesh,material, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
@@ -55,10 +50,10 @@ int main(int argc, char** argv)
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer;
     //LBFGS_Minimizer minimizer = LBFGS_Minimizer();//Fails on GTO, maybe due to gcc verions < 7.2
-    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,param_stress)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(A_ex)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(Ku1)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(Ku1_stress, {1, 0, 0})));
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
@@ -68,7 +63,7 @@ int main(int argc, char** argv)
     vti_writer_micro(minimizer.llgterms_.end()[-1]->h(state), mesh, filepath + "check_h_zee");
 
     //obtaining relaxed magnetization
-    timer t = af::timer::start();
+    af::timer t = af::timer::start();
     minimizer.Minimize(state);
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
     vti_writer_micro(state.m, mesh, filepath + "mrelax");
@@ -78,7 +73,7 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# id-val  	<mx>    <my>    <mz>    H_x    H_y    H_z" << std::endl;
-    timer t_hys = af::timer::start();
+    af::timer t_hys = af::timer::start();
     const int max_i = 100;
     for (int i = 0; i <= max_i; i++){
         state.t = (double)i/(double)max_i;

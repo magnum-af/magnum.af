@@ -53,7 +53,7 @@ array ExchangeField::h_withedges(const State& state){
 
     if(state.afsync) af::sync();
     time_edges += timer::stop(timer_edges);
-    cpu_time += timer::stop(timer_exchsolve);
+    computation_time_heff += timer::stop(timer_exchsolve);
     if (state.Ms.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
@@ -90,7 +90,7 @@ array ExchangeField::h(const State& state){
     filtr(1,1,2)= 1 / pow(state.mesh.dz,2);
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
     if(state.afsync) af::sync();
-    cpu_time += timer::stop(timer_exchsolve);
+    computation_time_heff += timer::stop(timer_exchsolve);
     if (state.Ms.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
@@ -267,7 +267,7 @@ array ExchangeField::h(const State& state){
 //    //exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
 //    if(material.afsync) sync();
 //    //time_edges += timer::stop(timer_edges);
-//    cpu_time += timer::stop(timer_exchsolve);
+//    computation_time_heff += timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //  else{
@@ -277,7 +277,7 @@ array ExchangeField::h(const State& state){
 //
 //    exch.eval();
 //    if(material.afsync) sync();
-//    cpu_time += timer::stop(timer_exchsolve);
+//    computation_time_heff += timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
@@ -435,7 +435,7 @@ array ExchangeField::h(const State& state){
 //    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
 //    if(material.afsync) sync();
 //    time_edges += timer::stop(timer_edges);
-//    cpu_time += timer::stop(timer_exchsolve);
+//    computation_time_heff += timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }
 //  else{
@@ -445,7 +445,7 @@ array ExchangeField::h(const State& state){
 //
 //    exch.eval();
 //    if(material.afsync) sync();
-//    cpu_time += timer::stop(timer_exchsolve);
+//    computation_time_heff += timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
 //  }

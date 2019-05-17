@@ -9,9 +9,7 @@ struct Material{
     // Micromagneitc 
     double ms{0};			//!< [J/T/m^3] 
     double D{0.};			//!< [D/m^2] 	// DM interaction constant  
-    double Ku1{0};			//!< [J/m^3] 	// Uniaxial Anisotropy 
     double D_axis[3]={0,0,-1};		//!<		// DMI axis
-    double Ku1_axis[3]={0,0,1};		//!<		// Anisotropy axis
 
     // Atomistic
     void set_atomistic_from_micromagnetic(double dx);
@@ -31,7 +29,7 @@ struct Material{
     // Default constructor
     Material(){};
     // For wrapping only
-    Material(double alpha, double T, double ms, double D, double Ku1, double D_axis_x, double D_axis_y, double D_axis_z, double Ku1_axis_x, double Ku1_axis_y, double Ku1_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
+    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
 };
 #endif
 
