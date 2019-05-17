@@ -32,7 +32,7 @@ TEST(NonEquiDemagField, EnergyTest) {
     m(af::span, af::span, 2, af::span) = random_2;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -77,7 +77,7 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
     m(af::span, af::span, 2, af::span) = random_2;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -121,7 +121,7 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     m(af::span, af::span, 2, af::span) = random_1;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {2 * z/nz, z/nz};
@@ -160,7 +160,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     m(af::span, af::span, 2, af::span) = random;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -196,7 +196,7 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     m(af::span, af::span, 0, af::span) = 0;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
@@ -232,7 +232,7 @@ TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest) {
     m(af::span, af::span, af::span, 2) = 1;
 
     State state_ed(mesh_ed, material_ed, m, false, true);
-    DemagField demag_ed = DemagField(mesh_ed, material_ed, false, false, 1);
+    DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};

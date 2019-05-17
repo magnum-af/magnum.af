@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
     LlgTerms llgterm;
-    llgterm.push_back( LlgTerm (new DemagField(mesh, material, true, true, 0)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh, true, true, 0)));
     llgterm.push_back( LlgTerm (new ExchangeField(A)));
     LLGIntegrator Llg(llgterm);
     

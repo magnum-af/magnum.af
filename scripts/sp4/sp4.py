@@ -28,13 +28,13 @@ m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 
 material = Material()
 material.ms = 8e5
-material.A = 1.3e-11
+A = 1.3e-11
 material.alpha = 1.
 
 
 state = State(mesh, material, m)
-demag = DemagField(mesh, material, verbose = True, caching = True, nthreads = 6)
-exch = ExchangeField(mesh, material)
+demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
+exch = ExchangeField(A)
 Llg = LLGIntegrator([demag, exch])
 
 # Relaxing

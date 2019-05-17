@@ -383,8 +383,8 @@ cdef class LLGIntegrator:
 
 cdef class DemagField:
   cdef cDemagField* thisptr
-  def __cinit__(self, Mesh mesh, Material param_in, verbose = False, caching = False, nthreads = 4):
-    self.thisptr = new cDemagField (deref(mesh.thisptr), deref(param_in.thisptr), verbose, caching, nthreads)  
+  def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
+    self.thisptr = new cDemagField (deref(mesh.thisptr), verbose, caching, nthreads)  
   #This would causes double free coruption!
   def __dealloc__(self):
     del self.thisptr
