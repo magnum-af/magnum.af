@@ -58,8 +58,8 @@ class State{
     void calc_mean_m_steps( std::ostream& myfile, const af::array& hzee);
     unsigned int get_n_cells_(){return n_cells_;};
 
-    const bool verbose { true };
-    const bool mute_warning { false };
+    bool verbose { true };
+    bool mute_warning { false };
     bool afsync { false };
     double integral_nonequimesh(const af::array& h_times_m) const;
   private:
