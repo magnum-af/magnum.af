@@ -237,12 +237,12 @@ cdef class Mesh:
 
 cdef class State:
   cdef cState* thisptr
-  def __cinit__(self, Mesh mesh_in, Material param_in, m_in, evaluate_mean = None):
+  def __cinit__(self, Mesh mesh, Material param_in, m_in, evaluate_mean = None):
     # switch for evaluate_mean value
     if (evaluate_mean is None):
-      self.thisptr = new cState (deref(mesh_in.thisptr), deref(param_in.thisptr), addressof(m_in.arr))  
+      self.thisptr = new cState (deref(mesh.thisptr), deref(param_in.thisptr), addressof(m_in.arr))  
     else:
-      self.thisptr = new cState (deref(mesh_in.thisptr), deref(param_in.thisptr), addressof(m_in.arr), addressof(evaluate_mean.arr))  
+      self.thisptr = new cState (deref(mesh.thisptr), deref(param_in.thisptr), addressof(m_in.arr), addressof(evaluate_mean.arr))  
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
   def __dealloc__(self): # causes segfault on every cleanup
     del self.thisptr
@@ -279,8 +279,8 @@ cdef class State:
       mesh = Mesh(0,0,0,0,0,0)
       mesh.set_ptr(&self.thisptr.mesh,self)
       return mesh
-    def __set__(self, Mesh mesh_in):
-      self.thisptr.mesh = deref(mesh_in.thisptr)
+    def __set__(self, Mesh mesh):
+      self.thisptr.mesh = deref(mesh.thisptr)
 
   property material:
     def __get__(self):
@@ -383,8 +383,8 @@ cdef class LLGIntegrator:
 
 cdef class DemagField:
   cdef cDemagField* thisptr
-  def __cinit__(self, Mesh mesh_in, Material param_in, verbose = False, caching = False, nthreads = 4):
-    self.thisptr = new cDemagField (deref(mesh_in.thisptr), deref(param_in.thisptr), verbose, caching, nthreads)  
+  def __cinit__(self, Mesh mesh, Material param_in, verbose = False, caching = False, nthreads = 4):
+    self.thisptr = new cDemagField (deref(mesh.thisptr), deref(param_in.thisptr), verbose, caching, nthreads)  
   #This would causes double free coruption!
   def __dealloc__(self):
     del self.thisptr
@@ -424,11 +424,12 @@ cdef class ExchangeField:
 
 cdef class SparseExchangeField:
   cdef cSparseExchangeField* thisptr
-  def __cinit__(self, A, Mesh mesh_in, verbose = True):
+  def __cinit__(self, A, Mesh mesh, verbose = True):
     if hasattr('A','arr'):
-      self.thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh_in.thisptr), verbose)
+      self.thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh.thisptr), <bool> verbose)
     else:
-      self.thisptr = new cSparseExchangeField (<double> A, deref(mesh_in.thisptr), verbose)
+      self.thisptr = new cSparseExchangeField (<double> A, deref(mesh.thisptr), <bool> verbose)
+      # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -441,8 +442,8 @@ cdef class SparseExchangeField:
 
 cdef class UniaxialAnisotropyField:
   cdef cUniaxialAnisotropyField* thisptr
-  def __cinit__(self, Mesh mesh_in, Material param_in):
-    self.thisptr = new cUniaxialAnisotropyField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __cinit__(self, Mesh mesh, Material param_in):
+    self.thisptr = new cUniaxialAnisotropyField (deref(mesh.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -456,8 +457,8 @@ cdef class UniaxialAnisotropyField:
 
 cdef class AtomisticDipoleDipoleField:
   cdef cAtomisticDipoleDipoleField* thisptr
-  def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new cAtomisticDipoleDipoleField (deref(mesh_in.thisptr))  
+  def __cinit__(self, Mesh mesh):
+    self.thisptr = new cAtomisticDipoleDipoleField (deref(mesh.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -470,8 +471,8 @@ cdef class AtomisticDipoleDipoleField:
 
 cdef class AtomisticUniaxialAnisotropyField:
   cdef cAtomisticUniaxialAnisotropyField* thisptr
-  def __cinit__(self, Mesh mesh_in, Material param_in):
-    self.thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __cinit__(self, Mesh mesh, Material param_in):
+    self.thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -484,8 +485,8 @@ cdef class AtomisticUniaxialAnisotropyField:
 
 cdef class AtomisticExchangeField:
   cdef cAtomisticExchangeField* thisptr
-  def __cinit__(self, Mesh mesh_in):
-    self.thisptr = new cAtomisticExchangeField (deref(mesh_in.thisptr))  
+  def __cinit__(self, Mesh mesh):
+    self.thisptr = new cAtomisticExchangeField (deref(mesh.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -498,8 +499,8 @@ cdef class AtomisticExchangeField:
 
 cdef class AtomisticDmiField:
   cdef cAtomisticDmiField* thisptr
-  def __cinit__(self, Mesh mesh_in, Material param_in):
-    self.thisptr = new cAtomisticDmiField (deref(mesh_in.thisptr),deref(param_in.thisptr))  
+  def __cinit__(self, Mesh mesh, Material param_in):
+    self.thisptr = new cAtomisticDmiField (deref(mesh.thisptr),deref(param_in.thisptr))  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
