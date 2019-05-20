@@ -145,7 +145,7 @@ while (state.t < 1e-7/fastenup and state.meanxyz(2) < (1. - 1e-6)):
   #print("m", state.m)
   if i%2000 == 0:
     state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
-  fields[0].set_xyz(state, 0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
+  fields[0].set_homogenuous_field(state, 0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
   Llg.step(state)
   printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
   print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)

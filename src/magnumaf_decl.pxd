@@ -149,7 +149,7 @@ cdef extern from "../../src/llg_terms/zee.hpp":
     long int get_m_addr();
     double E(const State& state);
     double get_cpu_time();
-    void set_xyz(const State&, const double x, const double y, const double z);
+    void set_homogenuous_field(const double x, const double y, const double z);
 
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp":
   cdef cppclass LBFGS_Minimizer:

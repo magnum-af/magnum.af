@@ -49,17 +49,14 @@ mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 # Setting material parameters
 param=Material()
 param.ms=0.5/Constants.mu0 # Saturation magnetization
-param.A=15e-12 # Exchange constant
-param.Ku1=79e+03 # Anisotropy constant
-print ("Check: param.Ku1_axis =", param.Ku1_axis)
+A=15e-12 # Exchange constant
+Ku1=79e+03 # Anisotropy constant
 
 # Second param class for stress
 param_stress=Material()
 param_stress.ms=param.ms
-param_stress.A=param.A
-param_stress.Ku1=1400 #TODO guessed worst case value fom Toni, elaborate
-param_stress.Ku1_axis=[1, 0, 0] # Setting axis in x-direction
-print ("Check: param_stress.Ku1_axis =", param_stress.Ku1_axis)
+stress_Ku1 = 1400 # Note: worst case value from Toni, elaborate
+stress_Ku1_axis = [1, 0, 0] # Setting axis in x-direction
 
 # Create state object with timing
 start = time.time()
@@ -68,10 +65,10 @@ print ("Initialize disk configuration [s]= ", time.time() - start)
 
 # Defining interaction terms
 start = time.time()
-demag = DemagField(mesh, param)
-exch = ExchangeField(mesh, param)
-aniso_z = UniaxialAnisotropyField(mesh, param)
-aniso_stress = UniaxialAnisotropyField(mesh, param_stress)
+demag = DemagField(mesh)
+exch = ExchangeField(A)
+aniso_z = UniaxialAnisotropyField(Ku1)
+aniso_stress = UniaxialAnisotropyField(stress_Ku1, stress_Ku1_axis)
 zee = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 print ("Init terms [s]= ", time.time() - start)
 
@@ -98,13 +95,13 @@ print ("B = ", B)
 # Run full rotation
 #stream = open(filepath+"CoPt_s_A%1.2e.dat"%(A*Constants.mu0), "w")
 stream = open(filepath+"m.dat", "w")
-steps = 100
+steps = 5
 for i in range(0, steps):
     phi = 2. * np.pi * i/steps;
     Bx = A*np.cos(phi)
     Bz = A*np.sin(phi)
     By = 0
-    zee.set_xyz(state, Bx, By, Bz)
+    zee.set_homogenuous_field(Bx, By, Bz)
     start = time.time()
     minimizer.pyMinimize(state)
     a = zee.get_zee()

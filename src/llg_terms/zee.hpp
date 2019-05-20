@@ -8,32 +8,28 @@
 
 class ExternalField : public LLGTerm {
   public:
-    ///< Constant Zeeman field.
-    ExternalField(af::array zee_in);
-    ExternalField(long int zee_in_addr);
-    long int get_m_addr();
-    ///< Setting x,y,z components of static Zeeman field.
-    void set_xyz(const State&, const double x, const double y, const double z);
-
-    ///< Time dependent Zeeman field.
-    ExternalField(af::array (*callback_func_in)(State state));
+    ExternalField(af::array zee_in);///< Constant Zeeman field.
+    ExternalField(af::array (*callback_func_in)(State state));///< Callback function for e.g. time dependent external field
     ExternalField(std::function<af::array(State)>);
-    af::array (*callback_func)(State state);
-    std::function<af::array(State)> lamda_callback;
-    bool callback{false};
-    bool is_lamda{false};
-
-    //Field contribution
-    af::array h(const State& state);
-    //Energy contribution
-    double E(const State& state);
+    ExternalField(long int zee_in_addr);///< For wrapping only
+    
+    af::array h(const State& state);//Field contribution
+    double E(const State& state);//Energy contribution
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
-    double get_cpu_time(){return cpu_time;}//TODO remove or use
-    double cpu_time{0.};
-    af::array zee_field;
-    af::timer timer;
-};
 
+    long int get_m_addr();// For wrapping only
+    void set_homogenuous_field(const double x, const double y, const double z);///< Setting homogenuous zeeman field with x,y,z components of static Zeeman field.
+
+    double get_cpu_time(){return 0;}// use or remove
+
+  private:
+    af::array zee_field;
+    af::array (*callback_func)(State state);
+    const bool callback{false};
+    std::function<af::array(State)> lamda_callback;
+    const bool is_lamda{false};
+    //double af_time{0.};
+};
 
 #endif
 
