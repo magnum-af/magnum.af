@@ -145,6 +145,7 @@ cdef extern from "../../src/llg_terms/zee.hpp":
     ExternalField (long int m_in);
     long int get_m_addr();
     double E(const State& state);
+    long int h_ptr(const State& state);
     double get_cpu_time();
     void set_homogenuous_field(const double x, const double y, const double z);
 

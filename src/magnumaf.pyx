@@ -42,7 +42,7 @@ from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleF
 from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
 from magnumaf_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
 from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
-from magnumaf_decl cimport ExternalField as cZee
+from magnumaf_decl cimport ExternalField as cExternalField
 from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnumaf_decl cimport LLGTerm as cLLGTerm
 
@@ -384,7 +384,7 @@ cdef class DemagField:
     self.thisptr = NULL
   def print_Nfft(self):
     self.thisptr.print_Nfft()
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -401,7 +401,7 @@ cdef class ExchangeField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -434,7 +434,7 @@ cdef class SparseExchangeField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -453,7 +453,7 @@ cdef class UniaxialAnisotropyField:
     self.thisptr = NULL
   def h(self, State state):
     return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -491,7 +491,7 @@ cdef class AtomisticDipoleDipoleField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -505,7 +505,7 @@ cdef class AtomisticUniaxialAnisotropyField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -519,7 +519,7 @@ cdef class AtomisticExchangeField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -533,7 +533,7 @@ cdef class AtomisticDmiField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -541,13 +541,13 @@ cdef class AtomisticDmiField:
       return <size_t><void*>self.thisptr
 
 cdef class ExternalField:
-  cdef cZee* thisptr
+  cdef cExternalField* thisptr
   def __cinit__(self, array_in):
-    self.thisptr = new cZee (addressof(array_in.arr))  
+    self.thisptr = new cExternalField (addressof(array_in.arr))
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state_in):
+  def E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):
     return self.thisptr.get_cpu_time()
@@ -555,8 +555,8 @@ cdef class ExternalField:
       self.thisptr.set_homogenuous_field(x, y, z)
   def pythisptr(self):
       return <size_t><void*>self.thisptr
-  def get_zee(self):
-    return array_from_addr(self.thisptr.get_m_addr())
+  def h(self, State state):
+    return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
 
 cdef class LBFGS_Minimizer:
   cdef cLBFGS_Minimizer* thisptr
@@ -719,7 +719,7 @@ cdef class SpinTransferTorqueField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
-  def print_E(self,State state):
+  def E(self,State state):
     return self.thisptr.E(deref(state.thisptr))
   def pythisptr(self):
       return <size_t><void*>self.thisptr
