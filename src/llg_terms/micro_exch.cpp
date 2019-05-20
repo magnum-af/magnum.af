@@ -54,23 +54,23 @@ array ExchangeField::h_withedges(const State& state){
     if(state.afsync) af::sync();
     time_edges += timer::stop(timer_edges);
     computation_time_heff += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty() && this->A_field.isempty())
+    if (state.Ms_field.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
     }
-    else if ( !state.Ms.isempty() && this->A_field.isempty())
+    else if ( !state.Ms_field.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* this->A)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
+        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
-    else if ( state.Ms.isempty() && !this->A_field.isempty())
+    else if ( state.Ms_field.isempty() && !this->A_field.isempty())
     {
         return (2.* this->A_field)/(constants::mu0 * state.material.ms) * exch;
     }
     else {
-        array heff = (2.* this->A_field)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
+        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
 }
@@ -91,23 +91,23 @@ array ExchangeField::h(const State& state){
     array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
     if(state.afsync) af::sync();
     computation_time_heff += timer::stop(timer_exchsolve);
-    if (state.Ms.isempty() && this->A_field.isempty())
+    if (state.Ms_field.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.material.ms) * exch;
     }
-    else if ( !state.Ms.isempty() && this->A_field.isempty())
+    else if ( !state.Ms_field.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* this->A)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
+        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
-    else if ( state.Ms.isempty() && !this->A_field.isempty())
+    else if ( state.Ms_field.isempty() && !this->A_field.isempty())
     {
         return (2.* this->A_field)/(constants::mu0 * state.material.ms) * exch;
     }
     else {
-        array heff = (2.* this->A_field)/(constants::mu0*state.Ms) * exch;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
+        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
         return  heff;
     }
 }

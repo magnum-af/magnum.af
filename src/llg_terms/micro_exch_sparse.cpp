@@ -22,12 +22,12 @@ af::array SparseExchangeField::h(const State& state){
     exch = af::moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
     if(state.afsync) af::sync();
     af_time += af::timer::stop(aftimer);
-    if (state.Ms.isempty()){
+    if (state.Ms_field.isempty()){
         return  exch/state.material.ms;
     }
     else {
-        af::array heff = exch/state.Ms;
-        replace(heff,state.Ms!=0,0); // set all cells where Ms==0 to 0
+        af::array heff = exch/state.Ms_field;
+        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
         return heff;
     }
 }

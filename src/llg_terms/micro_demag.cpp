@@ -72,12 +72,12 @@ af::array DemagField::h(const State&  state){
   // FFT with zero-padding of the m field
   af::array mfft;
   if (state.mesh.n2_exp == 1){
-      if (state.Ms.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
-      else mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
+      else mfft=af::fftR2C<2>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
   }
   else {
-      if (state.Ms.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
-      else  mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
+      else  mfft=af::fftR2C<3>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
   }
 
   // Pointwise product

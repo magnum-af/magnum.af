@@ -320,11 +320,11 @@ cdef class State:
   #  #self.thisptr.set_m(addressof(m_in.arr))
 
   @property
-  def micro_Ms_field(self):
-    return array_from_addr(self.thisptr.get_micro_Ms_field())
-  @micro_Ms_field.setter
-  def micro_Ms_field(self, micro_Ms_field_in):
-    self.thisptr.set_micro_Ms_field(addressof(micro_Ms_field_in.arr))
+  def Ms_field(self):
+    return array_from_addr(self.thisptr.get_Ms_field())
+  @Ms_field.setter
+  def Ms_field(self, Ms_field):
+    self.thisptr.set_Ms_field(addressof(Ms_field.arr))
 
   @property
   def steps(self):
@@ -451,6 +451,8 @@ cdef class UniaxialAnisotropyField:
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
+  def h(self, State state):
+    return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
   def print_E(self,State state_in):
     return self.thisptr.E(deref(state_in.thisptr))
   def cpu_time(self):

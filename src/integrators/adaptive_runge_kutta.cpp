@@ -51,7 +51,7 @@ void AdaptiveRungeKutta::step(State& state){
     h_ = controller_.get_hnext();
     state.m += mtemp;
     if (renormalize_){
-        if (state.Ms.isempty()){
+        if (state.Ms_field.isempty()){
             state.m = renormalize(state.m);
         }
         else {

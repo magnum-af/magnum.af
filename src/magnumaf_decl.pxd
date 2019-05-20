@@ -42,12 +42,9 @@ cdef extern from "../../src/state.hpp":
     array m;
     void set_m(long int aptr);
     long int get_m_addr();
-    array Ms;
-    void set_micro_Ms_field(long int aptr);
-    long int get_micro_Ms_field();
-    array micro_A_field;
-    void set_micro_A_field(long int aptr);
-    long int get_micro_A_field();
+
+    void set_Ms_field(long int aptr);
+    long int get_Ms_field();
 
     double t;
     unsigned long long steps;
@@ -119,6 +116,7 @@ cdef extern from "../../src/llg_terms/micro_anisotropy.hpp":
     UniaxialAnisotropyField (long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
     UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
     double E(const State& state);
+    long int h_ptr(const State& state);
     double Ku1;
     double get_ku1_axis(int i);
     long int get_Ku1_field();

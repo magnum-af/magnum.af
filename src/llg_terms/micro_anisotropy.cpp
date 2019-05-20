@@ -31,8 +31,15 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, double Ku1_axis_0,
 UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
 
-
 af::array UniaxialAnisotropyField::h(const State& state){
+    return calc_heff(state);
+}
+
+long int UniaxialAnisotropyField::h_ptr(const State& state){
+    return (long int) (new af::array(calc_heff(state)))->get();
+}
+
+af::array UniaxialAnisotropyField::calc_heff(const State& state){
     af::timer timer_anisotropy = af::timer::start();
 
     af::array eu = af::array(state.mesh.dims, f64);//Normal vector
@@ -46,20 +53,20 @@ af::array UniaxialAnisotropyField::h(const State& state){
 
     if(state.afsync) af::sync();
     computation_time_heff += af::timer::stop(timer_anisotropy);
-    if (state.Ms.isempty() && Ku1_field.isempty()){
+    if (state.Ms_field.isempty() && Ku1_field.isempty()){
         return  2.* Ku1/(constants::mu0 * state.material.ms) * (eu* anisotropy);
     }
-    else if ( ! state.Ms.isempty() && Ku1_field.isempty()){
-        af::array result =  2.* Ku1/(constants::mu0 * state.Ms) * (eu* anisotropy);
-        af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
+    else if ( ! state.Ms_field.isempty() && Ku1_field.isempty()){
+        af::array result =  2.* Ku1/(constants::mu0 * state.Ms_field) * (eu* anisotropy);
+        af::replace(result, !af::iszero(state.Ms_field), 0); // Replacing all resulting NaN with 0
         return result;
     }
-    else if ( state.Ms.isempty() && ! Ku1_field.isempty()){
+    else if ( state.Ms_field.isempty() && ! Ku1_field.isempty()){
         return  2.* Ku1_field/(constants::mu0 * state.material.ms) * (eu* anisotropy);
     }
     else {
-        af::array result =  2.* Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
-        af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
+        af::array result =  2.* Ku1_field/(constants::mu0 * state.Ms_field) * (eu* anisotropy);
+        af::replace(result, !af::iszero(state.Ms_field), 0); // Replacing all resulting NaN with 0
         return result;
     }
 }

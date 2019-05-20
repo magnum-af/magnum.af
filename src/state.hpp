@@ -24,11 +24,11 @@ class State{
     Material material;
     double t{0.};//time
     af::array m;
-    af::array Ms; // Saturation magnetization. Is impicitly set and used when magnetization has values of norm 0.
-    void set_micro_Ms_field(long int aptr);
-    long int get_micro_Ms_field();
+    af::array Ms_field; // Saturation magnetization. Is impicitly set and used when magnetization has values of norm 0.
+    void set_Ms_field(long int afarray_ptr);
+    long int get_Ms_field();
 
-    void set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms);
+    void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);
     void check_m_norm(double tol = 1e-6);
     unsigned long long steps{0};
     void Normalize(); ///< normalize the magnetization to 1

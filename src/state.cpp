@@ -1,14 +1,14 @@
 #include "state.hpp"
 
-void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
-    // Initializes Ms if any entry of initial m has zero norm
+void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field){
+    // Initializes Ms_field if any entry of initial m has zero norm
     if(minval(vecnorm(m)) == 0){
-        if(verbose) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms array" << std::endl;}
+        if(verbose) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms_field array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
-        Ms = af::constant(this->material.ms, nzero.dims(), f64);
-        Ms *= nzero;
-        Ms = af::tile(Ms,1,1,1,3);
+        Ms_field = af::constant(this->material.ms, nzero.dims(), f64);
+        Ms_field *= nzero;
+        Ms_field = af::tile(Ms_field,1,1,1,3);
     }
 }
 
@@ -31,7 +31,7 @@ void State::set_Ms_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms){
 //    }
 //}
 
-void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
+void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms_field)
     af::array one_when_value_is_zero = af::iszero(vecnorm(m));
     double meannorm = afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m)+1.*one_when_value_is_zero,0),1),2),3));
     if ( (fabs(meannorm - 1.) > tol) && ( this->mute_warning == false )) {
@@ -48,7 +48,7 @@ void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms)
 State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_warning): mesh(mesh), material(param), m(m), verbose(verbose), mute_warning(mute_warning)
 {
     check_m_norm();
-    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
     //check_discretization();
 }
 
@@ -56,7 +56,7 @@ State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mut
               nonequimesh(nonequimesh), m(m), verbose(verbose), mute_warning(mute_warning)
 {
     check_m_norm();
-    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
     //check_nonequispaced_discretization();
 }
 
@@ -64,7 +64,7 @@ State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mut
 State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean):
               mesh(mesh_in),material(param_in), m(m_in), evaluate_mean_(evaluate_mean)
 {
-    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
     //check_discretization();
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
@@ -77,7 +77,7 @@ State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), ma
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
     //m.lock();
-    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
     //check_discretization();
     check_m_norm();
 }
@@ -93,7 +93,7 @@ State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_
     evaluate_mean_ = *( new af::array( *b ));
     //evaluate_mean_.lock();
 
-    set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
     //check_discretization();
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
@@ -109,8 +109,6 @@ void State::set_m(long int aptr){
     void **a = (void **)aptr;
     m = *( new af::array( *a ));
     check_m_norm();
-    //TODO should these be called?// set_Ms_if_m_minvalnorm_is_zero( this->m, this->Ms);
-    //TODO should these be called?// check_discretization();
 }
 
 long int State::get_m_addr(){
@@ -118,13 +116,13 @@ long int State::get_m_addr(){
     return (long int) a->get();
 }
 
-void State::set_micro_Ms_field(long int aptr){
+void State::set_Ms_field(long int aptr){
     void **a = (void **)aptr;
-    Ms = *( new af::array( *a )); // TODO rename Ms -> micro_Ms_field
+    Ms_field = *( new af::array( *a )); // TODO rename Ms_field -> micro_Ms_field
 }
 
-long int State::get_micro_Ms_field(){
-    af::array *a = new af::array(Ms);
+long int State::get_Ms_field(){
+    af::array *a = new af::array(Ms_field);
     return (long int) a->get();
 }
 
@@ -157,7 +155,7 @@ double State::meani(const int i){
         ///< Calculates the mean values for the specified values given in evaluate_mean_
         norm_host = (af::sum(af::sum(af::sum((m * evaluate_mean_)(af::span,af::span,af::span,i),0),1),2)/evaluate_mean_is_1_).host<double>();
     }
-    else if(!Ms.isempty() && n_cells_ != 0){
+    else if(!Ms_field.isempty() && n_cells_ != 0){
         if (n_cells_ == 0) printf("%s State::meani: n_cells_ is empty and will be divieded by 0!\n", red("Warning:").c_str());
         norm_host = (af::sum(af::sum(af::sum(m(af::span,af::span,af::span,i),0),1),2)/n_cells_).host<double>();
     }
@@ -172,7 +170,7 @@ double State::meani(const int i){
 
 ///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>
 void State::calc_mean_m(std::ostream& myfile ){
-    if(Ms.isempty()){
+    if(Ms_field.isempty()){
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m,0),1),2);
         myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,0)) << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,1))<< "\t" << afvalue(mean_dim3(af::span,af::span,af::span,2)) << std::endl;
     }
@@ -185,7 +183,7 @@ void State::calc_mean_m(std::ostream& myfile ){
 
 ///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>, hzee
 void State::calc_mean_m( std::ostream& myfile, double hzee){
-    if(Ms.isempty()){
+    if(Ms_field.isempty()){
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m,0),1),2);
         myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,0)) << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,1))<< "\t" << afvalue(mean_dim3(af::span,af::span,af::span,2)) <<  "\t" << hzee << std::endl;
     }
@@ -198,7 +196,7 @@ void State::calc_mean_m( std::ostream& myfile, double hzee){
 ///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>, hzee_x, hzee_y, hzee_z
 void State::calc_mean_m( std::ostream& myfile, const af::array& hzee){
     af::array sum_dim3 = sum(sum(sum(this->m,0),1),2);
-    if(Ms.isempty()){
+    if(Ms_field.isempty()){
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m,0),1),2);
         myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,0)) << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,1))<< "\t" << afvalue(mean_dim3(af::span,af::span,af::span,2)) << "\t" << afvalue(hzee(0,0,0,0)) << "\t" << afvalue(hzee(0,0,0,1)) << "\t" << afvalue(hzee(0,0,0,2)) << std::endl;
     }
@@ -210,7 +208,7 @@ void State::calc_mean_m( std::ostream& myfile, const af::array& hzee){
 
 ///< Writing to filestrean: state.steps, <mx>,  <my>,  <mz>, hzee
 void State::calc_mean_m_steps( std::ostream& myfile, double hzee){
-    if(Ms.isempty()){
+    if(Ms_field.isempty()){
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m,0),1),2);
         myfile << std::setw(12) << this->steps << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,0)) << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,1))<< "\t" << afvalue(mean_dim3(af::span,af::span,af::span,2)) <<  "\t" << hzee << std::endl;
     }
@@ -223,7 +221,7 @@ void State::calc_mean_m_steps( std::ostream& myfile, double hzee){
 ///< Writing to filestrean: state.steps, <mx>,  <my>,  <mz>, hzee_x, hzee_y, hzee_z
 void State::calc_mean_m_steps( std::ostream& myfile, const af::array& hzee){
     af::array sum_dim3 = sum(sum(sum(this->m,0),1),2);
-    if(Ms.isempty()){
+    if(Ms_field.isempty()){
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m,0),1),2);
         myfile << std::setw(12) << this->steps << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,0)) << "\t" << afvalue(mean_dim3(af::span,af::span,af::span,1))<< "\t" << afvalue(mean_dim3(af::span,af::span,af::span,2)) << "\t" << afvalue(hzee(0,0,0,0)) << "\t" << afvalue(hzee(0,0,0,1)) << "\t" << afvalue(hzee(0,0,0,2)) << std::endl;
     }
@@ -240,12 +238,12 @@ double State::integral_nonequimesh(const af::array& h_times_m) const{
     af::array ms_h_times_m;
 
     // Global or local Ms switch
-    if (this->Ms.isempty() == true){
+    if (this->Ms_field.isempty() == true){
         ms_h_times_m = this->material.ms * h_times_m;
 ;
     }
     else {
-        ms_h_times_m = this->Ms * h_times_m;
+        ms_h_times_m = this->Ms_field * h_times_m;
     }
 
     af::array xy_integral = af::sum( af::sum( af::sum( ms_h_times_m, 0), 1), 3) * this->nonequimesh.dx * this->nonequimesh.dy;
