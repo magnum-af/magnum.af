@@ -128,16 +128,6 @@ long int State::get_micro_Ms_field(){
     return (long int) a->get();
 }
 
-void State::set_micro_Ku1_field(long int aptr){
-    void **a = (void **)aptr;
-    micro_Ku1_field = *( new af::array( *a ));
-}
-
-long int State::get_micro_Ku1_field(){
-    af::array *a = new af::array(micro_Ku1_field);
-    return (long int) a->get();
-}
-
 void State::_vti_writer_micro(std::string outputname){
     vti_writer_micro(m, mesh, outputname); 
 }

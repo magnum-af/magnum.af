@@ -327,13 +327,6 @@ cdef class State:
     self.thisptr.set_micro_Ms_field(addressof(micro_Ms_field_in.arr))
 
   @property
-  def micro_Ku1_field(self):
-    return array_from_addr(self.thisptr.get_micro_Ku1_field())
-  @micro_Ku1_field.setter
-  def micro_Ku1_field(self, micro_Ku1_field_in):
-    self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
-
-  @property
   def steps(self):
     return self.thisptr.steps
 
@@ -401,7 +394,7 @@ cdef class DemagField:
 cdef class ExchangeField:
   cdef cExchangeField* thisptr
   def __cinit__(self, A):
-    if hasattr('A','arr'):
+    if hasattr(A, 'arr'):
       self.thisptr = new cExchangeField (<long int> addressof(A.arr))
     else:
       self.thisptr = new cExchangeField (<double> A)
@@ -451,7 +444,10 @@ cdef class SparseExchangeField:
 cdef class UniaxialAnisotropyField:
   cdef cUniaxialAnisotropyField* thisptr
   def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
-    self.thisptr = new cUniaxialAnisotropyField (Ku1, Ku1_axis[0], Ku1_axis[1], Ku1_axis[2])  
+    if hasattr(Ku1, 'arr'):
+      self.thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
+    else:
+      self.thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
   def __dealloc__(self):
     del self.thisptr
     self.thisptr = NULL
@@ -476,6 +472,13 @@ cdef class UniaxialAnisotropyField:
   #  self.thisptr.Ku1_axis[0] = values[0]
   #  self.thisptr.Ku1_axis[1] = values[1]
   #  self.thisptr.Ku1_axis[2] = values[2]
+  @property
+  def Ku1_field(self):
+    return array_from_addr(self.thisptr.get_Ku1_field())
+  #@micro_Ku1_field.setter
+  #def micro_Ku1_field(self, micro_Ku1_field_in):
+  #  self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
+
 
 
 

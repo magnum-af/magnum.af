@@ -48,9 +48,6 @@ cdef extern from "../../src/state.hpp":
     array micro_A_field;
     void set_micro_A_field(long int aptr);
     long int get_micro_A_field();
-    array micro_Ku1_field;
-    void set_micro_Ku1_field(long int aptr);
-    long int get_micro_Ku1_field();
 
     double t;
     unsigned long long steps;
@@ -119,10 +116,12 @@ cdef extern from "../../src/llg_terms/micro_demag.hpp":
 
 cdef extern from "../../src/llg_terms/micro_anisotropy.hpp":
   cdef cppclass UniaxialAnisotropyField:
+    UniaxialAnisotropyField (long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
     UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+    double E(const State& state);
     double Ku1;
     double get_ku1_axis(int i);
-    double E(const State& state);
+    long int get_Ku1_field();
     double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_demag.hpp":

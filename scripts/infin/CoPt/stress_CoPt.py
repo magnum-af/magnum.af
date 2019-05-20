@@ -95,7 +95,7 @@ print ("B = ", B)
 # Run full rotation
 #stream = open(filepath+"CoPt_s_A%1.2e.dat"%(A*Constants.mu0), "w")
 stream = open(filepath+"m.dat", "w")
-steps = 5
+steps = 100
 for i in range(0, steps):
     phi = 2. * np.pi * i/steps;
     Bx = A*np.cos(phi)

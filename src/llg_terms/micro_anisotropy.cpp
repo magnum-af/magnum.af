@@ -18,8 +18,17 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, std::array<double,
 }
 
 
+UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, std::array<double, 3> Ku1_axis) : Ku1_field(Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis)){
+}
+
+
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1(Ku1), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
+}
+
+
+// For wrapping only
+UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
 
 
@@ -37,19 +46,19 @@ af::array UniaxialAnisotropyField::h(const State& state){
 
     if(state.afsync) af::sync();
     computation_time_heff += af::timer::stop(timer_anisotropy);
-    if (state.Ms.isempty() && state.micro_Ku1_field.isempty()){
+    if (state.Ms.isempty() && Ku1_field.isempty()){
         return  2.* Ku1/(constants::mu0 * state.material.ms) * (eu* anisotropy);
     }
-    else if ( ! state.Ms.isempty() && state.micro_Ku1_field.isempty()){
+    else if ( ! state.Ms.isempty() && Ku1_field.isempty()){
         af::array result =  2.* Ku1/(constants::mu0 * state.Ms) * (eu* anisotropy);
         af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
         return result;
     }
-    else if ( state.Ms.isempty() && ! state.micro_Ku1_field.isempty()){
-        return  2.* state.micro_Ku1_field/(constants::mu0 * state.material.ms) * (eu* anisotropy);
+    else if ( state.Ms.isempty() && ! Ku1_field.isempty()){
+        return  2.* Ku1_field/(constants::mu0 * state.material.ms) * (eu* anisotropy);
     }
     else {
-        af::array result =  2.* state.micro_Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
+        af::array result =  2.* Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
         af::replace(result, !af::iszero(state.Ms), 0); // Replacing all resulting NaN with 0
         return result;
     }
@@ -61,6 +70,19 @@ std::array<double, 3> UniaxialAnisotropyField::get_normalized_vector(std::array<
     return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
 }
 
+
 double UniaxialAnisotropyField::get_ku1_axis(int i){
     return Ku1_axis[i];
+}
+
+
+//void UniaxialAnisotropyField::set_Ku1_field(long int aptr){
+//    void **a = (void **)aptr;
+//    micro_Ku1_field = *( new af::array( *a ));
+//}
+
+
+long int UniaxialAnisotropyField::get_Ku1_field(){
+    af::array *a = new af::array(Ku1_field);
+    return (long int) a->get();
 }
