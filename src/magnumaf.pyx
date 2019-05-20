@@ -256,13 +256,13 @@ cdef class State:
   def pythisptr(self):
       return <size_t><void*>self.thisptr
 
-  def py_vti_writer_micro(self, outputname):
+  def write_vti(self, outputname):
     self.thisptr._vti_writer_micro( outputname.encode('utf-8')) 
-  def py_vti_writer_micro_boolean(self, outputname):
+  def write_vti_boolean(self, outputname):
     self.thisptr._vti_writer_micro_boolean( outputname.encode('utf-8')) 
-  def py_vti_writer_atom(self, outputname):
+  def write_vti_atomistic(self, outputname):
     self.thisptr._vti_writer_atom( outputname.encode('utf-8')) 
-  def py_vti_reader(self, outputname):
+  def read_vti(self, outputname):
     self.thisptr._vti_reader( outputname.encode('utf-8')) 
 
   #def py_vtr_writer(self, outputname):

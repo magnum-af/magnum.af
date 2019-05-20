@@ -69,7 +69,7 @@ m[-nx_disk-1:-1, ny_disk+1+int(ny_disk*a_y_factor):ny_disk+1+int(ny_disk*a_y_fac
 m[-nx_disk-1:-1, -ny_disk-1:-1, :, :] = disk
 
 state = State(mesh, material, m)
-state.py_vti_writer_micro(filepath+"init")
+state.write_vti(filepath+"init")
 print("setup in ", time.time() - timer, "[s]")
 timer = time.time()
 demag = DemagField(mesh, material, verbose = True, caching = True)
@@ -84,6 +84,6 @@ stream.write("%d, %d, %e, %e, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a_y*1e9, de
 stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)
-dirty_workaround.py_vti_writer_micro(filepath+"demagfield")
+dirty_workaround.write_vti(filepath+"demagfield")
 print("demagfield and output in ", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")

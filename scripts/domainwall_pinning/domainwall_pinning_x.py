@@ -50,7 +50,7 @@ mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
 state = State(mesh, material, m)
 state.normalize()
-state.py_vti_writer_micro(sys.argv[1] + "minit")
+state.write_vti(sys.argv[1] + "minit")
 #m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 #m[:nx/2-5,:,:,0] = af.constant(1.0, int(nx/2)-5 , ny, nz, 1, dtype=af.Dtype.f64)
 #m[nx/2-5:nx/2+5,:,:,2] = af.constant(1.0, 10 , ny, nz, 1, dtype=af.Dtype.f64)
@@ -87,7 +87,7 @@ Ku1_field[nx/2:,:,:,:] = af.constant(hard_K_uni, int(nx/2) , ny, nz, 3, dtype=af
 state.micro_A_field = A_field
 state.micro_Ms_field = Ms_field
 state.micro_Ku1_field = Ku1_field
-#state.py_vti_writer_micro(sys.argv[1] + "m_init")
+#state.write_vti(sys.argv[1] + "m_init")
 #print (Ms_field)
 #print (state.micro_Ms_field)
 #print (Ku1_field)
@@ -103,18 +103,18 @@ Llg = LLGIntegrator(terms=fields)
 
 #stream = open(sys.argv[1]+"m_relax.dat", "w")
 #print("Relaxing 2.2e-10 [s]")
-#state.py_vti_writer_micro(sys.argv[1] + "m_init")
+#state.write_vti(sys.argv[1] + "m_init")
 #i = 0
 #while state.t < 2.2e-10: #value for 100x6x6 geometry
 #  if i%200 == 0:
-#    state.py_vti_writer_micro(sys.argv[1] + "m_relax" + str(i))
+#    state.write_vti(sys.argv[1] + "m_relax" + str(i))
 #  i = i + 1
 #  Llg.step(state)
 #  mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
 #  stream.write("%e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar()))
 #  #stream.write("%e, %e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), -state.t/50e-9/Constants.mu0))
 #  stream.flush()
-#state.py_vti_writer_micro(sys.argv[1] + "m_relax")
+#state.write_vti(sys.argv[1] + "m_relax")
 #stream.close()
 
 fastenup = 10
@@ -124,7 +124,7 @@ timer = time.time()
 i = 0
 while (state.t < 1e-7/fastenup and state.meanxyz(0) < (1. - 1e-6)):
   if i%2000 == 0:
-    state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
+    state.write_vti(sys.argv[1] + "m_" + str(i))
   fields[0].set_homogenuous_field(state, fastenup * state.t/50e-9/Constants.mu0, 0.0, 0.0)
   Llg.step(state)
   #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)

@@ -28,11 +28,11 @@ print pystate.t()
 while pystate.t() < 1e-9:
   Llg.step(pystate)
 print pystate.t()
-pystate.py_vti_writer_micro("/home/pth/git/magnum.af/Data/Testing/py_interf/m_relax")
+pystate.write_vti("/home/pth/git/magnum.af/Data/Testing/py_interf/m_relax")
 
 teststate=magnumaf.State(meshvar,material,m) # testing wether teststate.m is correctly overwirtten with m_relax
-teststate.py_vti_reader("/home/pth/git/magnum.af/Data/Testing/py_interf/m_relax.vti")
-teststate.py_vti_writer_micro("/home/pth/git/magnum.af/Data/Testing/py_interf/m_reader")
+teststate.read_vti("/home/pth/git/magnum.af/Data/Testing/py_interf/m_relax.vti")
+teststate.write_vti("/home/pth/git/magnum.af/Data/Testing/py_interf/m_reader")
 
 print "switch --------------------"
 Llg.set_state0_alpha(0.02)# this should be changed in cpp version

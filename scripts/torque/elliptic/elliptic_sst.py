@@ -25,7 +25,7 @@ m, n_cells = Util.disk(nx, ny, nz, [0,1,0])
 material = Material(ms = 8.6e5, A = 30e-12, alpha = 0.1)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 state = State(mesh, material, m)
-state.py_vti_writer_micro(sys.argv[1] + "init")
+state.write_vti(sys.argv[1] + "init")
 
 polarization = Util.normed_homogeneous_field(nx, ny, nz, [1, 0, 0]) # Current in pinned layer along y-axis creates polarization in ellipse (which is in positive z dir) in (+/-)? x-dir
 
@@ -55,7 +55,7 @@ while state.t < simtime:
     llg.step(state)
     stream.flush()
     if itcount % nstep == 0:
-        state.py_vti_writer_micro(sys.argv[1] + "step" + str(itcount))
+        state.write_vti(sys.argv[1] + "step" + str(itcount))
         print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.steps)
         stream.write("%e, %e, %e, %e, %d\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), state.steps))
     itcount=itcount+1
@@ -67,6 +67,6 @@ stream.close()
 #minimizer = LBFGS_Minimizer(terms=fields, tol=1e-15, maxiter=1000)
 #minimizer.pyMinimize(state)
 #print("Minimized in ", time.time() - timer, "[s]")
-#state.py_vti_writer_micro(sys.argv[1] + "minimized")
+#state.write_vti(sys.argv[1] + "minimized")
 #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
 #print("Mean magnetization: ",  state.meanxyz(0), state.meanxyz(1), state.meanxyz(2))

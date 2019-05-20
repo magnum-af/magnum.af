@@ -108,5 +108,5 @@ for i in range(0, steps):
     stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0,0,0,0].scalar()*Constants.mu0, a[0,0,0,1].scalar()*Constants.mu0, a[0,0,0,2].scalar()*Constants.mu0, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
-    state.py_vti_writer_micro(filepath + "m_"+ str(i))
+    state.write_vti(filepath + "m_"+ str(i))
 stream.close()

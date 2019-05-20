@@ -24,7 +24,7 @@ m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
 m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
 pystate=magnumaf.State(meshvar,material,m)
-pystate.py_vti_writer_micro(path+"minit")
+pystate.write_vti(path+"minit")
 
 demag=magnumaf.DemagField(meshvar,material)
 exch=magnumaf.ExchangeField(meshvar,material)
@@ -33,7 +33,7 @@ Llg=magnumaf.LLGIntegrator([pystate,demag,exch])
 print "relax --------------------"
 while pystate.t() < 1e-9:
   Llg.step(pystate)
-pystate.py_vti_writer_micro(path+"mrelax")
+pystate.write_vti(path+"mrelax")
 
 print "switch --------------------"
 Llg.set_state0_alpha(0.02)# this should be changed in cpp version

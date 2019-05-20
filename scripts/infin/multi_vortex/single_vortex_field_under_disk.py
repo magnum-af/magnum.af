@@ -37,7 +37,7 @@ for i in range(nz):
     print(i, m[nx/2, ny/2, i, 0].scalar())
 
 state = State(mesh, material, m)
-state.py_vti_writer_micro(filepath+"init")
+state.write_vti(filepath+"init")
 print("setup in ", time.time() - timer, "[s]")
 timer = time.time()
 demag = DemagField(mesh, material, verbose = True, caching = False, nthreads = 0)
@@ -54,6 +54,6 @@ for i in range(nz):
 stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)
-dirty_workaround.py_vti_writer_micro(filepath+"demagfield")
+dirty_workaround.write_vti(filepath+"demagfield")
 print("demagfield and output in ", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")

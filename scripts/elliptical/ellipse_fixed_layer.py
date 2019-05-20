@@ -50,7 +50,7 @@ else:
 
 
 state = State(mesh, material, disk)
-state.py_vti_writer_micro(filepath + "init_m")
+state.write_vti(filepath + "init_m")
 print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
@@ -88,6 +88,6 @@ while E_diff > 1e-10 and state.t < 3e-8:
   #writing output
   stream.write("%e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2)))
   if i % 1000 == 0:
-    state.py_vti_writer_micro(filepath + "m_step_" + str(i))
+    state.write_vti(filepath + "m_step_" + str(i))
   i = i +1
 print("relaxed in", time.time() - timer, "[s], state.t=", state.t)
