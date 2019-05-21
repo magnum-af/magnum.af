@@ -1,11 +1,25 @@
 stages:
+  - build
   - test
   - deploy
 
-test_cpu: 
-  stage: test
+build_cpu:
+  stage: build
   script:
     - docker build -t magnum.af.cpu-dev -f Dockerfile.cpu .
+  tags:
+    - packer
+
+build_gpu:
+  stage: build
+  script:
+    - nvidia-docker build -t magnum.af-dev -f Dockerfile .
+  tags:
+    - gpu
+
+test_cpu:
+  stage: test
+  script:
     - docker run --rm -t magnum.af.cpu-dev ./tests/runall.sh
   tags:
     - packer
@@ -13,7 +27,6 @@ test_cpu:
 test_gpu:
   stage: test
   script:
-    - nvidia-docker build -t magnum.af-dev -f Dockerfile .
     - nvidia-docker run --rm -t magnum.af-dev ./tests/runall.sh
   tags:
     - gpu
