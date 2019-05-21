@@ -64,6 +64,7 @@ ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
 ENV DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 RUN apt update && \
     apt install -y libvtk7-dev \
+        ipython3 \
         python3-pip && \
     pip3 install arrayfire Cython numpy
 
@@ -92,3 +93,5 @@ WORKDIR /home/magnum.af
 RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh && \
     ./tests/integration/cpp/maketests.sh
+
+ENV PYTHONPATH=/home/magnum.af/build/src/

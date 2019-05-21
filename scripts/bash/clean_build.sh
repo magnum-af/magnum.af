@@ -1,15 +1,19 @@
-#!/bin/bash
+#!/bin/bash -e
 
 currdir=$PWD
 if [ -d $1/bin ]
 then
-    echo "removing files in $1/bin/*"
-    rm $1/bin/*
+    if [ -z "(ls -A $1/bin)" ]; then
+        echo "removing files in $1/bin/*"
+        rm $1/bin/*
+    fi
 fi
 if [ -d $1/build ]
 then
-    echo "cleaning up existing build/ by removing all files in $1/build/*"
-    rm $1/build/*
+    if [ -z "(ls -A $1/build)" ]; then
+        echo "cleaning up existing build/ by removing all files in $1/build/*"
+        rm $1/build/*
+    fi
 else
     mkdir $1/build
 fi
