@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     material.ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.alpha = 1;
-    material.afsync  = false;
+    state.material.afsync  = false;
     material.D = (argc >= 3 ? std::stod(argv[3]) : 0.01152);
     material.Ku1=(argc >= 4 ? std::stod(argv[4]) : 6400000);
 

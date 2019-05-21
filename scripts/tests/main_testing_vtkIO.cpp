@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   material.ms    = 8e5;
   material.A     = 1.3e-11;
   material.alpha = 1;
-  material.afsync  = false;
+  state.material.afsync  = false;
 
   // Initial magnetic field
   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
   material.ms    = 1.1e6;
   material.A     = 1.5e-11;//TODO why this value? Check!
   material.alpha = 1;
-  material.afsync  = false;
+  state.material.afsync  = false;
 
   //material.D=2*5.76e-3;
   //material.D=3.0e-3;

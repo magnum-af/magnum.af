@@ -251,7 +251,7 @@ array ExchangeField::h(const State& state){
 //    //convolution
 //    array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 //
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    time_conv += timer::stop(timer_conv);
 //
 //    //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
@@ -265,7 +265,7 @@ array ExchangeField::h(const State& state){
 //    //
 //    //exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
 //    //exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    //time_edges += timer::stop(timer_edges);
 //    computation_time_heff += timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
@@ -276,7 +276,7 @@ array ExchangeField::h(const State& state){
 //    exch=moddims(exch,mesh.n0,mesh.n1,mesh.n2,3);
 //
 //    exch.eval();
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    computation_time_heff += timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
@@ -419,7 +419,7 @@ array ExchangeField::h(const State& state){
 //    //convolution
 //    array exch = convolve(state.m,filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 //
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    time_conv += timer::stop(timer_conv);
 //
 //    //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
@@ -433,7 +433,7 @@ array ExchangeField::h(const State& state){
 //    
 //    exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
 //    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    time_edges += timer::stop(timer_edges);
 //    computation_time_heff += timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;
@@ -444,7 +444,7 @@ array ExchangeField::h(const State& state){
 //    exch=moddims(exch,mesh.n0,mesh.n1,mesh.n2,3);
 //
 //    exch.eval();
-//    if(material.afsync) sync();
+//    if(state.material.afsync) sync();
 //    computation_time_heff += timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*material.ms) * exch;

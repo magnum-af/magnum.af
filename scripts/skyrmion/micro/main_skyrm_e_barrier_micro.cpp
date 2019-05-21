@@ -44,7 +44,7 @@ int main(int argc, char** argv)
   material.ms    = 1.1e6;
   material.A     = 1.6e-11;
   material.alpha = 1;
-  material.afsync  = false;
+  state.material.afsync  = false;
 
   material.D=2*5.76e-3;
   //material.D_axis[2]=-1;

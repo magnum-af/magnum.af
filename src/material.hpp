@@ -23,13 +23,12 @@ struct Material{
     bool  hexagonal_close_packed{false};                //!< Selects hexagonal close packed atomistic structure
 
     // non-physical-parameters
-    int mode{6};  			//!< Inegration method	//TODO skipp inparam 0 -> rk4, 1 -> rk4_3o8, 2 -> rkf, 3 -> explicitEuler
     bool afsync{false};			//!< activate af::sync for timings //TODO skipp in material
 
     // Default constructor
     Material(){};
     // For wrapping only
-    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
+    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
 };
 #endif
 

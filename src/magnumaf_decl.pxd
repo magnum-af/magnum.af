@@ -63,17 +63,14 @@ cdef extern from "../../src/state.hpp":
 cdef extern from "../../src/material.hpp":
   cdef cppclass Material:
     Material();
-    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed, int mode, bool afsync);
-    double mu0;
+    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
     double gamma;
     double alpha;
     double T;
 
     double ms;
     double D;
-    double Ku1;
     double D_axis[3];
-    double Ku1_axis[3];
 
     double p;
     double J_atom;
@@ -82,9 +79,6 @@ cdef extern from "../../src/material.hpp":
     double D_atom_axis[3];
     double K_atom_axis[3];
     bool  hexagonal_close_packed;
-
-    int mode;
-    bool afsync;
 
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp":
   cdef cppclass AtomisticDmiField:

@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
     material.alpha = 1;
-    material.afsync  = false;
+    state.material.afsync  = false;
     //material.p=1;
     material.p=9.274009994e-24;
   

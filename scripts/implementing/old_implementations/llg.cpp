@@ -251,7 +251,7 @@ array LLG::step(State& state){
     state0.t+=h;//TODO avoid state0
     mtemp+=state.m;
     h=controller.get_hnext();
-    if(state0.material.afsync) af::sync();
+    if(state0.state.material.afsync) af::sync();
     time_integrator += timer::stop(timer_integrator);
     //mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
     state.steps ++;
@@ -963,7 +963,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    crosstemp  =  cross4(m, heff);
 //    array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp);
 //    m += dt * dmdt;
-//    if(state0.material.afsync) af::sync();
+//    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 ////    std::cout << "T: heff.dims " << heff.dims() << " m.dims " << m.dims() << " cross4 " << crosstemp.dims()  << std::endl;
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
@@ -971,13 +971,13 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::llgstepEEold(array& m,double dt, array& h_zee){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m) + h_zee;
-//    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m,3)),1,1,1,3); };
+//    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.state.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m,3)),1,1,1,3); };
 //
 ////Explicit Euler LLG stpe without zeeman field
 //array LLG::llgstepEE(array& m){
 //    timer_integrator = timer::start();
 //    m += explicitEuler(m, state0.material.dt);
-//    if(state0.material.afsync) af::sync();
+//    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
 //};
@@ -1235,7 +1235,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::step(array& m){
 //    timer_integrator = timer::start();
 //    m += rk4(m,state0.material.dt);
-//    if(state0.material.afsync) af::sync();
+//    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    mean(m); //TODO this is needed to avoid cuda crash?!?
 //    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
@@ -1245,7 +1245,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::llgstepEtesting(array& m,double dt){
 //    timer_integrator = timer::start();
 //    m += explicitEuler(m, dt);
-//    if(state0.material.afsync) af::sync();
+//    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    std::cout << "TEST:bef" << " m.dims = "  << m.dims() << " heff.dims = "<< heff.dims() << std::endl;
 //    m/=tile(sqrt(sum(m*m,3)),1,1,1,3);

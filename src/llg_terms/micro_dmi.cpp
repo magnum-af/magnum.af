@@ -64,7 +64,7 @@ array DmiField::h(const State& state){
   //correct_edges(second,state.m);
   apply_boundary_condition(second, state);
 
-  if(material.afsync) af::sync();
+  if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_dmi);
   return 2.* material.D/(constants::mu0*material.ms) * (first-second);//Note: Js=mu0*Ms
 }
@@ -264,7 +264,7 @@ void apply_boundary_condition(array& hfield, const State& state){
 //  array second = convolve(tile(sum(n*m,3),1,1,1,3),filtr,AF_CONV_DEFAULT,AF_CONV_SPATIAL);
 //  showdims(second);
 //
-//  if(material.afsync) sync();
+//  if(state.material.afsync) sync();
 //  cpu_time += timer::stop(timer_dmi);
 //  return  -2.* material.D/material.Js * (first-second);//TODO Js not set
 //}
