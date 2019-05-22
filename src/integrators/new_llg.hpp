@@ -9,11 +9,13 @@
 
 class LLGIntegrator : public AdaptiveRungeKutta{
     public:
-        LLGIntegrator(std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
-        LLGIntegrator(LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
-        double E(const State&);
+        LLGIntegrator(double alpha, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        double alpha{0};//!< Unitless damping constant in the Landau-Lifshitz-Gilbert equation
         LlgTerms llgterms;
         const bool dissipation_term_only;
+        double E(const State&);
+
         double get_time_heff(){return time_heff;}
         void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
         long int get_fheff_addr(const State& state);

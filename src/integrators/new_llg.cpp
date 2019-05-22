@@ -1,9 +1,9 @@
 #include "new_llg.hpp"
 
-LLGIntegrator::LLGIntegrator(std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
+LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : alpha(alpha), AdaptiveRungeKutta(scheme, controller), dissipation_term_only(dissipation_term_only) {
 };
 
-LLGIntegrator::LLGIntegrator(LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
+LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : alpha(alpha), AdaptiveRungeKutta(scheme, controller), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
 };
 
 af::array LLGIntegrator::fheff(const State& state){
@@ -22,11 +22,11 @@ af::array LLGIntegrator::f(const State& state){
   //timer_fdmdt=timer::start();
   if(dissipation_term_only){
     af::array heff=fheff(state);
-    return - state.material.alpha*constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - alpha*constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, cross4(state.m, heff));
   }
   else{
     af::array heff=fheff(state);
-    return - constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, heff) - state.material.alpha*constants::gamma/(1.+pow(state.material.alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, heff) - alpha*constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, cross4(state.m, heff));
   }
   //time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

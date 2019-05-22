@@ -66,9 +66,8 @@ cdef extern from "../../src/state.hpp":
 cdef extern from "../../src/material.hpp":
   cdef cppclass Material:
     Material();
-    Material(double alpha, double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
+    Material(double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
     double gamma;
-    double alpha;
     double T;
 
     double D;
@@ -94,12 +93,14 @@ cdef extern from "../../src/integrators/controller.hpp":
 
 cdef extern from "../../src/integrators/new_llg.hpp":
   cdef cppclass LLGIntegrator:
-    LLGIntegrator (vector[shared_ptr[LLGTerm]] vector_in, string mode, Controller);
+    LLGIntegrator (double alpha, vector[shared_ptr[LLGTerm]] vector_in, string mode, Controller);
     vector[shared_ptr[LLGTerm]] llgterms;
     void step(State& state);
     double E(const State& state);
     void relax(State& state, double precision, const int iloop, const int iwritecout);
     long int get_fheff_addr(const State& state);
+    double alpha;
+
 cdef extern from "../../src/llg_terms/micro_demag.hpp":
   cdef cppclass DemagField:
     DemagField (Mesh mesh_in, bool verbose, bool caching, unsigned nthreads);

@@ -14,11 +14,10 @@ class sp4(unittest.TestCase):
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   state=magnumaf.State(mesh, Ms = 8e5, m = m)
-  state.material.alpha=1
   
   demag=magnumaf.DemagField(mesh)
   exch=magnumaf.ExchangeField(A)
-  Llg=magnumaf.LLGIntegrator([demag,exch])
+  Llg=magnumaf.LLGIntegrator(alpha = 1, terms = [demag,exch])
 
   def test_relaxation(self):
     intx=0
@@ -38,7 +37,7 @@ class sp4(unittest.TestCase):
     self.assertLess(math.fabs(intz + 5.74381785359e-13), 1e-15)
 
   def test_switch(self):
-    self.state.set_alpha(0.02)
+    self.Llg.alpha = 0.02
     
     zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
     zeeswitch[0,0,0,0]=-24.6e-3/magnumaf.Constants.mu0

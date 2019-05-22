@@ -282,8 +282,6 @@ cdef class State:
   #  self.thisptr._vtr_writer( outputname.encode('utf-8'))
   #def py_vtr_reader(self, outputname):
   #  self.thisptr._vtr_reader( outputname.encode('utf-8'))
-  def set_alpha(self,value):
-    self.thisptr.material.alpha=value
   def normalize(self):
     self.thisptr.Normalize()
 
@@ -350,14 +348,14 @@ cdef class State:
 
 cdef class LLGIntegrator:
   cdef cLLGIntegrator* thisptr
-  def __cinit__(self, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
+  def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
     cdef vector[shared_ptr[cLLGTerm]] vector_in
     if not terms:
       print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
     else:
       for arg in terms:
         vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
-      self.thisptr = new cLLGIntegrator (vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
+      self.thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
   # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
   # NOTE not happening in minimizer class as it is not derived (i guess)
   #def __dealloc__(self):
@@ -380,6 +378,13 @@ cdef class LLGIntegrator:
       self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
   def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
       self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
+  @property
+  def alpha(self):
+    return self.thisptr.alpha
+  @alpha.setter
+  def alpha(self,value):
+    self.thisptr.alpha=value
+
     #cdef vector[shared_ptr[cLLGTerm]] vector_in
     #for term in terms:
     #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms.pythisptr()))
@@ -602,12 +607,12 @@ cdef class LBFGS_Minimizer:
 cdef class Material:
   cdef cParam* thisptr
   cdef object owner # None if this is our own # From [1]
-  def __cinit__(self, alpha = 0., T = 0., D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
+  def __cinit__(self, T = 0., D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
     # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
     Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
     D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
-    self.thisptr = new cParam (alpha, T, D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
+    self.thisptr = new cParam (T, D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
     owner = None # see [1]
   cdef set_ptr(self, cParam* ptr, owner):
     if self.owner is None:
@@ -619,19 +624,12 @@ cdef class Material:
       del self.thisptr
       self.thisptr = NULL
 
-  @property
-  def alpha(self):
-    return self.thisptr.alpha
-  @alpha.setter
-  def alpha(self,value):
-    self.thisptr.alpha=value
-
-  @property
-  def T(self):
-    return self.thisptr.T
-  @T.setter
-  def T(self,value):
-    self.thisptr.T=value
+  #inlcude in stochllg# @property
+  #inlcude in stochllg# def T(self):
+  #inlcude in stochllg#   return self.thisptr.T
+  #inlcude in stochllg# @T.setter
+  #inlcude in stochllg# def T(self,value):
+  #inlcude in stochllg#   self.thisptr.T=value
 
   # Micromagnetic
   @property

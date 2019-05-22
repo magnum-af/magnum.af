@@ -9,7 +9,7 @@
 
 class Stochastic_LLG : public Stochastic_Integrator {
     public:
-        Stochastic_LLG(State state, std::vector<std::shared_ptr<LLGTerm>> terms, const double d, std::string smode): Stochastic_Integrator (state, terms, d, smode){}
+        Stochastic_LLG(double alpha, double T, double dt, State state, std::vector<std::shared_ptr<LLGTerm>> terms, std::string smode): Stochastic_Integrator (alpha, T, dt, state, terms, smode){}
         double E(const State& state); //Energy calculation
     private:
         af::array fheff(const State&);

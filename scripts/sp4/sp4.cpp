@@ -17,18 +17,15 @@ int main(int argc, char** argv)
     
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
-    Material material = Material();
-    material.alpha = 1;
     
     // Initial magnetic field
-    State state(mesh,material, mesh.init_sp4());
-    state.Ms    = 8e5;
+    State state(mesh, 8e5, mesh.init_sp4());
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
     LlgTerms llgterm;
     llgterm.push_back( LlgTerm (new DemagField(mesh, true, true, 0)));
     llgterm.push_back( LlgTerm (new ExchangeField(A)));
-    LLGIntegrator Llg(llgterm);
+    LLGIntegrator Llg(1, llgterm);
     
     std::ofstream stream;
     stream.precision(12);
@@ -50,7 +47,7 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,2)=0.0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
-    state.material.alpha=0.02;
+    Llg.alpha = 0.02;
 
     // Switch
     t = af::timer::start();

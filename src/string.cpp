@@ -3,8 +3,8 @@
 
 using namespace af;
 
-String::String(State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
-  state(statein), Llg("RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
+String::String(double alpha, State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
+  state(statein), Llg(alpha, "RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
 
   //If set true, this only uses the energy dissipation term (i.e. Mx(MxH)) in the LLG
   // in init  Llg.fdmdt_dissipation_term_only=true;

@@ -3,7 +3,6 @@
 #include<math.h>
 ///Struct holding all simulation parameters.
 struct Material{
-    double alpha{0};			//!< []		// Unitless Damping constant
     double T{0};			//!< [K]  	// Temperature 				//in stochastic.cpp: Temperature in Stochastic Integrator
 
     // Micromagneitc 
@@ -27,7 +26,7 @@ struct Material{
     // Default constructor
     Material(){};
     // For wrapping only
-    Material(double alpha, double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
+    Material(double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
 };
 #endif
 

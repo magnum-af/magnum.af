@@ -16,10 +16,8 @@ class ParamTest(unittest.TestCase):
   D_atom_axis = [1., 1., 1.]
 
   def test_param_initialization(self):
-    material=magnumaf.Material(alpha=self.alpha, T=self.T, D=self.D, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
+    material=magnumaf.Material(D=self.D, J_atom=self.J_atom, D_atom=self.D_atom, Ku1_atom_axis=self.Ku1_atom_axis, D_axis=self.D_axis, D_atom_axis=self.D_atom_axis)
 
-    self.assertEqual(self.alpha, material.alpha)
-    self.assertEqual(self.T, material.T)
     self.assertEqual(self.D, material.D)
     self.assertEqual(self.J_atom, material.J_atom)
     self.assertEqual(self.D_atom, material.D_atom)
@@ -31,7 +29,6 @@ class ParamTest(unittest.TestCase):
     material=magnumaf.Material()
     self.assertEqual(4e-7*pi, magnumaf.Constants.mu0           )
     self.assertEqual(221276.14886372554, magnumaf.Constants.gamma         )
-    self.assertEqual(0., material.alpha         )
     self.assertEqual(0., material.p             )
     self.assertEqual(0., material.D             )
     self.assertEqual(0., material.J_atom        )

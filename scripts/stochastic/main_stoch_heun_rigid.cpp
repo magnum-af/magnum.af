@@ -46,8 +46,8 @@ int main(int argc, char** argv)
     unsigned long int measure_steps = 6e4;
 
     stream2<<"#measure_steps = "<<measure_steps<<std::endl;
-    stream2<<"# dt << Stoch.material.T<<  mean_mz <<  abs_mean_mz << mean_mz_analytical(chi) <<Stoch.material.T<<";
-    stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.material.T<<  mean_mz";
+    stream2<<"# dt << Stoch.T<<  mean_mz <<  abs_mean_mz << mean_mz_analytical(chi) <<Stoch.T<<";
+    stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.T<<  mean_mz";
     stream2<<" abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
@@ -57,8 +57,9 @@ int main(int argc, char** argv)
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     double Ku1   = 6.9e6;
-    material.alpha = 0.1;
-    material.T = 10;
+    double alpha = 0.1;
+    double T = 10;
+    double dt = 1e-15;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -66,14 +67,13 @@ int main(int argc, char** argv)
     State state(mesh,material, m);//ATTENTION, to be set in each loop
     state.Ms    = 1281197;
     std::vector<llgt_ptr> llgterm;
-    Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
+    Stochastic_LLG Stoch(alpha, T, dt, state, llgterm, "Heun");
   
     //Declare Variables
     double mean_mz;
     double abs_mean_mz;
     double chi;
     //Initialize others
-    double dt = 1e-15;
 
     //MEASURE
     
@@ -84,13 +84,13 @@ int main(int argc, char** argv)
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
             //std::cout << i << " " << state.t << " " << afvalue(state.m(0,0,0,2)) << " " << state.t << std::endl;
-            Stoch.step(state,dt); 
+            Stoch.step(state);
             //std::cout << i << " " << state.t << " " << afvalue(state.m(0,0,0,2)) << " " << state.t << std::endl;
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
@@ -98,60 +98,60 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.T);
+        std::cout<<"at "<<Stoch.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< std::setw(6)<< dt << "\t" << Stoch.material.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+        stream2<< std::setw(6)<< dt << "\t" << Stoch.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=50
         material.T=50.;
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt); 
+            Stoch.step(state);
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.T);
+        std::cout<<"at "<<Stoch.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< Stoch.material.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
+        stream2<< Stoch.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=200
         material.T=200.;
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
+        Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt); 
+            Stoch.step(state);
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.T);
+        std::cout<<"at "<<Stoch.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
-        stream2<< Stoch.material.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<<"\t"<<measure_steps<<std::endl;
+        stream2<< Stoch.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<<"\t"<<measure_steps<<std::endl;
 
         dt*=1.35;
     }
