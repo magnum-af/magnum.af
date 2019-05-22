@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
-    material.ms    = 1.1e6;
+    state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.alpha = 1;
     state.material.afsync  = false;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     std::cout<<"D_atom="<<material.D_atom<<std::endl;
     material.K_atom=material.Ku1*pow(dx,3);
     std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
-    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
     array m; 

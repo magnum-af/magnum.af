@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1e5;
+    state.Ms    = 1e5;
   
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -41,9 +41,9 @@ int main(int argc, char** argv)
   
     //std::cout.precision(12);
     //std::cout << "E_d_micro  = " << Llg.E(state) << std::endl;
-    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(material.ms,2) * constants::mu0 << std::endl;
+    //std::cout << "Analytical = " << 1./6. * x * y * z * pow(state.Ms,2) * constants::mu0 << std::endl;
   
-    if (compare(Llg.E(state),1./6. * x * y * z * pow(material.ms,2) * constants::mu0)){
+    if (compare(Llg.E(state),1./6. * x * y * z * pow(state.Ms,2) * constants::mu0)){
         std::cout << "!!! Test FAILED !!!" << std::endl;
         return 1;
     }

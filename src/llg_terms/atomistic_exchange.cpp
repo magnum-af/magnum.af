@@ -126,7 +126,7 @@ array AtomisticExchangeField::h(const State& state){
 //  if(state.material.afsync) sync();
 //  time_edges += timer::stop(timer_edges);
 //  time_exchsolve += timer::stop(timer_exchsolve);
-//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //}
 //
 //void showdims2(const array& a){
@@ -271,7 +271,7 @@ array AtomisticExchangeField::h(const State& state){
 //  if(state.material.afsync) sync();
 //  time_exchsolve += timer::stop(timer_exchsolve);
 //
-//  return  (2.* material.A)/(constants::mu0*material.ms) * exch;
+//  return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //}
 //
 //

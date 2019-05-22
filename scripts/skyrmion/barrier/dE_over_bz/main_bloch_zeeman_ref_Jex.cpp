@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
-    material.ms    = 1.1e6;
+    state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.alpha = 1;
     material.D=2*5.76e-3;
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     material.J_atom=2.*material.A*dx;
     material.D_atom= material.D * pow(dx,2);
     material.K_atom=material.Ku1*pow(dx,3);
-    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
     double bz_in_dims_of_J_atom(argc > 3 ? std::stod(argv[3]) : 0.);
     std::cout << "bz_in_dims_of_J_atom = " << bz_in_dims_of_J_atom << std::endl;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
     array zee = constant(0.0,1,1,1,3,f64);
-    zee(0,0,0,2)= bz_in_dims_of_J_atom * material.J_atom /(material.ms * pow(dx, 3) * constants::mu0);
+    zee(0,0,0,2)= bz_in_dims_of_J_atom * material.J_atom /(state.Ms * pow(dx, 3) * constants::mu0);
     af::print("zee_pre_tile",zee);
     zee = tile(zee,mesh.n0,mesh.n1,mesh.n2);
   

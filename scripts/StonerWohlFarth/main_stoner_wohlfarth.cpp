@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1/constants::mu0;
+    state.Ms    = 1/constants::mu0;
     material.alpha = 0.008;
     material.T = 1;
   

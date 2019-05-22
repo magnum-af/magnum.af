@@ -8,14 +8,13 @@ class sp4(unittest.TestCase):
   m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
   
   material=magnumaf.Material()
-  material.ms=8e5
   A =1.3e-11
-  material.alpha=1
   
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-  state=magnumaf.State(mesh,material,m)
+  state=magnumaf.State(mesh, Ms = 8e5, m = m)
+  state.material.alpha=1
   
   demag=magnumaf.DemagField(mesh)
   exch=magnumaf.ExchangeField(A)

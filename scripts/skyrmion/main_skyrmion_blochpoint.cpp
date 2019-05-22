@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nxy,nxy,nz,dx,dx,dx);
     Material material = Material();
-    material.ms    = 1.1e6;
+    state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.alpha = 1;
     material.D=2*5.76e-3;
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     material.J_atom=2.*material.A*dx;
     material.D_atom= material.D * pow(dx,2);
     material.K_atom=material.Ku1*pow(dx,3);
-    material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
   
   
      // Initial magnetic field

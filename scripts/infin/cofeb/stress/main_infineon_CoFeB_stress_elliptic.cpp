@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
     Material material = Material();
-    material.ms    = 1.58/constants::mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
+    state.Ms    = 1.58/constants::mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
     material.A     = 15e-12;        // [J/m]
     material.Ku1   = 1.3e-3/z;      // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     param_stress.Ku1_axis[0]=1;
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
-    param_stress.ms = material.ms;//TODO should be taken form state in the future
+    param_stress.ms = state.Ms;//TODO should be taken form state in the future
 
     State state(mesh,material, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;

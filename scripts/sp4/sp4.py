@@ -27,7 +27,7 @@ m[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 m[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
 
 material = Material()
-material.ms = 8e5
+state.Ms = 8e5
 A = 1.3e-11
 material.alpha = 1.
 

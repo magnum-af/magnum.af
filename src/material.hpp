@@ -7,7 +7,6 @@ struct Material{
     double T{0};			//!< [K]  	// Temperature 				//in stochastic.cpp: Temperature in Stochastic Integrator
 
     // Micromagneitc 
-    double ms{0};			//!< [J/T/m^3] 
     double D{0.};			//!< [D/m^2] 	// DM interaction constant  
     double D_axis[3]={0,0,-1};		//!<		// DMI axis
 
@@ -28,7 +27,7 @@ struct Material{
     // Default constructor
     Material(){};
     // For wrapping only
-    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
+    Material(double alpha, double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
 };
 #endif
 

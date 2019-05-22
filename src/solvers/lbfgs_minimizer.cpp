@@ -50,22 +50,22 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
         h+=temp_h;
         energy+=llgterms_[i]->E(state,temp_h);
     }
-    gradient = 1./(constants::mu0 * state.material.ms) * cross4(state.m, cross4(state.m, h)); 
+    gradient = 1./(constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h)); 
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }
 
 af::array LBFGS_Minimizer::Gradient(const State& state){
     //TODO//this runs, check correct way//return cross4(state.m, cross4(state.m, Heff(state)));
-    return 1./(constants::mu0 * state.material.ms) * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
+    return 1./(constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, Heff(state)));// TODO elaborate correct way
 
-    //return cross4(state.m, cross4(state.m, constants::mu0 * state.material.ms * state.mesh.V * Heff(state)));
-    //return constants::mu0 * state.material.ms * state.mesh.V * cross4(state.m, cross4(state.m, Heff(state)));
+    //return cross4(state.m, cross4(state.m, constants::mu0 * state.Ms * state.mesh.V * Heff(state)));
+    //return constants::mu0 * state.Ms * state.mesh.V * cross4(state.m, cross4(state.m, Heff(state)));
     //TODO//this runs//return cross4(state.m, cross4(state.m, Heff(state)));
     //TODO// this works!!!//return cross4(state.m, cross4(state.m, Heff(state)));
     //TODO//this is wrong, too slow maybe?//
-    //return pow(constants::mu0, 2)/state.mesh.V * state.material.ms * cross4(state.m, cross4(state.m, Heff(state)));
-    //return state.material.ms * cross4(state.m, cross4(state.m, Heff(state)));
+    //return pow(constants::mu0, 2)/state.mesh.V * state.Ms * cross4(state.m, cross4(state.m, Heff(state)));
+    //return state.Ms * cross4(state.m, cross4(state.m, Heff(state)));
 }
 
 double mydot (const af::array& a, const af::array& b){

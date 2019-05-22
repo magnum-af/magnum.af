@@ -48,13 +48,13 @@ nz = 1
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 # Setting material parameters
 param=Material()
-param.ms=0.5/Constants.mu0 # Saturation magnetization
+state.Ms=0.5/Constants.mu0 # Saturation magnetization
 A=15e-12 # Exchange constant
 Ku1=79e+03 # Anisotropy constant
 
 # Second param class for stress
 param_stress=Material()
-param_stress.ms=param.ms
+param_stress.ms=state.Ms
 stress_Ku1 = 1400 # Note: worst case value from Toni, elaborate
 stress_Ku1_axis = [1, 0, 0] # Setting axis in x-direction
 

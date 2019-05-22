@@ -16,9 +16,9 @@ TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
     double A = 1.3e-11;
     Mesh mesh(3,3,3,0.1,0.2,0.3);
     Material material = Material();
-    material.ms    = 8e5;
     material.alpha = 1;
     State state(mesh,material, mesh.init_sp4());
+    state.Ms    = 8e5;
     LlgTerms llgterms;
     llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A)));
 

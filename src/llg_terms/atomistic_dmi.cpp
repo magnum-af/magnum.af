@@ -96,7 +96,7 @@ array AtomisticDmiField::h(const State& state){
 //double AtomisticDmiField::E(const State& state){
 //  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
 //  //return -constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//  //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//  //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 //}
 //
 //AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){

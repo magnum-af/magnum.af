@@ -73,7 +73,7 @@ af::array NonEquiDemagField::h(const State&  state){
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms_field.isempty()){
-        mfft = af::fftR2C<2>(state.material.ms * state.m, af::dim4(state.nonequimesh.nx_expanded, state.nonequimesh.ny_expanded));
+        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(state.nonequimesh.nx_expanded, state.nonequimesh.ny_expanded));
     }
     else {
         mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(state.nonequimesh.nx_expanded, state.nonequimesh.ny_expanded));

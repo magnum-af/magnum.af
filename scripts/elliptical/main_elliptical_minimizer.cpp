@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     Material material = Material();
-    material.ms    = 2./constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    state.Ms    = 2./constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A     = 1.5e-11;//[J/m]
     material.Ku1 = 1.4e6;
     material.alpha = 0.02;

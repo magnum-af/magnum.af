@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
     Material material = Material();
-    material.ms    = 1.58/constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    state.Ms    = 1.58/constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A     = 15e-12;//[J/m]
     material.Ku1   = 1.3e-3/z;// [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = | [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) + (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
     material.alpha = 0.02;

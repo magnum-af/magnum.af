@@ -6,11 +6,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double UniaxialAnisotropyField::E(const State& state){
-    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double UniaxialAnisotropyField::E(const State& state, const af::array& h){
-    return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
@@ -54,7 +54,7 @@ af::array UniaxialAnisotropyField::calc_heff(const State& state){
     if(state.afsync) af::sync();
     computation_time_heff += af::timer::stop(timer_anisotropy);
     if (state.Ms_field.isempty() && Ku1_field.isempty()){
-        return  2.* Ku1/(constants::mu0 * state.material.ms) * (eu* anisotropy);
+        return  2.* Ku1/(constants::mu0 * state.Ms) * (eu* anisotropy);
     }
     else if ( ! state.Ms_field.isempty() && Ku1_field.isempty()){
         af::array result =  2.* Ku1/(constants::mu0 * state.Ms_field) * (eu* anisotropy);
@@ -62,7 +62,7 @@ af::array UniaxialAnisotropyField::calc_heff(const State& state){
         return result;
     }
     else if ( state.Ms_field.isempty() && ! Ku1_field.isempty()){
-        return  2.* Ku1_field/(constants::mu0 * state.material.ms) * (eu* anisotropy);
+        return  2.* Ku1_field/(constants::mu0 * state.Ms) * (eu* anisotropy);
     }
     else {
         af::array result =  2.* Ku1_field/(constants::mu0 * state.Ms_field) * (eu* anisotropy);

@@ -24,7 +24,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 1
 
-    state=magnumaf.State(mesh,material,m)
+    state=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_ani=magnumaf.AtomisticDmiField(mesh,material)
     Llg=magnumaf.LLGIntegrator([atom_ani])
 
@@ -56,7 +56,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 0
 
-    state=magnumaf.State(mesh,material,m)
+    state=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_ani=magnumaf.AtomisticDmiField(mesh,material)
     Llg=magnumaf.LLGIntegrator([atom_ani])
 
@@ -89,7 +89,7 @@ class AtomisticDmiFieldTest(unittest.TestCase):
     m[0,0,1,1] = 0
     m[0,0,1,2] = 0
 
-    state=magnumaf.State(mesh,material,m)
+    state=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_ani=magnumaf.AtomisticDmiField(mesh,material)
     Llg=magnumaf.LLGIntegrator([atom_ani])
 

@@ -35,6 +35,8 @@ cdef extern from "../../src/mesh.hpp":
 cdef extern from "../../src/state.hpp":
   cdef cppclass State:
     State ()
+    State (Mesh mesh_in, double Ms, long int m_in, bool verbose, bool mute_warning);
+    State (Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose, bool mute_warning);
     State (Mesh mesh_in, Material param_in, long int m_in);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
     void Normalize();
@@ -50,6 +52,7 @@ cdef extern from "../../src/state.hpp":
     unsigned long long steps;
     Mesh mesh;
     Material material;
+    double Ms{0};
 
     void _vti_writer_micro(string outputname);
     void _vti_writer_micro_boolean(string outputname);
@@ -63,12 +66,11 @@ cdef extern from "../../src/state.hpp":
 cdef extern from "../../src/material.hpp":
   cdef cppclass Material:
     Material();
-    Material(double alpha, double T, double ms, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
+    Material(double alpha, double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
     double gamma;
     double alpha;
     double T;
 
-    double ms;
     double D;
     double D_axis[3];
 

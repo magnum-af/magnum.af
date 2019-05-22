@@ -12,7 +12,8 @@ class Stochastic_Integrator {
         Stochastic_Integrator (State, std::vector<std::shared_ptr<LLGTerm> >, const double, std::string );
         std::vector<std::shared_ptr<LLGTerm> > Fieldterms;
         Material material;
-        Mesh mesh;
+        Mesh mesh;//TODO remove
+        double Ms;
         void step(State& state, const double dt);
         double cpu_time();
 
@@ -23,17 +24,17 @@ class Stochastic_Integrator {
         double get_time() const { return time;};
 
     protected:
-        template <class T> T Heun(const T& m, const double dt);
-        template <class T> T SemiImplicitHeun(const T& m, const double dt);
-        template <class T> T detRK4(const T& m, const double dt);
+        af::array Heun(const State&, const double dt);
+        af::array  SemiImplicitHeun(const State&, const double dt);
+        af::array  detRK4(const State&, const double dt);
 
         unsigned long int calls{0};
         unsigned long int fdmdt_calls{0};
         unsigned long int stochfdmdt_calls{0};
         double time{0.};
     private:
-        virtual af::array detfdmdt(const af::array& m)=0;
-        virtual af::array stochfdmdt(const af::array& m, const af::array& h_th)=0;
+        virtual af::array detfdmdt(const State&)=0;
+        virtual af::array stochfdmdt(const State&, const af::array& h_th)=0;
 
         af::array m_prev;
         af::array h_th_prev;

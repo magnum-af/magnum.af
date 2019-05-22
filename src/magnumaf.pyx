@@ -237,12 +237,18 @@ cdef class Mesh:
 
 cdef class State:
   cdef cState* thisptr
-  def __cinit__(self, Mesh mesh, Material param_in, m_in, evaluate_mean = None):
+  def __cinit__(self, Mesh mesh, Ms, m, evaluate_mean = None, verbose = True, mute_warning = False, Material material = None):
     # switch for evaluate_mean value
-    if (evaluate_mean is None):
-      self.thisptr = new cState (deref(mesh.thisptr), deref(param_in.thisptr), addressof(m_in.arr))  
+    if hasattr(Ms, 'arr'):
+      self.thisptr = new cState (deref(mesh.thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
+    # legacy
+    elif (material is not None and evaluate_mean is None):
+      self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr))
+    elif (material is not None):
+      self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr), addressof(evaluate_mean.arr))
+    # end legacy
     else:
-      self.thisptr = new cState (deref(mesh.thisptr), deref(param_in.thisptr), addressof(m_in.arr), addressof(evaluate_mean.arr))  
+      self.thisptr = new cState (deref(mesh.thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
     #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
   def __dealloc__(self): # causes segfault on every cleanup
     del self.thisptr
@@ -255,6 +261,13 @@ cdef class State:
     self.thisptr.t = value
   def pythisptr(self):
       return <size_t><void*>self.thisptr
+  @property
+  def Ms(self):
+    return self.thisptr.Ms
+  #@Ms.setter
+  #def Ms(self,value):
+  #  self.thisptr.Ms=value
+
 
   def write_vti(self, outputname):
     self.thisptr._vti_writer_micro( outputname.encode('utf-8')) 
@@ -589,12 +602,12 @@ cdef class LBFGS_Minimizer:
 cdef class Material:
   cdef cParam* thisptr
   cdef object owner # None if this is our own # From [1]
-  def __cinit__(self, alpha = 0., T = 0., ms = 0., D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
+  def __cinit__(self, alpha = 0., T = 0., D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
     # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
     Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
     D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
     D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
-    self.thisptr = new cParam (alpha, T, ms, D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
+    self.thisptr = new cParam (alpha, T, D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
     owner = None # see [1]
   cdef set_ptr(self, cParam* ptr, owner):
     if self.owner is None:
@@ -621,13 +634,6 @@ cdef class Material:
     self.thisptr.T=value
 
   # Micromagnetic
-  @property
-  def ms(self):
-    return self.thisptr.ms
-  @ms.setter
-  def ms(self,value):
-    self.thisptr.ms=value
-
   @property
   def D(self):
     return self.thisptr.D

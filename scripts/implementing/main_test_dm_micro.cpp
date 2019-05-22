@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     const int nx = 4, ny = 4 ,nz = 4;
     Mesh mesh(nx,ny,nz,1,1,1);
     Material material = Material();
-    material.ms    = 1;
+    state.Ms    = 1;
     material.D     = 1;
     material.D_axis[0] = 1;
     material.D_axis[1] = 0;

@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1.75/constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    state.Ms    = 1.75/constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A     = 1.5e-11;//[J/m]
     std::cout << "A=" << A << "B= " << B << "steps_full_rotation=" << steps_full_rotation << std::endl;
     State state(mesh, material, mesh.init_vortex());
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     param_stress.Ku1_axis[0]=1;
     param_stress.Ku1_axis[1]=0;
     param_stress.Ku1_axis[2]=0;
-    param_stress.ms = material.ms;//TODO should be taken form state in the future
+    param_stress.ms = state.Ms;//TODO should be taken form state in the future
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer(1e-6, 1000, 0);

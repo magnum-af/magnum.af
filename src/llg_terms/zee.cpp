@@ -55,10 +55,10 @@ af::array ExternalField::calc_heff(const State& state){
 
 //Zeeman energy term
 double ExternalField::E(const State& state){
-    return - constants::mu0 * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
+    return - constants::mu0 * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
 }
 
 
 double ExternalField::E(const State& state, const af::array& h){
-    return - constants::mu0 * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
+    return - constants::mu0 * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
 }

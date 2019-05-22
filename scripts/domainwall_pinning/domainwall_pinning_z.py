@@ -81,7 +81,7 @@ Ku1_field[:,:,:nz/2,:] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.
 # hard                
 Ku1_field[:,:,nz/2:,:] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
-#print ("material:", material.alpha, material.ms, material.A, material.Ku1, material.Ku1_axis)
+#print ("material:", material.alpha, state.Ms, material.A, material.Ku1, material.Ku1_axis)
 #TODO# string: setting ms=0 or not setting ms leads to segfault!: #material = Material(alpha=1.0, ms=0, Ku1_axis=[1., 0., 0.])
 #also not setting ms: material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
 

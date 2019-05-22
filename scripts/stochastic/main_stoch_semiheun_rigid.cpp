@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1281197;
+    state.Ms    = 1281197;
     material.Ku1   = 6.9e6;
     material.alpha = 0.1;
     material.T = 10;

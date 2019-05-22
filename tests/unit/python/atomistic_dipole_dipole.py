@@ -23,7 +23,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 1
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
 
@@ -53,7 +53,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 0
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
 
@@ -83,7 +83,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = -1
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
 
@@ -113,7 +113,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[0,1,0,1] = 0
     m[0,1,0,2] = 1
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
     
@@ -133,7 +133,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[0,1,0,1] = 0
     m[0,1,0,2] = 1
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
 
@@ -153,7 +153,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     m[1,0,0,1] = 0
     m[1,0,0,2] = 0
 
-    pystate=magnumaf.State(mesh,material,m)
+    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator([atom_demag])
 

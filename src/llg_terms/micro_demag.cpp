@@ -3,11 +3,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double DemagField::E(const State& state){
-  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double DemagField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 void DemagField::print_Nfft(){
@@ -72,11 +72,11 @@ af::array DemagField::h(const State&  state){
   // FFT with zero-padding of the m field
   af::array mfft;
   if (state.mesh.n2_exp == 1){
-      if (state.Ms_field.isempty()) mfft=af::fftR2C<2>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
       else mfft=af::fftR2C<2>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
   }
   else {
-      if (state.Ms_field.isempty()) mfft=af::fftR2C<3>(state.material.ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
       else  mfft=af::fftR2C<3>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
   }
 

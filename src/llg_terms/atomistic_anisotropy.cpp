@@ -52,7 +52,7 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 ////Edemag=-mu0/2 integral(M . Hdemag) dx
 //double AtomisticUniaxialAnisotropyField::E(const State& state){
 //  return - constants::mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//   //return -constants::mu0/2. * state.material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//   //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
 //}
 //
 //

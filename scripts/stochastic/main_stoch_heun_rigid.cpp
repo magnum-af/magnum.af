@@ -56,8 +56,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 1281197;
-    material.Ku1   = 6.9e6;
+    double Ku1   = 6.9e6;
     material.alpha = 0.1;
     material.T = 10;
   
@@ -65,6 +64,7 @@ int main(int argc, char** argv)
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
     State state(mesh,material, m);//ATTENTION, to be set in each loop
+    state.Ms    = 1281197;
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state,llgterm,0.,"Heun");//ATTENTION, to be set in each loop
   
@@ -82,20 +82,23 @@ int main(int argc, char** argv)
         //T=10
         material.T=10.;
         state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
+        state.Ms    = 1281197;
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
+            //std::cout << i << " " << state.t << " " << afvalue(state.m(0,0,0,2)) << " " << state.t << std::endl;
             Stoch.step(state,dt); 
+            //std::cout << i << " " << state.t << " " << afvalue(state.m(0,0,0,2)) << " " << state.t << std::endl;
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
@@ -105,7 +108,8 @@ int main(int argc, char** argv)
         //T=50
         material.T=50.;
         state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
+        state.Ms    = 1281197;
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
@@ -118,7 +122,7 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
@@ -128,7 +132,8 @@ int main(int argc, char** argv)
         //T=200
         material.T=200.;
         state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
+        state.Ms    = 1281197;
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(state,llgterm,dt,"Heun");
         llgterm.clear();
         mean_mz=0;
@@ -141,7 +146,7 @@ int main(int argc, char** argv)
 
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;

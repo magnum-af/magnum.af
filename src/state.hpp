@@ -11,11 +11,20 @@
 
 class State{
   public:
+    State (Mesh mesh_in, double Ms, af::array m_in, bool verbose = true, bool mute_warning = false);
+    State (Mesh mesh_in, double Ms, long int m_in, bool verbose = true, bool mute_warning = false);
+    State (Mesh mesh_in, af::array Ms_field, af::array m_in, bool verbose = true, bool mute_warning = false);
+    State (Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose = true, bool mute_warning = false);
+
+    State (NonequispacedMesh nonequimesh, double Ms_field, af::array m, bool verbose = true, bool mute_warning = false);
+    State (NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bool verbose = true, bool mute_warning = false);
+
     State (Mesh mesh_in, Material param_in, af::array m_in, bool verbose = true, bool mute_warning = false);
-    State (NonequispacedMesh nonequimesh, af::array m, bool verbose = true, bool mute_warning = false);
     State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean);
     State (Mesh mesh_in, Material param_in, long int aptr);
     State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
+    State operator+(const af::array&) const;
+    State(){};
     ~State(){};
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
     long int get_m_addr();
@@ -23,9 +32,10 @@ class State{
     NonequispacedMesh nonequimesh;
     Material material;
     double t{0.};//time
-    af::array m;
-    af::array Ms_field; // Saturation magnetization. Is impicitly set and used when magnetization has values of norm 0.
-    void set_Ms_field(long int afarray_ptr);
+    double Ms{0};//!< Saturation magnetization in [J/T/m^3]
+    af::array Ms_field;//<! Non-homugenuous, mesh dependent saturation magnetization defined at every node in units of [J/T/m^3]. Is impicitly set and used when magnetization has values of norm 0.
+    af::array m;//!< magnetic field configuration
+    void set_Ms_field(long int afarray_ptr);//for wrapping only
     long int get_Ms_field();
 
     void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);

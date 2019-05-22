@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
   Material material = Material();
   material.gamma = 2.211e5;
-  material.ms    = 1.1e6;
+  state.Ms    = 1.1e6;
   material.A     = 1.6e-11;
   material.alpha = 1;
   state.material.afsync  = false;
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
 
   material.J_atom=4.*material.A*dx;
   material.D_atom= 2.* material.D * pow(dx,2);
-  material.K_atom=4.* material.Ku1/material.ms;
-  material.p=material.ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+  material.K_atom=4.* material.Ku1/state.Ms;
+  material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 
 
    // Initial magnetic field

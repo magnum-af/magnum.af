@@ -18,11 +18,11 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
-    material.ms    = 8e5;
     material.alpha = 1;
     
     // Initial magnetic field
     State state(mesh,material, mesh.init_sp4());
+    state.Ms    = 8e5;
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
     
     LlgTerms llgterm;

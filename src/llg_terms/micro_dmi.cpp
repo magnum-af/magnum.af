@@ -7,11 +7,11 @@ void apply_boundary_condition(array& hfield, const State& state);
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
 double DmiField::E(const State& state){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 double DmiField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * material.ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 }
 
 DmiField::DmiField (Mesh meshin, Material paramin) : material(paramin),mesh(meshin){
@@ -66,7 +66,7 @@ array DmiField::h(const State& state){
 
   if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_dmi);
-  return 2.* material.D/(constants::mu0*material.ms) * (first-second);//Note: Js=mu0*Ms
+  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note: Js=mu0*Ms
 }
 
 

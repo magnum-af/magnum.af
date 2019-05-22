@@ -20,10 +20,10 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
-    material.ms    = 1.1e6;
+    state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.J_atom=2.*material.A*dx;
-    material.p=material.ms*pow(dx,3);
+    material.p=state.Ms*pow(dx,3);
   
     //-------------------------------------------------------
     array m = randu(mesh.n0,mesh.n1,mesh.n2,3,f64);

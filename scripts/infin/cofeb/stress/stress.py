@@ -72,7 +72,7 @@ mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
 material=Material()
-material.ms=1.58/Constants.mu0 # Saturation magnetization
+state.Ms=1.58/Constants.mu0 # Saturation magnetization
 material.A=15e-12 # Exchange constant
 material.Ku1=1.3e-3/z # Anisotropy constant
 

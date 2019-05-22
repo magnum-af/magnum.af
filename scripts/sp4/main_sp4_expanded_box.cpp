@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,5.e-7/100,1.25e-7/25,3.e-9);
     Material material = Material();
-    material.ms    = 8e5;
+    state.Ms    = 8e5;
     material.A     = 1.3e-11;
     material.alpha = 1;
   
@@ -103,19 +103,19 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
 
     //CASE 1
-    //state.Ms=constant(material.ms, state.mesh.dims, f64);
+    //state.Ms=constant(state.Ms, state.mesh.dims, f64);
     //CASE 1
 
     //CASE 2
     state.Ms =constant(0.0, state.mesh.dims, f64);
-    state.Ms(seq((nx-spnx)/2,end-(nx-spnx)/2),seq((ny-spny)/2,end-(ny-spny)/2),seq((nz-spnz)/2,end-(nz-spnz)/2),span) = constant(state.material.ms,spnx,spny,spnz,3,f64);
+    state.Ms(seq((nx-spnx)/2,end-(nx-spnx)/2),seq((ny-spny)/2,end-(ny-spny)/2),seq((nz-spnz)/2,end-(nz-spnz)/2),span) = constant(state.Ms,spnx,spny,spnz,3,f64);
     //CASE 2
     
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     //testing MS
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
-    //state.Ms=constant(material.ms, state.mesh.dims, f64);
+    //state.Ms=constant(state.Ms, state.mesh.dims, f64);
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
     //(state.Ms.isempty()? std::cout << "TRUE" << true <<std::endl : std::cout << "flase" << false <<std::endl);
     //if (state.Ms.isempty()){std::cout << "state.MS.isempts()"<<std::endl;}

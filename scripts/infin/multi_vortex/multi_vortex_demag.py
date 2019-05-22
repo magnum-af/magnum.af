@@ -80,7 +80,7 @@ demagfield = llg.get_fheff(state)
 #print (demagfield[nx/2, ny/2,:,:])
 print (demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0)
 stream = open(filepath+"demag.dat", "w")
-stream.write("%d, %d, %e, %e, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a_y*1e9, demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0, state.material.ms, angle_degree, a_x*1e9, a_x/a_y))
+stream.write("%d, %d, %e, %e, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a_y*1e9, demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0, state.Ms, angle_degree, a_x*1e9, a_x/a_y))
 stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)

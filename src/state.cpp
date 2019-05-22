@@ -1,12 +1,20 @@
 #include "state.hpp"
 
+/// Overloaded '+' operator adds an af::array to af::array this->m
+State State::operator+(const af::array& a) const{
+    State result = *this;
+    result.m += a;
+    return result;
+}
+
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field){
     // Initializes Ms_field if any entry of initial m has zero norm
     if(minval(vecnorm(m)) == 0){
         if(verbose) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms_field array" << std::endl;}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
-        Ms_field = af::constant(this->material.ms, nzero.dims(), f64);
+        if(Ms == 0) printf("Wraning: State::set_Ms_field: State.Ms is used but set to zero. It appears that you are using a legacy constuctor. Please pass Ms in constructor!\n");
+        Ms_field = af::constant(this->Ms, nzero.dims(), f64);//TODO this yields probem as Ms is not set in constuctor!
         Ms_field *= nzero;
         Ms_field = af::tile(Ms_field,1,1,1,3);
     }
@@ -44,6 +52,33 @@ void State::check_m_norm(double tol){//allowed norm is 1 or 0 (for no Ms_field)
 //}
 //
 
+State::State (Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning): mesh(mesh), Ms(Ms), m(m), verbose(verbose), mute_warning(mute_warning)
+{
+    check_m_norm();
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
+    //check_discretization();
+}
+
+
+State::State (Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning): mesh(mesh), Ms(Ms), m(*(new af::array( *((void **) m)))), verbose(verbose), mute_warning(mute_warning)
+{
+    check_m_norm();
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
+    //check_discretization();
+}
+
+
+State::State (Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning): mesh(mesh), Ms_field(Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
+{
+    check_m_norm();
+}
+
+
+State::State (Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning): mesh(mesh), Ms_field(*(new af::array( *((void **) Ms_field_ptr)))), m(*(new af::array( *((void **) m)))), verbose(verbose), mute_warning(mute_warning)
+{
+    check_m_norm();
+}
+
 
 State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_warning): mesh(mesh), material(param), m(m), verbose(verbose), mute_warning(mute_warning)
 {
@@ -52,13 +87,22 @@ State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_wa
     //check_discretization();
 }
 
-State::State (NonequispacedMesh nonequimesh, af::array m, bool verbose, bool mute_warning):
-              nonequimesh(nonequimesh), m(m), verbose(verbose), mute_warning(mute_warning)
+
+State::State (NonequispacedMesh nonequimesh, double Ms, af::array m, bool verbose, bool mute_warning):
+              nonequimesh(nonequimesh), Ms(Ms), m(m), verbose(verbose), mute_warning(mute_warning)
 {
     check_m_norm();
     set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-    //check_nonequispaced_discretization();
 }
+
+
+State::State (NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning):
+              nonequimesh(nonequimesh), Ms_field(Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
+{
+    check_m_norm();
+    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
+}
+
 
 ///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
 State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean):
@@ -239,7 +283,7 @@ double State::integral_nonequimesh(const af::array& h_times_m) const{
 
     // Global or local Ms switch
     if (this->Ms_field.isempty() == true){
-        ms_h_times_m = this->material.ms * h_times_m;
+        ms_h_times_m = this->Ms * h_times_m;
 ;
     }
     else {

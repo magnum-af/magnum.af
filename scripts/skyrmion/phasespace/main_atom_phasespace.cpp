@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
-    material.ms    = 1.1e6;
+    state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
     material.alpha = 1;
     state.material.afsync  = false;
