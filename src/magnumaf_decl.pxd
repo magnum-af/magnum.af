@@ -52,7 +52,7 @@ cdef extern from "../../src/state.hpp":
     unsigned long long steps;
     Mesh mesh;
     Material material;
-    double Ms{0};
+    double Ms;
 
     void _vti_writer_micro(string outputname);
     void _vti_writer_micro_boolean(string outputname);
