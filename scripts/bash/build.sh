@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 # $1 ... path to magnum.af root directory
 # $2 ... verbose. If "$2" != "true", stdout is redirected to /dev/null
 
