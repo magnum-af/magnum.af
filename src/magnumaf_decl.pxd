@@ -66,10 +66,7 @@ cdef extern from "../../src/state.hpp":
 cdef extern from "../../src/material.hpp":
   cdef cppclass Material:
     Material();
-    Material(double T, double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
-    double gamma;
-    double T;
-
+    Material(double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
     double D;
     double D_axis[3];
 
