@@ -113,7 +113,7 @@ State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluat
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
-    if (verbose) printf("%s state.cpp: evaluate_mean_is_1_= %f\n", Info(), evaluate_mean_is_1_);
+    if (verbose) printf("%s state.cpp: evaluate_mean_is_1_= %u\n", Info(), evaluate_mean_is_1_);
 }
 
 State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose(false)
