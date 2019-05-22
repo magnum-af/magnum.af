@@ -47,27 +47,24 @@ nz = 1
 ## Creating mesh
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 # Setting material parameters
-param=Material()
-state.Ms=0.5/Constants.mu0 # Saturation magnetization
+Ms=0.5/Constants.mu0 # Saturation magnetization
 A=15e-12 # Exchange constant
 Ku1=79e+03 # Anisotropy constant
 
-# Second param class for stress
-param_stress=Material()
-param_stress.ms=state.Ms
+# Second material constants for stress
 stress_Ku1 = 1400 # Note: worst case value from Toni, elaborate
 stress_Ku1_axis = [1, 0, 0] # Setting axis in x-direction
 
 # Create state object with timing
 start = time.time()
-state = State(mesh, param, disk(nx, ny, nz, 1))
+state = State(mesh, Ms, m = disk(nx, ny, nz, 1))
 print ("Initialize disk configuration [s]= ", time.time() - start)
 
 # Defining interaction terms
 start = time.time()
-demag = DemagField(mesh)
-exch = ExchangeField(A)
-aniso_z = UniaxialAnisotropyField(Ku1)
+demag = DemagField( mesh )
+exch = ExchangeField( A )
+aniso_z = UniaxialAnisotropyField( Ku1 , Ku1_axis = [0, 0, 1])# for clearity, [0, 0, 1] is default anyway
 aniso_stress = UniaxialAnisotropyField(stress_Ku1, stress_Ku1_axis)
 zee = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 print ("Init terms [s]= ", time.time() - start)
@@ -93,7 +90,6 @@ else:
 print ("B = ", B)
 
 # Run full rotation
-#stream = open(filepath+"CoPt_s_A%1.2e.dat"%(A*Constants.mu0), "w")
 stream = open(filepath+"m.dat", "w")
 steps = 100
 for i in range(0, steps):

@@ -10,7 +10,7 @@ State State::operator+(const af::array& a) const{
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field){
     // Initializes Ms_field if any entry of initial m has zero norm
     if(minval(vecnorm(m)) == 0){
-        if(verbose) {std::cout << "Info: in state.cpp: initial m has values with zero norm, building Ms_field array" << std::endl;}
+        if(verbose) {printf("%s in state.cpp: initial m has values with zero norm, building Ms_field array\n", Info());}
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero,0), 1), 2));
         if(Ms == 0) printf("Wraning: State::set_Ms_field: State.Ms is used but set to zero. It appears that you are using a legacy constuctor. Please pass Ms in constructor!\n");
@@ -113,7 +113,7 @@ State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluat
     check_m_norm();
     evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_,0), 1), 2));
     evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
-    if (verbose) std::cout << "Info: state.cpp: evaluate_mean_is_1_= " << evaluate_mean_is_1_ << std::endl;
+    if (verbose) printf("%s state.cpp: evaluate_mean_is_1_= %f\n", Info(), evaluate_mean_is_1_);
 }
 
 State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose(false)
