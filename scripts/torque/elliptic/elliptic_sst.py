@@ -65,7 +65,7 @@ stream.close()
 # Minimizer version
 #timer = time.time()
 #minimizer = LBFGS_Minimizer(terms=fields, tol=1e-15, maxiter=1000)
-#minimizer.pyMinimize(state)
+#minimizer.minimize(state)
 #print("Minimized in ", time.time() - timer, "[s]")
 #state.write_vti(sys.argv[1] + "minimized")
 #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)

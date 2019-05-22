@@ -54,7 +54,7 @@ print ("Initialized interaction terms in ", time.time() - start, "[s]")
 minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_stress, zee], tol=1e-15, maxiter=1000)
 
 start = time.time()
-minimizer.pyMinimize(state)
+minimizer.minimize(state)
 state.write_vti(filepath + "m_relaxed")
 print ("Relaxed initial configuration in", time.time() - start, "[s]")
 
@@ -67,7 +67,7 @@ for i in range(0, steps):
     phi = 2. * np.pi * i/steps;
     zee.set_homogenuous_field(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
-    minimizer.pyMinimize(state)
+    minimizer.minimize(state)
     stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)

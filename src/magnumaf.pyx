@@ -594,7 +594,7 @@ cdef class LBFGS_Minimizer:
   #not working as set_homogenuous_field is not pure virutal:#     self.thisptr.llgterms_[i].set_homogenuous_field(deref(state.thisptr), x, y, z)
   #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
   #  self.thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
-  def pyMinimize(self, State state_in):
+  def minimize(self, State state_in):
     return self.thisptr.Minimize(deref(state_in.thisptr))
   def pyGetTimeCalcHeff(self):
     return self.thisptr.GetTimeCalcHeff()

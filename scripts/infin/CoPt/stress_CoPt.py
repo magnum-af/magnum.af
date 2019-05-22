@@ -103,7 +103,7 @@ for i in range(0, steps):
     By = 0
     zee.set_homogenuous_field(Bx, By, Bz)
     start = time.time()
-    minimizer.pyMinimize(state)
+    minimizer.minimize(state)
     a = zee.h(state)
     stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0,0,0,0].scalar()*Constants.mu0, a[0,0,0,1].scalar()*Constants.mu0, a[0,0,0,2].scalar()*Constants.mu0, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2)))
     stream.flush()
