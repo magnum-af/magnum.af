@@ -175,7 +175,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR( max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0075);
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0006);
+    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.00065);
 }
 
  
