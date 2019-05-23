@@ -63,17 +63,17 @@ class Util:
     return af.tile(array, nx, ny, nz)
  
   @staticmethod
-  def disk(n0, n1, n2, axis=[1,0,0]): 
+  def disk(nx, ny, nz, axis=[1,0,0]):
     norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
     n_cells=0
-    m = np_zeros((n0, n1, n2, 3));
-    for ix in range (0, n0):
-      for iy in range(0, n1):
-        for iz in range(0, n2):
-          a= n0/2
-          b= n1/2
-          rx=ix-n0/2.
-          ry=iy-n1/2.
+    m = np_zeros((nx, ny, nz, 3));
+    for ix in range (0, nx):
+      for iy in range(0, ny):
+        for iz in range(0, nz):
+          a= nx/2
+          b= ny/2
+          rx=ix-nx/2.
+          ry=iy-ny/2.
           r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
           if(r<=1):
               m[ix,iy,iz,0]=axis[0]/norm
@@ -84,16 +84,16 @@ class Util:
 
   @staticmethod
   def vortex(mesh, positive_z = True):
-    """Returns a vortex configuration of dimension [mesh.n0, mesh.n1, mesh.n2, 3]. The option positive_z decides whether the vortex core points in positive (=True) or negative (=False) z-direction."""
-    m = np_zeros((mesh.n0, mesh.n1, mesh.n2, 3));
-    for ix in range (0, mesh.n0):
-      for iy in range(0, mesh.n1):
-        rx=float(ix)-mesh.n0/2.
-        ry=float(iy)-mesh.n1/2.
+    """Returns a vortex configuration of dimension [mesh.nx, mesh.ny, mesh.nz, 3]. The option positive_z decides whether the vortex core points in positive (=True) or negative (=False) z-direction."""
+    m = np_zeros((mesh.nx, mesh.ny, mesh.nz, 3));
+    for ix in range (0, mesh.nx):
+      for iy in range(0, mesh.ny):
+        rx=float(ix)-mesh.nx/2.
+        ry=float(iy)-mesh.ny/2.
         r = sqrt(pow(rx,2)+pow(ry,2))
 
-        if r < mesh.n0/2.:
-          for iz in range(0, mesh.n2):
+        if r < mesh.nx/2.:
+          for iz in range(0, mesh.nz):
             if r==0.:
               if positive_z==True:
                 m[ix,iy,:,2]= 1.
@@ -103,9 +103,9 @@ class Util:
               m[ix,iy,:,0]=-ry/r
               m[ix,iy,:,1]= rx/r
               if positive_z==True:
-                m[ix,iy,:,2]= sqrt(mesh.n0)/r
+                m[ix,iy,:,2]= sqrt(mesh.nx)/r
               else:
-                m[ix,iy,:,2]= - sqrt(mesh.n0)/r
+                m[ix,iy,:,2]= - sqrt(mesh.nx)/r
             norm = sqrt(m[ix, iy, iz,0]**2+m[ix, iy, iz,1]**2+m[ix, iy, iz,2]**2)
             m[ix, iy, iz,:]=m[ix, iy, iz,:]/norm
     return af.from_ndarray(m)
@@ -169,15 +169,43 @@ class dictproperty(object):
 # Docstring does work, todo: check type etc. 
 cdef class Mesh:
   """
-  Class defining number of nodes and discretization.
+  The Mesh object stores information about the discretization of our sample.
+  
+
+  Parameters
+  ----------
+  nx : int
+      Number of cells in the x-direction
+  ny : int
+      Number of cells in the y-direction
+  nz : int
+      Number of cells in the z-direction
+  dx : float
+      Distance of one cell in the x-direction
+  dy : float
+      Distance of one cell in the y-direction
+  dz : float
+      Distance of one cell in the z-direction
+
+
+  Attributes
+  ----------
+  All parameters are stored in equally named attributes
+
+
+  Examples
+  ----------
+  mesh = Mesh(100, 25, 1, 1e-9, 1e-9, 1e-9)
+  mesh = Mesh(nx = 100, ny = 25, nz = 1, dx = 1e-9, dy = 1e-9, dz = 1e-9)
+  print(mesh.nx)
   """
-  def __init__(self, n0, n1, n2, dx, dy, dz): # todo: For dockstring, but currently does not change signature
+  def __init__(self, nx, ny, nz, dx, dy, dz): # todo: For dockstring, but currently does not change signature
     pass
 
   cdef cMesh* thisptr
   cdef object owner # None if this is our own # From [1]
-  def __cinit__(self,int n0, int n1, int n2, double dx, double dy, double dz):
-    self.thisptr = new cMesh(n0, n1, n2, dx, dy, dz)
+  def __cinit__(self,int nx, int ny, int nz, double dx, double dy, double dz):
+    self.thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
     owner = None # see [1]
   cdef set_ptr(self, cMesh* ptr, owner):
     if self.owner is None:
@@ -188,28 +216,28 @@ cdef class Mesh:
     if self.owner is None: # only free if we own it: see [1]
       del self.thisptr
       self.thisptr = NULL
-  def print_n0(self):
+  def print_nx(self):
     print (self.thisptr.n0)
 
   @property
-  def n0(self):
+  def nx(self):
     return self.thisptr.n0
-  @n0.setter
-  def n0(self,value):
+  @nx.setter
+  def nx(self,value):
     self.thisptr.n0=value
 
   @property
-  def n1(self):
+  def ny(self):
     return self.thisptr.n1
-  @n1.setter
-  def n1(self,value):
+  @ny.setter
+  def ny(self,value):
     self.thisptr.n1=value
 
   @property
-  def n2(self):
+  def nz(self):
     return self.thisptr.n2
-  @n2.setter
-  def n2(self,value):
+  @nz.setter
+  def nz(self,value):
     self.thisptr.n2=value
 
   @property
@@ -236,16 +264,62 @@ cdef class Mesh:
 
 
 cdef class State:
+  """
+  The State object represents one realization of a magnetization configuration on a defined mesh.
+
+  Parameters
+  ----------
+  mesh : Mesh
+      The discretization is passed by a Mesh object
+  Ms : float or af.array
+      Saturation magnetization either set globally (float) or at each node (af.array)
+  m : af.array
+      Magnetization configuration which defines a vector at each node.
+      The expected size is [mesh.nx, mesh.ny, mesh.nz, 3] and dtype=af.Dtype.f64
+  verbose : bool(True)
+      Print info messages, defaults to true
+  mute_warning : bool(False)
+      Mutes warnings, defaults to false
+
+  Attributes
+  ----------
+  mesh : Mesh
+  Ms : float
+      Only set when input parameter Ms is float
+  Ms_field : af.array
+      Only set when input parameter Ms is af.array
+  m : af.array [mesh.nx, mesh.ny, mesh.nz, 3, dtype=af.Dtype.f64]
+  t : float
+      Physical time in [s] manipulated by the LLGIntegrator object and initialized to 0
+
+  Methods
+  -------
+  write_vti(outputname) : str
+      Writes the current magnetization m into the file 'outputname.vti'
+  normalize()
+      Normalizes m to 1 for every node
+
+  Examples
+  ----------
+  mesh = Mesh(1, 1, 1, 0.1, 0.1, 0.1)
+  m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+  m0[:,:,:,0] = 1
+  state = State(mesh, 8e5, m0)
+  """
   cdef cState* thisptr
-  def __cinit__(self, Mesh mesh, Ms, m, evaluate_mean = None, verbose = True, mute_warning = False, Material material = None):
+  def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False, Material material = None, evaluate_mean = None):
     # switch for evaluate_mean value
     if hasattr(Ms, 'arr'):
       self.thisptr = new cState (deref(mesh.thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
     # legacy
     elif (material is not None and evaluate_mean is None):
+      print("Warning: State constructor: legacy code, will be dopped soon")
       self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr))
+      self.thisptr.Ms = Ms
     elif (material is not None):
+      print("Warning: State constructor: legacy code, will be dopped soon")
       self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr), addressof(evaluate_mean.arr))
+      self.thisptr.Ms = Ms
     # end legacy
     else:
       self.thisptr = new cState (deref(mesh.thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
@@ -340,10 +414,11 @@ cdef class State:
   @property
   def steps(self):
     return self.thisptr.steps
-
-  def meanxyz(self, i):
-    return self.thisptr.meani(i)
-
+  def meanxyz(self, i = None):
+    if(i == None):
+      return self.thisptr.meani(0), self.thisptr.meani(1), self.thisptr.meani(2)
+    else:
+      return self.thisptr.meani(i)
 
 
 cdef class LLGIntegrator:
