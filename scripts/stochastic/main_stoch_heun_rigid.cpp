@@ -80,7 +80,6 @@ int main(int argc, char** argv)
     for(int i=0;i<25;i++){
         std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
         //T=10
-        material.T=10.;
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
@@ -106,7 +105,6 @@ int main(int argc, char** argv)
         stream2<< std::setw(6)<< dt << "\t" << Stoch.T<< "\t" << mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=50
-        material.T=50.;
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));
@@ -130,7 +128,6 @@ int main(int argc, char** argv)
         stream2<< Stoch.T << "\t"<< mean_mz << "\t" << abs_mean_mz << "\t"<< mean_mz_analytical(chi)<< "\t";
 
         //T=200
-        material.T=200.;
         state=State(mesh,material,m);
         state.Ms    = 1281197;
         llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(Ku1)));

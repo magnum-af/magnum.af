@@ -27,9 +27,9 @@ class sp4(unittest.TestCase):
     intz=0
     while self.pystate.t() < 1e-9:
       self.Llg.step(self.pystate)
-      intx+=self.pystate.meanxyz(0)*self.Llg.print_stepsize()
-      inty+=self.pystate.meanxyz(1)*self.Llg.print_stepsize()
-      intz+=self.pystate.meanxyz(2)*self.Llg.print_stepsize()
+      intx+=self.pystate.m_mean(0)*self.Llg.print_stepsize()
+      inty+=self.pystate.m_mean(1)*self.Llg.print_stepsize()
+      intz+=self.pystate.m_mean(2)*self.Llg.print_stepsize()
 
     self.assertLess(math.fabs(intx - 9.81206172824e-10), 1e-15)
     self.assertLess(math.fabs(inty - 9.14350283169e-11), 1e-15)
@@ -52,10 +52,10 @@ class sp4(unittest.TestCase):
     with open('../../Data/sp4.dat', 'w') as f:
       while self.pystate.t() < 2e-9:
         self.Llg.step(self.pystate)
-        intx+= self.pystate.meanxyz(0) * self.Llg.print_stepsize()
-        inty+= self.pystate.meanxyz(1) * self.Llg.print_stepsize()
-        intz+= self.pystate.meanxyz(2) * self.Llg.print_stepsize()
-        f.write("%10.12f %10.12f %10.12f %10.12f\n" % (self.pystate.t(), self.pystate.meanxyz(0), self.pystate.meanxyz(1), self.pystate.meanxyz(2)))
+        intx+= self.pystate.m_mean(0) * self.Llg.print_stepsize()
+        inty+= self.pystate.m_mean(1) * self.Llg.print_stepsize()
+        intz+= self.pystate.m_mean(2) * self.Llg.print_stepsize()
+        f.write("%10.12f %10.12f %10.12f %10.12f\n" % (self.pystate.t(), self.pystate.m_mean(0), self.pystate.m_mean(1), self.pystate.m_mean(2)))
 
     self.assertLess(math.fabs(intx + 6.41261165705e-10), 1e-15)
     self.assertLess(math.fabs(inty - 1.47353233738e-10), 1e-15)

@@ -92,7 +92,7 @@ boolean, n_boolean  = boolean_disk(nx, ny, nz, 0.9) # TODO: add respective value
 state = State(mesh, material, disk1, boolean)# NOTE update: optional argument 'boolean' allows for specified mean value evaluations
 state.write_vti(filepath + "init_m")
 state.write_vti_boolean(filepath + "boolean")
-print(state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2))
+print(state.m_mean(0), state.m_mean(1), state.m_mean(2), np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2))
 print ("Info: n_cells = ",n_cells, " n_boolean = ", n_boolean)
 print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
@@ -118,7 +118,7 @@ for i in range(0, steps):
     zee.set_homogenuous_field(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.minimize(state)
-    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.meanxyz(0))**2 +(state.meanxyz(1))**2 +(state.meanxyz(2))**2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.m_mean(0), state.m_mean(1), state.m_mean(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.write_vti(filepath + "m_"+ str(i))

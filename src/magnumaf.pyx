@@ -298,6 +298,8 @@ cdef class State:
       Writes the current magnetization m into the file 'outputname.vti'
   normalize()
       Normalizes m to 1 for every node
+  m_mean(i = None) : int
+      Calculates the average magnetization along all three dimensions (i = None) or along dimension i = {0, 1, 2}
 
   Examples
   ----------
@@ -414,7 +416,19 @@ cdef class State:
   @property
   def steps(self):
     return self.thisptr.steps
-  def meanxyz(self, i = None):
+  def m_mean(self, i = None):
+    """
+    Method calculating the average magnetization along all (i = None) or along a specific dimension ( i = {0, 1, 2})
+    Parameter
+    --------
+    i : int (None)
+    Returns
+    ------
+    <mx>, <my>, <mz>
+        When i is omitted
+    <mi>
+        When i is either 0 = mx, 1 = my or 2 = mz
+    """
     if(i == None):
       return self.thisptr.meani(0), self.thisptr.meani(1), self.thisptr.meani(2)
     else:

@@ -126,7 +126,7 @@ Llg = LLGIntegrator(terms=fields)
 #  Llg.step(state)
 #  mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
 #  stream.write("%e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar()))
-#  #stream.write("%e, %e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), -state.t/50e-9/Constants.mu0))
+#  #stream.write("%e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), -state.t/50e-9/Constants.mu0))
 #  stream.flush()
 #state.write_vti(sys.argv[1] + "m_relax")
 #stream.close()
@@ -139,17 +139,17 @@ i = 0
 
 printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
 #print("m", state.m)
-#print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar())
+#print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar())
 #while i < 10:
-while (state.t < 1e-7/fastenup and state.meanxyz(2) < (1. - 1e-6)):
+while (state.t < 1e-7/fastenup and state.m_mean(2) < (1. - 1e-6)):
   #print("m", state.m)
   if i%2000 == 0:
     state.write_vti(sys.argv[1] + "m_" + str(i))
   fields[0].set_homogenuous_field(state, 0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
   Llg.step(state)
   printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
-  print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()))
+  print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()))
   stream.flush()
   i = i + 1
 print("hysteresis for state.t=", state.t, " [s] in ", time.time() - timer, "[s]")

@@ -28,9 +28,9 @@ class sp4(unittest.TestCase):
       self.Llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
-      intx+=self.state.meanxyz(0)*stepsize
-      inty+=self.state.meanxyz(1)*stepsize
-      intz+=self.state.meanxyz(2)*stepsize
+      intx+=self.state.m_mean(0)*stepsize
+      inty+=self.state.m_mean(1)*stepsize
+      intz+=self.state.m_mean(2)*stepsize
 
     self.assertLess(math.fabs(intx - 9.81206172824e-10), 1e-15)
     self.assertLess(math.fabs(inty - 9.14350283169e-11), 1e-15)
@@ -54,9 +54,9 @@ class sp4(unittest.TestCase):
       self.Llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
-      intx+= self.state.meanxyz(0) * stepsize
-      inty+= self.state.meanxyz(1) * stepsize
-      intz+= self.state.meanxyz(2) * stepsize
+      intx+= self.state.m_mean(0) * stepsize
+      inty+= self.state.m_mean(1) * stepsize
+      intz+= self.state.m_mean(2) * stepsize
 
     self.assertLess(math.fabs(intx + 6.41261165705e-10), 1e-15)
     self.assertLess(math.fabs(inty - 1.47353233738e-10), 1e-15)
