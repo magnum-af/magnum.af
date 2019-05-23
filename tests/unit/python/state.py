@@ -57,9 +57,9 @@ class StateTest(unittest.TestCase):
     state=magnumaf.State(magnumaf.Mesh(0,0,0,0,0,0), Ms = 0, m = self.m_af)
     mesh = magnumaf.Mesh(1,2,3,4,5,6)
     state.mesh=mesh
-    self.assertEqual(1, state.mesh.n0)
-    self.assertEqual(2, state.mesh.n1)
-    self.assertEqual(3, state.mesh.n2)
+    self.assertEqual(1, state.mesh.nx)
+    self.assertEqual(2, state.mesh.ny)
+    self.assertEqual(3, state.mesh.nz)
     self.assertEqual(4, state.mesh.dx)
     self.assertEqual(5, state.mesh.dy)
     self.assertEqual(6, state.mesh.dz)
