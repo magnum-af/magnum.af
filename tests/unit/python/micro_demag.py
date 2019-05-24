@@ -14,7 +14,7 @@ class MicroDemagTest(unittest.TestCase):
         state=magnumaf.State(mesh, Ms = 1e5, m = m)
         micro_demag=magnumaf.DemagField(mesh)
         Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [micro_demag])
-        self.assertAlmostEqual(Llg.get_E(state), 1./6. * (self.nx*self.dx)**3 * state.Ms**2 * magnumaf.Constants.mu0)
+        self.assertAlmostEqual(Llg.E(state), 1./6. * (self.nx*self.dx)**3 * state.Ms**2 * magnumaf.Constants.mu0)
 
 if __name__ == '__main__':
   unittest.main()

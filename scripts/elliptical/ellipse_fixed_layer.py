@@ -80,7 +80,7 @@ while E_diff > 1e-10 and state.t < 3e-8:
   
   # check energy difference every 100th step
   if i % 100 == 0:
-    E_current = Llg.get_E(state)
+    E_current = Llg.E(state)
     E_diff = fabs((E_current - E_prev)/E_current)
     print ("Step i=", i, "E_diff=", E_diff)
     E_prev = E_current

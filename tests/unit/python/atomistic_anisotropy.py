@@ -28,7 +28,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.get_E(pystate), -2*material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
@@ -58,7 +58,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.get_E(pystate), -material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(pystate), -material.Ku1_atom)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
@@ -88,7 +88,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.get_E(pystate), -2*material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
 
     af_heff = Llg.get_fheff(pystate)
     np_heff = af_heff.__array__()
