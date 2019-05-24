@@ -436,6 +436,51 @@ cdef class State:
 
 
 cdef class LLGIntegrator:
+    """
+    LLGIntegrator(alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)
+
+    The LLGIntegrator object integrates a magnetization configuration according to the Landau–Lifshitz–Gilbert (LLG) equation
+
+    Parameters
+    ----------
+    alpha : float
+        The unitless damping constant in the LLG equation
+    terms : [LLGTerm]
+        A python list constisting of LLGTerm objects s.a. ExchangeField or DemagField
+    mode : str
+        Switch between Adapitve Runge Kutta schemes. Options are "RKF45", "DP45", "BS45", "DP78", "BS23"
+    hmin : float
+        Sets the minimum step size in seconds the integrator can take
+    hmax : float
+        Sets the minimum step size in seconds the integrator can take
+    atol : float
+        Sets the absolute tolerance for the adaptive Runge Kutta step-size
+    rtol : float
+        Sets the relative tolerance for the adaptive Runge Kutta step-size
+
+    Attributes
+    ----------
+    alpha : float
+        Stores the input parameter alpha
+
+    Methods
+    -------
+    step(State)
+        Make one Runge Kutta timestep integrating the LLG
+        This manipulates state.m and state.t
+    E(State) : float
+        Calculates the micromagnetic energy of all terms for the magnetization state.m
+    h(State) : af.array
+        Returns the effective field H_eff for the magnetization state.m
+    add_terms(*args)
+        Adds an LLGTerm object (s.a. ExchangeField) to be included in the effective field
+    relax(State, precision, ncalcE, nprint)
+        Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
+
+
+    Examples
+    ----------
+    """
     cdef cLLGIntegrator* thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
@@ -452,11 +497,11 @@ cdef class LLGIntegrator:
     #  self.thisptr = NULL
     def step(self, State state_in):
         self.thisptr.step(deref(state_in.thisptr))
-    def get_E(self,State state_in):
+    def E(self,State state_in):
         return self.thisptr.E(deref(state_in.thisptr))
     #def print_stepsize(self):
     #  return self.thisptr.h_stepped_
-    def get_fheff(self, State state):
+    def h(self, State state):
         return array_from_addr(self.thisptr.get_fheff_addr(deref(state.thisptr)))
     #def cpu_time(self):
     #  return self.thisptr.cpu_time()
@@ -466,6 +511,10 @@ cdef class LLGIntegrator:
         for arg in args:
             self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
     def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
+        """
+        relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
+            Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
+        """
             self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
     @property
     def alpha(self):
