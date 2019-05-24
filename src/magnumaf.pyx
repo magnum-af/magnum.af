@@ -515,7 +515,7 @@ cdef class LLGIntegrator:
         relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
             Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
         """
-            self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
+        self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
     @property
     def alpha(self):
         return self.thisptr.alpha
