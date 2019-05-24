@@ -79,9 +79,13 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master &
 ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/ DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 
 RUN apt update && \
-    apt install -y python3-pip \
+    apt install -y libvtk7-dev \
         ipython3 \
-        libvtk7-dev && \
+        python3-pip \
+        doxygen \
+        python-pydot \
+        python-pydot-ng \
+        graphviz && \
     pip3 install arrayfire cython numpy
 
 # Instal Google Tests
@@ -108,6 +112,7 @@ WORKDIR /home/magnum.af
 
 RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh && \
-    ./tests/integration/cpp/maketests.sh
+    ./tests/integration/cpp/maketests.sh && \
+    doxygen .doxygen-config
 
 ENV PYTHONPATH=/home/magnum.af/build/src/
