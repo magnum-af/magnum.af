@@ -59,7 +59,7 @@ print("Simulated ", simtime, " [ns] in ", time.time() - timer, "[s]")
 stream.close()
 
 
-#heff = llg.get_fheff(state)
+#heff = llg.h(state)
 #print(heff[0,0,0,0].scalar())
 #print(heff[0,0,0,1].scalar())
 #print(heff[0,0,0,2].scalar())

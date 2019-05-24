@@ -502,7 +502,7 @@ cdef class LLGIntegrator:
     #def print_stepsize(self):
     #  return self.thisptr.h_stepped_
     def h(self, State state):
-        return array_from_addr(self.thisptr.get_fheff_addr(deref(state.thisptr)))
+        return array_from_addr(self.thisptr.h_addr(deref(state.thisptr)))
     #def cpu_time(self):
     #  return self.thisptr.cpu_time()
     #def set_state0_alpha(self,value):

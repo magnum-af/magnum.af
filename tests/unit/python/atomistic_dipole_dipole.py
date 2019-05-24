@@ -28,7 +28,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     self.assertEqual(Llg.E(pystate), material.p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
@@ -57,7 +57,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     self.assertAlmostEqual(Llg.E(pystate), 0)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 2*material.p /4. /math.pi /self.dx**3  )
@@ -86,7 +86,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     self.assertEqual(Llg.E(pystate), -material.p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
@@ -153,7 +153,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     self.assertAlmostEqual(Llg.E(pystate), -material.p**2 * magnumaf.Constants.mu0 /(2.*math.pi) /self.dx**3)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], material.p/2./math.pi /self.dx**3 )

@@ -44,7 +44,7 @@ demag = DemagField(mesh, material, verbose = True, caching = False, nthreads = 0
 print("demagtensor in ", time.time() - timer, "[s]")
 timer = time.time()
 llg = LLGIntegrator([demag])
-demagfield = llg.get_fheff(state)
+demagfield = llg.h(state)
 #print (demagfield[nx/2, ny/2,:,:])
 print (demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0)
 

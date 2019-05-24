@@ -30,7 +30,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
@@ -60,7 +60,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(Llg.E(pystate), -material.Ku1_atom)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )
@@ -90,7 +90,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
 
-    af_heff = Llg.get_fheff(pystate)
+    af_heff = Llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0,0,0,0], 0 )

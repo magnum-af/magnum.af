@@ -53,11 +53,11 @@ void LLGIntegrator::relax(State& state, const double precision, const int iloop,
     printf("timerelax [af-s]: %e . Current state.steps= %llu and state.t = %e", state.t, state.steps, af::timer::stop(t)); 
 }
 
-long int LLGIntegrator::get_fheff_addr(const State& state){
-    //std::vector<af::array> get_fheff_addr_temp_array;
-    //get_fheff_addr_temp_array.push_back(fheff(state));
-    //get_fheff_addr_temp_array.back().lock(); 
-    //return (long int) get_fheff_addr_temp_array.back().get();
+long int LLGIntegrator::h_addr(const State& state){
+    //std::vector<af::array> h_addr_temp_array;
+    //h_addr_temp_array.push_back(fheff(state));
+    //h_addr_temp_array.back().lock(); 
+    //return (long int) h_addr_temp_array.back().get();
     
     //TODO tempfix for wrapping, elaborate other solution
     fheff_tmp=fheff(state);
