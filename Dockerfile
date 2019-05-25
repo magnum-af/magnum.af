@@ -113,8 +113,6 @@ WORKDIR /home/magnum.af
 RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     ./tests/unit/cpp/maketests.sh && \
     ./tests/integration/cpp/maketests.sh && \
-    mv src/magnumaf.pyx src/magnumaf.py && \
-    doxygen .doxygen-config && \
-    mv src/magnumaf.py src/magnumaf.pyx
+    doxygen .doxygen-config
 
 ENV PYTHONPATH=/home/magnum.af/build/src/

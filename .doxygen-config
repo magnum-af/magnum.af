@@ -291,7 +291,7 @@ OPTIMIZE_OUTPUT_VHDL   = NO
 # Note that for custom extensions you also need to set FILE_PATTERNS otherwise
 # the files are not read by doxygen.
 
-EXTENSION_MAPPING      =
+EXTENSION_MAPPING      = .pyx=python # edited, was empty before
 
 # If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
 # according to the Markdown format, which allows for more readable
@@ -848,6 +848,7 @@ FILE_PATTERNS          = *.c \
                          *.dox \
                          *.py \
                          *.pyw \
+                         *.pyx \ # edited, incude cython files
                          *.f90 \
                          *.f95 \
                          *.f03 \
