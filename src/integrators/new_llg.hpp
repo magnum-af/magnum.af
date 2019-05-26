@@ -7,6 +7,17 @@
 #include "adaptive_runge_kutta.hpp"
 #include <memory>//shared_ptr
 
+///
+/// The LLGIntegrator class performs time integration of the Landau–Lifshitz–Gilbert (LLG) equation on the magnetization passed by an State object.
+/// The LLG equation reads
+/// \f[
+///     \frac{\partial \boldsymbol{m}}{\partial t} =
+///             - \gamma \boldsymbol{m} \times \boldsymbol{H}_{\text{eff}}
+///             - \alpha \gamma \boldsymbol{m} \times (\boldsymbol{m} \times \boldsymbol{H}_{\text{eff}}) 
+/// \f]
+///
+
+
 class LLGIntegrator : public AdaptiveRungeKutta{
     public:
         LLGIntegrator(double alpha, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
