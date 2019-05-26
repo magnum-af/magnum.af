@@ -7,10 +7,6 @@ build_cpu:
   stage: build
   script:
     - docker build -t magnum.af.cpu-dev -f Dockerfile.cpu .
-    - scripts/get_docu_from_image.sh && rm -r latex
-  artifacts:
-    paths:
-      - html/
   tags:
     - packer
 
@@ -42,4 +38,10 @@ deploy_on_master_only:
   tags:
     - gpu
   script:
-    - nvidia-docker build -t magnum.af -f Dockerfile .
+    - docker tag magnum.af-dev magnum.af
+    - docker build -t magnum.af-docu -f Dockerfile.docu .
+    - scripts/get_docu_from_image.sh magnum.af-docu
+  artifacts:
+    paths:
+      - html/
+      - latex/refman.pdf

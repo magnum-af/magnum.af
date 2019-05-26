@@ -5,7 +5,7 @@
 # test : nvidia-docker run --rm -t magnum.af ./tests/runall.sh .
 
 FROM nvidia/cuda:9.2-devel-ubuntu18.04
-MAINTAINER none
+MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
 
 RUN apt-get update && apt-get install -y software-properties-common && \
     apt-get install -y --no-install-recommends \

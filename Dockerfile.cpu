@@ -1,6 +1,6 @@
 # based on https://github.com/arrayfire/arrayfire-docker
 FROM ubuntu:18.04
-MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at> 
+MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
 # image:     magnum.af.cpu
 # build:     $ docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" .
 # run image: $ docker run --rm -ti magnum.af.cpu /bin/bash
