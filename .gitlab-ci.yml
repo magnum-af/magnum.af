@@ -7,6 +7,10 @@ build_cpu:
   stage: build
   script:
     - docker build -t magnum.af.cpu-dev -f Dockerfile.cpu .
+    - scripts/get_docu_from_image.sh && rm -r latex
+  artifacts:
+    paths:
+      - html/
   tags:
     - packer
 
