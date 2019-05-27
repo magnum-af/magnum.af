@@ -582,7 +582,7 @@ cdef class ExchangeField:
 cdef class SparseExchangeField:
     cdef cSparseExchangeField* thisptr
     def __cinit__(self, A, Mesh mesh, verbose = True):
-        if hasattr('A','arr'):
+        if hasattr(A, 'arr'):
             self.thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh.thisptr), <bool> verbose)
         else:
             self.thisptr = new cSparseExchangeField (<double> A, deref(mesh.thisptr), <bool> verbose)

@@ -48,10 +48,6 @@ m[:,:,nz/2:,2] = af.constant(-1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 m[:,:,nz/2:,1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-material = Material(alpha=1.0, ms=0, Ku1_axis=[0, 0, 1])
-state = State(mesh, material, m)
-state.normalize()
-state.py_vti_writer_micro(sys.argv[1] + "minit")
 
 # Setting A values as field
 A_field = af.constant(0.0, nx, ny, nz, 1, dtype=af.Dtype.f64)
@@ -74,18 +70,19 @@ Ku1_field[:,:,:nz/2,:] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.
 # hard                
 Ku1_field[:,:,nz/2:,:] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
-#TODO# string: setting ms=0 or not setting ms leads to segfault!: #material = Material(alpha=1.0, ms=0, Ku1_axis=[1., 0., 0.])
-#also not setting ms: material = Material(alpha=1.0, Ku1_axis=[1., 0., 0.])
 
-state.micro_Ms_field = Ms_field
-state.micro_Ku1_field = Ku1_field
+state = State(mesh = mesh, Ms = 1e5, m = m)
+print("test post")
+state.normalize()
+state.write_vti(sys.argv[1] + "minit")
+
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
     SparseExchangeField(A_field, state.mesh, verbose = True),
-    UniaxialAnisotropyField(state.mesh, state.material),
+    UniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
 print ("test")
-Llg = LLGIntegrator(terms=fields)
+Llg = LLGIntegrator(alpha=1.0, terms=fields)
 
 fastenup = 10
 print("Start [ns] hysteresis")
@@ -93,16 +90,16 @@ stream = open(sys.argv[1]+"m.dat", "w")
 timer = time.time()
 i = 0
 
-printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
-while (state.t < 1e-7/fastenup and state.meanxyz(2) < (1. - 1e-6)):
+printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
+while (state.t < 1e-7/fastenup and state.m_mean(2) < (1. - 1e-6)):
   if i%2000 == 0:
-    state.py_vti_writer_micro(sys.argv[1] + "m_" + str(i))
-  fields[0].set_xyz(state, 0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
+    state.write_vti(sys.argv[1] + "m_" + str(i))
+  fields[0].set_homogenuous_field(0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
   Llg.step(state)
-  printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
+  printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
   if i % 100 == 0:
-    print(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.meanxyz(0), state.meanxyz(1), state.meanxyz(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()))
+    print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()))
   stream.flush()
   i = i + 1
 print("hysteresis for state.t=", state.t, " [s] in ", time.time() - timer, "[s]")
