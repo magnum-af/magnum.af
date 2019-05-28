@@ -87,7 +87,7 @@ i = 0
 while (state.t < 1e-7/fastenup and state.m_mean(0) < (1. - 1e-6)):
   if i%2000 == 0:
     state.write_vti(sys.argv[1] + "m_" + str(i))
-  fields[0].set_homogenuous_field(fastenup * state.t/50e-9/Constants.mu0, 0.0, 0.0)
+  fields[0].set_homogeneous_field(fastenup * state.t/50e-9/Constants.mu0, 0.0, 0.0)
   Llg.step(state)
   #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
   printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)

@@ -115,7 +115,7 @@ steps = 100
 print ("A= ", A)
 for i in range(0, steps):
     phi = 2. * np.pi * i/steps;
-    zee.set_homogenuous_field(state, A * np.cos(phi), A * np.sin(phi), 0)
+    zee.set_homogeneous_field(state, A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.minimize(state)
     stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.m_mean(0), state.m_mean(1), state.m_mean(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2)))

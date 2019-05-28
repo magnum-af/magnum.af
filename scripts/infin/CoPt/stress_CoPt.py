@@ -97,7 +97,7 @@ for i in range(0, steps):
     Bx = A*np.cos(phi)
     Bz = A*np.sin(phi)
     By = 0
-    zee.set_homogenuous_field(Bx, By, Bz)
+    zee.set_homogeneous_field(Bx, By, Bz)
     start = time.time()
     minimizer.minimize(state)
     a = zee.h(state)

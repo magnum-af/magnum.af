@@ -20,7 +20,7 @@ class ExternalField : public LLGTerm {
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
 
     long int get_m_addr();// For wrapping only
-    void set_homogenuous_field(const double x, const double y, const double z);///< Setting homogenuous zeeman field with x,y,z components of static Zeeman field.
+    void set_homogeneous_field(const double x, const double y, const double z);///< Setting homogeneous zeeman field with x,y,z components of static Zeeman field.
 
     double get_cpu_time(){return 0;}// use or remove
 

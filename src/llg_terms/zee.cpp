@@ -21,7 +21,7 @@ ExternalField::ExternalField(std::function<af::array(State)> lamda_callback): la
 
 
 ///< Sets internal af::array to a global field (x, y, z) for all spacial dimensions
-void ExternalField::set_homogenuous_field(const double x, const double y, const double z){
+void ExternalField::set_homogeneous_field(const double x, const double y, const double z){
     af::dim4 dim = af::dim4(zee_field.dims(0), zee_field.dims(1), zee_field.dims(2), 1);
     zee_field(af::span, af::span, af::span, 0) = af::constant(x, dim, f64);
     zee_field(af::span, af::span, af::span, 1) = af::constant(y, dim, f64);

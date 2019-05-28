@@ -707,8 +707,8 @@ cdef class ExternalField:
         return self.thisptr.E(deref(state_in.thisptr))
     def cpu_time(self):
         return self.thisptr.get_cpu_time()
-    def set_homogenuous_field(self, x, y, z):
-            self.thisptr.set_homogenuous_field(x, y, z)
+    def set_homogeneous_field(self, x, y, z):
+            self.thisptr.set_homogeneous_field(x, y, z)
     def pythisptr(self):
             return <size_t><void*>self.thisptr
     def h(self, State state):
@@ -733,8 +733,8 @@ cdef class LBFGS_Minimizer:
             self.thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
     def delete_last_term(self):
         self.thisptr.llgterms_.pop_back()
-    #not working as set_homogenuous_field is not pure virutal:# def set_zee_xyz(self, State state, i, x, y, z):
-    #not working as set_homogenuous_field is not pure virutal:#         self.thisptr.llgterms_[i].set_homogenuous_field(deref(state.thisptr), x, y, z)
+    #not working as set_homogeneous_field is not pure virutal:# def set_zee_xyz(self, State state, i, x, y, z):
+    #not working as set_homogeneous_field is not pure virutal:#         self.thisptr.llgterms_[i].set_homogeneous_field(deref(state.thisptr), x, y, z)
     #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
     #  self.thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
     def minimize(self, State state_in):

@@ -141,7 +141,7 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
 }
 
 TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
-    // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
+    // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25, nz=3, nz_ne=2;
 
@@ -218,7 +218,7 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
 
 
 TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest) {
-    // Compare SP4 layer with homogenuous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
+    // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25, nz=3, nz_ne=2;
 
