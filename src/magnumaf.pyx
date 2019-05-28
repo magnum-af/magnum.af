@@ -127,6 +127,7 @@ class Util:
                     return True
 
 
+# For adding methods as properties (e.g. the State class method m_partial as attribute)
 # From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/
 class dictproperty(object):
 
@@ -199,7 +200,7 @@ cdef class Mesh:
     mesh = Mesh(nx = 100, ny = 25, nz = 1, dx = 1e-9, dy = 1e-9, dz = 1e-9)
     print(mesh.nx)
     """
-    def __init__(self, nx, ny, nz, dx, dy, dz): # todo: For dockstring, but currently does not change signature
+    def __init__(self, nx, ny, nz, dx, dy, dz): # TODO: For dockstring, but currently does not change signature
         pass
 
     cdef cMesh* _thisptr
@@ -480,6 +481,9 @@ cdef class LLGIntegrator:
 
     Examples
     ----------
+    llg = LLGIntegrator (alpha = 0.02, terms = terms, mode = "RKF45")
+    llg.step(state)
+    print(llg.E(state))
     """
     cdef cLLGIntegrator* _thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
@@ -490,23 +494,17 @@ cdef class LLGIntegrator:
             for arg in terms:
                 vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
             self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
-    # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
-    # NOTE not happening in minimizer class as it is not derived (i guess)
     #def __dealloc__(self):
-    #  del self._thisptr
-    #  self._thisptr = NULL
+    #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
+    #    # NOTE is also problematic in minimizer class
+    #    del self._thisptr
+    #    self._thisptr = NULL
     def step(self, State state_in):
         self._thisptr.step(deref(state_in._thisptr))
     def E(self,State state_in):
         return self._thisptr.E(deref(state_in._thisptr))
-    #def print_stepsize(self):
-    #  return self._thisptr.h_stepped_
     def h(self, State state):
         return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
-    #def cpu_time(self):
-    #  return self._thisptr.cpu_time()
-    #def set_state0_alpha(self,value):
-    #  self._thisptr.state0.material.alpha=value
     def add_terms(self,*args):
         for arg in args:
             self._thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
@@ -527,8 +525,14 @@ cdef class LLGIntegrator:
         #for term in terms:
         #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))
         #self._thisptr = new cLLGIntegrator (vector_in)  
+
+    #def print_stepsize(self):
+    #  return self._thisptr.h_stepped_
+    #def cpu_time(self):
+    #  return self._thisptr.cpu_time()
+    #def set_state0_alpha(self,value):
+    #  self._thisptr.state0.material.alpha=value
         
-    
 
 cdef class DemagField:
     """
@@ -544,7 +548,6 @@ cdef class DemagField:
     cdef cDemagField* _thisptr
     def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
         self._thisptr = new cDemagField (deref(mesh._thisptr), verbose, caching, nthreads)    
-    #This would causes double free coruption!
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -556,6 +559,7 @@ cdef class DemagField:
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+
 
 cdef class ExchangeField:
     cdef cExchangeField* _thisptr
@@ -586,7 +590,6 @@ cdef class ExchangeField:
     # @micro_A_field.setter
     # def micro_A_field(self, micro_A_field_in):
     #       self._thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
-
 
 
 cdef class SparseExchangeField:
@@ -648,8 +651,6 @@ cdef class UniaxialAnisotropyField:
     #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
 
-
-
 cdef class AtomisticDipoleDipoleField:
     cdef cAtomisticDipoleDipoleField* _thisptr
     def __cinit__(self, Mesh mesh):
@@ -663,6 +664,7 @@ cdef class AtomisticDipoleDipoleField:
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+
 
 cdef class AtomisticUniaxialAnisotropyField:
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
@@ -678,6 +680,7 @@ cdef class AtomisticUniaxialAnisotropyField:
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
+
 cdef class AtomisticExchangeField:
     cdef cAtomisticExchangeField* _thisptr
     def __cinit__(self, Mesh mesh):
@@ -692,6 +695,7 @@ cdef class AtomisticExchangeField:
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
+
 cdef class AtomisticDmiField:
     cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
@@ -705,6 +709,7 @@ cdef class AtomisticDmiField:
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+
 
 cdef class ExternalField:
     cdef cExternalField* _thisptr
@@ -724,6 +729,27 @@ cdef class ExternalField:
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
 
+
+cdef class SpinTransferTorqueField:
+    cdef cSpinTransferTorqueField* _thisptr
+    def __cinit__(self, pol, nu_damp,  nu_field, j_e):
+        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
+    @property
+    def polarization_field(self):
+        return array_from_addr(self._thisptr.polarization_field.get_array_addr())
+    @polarization_field.setter
+    def polarization_field(self, array):
+        self._thisptr.polarization_field.set_array(addressof(array.arr))
+
+
 cdef class LBFGS_Minimizer:
     """
     The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the LLGTerm objects.
@@ -736,6 +762,8 @@ cdef class LBFGS_Minimizer:
         Defines tolerance of the LBFGS algorithm
     maxiter : int (230)
         Defines maximum number of iterations in the LBFGS algorithm
+    verbose : int(0)
+        If > 0 enables output levels
 
     Methods
     -------
@@ -752,27 +780,25 @@ cdef class LBFGS_Minimizer:
     minimier.minimize(state)
     """
     cdef cLBFGS_Minimizer* _thisptr
-    def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
+    def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230, verbose = 0):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
         if not terms:
             print("cLBFGS_Minimizer: no terms provided, please add some either by providing a list terms=[...] or calling add_terms(*args)")
         else:
             for arg in terms:
-                #print("Adding term", arg)
                 vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
-#TODO#  def __dealloc__(self): #causes segfault on GTO in cleanup
-#TODO#      del self._thisptr
-#TODO#      self._thisptr = NULL
+            self._thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, verbose)
+            # Note: std::cout is not handled and leads to segfault on some installs, hence c++ backend uses prinft
+
+    #TODO
+    #  def __dealloc__(self): #causes segfault on GTO in cleanup
+    #      del self._thisptr
+    #      self._thisptr = NULL
     def add_terms(self,*args):
         for arg in args:
             self._thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
         self._thisptr.llgterms_.pop_back()
-    #not working as set_homogeneous_field is not pure virutal:# def set_zee_xyz(self, State state, i, x, y, z):
-    #not working as set_homogeneous_field is not pure virutal:#         self._thisptr.llgterms_[i].set_homogeneous_field(deref(state._thisptr), x, y, z)
-    #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
-    #  self._thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
     def minimize(self, State state_in):
         return self._thisptr.Minimize(deref(state_in._thisptr))
     def pyGetTimeCalcHeff(self):
@@ -899,22 +925,3 @@ class Constants:
     kb = 1.38064852e-23
 
     hbar = 1.0545718e-34
-
-cdef class SpinTransferTorqueField:
-    cdef cSpinTransferTorqueField* _thisptr
-    def __cinit__(self, pol, nu_damp,  nu_field, j_e):
-        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
-    def __dealloc__(self):
-        del self._thisptr
-        self._thisptr = NULL
-    def E(self,State state):
-        return self._thisptr.E(deref(state._thisptr))
-    def _get_thisptr(self):
-            return <size_t><void*>self._thisptr
-
-    @property
-    def polarization_field(self):
-        return array_from_addr(self._thisptr.polarization_field.get_array_addr())
-    @polarization_field.setter
-    def polarization_field(self, array):
-        self._thisptr.polarization_field.set_array(addressof(array.arr))
