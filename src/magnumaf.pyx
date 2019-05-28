@@ -302,7 +302,7 @@ cdef class State:
         Calculates the average magnetization along all three dimensions (i = None) or along dimension i = {0, 1, 2}
 
     Examples
-    ----------
+    --------
     mesh = Mesh(1, 1, 1, 0.1, 0.1, 0.1)
     m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
     m0[:,:,:,0] = 1
@@ -531,6 +531,16 @@ cdef class LLGIntegrator:
     
 
 cdef class DemagField:
+    """
+    Parameters
+    ----------
+    Attributes
+    ----------
+    Methods
+    -------
+    Examples
+    --------
+    """
     cdef cDemagField* thisptr
     def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
         self.thisptr = new cDemagField (deref(mesh.thisptr), verbose, caching, nthreads)    
@@ -715,6 +725,32 @@ cdef class ExternalField:
         return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
 
 cdef class LBFGS_Minimizer:
+    """
+    The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the LLGTerm objects.
+
+    Parameters
+    ----------
+    terms : [HeffTerm]
+        List of HeffTerm objects
+    tol : float (1e-6)
+        Defines tolerance of the LBFGS algorithm
+    maxiter : int (230)
+        Defines maximum number of iterations in the LBFGS algorithm
+
+    Methods
+    -------
+    minimize(State)
+        Runns the minimization algorithm
+    add_terms([HeffTerm])
+        Adds a list of HeffTerm objects to the existing terms
+    delete_last_term()
+        Delets the lst HeffTerm object in the list
+
+    Examples
+    --------
+    minimizer = Minimizer(terms, tol = 1e-6, maxiter = 230)
+    minimier.minimize(state)
+    """
     cdef cLBFGS_Minimizer* thisptr
     def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
@@ -834,14 +870,24 @@ cdef class Material:
         self.thisptr.K_atom_axis[2] = values[2]
 
 class Constants:
-    """Common physical constants. Values were obtained from CODATA/NIST.
-         Attributes:
-         mu0 [H/m] magnetic constant mu_0
-         gamma [m A^-1 s^-1] gyromagnetic ratio gamma
-         mu_b [J/T] Bohr magneton mu_bohr
-         e [C] elementary charge e
-         kb [J/K] Boltzmann constant kb
-         hbar [J s] reduced Planck constant"""
+    """
+    Common physical constants. Values are obtained from CODATA/NIST.
+
+    Attributes
+    ----------
+    mu0 : float
+        [H/m] magnetic constant mu_0
+    gamma : float
+        [m A^-1 s^-1] gyromagnetic ratio gamma
+    mu_b : float
+        [J/T] Bohr magneton mu_bohr
+    e : float
+        [C] elementary charge e
+    kb : float
+        [J/K] Boltzmann constant kb
+    hbar : float
+        [J s] reduced Planck constant
+    """
     mu0 = 4e-7 * pi
 
     gamma = 1.760859644e11 * mu0
