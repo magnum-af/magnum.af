@@ -446,8 +446,8 @@ cdef class LLGIntegrator:
     ----------
     alpha : float
         The unitless damping constant in the LLG equation
-    terms : [LLGTerm]
-        A python list constisting of LLGTerm objects s.a. ExchangeField or DemagField
+    terms : [HeffTerm]
+        A python list constisting of HeffTerm objects s.a. ExchangeField or DemagField
     mode : str
         Switch between Adapitve Runge Kutta schemes. Options are "RKF45", "DP45", "BS45", "DP78", "BS23"
     hmin : float
@@ -474,7 +474,7 @@ cdef class LLGIntegrator:
     h(State) : af.array
         Returns the effective field H_eff for the magnetization state.m
     add_terms(*args)
-        Adds an LLGTerm object (s.a. ExchangeField) to be included in the effective field
+        Adds an HeffTerm object (s.a. ExchangeField) to be included in the effective field
     relax(State, precision, ncalcE, nprint)
         Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
 
@@ -756,7 +756,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
 
 cdef class LBFGS_Minimizer:
     """
-    The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the LLGTerm objects.
+    The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the HeffTerm objects.
 
     Parameters
     ----------
