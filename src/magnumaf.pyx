@@ -202,64 +202,64 @@ cdef class Mesh:
     def __init__(self, nx, ny, nz, dx, dy, dz): # todo: For dockstring, but currently does not change signature
         pass
 
-    cdef cMesh* thisptr
+    cdef cMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
     def __cinit__(self,int nx, int ny, int nz, double dx, double dy, double dz):
-        self.thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
+        self._thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
         owner = None # see [1]
     cdef set_ptr(self, cMesh* ptr, owner):
         if self.owner is None:
-            del self.thisptr
-        self.thisptr = ptr
+            del self._thisptr
+        self._thisptr = ptr
         self.owner = owner
     def __dealloc__(self):
         if self.owner is None: # only free if we own it: see [1]
-            del self.thisptr
-            self.thisptr = NULL
+            del self._thisptr
+            self._thisptr = NULL
     def print_nx(self):
-        print (self.thisptr.n0)
+        print (self._thisptr.n0)
 
     @property
     def nx(self):
-        return self.thisptr.n0
+        return self._thisptr.n0
     @nx.setter
     def nx(self,value):
-        self.thisptr.n0=value
+        self._thisptr.n0=value
 
     @property
     def ny(self):
-        return self.thisptr.n1
+        return self._thisptr.n1
     @ny.setter
     def ny(self,value):
-        self.thisptr.n1=value
+        self._thisptr.n1=value
 
     @property
     def nz(self):
-        return self.thisptr.n2
+        return self._thisptr.n2
     @nz.setter
     def nz(self,value):
-        self.thisptr.n2=value
+        self._thisptr.n2=value
 
     @property
     def dx(self):
-        return self.thisptr.dx
+        return self._thisptr.dx
     @dx.setter
     def dx(self,value):
-        self.thisptr.dx=value
+        self._thisptr.dx=value
 
     @property
     def dy(self):
-        return self.thisptr.dy
+        return self._thisptr.dy
     @dy.setter
     def dy(self,value):
-        self.thisptr.dy=value
+        self._thisptr.dy=value
 
     @property
     def dz(self):
-        return self.thisptr.dz
+        return self._thisptr.dz
     @dz.setter
     def dz(self,value):
-        self.thisptr.dz=value
+        self._thisptr.dz=value
 
 
 
@@ -308,90 +308,90 @@ cdef class State:
     m0[:,:,:,0] = 1
     state = State(mesh, 8e5, m0)
     """
-    cdef cState* thisptr
+    cdef cState* _thisptr
     def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False, Material material = None, evaluate_mean = None):
         # switch for evaluate_mean value
         if hasattr(Ms, 'arr'):
-            self.thisptr = new cState (deref(mesh.thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
+            self._thisptr = new cState (deref(mesh._thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         # legacy
         elif (material is not None and evaluate_mean is None):
             print("Warning: State constructor: legacy code, will be dopped soon")
-            self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr))
-            self.thisptr.Ms = Ms
+            self._thisptr = new cState (deref(mesh._thisptr), deref(material._thisptr), addressof(m.arr))
+            self._thisptr.Ms = Ms
         elif (material is not None):
             print("Warning: State constructor: legacy code, will be dopped soon")
-            self.thisptr = new cState (deref(mesh.thisptr), deref(material.thisptr), addressof(m.arr), addressof(evaluate_mean.arr))
-            self.thisptr.Ms = Ms
+            self._thisptr = new cState (deref(mesh._thisptr), deref(material._thisptr), addressof(m.arr), addressof(evaluate_mean.arr))
+            self._thisptr.Ms = Ms
         # end legacy
         else:
-            self.thisptr = new cState (deref(mesh.thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
+            self._thisptr = new cState (deref(mesh._thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
     def __dealloc__(self): # causes segfault on every cleanup
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     @property
     def t(self):
-        return self.thisptr.t
+        return self._thisptr.t
     @t.setter
     def t(self, value):
-        self.thisptr.t = value
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        self._thisptr.t = value
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
     @property
     def Ms(self):
-        return self.thisptr.Ms
+        return self._thisptr.Ms
     #@Ms.setter
     #def Ms(self,value):
-    #  self.thisptr.Ms=value
+    #  self._thisptr.Ms=value
 
 
     def write_vti(self, outputname):
-        self.thisptr._vti_writer_micro( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_micro( outputname.encode('utf-8')) 
     def write_vti_boolean(self, outputname):
-        self.thisptr._vti_writer_micro_boolean( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_micro_boolean( outputname.encode('utf-8')) 
     def write_vti_atomistic(self, outputname):
-        self.thisptr._vti_writer_atom( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_atom( outputname.encode('utf-8')) 
     def read_vti(self, outputname):
-        self.thisptr._vti_reader( outputname.encode('utf-8')) 
+        self._thisptr._vti_reader( outputname.encode('utf-8')) 
 
     #def py_vtr_writer(self, outputname):
-    #  self.thisptr._vtr_writer( outputname.encode('utf-8'))
+    #  self._thisptr._vtr_writer( outputname.encode('utf-8'))
     #def py_vtr_reader(self, outputname):
-    #  self.thisptr._vtr_reader( outputname.encode('utf-8'))
+    #  self._thisptr._vtr_reader( outputname.encode('utf-8'))
     def normalize(self):
-        self.thisptr.Normalize()
+        self._thisptr.Normalize()
 
     property mesh:
         def __get__(self):
             mesh = Mesh(0,0,0,0,0,0)
-            mesh.set_ptr(&self.thisptr.mesh,self)
+            mesh.set_ptr(&self._thisptr.mesh,self)
             return mesh
         def __set__(self, Mesh mesh):
-            self.thisptr.mesh = deref(mesh.thisptr)
+            self._thisptr.mesh = deref(mesh._thisptr)
 
     property material:
         def __get__(self):
             material = Material()
-            material.set_ptr(&self.thisptr.material,self)
+            material.set_ptr(&self._thisptr.material,self)
             return material
         def __set__(self, Material material_in):
-            self.thisptr.material = deref(material_in.thisptr)
+            self._thisptr.material = deref(material_in._thisptr)
 
     @property
     def m(self):
-        return array_from_addr(self.thisptr.get_m_addr())
+        return array_from_addr(self._thisptr.get_m_addr())
     @m.setter
     def m(self, m_in):
-        self.thisptr.set_m(addressof(m_in.arr))
+        self._thisptr.set_m(addressof(m_in.arr))
 
     def get_m_partial(self, key):
-        return array_from_addr(self.thisptr.get_m_addr())[key]
+        return array_from_addr(self._thisptr.get_m_addr())[key]
 
     def set_m_partial(self, key, value):
         if value.dims() == self.m[key].dims():
             temp = self.m
             temp[key] = value
-            self.thisptr.set_m(addressof(temp.arr))
+            self._thisptr.set_m(addressof(temp.arr))
         else:
                 print("Error: State.m_partial: Dimensions do not match. m_partial[key].dims()=",self.m[key].dims()," != rhs.dims()=",value.dims(),". Setting m_partial is ignored.")
     # setting dictionary as property
@@ -402,20 +402,20 @@ cdef class State:
     #def __setitem__(self, key, m_in):
     #  temp = self.m
     #  temp[key] = m_in
-    #  self.thisptr.set_m(addressof(temp.arr))
+    #  self._thisptr.set_m(addressof(temp.arr))
     #  print("min", self.m[key].dims(),"min", m_in.dims(), "m", self.m.dims(), "temp", temp.dims())
-    #  #self.thisptr.set_m(addressof(m_in.arr))
+    #  #self._thisptr.set_m(addressof(m_in.arr))
 
     @property
     def Ms_field(self):
-        return array_from_addr(self.thisptr.get_Ms_field())
+        return array_from_addr(self._thisptr.get_Ms_field())
     @Ms_field.setter
     def Ms_field(self, Ms_field):
-        self.thisptr.set_Ms_field(addressof(Ms_field.arr))
+        self._thisptr.set_Ms_field(addressof(Ms_field.arr))
 
     @property
     def steps(self):
-        return self.thisptr.steps
+        return self._thisptr.steps
     def m_mean(self, i = None):
         """
         Method calculating the average magnetization along all (i = None) or along a specific dimension ( i = {0, 1, 2})
@@ -430,9 +430,9 @@ cdef class State:
             When i is either 0 = mx, 1 = my or 2 = mz
         """
         if(i == None):
-            return self.thisptr.meani(0), self.thisptr.meani(1), self.thisptr.meani(2)
+            return self._thisptr.meani(0), self._thisptr.meani(1), self._thisptr.meani(2)
         else:
-            return self.thisptr.meani(i)
+            return self._thisptr.meani(i)
 
 
 cdef class LLGIntegrator:
@@ -481,52 +481,52 @@ cdef class LLGIntegrator:
     Examples
     ----------
     """
-    cdef cLLGIntegrator* thisptr
+    cdef cLLGIntegrator* _thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
         if not terms:
             print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
         else:
             for arg in terms:
-                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
-            self.thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
+                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+            self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
     # TODO leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
     # NOTE not happening in minimizer class as it is not derived (i guess)
     #def __dealloc__(self):
-    #  del self.thisptr
-    #  self.thisptr = NULL
+    #  del self._thisptr
+    #  self._thisptr = NULL
     def step(self, State state_in):
-        self.thisptr.step(deref(state_in.thisptr))
+        self._thisptr.step(deref(state_in._thisptr))
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     #def print_stepsize(self):
-    #  return self.thisptr.h_stepped_
+    #  return self._thisptr.h_stepped_
     def h(self, State state):
-        return array_from_addr(self.thisptr.h_addr(deref(state.thisptr)))
+        return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
     #def cpu_time(self):
-    #  return self.thisptr.cpu_time()
+    #  return self._thisptr.cpu_time()
     #def set_state0_alpha(self,value):
-    #  self.thisptr.state0.material.alpha=value
+    #  self._thisptr.state0.material.alpha=value
     def add_terms(self,*args):
         for arg in args:
-            self.thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+            self._thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
         """
         relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
             Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
         """
-        self.thisptr.relax(deref(state.thisptr), precision, ncalcE, nprint)
+        self._thisptr.relax(deref(state._thisptr), precision, ncalcE, nprint)
     @property
     def alpha(self):
-        return self.thisptr.alpha
+        return self._thisptr.alpha
     @alpha.setter
     def alpha(self,value):
-        self.thisptr.alpha=value
+        self._thisptr.alpha=value
 
         #cdef vector[shared_ptr[cLLGTerm]] vector_in
         #for term in terms:
-        #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms.pythisptr()))
-        #self.thisptr = new cLLGIntegrator (vector_in)  
+        #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))
+        #self._thisptr = new cLLGIntegrator (vector_in)  
         
     
 
@@ -541,188 +541,188 @@ cdef class DemagField:
     Examples
     --------
     """
-    cdef cDemagField* thisptr
+    cdef cDemagField* _thisptr
     def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
-        self.thisptr = new cDemagField (deref(mesh.thisptr), verbose, caching, nthreads)    
+        self._thisptr = new cDemagField (deref(mesh._thisptr), verbose, caching, nthreads)    
     #This would causes double free coruption!
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def print_Nfft(self):
-        self.thisptr.print_Nfft()
+        self._thisptr.print_Nfft()
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class ExchangeField:
-    cdef cExchangeField* thisptr
+    cdef cExchangeField* _thisptr
     def __cinit__(self, A):
         if hasattr(A, 'arr'):
-            self.thisptr = new cExchangeField (<long int> addressof(A.arr))
+            self._thisptr = new cExchangeField (<long int> addressof(A.arr))
         else:
-            self.thisptr = new cExchangeField (<double> A)
+            self._thisptr = new cExchangeField (<double> A)
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
     ## Add when needed:
     # @property
     # def A(self):
-    #       return self.thisptr.A
+    #       return self._thisptr.A
     # @A.setter
     # def A(self,value):
-    #       self.thisptr.A=value
+    #       self._thisptr.A=value
     # @property
     # def micro_A_field(self):
-    #       return array_from_addr(self.thisptr.get_micro_A_field())
+    #       return array_from_addr(self._thisptr.get_micro_A_field())
     # @micro_A_field.setter
     # def micro_A_field(self, micro_A_field_in):
-    #       self.thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
+    #       self._thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
 
 
 
 cdef class SparseExchangeField:
-    cdef cSparseExchangeField* thisptr
+    cdef cSparseExchangeField* _thisptr
     def __cinit__(self, A, Mesh mesh, verbose = True):
         if hasattr(A, 'arr'):
-            self.thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh.thisptr), <bool> verbose)
+            self._thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
-            self.thisptr = new cSparseExchangeField (<double> A, deref(mesh.thisptr), <bool> verbose)
+            self._thisptr = new cSparseExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class UniaxialAnisotropyField:
-    cdef cUniaxialAnisotropyField* thisptr
+    cdef cUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr'):
-            self.thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
+            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
         else:
-            self.thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])    
+            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])    
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def h(self, State state):
-        return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
     @property
     def Ku1(self):
-        return self.thisptr.Ku1
+        return self._thisptr.Ku1
     #@Ku1.setter
     #def Ku1(self,value):
-    #  self.thisptr.Ku1=value
+    #  self._thisptr.Ku1=value
 
     @property
     def Ku1_axis(self):
-        return self.thisptr.get_ku1_axis(0), self.thisptr.get_ku1_axis(1), self.thisptr.get_ku1_axis(2)
+        return self._thisptr.get_ku1_axis(0), self._thisptr.get_ku1_axis(1), self._thisptr.get_ku1_axis(2)
     #@Ku1_axis.setter
     #def Ku1_axis(self, values):
-    #  self.thisptr.Ku1_axis[0] = values[0]
-    #  self.thisptr.Ku1_axis[1] = values[1]
-    #  self.thisptr.Ku1_axis[2] = values[2]
+    #  self._thisptr.Ku1_axis[0] = values[0]
+    #  self._thisptr.Ku1_axis[1] = values[1]
+    #  self._thisptr.Ku1_axis[2] = values[2]
     @property
     def Ku1_field(self):
-        return array_from_addr(self.thisptr.get_Ku1_field())
+        return array_from_addr(self._thisptr.get_Ku1_field())
     #@micro_Ku1_field.setter
     #def micro_Ku1_field(self, micro_Ku1_field_in):
-    #  self.thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
+    #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
 
 
 
 cdef class AtomisticDipoleDipoleField:
-    cdef cAtomisticDipoleDipoleField* thisptr
+    cdef cAtomisticDipoleDipoleField* _thisptr
     def __cinit__(self, Mesh mesh):
-        self.thisptr = new cAtomisticDipoleDipoleField (deref(mesh.thisptr))    
+        self._thisptr = new cAtomisticDipoleDipoleField (deref(mesh._thisptr))    
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class AtomisticUniaxialAnisotropyField:
-    cdef cAtomisticUniaxialAnisotropyField* thisptr
+    cdef cAtomisticUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self.thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh.thisptr),deref(param_in.thisptr))  
+        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr),deref(param_in._thisptr))  
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class AtomisticExchangeField:
-    cdef cAtomisticExchangeField* thisptr
+    cdef cAtomisticExchangeField* _thisptr
     def __cinit__(self, Mesh mesh):
-        self.thisptr = new cAtomisticExchangeField (deref(mesh.thisptr))    
+        self._thisptr = new cAtomisticExchangeField (deref(mesh._thisptr))    
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class AtomisticDmiField:
-    cdef cAtomisticDmiField* thisptr
+    cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self.thisptr = new cAtomisticDmiField (deref(mesh.thisptr),deref(param_in.thisptr))  
+        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr),deref(param_in._thisptr))  
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class ExternalField:
-    cdef cExternalField* thisptr
+    cdef cExternalField* _thisptr
     def __cinit__(self, array_in):
-        self.thisptr = new cExternalField (addressof(array_in.arr))
+        self._thisptr = new cExternalField (addressof(array_in.arr))
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state_in):
-        return self.thisptr.E(deref(state_in.thisptr))
+        return self._thisptr.E(deref(state_in._thisptr))
     def cpu_time(self):
-        return self.thisptr.get_cpu_time()
+        return self._thisptr.get_cpu_time()
     def set_homogeneous_field(self, x, y, z):
-            self.thisptr.set_homogeneous_field(x, y, z)
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+            self._thisptr.set_homogeneous_field(x, y, z)
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
     def h(self, State state):
-        return array_from_addr(self.thisptr.h_ptr(deref(state.thisptr)))
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
 
 cdef class LBFGS_Minimizer:
     """
@@ -751,7 +751,7 @@ cdef class LBFGS_Minimizer:
     minimizer = Minimizer(terms, tol = 1e-6, maxiter = 230)
     minimier.minimize(state)
     """
-    cdef cLBFGS_Minimizer* thisptr
+    cdef cLBFGS_Minimizer* _thisptr
     def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
         if not terms:
@@ -759,115 +759,115 @@ cdef class LBFGS_Minimizer:
         else:
             for arg in terms:
                 #print("Adding term", arg)
-                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
-            self.thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
+                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+            self._thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, 0) # TODO: WARNING: std::cout is not handled and leads to segfault!!! (setting verbose to 0 is a temporary fix) 
 #TODO#  def __dealloc__(self): #causes segfault on GTO in cleanup
-#TODO#      del self.thisptr
-#TODO#      self.thisptr = NULL
+#TODO#      del self._thisptr
+#TODO#      self._thisptr = NULL
     def add_terms(self,*args):
         for arg in args:
-            self.thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg.pythisptr()))
+            self._thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
-        self.thisptr.llgterms_.pop_back()
+        self._thisptr.llgterms_.pop_back()
     #not working as set_homogeneous_field is not pure virutal:# def set_zee_xyz(self, State state, i, x, y, z):
-    #not working as set_homogeneous_field is not pure virutal:#         self.thisptr.llgterms_[i].set_homogeneous_field(deref(state.thisptr), x, y, z)
+    #not working as set_homogeneous_field is not pure virutal:#         self._thisptr.llgterms_[i].set_homogeneous_field(deref(state._thisptr), x, y, z)
     #def __cinit__(self, tol = 1e-6, maxiter = 230, verbose = 4):
-    #  self.thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
+    #  self._thisptr = new cLBFGS_Minimizer(tol, maxiter, verbose) # TODO handle default values 
     def minimize(self, State state_in):
-        return self.thisptr.Minimize(deref(state_in.thisptr))
+        return self._thisptr.Minimize(deref(state_in._thisptr))
     def pyGetTimeCalcHeff(self):
-        return self.thisptr.GetTimeCalcHeff()
+        return self._thisptr.GetTimeCalcHeff()
 
 cdef class Material:
-    cdef cParam* thisptr
+    cdef cParam* _thisptr
     cdef object owner # None if this is our own # From [1]
     def __cinit__(self, D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
         # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
         Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
         D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
         D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
-        self.thisptr = new cParam (D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
+        self._thisptr = new cParam (D, D_axis_renormed[0], D_axis_renormed[1], D_axis_renormed[2], p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
         owner = None # see [1]
     cdef set_ptr(self, cParam* ptr, owner):
         if self.owner is None:
-            del self.thisptr
-        self.thisptr = ptr
+            del self._thisptr
+        self._thisptr = ptr
         self.owner = owner
     def __dealloc__(self):
         if self.owner is None: # only free if we own it: see [1]
-            del self.thisptr
-            self.thisptr = NULL
+            del self._thisptr
+            self._thisptr = NULL
 
     #inlcude in stochllg# @property
     #inlcude in stochllg# def T(self):
-    #inlcude in stochllg#       return self.thisptr.T
+    #inlcude in stochllg#       return self._thisptr.T
     #inlcude in stochllg# @T.setter
     #inlcude in stochllg# def T(self,value):
-    #inlcude in stochllg#       self.thisptr.T=value
+    #inlcude in stochllg#       self._thisptr.T=value
 
     # Micromagnetic
     @property
     def D(self):
-        return self.thisptr.D
+        return self._thisptr.D
     @D.setter
     def D(self,value):
-        self.thisptr.D=value
+        self._thisptr.D=value
 
     @property
     def D_axis(self):
-        return self.thisptr.D_axis[0], self.thisptr.D_axis[1], self.thisptr.D_axis[2]
+        return self._thisptr.D_axis[0], self._thisptr.D_axis[1], self._thisptr.D_axis[2]
     @D_axis.setter
     def D_axis(self, values):
-        self.thisptr.D_axis[0] = values[0]
-        self.thisptr.D_axis[1] = values[1]
-        self.thisptr.D_axis[2] = values[2]
+        self._thisptr.D_axis[0] = values[0]
+        self._thisptr.D_axis[1] = values[1]
+        self._thisptr.D_axis[2] = values[2]
 
     # Atomistic
     @property
     def p(self):
-        return self.thisptr.p
+        return self._thisptr.p
     @p.setter
     def p(self,value):
-        self.thisptr.p=value
+        self._thisptr.p=value
 
     @property
     def J_atom(self):
-        return self.thisptr.J_atom
+        return self._thisptr.J_atom
     @J_atom.setter
     def J_atom(self,value):
-        self.thisptr.J_atom=value
+        self._thisptr.J_atom=value
 
     @property
     def D_atom(self):
-        return self.thisptr.D_atom
+        return self._thisptr.D_atom
     @D_atom.setter
     def D_atom(self,value):
-        self.thisptr.D_atom=value
+        self._thisptr.D_atom=value
 
     @property
     def Ku1_atom(self):
-        return self.thisptr.K_atom
+        return self._thisptr.K_atom
     @Ku1_atom.setter
     def Ku1_atom(self,value):
-        self.thisptr.K_atom=value
+        self._thisptr.K_atom=value
 
     @property
     def D_atom_axis(self):
-        return self.thisptr.D_atom_axis[0], self.thisptr.D_atom_axis[1], self.thisptr.D_atom_axis[2]
+        return self._thisptr.D_atom_axis[0], self._thisptr.D_atom_axis[1], self._thisptr.D_atom_axis[2]
     @D_atom_axis.setter
     def D_atom_axis(self, values):
-        self.thisptr.D_atom_axis[0] = values[0]
-        self.thisptr.D_atom_axis[1] = values[1]
-        self.thisptr.D_atom_axis[2] = values[2]
+        self._thisptr.D_atom_axis[0] = values[0]
+        self._thisptr.D_atom_axis[1] = values[1]
+        self._thisptr.D_atom_axis[2] = values[2]
 
     @property
     def Ku1_atom_axis(self):
-        return self.thisptr.K_atom_axis[0], self.thisptr.K_atom_axis[1], self.thisptr.K_atom_axis[2]
+        return self._thisptr.K_atom_axis[0], self._thisptr.K_atom_axis[1], self._thisptr.K_atom_axis[2]
     @Ku1_atom_axis.setter
     def Ku1_atom_axis(self, values):
-        self.thisptr.K_atom_axis[0] = values[0]
-        self.thisptr.K_atom_axis[1] = values[1]
-        self.thisptr.K_atom_axis[2] = values[2]
+        self._thisptr.K_atom_axis[0] = values[0]
+        self._thisptr.K_atom_axis[1] = values[1]
+        self._thisptr.K_atom_axis[2] = values[2]
 
 class Constants:
     """
@@ -901,20 +901,20 @@ class Constants:
     hbar = 1.0545718e-34
 
 cdef class SpinTransferTorqueField:
-    cdef cSpinTransferTorqueField* thisptr
+    cdef cSpinTransferTorqueField* _thisptr
     def __cinit__(self, pol, nu_damp,  nu_field, j_e):
-        self.thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
+        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
     def __dealloc__(self):
-        del self.thisptr
-        self.thisptr = NULL
+        del self._thisptr
+        self._thisptr = NULL
     def E(self,State state):
-        return self.thisptr.E(deref(state.thisptr))
-    def pythisptr(self):
-            return <size_t><void*>self.thisptr
+        return self._thisptr.E(deref(state._thisptr))
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
     @property
     def polarization_field(self):
-        return array_from_addr(self.thisptr.polarization_field.get_array_addr())
+        return array_from_addr(self._thisptr.polarization_field.get_array_addr())
     @polarization_field.setter
     def polarization_field(self, array):
-        self.thisptr.polarization_field.set_array(addressof(array.arr))
+        self._thisptr.polarization_field.set_array(addressof(array.arr))
