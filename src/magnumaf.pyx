@@ -499,10 +499,10 @@ cdef class LLGIntegrator:
     #    # NOTE is also problematic in minimizer class
     #    del self._thisptr
     #    self._thisptr = NULL
-    def step(self, State state_in):
-        self._thisptr.step(deref(state_in._thisptr))
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def step(self, State state):
+        self._thisptr.step(deref(state._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def h(self, State state):
         return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
     def add_terms(self,*args):
@@ -532,9 +532,13 @@ cdef class LLGIntegrator:
     #  return self._thisptr.cpu_time()
     #def set_state0_alpha(self,value):
     #  self._thisptr.state0.material.alpha=value
-        
 
-cdef class DemagField:
+# base class for clearification (especially for heritage diagramms in docu)
+cdef class HeffTerm:
+    pass
+
+
+cdef class DemagField(HeffTerm):
     """
     Parameters
     ----------
@@ -553,15 +557,15 @@ cdef class DemagField:
         self._thisptr = NULL
     def print_Nfft(self):
         self._thisptr.print_Nfft()
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
 
-cdef class ExchangeField:
+cdef class ExchangeField(HeffTerm):
     cdef cExchangeField* _thisptr
     def __cinit__(self, A):
         if hasattr(A, 'arr'):
@@ -571,8 +575,8 @@ cdef class ExchangeField:
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
@@ -592,7 +596,7 @@ cdef class ExchangeField:
     #       self._thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
 
 
-cdef class SparseExchangeField:
+cdef class SparseExchangeField(HeffTerm):
     cdef cSparseExchangeField* _thisptr
     def __cinit__(self, A, Mesh mesh, verbose = True):
         if hasattr(A, 'arr'):
@@ -603,14 +607,14 @@ cdef class SparseExchangeField:
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
-cdef class UniaxialAnisotropyField:
+cdef class UniaxialAnisotropyField(HeffTerm):
     cdef cUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr'):
@@ -622,8 +626,8 @@ cdef class UniaxialAnisotropyField:
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
@@ -651,75 +655,75 @@ cdef class UniaxialAnisotropyField:
     #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
 
-cdef class AtomisticDipoleDipoleField:
+cdef class AtomisticDipoleDipoleField(HeffTerm):
     cdef cAtomisticDipoleDipoleField* _thisptr
     def __cinit__(self, Mesh mesh):
         self._thisptr = new cAtomisticDipoleDipoleField (deref(mesh._thisptr))    
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticUniaxialAnisotropyField:
+cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
         self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr),deref(param_in._thisptr))  
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticExchangeField:
+cdef class AtomisticExchangeField(HeffTerm):
     cdef cAtomisticExchangeField* _thisptr
     def __cinit__(self, Mesh mesh):
         self._thisptr = new cAtomisticExchangeField (deref(mesh._thisptr))    
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticDmiField:
+cdef class AtomisticDmiField(HeffTerm):
     cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
         self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr),deref(param_in._thisptr))  
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
 
-cdef class ExternalField:
+cdef class ExternalField(HeffTerm):
     cdef cExternalField* _thisptr
     def __cinit__(self, array_in):
         self._thisptr = new cExternalField (addressof(array_in.arr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state_in):
-        return self._thisptr.E(deref(state_in._thisptr))
+    def E(self,State state):
+        return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def set_homogeneous_field(self, x, y, z):
@@ -730,7 +734,7 @@ cdef class ExternalField:
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
 
 
-cdef class SpinTransferTorqueField:
+cdef class SpinTransferTorqueField(HeffTerm):
     cdef cSpinTransferTorqueField* _thisptr
     def __cinit__(self, pol, nu_damp,  nu_field, j_e):
         self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
@@ -799,8 +803,8 @@ cdef class LBFGS_Minimizer:
             self._thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
         self._thisptr.llgterms_.pop_back()
-    def minimize(self, State state_in):
-        return self._thisptr.Minimize(deref(state_in._thisptr))
+    def minimize(self, State state):
+        return self._thisptr.Minimize(deref(state._thisptr))
     def pyGetTimeCalcHeff(self):
         return self._thisptr.GetTimeCalcHeff()
 
