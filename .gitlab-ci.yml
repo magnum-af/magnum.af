@@ -3,10 +3,21 @@ stages:
   - test
   - deploy
 
+variables:
+  DOCKER_HOST: git.exp.univie.ac.at:4567
+  DOCKER_DRIVER: overlay2
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  #IMAGE_TAG: cpu-dev:latest
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
 build_cpu:
   stage: build
   script:
-    - docker build -t magnum.af.cpu-dev -f Dockerfile.cpu .
+    - docker build -t $CONTAINER_TEST_IMAGE -f Dockerfile.cpu .
+    - docker push $CONTAINER_TEST_IMAGE
   tags:
     - packer
 
@@ -20,7 +31,8 @@ build_gpu:
 test_cpu:
   stage: test
   script:
-    - docker run --rm -t magnum.af.cpu-dev ./tests/runall.sh
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker run --rm $CONTAINER_TEST_IMAGE ./tests/runall.sh
   tags:
     - packer
 
