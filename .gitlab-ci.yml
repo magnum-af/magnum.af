@@ -4,8 +4,9 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CPU_TEST_IMAGE: $CI_REGISTRY_IMAGE:/cpu-dev
+  CUDA_TEST_IMAGE: $CI_REGISTRY_IMAGE:/cuda-dev
+  CUDA_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -13,30 +14,30 @@ before_script:
 build_cpu:
   stage: build
   script:
-    - docker build -t $CONTAINER_TEST_IMAGE -f Dockerfile.cpu .
-    - docker push $CONTAINER_TEST_IMAGE
+    - docker build -t $CPU_TEST_IMAGE -f Dockerfile.cpu .
+    - docker push $CPU_TEST_IMAGE
   tags:
     - packer
 
 build_gpu:
   stage: build
   script:
-    - nvidia-docker build -t magnum.af-dev -f Dockerfile .
+    - nvidia-docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
   tags:
     - gpu
 
 test_cpu:
   stage: test
   script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker run --rm $CONTAINER_TEST_IMAGE ./tests/runall.sh
+    - docker pull $CPU_TEST_IMAGE
+    - docker run --rm $CPU_TEST_IMAGE ./tests/runall.sh
   tags:
     - packer
 
 test_gpu:
   stage: test
   script:
-    - nvidia-docker run --rm -t magnum.af-dev ./tests/runall.sh
+    - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./tests/runall.sh
   tags:
     - gpu
 
@@ -47,7 +48,7 @@ deploy_on_master_only:
   tags:
     - gpu
   script:
-    - docker tag magnum.af-dev magnum.af
+    - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
   artifacts:
