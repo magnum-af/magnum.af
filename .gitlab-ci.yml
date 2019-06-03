@@ -22,7 +22,8 @@ build_cpu:
 build_gpu:
   stage: build
   script:
-    - nvidia-docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
+    - docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
+    - docker push $CUDA_TEST_IMAGE
   tags:
     - gpu
 
@@ -37,6 +38,7 @@ test_cpu:
 test_gpu:
   stage: test
   script:
+    - docker pull $CUDA_TEST_IMAGE
     - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./tests/runall.sh
   tags:
     - gpu
@@ -48,7 +50,9 @@ deploy_on_master_only:
   tags:
     - gpu
   script:
+    - docker pull $CUDA_TEST_IMAGE
     - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
+    - docker push $CUDA_RELEASE_IMAGE
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
   artifacts:
