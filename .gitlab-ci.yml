@@ -4,8 +4,8 @@ stages:
   - deploy
 
 variables:
-  CPU_TEST_IMAGE: $CI_REGISTRY_IMAGE:"/cpu-dev"
-  CUDA_TEST_IMAGE: $CI_REGISTRY_IMAGE:"/cuda-dev
+  CPU_TEST_IMAGE: $CI_REGISTRY_IMAGE/cpu-dev
+  CUDA_TEST_IMAGE: $CI_REGISTRY_IMAGE/cuda-dev
   CUDA_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 before_script:
