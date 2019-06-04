@@ -51,17 +51,19 @@ tag_master:
   script:
     - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
     - docker push $CUDA_RELEASE_IMAGE
+  tags:
+    - packer
 
 deploy_GTO:
   stage: deploy
   only:
     - master
-  tags:
-    - gpu
   script:
     - docker pull $CUDA_RELEASE_IMAGE
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
+  tags:
+    - gpu
   artifacts:
     paths:
       - html/
