@@ -49,10 +49,11 @@ tag_master:
   only:
     - master
   script:
+    - docker pull $CUDA_TEST_IMAGE
     - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
     - docker push $CUDA_RELEASE_IMAGE
   tags:
-    - packer
+    - gpu
 
 deploy_GTO:
   stage: deploy
