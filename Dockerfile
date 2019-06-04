@@ -1,6 +1,7 @@
 # based on: https://github.com/arrayfire/arrayfire-docker 
 # image: magnum.af
-# build: nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .
+# build: docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev:latest -f Dockerfile --build-arg user="$UID" .
+# push:  docker push git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev:latest
 # run  : nvidia-docker run --rm -ti magnum.af /bin/bash
 # test : nvidia-docker run --rm -t magnum.af ./tests/runall.sh .
 

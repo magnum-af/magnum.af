@@ -194,8 +194,11 @@ runstring=$runstring" -v $inputfile:$inputfile"
 [[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
 [[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath $copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
 runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
-command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t magnum.af" || runstring=$runstring" -t magnum.af.cpu" # TODO better swtich
-[[ "$D_flag" == "true" ]] && runstring=$runstring"-dev"
+if [[ "$D_flag" == "true" ]]; then
+    command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev" || runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev" # Note: better swtich?
+else
+    command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af" || runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev" # Note: better swtich?
+fi
 runstring=$runstring" ./scripts/magnum.af -f"
 runstring=$runstring" $saved_flags"
 [[ -n "$postprocess" ]] && runstring=$runstring" -p $postprocess"
