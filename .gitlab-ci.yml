@@ -24,7 +24,7 @@ build_gpu:
   script:
     - docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
     - docker push $CUDA_TEST_IMAGE
-    - $CI_COMMIT_REF_NAME == "master" && docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE && docker push $CUDA_RELEASE_IMAGE || true
+    - [ "$CI_COMMIT_REF_NAME" == "master" ] && docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE && docker push $CUDA_RELEASE_IMAGE || true
   tags:
     - gpu
 
