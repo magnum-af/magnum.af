@@ -24,6 +24,7 @@ build_gpu:
   script:
     - docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
     - docker push $CUDA_TEST_IMAGE
+    - $CI_COMMIT_REF_NAME == "master" && docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE && docker push $CUDA_RELEASE_IMAGE
   tags:
     - gpu
 
@@ -50,9 +51,7 @@ deploy_on_master_only:
   tags:
     - gpu
   script:
-    - docker pull $CUDA_TEST_IMAGE
-    - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
-    - docker push $CUDA_RELEASE_IMAGE
+    - docker pull $CUDA_RELEASE_IMAGE
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
   artifacts:
