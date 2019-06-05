@@ -1,7 +1,6 @@
 stages:
   - build
   - test
-  - predeploy
   - deploy
 
 variables:
@@ -41,17 +40,7 @@ test_gpu:
   script:
     - docker pull $CUDA_TEST_IMAGE
     - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./tests/runall.sh
-  tags:
-    - gpu
-
-tag_master:
-  stage: predeploy
-  only:
-    - master
-  script:
-    - docker pull $CUDA_TEST_IMAGE
-    - docker tag $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE
-    - docker push $CUDA_RELEASE_IMAGE
+    - ./scripts/bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
   tags:
     - gpu
 
