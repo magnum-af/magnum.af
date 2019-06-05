@@ -60,7 +60,7 @@ long int LLGIntegrator::h_addr(const State& state){
     //return (long int) h_addr_temp_array.back().get();
     
     //TODO tempfix for wrapping, elaborate other solution
-    fheff_tmp=fheff(state);
-    return (long int) fheff_tmp.get();
+    af::array *heff = new af::array(fheff(state));
+    return (long int) heff->get();
     //return (long int) fheff(state).get();
 }

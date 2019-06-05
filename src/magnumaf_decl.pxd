@@ -164,3 +164,6 @@ cdef extern from "../../src/llg_terms/micro_spintransfertorque.hpp":
         double E(const State& state);
         double get_cpu_time();
         WrappedArray polarization_field;
+
+cdef extern from "../../src/vtk_IO.hpp":
+    void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);

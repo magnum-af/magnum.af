@@ -46,6 +46,8 @@ from magnumaf_decl cimport ExternalField as cExternalField
 from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnumaf_decl cimport LLGTerm as cLLGTerm
 
+from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
+
 def array_from_addr(array_addr):
     array=af.Array()
     array.arr=c_void_p(array_addr)
@@ -63,10 +65,10 @@ class Util:
         return af.tile(array, nx, ny, nz)
  
     @staticmethod
-    def disk(nx, ny, nz, axis=[1,0,0]):
+    def disk(nx, ny, nz, axis=[1,0,0], return_ncells = False):
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
         n_cells=0
-        m = np_zeros((nx, ny, nz, 3));
+        m = np_zeros((nx, ny, nz, 3))
         for ix in range (0, nx):
             for iy in range(0, ny):
                 for iz in range(0, nz):
@@ -74,13 +76,16 @@ class Util:
                     b= ny/2
                     rx=ix-nx/2.
                     ry=iy-ny/2.
-                    r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                    r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2)
                     if(r<=1):
                             m[ix,iy,iz,0]=axis[0]/norm
                             m[ix,iy,iz,1]=axis[1]/norm
                             m[ix,iy,iz,2]=axis[2]/norm
                             n_cells = n_cells +1
-        return af.from_ndarray(m), n_cells
+        if return_ncells == True:
+            return af.from_ndarray(m), n_cells
+        else:
+            return af.from_ndarray(m)
 
     @staticmethod
     def vortex(mesh, positive_z = True):
@@ -126,6 +131,9 @@ class Util:
                             print ("Success")
                     return True
 
+    @staticmethod
+    def write_vti(afarray, dx, dy, dz, filename):
+        cpywrap_vti_writer_micro(addressof(afarray.arr), dx, dy, dz, filename.encode('utf-8'))
 
 # For adding methods as properties (e.g. the State class method m_partial as attribute)
 # From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/
