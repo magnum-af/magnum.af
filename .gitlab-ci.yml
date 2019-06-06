@@ -50,12 +50,20 @@ deploy_GTO:
     - master
   script:
     - docker pull $CUDA_RELEASE_IMAGE
-    - git pull && ./scripts/magnum.af scripts/main_empty.cpp && rm -r output_magnum.af
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
   tags:
-    - gpu
+    - packer
   artifacts:
     paths:
       - html/
       - latex/refman.pdf
+
+deploy_GTO2:
+  stage: deploy
+  only:
+    - master
+  script:
+    - docker pull $CUDA_RELEASE_IMAGE
+  tags:
+    - gto2
