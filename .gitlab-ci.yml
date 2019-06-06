@@ -50,7 +50,6 @@ deploy_GTO:
     - master
   script:
     - docker pull $CUDA_RELEASE_IMAGE
-    - echo $PWD && git pull && ./scripts/magnum.af scripts/main_empty.cpp && rm -r output_magnum.af
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/get_docu_from_image.sh magnum.af-docu
   tags:
