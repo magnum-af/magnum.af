@@ -1,5 +1,9 @@
-.git
+.git/
+.gitignore
 build/
 bin/
 tests/unit/cpp/build
 tests/integration/cpp/build
+*.vti
+*.vtk
+*.dat
