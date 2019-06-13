@@ -22,6 +22,18 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, std::arra
 }
 
 
+UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, af::array Ku1_axis_field) : Ku1_field(Ku1_field), Ku1_axis_field(Ku1_axis_field){
+}
+
+
+UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr) : Ku1(Ku1), Ku1_axis_field(*( new af::array( *((void**) Ku1_axis_field_ptr)))){
+}
+
+
+UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, long int Ku1_axis_field_ptr) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis_field(*( new af::array( *((void**) Ku1_axis_field_ptr)))){
+}
+
+
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1(Ku1), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
@@ -42,10 +54,17 @@ long int UniaxialAnisotropyField::h_ptr(const State& state){
 af::array UniaxialAnisotropyField::calc_heff(const State& state){
     af::timer timer_anisotropy = af::timer::start();
 
-    af::array eu = af::array(state.mesh.dims, f64);//Normal vector
-    eu(af::span,af::span,af::span,0) = Ku1_axis[0];
-    eu(af::span,af::span,af::span,1) = Ku1_axis[1];
-    eu(af::span,af::span,af::span,2) = Ku1_axis[2];
+    // switch Ku1_axis and Ku1_axis_field
+    af::array eu; // Array containing normal vectors
+    if ( Ku1_axis_field.isempty() ){
+        eu = af::array(state.mesh.dims, f64);
+        eu(af::span,af::span,af::span,0) = Ku1_axis[0];
+        eu(af::span,af::span,af::span,1) = Ku1_axis[1];
+        eu(af::span,af::span,af::span,2) = Ku1_axis[2];
+    }
+    else {
+        eu = Ku1_axis_field;
+    }
 
     af::array anisotropy = eu*state.m;
     anisotropy=af::sum(anisotropy,3);

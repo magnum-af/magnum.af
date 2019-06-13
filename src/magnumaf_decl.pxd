@@ -109,6 +109,8 @@ cdef extern from "../../src/llg_terms/micro_anisotropy.hpp":
     cdef cppclass UniaxialAnisotropyField:
         UniaxialAnisotropyField (long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
         UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        UniaxialAnisotropyField (long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
+        UniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr);
         double E(const State& state);
         long int h_ptr(const State& state);
         double Ku1;

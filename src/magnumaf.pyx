@@ -625,8 +625,12 @@ cdef class SparseExchangeField(HeffTerm):
 cdef class UniaxialAnisotropyField(HeffTerm):
     cdef cUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
-        if hasattr(Ku1, 'arr'):
+        if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
+            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
+        elif hasattr(Ku1, 'arr') :
             self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
+        elif hasattr(Ku1_axis, 'arr'):
+            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
             self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])    
     def __dealloc__(self):
