@@ -28,15 +28,15 @@ nz = 1
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting material parameters
-material=Material(ms=1.75/Constants.mu0, A=1.5e-11)
-
 # Second material class for stress
-material_stress=Material(ms=1.75/Constants.mu0, A=1.5e-11, Ku1=1400, Ku1_axis = [1, 0, 0])
-print ("Check: Ku1 axis =", material_stress.Ku1_axis)
+Ms = 1.75/Constants.mu0
+A = 1.5e-11
+stress_Ku1=1400
+stress_Ku1_axis = [1, 0, 0]
 
 # Create state object with timing
 start = time.time()
-state = State(mesh, material, Util.vortex(mesh, positive_z = True))
+state = State(mesh, Ms = Ms, m = Util.vortex(mesh, positive_z = True))
 state.write_vti(filepath + "init_m")
 #print(state.micro_Ms_field)
 print(state.m_mean(0), state.m_mean(1), state.m_mean(2), np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2))
@@ -44,14 +44,16 @@ print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
 start = time.time()
-demag = DemagField(mesh, material, verbose = True, caching = True)
-exch=ExchangeField(mesh, material)
-aniso_stress = UniaxialAnisotropyField(mesh, material_stress)
-zee = ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+terms = [
+    DemagField(mesh, verbose = True, caching = True),
+    ExchangeField(A),
+    UniaxialAnisotropyField(stress_Ku1),
+    ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+]
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
 # Creating minimizer object
-minimizer = LBFGS_Minimizer(terms=[demag, exch, aniso_stress, zee], tol=1e-15, maxiter=1000)
+minimizer = LBFGS_Minimizer(terms, tol=1e-15, maxiter=1000)
 
 start = time.time()
 minimizer.minimize(state)
@@ -65,7 +67,7 @@ steps = 100
 print ("A= ", A)
 for i in range(0, steps):
     phi = 2. * np.pi * i/steps;
-    zee.set_homogeneous_field(state, A * np.cos(phi), A * np.sin(phi), 0)
+    terms[-1].set_homogeneous_field(A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.minimize(state)
     stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.m_mean(0), state.m_mean(1), state.m_mean(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2)))

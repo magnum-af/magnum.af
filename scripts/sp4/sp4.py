@@ -19,9 +19,9 @@ mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 
 # Initial magnetization configuration
 m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m0[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64);
-m0[0,:,:,1]    = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
-m0[-1,:,:,1]   = af.constant(1.0, 1    ,ny, nz, 1, dtype=af.Dtype.f64);
+m0[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64)
+m0[0,:,:,1]    = 1.
+m0[-1,:,:,1]   = 1.
 
 state = State(mesh, Ms = 8e5, m = m0)
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
