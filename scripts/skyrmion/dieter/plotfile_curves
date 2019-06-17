@@ -1,4 +1,4 @@
-set terminal pdf 
+set terminal pdf
 
 set xlabel "Image ID"
 set ylabel "E [J]"

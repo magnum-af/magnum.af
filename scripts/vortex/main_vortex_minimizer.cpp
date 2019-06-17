@@ -19,13 +19,13 @@ int main(int argc, char** argv)
     auto zee_func= [ hzee_max, steps_full_hysteresis ] ( State state ) -> af::array {
         double field_Tesla;
         if(state.steps < steps_full_hysteresis/4){
-            field_Tesla = hzee_max * 4. * state.steps/steps_full_hysteresis; 
+            field_Tesla = hzee_max * 4. * state.steps/steps_full_hysteresis;
         }
         else if (state.steps < 3*steps_full_hysteresis/4){
-            field_Tesla = - hzee_max * 4. * state.steps/steps_full_hysteresis + 2*hzee_max; 
+            field_Tesla = - hzee_max * 4. * state.steps/steps_full_hysteresis + 2*hzee_max;
         }
         else if(state.steps < steps_full_hysteresis){
-            field_Tesla = hzee_max * 4. *state.steps/steps_full_hysteresis - 4*hzee_max;  
+            field_Tesla = hzee_max * 4. *state.steps/steps_full_hysteresis - 4*hzee_max;
         }
         else {
             field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const int nx = 250, ny=250 ,nz=1;
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();

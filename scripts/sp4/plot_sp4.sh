@@ -1,6 +1,6 @@
 #!/bin/bash
-gnuplot -e 'set terminal pdf enhanced; 
-            set output "m.pdf"; 
+gnuplot -e 'set terminal pdf enhanced;
+            set output "m.pdf";
             set xlabel "t [ns]";
             set ylabel "average magnetization";
             set title "\muMAG Standard Problem 4";

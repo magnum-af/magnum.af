@@ -42,7 +42,7 @@ snapshot(geom)
 Msat  = 1.4e5 //saturation magnetization
 Aex   = 3.5-12 //exchange constant
 //anisU   = vector(0, 0, 1) //anisotropy axis for unaxial anisotropy
-//Ku1 =  0.0 //(out of-plane) anisotropy constant - Ku1 = Msat*Bk/2 
+//Ku1 =  0.0 //(out of-plane) anisotropy constant - Ku1 = Msat*Bk/2
 alpha = 0.0002 //global alpha
 
 defregion(200,rect(Length_x,Length_y))
@@ -63,13 +63,13 @@ for i:=1; i<number_of_steps; i++{
 	//Define the regions in which the damping should be increased
 	DefRegion(i, rect(width_of_step, Length_y).Transl(-Length_x*0.5+(i-1)*width_of_step,0,0))
 	DefRegion(i+number_of_steps, rect(width_of_step, Length_y).Transl(Length_x*0.5-(i-1)*width_of_step,0,0))
-	
+
 	//The damping should decrease exponentially from a start value alpha_0 to a selected value alpha_end
 	//alpha(region)=alpha_0*exp(-beta*x)
 	alpha_end:=0.0002
 	alpha_0:=0.5
 	beta:=-log(alpha_end/alpha_0)/number_of_steps
-	
+
 	//Define the damping values in each region
 	alpha.setRegion(i,alpha_0*exp(-beta*i))
 	alpha.setRegion(i+number_of_steps,alpha_0*exp(-beta*i))
@@ -84,7 +84,7 @@ snapshot(alpha)
 snapshot(Msat)
 snapshot(Aex)
 
-// load ground state relaxation 
+// load ground state relaxation
 //m = uniform(0,0,1)
 m.loadfile("D:/Simulationen/Testskripte/GS-200,0,0.ovf")
 //set field
@@ -99,10 +99,10 @@ kmax:=2*pi/(10.0e-9)
 
 sincfield:= newVectorMask(Nx, 1, 1) //field of right antenna
 for i:=0; i<Nx; i++{
-	for j:=0; j<1; j++{ 
-		
+	for j:=0; j<1; j++{
+
 		Bz:=0.001*sinc((i*Cx-Length_x/2)*kmax)
-		
+
 		//Set the external field in every cell i,j to be the calculated antenna field.
 		sincfield.setVector(i, j, 0, vector(0, 0, Bz))
 	}

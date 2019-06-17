@@ -1,6 +1,6 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 bool compare(double a, double b){
     //std::cout << "COM:"<< a <<"," << b <<","<<fabs(a-b)/fabs(a+b)<<std::endl;
@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     std::cout.precision(32);
     int nx = 5, ny=5 ,nz=5;
     const double dx=2.715e-10;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
@@ -24,18 +24,18 @@ int main(int argc, char** argv)
     material.A     = 1.6e-11;
     material.J_atom=2.*material.A*dx;
     material.p=state.Ms*pow(dx,3);
-  
+
     //-------------------------------------------------------
     array m = randu(mesh.n0,mesh.n1,mesh.n2,3,f64);
     State state(mesh,material, m);
-  
+
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     LLG Llg(state,llgterm);
     std::vector<llgt_ptr> llgterm2;
     llgterm2.push_back( llgt_ptr (new ExchangeField(mesh,material)));
     LLG Llg2(state,llgterm2);
-    
+
     for (int x=0; x < nx; x++){
         for (int y=0; y < ny; y++){
             for (int z=0; z < nz; z++){

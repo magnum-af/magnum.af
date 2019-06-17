@@ -3,11 +3,11 @@
 #include "integrators/integrator.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"
 
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile);
 
-af::array givem (const double t, const af::array& m){ 
+af::array givem (const double t, const af::array& m){
     return t*sqrt(m);
 }
 int main(int argc, char** argv)

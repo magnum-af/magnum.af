@@ -2,7 +2,7 @@
 #include <math.h>
 #include "../../../src/material.cpp"
 #include "../../../src/constants.hpp"
- 
+
 TEST(Material, Init_p_Test) {
     Material material;
     material.p = 2.5;

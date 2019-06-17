@@ -42,10 +42,10 @@ int main(int argc, char** argv)
     };
 
     // Parameter initialization
-    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6  
+    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
     const int nx = 250, ny=250 ,nz=1;
     //const int nx = 400, ny=400 ,nz=1;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     mesh.print(std::cout);
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
     state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));// To checkback H_zee for init
-    Llg.llgterms.pop_back(); // Remove init zee field 
+    Llg.llgterms.pop_back(); // Remove init zee field
 
     timer t_hys = af::timer::start();
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zee_func))); //Rate in T/s

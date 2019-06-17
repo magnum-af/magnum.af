@@ -13,7 +13,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 //Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
 double mean_mz_analytical (double chi){
-    return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi 
+    return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi
 }
 
 void set_m_to_z(State& state){
@@ -38,10 +38,10 @@ int main(int argc, char** argv)
     std::ofstream stream2;
     stream2.precision(12);
     stream2.open ((filepath + "rigid.dat").c_str());
-  
+
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
-  
+
     //Integration material
     unsigned long int measure_steps = 6e4;
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 ,nz=1;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     double alpha = 0.1;
     double T = 10;
     double dt = 1e-15;
-  
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     state.Ms    = 1281197;
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(alpha, T, dt, state, llgterm, "Heun");
-  
+
     //Declare Variables
     double mean_mz;
     double abs_mean_mz;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     //Initialize others
 
     //MEASURE
-    
+
     for(int i=0;i<25;i++){
         std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
         //T=10

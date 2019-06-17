@@ -15,7 +15,7 @@ x = 1.e-9
 y = 1.e-9
 z = 8.e-8
 
-# Discretization 
+# Discretization
 nx = 1
 ny = 1
 nz = 50
@@ -59,14 +59,14 @@ A_field[:,:,nz/2:,:] = af.constant(hard_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtyp
 Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
 Ms_field[:,:,:nz/2,:] = af.constant(soft_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
-# hard               
+# hard
 Ms_field[:,:,nz/2:,:] = af.constant(hard_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 # Setting Ku1 values as field
 Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
 Ku1_field[:,:,:nz/2,:] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
-# hard                
+# hard
 Ku1_field[:,:,nz/2:,:] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 state = State(mesh, Ms_field, m)

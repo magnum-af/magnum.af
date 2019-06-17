@@ -11,7 +11,7 @@ start = time.time()
 
 # Physical dimensions in [m]
 x, y, z =  5.e-7, 1.25e-7, 3.e-9
-# Discretization 
+# Discretization
 nx, ny, nz = 100, 25, 1
 
 # Creating objects

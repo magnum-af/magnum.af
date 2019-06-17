@@ -1,9 +1,9 @@
 #!/bin/bash
 # magnum.af runfile
 # Usage:
-# ./magnum.af $1=main.cpp $2=absolute/new/output/path $3=optional_GPU-number $4<A> 
+# ./magnum.af $1=main.cpp $2=absolute/new/output/path $3=optional_GPU-number $4<A>
 
-# Exit on error 
+# Exit on error
 set -e
 
 # Setting (input) variables
@@ -23,7 +23,7 @@ fi
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
 
-# building 
+# building
 cp $buildfile $magafdir/src
 $magafdir/scripts/bash/build.sh $magafdir
 rm $magafdir/src/$(basename $buildfile)
@@ -32,7 +32,7 @@ rm $magafdir/src/$(basename $buildfile)
 $magafdir/scripts/bash/check_main_remove.sh
 
 
-for valueAB in {0..100..10} 
+for valueAB in {0..100..10}
 do
     # copying files
     mkdir -p $outputpath/$valueAB

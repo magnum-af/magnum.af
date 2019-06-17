@@ -11,14 +11,14 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 ,nz=1;
-    
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     state.Ms    = 8e5;
     material.A     = 1.3e-11;
     material.alpha = 1;
-    
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(seq(1,end-1),span,span,0) = constant(1.0,mesh.n0-2,mesh.n1,mesh.n2,1,f64);

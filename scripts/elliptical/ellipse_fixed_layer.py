@@ -18,7 +18,7 @@ af.info()
 x = 100e-9
 y = 200e-9
 z = 35e-9
-# Discretization 
+# Discretization
 nx = 100
 ny = 100
 nz = 8
@@ -42,7 +42,7 @@ fixed_is_elliptical=True # switch between rectangular or elliptic fixed film, se
 
 if fixed_is_elliptical == True:
   fixed_layer, n_cells_2  = Util.disk(nx, ny, 1, axis=[0,0,1])
-  disk[:, :, 0 , :] = fixed_layer 
+  disk[:, :, 0 , :] = fixed_layer
 else:
   fixed_layer = af.constant(0., nx, ny, 1, 3, dtype=af.Dtype.f64)
   fixed_layer[:, :, 0 , 2] = af.constant(1., nx, ny, 1, 1, dtype=af.Dtype.f64)
@@ -77,7 +77,7 @@ while E_diff > 1e-10 and state.t < 3e-8:
 
   # Fixing layer to +z direction
   state.m_partial[:, :, 0, :] = fixed_layer
-  
+
   # check energy difference every 100th step
   if i % 100 == 0:
     E_current = Llg.E(state)

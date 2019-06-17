@@ -1,11 +1,11 @@
 #!/bin/bash
 gnuplot -e '
  set logscale x;
- set format x "%.1e"; 
+ set format x "%.1e";
  set xlabel "dt";
  set yrange [-0.6:1.1];
  set ylabel "<|m_z|>";
- p  
+ p
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:4  w p lt 1 dashtype 1 t "    T=10K",
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:5  w l lt 1 dashtype 3 t "ref T=10K",
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:8  w p lt 2 dashtype 1 t "    T=50K",
@@ -17,11 +17,11 @@ gnuplot -e '
  set terminal pdfcairo size 8,5.5;
  set output "~/git/magnum.af/Data/rigid/rigid.pdf";
  set logscale x;
- set format x "%.1e"; 
+ set format x "%.1e";
  set xlabel "dt";
  set ylabel "<|m_z|>";
  set yrange [-0.6:1.1];
- p  
+ p
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:4  w p lt 1 dashtype 1 lw 1 t "    T=10K",
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:5  w l lt 1 dashtype 3 lw 2 t "ref T=10K",
     "~/git/magnum.af/Data/rigid/rigid.dat" u 1:8  w p lt 2 dashtype 1 lw 1 t "    T=50K",

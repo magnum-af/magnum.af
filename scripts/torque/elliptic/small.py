@@ -14,7 +14,7 @@ af.info()
 x = 100e-9
 y = 350e-9
 z = 1.6e-9
-# Discretization 
+# Discretization
 nx = int(x/5e-9)
 ny = int(y/5e-9)
 nz = 1

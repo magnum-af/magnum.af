@@ -10,7 +10,7 @@ extensions = [
         #libraries = ["afcuda"],
         #libraries = ["afopencl"],
         libraries = ["afcpu"],
-        library_dirs = ["/opt/lib", "/usr/include/vtk-7.1"], 
+        library_dirs = ["/opt/lib", "/usr/include/vtk-7.1"],
         extra_compile_args=["-std=c++11"],
         )
 ]

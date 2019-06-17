@@ -178,7 +178,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.00065);
 }
 
- 
+
 TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     // Compare SP4 layer (with ↑ → → → → ↑ magnetization) once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;

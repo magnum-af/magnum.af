@@ -15,8 +15,8 @@
 unsigned long long GetDirSize(std::string filepath);
 ///> Returns true if file "name" exists, false otherwise
 inline bool exists (const std::string& absolute_filepath) {
-    struct stat buffer;   
-    return (stat (absolute_filepath.c_str(), &buffer) == 0); 
+    struct stat buffer;
+    return (stat (absolute_filepath.c_str(), &buffer) == 0);
 }
 
 inline bool createdir(const std::string& absolute_filepath);

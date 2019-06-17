@@ -5,7 +5,7 @@ from magnumaf import *
 x = 1e-9
 y = 1e-9
 z = 1e-9
-# Discretization 
+# Discretization
 nx = 1
 ny = 1
 nz = 1

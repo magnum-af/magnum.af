@@ -15,8 +15,8 @@ class Controller{
         const double hmin;
         const double hmax;
         double get_hnext () const { return hnext ;};// # of rejections
-        af::array  givescale(const af::array& a){return atol+rtol*af::abs(a);}; 
-        //Access counters in read only 
+        af::array  givescale(const af::array& a){return atol+rtol*af::abs(a);};
+        //Access counters in read only
         unsigned long long int get_counter_reject  () const { return counter_reject  ;};// # of rejections
         unsigned long long int get_counter_accepted() const { return counter_accepted;};// # of accepced steps
         unsigned long long int get_counter_hmax    () const { return counter_hmax    ;};// # of rejections
@@ -51,7 +51,7 @@ class Controller{
         unsigned long long int counter_maxscale{0};// # of rejections
         unsigned long long int counter_minscale{0};// # of rejections
     //Member of LLG:
-    //double  err{0};      // Estimated error 
+    //double  err{0};      // Estimated error
 
 };
 

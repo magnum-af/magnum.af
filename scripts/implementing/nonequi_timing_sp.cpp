@@ -12,22 +12,22 @@ int main(int argc, char** argv)
     for (int nz = 1; nz < 10; ++nz){
         // Checking input variables and setting GPU Device
         timer total_time = af::timer::start();
-        
+
         // Parameter initialization
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
         const int nx = 100, ny=25;// ,nz=2;
-        
+
         //Generating Objects
         Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
         Material material = Material();
         material.ms    = 8e5;
         material.A     = 1.3e-11;
         material.alpha = 1;
-        
+
         // Initial magnetic field
         State state(mesh,material, mesh.init_sp4());
         vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
-        
+
         LlgTerms llgterm;
         const bool nonequi = true;
 
@@ -43,11 +43,11 @@ int main(int argc, char** argv)
         }
         llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
         LLGIntegrator Llg(llgterm);
-        
+
         std::ofstream stream;
         stream.precision(12);
         stream.open ((filepath + "m" + std::to_string(nz) +".dat").c_str());
-        
+
         // Relax
         timer t = af::timer::start();
         while (state.t < 1e-9){

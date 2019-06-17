@@ -6,7 +6,7 @@
 #include "../../../src/func.cpp"
 #include "../../../src/misc.cpp"
 #include "../../../src/vtk_IO.cpp"
- 
+
 class RK : public AdaptiveRungeKutta{
     public:
         RK(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false){};

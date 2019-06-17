@@ -50,15 +50,15 @@ void LLGIntegrator::relax(State& state, const double precision, const int iloop,
         }
         if( iwritecout > 0 and state.steps % iwritecout == 0) printf("LLGIntegrator: Relax: step %llu, rdiff= %e", state.steps, fabs((E_prev - E(state))/E_prev));
     }
-    printf("timerelax [af-s]: %e . Current state.steps= %llu and state.t = %e", state.t, state.steps, af::timer::stop(t)); 
+    printf("timerelax [af-s]: %e . Current state.steps= %llu and state.t = %e", state.t, state.steps, af::timer::stop(t));
 }
 
 long int LLGIntegrator::h_addr(const State& state){
     //std::vector<af::array> h_addr_temp_array;
     //h_addr_temp_array.push_back(fheff(state));
-    //h_addr_temp_array.back().lock(); 
+    //h_addr_temp_array.back().lock();
     //return (long int) h_addr_temp_array.back().get();
-    
+
     //TODO tempfix for wrapping, elaborate other solution
     af::array *heff = new af::array(fheff(state));
     return (long int) heff->get();

@@ -21,8 +21,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkDoubleArray.h>
 
-#include <vtkXMLRectilinearGridWriter.h> 
-#include <vtkXMLRectilinearGridReader.h> 
+#include <vtkXMLRectilinearGridWriter.h>
+#include <vtkXMLRectilinearGridReader.h>
 
 void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname);//3D Image data
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, const std::string outputname);

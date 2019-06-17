@@ -112,7 +112,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
     Llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
-    
+
     self.assertEqual(Llg.E(pystate), material.p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
   def test_atomistic_dipole_dipole_1_2_1_x_z(self):

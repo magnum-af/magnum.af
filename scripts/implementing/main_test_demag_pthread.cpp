@@ -28,4 +28,4 @@ int main(int argc, char** argv)
     //af::array zero_if_equal = af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3);
     //std::cout << zero_if_equal.type() << std::endl;
     //double zero_if_equal = afvalue(af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3));
-    
+

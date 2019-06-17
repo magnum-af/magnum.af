@@ -3,7 +3,7 @@
 
 Test::Test() { }
 
-Test::~Test() 
+Test::~Test()
 {
     printf("Cleanup!\n");
 }

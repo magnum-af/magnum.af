@@ -1,5 +1,5 @@
-//Usage: 
-//g++ -std=c++14 -o calc_mean_anihilation calc_mean_anihilationtime.cpp 
+//Usage:
+//g++ -std=c++14 -o calc_mean_anihilation calc_mean_anihilationtime.cpp
 //./calc_mean_anihilation $PWD/anihilationtime.dat $PWD
 #include <iostream>
 #include <cmath>
@@ -17,7 +17,7 @@ int main(int argc, char** argv){
     double detect_time;
     vector<double> vec_detect_time;
     double state_t;
-    int i; 
+    int i;
     int reverse;
     int ID;
     if (stream.is_open()){

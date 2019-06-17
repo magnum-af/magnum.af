@@ -2,7 +2,7 @@
 #include "func.hpp"
 
 Mesh::Mesh (int inn0, int inn1, int inn2, double indx, double indy, double indz):
-             n0(inn0), n1(inn1), n2(inn2),    dx(indx),    dy(indy),    dz(indz), 
+             n0(inn0), n1(inn1), n2(inn2),    dx(indx),    dy(indy),    dz(indz),
              n0_exp(2*n0), n1_exp(2*n1), n2_exp((n2 == 1)? 1 : 2*n2)
 {
   V = dx * dy * dz;
@@ -44,9 +44,9 @@ af::array Mesh::skyrmconf(const bool point_up){
 
 
 af::array Mesh::ellipse(const int xyz, const bool positive_direction){
-// Returns an initial elliptical magnetization 
+// Returns an initial elliptical magnetization
 // n_cells gives number of cells with non-zero Ms
-// xyz gives direction of initial magnetization direction, 
+// xyz gives direction of initial magnetization direction,
 // positive_direction true points +, false in - direction
     af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);
     for(int ix=0;ix<this->n0;ix++){
@@ -69,7 +69,7 @@ af::array Mesh::ellipse(const int xyz, const bool positive_direction){
 }
 
 af::array Mesh::init_vortex(const bool positive_direction){
-// Returns an initial vortex magnetization 
+// Returns an initial vortex magnetization
 // n_cells gives number of cells with non-zero Ms
 // positive_direction true, core points in +, false in - direction
     af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);

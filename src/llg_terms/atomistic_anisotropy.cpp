@@ -1,12 +1,12 @@
 //Ref Master Thesis Stifano
-//eq (19) 
+//eq (19)
 //Han=N*K/2 - K/2 Sum_i(m_i*ez)^2
 #include "atomistic_anisotropy.hpp"
 using namespace af;
 
 
 double AtomisticUniaxialAnisotropyField::E(const State& state){
-  return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+  return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
 }
 
 double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
@@ -51,8 +51,8 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 ////Energy calculation
 ////Edemag=-mu0/2 integral(M . Hdemag) dx
 //double AtomisticUniaxialAnisotropyField::E(const State& state){
-//  return - constants::mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//   //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//  return - constants::mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
+//   //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 //}
 //
 //
@@ -73,7 +73,7 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 //  anisotropy(span,span,span,0)=state.material.Ku1_axis[0]/norm * state.m(span,span,span,0);
 //  anisotropy(span,span,span,1)=state.material.Ku1_axis[1]/norm * state.m(span,span,span,1);
 //  anisotropy(span,span,span,2)=state.material.Ku1_axis[2]/norm * state.m(span,span,span,2);
-//  
+//
 //
 //  anisotropy*=anisotropy;
 //  anisotropy=sum(anisotropy,3);

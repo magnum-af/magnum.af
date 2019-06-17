@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     // Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
     const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.05/(4e-7 * M_PI)));
     const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
-    const int steps_full_rotation =(argc > 5 ? std::stoi(argv[5]) : 200); 
+    const int steps_full_rotation =(argc > 5 ? std::stoi(argv[5]) : 200);
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     std::cout.precision(24);
     info();
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const int nx = 250, ny=250 ,nz=1; // Discretization
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();

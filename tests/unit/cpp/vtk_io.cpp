@@ -2,7 +2,7 @@
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
 #include "../../../src/vtk_IO.cpp"
- 
+
 TEST(vtkIO, vtrWriteReadTest) {
     af::array a = af::randu(6, 5, 4, 10, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0);
@@ -24,7 +24,7 @@ TEST(vtkIO, vtrWriteReadTest) {
     ASSERT_EQ(read_mesh.dz, 0);
 
     for (unsigned i = 0; i < z_spacing.size(); i++){
-        ASSERT_NEAR(z_spacing.at(i), read_z_spacing.at(i), 2e-16); 
+        ASSERT_NEAR(z_spacing.at(i), read_z_spacing.at(i), 2e-16);
     }
 
     ASSERT_EQ(max_abs_diff(read_a, a), 0);

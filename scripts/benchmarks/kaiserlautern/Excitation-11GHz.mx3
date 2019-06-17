@@ -42,7 +42,7 @@ snapshot(geom)
 Msat  = 1.4e5 //saturation magnetization
 Aex   = 3.5-12 //exchange constant
 //anisU   = vector(0, 0, 1) //anisotropy axis for unaxial anisotropy
-//Ku1 =  0.0 //(out of-plane) anisotropy constant - Ku1 = Msat*Bk/2 
+//Ku1 =  0.0 //(out of-plane) anisotropy constant - Ku1 = Msat*Bk/2
 alpha = 0.0002 //global alpha
 
 defregion(200,rect(Length_x,Length_y))
@@ -63,13 +63,13 @@ for i:=1; i<number_of_steps; i++{
 	//Define the regions in which the dampin should be increased
 	DefRegion(i, rect(width_of_step, Length_y).Transl(-Length_x*0.5+(i-1)*width_of_step,0,0))
 	DefRegion(i+number_of_steps, rect(width_of_step, Length_y).Transl(Length_x*0.5-(i-1)*width_of_step,0,0))
-	
+
 	//The damping should decrease exponentially from a start value alpha_0 to a selected value alpha_end
 	//alpha(region)=alpha_0*exp(-beta*x)
 	alpha_end:=0.0002
 	alpha_0:=0.5
 	beta:=-log(alpha_end/alpha_0)/number_of_steps
-	
+
 	//Define the damping values in each region
 	alpha.setRegion(i,alpha_0*exp(-beta*i))
 	alpha.setRegion(i+number_of_steps,alpha_0*exp(-beta*i))
@@ -84,7 +84,7 @@ snapshot(alpha)
 snapshot(Msat)
 snapshot(Aex)
 
-// load ground state relaxation 
+// load ground state relaxation
 //m = uniform(0,0,1)
 m.loadfile("D:/Simulationen/Testskripte/GS-200,0,0.ovf")
 //set field
@@ -112,14 +112,14 @@ position_ant := 10.0e-6
 d := 150.0e-9 //center-to-center-seperation of antennas
 ant_field_l:= newVectorMask(Nx, 1, 1) //field of left antenna
 for i:=0; i<Nx; i++{
-	for j:=0; j<1; j++{ 
+	for j:=0; j<1; j++{
 		HF1:=a-i*Cx+position_ant+d
 		HF2:=a+i*Cx-position_ant-d
 		HF3:=b-y_pump
 		HF4:=b+y_pump
 		PREFACTOR:=-0.5*current*(4*pi*1e-7)/(8*pi*a*b) //current*mu0/8*pi*a*b
-		
-		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))	
+
+		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))
 		Bz:=PREFACTOR*(HF3*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF2,2)+pow(HF3,2)))+HF1*atan(HF3/HF1)+HF2*atan(-HF3/HF2)+HF4*0.5*log((pow(HF1,2)+pow(HF4,2))/(pow(HF2,2)+pow(HF4,2)))-HF1*atan(-HF4/HF1)-HF2*atan(HF4/HF2))
 
 		//Set the external field in every cell i,j to be the calculated antenna field.
@@ -135,8 +135,8 @@ for i:=0; i<Nx; i++{
 		HF3:=b-y_pump
 		HF4:=b+y_pump
 		PREFACTOR:=-0.5*current*(4*pi*1e-7)/(8*pi*a*b) //current*mu0/8*pi*a*b
-		
-		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))	
+
+		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))
 		Bz:=PREFACTOR*(HF3*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF2,2)+pow(HF3,2)))+HF1*atan(HF3/HF1)+HF2*atan(-HF3/HF2)+HF4*0.5*log((pow(HF1,2)+pow(HF4,2))/(pow(HF2,2)+pow(HF4,2)))-HF1*atan(-HF4/HF1)-HF2*atan(HF4/HF2))
 
 		//Set the external field in every cell i,j to be the calculated antenna field.
@@ -146,14 +146,14 @@ for i:=0; i<Nx; i++{
 
 ant_field_c:= newVectorMask(Nx, 1, 1) //field of right antenna
 for i:=0; i<Nx; i++{
-	for j:=0; j<1; j++{ 
+	for j:=0; j<1; j++{
 		HF1:=a-i*Cx+position_ant
 		HF2:=a+i*Cx-position_ant
 		HF3:=b-y_pump
 		HF4:=b+y_pump
 		PREFACTOR:=current*(4*pi*1e-7)/(8*pi*a*b) //current*mu0/8*pi*a*b
-		
-		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))	
+
+		Bx:=PREFACTOR*(HF1*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF4,2)+pow(HF1,2)))+HF2*0.5*log((pow(HF3,2)+pow(HF2,2))/(pow(HF4,2)+pow(HF2,2)))+HF3*atan(HF1/HF3)+HF4*atan(-HF1/HF4)-HF3*atan(-HF2/HF3)-HF4*atan(HF2/HF4))
 		Bz:=PREFACTOR*(HF3*0.5*log((pow(HF3,2)+pow(HF1,2))/(pow(HF2,2)+pow(HF3,2)))+HF1*atan(HF3/HF1)+HF2*atan(-HF3/HF2)+HF4*0.5*log((pow(HF1,2)+pow(HF4,2))/(pow(HF2,2)+pow(HF4,2)))-HF1*atan(-HF4/HF1)-HF2*atan(HF4/HF2))
 
 		//Set the external field in every cell i,j to be the calculated antenna field.

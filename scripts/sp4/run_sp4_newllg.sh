@@ -13,7 +13,7 @@ plotfile=plot_sp4.sh
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
 
-# building 
+# building
 cp $buildfile $magafdir/src
 $magafdir/scripts/bash/build.sh $magafdir
 rm $magafdir/src/$buildfile

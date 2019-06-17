@@ -21,19 +21,19 @@ int main(int argc, char** argv)
     stream.open ((filepath + "m.dat").c_str());
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
-  
+
     // Parameter initialization
     const double x=2.e-9, y=2.e-9, z=2.e-9;
     const int nx = 1, ny=1 ,nz=1;
     const double dt = 1e-14;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     state.Ms    = 1/constants::mu0;
     material.alpha = 0.008;
     material.T = 1;
-  
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
@@ -43,9 +43,9 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch,mesh,material)));
     State state(mesh, material, m);
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
-  
+
     while (state.t < 100e-9){
-        Stoch.step(state, dt); 
+        Stoch.step(state, dt);
         calcm(state,stream);
     }
     return 0;

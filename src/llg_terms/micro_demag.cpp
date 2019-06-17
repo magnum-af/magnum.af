@@ -82,10 +82,10 @@ af::array DemagField::h(const State&  state){
 
   // Pointwise product
   af::array hfft=af::array (state.mesh.n0_exp/2+1,state.mesh.n1_exp,state.mesh.n2_exp,3,c64);
-  hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0) 
+  hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0)
                                  + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
                                  + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0) 
+  hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0)
                                  + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
                                  + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
   hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
@@ -117,21 +117,21 @@ namespace newell{
       const double xx = pow(x,2);
       const double yy = pow(y,2);
       const double zz = pow(z,2);
-    
+
       double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
       if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
       if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
       return result;
     }
-    
+
     double g(const double x, const double y, double z){
       z=fabs(z);
       const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
       const double xx = pow(x,2);
       const double yy = pow(y,2);
       const double zz = pow(z,2);
-    
+
       double result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
@@ -141,7 +141,7 @@ namespace newell{
       if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
       return result;
     }
-    
+
     double Nxx(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
       const double x = dx*ix;
       const double y = dy*iy;
@@ -175,7 +175,7 @@ namespace newell{
              - 1.0 * f( x-dx, y-dy, z-dz);
       return - result / (4.0 * M_PI * dx * dy * dz);
     }
-    
+
     double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
       const double x = dx*ix;
       const double y = dy*iy;
@@ -228,8 +228,8 @@ namespace newell{
         double dy;
         double dz;
     };
-    
-    
+
+
     void* setup_N(void* arg)
     {
         LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
@@ -250,7 +250,7 @@ namespace newell{
             }
         }
         return NULL;
-    } 
+    }
 }
 
 

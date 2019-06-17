@@ -73,9 +73,9 @@ array DmiField::h(const State& state){
 //EXPERIMENTAL
 //This version assumes the same boundaries as in the exchange filed of 70Lines of Numpy
 //On the edges, we assume (not existing) outer cells with the same values as the boundary cells
-// in the middle ...|-1/2|  0 |1/2|... 
+// in the middle ...|-1/2|  0 |1/2|...
 // on the edges         ||  0 |1/2|...
-// we want         |-1/2||  0 |1/2|... 
+// we want         |-1/2||  0 |1/2|...
 // thus we take         ||-1/2|1/2|...
 // so after the convolution we have to add the edges with -1/(2*dx)
 
@@ -192,11 +192,11 @@ void apply_boundary_condition(array& hfield, const State& state){
 //--------------------------------------------------------------------------------------------------------------------------------
 
 //void DmiField::correct_edges(array& out, const array& in){
-//  //Lower x bound: after convolve it is:  1/2 * (1)  
+//  //Lower x bound: after convolve it is:  1/2 * (1)
 //  //i.e.                  filtr_grad(0,1,1,0) * in(0,span,span,0)
 //  //We want it to be:                  -1*(0) + 1* (1)
 //  //So we take                        1/2*(1) - 1* (0)
-//  
+//
 //  //Lower x edge:
 //  out( 0,span,span,0)+= in( 1,span,span,0)/(2.*mesh.dx) - in( 0,span,span,0)/mesh.dx;
 //  //Upper x edge:
@@ -204,7 +204,7 @@ void apply_boundary_condition(array& hfield, const State& state){
 //
 //  //Lower y edge:
 //  out(span, 0,span,1)+= in(span, 1,span,1)/(2.*mesh.dy) - in(span, 0,span,1)/mesh.dy;
-//  //Upper y edge:                                                                  
+//  //Upper y edge:
 //  out(span,-1,span,1)-= in(span,-2,span,1)/(2.*mesh.dy) - in(span,-1,span,1)/mesh.dy;
 //
 //  //z
@@ -214,7 +214,7 @@ void apply_boundary_condition(array& hfield, const State& state){
 //  else{
 //    //Lower z edge:
 //    out(span,span, 0,2)+= in(span,span, 1,2)/(2.*mesh.dz) - in(span,span, 0,2)/mesh.dz;
-//    //Upper z edge:                                                                  
+//    //Upper z edge:
 //    out(span,span,-1,2)-= in(span,span,-2,2)/(2.*mesh.dz) - in(span,span,-1,2)/mesh.dz;
 //  }
 //}

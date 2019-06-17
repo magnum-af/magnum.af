@@ -16,14 +16,14 @@
 #include "vtk_IO.hpp"
 #include "string.hpp"
 #include "stochastic_llg.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 int main(int argc, char** argv)
 {
   std::cout<<"argc"<<argc<<std::endl;
    for (int i=0; i<argc; i++)
         cout << "Parameter " << i << " was " << argv[i] << "\n";
-  
+
   std::string filepath(argc>1? argv[1]: "../Data/Testing");
   if(argc>0)filepath.append("/");
   std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   //double hmin = 1.0e-15;
   //double atol = 1e-8;
   //double rtol = atol;
-  
+
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
   Material material = Material();
@@ -72,11 +72,11 @@ int main(int argc, char** argv)
   std::ofstream stream;
   stream.precision(12);
   stream.open ((filepath + "m.dat").c_str());
-  
+
   timer t = af::timer::start();
   //for (int i = 0; i < 50; i++){
   while (state.t < 5.e-10){
-    Stoch.step(state,dt); 
+    Stoch.step(state,dt);
     //state.m=Llg.step(state);
     calcm(state,stream);
   }
@@ -105,12 +105,12 @@ int main(int argc, char** argv)
   //for (int i = 0; i < 50; i++){
   while (state.t < 1.5e-9){
     //state.m=Llg.step(state);
-    Stoch.step(state,dt); 
+    Stoch.step(state,dt);
     calcm(state,stream);
   }
   vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
   stream.close();
- // Llg.print_cpu_time(std::cout); 
+ // Llg.print_cpu_time(std::cout);
   std::cout<<"fdmdt_calls  = "<<Stoch.get_fdmdt_calls()<<"\n"<<std::endl;
   std::cout<<" CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
   std::cout<<" TIME  = "<<Stoch.get_time()<<"\n"<<std::endl;

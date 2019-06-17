@@ -13,7 +13,7 @@ echo "$D"
 K=10400000
 Kstep=800000
 mkdir "d$D"
-for value in {0..9..1} 
+for value in {0..9..1}
 do
   mkdir "d$D/k$K"
   ./magnum.af-cuda "d$D/k$K" "$GPU" "$D" "$K" > d$D/k$K/cout.dat

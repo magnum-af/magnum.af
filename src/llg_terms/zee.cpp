@@ -44,7 +44,7 @@ af::array ExternalField::calc_heff(const State& state){
     //if(state.afsync) sync();
     //af_time += af::timer::stop(timer);
     if (is_lamda) {
-        return lamda_callback(state); 
+        return lamda_callback(state);
     }
     else if(callback){
         return callback_func(state);

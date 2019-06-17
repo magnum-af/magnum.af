@@ -19,7 +19,7 @@ af.info()
 x = 1600e-9
 y = 1600e-9
 z = 65e-9
-# Discretization 
+# Discretization
 nx = 250
 ny = 250
 nz = 1

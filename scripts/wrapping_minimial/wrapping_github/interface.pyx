@@ -1,5 +1,5 @@
 import ctypes
-import arrayfire 
+import arrayfire
 
 cdef extern from "source.hpp":
   cdef cppclass Wrap:

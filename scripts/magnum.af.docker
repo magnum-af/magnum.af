@@ -25,7 +25,7 @@ Run script for magnum.af using docker. Manages build process, directory creation
 
 Arguments:
       inputfile      Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
-      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a 
+      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a
                      directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
       \$n             Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
 
@@ -51,7 +51,7 @@ Examples:
   $(basename "$0") -vg 1 sp4.cpp
 
 Example passing arguments 'a b c' to the input script.  The behaviour is equivalent for all versions
-and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments. 
+and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments.
   $(basename "$0") -i sp4.cpp -o run1 a b c
   $(basename "$0") -i sp4.cpp run1 a b c
   $(basename "$0") -o run1 sp4.cpp a b c
@@ -83,17 +83,17 @@ while getopts 'b:Bc:Ddhfg:i:o:p:rtvx' flag; do
   case "${flag}" in
     h) print_usage
        exit 0 ;;
-    b) ;; 
-    B) B_flag='true' ;; 
+    b) ;;
+    B) B_flag='true' ;;
     d) d_flag='true' ;;
     D) D_flag='true' ;;
     c) c_flag='true'; copyfile="${OPTARG}" ;;
     f) f_flag='true' ;;
-    g) ;; 
+    g) ;;
     i) i_flag='true'; inputfile="${OPTARG}" ;;
     o) o_flag='true'; outputdir="${OPTARG}" ;;
     p) postprocess="${OPTARG}" ;;
-    r) ;; 
+    r) ;;
     t) t_flag='true' ;;
     v) v_flag='true' ;;
     x) x_flag='true' ;;
@@ -187,7 +187,7 @@ runstring=""
 command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring"nvidia-docker" || runstring=$runstring"docker"
 runstring=$runstring" run --user ${UID} --rm"
 if [ "$d_flag" == "true" ];then
-    runstring=$runstring" -d" 
+    runstring=$runstring" -d"
 fi
 runstring=$runstring" -v $outputdir:$outputdir"
 runstring=$runstring" -v $inputfile:$inputfile"

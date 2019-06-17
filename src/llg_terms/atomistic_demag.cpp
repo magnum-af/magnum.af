@@ -33,10 +33,10 @@ array AtomisticDipoleDipoleField::h(const State& state){
 
   array hfft=array (state.mesh.n0_exp/2+1,state.mesh.n1_exp,state.mesh.n2_exp,3,c64);
   // Pointwise product
-  hfft(span,span,span,0)= Nfft(span,span,span,0) * mfft(span,span,span,0) 
+  hfft(span,span,span,0)= Nfft(span,span,span,0) * mfft(span,span,span,0)
                                  + Nfft(span,span,span,1) * mfft(span,span,span,1)
                                  + Nfft(span,span,span,2) * mfft(span,span,span,2);
-  hfft(span,span,span,1)= Nfft(span,span,span,1) * mfft(span,span,span,0) 
+  hfft(span,span,span,1)= Nfft(span,span,span,1) * mfft(span,span,span,0)
                                  + Nfft(span,span,span,3) * mfft(span,span,span,1)
                                  + Nfft(span,span,span,4) * mfft(span,span,span,2);
   hfft(span,span,span,2)= Nfft(span,span,span,2) * mfft(span,span,span,0)
@@ -86,14 +86,14 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
           N[idx+3] = 0.;
           N[idx+4] = 0.;
           N[idx+5] = 0.;
-          
+
           //N[idx+0] = -1./3.;
           //N[idx+1] = 0.;
           //N[idx+2] = 0.;
           //N[idx+3] = -1./3.;
           //N[idx+4] = 0.;
           //N[idx+5] = -1./3.;
-          
+
         }
         else{
           //N[idx+0] = 1./(4.*M_PI)*(3.*rx*rx/pow(r,5) - 1./pow(r,3));

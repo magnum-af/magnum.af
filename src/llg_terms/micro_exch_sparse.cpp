@@ -35,7 +35,7 @@ af::array SparseExchangeField::h(const State& state){
 
 // Energy calculation: E_ex = -mu0/2 * integral(M * Hex) dx
 double SparseExchangeField::E(const State& state){
-    return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+    return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
@@ -86,7 +86,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
                   CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
                   csr_ia++;
                 }
-  
+
                 //y
                 if(i1 == 0 && mesh.n1 > 1 ){
                     CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dy, 2) );
@@ -106,7 +106,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
                   CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
                   csr_ia++;
                 }
-  
+
                 //z
                 if (i2 == 0 && mesh.n2 > 1 ){
                   CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dz, 2) );

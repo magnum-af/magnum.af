@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const int nx = 250, ny=250 ,nz=1; // Discretization
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
     state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));// To checkback H_zee for init
-    Llg.llgterms.pop_back(); // Remove init zee field 
+    Llg.llgterms.pop_back(); // Remove init zee field
 
     timer t_hys = af::timer::start();
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zee_func))); //Rate in T/s

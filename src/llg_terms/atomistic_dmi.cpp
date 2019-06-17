@@ -18,16 +18,16 @@ AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material
     n(span,span,span,1)=material.D_atom_axis[1]/norm;
     n(span,span,span,2)=material.D_atom_axis[2]/norm;
     //print("n",n);
-  
+
     filtr_fd1=constant(0.0,3,3,3,3,f64);
     //dmx/dx
     filtr_fd1(0,1,1,0)= 1;
     filtr_fd1(2,1,1,0)=-1;
-  
+
     //dmy/dy
     filtr_fd1(1,0,1,1)= 1;
     filtr_fd1(1,2,1,1)=-1;
-  
+
     //dmz/dz
     filtr_fd1(1,1,0,2)= 1;
     filtr_fd1(1,1,2,2)=-1;
@@ -40,7 +40,7 @@ array AtomisticDmiField::h(const State& state){
     first=sum(first,3);
     first=tile(first,1,1,1,3);
     first=n*first;
-  
+
     //Dot product
     array second = sum(n*state.m,3);
     //Expand for fd1 convolution
@@ -56,7 +56,7 @@ array AtomisticDmiField::h(const State& state){
 ////Version with DmiField d pointing only in nz direction
 //array AtomisticDmiField::h(const State& state){
 //    timer_dmi = timer::start();
-//    
+//
 //    array filterHdx=constant(0., 3, 1, 1, 3, f64);
 //    filterHdx(2,0,0,2)=-1;
 //    filterHdx(0,0,0,2)= 1;
@@ -69,7 +69,7 @@ array AtomisticDmiField::h(const State& state){
 //    filterHdy(0,0,0,2)= 1;
 //    array Hdy = convolve( state.m, filterHdy, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span,span,span,2);
 //    //print ("Hdy", Hdy);
-//    
+//
 //    array filterHdz=constant(0., 3, 3, 1, 3, f64);
 //    filterHdz(2,1,0,0)= 1;
 //    filterHdz(0,1,0,0)=-1;
@@ -78,7 +78,7 @@ array AtomisticDmiField::h(const State& state){
 //    array Hdz = convolve( state.m, filterHdz, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span,span,span,seq(0,1));
 //    Hdz=Hdz(span,span,span,0)+Hdz(span,span,span,1);
 //    //print ("Hdz", Hdz);
-//    
+//
 //    if(state.material.afsync) sync();
 //    cpu_time += timer::stop(timer_dmi);
 //    return -2. * state.material.D_atom/(constants::mu0 * state.material.p) * join(3, Hdx, Hdy, Hdz); // TODO FACTOR 2?
@@ -94,9 +94,9 @@ array AtomisticDmiField::h(const State& state){
 ////Energy calculation
 ////E=-mu0/2 integral(M . H) dx
 //double AtomisticDmiField::E(const State& state){
-//  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//  //return -constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
-//  //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+//  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
+//  //return -constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
+//  //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 //}
 //
 //AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){

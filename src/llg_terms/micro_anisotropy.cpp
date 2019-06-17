@@ -1,5 +1,5 @@
 //Ref Diss Abert p 15 sec 2.3 eq 2.3.28
-//Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m) 
+//Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m)
 //With higher order (not implemented): Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m) ( + 4 Ku2 /(mu0 Ms) eu ( eu . m)^3
 #include "micro_anisotropy.hpp"
 

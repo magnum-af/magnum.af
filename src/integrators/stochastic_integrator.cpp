@@ -35,10 +35,10 @@ af::array Stochastic_Integrator::detRK4(const State& state)
 
 void Stochastic_Integrator::step(State& state){//TODO remove dt as parameter here, inconsistency between Heun/SemiHeun
     timer_stoch = timer::start();
-    if (mode == 0){ 
+    if (mode == 0){
         state.m += Heun(state);
     }
-    else if (mode == 1){ 
+    else if (mode == 1){
         state.m += SemiImplicitHeun(state);
     }
     else if (mode == 2){

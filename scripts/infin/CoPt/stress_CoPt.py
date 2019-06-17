@@ -22,7 +22,7 @@ af.info()
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
-def disk(n0, n1, n2, xyz = 2): 
+def disk(n0, n1, n2, xyz = 2):
     m = np.zeros((n0, n1, n2, 3));
     for ix in range (0, n0):
         for iy in range(0, n1):
@@ -39,7 +39,7 @@ def disk(n0, n1, n2, xyz = 2):
 x = 800e-9
 y = 800e-9
 z = 3.5e-9
-# Discretization 
+# Discretization
 nx = 250
 ny = 250
 nz = 1

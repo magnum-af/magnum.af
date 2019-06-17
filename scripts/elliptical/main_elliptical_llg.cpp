@@ -8,15 +8,15 @@ af::array zee_func(State state){
     double field_Tesla = 0;
     double rate = 0.34e6 ; //[T/s]
     double hzee_max = 0.25; //[T]
-    if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
-    else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
-    else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
+    if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
+    else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
+    else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
     zee(span,span,span,2)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
 }
-  
+
 int main(int argc, char** argv)
 {
     std::string filepath(argc >= 1? argv[1]: "../Data/Testing");
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     const int nx = 343;
     const int ny = 1920;
     const int nz = 2;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     long int n_cells=0;//Number of cells with Ms!=0

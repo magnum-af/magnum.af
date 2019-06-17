@@ -13,7 +13,7 @@
 /// \f[
 ///     \frac{\partial \boldsymbol{m}}{\partial t} =
 ///             - \gamma \boldsymbol{m} \times \boldsymbol{H}_{\text{eff}}
-///             - \alpha \gamma \boldsymbol{m} \times (\boldsymbol{m} \times \boldsymbol{H}_{\text{eff}}) 
+///             - \alpha \gamma \boldsymbol{m} \times (\boldsymbol{m} \times \boldsymbol{H}_{\text{eff}})
 /// \f]
 ///
 
@@ -34,7 +34,7 @@ class LLGIntegrator : public AdaptiveRungeKutta{
         af::array f(const State& state);
         af::array fheff(const State& state);
         double time_heff{0};
-         
+
 };
 
 #endif

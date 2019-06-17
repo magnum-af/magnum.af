@@ -1,4 +1,4 @@
-import arrayfire 
+import arrayfire
 import ctypes
 
 cdef extern from "<arrayfire.h>":
@@ -30,7 +30,7 @@ cdef class pyTest:
     self.thisptr.manipulate_m()
 
   def py_get_m(self):
-    b_adr = self.thisptr.get_m()    
+    b_adr = self.thisptr.get_m()
     b = arrayfire.Array()
     b.arr = ctypes.c_void_p(b_adr)
     return b

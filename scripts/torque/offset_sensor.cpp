@@ -9,12 +9,12 @@ int main(int argc, char** argv)
     std::string filepath(argc>1? argv[1]: "output_magnum.af/");
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
-    
+
     // Parameter initialization
     const double x=1.e-9, y=1e-9, z=0.6e-9;
     const int nx = 2, ny=2 ,nz=2;
     //const int nx = 1, ny=1 ,nz=1;
-    
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     material.Ku1_axis[0]=1;
     material.Ku1_axis[1]=0;
     material.Ku1_axis[2]=0;
-    
+
     // Initial magnetic field
     af::array m = af::constant(0.0, nx, ny, nz, 3, f64);
     m(af::span, af::span, af::span, 0 )=1.;
@@ -36,18 +36,18 @@ int main(int argc, char** argv)
 
     State state(mesh,material, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
-    
+
     LlgTerms llgterm;
     llgterm.push_back( LlgTerm (new DemagField(mesh,material, true)));
     llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
     llgterm.push_back( LlgTerm (new SpinTransferTorqueField(pol, .3, .4, 2e10)));
     llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
     LLGIntegrator Llg(llgterm);
-    
+
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
-    
+
     // Relax
     timer t = af::timer::start();
     while (state.t < 1e-7){

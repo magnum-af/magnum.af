@@ -1,6 +1,6 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 bool compare(double a, double b){
     if(fabs(a-b)/fabs(a+b)<1e-30) return false;
@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     int nx = 2, ny=1 ,nz=1;//nz=5 -> lz=(5-1)*dx
     //const double dx=1;
     const double dx=2.715e-10;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     state.material.afsync  = false;
     //material.p=1;
     material.p=9.274009994e-24;
-  
+
     // Initial magnetic field
     //
     //-------------------------------------------------------
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     m(1,0,0,2) = 1;
     State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "/minit").c_str());
-  
+
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     LLG Llg(state,llgterm);
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
     m(0,1,0,2) = 1;
     state = State (mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "/minit").c_str());
-  
+
     llgterm.pop_back();
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     //TODO this leads to compiler error

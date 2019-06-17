@@ -4,14 +4,14 @@
 
 currdir=$PWD
 if [ -d $1/bin ]
-then 
+then
     if [ -z "(ls -A $1/bin)" ]; then
         [ "$2" == "true" ] && echo "removing files in $1/bin/*"
         rm $1/bin/*
     fi
 fi
 if [ ! -d $1/build ]
-then 
+then
     mkdir $1/build
 fi
 cd $1/build

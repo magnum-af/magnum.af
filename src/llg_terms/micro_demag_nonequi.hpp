@@ -20,12 +20,12 @@ class NonEquiDemagField : public LLGTerm {
     double get_cpu_time(){return cpu_time;}
 
     NonEquiDemagField (NonequispacedMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
-    
+
     af::array Nfft;//!< Array storing the Fourier transfrom of the demag tensor.
 
     double cpu_time{0.};
     af::timer timer_demagsolve;
-    
+
     //For wrapping
     void print_Nfft();
 

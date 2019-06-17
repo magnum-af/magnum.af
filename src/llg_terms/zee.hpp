@@ -12,7 +12,7 @@ class ExternalField : public LLGTerm {
     ExternalField(af::array (*callback_func_in)(State state));///< Callback function for e.g. time dependent external field
     ExternalField(std::function<af::array(State)>);
     ExternalField(long int zee_in_addr);///< For wrapping only
-    
+
     af::array h(const State& state);//Field contribution
     long int h_ptr(const State& state);// For wrapping
 
@@ -36,5 +36,5 @@ class ExternalField : public LLGTerm {
 
 #endif
 
-//for wrapping: 
+//for wrapping:
 //https://stackoverflow.com/questions/8800838/how-to-pass-a-function-pointer-to-an-external-program-in-cython

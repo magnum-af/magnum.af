@@ -23,7 +23,7 @@ class DemagField : public LLGTerm {
 
     double cpu_time{0.};
     af::timer timer_demagsolve;
-    
+
     //For wrapping
     void print_Nfft();
     private:

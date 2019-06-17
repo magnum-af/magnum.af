@@ -27,7 +27,7 @@ class LLG {
     void write_fieldterms_atom (const State& state, const std::string filepath);
     void write_fieldterms_micro(const State& state, const std::string filepath);
     void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
-    
+
     // rhs of the LLG equation
     bool fdmdt_dissipation_term_only{false};//If ture, only use the energy dissipation term (i.e. Mx(MxH)) in the LLG
     array fdmdt(const array& m, const array& heff);
@@ -37,10 +37,10 @@ class LLG {
     // Calculation of effective field with optional zeeman field
     array fheff(const array& m);
     array fheffminimal(array m);
-    long int h_addr(const State& state);//Getter function for effective field for wrapping 
+    long int h_addr(const State& state);//Getter function for effective field for wrapping
 
     std::vector<array> h_addr_temp_array;
-    //Alternative: 
+    //Alternative:
     //array h_addr_temp_array;
 
     array step(State& state);
@@ -54,8 +54,8 @@ class LLG {
     int calls{0};
 
     // Computation Arrays
-    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp; 
- 
+    array heff, crosstemp, dmdt, sumbk, rk_error, mtemp, rktemp;
+
     // Explicit Euler Integrator
     array explicitEuler(const array&, double dt);
 
@@ -80,9 +80,9 @@ class LLG {
     //double rk_abs_tol_error{8.e-6}; // 8.e-6 is pretty good
     //double rk_rel_error{0.};
     //double rk_rel_tol_error{5.e-3}; // 5.e-3 is pretty good
-    //double h_abs{0.}; 
-    //double h_rel{0.}; 
-    
+    //double h_abs{0.};
+    //double h_rel{0.};
+
     double h; // working variable in Controller, actual stepsize and next stepsize, min of h_abs and h_rel
     double h_stepped; // step size set after step is called
     //int counter_abs{0};
@@ -102,7 +102,7 @@ class LLG {
     // Tsitorous 4/5  with stepsize control
     array tsit45(const array&, const double dt, double& err);
 
-    // Dormand-Prince  with stepsize control 
+    // Dormand-Prince  with stepsize control
     array DP45(const array&, const double dt, double& err);
     array DP78(const array&, const double dt, double& err);
     //array DP45(array m, double dt, double& rk_abs_error);// Dormand-Prince  with stepsize control
@@ -119,7 +119,7 @@ class LLG {
     //const double hmin{1e-15};
     //const double hmax{3.5e-10};
     array  givescale(const array& a); // Scale function return= atol + abs(y) * rtol
-    double  err{.0};      // Estimated error 
+    double  err{.0};      // Estimated error
     int counter_reject{0};// # of rejections
     int counter_accepted{0};// # of accepced steps
     int counter_hmax{0};// # of rejections

@@ -136,21 +136,21 @@ namespace newell_nonequi{
       const double xx = pow(x,2);
       const double yy = pow(y,2);
       const double zz = pow(z,2);
-    
+
       double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
       if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
       if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
       return result;
     }
-    
+
     double g(double x, double y, double z){
       z=fabs(z);
       const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
       const double xx = pow(x,2);
       const double yy = pow(y,2);
       const double zz = pow(z,2);
-    
+
       double result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
@@ -238,7 +238,7 @@ namespace newell_nonequi{
         if (verbose and (i == spacings.size() or j == spacings.size())){
             printf("%s in nonequi_index_distance: index == vector.size(), the distance includes the last element which is not wanted behaviour\n", Warning());
         }
-    
+
         double result = 0;
         if(i > j){
             for (unsigned k = i; k > j; k--){
@@ -253,9 +253,9 @@ namespace newell_nonequi{
         return result;
     }
 
-    
+
     double* N_ptr = NULL;
-    
+
     void* init_N(void* arg)
     {
         newell_nonequi::NonequiLoopInfo* loopinfo = static_cast<newell_nonequi::NonequiLoopInfo*>(arg);
@@ -285,7 +285,7 @@ namespace newell_nonequi{
             }
         }
         return NULL;
-    } 
+    }
 }
 
 

@@ -12,7 +12,7 @@ if [ -z "$1" ]; then
 fi
 
 for dir in $1/*
-do 
+do
     ./calc_mean_annihilationtime $dir/anihilationtime.dat $dir
 done
 
@@ -20,7 +20,7 @@ if [ -f $1/mean_annihilationtimes.dat ]; then
     rm $1/mean_annihilationtimes.dat
 fi
 for dir in $1/*/
-do 
+do
     echo "#"$dir >>  $1/mean_annihilationtimes.dat
     cat $dir/mean_annihilationtime.dat >> $1/mean_annihilationtimes.dat
 done

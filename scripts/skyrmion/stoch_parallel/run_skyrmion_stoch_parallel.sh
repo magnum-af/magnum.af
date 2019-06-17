@@ -35,7 +35,7 @@ cp main_skyrmion_stoch_parallel.cpp  $magafdir/src
 $magafdir/scripts/build.sh $magafdir
 
 # cleaning up main(s)
-rm $magafdir/src/main_skyrmion_stoch_parallel.cpp 
+rm $magafdir/src/main_skyrmion_stoch_parallel.cpp
 if [ $ismainmoved ]
 then
     mv $magafdir/main*.cpp $magafdir/src/

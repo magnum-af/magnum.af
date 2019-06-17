@@ -1,7 +1,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile);
 
@@ -10,18 +10,18 @@ int main(int argc, char** argv)
      std::cout<<"argc"<<argc<<std::endl;
      for (int i=0; i<argc; i++)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
+
     std::string filepath(argc>1? argv[1]: "../../Data/Testing");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
-    
+
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
-    
+
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 ,nz=1;
-    
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     material.alpha = 1;
     state.material.afsync  = false;
     material.T  = 300;
-    
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(seq(1,end-1),span,span,0) = constant(1.0,mesh.n0-2,mesh.n1,mesh.n2,1,f64);
@@ -38,15 +38,15 @@ int main(int argc, char** argv)
     m(-1,span,span,1) = constant(1.0,1,mesh.n1,mesh.n2,1,f64);
     State state(mesh,material, m);
     vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
-    
+
     LLGIntegrator Llg = LLGIntegrator("RKF45");
     Llg.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
     Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    
+
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
-    
+
     // Relax
     timer t = af::timer::start();
     double time=0;

@@ -30,11 +30,11 @@ if [ -n "$1" ];then
 fi
 
 cp main_skyrmion_stoch_parallel.cpp  $magafdir/src
-# Compiling 
+# Compiling
 $magafdir/scripts/vsc3/compile.sh
 
 # cleaning up main(s)
-rm $magafdir/src/main_skyrmion_stoch_parallel.cpp 
+rm $magafdir/src/main_skyrmion_stoch_parallel.cpp
 if [ $ismainmoved ]
 then
     mv $magafdir/main*.cpp $magafdir/src/
@@ -65,5 +65,5 @@ done
 # running slurm script
 cd $1
 sbatch $DIR/vsc-parallel.sh
-#To test run: 
+#To test run:
 #$DIR/vsc-parallel.sh

@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     setDevice(argc>2? std::stoi(argv[2]):0);
     const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
-    const int quater_steps =(argc > 4 ? std::stoi(argv[4]) : 100); 
+    const int quater_steps =(argc > 4 ? std::stoi(argv[4]) : 100);
     std::string path_mrelax(argc > 5? argv[3]: "");
     info();
     std::cout.precision(24);
@@ -18,9 +18,9 @@ int main(int argc, char** argv)
     auto zee_func= [ hzee_max, quater_steps ] ( State state ) -> af::array {
         double field_Tesla = 0;
         double rate = hzee_max/quater_steps; //[T/s]
-        if(state.t < hzee_max/rate) field_Tesla = rate *state.t; 
-        else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max; 
-        else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max; 
+        if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
+        else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
+        else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
         else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
         array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
         zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     const int nx = 250;
     const int ny = 250;
     const int nz = 1;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
 

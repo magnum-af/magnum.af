@@ -6,15 +6,15 @@ import math
 class sp4(unittest.TestCase):
   mesh=magnumaf.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
   m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
-  
+
   material=magnumaf.Material()
   A =1.3e-11
-  
+
   m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
   m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
   state=magnumaf.State(mesh, Ms = 8e5, m = m)
-  
+
   demag=magnumaf.DemagField(mesh)
   exch=magnumaf.ExchangeField(A)
   Llg=magnumaf.LLGIntegrator(alpha = 1, terms = [demag,exch])
@@ -38,7 +38,7 @@ class sp4(unittest.TestCase):
 
   def test_switch(self):
     self.Llg.alpha = 0.02
-    
+
     zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
     zeeswitch[0,0,0,0]=-24.6e-3/magnumaf.Constants.mu0
     zeeswitch[0,0,0,1]= +4.3e-3/magnumaf.Constants.mu0

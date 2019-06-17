@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     };
 
     // Parameter initialization
-    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6  
+    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
     const int nx = 250, ny=250 ,nz=1;
 
     //Generating Objects

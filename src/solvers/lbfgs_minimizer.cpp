@@ -50,7 +50,7 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
         h+=temp_h;
         energy+=llgterms_[i]->E(state,temp_h);
     }
-    gradient = 1./(constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h)); 
+    gradient = 1./(constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }
@@ -128,7 +128,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     af::array grad_old = af::constant(0.0, state.mesh.dims, f64);
     af::array x_old = state.m;
 
-    size_t iter = 0, globIter = 0; 
+    size_t iter = 0, globIter = 0;
     double H0k = 1;
         do {
             //TODO TODEL
@@ -140,7 +140,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             //END TODO
             int cgSteps = 0;
             //this->minIterCount_++;
-            f_old = f; 
+            f_old = f;
             x_old = state.m;
             //af::print("state.m", af::mean(state.m,0));
             grad_old = grad;
@@ -159,7 +159,7 @@ double LBFGS_Minimizer::Minimize(State& state){
                 q += sVector[i] * (alpha[i] - beta);
             }
 
-            // line 291 in .fe: decent = -grad.dot(q) 
+            // line 291 in .fe: decent = -grad.dot(q)
             double phiPrime0 = -mydot(grad,q);
             if (phiPrime0 > 0) {
                 q = grad;
@@ -173,7 +173,7 @@ double LBFGS_Minimizer::Minimize(State& state){
             //TODO objFunc.updateTol(gradNorm);
             //TODO check version Schrefl vs Flo
             if ( -mydot(grad, q) > -1e-15){
-               gradNorm = maxnorm(grad); 
+               gradNorm = maxnorm(grad);
                if (gradNorm < eps*(1.+fabs(f)) and this->verbose > 0){
                    std::cout << "Minimizer: Convergence reached (due to almost zero gradient (|g|=" << gradNorm << " < " << eps*(1.+fabs(f))<< ")!" << std::endl;
                }
@@ -202,8 +202,8 @@ double LBFGS_Minimizer::Minimize(State& state){
             if (of_convergence.is_open()){
                 of_convergence << (f_old-f)/(tolerance_*f1)<< "\t" << maxnorm(s) / (tolf2*(1+maxnorm(state.m)))<< "\t" << gradNorm/(tolf3*f1) << std::endl;
             }
-            if ( ( (f_old-f)   < (tolerance_*f1) ) && 
-                 (  maxnorm(s) < (tolf2*(1+maxnorm(state.m))) ) && 
+            if ( ( (f_old-f)   < (tolerance_*f1) ) &&
+                 (  maxnorm(s) < (tolf2*(1+maxnorm(state.m))) ) &&
                  (  gradNorm  <= (tolf3*f1) ) )  {
               break;
             }
@@ -214,7 +214,7 @@ double LBFGS_Minimizer::Minimize(State& state){
                 std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
               }
             }
-            else { 
+            else {
               if (iter < m) {
                 //af::print("s", af::mean(s,0));
                 sVector[iter] = s;
@@ -232,7 +232,7 @@ double LBFGS_Minimizer::Minimize(State& state){
 
             globIter++;
 
-        } while (globIter < this->maxIter_); 
+        } while (globIter < this->maxIter_);
         if (globIter >= this->maxIter_ && this->maxIter_ > 99 and this->verbose > 0) {
           std::cout << "WARNING : maximum number of iterations exceeded in LBFGS" << std::endl;
         }
@@ -243,14 +243,14 @@ double LBFGS_Minimizer::Minimize(State& state){
           auto deltaF = f-f_old;
           std::cout << "aa> " << globIter << " " << deltaF << " " << " " << mxh << std::endl;
         }
-      return f;        
+      return f;
 
 
 
     if( this->verbose > 0) {std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;}
-}; 
+};
 
-double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) { 
+double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) {
     double rate = 1.0;
     cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
     return rate;
@@ -363,7 +363,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
 
     if (((f<=ftest2)&&(ft*dginit>=dg)) && (fabs(dg) <= gtol * (-dginit)))
       info = 1;
-    
+
     // terminate when convergence reached
     if (info != 0) {
       return -1;

@@ -20,7 +20,7 @@ class CG_Minimizer {
         LlgTerms llgterms_;
         double GetTimeCalcHeff() const { return time_calc_heff_;}; ///< Accumulated time for calculation of Heff.
     private:
-        af::array Heff(const State& m);///< Effective Field 
+        af::array Heff(const State& m);///< Effective Field
         double EnergyAndGradient(const State& state, af::array& gradient);
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
 };

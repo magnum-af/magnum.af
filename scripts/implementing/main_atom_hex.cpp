@@ -5,13 +5,13 @@
 #include <algorithm>
 #include <string>
 #include <memory>
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv)
 {
     std::cout<<"argc"<<argc<<std::endl;
      for (int i=0; i<argc; i++)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
+
     std::string filepath(argc>1? argv[1]: "../Data/Testing");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
@@ -33,15 +33,15 @@ int main(int argc, char** argv)
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      //m(span,span,span,2) = -1;
      m(1,1,0) = 1;
-  
+
     State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
-  
+
     std::vector<llgt_ptr> llgterm;
-    
+
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     af::print("llgterm",llgterm[0]->h(state));
     //LLG Llg(state,llgterm);
-  
+
     return 0;
 }

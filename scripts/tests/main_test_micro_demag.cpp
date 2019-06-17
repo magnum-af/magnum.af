@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 #include <memory>
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 
 bool compare(double a, double b){
@@ -22,27 +22,27 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 10, ny=10 ,nz=10;
-  
-    
+
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
     state.Ms    = 1e5;
-  
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(span,span,span,0) = 1;
     State state(mesh,material, m);
-  
+
     //MICROMAGNETIC
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
     LLG Llg(state,llgterm);
-  
+
     //std::cout.precision(12);
     //std::cout << "E_d_micro  = " << Llg.E(state) << std::endl;
     //std::cout << "Analytical = " << 1./6. * x * y * z * pow(state.Ms,2) * constants::mu0 << std::endl;
-  
+
     if (compare(Llg.E(state),1./6. * x * y * z * pow(state.Ms,2) * constants::mu0)){
         std::cout << "!!! Test FAILED !!!" << std::endl;
         return 1;

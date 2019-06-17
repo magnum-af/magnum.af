@@ -3,8 +3,8 @@
 #include<math.h>
 ///Struct holding all simulation parameters.
 struct Material{
-    // Micromagneitc 
-    double D{0.};			//!< [D/m^2] 	// DM interaction constant  
+    // Micromagneitc
+    double D{0.};			//!< [D/m^2] 	// DM interaction constant
     double D_axis[3]={0,0,-1};		//!<		// DMI axis
 
     // Atomistic

@@ -31,4 +31,4 @@ array Stochastic_LLG::stochfdmdt(const State& state, const array& h_th){
     const af::array cross_temp = cross4(state.m, h);
     return  - constants::gamma/(1.+pow(this->alpha,2)) * cross_temp - this->alpha*constants::gamma/(1.+pow(this->alpha,2)) * cross4(state.m, cross_temp);
 }
- 
+

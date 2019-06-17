@@ -38,7 +38,7 @@ void LLG::relax(State& state, const double precision, const int iloop, const int
         }
         if( state.steps % iwritecout == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state))/E_prev) << std::endl;
     }
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl; 
+    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl;
 }
 
 array LLG::fdmdt(const array& m, const array& heff){
@@ -91,14 +91,14 @@ long int LLG::h_addr(const State& state){
     //fheff_pass_to_python.lock(); //Caution with locking arrays
     //std::cout << "LLG::h_addr:"<< (long int) fheff_pass_to_python.get() << std::endl;
     //return (long int) fheff_pass_to_python.get();
-    
+
   //  h_addr_temp_array = fheff(state.m);
   //  //h_addr_temp_array.lock(); //check if it works without locking
   //  return (long int) h_addr_temp_array.get();
 
     //With vector, but also with sagfaults for second call
     h_addr_temp_array.push_back(fheff(state.m));
-    h_addr_temp_array.back().lock(); 
+    h_addr_temp_array.back().lock();
     return (long int) h_addr_temp_array.back().get();
 }
 
@@ -123,7 +123,7 @@ long int LLG::h_addr(const State& state){
 //  static const double maxscale{10.};
 //
 //  double scale;
-//  
+//
 ////  std::cout << "err = " << err << " h= " << h << "reject "<< reject << " t="<<true << " f=" <<false << std::endl;
 //  if (err <= 1.0){
 //    if (err == 0.0)
@@ -141,7 +141,7 @@ long int LLG::h_addr(const State& state){
 //    }
 //  if (reject)
 //    hnext=h*std::min(scale,1.0);//Do not increase stepsize if previous try was rejected
-//  else 
+//  else
 //    hnext=h*scale;
 //  if(hnext<=hmin) {
 //    hnext=hmin;
@@ -226,7 +226,7 @@ array LLG::step(State& state){
         }
         //DP5
         else if (state.material.mode == 9){
-          //rk_rel_tol_error=5.e-2; 
+          //rk_rel_tol_error=5.e-2;
           mtemp= DP45(state.m,h,err);
         }
         //BS5
@@ -243,7 +243,7 @@ array LLG::step(State& state){
         }
         if(controller.success(err,h))
           break;
-        
+
       }while(while_break < 100);
     }
     state.t+=h;
@@ -458,8 +458,8 @@ array LLG::tsit45(const array& m, const double dt, double& err)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
   //Local extrapolation using 5th order approx
   sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -495,8 +495,8 @@ array LLG::DP45(const array& m, const double dt, double& err)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
   //Local extrapolation using 5th order approx
   sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -532,8 +532,8 @@ array LLG::BS45(const array& m, const double dt , double& err)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
 
   sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -587,8 +587,8 @@ array LLG::BS45de(const array& m, const double dt , double& err)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
 
   //Check first 4th order approx yielding directly the error
@@ -604,7 +604,7 @@ if(err>1.)
   std::cout<<"RKErr>1"<<std::endl;
 
   //We now check this error with the controller, if it passes (cont returns true), hnext is changed temporary but then overwritten in step after passing second controlling
-  //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages 
+  //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages
   if(controller.success(err,h)==false){
     std::cout<<"CONTROOOL"<<std::endl;
     return constant(10000000.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -617,8 +617,8 @@ if(err>1.)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
 
   // Calc sumbk
@@ -652,8 +652,8 @@ array LLG::DP78(const array& m, const double dt , double& err)
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
-    heff= fheff(m + rktemp); 
-    k[i]= fdmdt(m + rktemp,heff); 
+    heff= fheff(m + rktemp);
+    k[i]= fdmdt(m + rktemp,heff);
   }
   //Calculating 8th order approx (local extrapolation)
   sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -749,7 +749,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     //    a[i][j]=0.;
     //  }
     //}
-  
+
     //c[2]=0.2,c[3]=0.3,c[4]=0.8,c[5]=8.0/9.0;
     a[2][1]=0.2,a[3][1]=3.0/40.0,
     a[3][2]=9.0/40.0,a[4][1]=44.0/45.0,a[4][2]=-56.0/15.0,a[4][3]=32.0/9.0,a[5][1]=19372.0/6561.0,
@@ -758,8 +758,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     a[7][1]=35.0/384.0,a[7][3]=500.0/1113.0,a[7][4]=125.0/192.0,a[7][5]=-2187.0/6784.0,
     a[7][6]=11.0/84.0,e[1]=71.0/57600.0,e[3]=-71.0/16695.0,e[4]=71.0/1920.0,
     e[5]=-17253.0/339200.0,e[6]=22.0/525.0,e[7]=-1.0/40.0;
-  
-  
+
+
    }
   //BS5 and BS5de
   if (state0.material.mode == 10 || state0.material.mode == 11){
@@ -993,7 +993,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  a71=35.0/384.0,a73=500.0/1113.0,a74=125.0/192.0,a75=-2187.0/6784.0,
 //  a76=11.0/84.0,e1=71.0/57600.0,e3=-71.0/16695.0,e4=71.0/1920.0,
 //  e5=-17253.0/339200.0,e6=22.0/525.0,e7=-1.0/40.0;
-//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7}; 
+//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7};
 //  const double a[8][8]={
 //    {0,0, 0, 0, 0, 0, 0, 0},
 //    {0,0, 0, 0, 0, 0, 0, 0},
@@ -1001,11 +1001,11 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    {0,a31, a32, 0, 0, 0, 0, 0},
 //    {0,a41, a42, a43, 0, 0, 0, 0},
 //    {0,a51, a52, a53, a54, 0, 0, 0},
-//    {0,a61, a62, a63, a64, a65, 0, 0}, 
-//    {0,a71, 0  , a73, a74, a75, a76,0.} 
+//    {0,a61, a62, a63, a64, a65, 0, 0},
+//    {0,a71, 0  , a73, a74, a75, a76,0.}
 //  };
 //
-// // if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl; 
+// // if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl;
 ////  std::cout<<"mini = "<<afvalue((m)(0,0,0,0))<<std::endl;
 //
 //  if(reject || calls==0 || llg_wasnormalized){
@@ -1040,7 +1040,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 ////  std::cout<<"after k7   = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0,0,0,0))<<"\n"<<std::endl;
 ////  std::cout<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
 //
-//  //Todo: not differs in 7th digit 
+//  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
 //  //std::cout << maxnorm(k1(0,0,0,0)) << "\t" << maxnorm(k7(0,0,0,0)) << std::endl;
 ////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0,0,0,0))<<std::endl;
@@ -1051,7 +1051,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //
 ////  std::cout<<"k7 = "<<afvalue((dt * fdmdt(m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6, heff))(0,0,0,0))<<std::endl;
 //  //std::cout<<"m k7 = "<<afvalue((m+sumbk)(0,0,0,0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k7= "<<afvalue(k7(0,0,0,0))<<std::endl;
-// 
+//
 ////  std::cout<<"m k7 = "<<afvalue((m + dt*(a[7][1] * k1+  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6))(0,0,0,0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k7= "<<afvalue(k7(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m + dt*(a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6),heff)(0,0,0,0))<<std::endl;
 //  return sumbk;
 //}
@@ -1263,8 +1263,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //      //mdiff=max(abs(m-mtemp)).host<double>();
 //      rk_rel_error=rk_abs_error/(mdiff[0]);
 //      freeHost(mdiff);
-//      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); 
-//      //For fixed stepsize: h_rel = state0.material.dt * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.)));    
+//      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.)));
+//      //For fixed stepsize: h_rel = state0.material.dt * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.)));
 //      h_abs = h * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); //TODO is s=6?
 //      h_rel = h * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.))); //TODO is s=6?
 //      (h_abs < h_rel) ? h=h_abs : h=h_rel ;
@@ -1599,8 +1599,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //      rktemp+=a[i][j] * k[j];
 //    }
 //    rktemp*=dt;
-//    heff= fheff(m + rktemp); 
-//    k[i]= fdmdt(m + rktemp,heff); 
+//    heff= fheff(m + rktemp);
+//    k[i]= fdmdt(m + rktemp,heff);
 //  //std::cout<<std::endl;
 //  }
 //  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
@@ -1691,8 +1691,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  //double a7i = b i , i = 1, 2, · · · , 6
 //  //
 //  //double c[7]={c1, c2, c3, c4, c5, c6, c7};
-//  const double b[8]={0,b1, b2, b3, b4, b5, b6,0}; 
-//  const double b_hat[8]={0,b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat}; 
+//  const double b[8]={0,b1, b2, b3, b4, b5, b6,0};
+//  const double b_hat[8]={0,b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat};
 //  const double a[8][8]={
 //    {0,0, 0, 0, 0, 0, 0, 0},
 //    {0,0, 0, 0, 0, 0, 0, 0},
@@ -1700,8 +1700,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    {0,c3-a32, a32, 0, 0, 0, 0, 0},
 //    {0,c4 - a42 - a43, a42, a43, 0, 0, 0, 0},
 //    {0,c5 - a52 - a53 - a54, a52, a53, a54, 0, 0, 0},
-//    {0,1 - a62 - a63 - a64 - a65, a62, a63, a64, a65, 0, 0}, 
-//    {0,b1, b2, b3, b4, b5, b6,0.} 
+//    {0,1 - a62 - a63 - a64 - a65, a62, a63, a64, a65, 0, 0},
+//    {0,b1, b2, b3, b4, b5, b6,0.}
 //  };
 //
 //  heff =       fheff(m                                                                                                     );
@@ -1738,7 +1738,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  a71=35.0/384.0,a73=500.0/1113.0,a74=125.0/192.0,a75=-2187.0/6784.0,
 //  a76=11.0/84.0,e1=71.0/57600.0,e3=-71.0/16695.0,e4=71.0/1920.0,
 //  e5=-17253.0/339200.0,e6=22.0/525.0,e7=-1.0/40.0;
-//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7}; 
+//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7};
 //  const double a[8][8]={
 //    {0,0, 0, 0, 0, 0, 0, 0},
 //    {0,0, 0, 0, 0, 0, 0, 0},
@@ -1746,14 +1746,14 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    {0,a31, a32, 0, 0, 0, 0, 0},
 //    {0,a41, a42, a43, 0, 0, 0, 0},
 //    {0,a51, a52, a53, a54, 0, 0, 0},
-//    {0,a61, a62, a63, a64, a65, 0, 0}, 
-//    {0,a71, 0  , a73, a74, a75, a76,0.} 
+//    {0,a61, a62, a63, a64, a65, 0, 0},
+//    {0,a71, 0  , a73, a74, a75, a76,0.}
 //  };
 //
 ////  std::cout<<"m of k1 = "<<afvalue((m)(0,0,0,0))<<"\n"<<std::endl;
 ////  std::cout<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
 ////  std::cout<<"k1= "<<afvalue(k1(0,0,0,0))<<"\t"<<afvalue(k1(1,1,0,1))<<"\n"<<std::endl;
-//  if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl; 
+//  if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl;
 //  if(reject){
 //    heff =       fheff(m                               );
 //    k1   =  dt * fdmdt(m                         , heff);
@@ -1788,13 +1788,13 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 ////  std::cout<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
 ////  std::cout<<"k7= "<<afvalue(k7(0,0,0,0))<<"\t"<<afvalue(k7(1,1,0,1))<<std::endl;
 //
-//  //Todo: not differs in 7th digit 
+//  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
 //  //std::cout << maxnorm(k1(0,0,0,0)) << "\t" << maxnorm(k7(0,0,0,0)) << std::endl;
 //
 ////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0,0,0,0))<<std::endl;
 //  //rk_error = (a[7][1] - e[1] ) * k1 + (a[7][2] - e[2] * k2 ) + (a[7][3] - e[3] ) * k3 + ( a[7][4] -e[4] ) * k4 + (a[7][5] - e[5]) * k5 + (a[7][6] - e[6] )* k6 -e[7] * k7;
-// 
+//
 //  rk_error = sumbk - (e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 + e[5]*k5 + e[6]*k6 + e[7]*k7);
 //  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
 //  //std::cout << "h = "<<h<< " error = "<<err<<" maxnorm(rk_error) "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m,m+sumbk)))<<std::endl;

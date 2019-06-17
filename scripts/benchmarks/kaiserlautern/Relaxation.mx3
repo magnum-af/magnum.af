@@ -34,7 +34,7 @@ Msat  = 1.4e5 //saturation magnetization
 Aex   = 3.5e-12 //exchange constant
 alpha = 0.02 //global alpha
 
-// load ground state relaxation 
+// load ground state relaxation
 m = uniform(0.81,0.19,0)
 //m.loadfile("D:/Data/Data/MuMax/OOP-SOT/1.02 nm - Ku 1,0343MJm3/OOP-CSOT-10mT-GS.ovf")
 //set field

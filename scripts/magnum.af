@@ -5,11 +5,11 @@ set -e
 magafdir=$( dirname "${BASH_SOURCE[0]}" )/.. # path to magnum.af/
 allargs=$@
 
-b_flag='' 
+b_flag=''
 c_flag=''
 copyfile=''
-backend='' 
-f_flag='' 
+backend=''
+f_flag=''
 GPU='0'
 d_flag=''
 i_flag=''
@@ -17,9 +17,9 @@ inputfile=''
 o_flag=''
 outputdir=''
 postprocess=''
-r_flag='' 
-s_flag='' 
-S_flag='' 
+r_flag=''
+s_flag=''
+S_flag=''
 v_flag='false'
 x_flag=''
 
@@ -30,7 +30,7 @@ Simulation script for magnum.af. Manages build process, directory creation and p
 
 Arguments:
       inputfile      Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
-      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a 
+      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a
                      directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
       \$n             Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
 
@@ -56,7 +56,7 @@ Examples:
   magnum.af -fsi sp4.cpp -o run1 -g 1 -p plot_sp4.sh
 
 Example passing arguments 'a b c' to the input script.  The behaviour is equivalent for all versions
-and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments. 
+and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments.
   magnum.af -i sp4.cpp -o run1 a b c
   magnum.af -i sp4.cpp run1 a b c
   magnum.af -o run1 sp4.cpp a b c
@@ -161,12 +161,12 @@ log "checking if build is necessary"
 if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
     $magafdir/scripts/bash/check_main.sh $v_flag
-    
+
     log "building"
-    [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src 
+    [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src
     $magafdir/scripts/bash/build.sh $magafdir $v_flag
     [ "$extension" == "cpp" ] && rm $magafdir/src/$(basename $inputfile) || rm $magafdir/src/main_empty.cpp
-    
+
     log "moving possible old main back"
     $magafdir/scripts/bash/check_main_remove.sh $v_flag
 fi
@@ -220,7 +220,7 @@ else
 fi
 
 log "writing $outputdir/simulation_info.txt"
-if [[ -n "$githash" ]];then 
+if [[ -n "$githash" ]];then
     echo "Command '$0 $allargs' called at $(eval date). According git hash is $githash" >> $outputdir/command_log.txt
 else
     echo "Command '$0 $allargs' called at $(eval date)." >> $outputdir/command_log.txt

@@ -15,7 +15,7 @@ x = 8.e-8
 y = 1.e-9
 z = 1.e-9
 
-# Discretization 
+# Discretization
 nx = 100
 ny = 1
 nz = 1

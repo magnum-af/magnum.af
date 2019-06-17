@@ -5,23 +5,23 @@ gnuplot  -e '
 
         set xlabel "time [s]";
         set ylabel "Average Magnetizaion";
-        plot 
-        "m.dat" u 1:2 w l t "<m_x>", 
+        plot
+        "m.dat" u 1:2 w l t "<m_x>",
         "m.dat" u 1:3 w l t "<m_y>",
         "m.dat" u 1:4 w l t "<m_z>";
 
         set title "x-Response";
         set xlabel "mu_0*H_x [T]";
         set ylabel "Average Magnetizaion";
-        plot 
-        "m.dat" u ($5*3.14159*4*1e-7):2 w l t "<m_x>", 
+        plot
+        "m.dat" u ($5*3.14159*4*1e-7):2 w l t "<m_x>",
         "m.dat" u ($5*3.14159*4*1e-7):3 w l t "<m_y>",
         "m.dat" u ($5*3.14159*4*1e-7):4 w l t "<m_z>";
 
         set title "External Field";
         set xlabel "time [s]";
         set ylabel "mu_0*H_ext [T]";
-        plot 
+        plot
         "m.dat" u 1:($5*3.14159*4*1e-7) w l t "H_x",
         "m.dat" u 1:($6*3.14159*4*1e-7) w l t "H_y",
         "m.dat" u 1:($7*3.14159*4*1e-7) w l t "H_z";

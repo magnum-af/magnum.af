@@ -92,9 +92,9 @@ void String::integrate(){
         // double h=imagtime+dt-images[i].t;
         // double dummy_err;
         // images[i].m += Llg.RKF45(images[i],h,dummy_err);
-        
+
         // NOTE:
-        // af::eval(images[i].m);//If memory error occurs, uncomment this 
+        // af::eval(images[i].m);//If memory error occurs, uncomment this
     }
 }
 
@@ -126,22 +126,22 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
-  
+
     std::ofstream stream_E_barrier;
     stream_E_barrier.precision(12);
-  
+
     std::ofstream stream_steps;
     stream_steps.precision(12);
     stream_steps.open ((filepath + "steps.dat").c_str());
-  
+
     std::ofstream stream_E_curves;
     stream_E_curves.precision(12);
     stream_E_curves.open ((filepath + "E_curves.dat").c_str());
-  
+
     double max_lowest=1e100;
     double max_prev_step=1e100;
     int i_max_lowest=-1;
-    std::vector<State> images_max_lowest; 
+    std::vector<State> images_max_lowest;
     std::vector<double> E_max_lowest;
     for(int i=0; i<string_steps;i++){
         af::timer t = af::timer::start();
@@ -155,7 +155,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             i_max_lowest=i;
             images_max_lowest=this->images;
             E_max_lowest=this->E;
-        }    
+        }
         // Check for convergence
         const double abs_diff = fabs(*max-this->E[0]-max_prev_step);
         const double rel_diff = fabs((2.* abs_diff)/(*max-this->E[0]+max_prev_step));
@@ -178,7 +178,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
         }
         stream_E_curves<<i<<"\n\n"<<std::endl;
         max_prev_step=*max-this->E[0];
-        if(i%50==1){ 
+        if(i%50==1){
             std::cout<<"Writing current skyrm images for iteration"<<i<<std::endl;
             for(unsigned j = 0; j < this->images.size(); j++){
                 std::string name = filepath;
@@ -192,15 +192,15 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     }
     std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-  
+
     std::ofstream myfileE;
     myfileE.precision(12);
     myfileE.open ((filepath + "E_last_step.dat").c_str());
-  
+
     std::ofstream stream_max_lowest;
     stream_max_lowest.precision(12);
     stream_max_lowest.open ((filepath + "E_max_lowest.dat").c_str());
-  
+
     std::cout<<this->E.size()<<"\t"<<this->images.size()<< "\t" <<std::endl;
     for(unsigned i = 0; i < this->images.size(); i++){
       std::cout<<"i="<<i<< "\t" << "E= "<<this->E[i]<<std::endl;
@@ -215,14 +215,14 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
       name.append(std::to_string(i));
       vti_writer_micro(images_max_lowest[i].m, this->images[0].mesh ,name.c_str());
     }
-  
+
     //for(unsigned i=0;i<Llg.llgterms.size();++i){
     //  std::cout<<"get_cpu_time()"<<std::endl;
     //  std::cout<<i<<"\t"<<Llg.cpu_time()<<std::endl;
     //  stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
     //  stream_steps<<"#"<<i<<"\t"<<Llg.cpu_time()<<std::endl;
     //}
-  
+
     myfileE.close();
     stream_steps.close();
     stream_E_curves.close();
@@ -239,7 +239,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //String::String(State statein, std::vector<State> inputimages, int n_interp_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):
 // state(statein), Llg(state,1e-6,1e-6,3.5e-10,1.0e-15, Fieldterms_in), n_interp(n_interp_in), images(inputimages){
 //
-//  
+//
 //  Llg.fdmdt_dissipation_term_only=true;//To only use the first term in llg equ
 //
 //  calc_x();

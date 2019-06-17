@@ -20,7 +20,7 @@ class StateTest(unittest.TestCase):
   mesh=magnumaf.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
   material=magnumaf.Material()
   state=magnumaf.State(mesh, Ms = 0, m = m_af)
-  
+
   def test_state_initialization(self):
     self.assertEqual(1., self.state.m[0,0,0,0].scalar())
     self.assertEqual(0., self.state.m[0,0,0,1].scalar())
@@ -37,7 +37,7 @@ class StateTest(unittest.TestCase):
     self.assertEqual(1., self.state.m[0,0,0,1].scalar())
     self.assertEqual(0., self.state.m[0,0,0,2].scalar())
 
-  def test_state_set_wrong_m(self): 
+  def test_state_set_wrong_m(self):
     m_np = ones(3)
     m_af = af.from_ndarray(m_np)
     m_af = af.reorder(m_af,1,2,3,0)

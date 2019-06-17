@@ -92,10 +92,10 @@ void Minimizer::minimize(State& state){
         // Next stepsize alternating tau1 and tau2
 
         if (step % 2 == 0){
-            tau = full_inner_product(m_diff, m_diff)/full_inner_product(m_diff, dm_diff); 
+            tau = full_inner_product(m_diff, m_diff)/full_inner_product(m_diff, dm_diff);
         }
         else {
-            tau = full_inner_product(m_diff, dm_diff)/full_inner_product(dm_diff, dm_diff); 
+            tau = full_inner_product(m_diff, dm_diff)/full_inner_product(dm_diff, dm_diff);
         }
         // TODO handly zero division
 
@@ -103,8 +103,8 @@ void Minimizer::minimize(State& state){
         else tau = - std::max(std::min(fabs(tau),tau_max),tau_min);
         // Increase step count
         step ++;
-        if (info) std::cout << "step="<< step <<" rate=" << 1./af::timer::stop(t) << " tau="<< tau << " last_dm_max.size()="<< last_dm_max.size()<< " dm_max=" << dm_max <<" *std::max_element()="<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
-        //std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;    
+        if (info) std::cout << "step="<< step <<" rate=" << 1./af::timer::stop(t) << " tau="<< tau << " last_dm_max.size()="<< last_dm_max.size()<< " dm_max=" << dm_max <<" *std::max_element()="<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;
+        //std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;
     }
     if (info) std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
-}; 
+};

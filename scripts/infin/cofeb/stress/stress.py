@@ -17,7 +17,7 @@ filepath = sys.argv[1]
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
-def disk(n0, n1, n2, xyz = 2): 
+def disk(n0, n1, n2, xyz = 2):
     n_cells=0
     m = np.zeros((n0, n1, n2, 3));
     for ix in range (0, n0):
@@ -62,7 +62,7 @@ af.info()
 x = 800e-9
 y = 800e-9
 z = 1.3e-3/1.056e6
-# Discretization 
+# Discretization
 nx = 250
 ny = 250
 nz = 1

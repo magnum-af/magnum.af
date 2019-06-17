@@ -4,7 +4,7 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchangeField::E(const State& state){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz; 
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double ExchangeField::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
@@ -43,11 +43,11 @@ array ExchangeField::h_withedges(const State& state){
     timer_edges = timer::start();
     exch(0, span,span,span)+=state.m(0 ,span,span,span)/ pow(state.mesh.dx,2);
     exch(-1,span,span,span)+=state.m(-1,span,span,span)/ pow(state.mesh.dx,2);
-    
-    
+
+
     exch(span,0 ,span,span)+=state.m(span,0 ,span,span)/ pow(state.mesh.dy,2);
     exch(span,-1,span,span)+=state.m(span,-1,span,span)/ pow(state.mesh.dy,2);
-    
+
     exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(state.mesh.dz,2);
     exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(state.mesh.dz,2);
 
@@ -130,10 +130,10 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
-////Function returns index 
+////Function returns index
 //int ExchangeField::findex(int i0, int i1, int i2, int im, int id){
 //  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
 //}
@@ -148,13 +148,13 @@ array ExchangeField::h(const State& state){
 //    //initialize filters
 //    filtr=constant(0.0,3,3,3,f64);
 //    //filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
-//  
+//
 //    filtr(0,1,1)= 1 / pow(mesh.dx,2);
 //    filtr(2,1,1)= 1 / pow(mesh.dx,2);
-//  
+//
 //    filtr(1,0,1)= 1 / pow(mesh.dy,2);
 //    filtr(1,2,1)= 1 / pow(mesh.dy,2);
-//  
+//
 //    filtr(1,1,0)= 1 / pow(mesh.dz,2);
 //    filtr(1,1,2)= 1 / pow(mesh.dz,2);
 //  }
@@ -175,7 +175,7 @@ array ExchangeField::h(const State& state){
 //        }
 //      }
 //    }
-//  
+//
 //    for (int id = 0; id < dimension; id++){
 //      for (int im = 0; im < 3; im++){
 //        for (int i2 = 0; i2 < mesh.n2; i2++){
@@ -197,7 +197,7 @@ array ExchangeField::h(const State& state){
 //                  vmatr[findex(i0-1,i1,i2,im,id)]+= 1./pow(mesh.dx,2);
 //                  vmatr[findex(i0+1,i1,i2,im,id)]+= 1./pow(mesh.dx,2);
 //                }
-//  
+//
 //                //y
 //                if(i1==0){
 //                  //vmatr[findex(i0,i1  ,i2,im,id)]+= 1./pow(mesh.dy,2);
@@ -206,12 +206,12 @@ array ExchangeField::h(const State& state){
 //                if (i1==mesh.n1-1){
 //                  //vmatr[findex(i0,i1  ,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                  if (mesh.n1>1) vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
-//                }                     
+//                }
 //                if(i1>0 && i1< mesh.n1-1){
 //                  vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                  vmatr[findex(i0,i1+1,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                }
-//  
+//
 //                //z
 //                if (i2==0){
 //                  //vmatr[findex(i0,i1,i2  ,im,id)]+= 1./pow(mesh.dz,2);
@@ -236,7 +236,7 @@ array ExchangeField::h(const State& state){
 //    vmatr = NULL;
 //    //showdims2(fullmatr);
 //    matr=sparse(fullmatr);
-//  
+//
 //    std::cout << "Sparsity of matr = "
 //              << (float)sparseGetNNZ(matr) / (float)matr.elements()
 //              << std::endl;
@@ -298,10 +298,10 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz; 
+//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
-////Function returns index 
+////Function returns index
 //int ExchangeField::findex(int i0, int i1, int i2, int im, int id){
 //  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
 //}
@@ -316,13 +316,13 @@ array ExchangeField::h(const State& state){
 //    //initialize filters
 //    filtr=constant(0.0,3,3,3,f64);
 //    filtr(1,1,1)= -6 / (pow(mesh.dx,2)+pow(mesh.dy,2)+pow(mesh.dz,2));
-//  
+//
 //    filtr(0,1,1)= 1 / pow(mesh.dx,2);
 //    filtr(2,1,1)= 1 / pow(mesh.dx,2);
-//  
+//
 //    filtr(1,0,1)= 1 / pow(mesh.dy,2);
 //    filtr(1,2,1)= 1 / pow(mesh.dy,2);
-//  
+//
 //    filtr(1,1,0)= 1 / pow(mesh.dz,2);
 //    filtr(1,1,2)= 1 / pow(mesh.dz,2);
 //  }
@@ -343,7 +343,7 @@ array ExchangeField::h(const State& state){
 //        }
 //      }
 //    }
-//  
+//
 //    for (int id = 0; id < dimension; id++){
 //      for (int im = 0; im < 3; im++){
 //        for (int i2 = 0; i2 < mesh.n2; i2++){
@@ -365,7 +365,7 @@ array ExchangeField::h(const State& state){
 //                  vmatr[findex(i0-1,i1,i2,im,id)]+= 1./pow(mesh.dx,2);
 //                  vmatr[findex(i0+1,i1,i2,im,id)]+= 1./pow(mesh.dx,2);
 //                }
-//  
+//
 //                //y
 //                if(i1==0){
 //                  vmatr[findex(i0,i1  ,i2,im,id)]+= 1./pow(mesh.dy,2);
@@ -374,12 +374,12 @@ array ExchangeField::h(const State& state){
 //                if (i1==mesh.n1-1){
 //                  vmatr[findex(i0,i1  ,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                  if (mesh.n1>1) vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
-//                }                     
+//                }
 //                if(i1>0 && i1< mesh.n1-1){
 //                  vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                  vmatr[findex(i0,i1+1,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                }
-//  
+//
 //                //z
 //                if (i2==0){
 //                  vmatr[findex(i0,i1,i2  ,im,id)]+= 1./pow(mesh.dz,2);
@@ -404,7 +404,7 @@ array ExchangeField::h(const State& state){
 //    vmatr = NULL;
 //    //showdims2(fullmatr);
 //    matr=sparse(fullmatr);
-//  
+//
 //    std::cout << "Sparsity of matr = "
 //              << (float)sparseGetNNZ(matr) / (float)matr.elements()
 //              << std::endl;
@@ -426,11 +426,11 @@ array ExchangeField::h(const State& state){
 //    timer_edges = timer::start();
 //    exch(0, span,span,span)+=state.m(0 ,span,span,span)/ pow(mesh.dx,2);
 //    exch(-1,span,span,span)+=state.m(-1,span,span,span)/ pow(mesh.dx,2);
-//    
-//    
+//
+//
 //    exch(span,0 ,span,span)+=state.m(span,0 ,span,span)/ pow(mesh.dy,2);
 //    exch(span,-1,span,span)+=state.m(span,-1,span,span)/ pow(mesh.dy,2);
-//    
+//
 //    exch(span,span,0 ,span)+=state.m(span,span,0 ,span)/ pow(mesh.dz,2);
 //    exch(span,span,-1,span)+=state.m(span,span,-1,span)/ pow(mesh.dz,2);
 //    if(state.material.afsync) sync();

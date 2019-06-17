@@ -15,14 +15,14 @@
 #include "atomistic_dmi.hpp"
 #include "vtk_IO.hpp"
 #include "string.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 int main(int argc, char** argv)
 {
   std::cout<<"argc"<<argc<<std::endl;
    for (int i=0; i<argc; i++)
         cout << "Parameter " << i << " was " << argv[i] << "\n";
-  
+
   std::string filepath(argc>1? argv[1]: "../Data/Testing");
   if(argc>0)filepath.append("/");
   std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   //double hmin = 1.0e-15;
   //double atol = 1e-8;
   //double rtol = atol;
-  
+
   //Generating Objects
   Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
   Material material = Material();
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   Mesh bmesh = Mesh(0,0,0,0,0,0);
 
   vti_reader(B,bmesh,"/home/pth/git/magnum.af/Data/Testing/aminit.vti");
- 
+
   print("B",B);
   std::cout<<bmesh.n0<<"  "<<bmesh.n1<<"  "<<bmesh.n2<<"  "<<bmesh.dx<<"  "<<bmesh.dy<<"  "<<bmesh.dz<<"  "<<std::endl;
 
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 //  std::ofstream stream;
 //  stream.precision(12);
 //  stream.open ((filepath + "m.dat").c_str());
-//  
+//
 //  timer t = af::timer::start();
 //  while (state.t < 1.e-9){
 //    state.m=Llg.step(state);
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 //  }
 //  af_to_vti(state.m, mesh ,(filepath + "2ns").c_str());
 //  stream.close();
-//  Llg.print_cpu_time(std::cout); 
+//  Llg.print_cpu_time(std::cout);
   return 0;
 }
 void calcm(State state, std::ostream& myfile){

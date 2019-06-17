@@ -3,7 +3,7 @@ WrappedArray::WrappedArray(af::array array) : array(array) {
 }
 
 WrappedArray::WrappedArray(long int  array_ptr){
-    set_array(array_ptr); 
+    set_array(array_ptr);
 }
 
 void WrappedArray::set_array(long int array_ptr){
@@ -53,21 +53,21 @@ double full_inner_product(const af::array& a, const af::array& b){
 }
 
 af::array renormalize(const af::array& a){
-  return a/tile(sqrt(sum(a*a,3)),1,1,1,3); 
+  return a/tile(sqrt(sum(a*a,3)),1,1,1,3);
 }
 
 //Renormalization where values with Ms zero are set from inf to zero
 af::array renormalize_handle_zero_values(const af::array& a){
-    af::array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3); 
+    af::array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3);
     af::array renorm = a/norm_a;
     replace(renorm,norm_a!=0,0);
     return renorm;
-    
+
     //TODO for (af::array& a) only: return replace(a/tile(sqrt(sum(a*a,3)),1,1,1,3), a!=0., 0.);
 }
 
 af::array vecnorm(const af::array& a){
-  return sqrt(sum(a*a,3)); 
+  return sqrt(sum(a*a,3));
 }
 
 
@@ -160,7 +160,7 @@ double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
         prec_prev = prec;
         prec = factor1 * prec;
     }
-    
+
     prec = prec_prev;
     while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
     {
@@ -181,7 +181,7 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
         prec_prev = prec;
         prec = factor1 * prec;
     }
-    
+
     prec = prec_prev;
     while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
     {
@@ -228,7 +228,7 @@ double maxnorm(const af::array& a){
   return maxnorm;
 }
 
-// Minimum value 
+// Minimum value
 double minval(const af::array& a){
   double *minval_host=NULL;
   minval_host = min(min(min(min(a,0),1),2),3).host<double>();
@@ -283,16 +283,16 @@ af::randomEngine util::rand_engine_current_time(){
 //{
 //        const double TIME_MAXIMUM = 10.0, WHOLE_TOLERANCE = 1e-12 ;
 //        const double T_START = 0.0, Y_START = 1.0, DT = 0.10;
-// 
+//
 //        auto eval_diff_eqn = [               ](double t, double y)->double{ return t*sqrt(y)                         ; } ;
 //        auto eval_solution = [               ](double t          )->double{ return pow(t*t+4,2)/16                   ; } ;
 //        auto find_error    = [eval_solution  ](double t, double y)->double{ return fabs(y-eval_solution(t))          ; } ;
 //        auto is_whole      = [WHOLE_TOLERANCE](double t          )->bool  { return fabs(t-round(t)) < WHOLE_TOLERANCE; } ;
-// 
+//
 //        auto dy = rk4( eval_diff_eqn ) ;
-// 
+//
 //        double y = Y_START, t = T_START ;
-// 
+//
 //        while(t <= TIME_MAXIMUM) {
 //          if (is_whole(t)) { printf("y(%4.1f)\t=%12.6f \t error: %12.6e\n",t,y,find_error(t,y)); }
 //          y += dy(t,y,DT) ; t += DT;

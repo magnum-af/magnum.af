@@ -15,7 +15,7 @@
 #include "atomistic_dmi.hpp"
 #include "vtk_writer.hpp"
 #include "string.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv)
 {
   if(argc>1) setDevice(std::stoi(argv[2]));
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   //char* charptr;
   //std::cout<<"argv"<<std::strtod(argv[1],&charptr)<<std::endl;
   //std::cout<<"argv"<<std::strtod(argv[2],&charptr)<<std::endl;
-  
+
   // Parameter initialization
   const int nx = 112, ny=112 ,nz=1;//nz=5 -> lz=(5-1)*dx
   const double dx=2.715e-10;
@@ -38,9 +38,9 @@ int main(int argc, char** argv)
   double hmin = 1.0e-15;
 
   double atol = 1e-6;
-  
+
   double rtol = atol;
-  
+
   double n_interp = 60;
   double string_dt=5e-13;
   const int string_steps = 10000;
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
   //llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
   //llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
   //llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-  
+
   llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
   llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
   llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
@@ -131,8 +131,8 @@ int main(int argc, char** argv)
 
   array last   = constant( 0,mesh.dims,f64);
   last(span,span,span,2)=1;
-  
-  std::vector<State> inputimages; 
+
+  std::vector<State> inputimages;
   inputimages.push_back(state);
   inputimages.push_back(State(mesh,material, last));
 
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
   double max_lowest=1e100;
   double max_prev_step=1e100;
   int i_max_lowest=-1;
-  std::vector<State> images_max_lowest; 
+  std::vector<State> images_max_lowest;
   std::vector<double> E_max_lowest;
   for(int i=0; i<string_steps;i++){
     string.step();
@@ -166,16 +166,16 @@ int main(int argc, char** argv)
       i_max_lowest=i;
       images_max_lowest=string.images;
       E_max_lowest=string.E;
-    }    
+    }
     //Wrong approach
     //else if(i>50){
     //  std::cout   << "Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;
     //  stream_steps<<"#Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;
     //  break;
     //}
-    
+
     //std::cout<<"Test: fabs= "<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
-    
+
     if(i>25 && fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<1e-6){
       std::cout   <<      "Exiting loop: Energy barrier relative difference smaller than 1e-6"<<std::endl;
       stream_steps<<     "#Exiting loop: Energy barrier relative difference smaller than 1e-6"<<std::endl;
@@ -194,7 +194,7 @@ int main(int argc, char** argv)
     }
     stream_E_curves<<i<<"\n\n"<<std::endl;
     max_prev_step=*max-string.E[0];
-    if(i%20==1){ 
+    if(i%20==1){
      std::cout<<"Writing current skyrm images for iteration"<<i<<std::endl;
      for(unsigned j = 0; j < string.images.size(); j++){
        std::string name = filepath;

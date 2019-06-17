@@ -2,7 +2,7 @@
 
 bool Controller::success(const double err, double& h){
     double scale;
-  
+
     if (err <= 1.0) {
         if (err == 0.0) {
             scale = maxscale;

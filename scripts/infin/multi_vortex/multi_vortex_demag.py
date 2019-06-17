@@ -6,7 +6,7 @@ from magnumaf import *
 import time
 
 # expected arguments:
-# description [Unit] (default) 
+# description [Unit] (default)
 # argv[1] filepath
 # argv[2] GPU number [0-3] (0)
 # argv[3] nx_disk (100)
@@ -49,7 +49,7 @@ print (n_cells)
 
 nx = int((3 + 2*a_x_factor) * nx_disk)
 ny = int((3 + 2*a_y_factor) * ny_disk)
-nz = nz_disk 
+nz = nz_disk
 print (nx, ny, nz)
 
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)

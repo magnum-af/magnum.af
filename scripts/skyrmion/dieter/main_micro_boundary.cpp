@@ -1,7 +1,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; 
+using namespace af;
 
 int main(int argc, char** argv)
 {
@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     const int nx = 90, nz=1;
     const double dx=2.0e-9;
     const double dz=0.6e-9;
-  
+
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
     Material material = Material();
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     material.alpha = 1;
     material.D=3e-3;
     material.Ku1=0.6e6;
-  
+
     State state(mesh, material, mesh.skyrmconf());
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
     Llg.llgterms.push_back( LlgTerm (new DmiField(mesh,material)));
     Llg.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
-  
+
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         Llg.relax(state);
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         vti_reader(state.m, state.mesh, path_mrelax);
     }
 
-    std::vector<State> inputimages; 
+    std::vector<State> inputimages;
 
     // Direct x-boundary
     // TODO temp fix: going to left boundary to check boundary annihilatoin. In relax skyrm, top and right boundary seems wrong
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     //    mm(span,seq(0,i),span,2)=1.;
     //    inputimages.push_back(State(mesh, material, mm));
     //}
-   
+
     String string(state, inputimages, 60, 5e-14, Llg.llgterms);
     string.run(filepath, 1e-13, 1e-28, 10000);
 

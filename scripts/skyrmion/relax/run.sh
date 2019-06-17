@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage ./run*.sh absolute/path/to/write/to 
+# Usage ./run*.sh absolute/path/to/write/to
 GPU=0
 
 echo "enter nxy"
@@ -20,7 +20,7 @@ plotfile=plot*.sh
 # checking if other main exists in /src
 $magafdir/scripts/bash/check_main.sh
 
-# building 
+# building
 cp $buildfile $magafdir/src
 $magafdir/scripts/bash/build.sh $magafdir
 rm $magafdir/src/$buildfile

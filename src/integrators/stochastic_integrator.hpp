@@ -39,7 +39,7 @@ class Stochastic_Integrator {
         af::array m_prev;
         af::array h_th_prev;
         af::timer timer_stoch;
-       
+
         int mode; //Integration mode
 
         af::randomEngine rand_engine;

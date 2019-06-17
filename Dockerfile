@@ -1,4 +1,4 @@
-# based on: https://github.com/arrayfire/arrayfire-docker 
+# based on: https://github.com/arrayfire/arrayfire-docker
 # image: magnum.af
 # build: docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev:latest -f Dockerfile --build-arg user="$UID" .
 # push:  docker push git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev:latest

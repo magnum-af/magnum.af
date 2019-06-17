@@ -16,7 +16,7 @@ Include respective file in src/CMakeLists cython_add_module_w_AF_VTK() to solve
 
 * Core dump at startup often results when choosing the wrong library in setup.py for desired backend (cpu, opencl, cuda)
 
-E.g.: ibraries = ["afopencl"] 
+E.g.: ibraries = ["afopencl"]
 
 Include correct library in setup.py
 
@@ -43,7 +43,7 @@ include af::eval() in respective function/line where program crashes
 https://github.com/arrayfire/arrayfire/issues/1709
 
 Fix:
-remove af.lock() or af device pointer 
+remove af.lock() or af device pointer
 optionally add more af::eval()
 
 
@@ -52,7 +52,7 @@ optionally add more af::eval()
 Error:
 /usr/local/lib/libafopencl.so.3.5.0: undefined reference to `clReleaseMemObject@OPENCL_1.0'
 Fix:
-Include 
+Include
         ${OpenCL_LIBRARIES} #TODO include this on eg GTO
 in src/CMakeLists.txt
 

@@ -1,7 +1,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
-using namespace af; 
-typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af;
+typedef std::shared_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv)
 {
     //const double x = 1.e-0, y = 1.e-0, z = 1.e-0;
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
     LLG Llg(state,llgterm);
-    
+
     print("DmiField", Llg.Fieldterms[0]->h(state));
     return 0;
 }

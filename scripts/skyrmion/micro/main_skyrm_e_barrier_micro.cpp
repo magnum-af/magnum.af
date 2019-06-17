@@ -1,6 +1,6 @@
 #include "magnum.af.hpp"
-//TODO this file was used to see wether the skyrmion changes by employing boundary conditions as stated in Paper in implementation. This currently lacks unit testing 
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+//TODO this file was used to see wether the skyrmion changes by employing boundary conditions as stated in Paper in implementation. This currently lacks unit testing
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv)
 {
   std::cout<<"argc"<<argc<<std::endl;
@@ -12,10 +12,10 @@ int main(int argc, char** argv)
   //char* charptr;
   //std::cout<<"argv"<<std::strtod(argv[1],&charptr)<<std::endl;
   //std::cout<<"argv"<<std::strtod(argv[2],&charptr)<<std::endl;
-  
+
   // Parameter initialization
   const int nx = 111, ny=111 ,nz=1;
-  
+
   const double dx=2.715e-10;//dx max = sqrt(A/Ku1)=1.58114e-9
   const double x=111*dx, y=111*dx, z=4*dx;
 
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   //double atol = 1e-6;
   //
   //double rtol = atol;
-  
+
   double n_interp = 60;
   double string_dt=5e-13;
   const int string_steps = 300;
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
   llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
   llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-  
+
   //llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
   //llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
   //llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
@@ -103,8 +103,8 @@ int main(int argc, char** argv)
 
   array last   = constant( 0,mesh.dims,f64);
   last(span,span,span,2)=1;
-  
-  std::vector<State> inputimages; 
+
+  std::vector<State> inputimages;
   inputimages.push_back(state);
   inputimages.push_back(State(mesh,material, last));
 
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
   double max_lowest=1e100;
   double max_prev_step=1e100;
   int i_max_lowest=-1;
-  std::vector<State> images_max_lowest; 
+  std::vector<State> images_max_lowest;
   std::vector<double> E_max_lowest;
   for(int i=0; i<string_steps;i++){
     string.step();
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
       i_max_lowest=i;
       images_max_lowest=string.images;
       E_max_lowest=string.E;
-    }    
+    }
     else if(i>50){
       std::cout   << "Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;
       stream_steps<<"#Exiting loop: Energy barrier after 50step relaxation becomes bigger "<<std::endl;

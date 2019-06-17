@@ -3,8 +3,8 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; 
-typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af;
+typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg){
     myfile << std::setw(12) << state.t << "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
@@ -23,11 +23,11 @@ class Detector{
         double get_avg(){return avg;}
 
         std::list<double> data; //The data to take the average on
-        std::list<double> data_avg; //The calculated avarages of the data 
+        std::list<double> data_avg; //The calculated avarages of the data
         void add_data(double value);
         double avg{NaN};
     private:
-    
+
 };
 
 void Detector::add_data(double value){
@@ -35,8 +35,8 @@ void Detector::add_data(double value){
         data.push_back(value);
     }
     else{
-        data.pop_front(); 
-        data.push_back(value); 
+        data.pop_front();
+        data.push_back(value);
         avg=0;
         for( double values : data){
             avg+=values;
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     for (int i=0; i<argc; i++){
         cout << "Parameter " << i << " was " << argv[i] << "\n";
     }
-    
+
     std::string filepath(argc>1? argv[1]: "../Data/skyrmion_stoch/Testing");
     filepath.append("/");
     std::cout<<"Writing into path "<<filepath<<std::endl;
@@ -82,10 +82,10 @@ int main(int argc, char** argv)
         dt = 1e-13;
     }
     std::cout << "dt = " << dt << std::endl;
-    
-    //Temperature 
+
+    //Temperature
     double T_in(argc>4? std::stod(argv[4]):300);
- 
+
     int ID (argc>5? std::stoi(argv[5]) : -1);
     //const double dt = 1e-13;//Integration step
 
@@ -101,12 +101,12 @@ int main(int argc, char** argv)
     const double threshold = 0.85;
     const int samples = 1;
     const double maxtime = 1e-5;
-  
+
     std::list<af::array> images; //The data to take the average on
     unsigned int images_length=25;
 
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
@@ -118,13 +118,13 @@ int main(int argc, char** argv)
     material.T = T_in;
     //material.T = argc>3? std::stod(argv[3]):300;
     std::cout<< "material.T = " << material.T << std::endl;
-  
+
     material.J_atom=2.*material.A*dx;
     material.D_atom= material.D * pow(dx,2);
     material.K_atom=material.Ku1*pow(dx,3);
     material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
 
-    array m; 
+    array m;
     Mesh testmesh(nx,ny,nz,dx,dx,dx);
     vti_reader(m, testmesh, indatapath + "relax.vti");
     //Reading energy barrier from calculation performed with main_n30.cpp
@@ -143,8 +143,8 @@ int main(int argc, char** argv)
     double T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
-    
-    
+
+
     //Assemble Stochastic Integrator and State object
     State state(mesh,material, m);
     std::vector<llgt_ptr> llgterm;
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
     // Iterations to obtain mean annihilaiton time
     state = State(mesh,material, m);
     std::cout<<"TEST (should be 0): state.t = "<< state.t << std::endl;
-    
+
     Detector detector = Detector( (int)(3e-10/dt), threshold);
     unsigned long int i=0;
     while (detector.event == false){
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
              std::cout << "WARNING: no event detected within maxtime seconds, aborting" << std::endl;
              break;
         }
-        Stoch.step(state,dt); 
+        Stoch.step(state,dt);
         //set_boundary_mz(state.m);
         detector.add_data(meani(state.m,2));
         //if( ID < id_outp ) calcm(state, stream_m, detector.get_avg());
@@ -176,8 +176,8 @@ int main(int argc, char** argv)
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10,9)
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
-        if( images.size() < images_length &&  i % (int)(1e-11/dt) == 0) images.push_back(state.m); 
-        if( images.size() > images_length &&  i % (int)(1e-11/dt) == 0) {images.pop_front(); images.push_back(state.m);} 
+        if( images.size() < images_length &&  i % (int)(1e-11/dt) == 0) images.push_back(state.m);
+        if( images.size() > images_length &&  i % (int)(1e-11/dt) == 0) {images.pop_front(); images.push_back(state.m);}
         i++;
     }
 
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
         count1++;
     }
     //vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
-    
+
     double detect_time = state.t;
     Detector detector2 = Detector((int)(5e-12/dt), threshold);
     detector2.gt=false;
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
     ofs_antime<< detect_time << "\t" << state.t << "\t" << i <<"\t" << reverse << "\t" << ID << std::endl;
     ofs_antime.close();
 
-      
+
     std::cout<<"state.t = "<< state.t << std::endl;
     return 0;
 }
@@ -250,7 +250,7 @@ void set_boundary_mz(array& m){
     //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
-    
+
   //  double mean_antime = 0;
   //  for (double n : antimes){
   //      mean_antime+=n;
@@ -272,7 +272,7 @@ void set_boundary_mz(array& m){
   //  ofs_antime<<"#mean_antime << unbiased_sample_variance << unbiased_sample_sigma<< antimes.size() "<< std::endl;
   //  ofs_antime<< mean_antime <<  "\t" << unbiased_sample_variance <<"\t" << unbiased_sample_sigma<< "\t" << antimes.size() <<  std::endl;
   //  ofs_antime.close();
-  
+
     //  antimes.push_back(detect_time);
 
 //    Detector detector = Detector ();

@@ -5,11 +5,11 @@ using namespace af;
 //Eex=-mu0/2 integral(M . Hex) dx
 
 double AtomisticExchangeField::E(const State& state){
-  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)); 
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3));
 }
 
 double AtomisticExchangeField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)); 
+  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3));
 }
 
 AtomisticExchangeField::AtomisticExchangeField (const Mesh& mesh){
@@ -21,7 +21,7 @@ array AtomisticExchangeField::h(const State& state){
     if(state.material.hexagonal_close_packed == true){
         std::cout << "WARNING: Experimental hcp exchange" << std::endl;
         filtr(0,1,1,span)= 1.;
-        filtr(0,2,1,span)= 1.;// hex lattice 
+        filtr(0,2,1,span)= 1.;// hex lattice
         filtr(2,1,1,span)= 1.;
         filtr(2,0,1,span)= 1.;// hex lattice
         filtr(1,0,1,span)= 1.;
@@ -31,10 +31,10 @@ array AtomisticExchangeField::h(const State& state){
         //TODO hex in z: filtr(,,,span)= 1.;// hex lattice
         //NOTE: numers of NN is 12, so 3 in +z and 3 in +z slice
         af::print("filtr",filtr);
-         
+
     }
     //else if(state.material.atom_fcc=true){
-    //    //https://www.physics-in-a-nutshell.com/article/11/close-packed-structures-fcc-and-hcp 
+    //    //https://www.physics-in-a-nutshell.com/article/11/close-packed-structures-fcc-and-hcp
     //}
     else{
         filtr(0,1,1,span)= 1.;
@@ -77,7 +77,7 @@ array AtomisticExchangeField::h(const State& state){
 
 
 
-  //return -state.material.J/(2. * state.mesh.dx) * mj;//TODO not dx 
+  //return -state.material.J/(2. * state.mesh.dx) * mj;//TODO not dx
   //array result =-state.material.J/(2. * state.mesh.dx) * mj;
   //Wrong: this would be the Energy, not the field:   array result =tile(-state.material.J/2. * sum(state.m*mj,3),1,1,1,3);
   //return result;
@@ -116,11 +116,11 @@ array AtomisticExchangeField::h(const State& state){
 //  timer_edges = timer::start();
 //  exch(0, span,span,span)+=m(0 ,span,span,span)/ pow(mesh.dx,2);
 //  exch(-1,span,span,span)+=m(-1,span,span,span)/ pow(mesh.dx,2);
-//  
-//  
+//
+//
 //  exch(span,0 ,span,span)+=m(span,0 ,span,span)/ pow(mesh.dy,2);
 //  exch(span,-1,span,span)+=m(span,-1,span,span)/ pow(mesh.dy,2);
-//  
+//
 //  exch(span,span,0 ,span)+=m(span,span,0 ,span)/ pow(mesh.dz,2);
 //  exch(span,span,-1,span)+=m(span,span,-1,span)/ pow(mesh.dz,2);
 //  if(state.material.afsync) sync();
@@ -133,7 +133,7 @@ array AtomisticExchangeField::h(const State& state){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
 //}
 //
-////Function returns index 
+////Function returns index
 //int AtomisticExchangeField::findex(int i0, int i1, int i2, int im, int id){
 //  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
 //}
@@ -192,7 +192,7 @@ array AtomisticExchangeField::h(const State& state){
 //              if (i1==mesh.n1-1){
 //                vmatr[findex(i0,i1  ,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                if (mesh.n1>1) vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
-//              }                     
+//              }
 //              if(i1>0 && i1< mesh.n1-1){
 //                vmatr[findex(i0,i1-1,i2,im,id)]+= 1./pow(mesh.dy,2);
 //                vmatr[findex(i0,i1+1,i2,im,id)]+= 1./pow(mesh.dy,2);

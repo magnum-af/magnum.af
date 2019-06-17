@@ -16,7 +16,7 @@
 #include "vtk_IO.hpp"
 #include "string.hpp"
 #include "stochastic_llg.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 //void calcm(State state, std::ostream& myfile);
 void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz);
 void calcm_autodetect(State state, std::ostream& myfile){
@@ -33,9 +33,9 @@ int main(int argc, char** argv)
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();
-  
+
 //    //TODO  Include in python testing
-//    //TEST RENORMALIZE    
+//    //TEST RENORMALIZE
 //    array test_renorm=constant(0.0,6,1,1,3,f64);
 //    //nx=0: (1,0,0)
 //    test_renorm(0,0,0,0)=1;
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 //    print ("test_renorm",test_renorm);
 //    print ("renormalized test_renorm",renormalize(test_renorm));
 //    print ("renormalized handle zero  test_renorm",renormalize_handle_zero_values(test_renorm));
-//    //END TEST RENORMALIZE    
+//    //END TEST RENORMALIZE
 
 
     // Parameter initialization
@@ -72,14 +72,14 @@ int main(int argc, char** argv)
     //const int nx = 100, ny=25 ,nz=1; //NOTE This with CASE 1 yields same results as backups
     const int nx = 120, ny=45 ,nz=3; //Total Box dimensions
     const int spnx = 100, spny=25 ,spnz=1;// Box dimensions without vacuum
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,5.e-7/100,1.25e-7/25,3.e-9);
     Material material = Material();
     state.Ms    = 8e5;
     material.A     = 1.3e-11;
     material.alpha = 1;
-  
+
     // Initial magnetic field
     //CASE 1
     //array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
     state.Ms =constant(0.0, state.mesh.dims, f64);
     state.Ms(seq((nx-spnx)/2,end-(nx-spnx)/2),seq((ny-spny)/2,end-(ny-spny)/2),seq((nz-spnz)/2,end-(nz-spnz)/2),span) = constant(state.Ms,spnx,spny,spnz,3,f64);
     //CASE 2
-    
+
     vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
 
     //testing MS
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     //(state.Ms.isempty()? std::cout << "TRUE" << true <<std::endl : std::cout << "flase" << false <<std::endl);
     //if (state.Ms.isempty()){std::cout << "state.MS.isempts()"<<std::endl;}
     //else {std::cout << "state.MS.is NOT empty()"<<std::endl;}
-  
+
     //mesh=Mesh(4,4,4,x/nx,y/ny,z/nz);
     //m=constant(0, mesh.dims, f64);
     //m(span,span,span,0) = constant(1.0, mesh.n0 ,mesh.n1,mesh.n2,1,f64);
@@ -145,11 +145,11 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
     llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
     LLG Llg(state,llgterm);
-  
+
     std::ofstream stream;
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
-    
+
     timer t = af::timer::start();
     //for (int i = 0; i<5; i++){
     while (state.t < 5.e-10){
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
     double timerelax= af::timer::stop(t);
     std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
-  
+
     // Prepare switch
     array zeeswitch = constant(0.0,1,1,1,3,f64);
     zeeswitch(0,0,0,0)=-24.6e-3/constants::mu0;
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch,mesh,material)));
     Llg.Fieldterms=llgterm;
     Llg.state0.material.alpha=0.02;
-  
+
     while (state.t < 1.5e-9){
       state.m=Llg.step(state);
       calcm(state,std::cout, nx, ny, nz, spnx, spny, spnz);

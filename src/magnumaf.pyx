@@ -63,7 +63,7 @@ class Util:
         array [0,0,0,1] = factor * axis[1]/norm
         array [0,0,0,2] = factor * axis[2]/norm
         return af.tile(array, nx, ny, nz)
- 
+
     @staticmethod
     def disk(nx, ny, nz, axis=[1,0,0], return_ncells = False):
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
@@ -118,7 +118,7 @@ class Util:
     @classmethod
     def sum_of_difference_of_abs(cls, a, b):
         return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b),0),1),2),3).scalar()
- 
+
     @classmethod
     def test_sum_of_difference_of_abs(cls, a, b, verbose = True):
             c = cls.sum_of_difference_of_abs(a, b)
@@ -175,11 +175,11 @@ class dictproperty(object):
 
 
 #NOTE#@cython.embedsignature(True)# error: Cdef functions/classes cannot take arbitrary decorators. https://stackoverflow.com/questions/42668252/cython-cdef-class-not-displaying-doc-string-or-init-parameters
-# Docstring does work, todo: check type etc. 
+# Docstring does work, todo: check type etc.
 cdef class Mesh:
     """
     The Mesh object stores information about the discretization of our sample.
-    
+
 
     Parameters
     ----------
@@ -355,13 +355,13 @@ cdef class State:
 
 
     def write_vti(self, outputname):
-        self._thisptr._vti_writer_micro( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_micro( outputname.encode('utf-8'))
     def write_vti_boolean(self, outputname):
-        self._thisptr._vti_writer_micro_boolean( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_micro_boolean( outputname.encode('utf-8'))
     def write_vti_atomistic(self, outputname):
-        self._thisptr._vti_writer_atom( outputname.encode('utf-8')) 
+        self._thisptr._vti_writer_atom( outputname.encode('utf-8'))
     def read_vti(self, outputname):
-        self._thisptr._vti_reader( outputname.encode('utf-8')) 
+        self._thisptr._vti_reader( outputname.encode('utf-8'))
 
     #def py_vtr_writer(self, outputname):
     #  self._thisptr._vtr_writer( outputname.encode('utf-8'))
@@ -532,7 +532,7 @@ cdef class LLGIntegrator:
         #cdef vector[shared_ptr[cLLGTerm]] vector_in
         #for term in terms:
         #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))
-        #self._thisptr = new cLLGIntegrator (vector_in)  
+        #self._thisptr = new cLLGIntegrator (vector_in)
 
     #def print_stepsize(self):
     #  return self._thisptr.h_stepped_
@@ -559,7 +559,7 @@ cdef class DemagField(HeffTerm):
     """
     cdef cDemagField* _thisptr
     def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
-        self._thisptr = new cDemagField (deref(mesh._thisptr), verbose, caching, nthreads)    
+        self._thisptr = new cDemagField (deref(mesh._thisptr), verbose, caching, nthreads)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -628,11 +628,11 @@ cdef class UniaxialAnisotropyField(HeffTerm):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
             self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
         elif hasattr(Ku1, 'arr') :
-            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])  
+            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
         elif hasattr(Ku1_axis, 'arr'):
             self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
-            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])    
+            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -670,7 +670,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
 cdef class AtomisticDipoleDipoleField(HeffTerm):
     cdef cAtomisticDipoleDipoleField* _thisptr
     def __cinit__(self, Mesh mesh):
-        self._thisptr = new cAtomisticDipoleDipoleField (deref(mesh._thisptr))    
+        self._thisptr = new cAtomisticDipoleDipoleField (deref(mesh._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -685,7 +685,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
 cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr),deref(param_in._thisptr))  
+        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr),deref(param_in._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -700,7 +700,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
 cdef class AtomisticExchangeField(HeffTerm):
     cdef cAtomisticExchangeField* _thisptr
     def __cinit__(self, Mesh mesh):
-        self._thisptr = new cAtomisticExchangeField (deref(mesh._thisptr))    
+        self._thisptr = new cAtomisticExchangeField (deref(mesh._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -715,7 +715,7 @@ cdef class AtomisticExchangeField(HeffTerm):
 cdef class AtomisticDmiField(HeffTerm):
     cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr),deref(param_in._thisptr))  
+        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr),deref(param_in._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL

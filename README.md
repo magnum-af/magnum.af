@@ -15,7 +15,7 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
     code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
 * C++ Project
   * Optimized for performance
-* Python bindings 
+* Python bindings
   * For an easy user-interface
 
 # Installation Guide
@@ -53,7 +53,7 @@ add your user to the video group
 
 `$ sudo usermod -a -G video $LOGNAME`
 
-Note: 
+Note:
 if the driver version provided by the repo is not sufficient, use a ppa instead:
 
 `$ sudo add-apt-repository ppa:graphics-drivers && sudo apt-get update`
@@ -69,7 +69,7 @@ install CUDA with
 
 ### Install Arrayfire
  For version 3.6.2:
- 
+
 `$ wget https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_Linux_x86_64.sh .`
 
 `$ chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh`
@@ -90,7 +90,7 @@ install CUDA with
 * Installation of hardware-specific drivers:
 
 http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
-* AMD APP SDK 
+* AMD APP SDK
 
 http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
 
@@ -100,14 +100,14 @@ Currently, AMDAPPSDK-3.0 installs with a broken symbolic link on 64-bit installs
 which can be fixed by
 
 going to directory
-`/AMDAPPSDKROOT/lib/x86_64/` (usually `/opt/AMDAPPSDK-3.0/lib/x86_64`) 
+`/AMDAPPSDKROOT/lib/x86_64/` (usually `/opt/AMDAPPSDK-3.0/lib/x86_64`)
 
 and executing:
 
 `$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
-### Arrayfire 
-* from binaries 
+### Arrayfire
+* from binaries
 
 http://arrayfire.org/docs/installing.htm
 
@@ -130,7 +130,7 @@ Fore more details see https://github.com/arrayfire/arrayfire-python
 
 `$ apt-cache search libvtk`
 
-* Choose latest version with headers  (i.e. latest -dev version), e.g. 
+* Choose latest version with headers  (i.e. latest -dev version), e.g.
 
 `$ sudo apt install libvtk6-dev`
 
@@ -190,5 +190,5 @@ Note: In new projects, set VTK_DIR by
 
 `$ make -jXX` (where XX is number of desired threads)
 
-Note: In new projects, set VTK_DIR by 
+Note: In new projects, set VTK_DIR by
 `$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`

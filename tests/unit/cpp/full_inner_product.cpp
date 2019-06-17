@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "arrayfire.h"
 #include "../../../src/func.cpp"
- 
+
 // Exemplary unit test
 TEST(FullInnerProductTest, n) {
     af::array a = af::constant(1., 3, 3, 3, 3, f64);

@@ -18,5 +18,5 @@ if [ -e $magafdir/temp_main ];then
         [ "$1" == "true" ] && echo "Moving back file $file from temp_main/ to /src"
         mv $magafdir/temp_main/main*.cpp $magafdir/src
     done
-    rmdir $magafdir/temp_main 
+    rmdir $magafdir/temp_main
 fi

@@ -15,7 +15,7 @@ class LLGTerm{
 };
 
 // Aliases used to initialize objects wich inherit from this class
-using LlgTerm = std::shared_ptr<LLGTerm>; 
-using LlgTerms = std::vector<LlgTerm>; 
+using LlgTerm = std::shared_ptr<LLGTerm>;
+using LlgTerms = std::vector<LlgTerm>;
 
 #endif

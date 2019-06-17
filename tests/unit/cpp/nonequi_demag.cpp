@@ -7,7 +7,7 @@
 #include "../../../src/vtk_IO.cpp"
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
- 
+
 // Exemplary unit test
 TEST(NonEquiDemag, NxxNxyNearTest) {
     int ix = 1;
@@ -75,7 +75,7 @@ TEST(NonEquiDemag, DistanceFromIndexTest) {
     EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 2), 1 + 2);
     EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 1, 0), -1);
     EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 2, 0), -1 - 2);
-    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 3, false), 1 + 2 + 3);//Note: 
+    EXPECT_EQ(newell_nonequi::nonequi_index_distance(vz, 0, 3, false), 1 + 2 + 3);//Note:
     //This is not out of bound because distance is from i to j-1. The arising warning is surpressed here.
 }
 

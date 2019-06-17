@@ -1,8 +1,8 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; 
-typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af;
+typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 int main(int argc, char** argv)
 {
@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     std::cout<<"argc = "<<argc<<std::endl;
      for (int i=0; i<argc; i++)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
+
     std::string filepath(argc>1? argv[1]: "../Data/skyrmion_stoch");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     const double dx=0.5e-9;
     const int nx = (int)(length/dx);
     std::cout << "nx = "<< nx << std::endl;
-  
+
     //Generating Objects
     Mesh mesh(nx,nx,1,dx,dx,dx);
     Material material = Material();
@@ -32,12 +32,12 @@ int main(int argc, char** argv)
     material.alpha = 1;
     material.D=3e-3;
     material.Ku1=0.6e6;
-  
+
     material.J_atom=2.*material.A*dx;
     material.D_atom= material.D * pow(dx,2);
     material.K_atom=material.Ku1*pow(dx,3);
     material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
-  
+
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      m(span,span,span,2) = -1;
@@ -49,10 +49,10 @@ int main(int argc, char** argv)
              if(r>nx/4.) m(ix,iy,span,2)=1.;
          }
      }
-  
+
     State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
-  
+
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     zeeswitch(0,0,0,2)= - 0.07 * pow(state.Ms,2) * constants::mu0;
     zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
     llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch)));
-    
+
     LLG Llg(state,llgterm);
     Llg.write_fieldterms_micro(state, filepath + "init_field_micro_");
     Llg.write_fieldterms_atom (state, filepath + "init_field_atom_");
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     //vti_writer_atom(Llg.Fieldterms[2]->h(state), mesh ,filepath + "aDMI");
     //vti_writer_atom(Llg.Fieldterms[3]->h(state), mesh ,filepath + "aAni");
     //vti_writer_atom(Llg.Fieldterms[4]->h(state), mesh ,filepath + "aZee");
-  
+
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
     return 0;
 }

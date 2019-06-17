@@ -20,7 +20,7 @@ class UniaxialAnisotropyField : public LLGTerm {
     double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
     double get_cpu_time(){return computation_time_heff;}//!< accumulated heff computation time in [s]
 
-    const double Ku1{0};//!< [J/m^3]  Uniaxial Anisotropy 
+    const double Ku1{0};//!< [J/m^3]  Uniaxial Anisotropy
 
     const af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node
     long int get_Ku1_field();

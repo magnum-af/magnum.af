@@ -43,7 +43,7 @@ std::string setup_magafdir(){
     std::string magafdir(homedir);
     magafdir = magafdir +"/.magnum.af.cache/";
     if (exists(magafdir) == false){
-       createdir(magafdir); 
+       createdir(magafdir);
     }
     return magafdir;
 }

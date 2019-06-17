@@ -6,14 +6,14 @@ int main(int argc, char** argv)
 {
     const int run_test = 3; // specify test no., 0 is all
 
-    //Test 1: Testing heff for 
+    //Test 1: Testing heff for
     if (run_test == 0 || run_test == 1)
     {
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
         //const int nx = 100, ny=25 ,nz=1;
         const int nx = 3, ny=1 ,nz=2;
         const int nz_nonequi = 1;
-        
+
         //Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
         Material material = Material();
         state.Ms    = 8e5;
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         //af::print("demag.Nfft", demag.Nfft);
         //af::print("nonequi_demag.Nfft", nonequi_demag.Nfft);
         //unsigned int zero_if_equal_var = zero_if_equal(demag.Nfft, nonequi_demag.Nfft);
-        
+
         abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi));
         //if (abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), 2*nonequi_demag.h(state_nonequi))) std::cout << "test true" << std::endl;
         //else std::cout << "test false" << std::endl;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
         //zero_if_equal(demag.Nfft(af::span, af::span, 2, af::span), nonequi_demag.Nfft);
     }
 
-    //Test 2: Testing heff with extendend newell 
+    //Test 2: Testing heff with extendend newell
     //NOTE: requires j2 = 1 in /micro_nonequi_demag.cpp:272
     if (run_test == 0 || run_test == 2)
     {
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
         //const int nx = 100, ny=25 ,nz=1;
         const int nx = 3, ny=1 ,nz=2;
         const int nz_nonequi = 1;
-        
+
         //Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
         Material material = Material();
         state.Ms    = 8e5;
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
         //const int nx = 3, ny=1 ,nz=2;
         //const int nx = 3, ny=1 ,nz=1;
         //const int nx = 3, ny=3 ,nz=3;
-        
+
         Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
         Material material = Material();
         state.Ms    = 8e5;
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 
         //std::cout << "N[000] abs diff = " << max_abs_diff(demag.todel_N(0, 0, 0), nonequi_demag.todel_N(0, 0, 0)) << std::endl;
         //std::cout << "N[000] rel diff = " << max_rel_diff(demag.todel_N(0, 0, 0), nonequi_demag.todel_N(0, 0, 0)) << std::endl << std::endl;
-        
+
         std::cout.precision(16);
         std::cout << std::endl;
 

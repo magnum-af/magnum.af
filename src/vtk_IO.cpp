@@ -4,9 +4,9 @@
 //3D vtkImageData vtkCellData writer
 //Optimization should avoid generation of two vtkImageData objects
 void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname){
-  
+
     double* host_a = field.host<double>();
-  
+
     vtkSmartPointer<vtkImageData> imageDataPointCentered = vtkSmartPointer<vtkImageData>::New();
     imageDataPointCentered->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
     imageDataPointCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
@@ -18,7 +18,7 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
        imageDataPointCentered->AllocateScalars(VTK_DOUBLE, field.dims(3));
     #endif
     int* dims = imageDataPointCentered->GetDimensions();
-  
+
     for (int z = 0; z < dims[2]; z++)
       {
       for (int y = 0; y < dims[1]; y++)
@@ -39,10 +39,10 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
     imageDataCellCentered->SetOrigin(0,0,0);
     imageDataCellCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
     imageDataCellCentered->GetCellData()->SetScalars (imageDataPointCentered->GetPointData()->GetScalars());
-  
+
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    //std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2) 
+    //std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)* field.dims(1)* field.dims(2)
     //    << " Cells in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
          writer->SetInputConnection(imageDataCellCentered->GetProducerPort());
@@ -64,9 +64,9 @@ void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const 
 
 //3D vtkImageData vtkPointData writer
 void vti_writer_atom(const af::array field, const Mesh& mesh, std::string outputname){
-  
+
     double* host_a = field.host<double>();
-  
+
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
     imageData->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
     imageData->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
@@ -77,7 +77,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
     imageData->AllocateScalars(VTK_DOUBLE, field.dims(3));
     #endif
     int* dims = imageData->GetDimensions();
-  
+
     for (int z = 0; z < dims[2]; z++)
       {
       for (int y = 0; y < dims[1]; y++)
@@ -94,7 +94,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
       }
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
     writer->SetFileName((outputname.append(".vti")).c_str());
-    //std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2)  
+    //std::cout<<"vti_writer_atom: Writing vtkPointData with "<< field.dims(0)* field.dims(1)* field.dims(2)
     //     << " Points in file "<<outputname<<std::endl;
     #if VTK_MAJOR_VERSION <= 5
         writer->SetInputConnection(imageData->GetProducerPort());
@@ -109,7 +109,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
     int dim4th = 3;//This is the number of the components of the 3D Field (until now only 3)
     vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
     reader->SetFileName(filepath.c_str());
-    reader->Update(); 
+    reader->Update();
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
     imageData=reader->GetOutput();
 
@@ -145,7 +145,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
         A=af::moddims(A,af::dim4(dim4th,dims[0],dims[1],dims[2]));
         A=af::reorder(A,1,2,3,0);
         field=A;
-        //Two Versions to sort CellData to double* A_host 
+        //Two Versions to sort CellData to double* A_host
         //Perform equally both on CPU and OpenCL
 
         ////VERSION SORT WITH C++ LOOP
@@ -192,12 +192,12 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     // writes af::array field as vtkRectilinearGrid to file outputname.vtr
     // Uses cell data, thus xyz dimensions are increased by 1:  field.dims(0)+1, field.dims(1)+1, field.dims(2)+1
     // supports arbitrary field.dims(3) (e.g. 3 for vector field, 1 for scalar field)
-  
+
     // Creating vtk Object and setting dimensions obtained from af::array
     vtkSmartPointer<vtkRectilinearGrid> grid = vtkSmartPointer<vtkRectilinearGrid>::New();
     grid->SetDimensions(field.dims(0)+1, field.dims(1)+1, field.dims(2)+1);// Adding one node per dimension as we use cell data
-  
-  
+
+
     // declare xyz coordinate vectors
     vtkDataArray* coords[3];
     for(int i=0; i < 3; ++i){
@@ -217,7 +217,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
         double val = (double)j * mesh.dy;
         coords[1]->SetTuple(j, &val);
     }
-    
+
     //z
     double add_val = 0;
     for(int j=0; j < field.dims(2)+1; ++j)
@@ -238,7 +238,7 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     coords[0]->Delete();
     coords[1]->Delete();
     coords[2]->Delete();
-  
+
     // Write af::array data as vtk cell data
     const double* host_a = field.host<double>();// accesses af::array raw data
     const vtkIdType ncells = grid->GetNumberOfCells();
@@ -247,13 +247,13 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     data->SetName("m");
     data->SetNumberOfComponents(field.dims(3));
     data->SetNumberOfTuples( ncells );
-  
+
     for(vtkIdType cellId=0; cellId < ncells; ++cellId){
         for(int i=0; i < field.dims(3); ++i){
             data->SetValue(field.dims(3) * cellId + i, host_a[cellId+i*ncells]);
         }
     }
-  
+
     grid->GetCellData()->AddArray(data);
 
     // Writing output
@@ -262,11 +262,11 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
 
     if (verbose) std::cout<<"vtk_writer: writing array of dimension ["<< field.dims(0) << " " << field.dims(1) << \
         " " << field.dims(2) << " " << field.dims(3)<< "] to '" << outputname << "'" << std::endl;
-  
+
     writer->SetFileName(outputname.c_str());
     writer->SetInputData( grid );
     writer->Write();
-  
+
 
     writer->Delete();
     data->Delete();

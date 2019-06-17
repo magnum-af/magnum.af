@@ -1,8 +1,8 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace af; 
-typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af;
+typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee){
     const array sum_dim3 = sum(sum(sum(state.m,0),1),2);
@@ -16,7 +16,7 @@ const double rate = hzee_max/simtime; //[T/s]
 
 af::array zee_func(State state){
     double field_Tesla = 0;
-    field_Tesla = rate *state.t; 
+    field_Tesla = rate *state.t;
     array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
     zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
     return  zee;
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     std::cout<<"argc = "<<argc<<std::endl;
      for (int i=0; i<argc; i++)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
-    
+
     std::string filepath(argc>1? argv[1]: "../Data/skyrmion_stoch");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     const int nx = 90, nz=1;
     const double dx=1.0e-9;
     const double dz=0.6e-9;
-  
+
     //Generating Objects
     Mesh mesh(nx,nx,nz,dx,dx,dz);
     Material material = Material();
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     material.alpha = 1;
     material.D=3e-3;
     material.Ku1=0.6e6;
-  
+
      // Initial magnetic field
      array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
      m(span,span,span,2) = -1;
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
              if(r>nx/4.) m(ix,iy,span,2)=1.;
          }
      }
-  
+
     State state(mesh,material, m);
     vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
 
@@ -71,9 +71,9 @@ int main(int argc, char** argv)
     llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
     llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
     llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-    
+
     LLG Llg(state,llgterm);
-  
+
     timer t = af::timer::start();
     double E_prev=1e20;
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-8){
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev-Llg.E(state))/E_prev) << std::endl;
     }
     std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", steps = " << state.steps << std::endl; 
+    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", steps = " << state.steps << std::endl;
     vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
 
     // Hysteresis

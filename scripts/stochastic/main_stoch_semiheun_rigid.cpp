@@ -13,7 +13,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 //Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
 double mean_mz_analytical (double chi){
-    return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi 
+    return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi
 }
 
 void set_m_to_z(State& state){
@@ -38,10 +38,10 @@ int main(int argc, char** argv)
     std::ofstream stream2;
     stream2.precision(12);
     stream2.open ((filepath + "rigid.dat").c_str());
-  
+
     setDevice(argc>2? std::stoi(argv[2]):3);
     info();
-  
+
     //Integration material
     unsigned long int measure_steps = 6e4;
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 ,nz=1;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
     Material material = Material();
@@ -60,14 +60,14 @@ int main(int argc, char** argv)
     material.Ku1   = 6.9e6;
     material.alpha = 0.1;
     material.T = 10;
-  
+
     // Initial magnetic field
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,2)=1.;
     State state(mesh,material, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state,llgterm,0.,"SemiHeun");//ATTENTION, to be set in each loop
-  
+
     //Declare Variables
     double mean_mz;
     double abs_mean_mz;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     double dt = 1e-15;
 
     //MEASURE
-    
+
     for(int i=0;i<25;i++){
         std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
         //T=10
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt); 
+            Stoch.step(state,dt);
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
         chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt); 
+            Stoch.step(state,dt);
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
         chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt); 
+            Stoch.step(state,dt);
             mean_mz+=afvalue(state.m(0,0,0,2));
             abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
         }
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
         mean_mz=mean_mz/measure_steps;
         abs_mean_mz=abs_mean_mz/measure_steps;
         chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
-        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl; 
+        std::cout<<"at "<<Stoch.material.T<<" K" << std::endl;
         std::cout<<"Calculated <mz>/Ms  = "<< mean_mz <<std::endl;
         std::cout<<"Cal  <fabs(mz)>/Ms  = "<< abs_mean_mz <<std::endl;
         std::cout<<"Analytical <mz>/Ms  = "<< mean_mz_analytical(chi) <<"\n" << std::endl;

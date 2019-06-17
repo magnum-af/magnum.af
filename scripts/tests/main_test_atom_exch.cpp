@@ -1,6 +1,6 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
-using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr; 
+using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 bool compare(double a, double b){
     //std::cout << "COM:"<< a <<"," << b <<","<<fabs(a-b)/fabs(a+b)<<std::endl;
@@ -17,14 +17,14 @@ int main(int argc, char** argv)
     int nx = 2, ny=1 ,nz=1;//nz=5 -> lz=(5-1)*dx
     //const double dx=1;
     const double dx=2.715e-10;
-  
+
     //Generating Objects
     Mesh mesh(nx,ny,nz,dx,dx,dx);
     Material material = Material();
     material.J_atom=1e12;
     material.p=1e-12;
     //material.p=9.274009994e-24;
-  
+
     //-------------------------------------------------------
     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
     m(0,0,0,0) = 0;
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     m(1,0,0,2) = 1;
     State state(mesh,material, m);
     //vti_writer_atom(state.m, mesh ,(filepath + "/minit").c_str());
-  
+
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     LLG Llg(state,llgterm);
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     m(0,1,0,1) = 0;
     m(0,1,0,2) = 1;
     state = State (mesh,material, m);
-  
+
     llgterm.pop_back();
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
     //TODO this leads to compiler error
