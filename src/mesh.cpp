@@ -100,10 +100,10 @@ af::array Mesh::init_vortex(const bool positive_direction){
     return m;
 }
 af::array Mesh::init_sp4(){
-    af::array m = af::constant(0.0,this->n0,this->n1,this->n2,3,f64);
-    m(af::seq(1,af::end-1),af::span,af::span,0) = af::constant(1.0,this->n0-2,this->n1,this->n2,1,f64);
-    m(0,af::span,af::span,1 ) = af::constant(1.0,1,this->n1,this->n2,1,f64);
-    m(-1,af::span,af::span,1) = af::constant(1.0,1,this->n1,this->n2,1,f64);
+    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+    m(af::seq(1, af::end-1), af::span, af::span, 0) = 1;
+    m(0, af::span, af::span, 1 ) = 1;
+    m(-1, af::span, af::span, 1) = 1;
     return m;
 
 }

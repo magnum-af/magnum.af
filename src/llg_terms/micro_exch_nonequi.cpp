@@ -49,8 +49,15 @@ int NonequiExchangeField::findex(int i0, int i1, int i2, int im, NonequispacedMe
 
 
 af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const NonequispacedMesh& mesh, const bool verbose){
+    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning()); fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
+
+    std::vector<double> h;// spacings between discretization points h = (dz[n] + dz[n+1])/2
+    for(unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++){
+        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i+1))/2.);
+    }
+
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
@@ -107,27 +114,27 @@ af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const N
                   csr_ia++;
                 }
 
-                //z from ref [1]
+                // z from ref [1]
                 if (i2 == 0 && mesh.nz > 1 ){//TODO check
-                  double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
-                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * 1./h_divisor );
+                  // Note: skipping f-1 term as it drops out in llg: neumann bc is assumed, which would consider fictive m[-1] with value m[0]
+                  CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2), 2) );
                   CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                   csr_ia++;
                 }
-                if (i2 == mesh.nz - 1 && mesh.nz > 1){//TODO check
-                  double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
-                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * (mesh.z_spacing[i2]/mesh.z_spacing[i2-1])/h_divisor);
+                else if (i2 == mesh.nz - 1 && mesh.nz > 1){//TODO check
+                  // Note: skipping f+1 term as it drops out in llg: neumann bc is assumed, which would consider fictive m[n] with value m[n-1]
+                  CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2-1), 2) );
                   CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                   csr_ia++;
                 }
-                if( i2 > 0 && i2 < mesh.nz - 1){
-                  double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
+                else if( i2 > 0 && i2 < mesh.nz - 1){
+                  double h_divisor = h.at(i2) * h.at(i2-1) * (1. + h.at(i2)/h.at(i2-1));
                   // f_{i-1} term
-                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * (mesh.z_spacing[i2]/mesh.z_spacing[i2-1])/h_divisor);
+                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * (2. * h.at(i2)/h.at(i2-1))/h_divisor);
                   CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                   csr_ia++;
                   // f_{i+1} term
-                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * 1./h_divisor );
+                  CSR_values.push_back( (2.* A_exchange / constants::mu0) * 2./h_divisor );
                   CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                   csr_ia++;
                 }
@@ -146,10 +153,15 @@ af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const N
 
 // Assembly of sparse matrix for spacially varying exchange energy A_exchange_field
 af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_field, const NonequispacedMesh& mesh, const bool verbose){
-    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
-    fflush(stdout);
+    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning()); fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
+
+    std::vector<double> h;// spacings between discretization points h = (dz[n] + dz[n+1])/2  
+    for(unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++){
+        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i+1))/2.);
+    }
+
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
@@ -237,34 +249,32 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
 
                 // z TODO add proper z handling
                 if (i2 == 0 && mesh.nz > 1 ){
-                    double A_exch = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
-                    double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
-                    if (A_exch != 0){
-                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * 1./h_divisor );
+                    double A_exchange = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
+                    if (A_exchange != 0){
+                        CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2), 2) );
                         CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                         csr_ia++;
                     }
                 }
                 if (i2 == mesh.nz - 1 && mesh.nz > 1){
-                    double A_exch = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
-                    double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
-                    if (A_exch != 0){
-                        CSR_values.push_back( (2.* A_exch)/(constants::mu0) * (mesh.z_spacing[i2]/mesh.z_spacing[i2-1])/h_divisor );
+                    double A_exchange = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
+                    if (A_exchange != 0){
+                        CSR_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2-1), 2) );
                         CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                         csr_ia++;
                     }
                 }
                 if( i2 > 0 && i2 < mesh.nz - 1){
-                    double A_exch_m = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
+                    double A_exchange_m = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
                     double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
-                    if (A_exch_m != 0){
-                        CSR_values.push_back( (2.* A_exch_m)/(constants::mu0) * (mesh.z_spacing[i2]/mesh.z_spacing[i2-1])/h_divisor );
+                    if (A_exchange_m != 0){
+                        CSR_values.push_back( (2.* A_exchange_m / constants::mu0) * (2. * h.at(i2)/h.at(i2-1))/h_divisor);
                         CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                         csr_ia++;
                     }
-                    double A_exch_p = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
-                    if (A_exch_p != 0){
-                        CSR_values.push_back( (2.* A_exch_p)/(constants::mu0) * 1./h_divisor );
+                    double A_exchange_p = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
+                    if (A_exchange_p != 0){
+                        CSR_values.push_back( (2.* A_exchange_p / constants::mu0) * 2./h_divisor );
                         CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                         csr_ia++;
                     }
