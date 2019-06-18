@@ -44,7 +44,10 @@ Execute the provided installation script:
 * [CMake](http://www.cmake.org) 2.8 or newer
 * pip3
 
-### GPU Driver Installation (choose either NVIDIA or AMD)
+### GPU Driver Installation
+
+In the following, choose either NVIDIA or AMD:
+
 #### NVIDIA: nvidia-driver and CUDA:
 following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
