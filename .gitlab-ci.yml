@@ -53,7 +53,7 @@ deploy_GTO:
   script:
     - docker pull $CUDA_RELEASE_IMAGE
     - docker build -t magnum.af-docu -f Dockerfile.docu .
-    - scripts/get_docu_from_image.sh magnum.af-docu
+    - scripts/bash/get_docu_from_image.sh magnum.af-docu
   tags:
     - packer
   artifacts:
