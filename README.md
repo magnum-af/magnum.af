@@ -41,10 +41,11 @@ Execute the provided installation script:
 
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
-* [CMake](http://www.cmake.org) 3.0.0 or newer
+* [CMake](http://www.cmake.org) 2.8 or newer
 * pip3
 
-### NVIDIA driver and CUDA:
+### GPU Driver Installation (choose either NVIDIA or AMD)
+#### NVIDIA: nvidia-driver and CUDA:
 following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 `$ sudo ubuntu-drivers autoinstall`
@@ -67,26 +68,7 @@ install CUDA with
 
 `$ sudo apt install nvidia-cuda-toolkit`
 
-### Install Arrayfire
- For version 3.6.2:
-
-`$ wget https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_Linux_x86_64.sh .`
-
-`$ chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh`
-
-`$ sudo ./ArrayFire-v3.6.2_Linux_x86_64.sh  --include-subdir --prefix=/opt`
-
-`$ sudo pip3 install arrayfire`
-
-### Install VTK
-`$ sudo apt install libvtk7-dev`
-
-### Install Cython
-`$ sudo pip3 install cython`
-
---------------------
-
-### OpenCL Devices (e.g. AMD Graphics Cards):
+#### AMD: AMDGPU driver and OpenCL
 * Installation of hardware-specific drivers:
 
 http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
@@ -106,89 +88,23 @@ and executing:
 
 `$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
 
-### Arrayfire
-* from binaries
+for cmake to find OpenCl run:
 
-http://arrayfire.org/docs/installing.htm
+`$ sudo apt install ocl-icd-opencl-dev`
 
-* from source
+### Install Arrayfire
+ For version 3.6.2:
 
-https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
+`$ wget https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_Linux_x86_64.sh .`
 
-### Arrayfire-Python
+`$ chmod +x ArrayFire-v3.6.2_Linux_x86_64.sh`
 
+`$ sudo ./ArrayFire-v3.6.2_Linux_x86_64.sh  --include-subdir --prefix=/opt`
 
-* Install arrayfire-python bindings by
+`$ sudo pip3 install arrayfire`
 
-`$ pip install arrayfire`
+### Install VTK
+`$ sudo apt install libvtk7-dev`
 
-Fore more details see https://github.com/arrayfire/arrayfire-python
-
-### VTK:
-#### From Package Manager
-* Check current versions:
-
-`$ apt-cache search libvtk`
-
-* Choose latest version with headers  (i.e. latest -dev version), e.g.
-
-`$ sudo apt install libvtk6-dev`
-
-Currently, this comes with a broken link in Ubuntu 16.04. Fix by installing
-
-`$ sudo apt-get install libproj-dev`
-
-An other quick and dirty fix is
-
-`$ sudo ln -s  /usr/lib/x86_64-linux-gnu/libproj.so.<your-version> /usr/lib/x86_64-linux-gnu/libproj.so`
-
-with <your-version> being eg 9 (https://stackoverflow.com/questions/37369369/compiling-pcl-1-7-on-ubuntu-16-04-errors-in-cmake-generated-makefile)
-
-Note: maybe python-vtk is also neccessary
-`$ sudo apt install python-vtk`
-
-Add the VTK_DIR environment variable in your .bashrc file and source it
-
-add `export VTK_DIR=/path_to_VTK:$VTK_DIR`
-
-`source .bashrc`
-
-#### From source (not recommended)
-* follow
-
-https://www.vtk.org/Wiki/VTK/Configure_and_Build
-
-* generate ccmake files with
-
-`$ ccmake /...path_to_VTK/`
-* install with
-
-`$ sudo make install -jXX`  (where XX is number of desired threads)
-
-Note: if you encounter the error  "CMake Error at Rendering/OpenGL/CMakeLists.txt:304 (message):
-   X11_Xt_LIB could not be found.  Required for VTK X lib."
-try
-
-`$ sudo apt-get install libxt-dev`
-
-(https://stackoverflow.com/questions/23528248/how-to-install-x11-xt-lib-when-configure-vtk)
-
-###  Arrayfire Python and Cython
-$ pip install arrayfire
-$ pip install Cython
-
-### magnum.af:
-Note: In new projects, set VTK_DIR by
-
-`$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
-
-* in magnum.af folder run
-
-`$ mkdir build && cd build`
-
-`$ cmake -DVTK_DIR:PATH=/home/path_to_VTK_build/VKT-build  ..`
-
-`$ make -jXX` (where XX is number of desired threads)
-
-Note: In new projects, set VTK_DIR by
-`$ export VTK_DIR=/home/.../VTK-build:$VTK_DIR`
+### Install Cython
+`$ sudo pip3 install cython`
