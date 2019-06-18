@@ -49,7 +49,7 @@ Execute the provided installation script:
 In the following, choose either NVIDIA or AMD:
 
 #### NVIDIA: nvidia-driver and CUDA:
-following linuxconfig.org [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
+following [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 `$ sudo ubuntu-drivers autoinstall`
 
@@ -72,24 +72,7 @@ install CUDA with
 `$ sudo apt install nvidia-cuda-toolkit`
 
 #### AMD: AMDGPU driver and OpenCL
-* Installation of hardware-specific drivers:
-
-http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Install.aspx
-* AMD APP SDK
-
-http://developer.amd.com/amd-accelerated-parallel-processing-app-sdk/
-
-* Fix linking error
-
-Currently, AMDAPPSDK-3.0 installs with a broken symbolic link on 64-bit installs
-which can be fixed by
-
-going to directory
-`/AMDAPPSDKROOT/lib/x86_64/` (usually `/opt/AMDAPPSDK-3.0/lib/x86_64`)
-
-and executing:
-
-`$ sudo ln -sf sdk/libOpenCL.so.1 libOpenCL.so`
+Follow [linuxconfig.org](https://linuxconfig.org/how-to-install-the-latest-amd-radeon-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 for cmake to find OpenCl run:
 

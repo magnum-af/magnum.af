@@ -41,5 +41,6 @@ sudo reboot
 cd ~/Downloads/amdgpu-pro-18.40-676022-ubuntu-18.04/
 sudo ./amdgpu-pro-install -y --opencl=legacy
 sudo reboot
+sudo apt install ocl-icd-opencl-dev # fixes cmake OpenCl not found
 # Uninstall with:
 # sudo amdgpu-uninstall
