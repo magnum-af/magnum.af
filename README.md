@@ -32,12 +32,7 @@ For running simulations, use the provided script in 'scripts/magnum.af.docker', 
 
 `$ magnum.af.docker sp4.py`
 
-## Build scipt:
-Execute the provided installation script:
-
-`$./scripts/install_magnum.af_environment.sh`
-
-## Manual installation:
+## Local installation:
 
 ### Prerequisites:
 * A C++11 compiler like gcc or clang
@@ -49,7 +44,7 @@ Execute the provided installation script:
 In the following, choose either NVIDIA or AMD:
 
 #### NVIDIA: nvidia-driver and CUDA:
-following [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux)
+following [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux):
 
 `$ sudo ubuntu-drivers autoinstall`
 
