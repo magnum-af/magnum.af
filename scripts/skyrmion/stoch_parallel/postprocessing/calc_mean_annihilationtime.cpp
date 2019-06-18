@@ -34,7 +34,7 @@ int main(int argc, char** argv){
 
         double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
         for (double n : vec_detect_time){
-            unbiased_sample_variance += pow( n - mean_detect_time ,2);
+            unbiased_sample_variance += pow( n - mean_detect_time , 2);
         }
         unbiased_sample_variance/=( (double) vec_detect_time.size() -1 );
         double unbiased_sample_sigma = sqrt(unbiased_sample_variance);

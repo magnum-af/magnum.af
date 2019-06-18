@@ -44,17 +44,17 @@
    for w(z) similar to those described in:
 
       Walter Gautschi, "Efficient computation of the complex error
-      function," SIAM J. Numer. Anal. 7(1), pp. 187-198 (1970)
+      function, " SIAM J. Numer. Anal. 7(1), pp. 187-198 (1970)
 
       G. P. M. Poppe and C. M. J. Wijers, "More efficient computation
-      of the complex error function," ACM Trans. Math. Soft. 16(1),
+      of the complex error function, " ACM Trans. Math. Soft. 16(1),
       pp. 38-46 (1990).
 
    Unlike those papers, however, we switch to a completely different
    algorithm for smaller |z|:
 
       Mofreh R. Zaghloul and Ahmed N. Ali, "Algorithm 916: Computing the
-      Faddeyeva and Voigt Functions," ACM Trans. Math. Soft. 38(2), 15
+      Faddeyeva and Voigt Functions, " ACM Trans. Math. Soft. 38(2), 15
       (2011).
 
    (I initially used this algorithm for all z, but it turned out to be
@@ -109,7 +109,7 @@
       24 October 2012: Switch to continued-fraction expansion for
                        sufficiently large z, for performance reasons.
                        Also, avoid spurious overflow for |z| > 1e154.
-                       Set relerr argument to min(relerr,0.1).
+                       Set relerr argument to min(relerr, 0.1).
       27 October 2012: Enhance accuracy in Re[w(z)] taken by itself,
                        by switching to Alg. 916 in a region near
                        the real-z axis where continued fractions
@@ -175,9 +175,9 @@ typedef complex<double> cmplx;
 #  define cexp(z) exp(z)
 #  define creal(z) real(z)
 #  define cimag(z) imag(z)
-#  define cpolar(r,t) polar(r,t)
+#  define cpolar(r, t) polar(r, t)
 
-#  define C(a,b) cmplx(a,b)
+#  define C(a, b) cmplx(a, b)
 
 #  define FADDEEVA(name) Faddeeva::name
 #  define FADDEEVA_RE(name) Faddeeva::name
@@ -240,11 +240,11 @@ typedef double complex cmplx;
    glibc and compile with -std=c11... note that icc lies about being
    gcc and probably doesn't have this builtin(?), so exclude icc explicitly */
 #  if !defined(CMPLX) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)) && !(defined(__ICC) || defined(__INTEL_COMPILER))
-#    define CMPLX(a,b) __builtin_complex((double) (a), (double) (b))
+#    define CMPLX(a, b) __builtin_complex((double) (a), (double) (b))
 #  endif
 
 #  ifdef CMPLX // C11
-#    define C(a,b) CMPLX(a,b)
+#    define C(a, b) CMPLX(a, b)
 #    define Inf INFINITY // C99 infinity
 #    ifdef NAN // GNU libc extension
 #      define NaN NAN
@@ -252,7 +252,7 @@ typedef double complex cmplx;
 #      define NaN (0./0.) // NaN
 #    endif
 #  else
-#    define C(a,b) ((a) + I*(b))
+#    define C(a, b) ((a) + I*(b))
 #    define Inf (1./0.)
 #    define NaN (0./0.)
 #  endif
@@ -343,7 +343,7 @@ cmplx FADDEEVA(erf)(cmplx z, double relerr)
        values when multiplying w in an overflow situation. */
     return 1.0 - exp(mRe_z2) *
       (C(cos(mIm_z2), sin(mIm_z2))
-       * FADDEEVA(w)(C(-y,x), relerr));
+       * FADDEEVA(w)(C(-y, x), relerr));
   }
   else { // x < 0
     if (x > -8e-2) { // duplicate from above to avoid fabs(x) call
@@ -358,7 +358,7 @@ cmplx FADDEEVA(erf)(cmplx z, double relerr)
        values when multiplying w in an overflow situation. */
     return exp(mRe_z2) *
       (C(cos(mIm_z2), sin(mIm_z2))
-       * FADDEEVA(w)(C(y,-x), relerr)) - 1.0;
+       * FADDEEVA(w)(C(y, -x), relerr)) - 1.0;
   }
 
   // Use Taylor series for small |z|, to avoid cancellation inaccuracy
@@ -403,7 +403,7 @@ cmplx FADDEEVA(erf)(cmplx z, double relerr)
 // erfi(z) = -i erf(iz)
 cmplx FADDEEVA(erfi)(cmplx z, double relerr)
 {
-  cmplx e = FADDEEVA(erf)(C(-cimag(z),creal(z)), relerr);
+  cmplx e = FADDEEVA(erf)(C(-cimag(z), creal(z)), relerr);
   return C(cimag(e), -creal(e));
 }
 
@@ -457,10 +457,10 @@ cmplx FADDEEVA(erfc)(cmplx z, double relerr)
 
   if (x >= 0)
     return cexp(C(mRe_z2, mIm_z2))
-      * FADDEEVA(w)(C(-y,x), relerr);
+      * FADDEEVA(w)(C(-y, x), relerr);
   else
     return 2.0 - cexp(C(mRe_z2, mIm_z2))
-      * FADDEEVA(w)(C(y,-x), relerr);
+      * FADDEEVA(w)(C(y, -x), relerr);
 }
 
 // compute Dawson(x) = sqrt(pi)/2  *  exp(-x^2) * erfi(x)
@@ -739,7 +739,7 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
         }
         else if (isinf(ya))
           return ((isnan(x) || y < 0)
-                  ? C(NaN,NaN) : C(0,0));
+                  ? C(NaN, NaN) : C(0, 0));
         else {
           double xya = xs / ya;
           double denom = ispi / (xya*xs + ya);
@@ -804,8 +804,8 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
 
   /* Note: The test that seems to be suggested in the paper is x <
      sqrt(-log(DBL_MIN)), about 26.6, since otherwise exp(-x^2)
-     underflows to zero and sum1,sum2,sum4 are zero.  However, long
-     before this occurs, the sum1,sum2,sum4 contributions are
+     underflows to zero and sum1, sum2, sum4 are zero.  However, long
+     before this occurs, the sum1, sum2, sum4 contributions are
      negligible in double precision; I find that this happens for x >
      about 6, for all y.  On the other hand, I find that the case
      where we compute all of the sums is faster (at least with the
@@ -819,7 +819,7 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
     double expx2;
 
     if (isnan(y))
-      return C(y,y);
+      return C(y, y);
 
     /* Somewhat ugly copy-and-paste duplication here, but I see significant
        speedups from using the special-case code with the precomputed
@@ -923,9 +923,9 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
   }
   else { // x large: only sum3 & sum5 contribute (see above note)
     if (isnan(x))
-      return C(x,x);
+      return C(x, x);
     if (isnan(y))
-      return C(y,y);
+      return C(y, y);
 
 #if USE_CONTINUED_FRACTION
     ret = exp(-x*x); // |y| < 1e-10, so we only need exp(-x*x) term
@@ -984,13 +984,13 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
    Second, for 0 <= x <= 50, it uses Chebyshev polynomial approximations,
    but with two twists:
 
-      a) It maps x to y = 4 / (4+x) in [0,1].  This simple transformation,
+      a) It maps x to y = 4 / (4+x) in [0, 1].  This simple transformation,
          inspired by a similar transformation in the octave-forge/specfun
          erfcx by Soren Hauberg, results in much faster Chebyshev convergence
          than other simple transformations I have examined.
 
       b) Instead of using a single Chebyshev polynomial for the entire
-         [0,1] y interval, we break the interval up into 100 equal
+         [0, 1] y interval, we break the interval up into 100 equal
          subintervals, with a switch/lookup table, and use much lower
          degree Chebyshev polynomials in each subinterval. This greatly
          improves performance in my tests.
@@ -1006,10 +1006,10 @@ cmplx FADDEEVA(w)(cmplx z, double relerr)
 /* Given y100=100*y, where y = 4/(4+x) for x >= 0, compute erfc(x).
 
    Uses a look-up table of 100 different Chebyshev polynomials
-   for y intervals [0,0.01], [0.01,0.02], ...., [0.99,1], generated
+   for y intervals [0, 0.01], [0.01, 0.02], ...., [0.99, 1], generated
    with the help of Maple and a little shell script.   This allows
    the Chebyshev polynomials to be of significantly lower degree (about 1/4)
-   compared to fitting the whole [0,1] interval with a single polynomial. */
+   compared to fitting the whole [0, 1] interval with a single polynomial. */
 static double erfcx_y100(double y100)
 {
   switch ((int) y100) {
@@ -1451,10 +1451,10 @@ double FADDEEVA_RE(erfcx)(double x)
 /* Given y100=100*y, where y = 1/(1+x) for x >= 0, compute w_im(x).
 
    Uses a look-up table of 100 different Chebyshev polynomials
-   for y intervals [0,0.01], [0.01,0.02], ...., [0.99,1], generated
+   for y intervals [0, 0.01], [0.01, 0.02], ...., [0.99, 1], generated
    with the help of Maple and a little shell script.   This allows
    the Chebyshev polynomials to be of significantly lower degree (about 1/30)
-   compared to fitting the whole [0,1] interval with a single polynomial. */
+   compared to fitting the whole [0, 1] interval with a single polynomial. */
 static double w_im_y100(double y100, double x) {
   switch ((int) y100) {
     case 0: {
@@ -1919,63 +1919,63 @@ int main(void) {
     printf("############# w(z) tests #############\n");
 #define NTST 57 // define instead of const for C compatibility
     cmplx z[NTST] = {
-      C(624.2,-0.26123),
-      C(-0.4,3.),
-      C(0.6,2.),
-      C(-1.,1.),
-      C(-1.,-9.),
-      C(-1.,9.),
-      C(-0.0000000234545,1.1234),
-      C(-3.,5.1),
-      C(-53,30.1),
-      C(0.0,0.12345),
-      C(11,1),
-      C(-22,-2),
-      C(9,-28),
-      C(21,-33),
-      C(1e5,1e5),
-      C(1e14,1e14),
-      C(-3001,-1000),
-      C(1e160,-1e159),
-      C(-6.01,0.01),
-      C(-0.7,-0.7),
+      C(624.2, -0.26123),
+      C(-0.4, 3.),
+      C(0.6, 2.),
+      C(-1., 1.),
+      C(-1., -9.),
+      C(-1., 9.),
+      C(-0.0000000234545, 1.1234),
+      C(-3., 5.1),
+      C(-53, 30.1),
+      C(0.0, 0.12345),
+      C(11, 1),
+      C(-22, -2),
+      C(9, -28),
+      C(21, -33),
+      C(1e5, 1e5),
+      C(1e14, 1e14),
+      C(-3001, -1000),
+      C(1e160, -1e159),
+      C(-6.01, 0.01),
+      C(-0.7, -0.7),
       C(2.611780000000000e+01, 4.540909610972489e+03),
-      C(0.8e7,0.3e7),
-      C(-20,-19.8081),
-      C(1e-16,-1.1e-16),
-      C(2.3e-8,1.3e-8),
-      C(6.3,-1e-13),
-      C(6.3,1e-20),
-      C(1e-20,6.3),
-      C(1e-20,16.3),
-      C(9,1e-300),
-      C(6.01,0.11),
-      C(8.01,1.01e-10),
-      C(28.01,1e-300),
-      C(10.01,1e-200),
-      C(10.01,-1e-200),
-      C(10.01,0.99e-10),
-      C(10.01,-0.99e-10),
-      C(1e-20,7.01),
-      C(-1,7.01),
-      C(5.99,7.01),
-      C(1,0),
-      C(55,0),
-      C(-0.1,0),
-      C(1e-20,0),
-      C(0,5e-14),
-      C(0,51),
-      C(Inf,0),
-      C(-Inf,0),
-      C(0,Inf),
-      C(0,-Inf),
-      C(Inf,Inf),
-      C(Inf,-Inf),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(0,NaN),
-      C(NaN,Inf),
-      C(Inf,NaN)
+      C(0.8e7, 0.3e7),
+      C(-20, -19.8081),
+      C(1e-16, -1.1e-16),
+      C(2.3e-8, 1.3e-8),
+      C(6.3, -1e-13),
+      C(6.3, 1e-20),
+      C(1e-20, 6.3),
+      C(1e-20, 16.3),
+      C(9, 1e-300),
+      C(6.01, 0.11),
+      C(8.01, 1.01e-10),
+      C(28.01, 1e-300),
+      C(10.01, 1e-200),
+      C(10.01, -1e-200),
+      C(10.01, 0.99e-10),
+      C(10.01, -0.99e-10),
+      C(1e-20, 7.01),
+      C(-1, 7.01),
+      C(5.99, 7.01),
+      C(1, 0),
+      C(55, 0),
+      C(-0.1, 0),
+      C(1e-20, 0),
+      C(0, 5e-14),
+      C(0, 51),
+      C(Inf, 0),
+      C(-Inf, 0),
+      C(0, Inf),
+      C(0, -Inf),
+      C(Inf, Inf),
+      C(Inf, -Inf),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(0, NaN),
+      C(NaN, Inf),
+      C(Inf, NaN)
     };
     cmplx w[NTST] = { /* w(z), computed with WolframAlpha
                                    ... note that WolframAlpha is problematic
@@ -2075,25 +2075,25 @@ int main(void) {
         0),
       C(0.0110604154853277201542582159216317923453996211744250,
         0),
-      C(0,0),
-      C(0,0),
-      C(0,0),
-      C(Inf,0),
-      C(0,0),
-      C(NaN,NaN),
-      C(NaN,NaN),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(NaN,NaN),
-      C(NaN,NaN)
+      C(0, 0),
+      C(0, 0),
+      C(0, 0),
+      C(Inf, 0),
+      C(0, 0),
+      C(NaN, NaN),
+      C(NaN, NaN),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(NaN, NaN),
+      C(NaN, NaN)
     };
     double errmax = 0;
     for (int i = 0; i < NTST; ++i) {
-      cmplx fw = FADDEEVA(w)(z[i],0.);
+      cmplx fw = FADDEEVA(w)(z[i], 0.);
       double re_err = relerr(creal(w[i]), creal(fw));
       double im_err = relerr(cimag(w[i]), cimag(fw));
       printf("w(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n",
-             creal(z[i]),cimag(z[i]), creal(fw),cimag(fw), creal(w[i]),cimag(w[i]),
+             creal(z[i]), cimag(z[i]), creal(fw), cimag(fw), creal(w[i]), cimag(w[i]),
              re_err, im_err);
       if (re_err > errmax) errmax = re_err;
       if (im_err > errmax) errmax = im_err;
@@ -2109,15 +2109,15 @@ int main(void) {
 #undef NTST
 #define NTST 41 // define instead of const for C compatibility
     cmplx z[NTST] = {
-      C(1,2),
-      C(-1,2),
-      C(1,-2),
-      C(-1,-2),
-      C(9,-28),
-      C(21,-33),
-      C(1e3,1e3),
-      C(-3001,-1000),
-      C(1e160,-1e159),
+      C(1, 2),
+      C(-1, 2),
+      C(1, -2),
+      C(-1, -2),
+      C(9, -28),
+      C(21, -33),
+      C(1e3, 1e3),
+      C(-3001, -1000),
+      C(1e160, -1e159),
       C(5.1e-3, 1e-8),
       C(-4.9e-3, 4.95e-3),
       C(4.9e-3, 0.5),
@@ -2126,30 +2126,30 @@ int main(void) {
       C(5.1e-3, 0.5),
       C(5.1e-4, -0.5e1),
       C(-5.1e-5, -0.5e2),
-      C(1e-6,2e-6),
-      C(0,2e-6),
-      C(0,2),
-      C(0,20),
-      C(0,200),
-      C(Inf,0),
-      C(-Inf,0),
-      C(0,Inf),
-      C(0,-Inf),
-      C(Inf,Inf),
-      C(Inf,-Inf),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(0,NaN),
-      C(NaN,Inf),
-      C(Inf,NaN),
-      C(1e-3,NaN),
-      C(7e-2,7e-2),
-      C(7e-2,-7e-4),
-      C(-9e-2,7e-4),
-      C(-9e-2,9e-2),
-      C(-7e-4,9e-2),
-      C(7e-2,0.9e-2),
-      C(7e-2,1.1e-2)
+      C(1e-6, 2e-6),
+      C(0, 2e-6),
+      C(0, 2),
+      C(0, 20),
+      C(0, 200),
+      C(Inf, 0),
+      C(-Inf, 0),
+      C(0, Inf),
+      C(0, -Inf),
+      C(Inf, Inf),
+      C(Inf, -Inf),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(0, NaN),
+      C(NaN, Inf),
+      C(Inf, NaN),
+      C(1e-3, NaN),
+      C(7e-2, 7e-2),
+      C(7e-2, -7e-4),
+      C(-9e-2, 7e-4),
+      C(-9e-2, 9e-2),
+      C(-7e-4, 9e-2),
+      C(7e-2, 0.9e-2),
+      C(7e-2, 1.1e-2)
     };
     cmplx w[NTST] = { // erf(z[i]), evaluated with Maple
       C(-0.5366435657785650339917955593141927494421,
@@ -2194,18 +2194,18 @@ int main(void) {
         0.1474797539628786202447733153131835124599e173),
       C(0,
         Inf),
-      C(1,0),
-      C(-1,0),
-      C(0,Inf),
-      C(0,-Inf),
-      C(NaN,NaN),
-      C(NaN,NaN),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(0,NaN),
-      C(NaN,NaN),
-      C(NaN,NaN),
-      C(NaN,NaN),
+      C(1, 0),
+      C(-1, 0),
+      C(0, Inf),
+      C(0, -Inf),
+      C(NaN, NaN),
+      C(NaN, NaN),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(0, NaN),
+      C(NaN, NaN),
+      C(NaN, NaN),
+      C(NaN, NaN),
       C(0.07924380404615782687930591956705225541145,
         0.07872776218046681145537914954027729115247),
       C(0.07885775828512276968931773651224684454495,
@@ -2221,15 +2221,15 @@ int main(void) {
       C(0.07886723099940260286824654364807981336591,
         0.01235199327873258197931147306290916629654)
     };
-#define TST(f,isc)                                                      \
+#define TST(f, isc)                                                      \
     printf("############# " #f "(z) tests #############\n");            \
     double errmax = 0;                                                  \
     for (int i = 0; i < NTST; ++i) {                                    \
-      cmplx fw = FADDEEVA(f)(z[i],0.);                  \
+      cmplx fw = FADDEEVA(f)(z[i], 0.);                  \
       double re_err = relerr(creal(w[i]), creal(fw));                   \
       double im_err = relerr(cimag(w[i]), cimag(fw));                   \
       printf(#f "(%g%+gi) = %g%+gi (vs. %g%+gi), re/im rel. err. = %0.2g/%0.2g)\n", \
-             creal(z[i]),cimag(z[i]), creal(fw),cimag(fw), creal(w[i]),cimag(w[i]), \
+             creal(z[i]), cimag(z[i]), creal(fw), cimag(fw), creal(w[i]), cimag(w[i]), \
              re_err, im_err);                                           \
       if (re_err > errmax) errmax = re_err;                             \
       if (im_err > errmax) errmax = im_err;                             \
@@ -2242,21 +2242,21 @@ int main(void) {
     for (int i = 0; i < 10000; ++i) {                                   \
       double x = pow(10., -300. + i * 600. / (10000 - 1));              \
       double re_err = relerr(FADDEEVA_RE(f)(x),                         \
-                             creal(FADDEEVA(f)(C(x,x*isc),0.)));        \
+                             creal(FADDEEVA(f)(C(x, x*isc), 0.)));        \
       if (re_err > errmax) errmax = re_err;                             \
       re_err = relerr(FADDEEVA_RE(f)(-x),                               \
-                      creal(FADDEEVA(f)(C(-x,x*isc),0.)));              \
+                      creal(FADDEEVA(f)(C(-x, x*isc), 0.)));              \
       if (re_err > errmax) errmax = re_err;                             \
     }                                                                   \
     {                                                                   \
       double re_err = relerr(FADDEEVA_RE(f)(Inf),                       \
-                             creal(FADDEEVA(f)(C(Inf,0.),0.))); \
+                             creal(FADDEEVA(f)(C(Inf, 0.), 0.))); \
       if (re_err > errmax) errmax = re_err;                             \
       re_err = relerr(FADDEEVA_RE(f)(-Inf),                             \
-                      creal(FADDEEVA(f)(C(-Inf,0.),0.)));               \
+                      creal(FADDEEVA(f)(C(-Inf, 0.), 0.)));               \
       if (re_err > errmax) errmax = re_err;                             \
       re_err = relerr(FADDEEVA_RE(f)(NaN),                              \
-                      creal(FADDEEVA(f)(C(NaN,0.),0.)));                \
+                      creal(FADDEEVA(f)(C(NaN, 0.), 0.)));                \
       if (re_err > errmax) errmax = re_err;                             \
     }                                                                   \
     if (errmax > 1e-13) {                                               \
@@ -2273,7 +2273,7 @@ int main(void) {
     // be sufficient to make sure I didn't screw up the signs or something
 #undef NTST
 #define NTST 1 // define instead of const for C compatibility
-    cmplx z[NTST] = { C(1.234,0.5678) };
+    cmplx z[NTST] = { C(1.234, 0.5678) };
     cmplx w[NTST] = { // erfi(z[i]), computed with Maple
       C(1.081032284405373149432716643834106923212,
         1.926775520840916645838949402886591180834)
@@ -2285,7 +2285,7 @@ int main(void) {
     // be sufficient to make sure I didn't screw up the signs or something
 #undef NTST
 #define NTST 1 // define instead of const for C compatibility
-    cmplx z[NTST] = { C(1.234,0.5678) };
+    cmplx z[NTST] = { C(1.234, 0.5678) };
     cmplx w[NTST] = { // erfcx(z[i]), computed with Maple
       C(0.3382187479799972294747793561190487832579,
         -0.1116077470811648467464927471872945833154)
@@ -2296,36 +2296,36 @@ int main(void) {
 #undef NTST
 #define NTST 30 // define instead of const for C compatibility
     cmplx z[NTST] = {
-      C(1,2),
-      C(-1,2),
-      C(1,-2),
-      C(-1,-2),
-      C(9,-28),
-      C(21,-33),
-      C(1e3,1e3),
-      C(-3001,-1000),
-      C(1e160,-1e159),
+      C(1, 2),
+      C(-1, 2),
+      C(1, -2),
+      C(-1, -2),
+      C(9, -28),
+      C(21, -33),
+      C(1e3, 1e3),
+      C(-3001, -1000),
+      C(1e160, -1e159),
       C(5.1e-3, 1e-8),
-      C(0,2e-6),
-      C(0,2),
-      C(0,20),
-      C(0,200),
-      C(2e-6,0),
-      C(2,0),
-      C(20,0),
-      C(200,0),
-      C(Inf,0),
-      C(-Inf,0),
-      C(0,Inf),
-      C(0,-Inf),
-      C(Inf,Inf),
-      C(Inf,-Inf),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(0,NaN),
-      C(NaN,Inf),
-      C(Inf,NaN),
-      C(88,0)
+      C(0, 2e-6),
+      C(0, 2),
+      C(0, 20),
+      C(0, 200),
+      C(2e-6, 0),
+      C(2, 0),
+      C(20, 0),
+      C(200, 0),
+      C(Inf, 0),
+      C(-Inf, 0),
+      C(0, Inf),
+      C(0, -Inf),
+      C(Inf, Inf),
+      C(Inf, -Inf),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(0, NaN),
+      C(NaN, Inf),
+      C(Inf, NaN),
+      C(88, 0)
     };
     cmplx w[NTST] = { // erfc(z[i]), evaluated with Maple
       C(1.536643565778565033991795559314192749442,
@@ -2371,7 +2371,7 @@ int main(void) {
       C(1, NaN),
       C(NaN, NaN),
       C(NaN, NaN),
-      C(0,0)
+      C(0, 0)
     };
     TST(erfc, 1e-20);
   }
@@ -2379,14 +2379,14 @@ int main(void) {
 #undef NTST
 #define NTST 48 // define instead of const for C compatibility
     cmplx z[NTST] = {
-      C(2,1),
-      C(-2,1),
-      C(2,-1),
-      C(-2,-1),
-      C(-28,9),
-      C(33,-21),
-      C(1e3,1e3),
-      C(-1000,-3001),
+      C(2, 1),
+      C(-2, 1),
+      C(2, -1),
+      C(-2, -1),
+      C(-28, 9),
+      C(33, -21),
+      C(1e3, 1e3),
+      C(-1000, -3001),
       C(1e-8, 5.1e-3),
       C(4.95e-3, -4.9e-3),
       C(5.1e-3, 5.1e-3),
@@ -2397,28 +2397,28 @@ int main(void) {
       C(0.5, 5.1e-3),
       C(-0.5e1, 5.1e-4),
       C(-0.5e2, -5.1e-5),
-      C(1e-6,2e-6),
-      C(2e-6,0),
-      C(2,0),
-      C(20,0),
-      C(200,0),
-      C(0,4.9e-3),
-      C(0,-5.1e-3),
-      C(0,2e-6),
-      C(0,-2),
-      C(0,20),
-      C(0,-200),
-      C(Inf,0),
-      C(-Inf,0),
-      C(0,Inf),
-      C(0,-Inf),
-      C(Inf,Inf),
-      C(Inf,-Inf),
-      C(NaN,NaN),
-      C(NaN,0),
-      C(0,NaN),
-      C(NaN,Inf),
-      C(Inf,NaN),
+      C(1e-6, 2e-6),
+      C(2e-6, 0),
+      C(2, 0),
+      C(20, 0),
+      C(200, 0),
+      C(0, 4.9e-3),
+      C(0, -5.1e-3),
+      C(0, 2e-6),
+      C(0, -2),
+      C(0, 20),
+      C(0, -200),
+      C(Inf, 0),
+      C(-Inf, 0),
+      C(0, Inf),
+      C(0, -Inf),
+      C(Inf, Inf),
+      C(Inf, -Inf),
+      C(NaN, NaN),
+      C(NaN, 0),
+      C(0, NaN),
+      C(NaN, Inf),
+      C(Inf, NaN),
       C(39, 6.4e-5),
       C(41, 6.09e-5),
       C(4.9e7, 5e-11),
@@ -2475,14 +2475,14 @@ int main(void) {
         0),
       C(0.002500031251171948248596912483183760683918,
         0),
-      C(0,0.004900078433419939164774792850907128053308),
-      C(0,-0.005100088434920074173454208832365950009419),
-      C(0,0.2000000000005333333333341866666666676419e-5),
-      C(0,-48.16001211429122974789822893525016528191),
-      C(0,0.4627407029504443513654142715903005954668e174),
-      C(0,-Inf),
-      C(0,0),
-      C(-0,0),
+      C(0, 0.004900078433419939164774792850907128053308),
+      C(0, -0.005100088434920074173454208832365950009419),
+      C(0, 0.2000000000005333333333341866666666676419e-5),
+      C(0, -48.16001211429122974789822893525016528191),
+      C(0, 0.4627407029504443513654142715903005954668e174),
+      C(0, -Inf),
+      C(0, 0),
+      C(-0, 0),
       C(0, Inf),
       C(0, -Inf),
       C(NaN, NaN),

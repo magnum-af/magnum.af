@@ -48,7 +48,7 @@ terms = [
     DemagField(mesh, verbose = True, caching = True),
     ExchangeField(A),
     UniaxialAnisotropyField(stress_Ku1),
-    ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 ]
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 

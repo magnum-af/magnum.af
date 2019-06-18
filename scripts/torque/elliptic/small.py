@@ -21,7 +21,7 @@ nz = 1
 
 print(nx, ny, nz, x, y, z)
 
-m, n_cells = Util.disk(nx, ny, nz, [0,1,0])
+m, n_cells = Util.disk(nx, ny, nz, [0, 1, 0])
 material = Material(ms = 8.6e5, A = 30e-12, alpha = 0.1)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 state = State(mesh, material, m)
@@ -61,7 +61,7 @@ stream.close()
 
 #SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=1.6e11),
 #UniaxialAnisotropyField(mesh, material),
-#Zee(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
+#Zee(Util.normed_homogeneous_field(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
 # Minimizer version
 #timer = time.time()
 #minimizer = LBFGS_Minimizer(terms=fields, tol=1e-15, maxiter=1000)

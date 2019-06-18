@@ -6,11 +6,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double UniaxialAnisotropyField::E(const State& state){
-    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double UniaxialAnisotropyField::E(const State& state, const af::array& h){
-    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
@@ -58,17 +58,17 @@ af::array UniaxialAnisotropyField::calc_heff(const State& state){
     af::array eu; // Array containing normal vectors
     if ( Ku1_axis_field.isempty() ){
         eu = af::array(state.mesh.dims, f64);
-        eu(af::span,af::span,af::span,0) = Ku1_axis[0];
-        eu(af::span,af::span,af::span,1) = Ku1_axis[1];
-        eu(af::span,af::span,af::span,2) = Ku1_axis[2];
+        eu(af::span, af::span, af::span, 0) = Ku1_axis[0];
+        eu(af::span, af::span, af::span, 1) = Ku1_axis[1];
+        eu(af::span, af::span, af::span, 2) = Ku1_axis[2];
     }
     else {
         eu = Ku1_axis_field;
     }
 
     af::array anisotropy = eu*state.m;
-    anisotropy=af::sum(anisotropy,3);
-    anisotropy=af::tile(anisotropy,1,1,1,3);
+    anisotropy=af::sum(anisotropy, 3);
+    anisotropy=af::tile(anisotropy, 1, 1, 1, 3);
 
     if(state.afsync) af::sync();
     computation_time_heff += af::timer::stop(timer_anisotropy);
@@ -92,7 +92,7 @@ af::array UniaxialAnisotropyField::calc_heff(const State& state){
 
 
 std::array<double, 3> UniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector){
-    double norm = sqrt(pow(vector[0],2)+ pow(vector[1],2) + pow(vector[2], 2));
+    double norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
     return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
 }
 

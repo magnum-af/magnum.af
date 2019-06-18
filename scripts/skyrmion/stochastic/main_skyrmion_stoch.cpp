@@ -7,9 +7,9 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
-    //myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
-    //myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
+    //myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t" <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
+    //myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m, 1))<< "\t" <<fabs(meani(state.m, 2))<< std::endl;
 }
 
 //void set_boundary_mz(array& m){
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     //END TODO
 
     // Parameter initialization
-    const int nx = 30, ny=30 ,nz=1;
+    const int nx = 30, ny=30 , nz=1;
     const double dx=1e-9;
 
     double dt;
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     unsigned long long dir_size_max=2e9; // in Bytes
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,dx,dx,dx);
+    Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
@@ -120,45 +120,45 @@ int main(int argc, char** argv)
     std::cout<< "material.T = " << material.T << std::endl;
 
     material.J_atom=2.*material.A*dx;
-    material.D_atom= material.D * pow(dx,2);
-    material.K_atom=material.Ku1*pow(dx,3);
-    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.D_atom= material.D * pow(dx, 2);
+    material.K_atom=material.Ku1*pow(dx, 3);
+    material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
     array m_temp;
-    Mesh testmesh(nx,ny,nz,dx,dx,dx);
+    Mesh testmesh(nx, ny, nz, dx, dx, dx);
     //vti_reader(m, testmesh, indatapath + "relax.vti");
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         // Initial magnetic field
-        array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-        m(span,span,span,2) = -1;
+        array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        m(span, span, span, 2) = -1;
         for(int ix=0;ix<mesh.n0;ix++){
             for(int iy=0;iy<mesh.n1;iy++){
                 const double rx=double(ix)-mesh.n0/2.;
                 const double ry=double(iy)-mesh.n1/2.;
-                const double r = sqrt(pow(rx,2)+pow(ry,2));
-                if(r>nx/4.) m(ix,iy,span,2)=1.;
+                const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+                if(r>nx/4.) m(ix, iy, span, 2)=1.;
             }
         }
 
-        State state(mesh,material, m);
-        vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+        State state(mesh, material, m);
+        vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
         std::vector<llgt_ptr> llgterm;
 
         llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
         llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-        llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-        llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+        llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+        llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-        LLG Llg(state,llgterm);
+        LLG Llg(state, llgterm);
 
         timer t = af::timer::start();
         while (state.t < 8.e-10){
             state.m=Llg.step(state);
         }
         double timerelax= af::timer::stop(t);
-        vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
+        vti_writer_atom(state.m, mesh , (filepath + "relax").c_str());
         m_temp=m;
     }
     else{
@@ -168,25 +168,25 @@ int main(int argc, char** argv)
     //vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
-    //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
+    //vti_writer_atom(m, mesh , (filepath + "test_readin").c_str());
 
     af::array m = m_temp; //NOTE: not beautiful
 
 
-    double A = pow(10,9);
-    double k = pow(10,8);
+    double A = pow(10, 9);
+    double k = pow(10, 8);
     double T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
 
 
     //Assemble Stochastic Integrator and State object
-    State state(mesh,material, m);
+    State state(mesh, material, m);
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
     Stochastic_LLG Stoch(state, llgterm, dt , "Heun");
 
     std::ofstream ofs_antime((filepath + "antime.dat").c_str());
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
     std::vector<double> antimes;// appends annihilation time for each iteration to calculate mean
     // Iterations to obtain mean annihilaiton time
     for(int j = 0; j < samples; j++){
-        state = State(mesh,material, m);
+        state = State(mesh, material, m);
         std::cout<<"TEST (should be 0): state.t = "<< state.t << std::endl;
         std::ofstream stream_m(filepath + "m"+std::to_string(j)+".dat");
         stream_m.precision(12);
@@ -207,14 +207,14 @@ int main(int argc, char** argv)
                  std::cout << "WARNING: no event detected within maxtime seconds, aborting" << std::endl;
                  break;
             }
-            Stoch.step(state,dt);
+            Stoch.step(state, dt);
             //set_boundary_mz(state.m);
-            detector.add_data(meani(state.m,2));
+            detector.add_data(meani(state.m, 2));
             if ( i % 500 == 0) calcm(state, stream_m, detector.get_avg());
-            if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
+            if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10, 9)
             if(i % (int)(1e-10/dt) == 0){
-		vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-            	std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << ", avg_mz= "<< detector.get_avg() << std::endl;
+		vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10, 9)
+            	std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m, 2) << ", avg_mz= "<< detector.get_avg() << std::endl;
 	        if(GetDirSize(filepath)>dir_size_max){
 			std::cout<<"WARNING: Output Directory is larger than "<<GetDirSize(filepath)<<" Bytes, ABORTING!"<<std::endl;
 			return 1;
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
 	    }
             i++;
         }
-        vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
+        vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10, 9)
 
         double detect_time = state.t;
         Detector detector2 = Detector((int)(5e-12/dt), threshold);
@@ -252,7 +252,7 @@ int main(int argc, char** argv)
 
     double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
     for (double n : antimes){
-        unbiased_sample_variance += pow( n - mean_antime ,2);
+        unbiased_sample_variance += pow( n - mean_antime , 2);
     }
     unbiased_sample_variance/=( (double)antimes.size() -1 );
     double unbiased_sample_sigma = sqrt(unbiased_sample_variance);

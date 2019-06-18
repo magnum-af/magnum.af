@@ -40,7 +40,7 @@ class Controller{
 
 
         bool reject{false};
-        double errold{1.0e-4};//This value is max(err,1.0e-4)
+        double errold{1.0e-4};//This value is max(err, 1.0e-4)
         double hnext;
 
         //Counters to check performance

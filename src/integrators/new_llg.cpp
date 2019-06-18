@@ -7,7 +7,7 @@ LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme
 };
 
 af::array LLGIntegrator::fheff(const State& state){
-  af::array solution = constant(0.,state.mesh.dims, f64);
+  af::array solution = constant(0., state.mesh.dims, f64);
   af::timer timer_heff = af::timer::start();
 
   for(unsigned i=0;i<llgterms.size();++i){
@@ -22,11 +22,11 @@ af::array LLGIntegrator::f(const State& state){
   //timer_fdmdt=timer::start();
   if(dissipation_term_only){
     af::array heff=fheff(state);
-    return - alpha*constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - alpha*constants::gamma/(1.+pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
   }
   else{
     af::array heff=fheff(state);
-    return - constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, heff) - alpha*constants::gamma/(1.+pow(alpha,2)) * cross4(state.m, cross4(state.m, heff));
+    return - constants::gamma/(1.+pow(alpha, 2)) * cross4(state.m, heff) - alpha*constants::gamma/(1.+pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
   }
   //time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

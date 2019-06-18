@@ -5,7 +5,7 @@
 struct Material{
     // Micromagneitc
     double D{0.};			//!< [D/m^2] 	// DM interaction constant
-    double D_axis[3]={0,0,-1};		//!<		// DMI axis
+    double D_axis[3]={0, 0, -1};		//!<		// DMI axis
 
     // Atomistic
     void set_atomistic_from_micromagnetic(double dx);
@@ -14,8 +14,8 @@ struct Material{
     double J_atom{0.};			//!< [J]   	// Atomistic exchange
     double D_atom{0.};			//!< [J]   	// Atomistic DMI
     double K_atom{0.};			//!< [J]   	// Atomistic anisotropy
-    double D_atom_axis[3]={0.,0.,1.};		 	//!< Atomistic DMI axis
-    double K_atom_axis[3]={0.,0.,1.};		 	//!< Atomistic anisotropy axis
+    double D_atom_axis[3]={0., 0., 1.};		 	//!< Atomistic DMI axis
+    double K_atom_axis[3]={0., 0., 1.};		 	//!< Atomistic anisotropy axis
     bool  hexagonal_close_packed{false};                //!< Selects hexagonal close packed atomistic structure
 
     // non-physical-parameters

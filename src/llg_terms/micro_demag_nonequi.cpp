@@ -122,8 +122,8 @@ af::array NonEquiDemagField::h(const State&  state){
     h_field=af::fftC2R<2>(hfft);
     if(state.material.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    //return h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
-    return one_over_tau_vec * h_field(af::seq(0,state.nonequimesh.nx_expanded/2-1),af::seq(0,state.nonequimesh.ny_expanded/2-1));
+    //return h_field(af::seq(0, state.nonequimesh.nx_expanded/2-1), af::seq(0, state.nonequimesh.ny_expanded/2-1));
+    return one_over_tau_vec * h_field(af::seq(0, state.nonequimesh.nx_expanded/2-1), af::seq(0, state.nonequimesh.ny_expanded/2-1));
 }
 
 namespace newell_nonequi{
@@ -132,10 +132,10 @@ namespace newell_nonequi{
       x=fabs(x);
       y=fabs(y);
       z=fabs(z);
-      const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-      const double xx = pow(x,2);
-      const double yy = pow(y,2);
-      const double zz = pow(z,2);
+      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const double xx = pow(x, 2);
+      const double yy = pow(y, 2);
+      const double zz = pow(z, 2);
 
       double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
@@ -146,16 +146,16 @@ namespace newell_nonequi{
 
     double g(double x, double y, double z){
       z=fabs(z);
-      const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-      const double xx = pow(x,2);
-      const double yy = pow(y,2);
-      const double zz = pow(z,2);
+      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const double xx = pow(x, 2);
+      const double yy = pow(y, 2);
+      const double zz = pow(z, 2);
 
       double result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
       if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-      if(z  *  R > 0) result += - pow(z,3) / 6.0     * atan(x*y / (z * R));
+      if(z  *  R > 0) result += - pow(z, 3) / 6.0     * atan(x*y / (z * R));
       if(y  *  R!= 0) result += - z * yy / 2.0 * atan(x*z / (y * R));
       if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
       return result;
@@ -309,7 +309,7 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
         t[i].join();
      }
     af::array Naf(6, (n2 * (n2 + 1))/2, n1_exp, n0_exp, newell_nonequi::N_ptr);
-    Naf=af::reorder(Naf,3,2,1,0);
+    Naf=af::reorder(Naf, 3, 2, 1, 0);
     delete [] newell_nonequi::N_ptr;
     newell_nonequi::N_ptr = NULL;
     Naf = af::fftR2C<2>(Naf);

@@ -27,7 +27,7 @@ af::array SparseExchangeField::h(const State& state){
     }
     else {
         af::array heff = exch/state.Ms_field;
-        replace(heff,state.Ms_field!=0,0); // set all cells where Ms==0 to 0
+        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
@@ -165,7 +165,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                 // x
                 // Note: poor indexing performace. TODO improve performance: directly accessing values with afvalue increades sp4 assembly from ~0.4 s to ~1.4 s! maybe access full host array once?
                 // is host data then in correct order for adapted findex for scalar field, i.e. i0 + mesh.n0 * (i1 + mesh.n1 * i2)?
-                // TODO consider changing A_exchange_field(i0+1, i1, i2) to 'local' A_exchange_field(i0, i1, i2) for x,y,z
+                // TODO consider changing A_exchange_field(i0+1, i1, i2) to 'local' A_exchange_field(i0, i1, i2) for x, y, z
                 if(i0 == 0 && mesh.n0 > 1){
                     double A_exch = a_host[util::stride(i0+1, i1, i2, mesh.n0, mesh.n1)];
                     if (A_exch != 0){

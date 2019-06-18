@@ -24,33 +24,33 @@ int main(int argc, char** argv)
     // Defining lamdas
     auto zee_func = [ steps_full_rotation, A, B ] ( State state ) -> af::array {
         double phi = 2. * M_PI * (double)state.steps / (double)steps_full_rotation;
-        array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        zee(span, span, span, 0)=constant( A * std::cos(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 1)=constant( B * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
     // Parameter initialization
-    const int nx = 250, ny=250 ,nz=1; // Discretization
+    const int nx = 250, ny=250 , nz=1; // Discretization
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material = Material();
     state.Ms    = 1.75/constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A     = 1.5e-11;//[J/m]
     std::cout << "A=" << A << "B= " << B << "steps_full_rotation=" << steps_full_rotation << std::endl;
 
     State state(mesh, material, mesh.init_vortex());
-    vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
+    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer(1e-6, 1000, 0);
     //LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);// This fails on GTO with current gcc version
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
-    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh, material)));
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
@@ -63,9 +63,9 @@ int main(int argc, char** argv)
     timer t_rot = af::timer::start();
     for (int i = 0; i <= steps_full_rotation; i++){
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream, minimizer.llgterms_.end()[-1]->h(state)(0,0,0,af::span));
+        state.calc_mean_m_steps(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
         if( state.steps % 2000 == 0){
-            vti_writer_micro(state.m, mesh ,filepath + "m_rotation_"+std::to_string(state.steps));
+            vti_writer_micro(state.m, mesh , filepath + "m_rotation_"+std::to_string(state.steps));
         }
         state.steps++;
     }

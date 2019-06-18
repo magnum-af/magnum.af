@@ -30,9 +30,9 @@ def disk(n0, n1, n2, xyz = 2):
             b= n1/2
             rx=ix-n0/2.
             ry=iy-n1/2.
-            r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+            r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
             if(r<1):
-                m[ix,iy,:,xyz]=1
+                m[ix, iy, :, xyz]=1
     return af.from_ndarray(m)
 
 # Physical dimensions in [m]
@@ -101,7 +101,7 @@ for i in range(0, steps):
     start = time.time()
     minimizer.minimize(state)
     a = zee.h(state)
-    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0,0,0,0].scalar()*Constants.mu0, a[0,0,0,1].scalar()*Constants.mu0, a[0,0,0,2].scalar()*Constants.mu0, state.m_mean(0), state.m_mean(1), state.m_mean(2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0, 0, 0, 0].scalar()*Constants.mu0, a[0, 0, 0, 1].scalar()*Constants.mu0, a[0, 0, 0, 2].scalar()*Constants.mu0, state.m_mean(0), state.m_mean(1), state.m_mean(2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.write_vti(filepath + "m_"+ str(i))

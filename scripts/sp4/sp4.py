@@ -19,9 +19,9 @@ mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 
 # Initial magnetization configuration
 m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m0[1:-1,:,:,0] = af.constant(1.0, nx-2 ,ny, nz, 1, dtype=af.Dtype.f64)
-m0[0,:,:,1]    = 1.
-m0[-1,:,:,1]   = 1.
+m0[1:-1, :, :, 0] = af.constant(1.0, nx-2 , ny, nz, 1, dtype=af.Dtype.f64)
+m0[0, :, :, 1]    = 1.
+m0[-1, :, :, 1]   = 1.
 
 state = State(mesh, Ms = 8e5, m = m0)
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
@@ -35,15 +35,15 @@ timer = time.time()
 while state.t < 1e-9:
     llg.step(state)
     mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
-    stream.write("%e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar()))
+    stream.write("%e, %e, %e, %e\n" %(state.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
 print("relaxed in", time.time() - timer, "[s]")
 
 # Preparing switch by resetting alpha and adding Zeeman field
 llg.alpha=0.02
-zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0] = -24.6e-3/Constants.mu0
-zeeswitch[0,0,0,1] = +4.3e-3/Constants.mu0
-zeeswitch[0,0,0,2] = 0.0
+zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
+zeeswitch[0, 0, 0, 0] = -24.6e-3/Constants.mu0
+zeeswitch[0, 0, 0, 1] = +4.3e-3/Constants.mu0
+zeeswitch[0, 0, 0, 2] = 0.0
 zeeswitch = af.tile(zeeswitch, nx, ny, nz)
 zee = ExternalField(zeeswitch)
 llg.add_terms(zee)
@@ -54,7 +54,7 @@ timer = time.time()
 while state.t < 2e-9:
     llg.step(state)
     mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
-    stream.write("%e, %e, %e, %e\n" %(state.t, mean[0,0,0,0].scalar(), mean[0,0,0,1].scalar(), mean[0,0,0,2].scalar()))
+    stream.write("%e, %e, %e, %e\n" %(state.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
 stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")

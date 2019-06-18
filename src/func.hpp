@@ -15,13 +15,13 @@ class WrappedArray {
     private:
 };
 
-af::array cross4(const af::array& a,const af::array& b);
-af::array dotproduct(const af::array& a,const af::array& b);
+af::array cross4(const af::array& a, const af::array& b);
+af::array dotproduct(const af::array& a, const af::array& b);
 af::array renormalize(const af::array& a);
 af::array renormalize_handle_zero_values(const af::array& a);
 af::array vecnorm(const af::array& a);
-double afvalue(const af::array& a); //give value of a 1,1,1,1 af af::array
-unsigned int afvalue_u32(const af::array& a); // Returns value an af::array of type u32 == 6 and size [1,1,1,1]
+double afvalue(const af::array& a); //give value of a 1, 1, 1, 1 af af::array
+unsigned int afvalue_u32(const af::array& a); // Returns value an af::array of type u32 == 6 and size [1, 1, 1, 1]
 double full_inner_product(const af::array& a, const af::array& b);
 double maxnorm(const af::array& a);
 double minval(const af::array& a);
@@ -41,8 +41,8 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose 
 
 // utility functions
 namespace util{
-    std::pair<int, int> k2ij(const int k, const int n);//!< returns indices i,j from a serialized triangular matrix index k
-    int ij2k(const int i, const int j, const int n);//!< returns the serialized triangular matrix index k from regular indices i,j
+    std::pair<int, int> k2ij(const int k, const int n);//!< returns indices i, j from a serialized triangular matrix index k
+    int ij2k(const int i, const int j, const int n);//!< returns the serialized triangular matrix index k from regular indices i, j
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int ni);
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni, const unsigned int nj);
     unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l, const unsigned int ni, const unsigned int nj, const unsigned int nk);

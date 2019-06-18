@@ -36,12 +36,12 @@ material.alpha = 0.02
 
 # Create state object with timing
 start = time.time()
-disk, n_cells  = Util.disk(nx, ny, nz, axis=[1,0,0])
+disk, n_cells  = Util.disk(nx, ny, nz, axis=[1, 0, 0])
 
 fixed_is_elliptical=True # switch between rectangular or elliptic fixed film, set to False if needed
 
 if fixed_is_elliptical == True:
-  fixed_layer, n_cells_2  = Util.disk(nx, ny, 1, axis=[0,0,1])
+  fixed_layer, n_cells_2  = Util.disk(nx, ny, 1, axis=[0, 0, 1])
   disk[:, :, 0 , :] = fixed_layer
 else:
   fixed_layer = af.constant(0., nx, ny, 1, 3, dtype=af.Dtype.f64)
@@ -59,7 +59,7 @@ fields = [
     DemagField(mesh, material, verbose = True),
     ExchangeField(mesh, material),
     #UniaxialAnisotropyField(mesh, material),
-    #ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+    #ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 ]
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 Llg = LLGIntegrator(terms = fields)

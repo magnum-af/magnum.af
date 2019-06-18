@@ -12,8 +12,8 @@ af::array zee_func(State state){
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-    array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,2)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    zee(span, span, span, 2)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return  zee;
 }
 
@@ -40,26 +40,26 @@ int main(int argc, char** argv)
     const int nz = 2;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,material, mesh.ellipse(n_cells));
+    State state(mesh, material, mesh.ellipse(n_cells));
 
-    vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
     mesh.print(std::cout);
 
     std::vector<LlgTerm> llgterm;
     timer t_demag = af::timer::start();
-    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh, material)));
     std::cout<<"Demag assembled in "<< af::timer::stop(t_demag) <<std::endl;
-    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh, material)));
+    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, material)));
     LLGIntegrator Llg(llgterm);
 
     // Relaxation
     if(!exists (path_mrelax)){
         Llg.relax(state, 1e-7);
-        vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "mrelax").c_str());
         state.t=0; // Setting t=0 for hysteresis
     }
     else{
@@ -80,9 +80,9 @@ int main(int argc, char** argv)
     Llg.llgterms.push_back( LlgTerm (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          Llg.step(state);
-         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
+         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0, 0, 0, af::span));
          if( state.steps % 2000 == 0){
-             vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)));
+             vti_writer_micro(state.m, mesh , (filepath + "m_hysteresis_"+std::to_string(state.steps)));
          }
     }
 

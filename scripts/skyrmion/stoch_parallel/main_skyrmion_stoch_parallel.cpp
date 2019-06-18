@@ -7,9 +7,9 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
-    //myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2) << "\t" << get_avg << std::endl;
-    //myfile <<fabs(meani(state.m,0))<< "\t" <<fabs(meani(state.m,1))<< "\t" <<fabs(meani(state.m,2))<< std::endl;
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
+    //myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t" <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
+    //myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m, 1))<< "\t" <<fabs(meani(state.m, 2))<< std::endl;
 }
 
 void set_boundary_mz(array& m);
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const int nx = 30, ny=30 ,nz=1;
+    const int nx = 30, ny=30 , nz=1;
     const double dx=1e-9;
 
     const double threshold = 0.85;
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,dx,dx,dx);
+    Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
@@ -120,12 +120,12 @@ int main(int argc, char** argv)
     std::cout<< "material.T = " << material.T << std::endl;
 
     material.J_atom=2.*material.A*dx;
-    material.D_atom= material.D * pow(dx,2);
-    material.K_atom=material.Ku1*pow(dx,3);
-    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.D_atom= material.D * pow(dx, 2);
+    material.K_atom=material.Ku1*pow(dx, 3);
+    material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
     array m;
-    Mesh testmesh(nx,ny,nz,dx,dx,dx);
+    Mesh testmesh(nx, ny, nz, dx, dx, dx);
     vti_reader(m, testmesh, indatapath + "relax.vti");
     //Reading energy barrier from calculation performed with main_n30.cpp
     double e_barrier;
@@ -138,25 +138,25 @@ int main(int argc, char** argv)
     std::cout.precision(12);
     std::cout <<"E_barrier from prev calculation = "<< e_barrier <<std::endl;
 
-    double A = pow(10,9);
-    double k = pow(10,8);
+    double A = pow(10, 9);
+    double k = pow(10, 8);
     double T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
 
 
     //Assemble Stochastic Integrator and State object
-    State state(mesh,material, m);
+    State state(mesh, material, m);
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
     Stochastic_LLG Stoch(state, llgterm, dt , "Heun");
 
     //ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse " << std::endl;
   //  std::vector<double> antimes;// appends annihilation time for each iteration to calculate mean
     // Iterations to obtain mean annihilaiton time
-    state = State(mesh,material, m);
+    state = State(mesh, material, m);
     std::cout<<"TEST (should be 0): state.t = "<< state.t << std::endl;
 
     Detector detector = Detector( (int)(3e-10/dt), threshold);
@@ -166,15 +166,15 @@ int main(int argc, char** argv)
              std::cout << "WARNING: no event detected within maxtime seconds, aborting" << std::endl;
              break;
         }
-        Stoch.step(state,dt);
+        Stoch.step(state, dt);
         //set_boundary_mz(state.m);
-        detector.add_data(meani(state.m,2));
+        detector.add_data(meani(state.m, 2));
         //if( ID < id_outp ) calcm(state, stream_m, detector.get_avg());
-        //if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/vti/dense_skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10,9)
-        //if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-        //if(i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10,9)
-        //if( ID < id_outp && i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10,9)
-        //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m,2) << std::endl;
+        //if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/vti/dense_skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10, 9)
+        //if(i < 100)  vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/dense_skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10, 9)
+        //if(i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/skyrm/skyrm"+std::to_string(j)+"_"+std::to_string(i));//state.t*pow(10, 9)
+        //if( ID < id_outp && i % (int)(1e-10/dt) == 0) vti_writer_atom(state.m, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(i));//state.t*pow(10, 9)
+        //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", mz    = "<< meani(state.m, 2) << std::endl;
         //if( ID < id_outp && i % (int)(1e-10/dt) == 0) std::cout << state.t << " , i= " << i << ", avg_mz= "<< detector.get_avg() << std::endl;
         if( images.size() < images_length &&  i % (int)(1e-11/dt) == 0) images.push_back(state.m);
         if( images.size() > images_length &&  i % (int)(1e-11/dt) == 0) {images.pop_front(); images.push_back(state.m);}
@@ -198,15 +198,15 @@ int main(int argc, char** argv)
         stream_m.close();
     }
 
-    vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(ID));//state.t*pow(10,9)
+    vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(ID));//state.t*pow(10, 9)
 
     //last images:
     int count1=0;
     for (auto const& i : images) {
-        vti_writer_atom(i, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(count1));//state.t*pow(10,9)
+        vti_writer_atom(i, state.mesh, filepath+"/vti/skyrm"+std::to_string(ID)+"_"+std::to_string(count1));//state.t*pow(10, 9)
         count1++;
     }
-    //vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10,9)
+    //vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10, 9)
 
     double detect_time = state.t;
     Detector detector2 = Detector((int)(5e-12/dt), threshold);
@@ -220,7 +220,7 @@ int main(int argc, char** argv)
     detect_time-=reverse*dt;
     std::cout<< "Preliminiary annihilation time at " << detect_time << "[s]" << std::endl;
 
-    std::ofstream ofs_antime(filepath + "anihilationtime.dat",std::ios_base::app);
+    std::ofstream ofs_antime(filepath + "anihilationtime.dat", std::ios_base::app);
     ofs_antime.precision(12);
     ofs_antime<< detect_time << "\t" << state.t << "\t" << i <<"\t" << reverse << "\t" << ID << std::endl;
     ofs_antime.close();
@@ -249,7 +249,7 @@ void set_boundary_mz(array& m){
     //vti_reader(m, testmesh, "../../E_barrier/relax.vti");
     //set_boundary_mz(m);
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
-    //vti_writer_atom(m, mesh ,(filepath + "test_readin").c_str());
+    //vti_writer_atom(m, mesh , (filepath + "test_readin").c_str());
 
   //  double mean_antime = 0;
   //  for (double n : antimes){
@@ -259,7 +259,7 @@ void set_boundary_mz(array& m){
 
   //  double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
   //  for (double n : antimes){
-  //      unbiased_sample_variance += pow( n - mean_antime ,2);
+  //      unbiased_sample_variance += pow( n - mean_antime , 2);
   //  }
   //  unbiased_sample_variance/=( (double)antimes.size() -1 );
   //  double unbiased_sample_sigma = sqrt(unbiased_sample_variance);

@@ -5,9 +5,9 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee){
-    const array sum_dim3 = sum(sum(sum(state.m,0),1),2);
+    const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     const int ncells = state.mesh.n0 * state.mesh.n1 * state.mesh.n2;
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span,span,span,0))/ncells << "\t" << afvalue(sum_dim3(span,span,span,1))/ncells<< "\t" << afvalue(sum_dim3(span,span,span,2))/ncells << "\t" << hzee << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0))/ncells << "\t" << afvalue(sum_dim3(span, span, span, 1))/ncells<< "\t" << afvalue(sum_dim3(span, span, span, 2))/ncells << "\t" << hzee << std::endl;
 }
 
 const double hzee_max = 2; //[T]
@@ -17,8 +17,8 @@ const double rate = hzee_max/simtime; //[T/s]
 af::array zee_func(State state){
     double field_Tesla = 0;
     field_Tesla = rate *state.t;
-    array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-    zee(span,span,span,2)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    zee(span, span, span, 2)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return  zee;
 }
 
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     std::cout << "nx = "<< nx << std::endl;
 
     //Generating Objects
-    Mesh mesh(nx,nx,1,dx,dx,dx);
+    Mesh mesh(nx, nx, 1, dx, dx, dx);
     Material material = Material();
     state.Ms    = 580000;
     material.alpha = 1;
@@ -51,23 +51,23 @@ int main(int argc, char** argv)
     //material.D=3e-3;
     //material.Ku1=0.6e6;
 
-    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
     material.J_atom=2.*material.A*dx;
-    //material.D_atom= material.D * pow(dx,2);
-    //material.K_atom=material.Ku1*pow(dx,3);
+    //material.D_atom= material.D * pow(dx, 2);
+    //material.K_atom=material.Ku1*pow(dx, 3);
 
      // Initial magnetic field
-     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-     m(span,span,span,0) = 1.;
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     m(span, span, span, 0) = 1.;
 
-    State state(mesh,material, m);
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    State state(mesh, material, m);
+    vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
 
-    LLG Llg(state,llgterm);
+    LLG Llg(state, llgterm);
 
     timer t = af::timer::start();
     double E_prev=1e20;
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     }
     std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) << ", steps = " << state.steps << std::endl;
-    vti_writer_atom(state.m, mesh ,(filepath + "relax").c_str());
+    vti_writer_atom(state.m, mesh , (filepath + "relax").c_str());
 
     // Hysteresis
     std::ofstream stream;
@@ -94,8 +94,8 @@ int main(int argc, char** argv)
     while (state.t <  simtime){
          state.m=Llg.step(state);
          if( state.steps % 1000 == 0){
-             calc_mean_m(state, stream, afvalue(Llg.Fieldterms[Llg.Fieldterms.size()-1]->h(state)(0,0,0,2)));
-             vti_writer_atom(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
+             calc_mean_m(state, stream, afvalue(Llg.Fieldterms[Llg.Fieldterms.size()-1]->h(state)(0, 0, 0, 2)));
+             vti_writer_atom(state.m, mesh , (filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
          }
     }
     stream.close();

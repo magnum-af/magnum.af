@@ -41,33 +41,33 @@ print ("H_analytic=", H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K
 
 # Creating objects
 m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m[:nx/2,:,:,0] = af.constant( 1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
-m[:nx/2,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
-m[nx/2:,:,:,0] = af.constant(-1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
-m[nx/2:,:,:,1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
+m[:nx/2, :, :, 0] = af.constant( 1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
+m[:nx/2, :, :, 1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
+m[nx/2:, :, :, 0] = af.constant(-1.0, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
+m[nx/2:, :, :, 1] = af.constant( 0.3, int(nx/2) , ny, nz, 1, dtype=af.Dtype.f64)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting A values as field
 A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-A_field[:nx/2,:,:,:] = af.constant(soft_Aex, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+A_field[:nx/2, :, :, :] = af.constant(soft_Aex, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 # hard
-A_field[nx/2:,:,:,:] = af.constant(hard_Aex, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+A_field[nx/2:, :, :, :] = af.constant(hard_Aex, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 
 # Setting Ms values as field
 Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-Ms_field[:nx/2,:,:,:] = af.constant(soft_ms, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+Ms_field[:nx/2, :, :, :] = af.constant(soft_ms, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 # hard
-Ms_field[nx/2:,:,:,:] = af.constant(hard_ms, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+Ms_field[nx/2:, :, :, :] = af.constant(hard_ms, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 
 # Setting Ku1 values as field
 Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-Ku1_field[:nx/2,:,:,:] = af.constant(soft_K_uni, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+Ku1_field[:nx/2, :, :, :] = af.constant(soft_K_uni, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 # hard
-Ku1_field[nx/2:,:,:,:] = af.constant(hard_K_uni, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
+Ku1_field[nx/2:, :, :, :] = af.constant(hard_K_uni, int(nx/2) , ny, nz, 3, dtype=af.Dtype.f64)
 
 state = State(mesh, Ms_field, m)
 state.normalize()
@@ -91,13 +91,13 @@ while (state.t < 1e-7/fastenup and state.m_mean(0) < (1. - 1e-6)):
   Llg.step(state)
   #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
   printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
-  print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()*Constants.mu0)
+  print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 0].scalar()*Constants.mu0)
   #printzee = af.mean(af.mean(af.mean(fields[0].get_zee(), dim=0), dim=1), dim=2)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar()))
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 0].scalar()))
   stream.flush()
   i = i + 1
 print("100 [ns] hysteresis in ", time.time() - timer, "[s]")
 
 stream.close()
-print("switched at Hext=", printzee[0,0,0,0].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
+print("switched at Hext=", printzee[0, 0, 0, 0].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
 print("total time =", time.time() - start, "[s]")

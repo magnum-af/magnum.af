@@ -8,8 +8,8 @@ int main(int argc, char** argv)
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
         const int nx = 400, ny=250;
         std::cout << "nz = " << nz << std::endl;
-        //const int nx = 400, ny=250 ,nz=10;
-        Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+        //const int nx = 400, ny=250 , nz=10;
+        Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
         Material material = Material();
         DemagFieldMultithread PthreadDemag (mesh, material, true, false, 16);
         DemagField Demag (mesh, material, true, false);

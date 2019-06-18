@@ -27,9 +27,9 @@ def disk(n0, n1, n2, xyz = 2):
                 b= n1/2
                 rx=ix-n0/2.
                 ry=iy-n1/2.
-                r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
                 if(r<1):
-                    m[ix,iy,iz,xyz]=1
+                    m[ix, iy, iz, xyz]=1
                     n_cells = n_cells +1
     return af.from_ndarray(m), n_cells
 
@@ -44,9 +44,9 @@ def boolean_disk(n0, n1, n2, r_inner = 0.9):
                 b= n1/2
                 rx=ix-n0/2.
                 ry=iy-n1/2.
-                r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2);
+                r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
                 if(r < r_inner):# NOTE: (keep in mind that in general 'r' is not the radius of a circle and for e.g. r2=2*r1, A2 != 4*A1)
-                    boolean[ix,iy,iz]=1
+                    boolean[ix, iy, iz]=1
                     n_cells = n_cells +1
     return af.from_ndarray(boolean), n_cells
 
@@ -93,7 +93,7 @@ state = State(mesh, material, disk1, boolean)# NOTE update: optional argument 'b
 state.write_vti(filepath + "init_m")
 state.write_vti_boolean(filepath + "boolean")
 print(state.m_mean(0), state.m_mean(1), state.m_mean(2), np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2))
-print ("Info: n_cells = ",n_cells, " n_boolean = ", n_boolean)
+print ("Info: n_cells = ", n_cells, " n_boolean = ", n_boolean)
 print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
@@ -102,7 +102,7 @@ demag = DemagField(mesh, material)
 exch=ExchangeField(mesh, material)
 aniso_z = UniaxialAnisotropyField(mesh, material)
 aniso_stress = UniaxialAnisotropyField(mesh, param_stress)
-zee = ExternalField(af.constant(0.0, nx, ny, nz, 3,dtype=af.Dtype.f64))
+zee = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
 
 # Creating minimizer object

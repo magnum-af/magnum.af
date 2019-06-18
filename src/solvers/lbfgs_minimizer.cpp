@@ -48,7 +48,7 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
     //for(unsigned i = 0; i < llgterms_.size() ; ++i ){
         af::array temp_h = llgterms_[i]->h(state);
         h+=temp_h;
-        energy+=llgterms_[i]->E(state,temp_h);
+        energy+=llgterms_[i]->E(state, temp_h);
     }
     gradient = 1./(constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
     time_calc_heff_ += af::timer::stop(timer);
@@ -72,7 +72,7 @@ double mydot (const af::array& a, const af::array& b){
     return full_inner_product(a, b);
 }
 double mynorm(const af::array &a) {
-  return sqrt( mydot(a,a) );
+  return sqrt( mydot(a, a) );
 }
 
 double LBFGS_Minimizer::mxmxhMax(const State& state) {
@@ -89,10 +89,10 @@ double LBFGS_Minimizer::Minimize(State& state){
 
     double eps  = 2.22e-16;
     double eps2 = sqrt(eps);
-    double epsr = pow(eps,0.9);
+    double epsr = pow(eps, 0.9);
     //double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolerance_);
-    double tolf3 = pow(tolerance_,0.3333333333333333333333333);
+    double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
     //double f = this->E(state);
     //af::array grad = this->Gradient(state);
     af::array grad;
@@ -120,7 +120,7 @@ double LBFGS_Minimizer::Minimize(State& state){
     //    yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
     //}
 
-    std::array<double, m> alpha = {0.,0.,0.,0.,0.};
+    std::array<double, m> alpha = {0., 0., 0., 0., 0.};
     af::array q = af::constant(0.0, state.mesh.dims, f64);
     af::array s = af::constant(0.0, state.mesh.dims, f64);
     af::array y = af::constant(0.0, state.mesh.dims, f64);
@@ -135,39 +135,39 @@ double LBFGS_Minimizer::Minimize(State& state){
             //
             //for (size_t i = 0; i < m; i++){
             //    printf("size svec = %i \n", sVector.size());
-            //    af::print("svec", af::mean(sVector[i],0));
+            //    af::print("svec", af::mean(sVector[i], 0));
             //}
             //END TODO
             int cgSteps = 0;
             //this->minIterCount_++;
             f_old = f;
             x_old = state.m;
-            //af::print("state.m", af::mean(state.m,0));
+            //af::print("state.m", af::mean(state.m, 0));
             grad_old = grad;
 
             q = grad;
             const int k = std::min(m, iter);
             for (int i = k - 1; i >= 0; i--) {
-                const double rho = 1.0 / mydot(sVector[i],yVector[i]);
-                alpha[i] = rho * mydot(sVector[i],q);
+                const double rho = 1.0 / mydot(sVector[i], yVector[i]);
+                alpha[i] = rho * mydot(sVector[i], q);
                 q -= alpha[i] * yVector[i];
             }
             q = H0k * q; // NOTE: cg step skipped and only used else
             for (int i = 0; i < k; i++) {
-                const double rho = 1.0 / mydot(sVector[i],yVector[i]);
-                const double beta = rho * mydot(yVector[i],q);
+                const double rho = 1.0 / mydot(sVector[i], yVector[i]);
+                const double beta = rho * mydot(yVector[i], q);
                 q += sVector[i] * (alpha[i] - beta);
             }
 
             // line 291 in .fe: decent = -grad.dot(q)
-            double phiPrime0 = -mydot(grad,q);
+            double phiPrime0 = -mydot(grad, q);
             if (phiPrime0 > 0) {
                 q = grad;
                 iter = 0;
                 if (this->verbose>2) {
                   std::cout << "descent " << std::endl;
                 }
-                phiPrime0 = -mydot(grad,q);
+                phiPrime0 = -mydot(grad, q);
             }
 
             //TODO objFunc.updateTol(gradNorm);
@@ -208,7 +208,7 @@ double LBFGS_Minimizer::Minimize(State& state){
               break;
             }
             y = grad - grad_old;
-            double ys = mydot(y,s);
+            double ys = mydot(y, s);
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
               if (this->verbose>2) {
                 std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
@@ -216,17 +216,17 @@ double LBFGS_Minimizer::Minimize(State& state){
             }
             else {
               if (iter < m) {
-                //af::print("s", af::mean(s,0));
+                //af::print("s", af::mean(s, 0));
                 sVector[iter] = s;
-                //af::print("svec", af::mean(sVector[iter],0));
+                //af::print("svec", af::mean(sVector[iter], 0));
                 yVector[iter] = y;
               } else {
-                std::rotate(sVector.begin(),sVector.begin()+1,sVector.end());
+                std::rotate(sVector.begin(), sVector.begin()+1, sVector.end());
                 sVector[m-1] = s;
-                std::rotate(yVector.begin(),yVector.begin()+1,yVector.end());
+                std::rotate(yVector.begin(), yVector.begin()+1, yVector.end());
                 yVector[m-1] = y;
               }
-              H0k = ys / mydot(y,y);
+              H0k = ys / mydot(y, y);
               iter++;
             }
 
@@ -275,7 +275,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
   const int maxfev   = 20;
   int nfev           = 0;
 
-  double dginit = mydot(g,s);
+  double dginit = mydot(g, s);
   if (dginit >= 0.0) {
     // no descent direction
     // TODO: handle this case
@@ -290,7 +290,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
   double dgtest     = ftol * dginit;
   double width      = stpmax - stpmin;
   double width1     = 2 * width;
-  // vex::vector<double> wa(x.queue_list(),x.size());
+  // vex::vector<double> wa(x.queue_list(), x.size());
   // wa = x;
 
   double stx        = 0.0;
@@ -330,12 +330,12 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
     //// test new point
     //// x = wa + stp * s;
     //// objFunc.normalizeVector(x);
-    //objFunc.update(stp,wa,s,x);
-    state.m = wa + stp * s; //TODO check// this should be equivalent to objFunc.update(stp,wa,s,x);
+    //objFunc.update(stp, wa, s, x);
+    state.m = wa + stp * s; //TODO check// this should be equivalent to objFunc.update(stp, wa, s, x);
     state.m = renormalize_handle_zero_values(state.m);
     f = this->EnergyAndGradient(state, g);
     nfev++;
-    double dg = mydot(g,s);
+    double dg = mydot(g, s);
     double ftest1 = finit + stp * dgtest;
     double ftest2 = finit + eps*fabs(finit);
     double ft = 2*ftol-1;

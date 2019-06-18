@@ -25,28 +25,28 @@ int main(int argc, char** argv)
     // Defining lamdas
     auto zee_func_for_relax_in_init= [ A, B ] ( State state ) -> af::array {
         double phi = 0;
-        array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        zee(span, span, span, 0)=constant( A * std::cos(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 1)=constant( B * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
     auto zee_func = [ t_full_rotation, A, B ] ( State state ) -> af::array {
         double phi = 2 * M_PI * (state.t / t_full_rotation);
-        array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant( A * std::cos(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,1)=constant( B * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
-        zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        zee(span, span, span, 0)=constant( A * std::cos(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 1)=constant( B * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
     // Parameter initialization
-    const int nx = 250, ny=250 ,nz=1; // Discretization
+    const int nx = 250, ny=250 , nz=1; // Discretization
     const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material = Material();
     state.Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A     = 1.5e-11;//[J/m]
@@ -56,20 +56,20 @@ int main(int argc, char** argv)
 
     long int n_cells=0;//Number of cells with Ms!=0
     State state(mesh, material, mesh.init_vortex(n_cells));
-    vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
+    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
 
     std::vector<LlgTerm> llgterm;
-    llgterm.push_back( LlgTerm (new DemagField(mesh,material)));
-    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh, material)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh, material)));
     llgterm.push_back( LlgTerm (new ExternalField( zee_func_for_relax_in_init)));
     LLGIntegrator Llg(llgterm);
 
     // Calculating relaxed initial magnetization or reading in given magnetization
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
-        vti_writer_micro(state.m, mesh ,(filepath + "minit_renorm").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "minit_renorm").c_str());
         Llg.relax(state, 1e-7);
-        vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "mrelax").c_str());
         state.t=0; // Setting t=0 for hysteresis
     }
     else{
@@ -82,16 +82,16 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
-    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));// To checkback H_zee for init
+    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0, 0, 0, af::span));// To checkback H_zee for init
     Llg.llgterms.pop_back(); // Remove init zee field
 
     timer t_hys = af::timer::start();
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zee_func))); //Rate in T/s
     while (state.t < t_full_rotation){
          Llg.step(state);
-         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0,0,0,af::span));
+         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size()-1]->h(state)(0, 0, 0, af::span));
          if( state.steps % 2000 == 0){
-             vti_writer_micro(state.m, mesh ,filepath + "m_hysteresis_"+std::to_string(state.steps));
+             vti_writer_micro(state.m, mesh , filepath + "m_hysteresis_"+std::to_string(state.steps));
          }
     }
     stream.close();

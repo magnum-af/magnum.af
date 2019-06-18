@@ -12,7 +12,7 @@ int main(int argc, char** argv)
      for (int i=0; i<argc; i++)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
     // Parameter initialization
-    const int nx = 112, ny=112 ,nz=1;//nz=5 -> lz=(5-1)*dx
+    const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
     const double dx=2.715e-10;
 
     double n_interp = 60;
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,dx,dx,dx);
+    Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
@@ -45,29 +45,29 @@ int main(int argc, char** argv)
     //material.Ku1_axis[2]=1;
 
     material.J_atom=2.*material.A*dx;
-    material.D_atom= material.D * pow(dx,2);
+    material.D_atom= material.D * pow(dx, 2);
     //old values in prev versions, this is now wrong in pthmag:
     //const double wrong_J_atom=4.*material.A*dx;
-    const double wrong_D_atom= 2.* material.D * pow(dx,2);
+    const double wrong_D_atom= 2.* material.D * pow(dx, 2);
     std::cout<<"D_atom="<<material.D_atom<<std::endl;
-    material.K_atom=material.Ku1*pow(dx,3);
+    material.K_atom=material.Ku1*pow(dx, 3);
     std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
-    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
 
     array m;
-    Mesh testmesh(nx,ny,nz,dx,dx,dx);
+    Mesh testmesh(nx, ny, nz, dx, dx, dx);
 
-    State state(mesh,material, m);
-    //vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    State state(mesh, material, m);
+    //vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state,llgterm);
+    LLG Llg(state, llgterm);
 
     std::vector<State> inputimages;
     for(int i=0; i < n_interp; i++){
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
         inputimages.push_back(State(mesh, material, m));
     }
 
-    String string(state,inputimages, n_interp, string_dt ,llgterm);
+    String string(state, inputimages, n_interp, string_dt , llgterm);
     string.write_vti(filepath+"init_string");
     string.calc_E();
     for(unsigned int i=0; i<string.images.size(); i++){

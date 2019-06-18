@@ -16,16 +16,16 @@ long int WrappedArray::get_array_addr(){
     return (long int) a->get();
 }
 
-af::array cross4(const af::array& a,const af::array& b){
-  af::array c= af::array(a.dims(0),a.dims(1),a.dims(2),3,f64);
-  c(af::span,af::span,af::span,0)=a(af::span,af::span,af::span,1)*b(af::span,af::span,af::span,2)-a(af::span,af::span,af::span,2)*b(af::span,af::span,af::span,1);
-  c(af::span,af::span,af::span,1)=a(af::span,af::span,af::span,2)*b(af::span,af::span,af::span,0)-a(af::span,af::span,af::span,0)*b(af::span,af::span,af::span,2);
-  c(af::span,af::span,af::span,2)=a(af::span,af::span,af::span,0)*b(af::span,af::span,af::span,1)-a(af::span,af::span,af::span,1)*b(af::span,af::span,af::span,0);
+af::array cross4(const af::array& a, const af::array& b){
+  af::array c= af::array(a.dims(0), a.dims(1), a.dims(2), 3, f64);
+  c(af::span, af::span, af::span, 0)=a(af::span, af::span, af::span, 1)*b(af::span, af::span, af::span, 2)-a(af::span, af::span, af::span, 2)*b(af::span, af::span, af::span, 1);
+  c(af::span, af::span, af::span, 1)=a(af::span, af::span, af::span, 2)*b(af::span, af::span, af::span, 0)-a(af::span, af::span, af::span, 0)*b(af::span, af::span, af::span, 2);
+  c(af::span, af::span, af::span, 2)=a(af::span, af::span, af::span, 0)*b(af::span, af::span, af::span, 1)-a(af::span, af::span, af::span, 1)*b(af::span, af::span, af::span, 0);
   return c;
 };
 
 af::array dotproduct(const af::array& a, const af::array& b){
-  return sum(a*b,3);
+  return sum(a*b, 3);
 }
 
 /// Returns the value of array with only one element
@@ -49,32 +49,32 @@ unsigned int afvalue_u32(const af::array& a){
 }
 
 double full_inner_product(const af::array& a, const af::array& b){
-  return afvalue(sum(sum(sum(sum(a*b,3),2),1),0));
+  return afvalue(sum(sum(sum(sum(a*b, 3), 2), 1), 0));
 }
 
 af::array renormalize(const af::array& a){
-  return a/tile(sqrt(sum(a*a,3)),1,1,1,3);
+  return a/tile(sqrt(sum(a*a, 3)), 1, 1, 1, 3);
 }
 
 //Renormalization where values with Ms zero are set from inf to zero
 af::array renormalize_handle_zero_values(const af::array& a){
-    af::array norm_a = tile(sqrt(sum(a*a,3)),1,1,1,3);
+    af::array norm_a = tile(sqrt(sum(a*a, 3)), 1, 1, 1, 3);
     af::array renorm = a/norm_a;
-    replace(renorm,norm_a!=0,0);
+    replace(renorm, norm_a!=0, 0);
     return renorm;
 
-    //TODO for (af::array& a) only: return replace(a/tile(sqrt(sum(a*a,3)),1,1,1,3), a!=0., 0.);
+    //TODO for (af::array& a) only: return replace(a/tile(sqrt(sum(a*a, 3)), 1, 1, 1, 3), a!=0., 0.);
 }
 
 af::array vecnorm(const af::array& a){
-  return sqrt(sum(a*a,3));
+  return sqrt(sum(a*a, 3));
 }
 
 
-//Mean value of i = 0,1,2 entry entry
+//Mean value of i = 0, 1, 2 entry entry
 double meani(const af::array& a, const int i){
   double *norm_host=NULL;
-  norm_host = mean(mean(mean(a(af::span,af::span,af::span,i),0),1),2).host<double>();
+  norm_host = mean(mean(mean(a(af::span, af::span, af::span, i), 0), 1), 2).host<double>();
   double norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
@@ -83,7 +83,7 @@ double meani(const af::array& a, const int i){
 //||A||=sqrt(sum(fabs(a)))
 double FrobeniusNorm(const af::array& a){
   double *norm_host=NULL;
-  norm_host = sqrt(mean(mean(mean(mean(a*a,0),1),2),3)).host<double>();
+  norm_host = sqrt(mean(mean(mean(mean(a*a, 0), 1), 2), 3)).host<double>();
   double norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
@@ -92,7 +92,7 @@ double FrobeniusNorm(const af::array& a){
 //Experimental: eucledian norm
 double euclnorm(const af::array& a){
   double *norm_host=NULL;
-  norm_host = mean(mean(mean(mean((a*a),0),1),2),3).host<double>();
+  norm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<double>();
   double norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
@@ -195,8 +195,8 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 //Experimental: eucledian norm
 //double maxnorm(const af::array& a){
 //  double *maxnorm_host=NULL;
-//  maxnorm_host = mean(mean(mean(mean((a*a),0),1),2),3).host<double>();
-//  //maxnorm_host = max(max(max(max(abs(a),0),1),2),3).host<double>();
+//  maxnorm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<double>();
+//  //maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
 //  double maxnorm = maxnorm_host[0];
 //  af::freeHost(maxnorm_host);
 //  return maxnorm;
@@ -204,9 +204,9 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 
 //void calcm(State state, LLG Llg, std::ostream& myfile){
 //  double *host_mx=NULL, *host_my=NULL, *host_mz=NULL;
-//  host_mx = mean(mean(mean(state.m(af::span,af::span,af::span,0),0),1),2).host<double>();
-//  host_my = mean(mean(mean(state.m(af::span,af::span,af::span,1),0),1),2).host<double>();
-//  host_mz = mean(mean(mean(state.m(af::span,af::span,af::span,2),0),1),2).host<double>();
+//  host_mx = mean(mean(mean(state.m(af::span, af::span, af::span, 0), 0), 1), 2).host<double>();
+//  host_my = mean(mean(mean(state.m(af::span, af::span, af::span, 1), 0), 1), 2).host<double>();
+//  host_mz = mean(mean(mean(state.m(af::span, af::span, af::span, 2), 0), 1), 2).host<double>();
 //  myfile << std::setw(12) << state.t << "\t";
 //  myfile << std::setw(12) << state.t*1e9 << "\t" << host_mx[0] << "\t"<< host_my[0] << "\t";
 //  myfile << host_mz[0] <<"\t" << Llg.E(state) <<std::endl;
@@ -222,7 +222,7 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 // Maximum value norm
 double maxnorm(const af::array& a){
   double *maxnorm_host=NULL;
-  maxnorm_host = max(max(max(max(abs(a),0),1),2),3).host<double>();
+  maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
   double maxnorm = maxnorm_host[0];
   af::freeHost(maxnorm_host);
   return maxnorm;
@@ -231,7 +231,7 @@ double maxnorm(const af::array& a){
 // Minimum value
 double minval(const af::array& a){
   double *minval_host=NULL;
-  minval_host = min(min(min(min(a,0),1),2),3).host<double>();
+  minval_host = min(min(min(min(a, 0), 1), 2), 3).host<double>();
   double minval = minval_host[0];
   af::freeHost(minval_host);
   return minval;
@@ -267,10 +267,10 @@ af::randomEngine util::rand_engine_current_time(){
 //{
 //        return
 //        [       f            ](double t,  af::array y, double dt ) -> af::array { return
-//        [t,y,dt,f            ](                    af::array  dy1) -> af::array { return
-//        [t,y,dt,f,dy1        ](                    af::array  dy2) -> af::array { return
-//        [t,y,dt,f,dy1,dy2    ](                    af::array  dy3) -> af::array { return
-//        [t,y,dt,f,dy1,dy2,dy3](                    af::array  dy4) -> af::array { return
+//        [t, y, dt, f            ](                    af::array  dy1) -> af::array { return
+//        [t, y, dt, f, dy1        ](                    af::array  dy2) -> af::array { return
+//        [t, y, dt, f, dy1, dy2    ](                    af::array  dy3) -> af::array { return
+//        [t, y, dt, f, dy1, dy2, dy3](                    af::array  dy4) -> af::array { return
 //        ( dy1 + 2*dy2 + 2*dy3 + dy4 ) / 6   ;} (
 //        dt * f( t+dt  , y+dy3   )          );} (
 //        dt * f( t+dt/2, y+dy2/2 )          );} (
@@ -285,7 +285,7 @@ af::randomEngine util::rand_engine_current_time(){
 //        const double T_START = 0.0, Y_START = 1.0, DT = 0.10;
 //
 //        auto eval_diff_eqn = [               ](double t, double y)->double{ return t*sqrt(y)                         ; } ;
-//        auto eval_solution = [               ](double t          )->double{ return pow(t*t+4,2)/16                   ; } ;
+//        auto eval_solution = [               ](double t          )->double{ return pow(t*t+4, 2)/16                   ; } ;
 //        auto find_error    = [eval_solution  ](double t, double y)->double{ return fabs(y-eval_solution(t))          ; } ;
 //        auto is_whole      = [WHOLE_TOLERANCE](double t          )->bool  { return fabs(t-round(t)) < WHOLE_TOLERANCE; } ;
 //
@@ -294,8 +294,8 @@ af::randomEngine util::rand_engine_current_time(){
 //        double y = Y_START, t = T_START ;
 //
 //        while(t <= TIME_MAXIMUM) {
-//          if (is_whole(t)) { printf("y(%4.1f)\t=%12.6f \t error: %12.6e\n",t,y,find_error(t,y)); }
-//          y += dy(t,y,DT) ; t += DT;
+//          if (is_whole(t)) { printf("y(%4.1f)\t=%12.6f \t error: %12.6e\n", t, y, find_error(t, y)); }
+//          y += dy(t, y, DT) ; t += DT;
 //        }
 //        return 0;
 //}

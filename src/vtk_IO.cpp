@@ -9,8 +9,8 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
 
     vtkSmartPointer<vtkImageData> imageDataPointCentered = vtkSmartPointer<vtkImageData>::New();
     imageDataPointCentered->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
-    imageDataPointCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
-    imageDataPointCentered->SetOrigin(0,0,0);
+    imageDataPointCentered->SetSpacing(mesh.dx, mesh.dy, mesh.dz);
+    imageDataPointCentered->SetOrigin(0, 0, 0);
     #if VTK_MAJOR_VERSION <= 5
        imageDataPointCentered->SetNumberOfScalarComponents(field.dims(3));
        imageDataPointCentered->SetScalarTypeToDouble();
@@ -27,7 +27,7 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
           {
           for (int im=0; im < field.dims(3); im++)
             {
-            double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x,y,z));
+            double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x, y, z));
             pixel[im] = host_a[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))];
             }
           }
@@ -36,8 +36,8 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
 
     vtkSmartPointer<vtkImageData> imageDataCellCentered = vtkSmartPointer<vtkImageData>::New();
     imageDataCellCentered->SetDimensions(field.dims(0)+1, field.dims(1)+1, field.dims(2)+1);
-    imageDataCellCentered->SetOrigin(0,0,0);
-    imageDataCellCentered->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
+    imageDataCellCentered->SetOrigin(0, 0, 0);
+    imageDataCellCentered->SetSpacing(mesh.dx, mesh.dy, mesh.dz);
     imageDataCellCentered->GetCellData()->SetScalars (imageDataPointCentered->GetPointData()->GetScalars());
 
     vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
@@ -69,7 +69,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
 
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
     imageData->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
-    imageData->SetSpacing(mesh.dx,mesh.dy,mesh.dz);
+    imageData->SetSpacing(mesh.dx, mesh.dy, mesh.dz);
     #if VTK_MAJOR_VERSION <= 5
     imageData->SetNumberOfScalarComponents(field.dims(3));
     imageData->SetScalarTypeToDouble();
@@ -86,7 +86,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
           {
           for (int im=0; im < field.dims(3); im++)
             {
-            double* pixel = static_cast<double*>(imageData->GetScalarPointer(x,y,z));
+            double* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
             pixel[im] = host_a[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))];
             }
           }
@@ -115,7 +115,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
 
     //Check whether input is vtkCellData or vtkPointData
     bool celldata=false;// If true, vtkCellData, if false, vtkPointData
-    double* test_pixel = static_cast<double*>(imageData->GetScalarPointer(0,0,0));
+    double* test_pixel = static_cast<double*>(imageData->GetScalarPointer(0, 0, 0));
     if(test_pixel==NULL){
         std::cout<<"vti_reader: Reading vtkCellData from "<<filepath<<std::endl;
         celldata=true;
@@ -133,17 +133,17 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
         }
         //IF Celldata:
         vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
-        imageData->GetCellData()->GetScalars()->GetData(0,imageData->GetNumberOfCells()-1,0,dim4th-1,temp);
+        imageData->GetCellData()->GetScalars()->GetData(0, imageData->GetNumberOfCells()-1, 0, dim4th-1, temp);
         double* A_host = NULL;
         A_host = new double[dim4th*imageData->GetNumberOfCells()];
         //VERSION SORT WITH ARRAYFIRE
         for(int i=0; i < dim4th* imageData->GetNumberOfCells(); i++){
             A_host[i]=temp->GetValue(i);
         }
-        af::array A(dim4th*imageData->GetNumberOfCells(),1,1,1,A_host);
+        af::array A(dim4th*imageData->GetNumberOfCells(), 1, 1, 1, A_host);
         delete [] A_host;
-        A=af::moddims(A,af::dim4(dim4th,dims[0],dims[1],dims[2]));
-        A=af::reorder(A,1,2,3,0);
+        A=af::moddims(A, af::dim4(dim4th, dims[0], dims[1], dims[2]));
+        A=af::reorder(A, 1, 2, 3, 0);
         field=A;
         //Two Versions to sort CellData to double* A_host
         //Perform equally both on CPU and OpenCL
@@ -156,9 +156,9 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
         //        A_host_idx++;
         //    }
         //}
-        //af::array A(dim4th*imageData->GetNumberOfCells(),1,1,1,A_host);
+        //af::array A(dim4th*imageData->GetNumberOfCells(), 1, 1, 1, A_host);
         //delete [] A_host;
-        //A=af::moddims(A,af::dim4(dims_reduced[0],dims_reduced[1],dims_reduced[2],dim4th));
+        //A=af::moddims(A, af::dim4(dims_reduced[0], dims_reduced[1], dims_reduced[2], dim4th));
         //field=A;
     }
     else{
@@ -170,7 +170,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
             {
             for (int x = 0; x < dims[0]; x++)
               {
-              double* pixel = static_cast<double*>(imageData->GetScalarPointer(x,y,z));
+              double* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
               for (int im=0; im < dim4th; im++)
                 {
                 A_host[x+dims[0]*(y+dims[1]*(z+ dims[2] * im))] = pixel[im] ;
@@ -179,12 +179,12 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
             }
           }
 
-        af::array A(dim4th*imageData->GetNumberOfPoints(),1,1,1,A_host);
+        af::array A(dim4th*imageData->GetNumberOfPoints(), 1, 1, 1, A_host);
         delete [] A_host;
-        A=af::moddims(A,af::dim4(dims[0],dims[1],dims[2],dim4th));
+        A=af::moddims(A, af::dim4(dims[0], dims[1], dims[2], dim4th));
         field=A;
     }
-    mesh=Mesh(dims[0],dims[1],dims[2],spacing[0],spacing[1],spacing[2]);
+    mesh=Mesh(dims[0], dims[1], dims[2], spacing[0], spacing[1], spacing[2]);
 }
 
 
@@ -326,7 +326,7 @@ void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, st
     af::array A(data_dim * output_data->GetNumberOfCells(), 1, 1, 1, A_host);
     delete [] A_host;
     A=af::moddims(A, af::dim4(data_dim, grid_dims[0]-1, grid_dims[1]-1, grid_dims[2]-1));
-    A=af::reorder(A,1,2,3,0);
+    A=af::reorder(A, 1, 2, 3, 0);
 
     // Printing dimension info
     if(verbose) std::cout << "vtr_reader: read vtkCellData of dimension [" << grid_dims[0]-1 << ", " << grid_dims[1]-1 \

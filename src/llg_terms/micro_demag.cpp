@@ -3,11 +3,11 @@
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double DemagField::E(const State& state){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double DemagField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m,0),1),2),3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 void DemagField::print_Nfft(){
@@ -19,7 +19,7 @@ af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
 DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
-        Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+        Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
         if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
         if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
     }
@@ -44,7 +44,7 @@ DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads
         }
         else{
             if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft=N_cpp_alloc(mesh.n0_exp,mesh.n1_exp,mesh.n2_exp,mesh.dx,mesh.dy,mesh.dz);
+            Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize){
                 if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
@@ -72,25 +72,25 @@ af::array DemagField::h(const State&  state){
   // FFT with zero-padding of the m field
   af::array mfft;
   if (state.mesh.n2_exp == 1){
-      if (state.Ms_field.isempty()) mfft=af::fftR2C<2>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
-      else mfft=af::fftR2C<2>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<2>(state.Ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+      else mfft=af::fftR2C<2>(state.Ms_field * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
   }
   else {
-      if (state.Ms_field.isempty()) mfft=af::fftR2C<3>(state.Ms * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
-      else  mfft=af::fftR2C<3>(state.Ms_field * state.m,af::dim4(state.mesh.n0_exp,state.mesh.n1_exp,state.mesh.n2_exp));
+      if (state.Ms_field.isempty()) mfft=af::fftR2C<3>(state.Ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp, state.mesh.n2_exp));
+      else  mfft=af::fftR2C<3>(state.Ms_field * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp, state.mesh.n2_exp));
   }
 
   // Pointwise product
-  af::array hfft=af::array (state.mesh.n0_exp/2+1,state.mesh.n1_exp,state.mesh.n2_exp,3,c64);
-  hfft(af::span,af::span,af::span,0)= Nfft(af::span,af::span,af::span,0) * mfft(af::span,af::span,af::span,0)
-                                 + Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,1)= Nfft(af::span,af::span,af::span,1) * mfft(af::span,af::span,af::span,0)
-                                 + Nfft(af::span,af::span,af::span,3) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,2);
-  hfft(af::span,af::span,af::span,2)= Nfft(af::span,af::span,af::span,2) * mfft(af::span,af::span,af::span,0)
-                                 + Nfft(af::span,af::span,af::span,4) * mfft(af::span,af::span,af::span,1)
-                                 + Nfft(af::span,af::span,af::span,5) * mfft(af::span,af::span,af::span,2);
+  af::array hfft=af::array (state.mesh.n0_exp/2+1, state.mesh.n1_exp, state.mesh.n2_exp, 3, c64);
+  hfft(af::span, af::span, af::span, 0)= Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0)
+                                 + Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1)
+                                 + Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 2);
+  hfft(af::span, af::span, af::span, 1)= Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 0)
+                                 + Nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, af::span, 1)
+                                 + Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 2);
+  hfft(af::span, af::span, af::span, 2)= Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 0)
+                                 + Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1)
+                                 + Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
 
   // IFFT reversing padding
   af::array h_field;
@@ -98,13 +98,13 @@ af::array DemagField::h(const State&  state){
     h_field=af::fftC2R<2>(hfft);
     if(state.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,state.mesh.n0_exp/2-1),af::seq(0,state.mesh.n1_exp/2-1));
+    return h_field(af::seq(0, state.mesh.n0_exp/2-1), af::seq(0, state.mesh.n1_exp/2-1));
   }
   else {
     h_field=af::fftC2R<3>(hfft);
     if(state.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    return h_field(af::seq(0,state.mesh.n0_exp/2-1),af::seq(0,state.mesh.n1_exp/2-1),af::seq(0,state.mesh.n2_exp/2-1),af::span);
+    return h_field(af::seq(0, state.mesh.n0_exp/2-1), af::seq(0, state.mesh.n1_exp/2-1), af::seq(0, state.mesh.n2_exp/2-1), af::span);
   }
 }
 
@@ -113,10 +113,10 @@ namespace newell{
       x=fabs(x);
       y=fabs(y);
       z=fabs(z);
-      const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-      const double xx = pow(x,2);
-      const double yy = pow(y,2);
-      const double zz = pow(z,2);
+      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const double xx = pow(x, 2);
+      const double yy = pow(y, 2);
+      const double zz = pow(z, 2);
 
       double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
@@ -127,16 +127,16 @@ namespace newell{
 
     double g(const double x, const double y, double z){
       z=fabs(z);
-      const double R = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
-      const double xx = pow(x,2);
-      const double yy = pow(y,2);
-      const double zz = pow(z,2);
+      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const double xx = pow(x, 2);
+      const double yy = pow(y, 2);
+      const double zz = pow(z, 2);
 
       double result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
       if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-      if(z  *  R > 0) result += - pow(z,3) / 6.0     * atan(x*y / (z * R));
+      if(z  *  R > 0) result += - pow(z, 3) / 6.0     * atan(x*y / (z * R));
       if(y  *  R!= 0) result += - z * yy / 2.0 * atan(x*z / (y * R));
       if(x  *  R!= 0) result += - z * xx / 2.0 * atan(y*z / (x * R));
       return result;
@@ -272,8 +272,8 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
     for (unsigned i = 0; i < nthreads; i++){
         t[i].join();
      }
-    af::array Naf(6,n2_exp,n1_exp,n0_exp, newell::N_setup);
-    Naf=af::reorder(Naf,3,2,1,0);
+    af::array Naf(6, n2_exp, n1_exp, n0_exp, newell::N_setup);
+    Naf=af::reorder(Naf, 3, 2, 1, 0);
     delete [] newell::N_setup;
     newell::N_setup = NULL;
     if (n2_exp == 1){

@@ -12,11 +12,11 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const double x=1.e-9, y=1e-9, z=0.6e-9;
-    const int nx = 2, ny=2 ,nz=2;
-    //const int nx = 1, ny=1 ,nz=1;
+    const int nx = 2, ny=2 , nz=2;
+    //const int nx = 1, ny=1 , nz=1;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material = Material();
     state.Ms    = 1.4e6;
     material.A     = 30e-12;
@@ -34,14 +34,14 @@ int main(int argc, char** argv)
     pol(af::span, af::span, af::span, 0 )=1/sqrt(2);
     pol(af::span, af::span, af::span, 1 )=1/sqrt(2);
 
-    State state(mesh,material, m);
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    State state(mesh, material, m);
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
     LlgTerms llgterm;
-    llgterm.push_back( LlgTerm (new DemagField(mesh,material, true)));
-    llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+    llgterm.push_back( LlgTerm (new DemagField(mesh, material, true)));
+    llgterm.push_back( LlgTerm (new ExchangeField(mesh, material)));
     llgterm.push_back( LlgTerm (new SpinTransferTorqueField(pol, .3, .4, 2e10)));
-    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, material)));
     LLGIntegrator Llg(llgterm);
 
     std::ofstream stream;
@@ -54,9 +54,9 @@ int main(int argc, char** argv)
         Llg.step(state);
         state.calc_mean_m(stream);
         //state.calc_mean_m(std::cout);
-        //std::cout << afvalue(m(0,0,0,0)) << " " << afvalue(m(0,0,0,1)) << " " << afvalue(m(0,0,0,2)) << " " << std::endl;
+        //std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1)) << " " << afvalue(m(0, 0, 0, 2)) << " " << std::endl;
     }
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
-    vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
     return 0;
 }

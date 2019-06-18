@@ -6,9 +6,9 @@ import time
 from math import atan, sin, cos
 
 def get_norm_mz(a):
-    x = a[0,0,0,0].scalar()
-    y = a[0,0,0,1].scalar()
-    z = a[0,0,0,2].scalar()
+    x = a[0, 0, 0, 0].scalar()
+    y = a[0, 0, 0, 1].scalar()
+    z = a[0, 0, 0, 2].scalar()
     norm = np.sqrt(x**2 + y**2 + z**2)
     return z/norm
 
@@ -62,7 +62,7 @@ for i in range(ni):
     h1 = h[ ix, 0, iz, 2].scalar()
     h2 = h[ 0, iy, iz, 2].scalar()
     h3 = h[-ix, 0, iz, 2].scalar()
-    h4 = h[ 0,-iy, iz, 2].scalar()
+    h4 = h[ 0, -iy, iz, 2].scalar()
 
     dhx = h1 - h3
     dhy = h2 - h4
@@ -74,7 +74,7 @@ for i in range(ni):
     m1 = get_norm_mz(h[ ix, 0, iz, 2])
     m2 = get_norm_mz(h[ 0, iy, iz, 2])
     m3 = get_norm_mz(h[-ix, 0, iz, 2])
-    m4 = get_norm_mz(h[ 0,-iy, iz, 2])
+    m4 = get_norm_mz(h[ 0, -iy, iz, 2])
 
     dmx = m1 - m3
     dmy = m2 - m4

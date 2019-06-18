@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     const double dz=0.6e-9;
 
     //Generating Objects
-    Mesh mesh(nx,nx,nz,dx,dx,dz);
+    Mesh mesh(nx, nx, nz, dx, dx, dz);
     Material material = Material();
     state.Ms    = 580000;
     material.A     = 15e-12;
@@ -27,18 +27,18 @@ int main(int argc, char** argv)
     material.Ku1=0.6e6;
 
     State state(mesh, material, mesh.skyrmconf());
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
-    Llg.llgterms.push_back( LlgTerm (new DemagField(mesh,material)));
-    Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    Llg.llgterms.push_back( LlgTerm (new DmiField(mesh,material)));
-    Llg.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new DemagField(mesh, material)));
+    Llg.llgterms.push_back( LlgTerm (new ExchangeField(mesh, material)));
+    Llg.llgterms.push_back( LlgTerm (new DmiField(mesh, material)));
+    Llg.llgterms.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, material)));
 
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         Llg.relax(state);
-        vti_writer_micro(state.m, mesh ,filepath + "relax");
+        vti_writer_micro(state.m, mesh , filepath + "relax");
         state.t=0;
     }
     else{
@@ -53,20 +53,20 @@ int main(int argc, char** argv)
     inputimages.push_back(State(mesh, material, state.m));
     for(int i=1; i < mesh.n0; i++){
         array mm = array(state.m);
-        mm=shift(mm,-i);
-        mm(seq(-i,-1),span,span,span)=0;
-        mm(seq(-i,-1),span,span,2)=1.;
+        mm=shift(mm, -i);
+        mm(seq(-i, -1), span, span, span)=0;
+        mm(seq(-i, -1), span, span, 2)=1.;
         inputimages.push_back(State(mesh, material, mm));
     }
 
     // Corner
     //for(int i=0; i < mesh.n0; i++){
     //    array mm = array(state.m);
-    //    mm=shift(mm,i,i);
-    //    mm(seq(0,i),span,span,span)=0;
-    //    mm(seq(0,i),span,span,2)=1.;
-    //    mm(span,seq(0,i),span,span)=0;
-    //    mm(span,seq(0,i),span,2)=1.;
+    //    mm=shift(mm, i, i);
+    //    mm(seq(0, i), span, span, span)=0;
+    //    mm(seq(0, i), span, span, 2)=1.;
+    //    mm(span, seq(0, i), span, span)=0;
+    //    mm(span, seq(0, i), span, 2)=1.;
     //    inputimages.push_back(State(mesh, material, mm));
     //}
 

@@ -35,27 +35,27 @@ af::array Minimizer::dm(const State& state){
 
 af::array Minimizer::m_next(const State& state, const double tau){
 
-    const af::array Mx = state.m(af::span,af::span,af::span,0);
-    const af::array My = state.m(af::span,af::span,af::span,1);
-    const af::array Mz = state.m(af::span,af::span,af::span,2);
+    const af::array Mx = state.m(af::span, af::span, af::span, 0);
+    const af::array My = state.m(af::span, af::span, af::span, 1);
+    const af::array Mz = state.m(af::span, af::span, af::span, 2);
 
     const af::array H = h(state);
-    const af::array Hx = H(af::span,af::span,af::span,0);
-    const af::array Hy = H(af::span,af::span,af::span,1);
-    const af::array Hz = H(af::span,af::span,af::span,2);
+    const af::array Hx = H(af::span, af::span, af::span, 0);
+    const af::array Hy = H(af::span, af::span, af::span, 1);
+    const af::array Hz = H(af::span, af::span, af::span, 2);
 
     const af::array MxH=cross4(state.m, h(state));
-    const af::array N = 4 + tau * tau * dotproduct(MxH, MxH);// TODO check whether tau and N are scalars or scalar fields: N_i or N is sum((mhx,mxh)0,1,2,3), i.e. constant for all indices
-    const af::array MxH_x = MxH(af::span,af::span,af::span,0);
-    const af::array MxH_y = MxH(af::span,af::span,af::span,1);
-    const af::array MxH_z = MxH(af::span,af::span,af::span,2);
+    const af::array N = 4 + tau * tau * dotproduct(MxH, MxH);// TODO check whether tau and N are scalars or scalar fields: N_i or N is sum((mhx, mxh)0, 1, 2, 3), i.e. constant for all indices
+    const af::array MxH_x = MxH(af::span, af::span, af::span, 0);
+    const af::array MxH_y = MxH(af::span, af::span, af::span, 1);
+    const af::array MxH_z = MxH(af::span, af::span, af::span, 2);
 
 
-    af::array result = af::constant(0.,state.mesh.dims,f64);
+    af::array result = af::constant(0., state.mesh.dims, f64);
 
-    result(af::span,af::span,af::span,0)= (4*Mx + 4*tau * (MxH_y*Mz - MxH_z*My) + tau*tau*Mx * (  MxH_x*MxH_x - MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_x * (MxH_y*My + MxH_z*Mz)) / N;
-    result(af::span,af::span,af::span,1)= (4*My + 4*tau * (MxH_z*Mx - MxH_x*Mz) + tau*tau*My * (- MxH_x*MxH_x + MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_y * (MxH_z*Mz + MxH_x*Mx)) / N;
-    result(af::span,af::span,af::span,2)= (4*Mz + 4*tau * (MxH_x*My - MxH_y*Mx) + tau*tau*Mz * (- MxH_x*MxH_x - MxH_y*MxH_y + MxH_z*MxH_z) + 2*tau*tau*MxH_z * (MxH_x*Mx + MxH_y*My)) / N;
+    result(af::span, af::span, af::span, 0)= (4*Mx + 4*tau * (MxH_y*Mz - MxH_z*My) + tau*tau*Mx * (  MxH_x*MxH_x - MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_x * (MxH_y*My + MxH_z*Mz)) / N;
+    result(af::span, af::span, af::span, 1)= (4*My + 4*tau * (MxH_z*Mx - MxH_x*Mz) + tau*tau*My * (- MxH_x*MxH_x + MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_y * (MxH_z*Mz + MxH_x*Mx)) / N;
+    result(af::span, af::span, af::span, 2)= (4*Mz + 4*tau * (MxH_x*My - MxH_y*Mx) + tau*tau*Mz * (- MxH_x*MxH_x - MxH_y*MxH_y + MxH_z*MxH_z) + 2*tau*tau*MxH_z * (MxH_x*Mx + MxH_y*My)) / N;
 
     return result;
 }
@@ -99,8 +99,8 @@ void Minimizer::minimize(State& state){
         }
         // TODO handly zero division
 
-        if(tau >= 0) tau = std::max(std::min(fabs(tau),tau_max),tau_min);
-        else tau = - std::max(std::min(fabs(tau),tau_max),tau_min);
+        if(tau >= 0) tau = std::max(std::min(fabs(tau), tau_max), tau_min);
+        else tau = - std::max(std::min(fabs(tau), tau_max), tau_min);
         // Increase step count
         step ++;
         if (info) std::cout << "step="<< step <<" rate=" << 1./af::timer::stop(t) << " tau="<< tau << " last_dm_max.size()="<< last_dm_max.size()<< " dm_max=" << dm_max <<" *std::max_element()="<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;

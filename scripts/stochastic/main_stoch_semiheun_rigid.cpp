@@ -17,12 +17,12 @@ double mean_mz_analytical (double chi){
 }
 
 void set_m_to_z(State& state){
-    state.m(span,span,span,0)=0.;
-    state.m(span,span,span,1)=0.;
-    state.m(span,span,span,2)=1.;
+    state.m(span, span, span, 0)=0.;
+    state.m(span, span, span, 1)=0.;
+    state.m(span, span, span, 2)=1.;
 }
 void calcm(State state, std::ostream& myfile){
-    myfile << std::setw(12) << state.t << "\t" <<meani(state.m,0)<< "\t" <<meani(state.m,1)<< "\t" <<meani(state.m,2)<< "\t" << std::endl;
+    myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t" <<meani(state.m, 1)<< "\t" <<meani(state.m, 2)<< "\t" << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -51,10 +51,10 @@ int main(int argc, char** argv)
     stream2<<" abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
     const double x=1.e-9, y=1.e-9, z=1.e-9;
-    const int nx = 1, ny=1 ,nz=1;
+    const int nx = 1, ny=1 , nz=1;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material = Material();
     state.Ms    = 1281197;
     material.Ku1   = 6.9e6;
@@ -62,11 +62,11 @@ int main(int argc, char** argv)
     material.T = 10;
 
     // Initial magnetic field
-    array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-    m(0,0,0,2)=1.;
-    State state(mesh,material, m);//ATTENTION, to be set in each loop
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m(0, 0, 0, 2)=1.;
+    State state(mesh, material, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
-    Stochastic_LLG Stoch(state,llgterm,0.,"SemiHeun");//ATTENTION, to be set in each loop
+    Stochastic_LLG Stoch(state, llgterm, 0., "SemiHeun");//ATTENTION, to be set in each loop
 
     //Declare Variables
     double mean_mz;
@@ -81,16 +81,16 @@ int main(int argc, char** argv)
         std::cout<<"i= "<<i<<" dt = "<<dt<<std::endl;
         //T=10
         material.T=10.;
-        state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
+        state=State(mesh, material, m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));
+        Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt);
-            mean_mz+=afvalue(state.m(0,0,0,2));
-            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            Stoch.step(state, dt);
+            mean_mz+=afvalue(state.m(0, 0, 0, 2));
+            abs_mean_mz+=fabs(afvalue(state.m(0, 0, 0, 2)));
         }
 
         mean_mz=mean_mz/measure_steps;
@@ -104,16 +104,16 @@ int main(int argc, char** argv)
 
         //T=50
         material.T=50.;
-        state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
+        state=State(mesh, material, m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));
+        Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt);
-            mean_mz+=afvalue(state.m(0,0,0,2));
-            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            Stoch.step(state, dt);
+            mean_mz+=afvalue(state.m(0, 0, 0, 2));
+            abs_mean_mz+=fabs(afvalue(state.m(0, 0, 0, 2)));
         }
 
         mean_mz=mean_mz/measure_steps;
@@ -127,16 +127,16 @@ int main(int argc, char** argv)
 
         //T=200
         material.T=200.;
-        state=State(mesh,material,m);
-        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
-        Stoch = Stochastic_LLG(state,llgterm,dt,"SemiHeun");
+        state=State(mesh, material, m);
+        llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));
+        Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz=0;
         abs_mean_mz=0;
         for (unsigned long int i = 0; i < measure_steps; i++){
-            Stoch.step(state,dt);
-            mean_mz+=afvalue(state.m(0,0,0,2));
-            abs_mean_mz+=fabs(afvalue(state.m(0,0,0,2)));
+            Stoch.step(state, dt);
+            mean_mz+=afvalue(state.m(0, 0, 0, 2));
+            abs_mean_mz+=fabs(afvalue(state.m(0, 0, 0, 2)));
         }
 
         mean_mz=mean_mz/measure_steps;

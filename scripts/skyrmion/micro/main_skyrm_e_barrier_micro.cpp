@@ -10,11 +10,11 @@ int main(int argc, char** argv)
   info();
 
   //char* charptr;
-  //std::cout<<"argv"<<std::strtod(argv[1],&charptr)<<std::endl;
-  //std::cout<<"argv"<<std::strtod(argv[2],&charptr)<<std::endl;
+  //std::cout<<"argv"<<std::strtod(argv[1], &charptr)<<std::endl;
+  //std::cout<<"argv"<<std::strtod(argv[2], &charptr)<<std::endl;
 
   // Parameter initialization
-  const int nx = 111, ny=111 ,nz=1;
+  const int nx = 111, ny=111 , nz=1;
 
   const double dx=2.715e-10;//dx max = sqrt(A/Ku1)=1.58114e-9
   const double x=111*dx, y=111*dx, z=4*dx;
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 
   //Generating Objects
-  Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+  Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
   Material material = Material();
   material.gamma = 2.211e5;
   state.Ms    = 1.1e6;
@@ -53,63 +53,63 @@ int main(int argc, char** argv)
   //material.Ku1_axis[2]=1;
 
   material.J_atom=4.*material.A*dx;
-  material.D_atom= 2.* material.D * pow(dx,2);
+  material.D_atom= 2.* material.D * pow(dx, 2);
   material.K_atom=4.* material.Ku1/state.Ms;
-  material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+  material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
 
    // Initial magnetic field
-   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-   m(span,span,span,2) = -1;
+   array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+   m(span, span, span, 2) = -1;
    for(int ix=0;ix<mesh.n0;ix++){
      for(int iy=0;iy<mesh.n1;iy++){
        const double rx=double(ix)-mesh.n0/2.;
        const double ry=double(iy)-mesh.n1/2.;
-       const double r = sqrt(pow(rx,2)+pow(ry,2));
-       if(r>nx/4.) m(ix,iy,span,2)=1.;
+       const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+       if(r>nx/4.) m(ix, iy, span, 2)=1.;
      }
    }
 
-  State state(mesh,material, m);
+  State state(mesh, material, m);
   std::cout << "test" << std::endl;
-  vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+  vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
   std::cout << "test" << std::endl;
   std::vector<llgt_ptr> llgterm;
-  llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
   std::cout << "test" << std::endl;
-  llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
-  llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
-  llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new ExchangeField(mesh, material)));
+  llgterm.push_back( llgt_ptr (new DmiField(mesh, material)));
+  llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));
 
   //llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
   //llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-  //llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-  //llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+  //llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-  LLG Llg(state,llgterm);
+  LLG Llg(state, llgterm);
 
   timer t = af::timer::start();
   while (state.t < 2.e-10){
     state.m=Llg.step(state);
   }
   double timerelax= af::timer::stop(t);
-  vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
+  vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
   std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
 
 
 
 
-  array last   = constant( 0,mesh.dims,f64);
-  last(span,span,span,2)=1;
+  array last   = constant( 0, mesh.dims, f64);
+  last(span, span, span, 2)=1;
 
   std::vector<State> inputimages;
   inputimages.push_back(state);
-  inputimages.push_back(State(mesh,material, last));
+  inputimages.push_back(State(mesh, material, last));
 
-  String string(state,inputimages, n_interp, string_dt ,llgterm);
-  //String* string = new String(state,inputimages, n_interp ,llgterm);
+  String string(state, inputimages, n_interp, string_dt , llgterm);
+  //String* string = new String(state, inputimages, n_interp , llgterm);
   std::cout.precision(12);
 
   std::ofstream stream_E_barrier;
@@ -159,8 +159,8 @@ int main(int argc, char** argv)
     stream_E_curves<<i<<"\n\n"<<std::endl;
     max_prev_step=*max-string.E[0];
   }
-    std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    std::cout   <<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    stream_steps<<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_E_barrier<<max_lowest<<"\t"<<std::endl;
 
   std::ofstream myfileE;
@@ -178,13 +178,13 @@ int main(int argc, char** argv)
     std::string name = filepath;
     name.append("skyrm_image");
     name.append(std::to_string(i));
-    vti_writer_micro(string.images[i].m, mesh ,name.c_str());
-    //af_to_vtk(string.images_interp[i],name.c_str());
+    vti_writer_micro(string.images[i].m, mesh , name.c_str());
+    //af_to_vtk(string.images_interp[i], name.c_str());
     stream_max_lowest<<i<< "\t" << E_max_lowest[i]<<"\t" << E_max_lowest[i]-E_max_lowest[0]<<"\t" << E_max_lowest[i]-E_max_lowest[-1]<<std::endl;
     name = filepath;
     name.append("skyrm_image_max_lowest");
     name.append(std::to_string(i));
-    vti_writer_micro(images_max_lowest[i].m, mesh ,name.c_str());
+    vti_writer_micro(images_max_lowest[i].m, mesh , name.c_str());
   }
 
   for(unsigned i=0;i<Llg.Fieldterms.size();++i){

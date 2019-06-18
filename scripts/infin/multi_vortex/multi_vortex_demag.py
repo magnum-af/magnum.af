@@ -33,7 +33,7 @@ z = 80e-9
 
 print("a_x", a_x, "a_y", a_y)
 print("a_x_factor", a_x_factor, "a_y_factor", a_y_factor)
-print ("x,y,z:", x, y, z)
+print ("x, y, z:", x, y, z)
 
 
 nx_disk = int(sys.argv[3]) if len(sys.argv) > 3 else 100
@@ -77,10 +77,10 @@ print("demagtensor in ", time.time() - timer, "[s]")
 timer = time.time()
 llg = LLGIntegrator([demag])
 demagfield = llg.h(state)
-#print (demagfield[nx/2, ny/2,:,:])
-print (demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0)
+#print (demagfield[nx/2, ny/2, :, :])
+print (demagfield[nx/2, ny/2, 0, 0].scalar()*Constants.mu0, demagfield[nx/2, ny/2, 0, 1].scalar()*Constants.mu0, demagfield[nx/2, ny/2, 0, 2].scalar()*Constants.mu0)
 stream = open(filepath+"demag.dat", "w")
-stream.write("%d, %d, %e, %e, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a_y*1e9, demagfield[nx/2, ny/2,0,0].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,1].scalar()*Constants.mu0, demagfield[nx/2, ny/2,0,2].scalar()*Constants.mu0, state.Ms, angle_degree, a_x*1e9, a_x/a_y))
+stream.write("%d, %d, %e, %e, %e, %e, %e, %e, %e, %e" %(nx, nx_disk, a_y*1e9, demagfield[nx/2, ny/2, 0, 0].scalar()*Constants.mu0, demagfield[nx/2, ny/2, 0, 1].scalar()*Constants.mu0, demagfield[nx/2, ny/2, 0, 2].scalar()*Constants.mu0, state.Ms, angle_degree, a_x*1e9, a_x/a_y))
 stream.close()
 
 dirty_workaround = State(mesh, material, demagfield)

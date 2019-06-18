@@ -21,7 +21,7 @@ nz = 1
 
 print(nx, ny, nz, x, y, z)
 
-m, n_cells = Util.disk(nx, ny, nz, [0,1,0])
+m, n_cells = Util.disk(nx, ny, nz, [0, 1, 0])
 material = Material(ms = 8.6e5, A = 30e-12, alpha = 0.1)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 state = State(mesh, material, m)
@@ -37,7 +37,7 @@ fields = [
     SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=4.5e7 * 1.6e11 * spin_diffusion_length / z),
     #SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=1.6e11),
     #UniaxialAnisotropyField(mesh, material),
-    #ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1,1,0], 10e-3/Constants.mu0)),
+    #ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
 ]
 print (fields)
 

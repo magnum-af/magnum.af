@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     double string_dt=1e-13;
 
     //Generating Objects
-    Mesh mesh(nx,nx,1,dx,dx,dx);
+    Mesh mesh(nx, nx, 1, dx, dx, dx);
     Material material = Material();
     state.Ms    = 580000;
     material.A     = 15e-12;
@@ -33,19 +33,19 @@ int main(int argc, char** argv)
     material.set_atomistic_from_micromagnetic(mesh.dx);
 
     State state(mesh, material, mesh.skyrmconf());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
     Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
-    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh, material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
 
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         Llg.relax(state);
-        vti_writer_micro(state.m, mesh ,filepath + "relax");
+        vti_writer_micro(state.m, mesh , filepath + "relax");
         state.t=0;
     }
     else{
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
     }
 
 
-    array last   = constant( 0,mesh.dims,f64);
-    last(span,span,span,2)=1;
+    array last   = constant( 0, mesh.dims, f64);
+    last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;
 
@@ -65,9 +65,9 @@ int main(int argc, char** argv)
         if (i > mesh.n0) i = mesh.n0;
         std::cout << "i= " << i<< std::endl;
         array mm = array(state.m);
-        mm=shift(mm,i);
-        mm(seq(0,i),span,span,span)=0;
-        mm(seq(0,i),span,span,2)=1.;
+        mm=shift(mm, i);
+        mm(seq(0, i), span, span, span)=0;
+        mm(seq(0, i), span, span, 2)=1.;
         inputimages.push_back(State(mesh, material, mm));
     }
 

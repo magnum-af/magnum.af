@@ -21,19 +21,19 @@ int main(int argc, char** argv)
         //zee(span, span, span, 0)=constant(A * std::cos(phi), dim, f64);
         //zee(span, span, span, 1)=constant(A * std::sin(phi), dim, f64);
         //zee(span, span, span, 2)=constant(0.0              , dim, f64);
-        zee(span,span,span,0)=constant( A * std::cos(phi), dim, f64);
-        zee(span,span,span,1)=constant( B * std::sin(phi), dim, f64);
-        zee(span,span,span,2)=constant( A * std::sin(phi), dim, f64);
-        //zee(span,span,span,2)=constant( A * std::sin(phi) ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        zee(span, span, span, 0)=constant( A * std::cos(phi), dim, f64);
+        zee(span, span, span, 1)=constant( B * std::sin(phi), dim, f64);
+        zee(span, span, span, 2)=constant( A * std::sin(phi), dim, f64);
+        //zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
     // Parameter initialization
     const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
-    const int nx = 250, ny=250 ,nz=1;
+    const int nx = 250, ny=250 , nz=1;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     mesh.print(std::cout);
     Material material = Material();
     state.Ms    = 1.58/constants::mu0;// [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla /mu_0 // Js = 1.58 Tesla
@@ -47,21 +47,21 @@ int main(int argc, char** argv)
     param_stress.Ku1_axis[2]=0;
     param_stress.ms = state.Ms;//TODO should be taken form state in the future
 
-    State state(mesh,material, mesh.ellipse(2));
+    State state(mesh, material, mesh.ellipse(2));
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
     std::cout << "Mean i for check: " <<  state.meani(0) <<"\t" << state.meani(1) <<"\t" << state.meani(2) << std::endl;
 
-    vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
     mesh.print(std::cout);
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer;
     //LBFGS_Minimizer minimizer = LBFGS_Minimizer();//Fails on GTO, maybe due to gcc verions < 7.2
-    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,param_stress)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, param_stress)));
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
         state.t = (double)i/(double)max_i;
         state.steps++;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0,0,0,af::span));
+        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
         vti_writer_micro(state.m, mesh, filepath + "m_"+std::to_string(state.steps));
         vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh, filepath + "check_h_ani_stress"+std::to_string(state.steps));// TODO this looks interesting, value drops at the boundaries of the disc
     }

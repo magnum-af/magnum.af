@@ -20,28 +20,28 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const int nx = 5, ny=5 ,nz=1;//nz=5 -> lz=(5-1)*dx
+    const int nx = 5, ny=5 , nz=1;//nz=5 -> lz=(5-1)*dx
     const double dx=1.e-10;
     //Generating Objects
-    Mesh mesh(nx,ny,nz,dx,dx,dx);
+    Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     material.p    = 1.;
     //material.alpha = 1.;
     material.J_atom=1;
 
      // Initial magnetic field
-     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-     //m(span,span,span,2) = -1;
-     m(1,1,0) = 1;
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     //m(span, span, span, 2) = -1;
+     m(1, 1, 0) = 1;
 
-    State state(mesh,material, m);
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    State state(mesh, material, m);
+    vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
     std::vector<llgt_ptr> llgterm;
 
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-    af::print("llgterm",llgterm[0]->h(state));
-    //LLG Llg(state,llgterm);
+    af::print("llgterm", llgterm[0]->h(state));
+    //LLG Llg(state, llgterm);
 
     return 0;
 }

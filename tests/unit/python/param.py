@@ -21,9 +21,9 @@ class ParamTest(unittest.TestCase):
     self.assertEqual(self.D, material.D)
     self.assertEqual(self.J_atom, material.J_atom)
     self.assertEqual(self.D_atom, material.D_atom)
-    self.assertEqual((0.,1.,0.), material.Ku1_atom_axis)
-    self.assertEqual((1./sqrt(2.),1./sqrt(2.),0.), material.D_axis)
-    self.assertEqual((1./sqrt(3.),1./sqrt(3.),1./sqrt(3.)), material.D_atom_axis)
+    self.assertEqual((0., 1., 0.), material.Ku1_atom_axis)
+    self.assertEqual((1./sqrt(2.), 1./sqrt(2.), 0.), material.D_axis)
+    self.assertEqual((1./sqrt(3.), 1./sqrt(3.), 1./sqrt(3.)), material.D_atom_axis)
 
   def test_param_default_initialization(self):
     material=magnumaf.Material()

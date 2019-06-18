@@ -12,23 +12,23 @@ if os.path.exists(path) is False:
     exit()
 af.info()
 
-meshvar=magnumaf.Mesh(  100,25,1,5.e-7/100,1.25e-7/25,3.e-9)
-m=af.constant(0.0,100,25,1,3,dtype=af.Dtype.f64)
+meshvar=magnumaf.Mesh(  100, 25, 1, 5.e-7/100, 1.25e-7/25, 3.e-9)
+m=af.constant(0.0, 100, 25, 1, 3, dtype=af.Dtype.f64)
 
 material=magnumaf.Material()
 state.Ms    (8e5)
 material.A     (1.3e-11)
 material.alpha (1)
 
-m[1:-1,:,:,0] = af.constant(1.0,100-2,25,1,1,dtype=af.Dtype.f64);
-m[0,:,:,1]    = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-m[-1,:,:,1]   = af.constant(1.0,1    ,25,1,1,dtype=af.Dtype.f64);
-pystate=magnumaf.State(meshvar,material,m)
+m[1:-1, :, :, 0] = af.constant(1.0, 100-2, 25, 1, 1, dtype=af.Dtype.f64);
+m[0, :, :, 1]    = af.constant(1.0, 1    , 25, 1, 1, dtype=af.Dtype.f64);
+m[-1, :, :, 1]   = af.constant(1.0, 1    , 25, 1, 1, dtype=af.Dtype.f64);
+pystate=magnumaf.State(meshvar, material, m)
 pystate.write_vti(path+"minit")
 
-demag=magnumaf.DemagField(meshvar,material)
-exch=magnumaf.ExchangeField(meshvar,material)
-Llg=magnumaf.LLGIntegrator([pystate,demag,exch])
+demag=magnumaf.DemagField(meshvar, material)
+exch=magnumaf.ExchangeField(meshvar, material)
+Llg=magnumaf.LLGIntegrator([pystate, demag, exch])
 
 print "relax --------------------"
 while pystate.t() < 1e-9:
@@ -38,11 +38,11 @@ pystate.write_vti(path+"mrelax")
 print "switch --------------------"
 Llg.set_state0_alpha(0.02)# this should be changed in cpp version
 
-zeeswitch = af.constant(0.0,1,1,1,3,dtype=af.Dtype.f64)
-zeeswitch[0,0,0,0]=-24.6e-3/material.print_mu0()
-zeeswitch[0,0,0,1]=+4.3e-3/material.print_mu0()
-zeeswitch[0,0,0,2]=0.0
-zeeswitch = af.tile(zeeswitch,100,25,1)
+zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
+zeeswitch[0, 0, 0, 0]=-24.6e-3/material.print_mu0()
+zeeswitch[0, 0, 0, 1]=+4.3e-3/material.print_mu0()
+zeeswitch[0, 0, 0, 2]=0.0
+zeeswitch = af.tile(zeeswitch, 100, 25, 1)
 zee=magnumaf.ExternalField(zeeswitch)
 Llg.add_terms(zee)
 
@@ -58,5 +58,5 @@ with open(path + 'm.dat', 'w') as f:
 #  x = [line.split()[1] for line in lines]
 #  y = [line.split()[2] for line in lines]
 #  z = [line.split()[3] for line in lines]
-#plt.plot(t,y)
+#plt.plot(t, y)
 #plt.show()

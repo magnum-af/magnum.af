@@ -18,7 +18,7 @@ w0 = gamma*hext
 def read_m_t_magnumfe(logfile):
   ''' return (t, mx, my, mz) read from magnumfe logfile'''
   x = np.loadtxt(logfile)
-  return x[:,(0,1,2,3)]
+  return x[:, (0, 1, 2, 3)]
 
 def fft(t, x, dt):
   # interpolate on equidistant grid
@@ -35,25 +35,25 @@ def fft(t, x, dt):
 
 # main routine
 x = read_m_t_magnumfe("m.dat")
-t, my = x[:,0], x[:,2]
+t, my = x[:, 0], x[:, 2]
 f, MY = fft(t, my, t[1]-t[0])
 
-np.savetxt("psd.dat", np.vstack([f,MY]).T, header="Frequency[Hz], Spectral Density")
+np.savetxt("psd.dat", np.vstack([f, MY]).T, header="Frequency[Hz], Spectral Density")
 
 plt.subplot(2, 1, 1)
 plt.grid()
-plt.plot(t,my)
+plt.plot(t, my)
 plt.xlabel('Time [s]')
 plt.ylabel('Polarization Jx [T]')
 
 plt.subplot(2, 1, 2)
-#plt.plot(f,MY)
-plt.xlim([0,3*w0/2/np.pi])
+#plt.plot(f, MY)
+plt.xlim([0, 3*w0/2/np.pi])
 plt.ylim([1e-18, 1e-10])
 plt.semilogy(f, MY, 'bo', label="simulation")
 plt.semilogy(f, MY, 'b-', label=None, alpha=0.2)
 
-func = lambda w,w0,dw,a: a*(1/((w-w0)**2+dw**2) + 1/((w+w0)**2+dw**2))
+func = lambda w, w0, dw, a: a*(1/((w-w0)**2+dw**2) + 1/((w+w0)**2+dw**2))
 p0=np.array([w0, alpha*w0, gamma*alpha*kb*T/mu0/ms/V])
 popt, pcov = curve_fit(func, 2*np.pi*f, MY, p0=p0)
 print "popt:", popt

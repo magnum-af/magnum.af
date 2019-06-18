@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const int nx = 112, ny=112 ,nz=1;//nz=5 -> lz=(5-1)*dx
+    const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
     const double dx=2.715e-10;
 
 
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,dx,dx,dx);
+    Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     state.Ms    = 1.1e6;
     material.A     = 1.6e-11;
@@ -41,25 +41,25 @@ int main(int argc, char** argv)
     std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
 
     State state(mesh, material, mesh.skyrmconf());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
     Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh,material)));
-    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(mesh, material)));
+    Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     Llg.relax(state);
-    vti_writer_micro(state.m, mesh ,filepath + "relax");
+    vti_writer_micro(state.m, mesh , filepath + "relax");
     state.t=0;
 
 
-    array last   = constant( 0,mesh.dims,f64);
-    last(span,span,span,2)=1;
+    array last   = constant( 0, mesh.dims, f64);
+    last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh,material, last));
+    inputimages.push_back(State(mesh, material, last));
 
     String string(state, inputimages, n_interp, string_dt , Llg.llgterms);
     string.run(filepath, rel_diff, abs_diff, string_max_steps);

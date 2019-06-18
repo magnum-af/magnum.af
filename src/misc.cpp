@@ -13,8 +13,8 @@ unsigned long long GetDirSize(std::string filepath)
        //printf( "(%s)\n", string );
     }
     std::string charstring(string);
-    std::string dir_size_string=charstring.substr(0,charstring.find("/")-1);
-    return std::stoull (dir_size_string,0,0);
+    std::string dir_size_string=charstring.substr(0, charstring.find("/")-1);
+    return std::stoull (dir_size_string, 0, 0);
 
 }
 
@@ -64,7 +64,7 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumb
              if(chdir(dir)==0){
                  while((entry = readdir(dp)) != NULL) {
                     lstat(entry->d_name, &statbuf);
-                    if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
+                    if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
                        continue;
                     if (maxiter == 0 && verbose) printf("Entry: ~/.magnum.af.cache/%s\t%s", entry->d_name, ctime(&statbuf.st_mtime));
                        numberOfEntries++;

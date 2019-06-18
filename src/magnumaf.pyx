@@ -55,17 +55,17 @@ def array_from_addr(array_addr):
 
 class Util:
     @staticmethod
-    def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1,0,0], factor = 1.):
+    def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1, 0, 0], factor = 1.):
         """Returns a homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis and normed to factor."""
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
         array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
-        array [0,0,0,0] = factor * axis[0]/norm
-        array [0,0,0,1] = factor * axis[1]/norm
-        array [0,0,0,2] = factor * axis[2]/norm
+        array [0, 0, 0, 0] = factor * axis[0]/norm
+        array [0, 0, 0, 1] = factor * axis[1]/norm
+        array [0, 0, 0, 2] = factor * axis[2]/norm
         return af.tile(array, nx, ny, nz)
 
     @staticmethod
-    def disk(nx, ny, nz, axis=[1,0,0], return_ncells = False):
+    def disk(nx, ny, nz, axis=[1, 0, 0], return_ncells = False):
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
         n_cells=0
         m = np_zeros((nx, ny, nz, 3))
@@ -76,11 +76,11 @@ class Util:
                     b= ny/2
                     rx=ix-nx/2.
                     ry=iy-ny/2.
-                    r = pow(rx,2)/pow(a,2)+pow(ry,2)/pow(b,2)
+                    r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
                     if(r<=1):
-                            m[ix,iy,iz,0]=axis[0]/norm
-                            m[ix,iy,iz,1]=axis[1]/norm
-                            m[ix,iy,iz,2]=axis[2]/norm
+                            m[ix, iy, iz, 0]=axis[0]/norm
+                            m[ix, iy, iz, 1]=axis[1]/norm
+                            m[ix, iy, iz, 2]=axis[2]/norm
                             n_cells = n_cells +1
         if return_ncells == True:
             return af.from_ndarray(m), n_cells
@@ -95,29 +95,29 @@ class Util:
             for iy in range(0, mesh.ny):
                 rx=float(ix)-mesh.nx/2.
                 ry=float(iy)-mesh.ny/2.
-                r = sqrt(pow(rx,2)+pow(ry,2))
+                r = sqrt(pow(rx, 2)+pow(ry, 2))
 
                 if r < mesh.nx/2.:
                     for iz in range(0, mesh.nz):
                         if r==0.:
                             if positive_z==True:
-                                m[ix,iy,:,2]= 1.
+                                m[ix, iy, :, 2]= 1.
                             else:
-                                m[ix,iy,:,2]= -1
+                                m[ix, iy, :, 2]= -1
                         else:
-                            m[ix,iy,:,0]=-ry/r
-                            m[ix,iy,:,1]= rx/r
+                            m[ix, iy, :, 0]=-ry/r
+                            m[ix, iy, :, 1]= rx/r
                             if positive_z==True:
-                                m[ix,iy,:,2]= sqrt(mesh.nx)/r
+                                m[ix, iy, :, 2]= sqrt(mesh.nx)/r
                             else:
-                                m[ix,iy,:,2]= - sqrt(mesh.nx)/r
-                        norm = sqrt(m[ix, iy, iz,0]**2+m[ix, iy, iz,1]**2+m[ix, iy, iz,2]**2)
-                        m[ix, iy, iz,:]=m[ix, iy, iz,:]/norm
+                                m[ix, iy, :, 2]= - sqrt(mesh.nx)/r
+                        norm = sqrt(m[ix, iy, iz, 0]**2+m[ix, iy, iz, 1]**2+m[ix, iy, iz, 2]**2)
+                        m[ix, iy, iz, :]=m[ix, iy, iz, :]/norm
         return af.from_ndarray(m)
 
     @classmethod
     def sum_of_difference_of_abs(cls, a, b):
-        return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b),0),1),2),3).scalar()
+        return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b), 0), 1), 2), 3).scalar()
 
     @classmethod
     def test_sum_of_difference_of_abs(cls, a, b, verbose = True):
@@ -213,7 +213,7 @@ cdef class Mesh:
 
     cdef cMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
-    def __cinit__(self,int nx, int ny, int nz, double dx, double dy, double dz):
+    def __cinit__(self, int nx, int ny, int nz, double dx, double dy, double dz):
         self._thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
         owner = None # see [1]
     cdef set_ptr(self, cMesh* ptr, owner):
@@ -232,42 +232,42 @@ cdef class Mesh:
     def nx(self):
         return self._thisptr.n0
     @nx.setter
-    def nx(self,value):
+    def nx(self, value):
         self._thisptr.n0=value
 
     @property
     def ny(self):
         return self._thisptr.n1
     @ny.setter
-    def ny(self,value):
+    def ny(self, value):
         self._thisptr.n1=value
 
     @property
     def nz(self):
         return self._thisptr.n2
     @nz.setter
-    def nz(self,value):
+    def nz(self, value):
         self._thisptr.n2=value
 
     @property
     def dx(self):
         return self._thisptr.dx
     @dx.setter
-    def dx(self,value):
+    def dx(self, value):
         self._thisptr.dx=value
 
     @property
     def dy(self):
         return self._thisptr.dy
     @dy.setter
-    def dy(self,value):
+    def dy(self, value):
         self._thisptr.dy=value
 
     @property
     def dz(self):
         return self._thisptr.dz
     @dz.setter
-    def dz(self,value):
+    def dz(self, value):
         self._thisptr.dz=value
 
 
@@ -314,7 +314,7 @@ cdef class State:
     --------
     mesh = Mesh(1, 1, 1, 0.1, 0.1, 0.1)
     m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-    m0[:,:,:,0] = 1
+    m0[:, :, :, 0] = 1
     state = State(mesh, 8e5, m0)
     """
     cdef cState* _thisptr
@@ -350,7 +350,7 @@ cdef class State:
     def Ms(self):
         return self._thisptr.Ms
     #@Ms.setter
-    #def Ms(self,value):
+    #def Ms(self, value):
     #  self._thisptr.Ms=value
 
 
@@ -372,8 +372,8 @@ cdef class State:
 
     property mesh:
         def __get__(self):
-            mesh = Mesh(0,0,0,0,0,0)
-            mesh.set_ptr(&self._thisptr.mesh,self)
+            mesh = Mesh(0, 0, 0, 0, 0, 0)
+            mesh.set_ptr(&self._thisptr.mesh, self)
             return mesh
         def __set__(self, Mesh mesh):
             self._thisptr.mesh = deref(mesh._thisptr)
@@ -381,7 +381,7 @@ cdef class State:
     property material:
         def __get__(self):
             material = Material()
-            material.set_ptr(&self._thisptr.material,self)
+            material.set_ptr(&self._thisptr.material, self)
             return material
         def __set__(self, Material material_in):
             self._thisptr.material = deref(material_in._thisptr)
@@ -402,7 +402,7 @@ cdef class State:
             temp[key] = value
             self._thisptr.set_m(addressof(temp.arr))
         else:
-                print("Error: State.m_partial: Dimensions do not match. m_partial[key].dims()=",self.m[key].dims()," != rhs.dims()=",value.dims(),". Setting m_partial is ignored.")
+                print("Error: State.m_partial: Dimensions do not match. m_partial[key].dims()=", self.m[key].dims(), " != rhs.dims()=", value.dims(), ". Setting m_partial is ignored.")
     # setting dictionary as property
     m_partial = dictproperty(get_m_partial, set_m_partial, None)
 
@@ -412,7 +412,7 @@ cdef class State:
     #  temp = self.m
     #  temp[key] = m_in
     #  self._thisptr.set_m(addressof(temp.arr))
-    #  print("min", self.m[key].dims(),"min", m_in.dims(), "m", self.m.dims(), "temp", temp.dims())
+    #  print("min", self.m[key].dims(), "min", m_in.dims(), "m", self.m.dims(), "temp", temp.dims())
     #  #self._thisptr.set_m(addressof(m_in.arr))
 
     @property
@@ -509,11 +509,11 @@ cdef class LLGIntegrator:
     #    self._thisptr = NULL
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def h(self, State state):
         return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
-    def add_terms(self,*args):
+    def add_terms(self, *args):
         for arg in args:
             self._thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
@@ -526,7 +526,7 @@ cdef class LLGIntegrator:
     def alpha(self):
         return self._thisptr.alpha
     @alpha.setter
-    def alpha(self,value):
+    def alpha(self, value):
         self._thisptr.alpha=value
 
         #cdef vector[shared_ptr[cLLGTerm]] vector_in
@@ -538,7 +538,7 @@ cdef class LLGIntegrator:
     #  return self._thisptr.h_stepped_
     #def cpu_time(self):
     #  return self._thisptr.cpu_time()
-    #def set_state0_alpha(self,value):
+    #def set_state0_alpha(self, value):
     #  self._thisptr.state0.material.alpha=value
 
 # base class for clearification (especially for heritage diagramms in docu)
@@ -583,7 +583,7 @@ cdef class ExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -594,7 +594,7 @@ cdef class ExchangeField(HeffTerm):
     # def A(self):
     #       return self._thisptr.A
     # @A.setter
-    # def A(self,value):
+    # def A(self, value):
     #       self._thisptr.A=value
     # @property
     # def micro_A_field(self):
@@ -615,7 +615,7 @@ cdef class SparseExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -638,7 +638,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -648,7 +648,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
     def Ku1(self):
         return self._thisptr.Ku1
     #@Ku1.setter
-    #def Ku1(self,value):
+    #def Ku1(self, value):
     #  self._thisptr.Ku1=value
 
     @property
@@ -674,7 +674,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -685,11 +685,11 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
 cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr),deref(param_in._thisptr))
+        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr), deref(param_in._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -704,7 +704,7 @@ cdef class AtomisticExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -715,11 +715,11 @@ cdef class AtomisticExchangeField(HeffTerm):
 cdef class AtomisticDmiField(HeffTerm):
     cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr),deref(param_in._thisptr))
+        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr), deref(param_in._thisptr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -734,7 +734,7 @@ cdef class ExternalField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
@@ -753,7 +753,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def E(self,State state):
+    def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
@@ -810,7 +810,7 @@ cdef class LBFGS_Minimizer:
     #  def __dealloc__(self): #causes segfault on GTO in cleanup
     #      del self._thisptr
     #      self._thisptr = NULL
-    def add_terms(self,*args):
+    def add_terms(self, *args):
         for arg in args:
             self._thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
@@ -823,7 +823,7 @@ cdef class LBFGS_Minimizer:
 cdef class Material:
     cdef cParam* _thisptr
     cdef object owner # None if this is our own # From [1]
-    def __cinit__(self, D = 0., D_axis = [0.,0.,-1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0.,0.,1.], Ku1_atom_axis = [0.,0.,1.], bool hexagonal_close_packed = False):
+    def __cinit__(self, D = 0., D_axis = [0., 0., -1], p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0., 0., 1.], Ku1_atom_axis = [0., 0., 1.], bool hexagonal_close_packed = False):
         # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
         Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
         D_axis_renormed = [x/(sqrt(D_axis[0]**2 + D_axis[1]**2 + D_axis[2]**2)) for x in D_axis]
@@ -844,7 +844,7 @@ cdef class Material:
     #inlcude in stochllg# def T(self):
     #inlcude in stochllg#       return self._thisptr.T
     #inlcude in stochllg# @T.setter
-    #inlcude in stochllg# def T(self,value):
+    #inlcude in stochllg# def T(self, value):
     #inlcude in stochllg#       self._thisptr.T=value
 
     # Micromagnetic
@@ -852,7 +852,7 @@ cdef class Material:
     def D(self):
         return self._thisptr.D
     @D.setter
-    def D(self,value):
+    def D(self, value):
         self._thisptr.D=value
 
     @property
@@ -869,28 +869,28 @@ cdef class Material:
     def p(self):
         return self._thisptr.p
     @p.setter
-    def p(self,value):
+    def p(self, value):
         self._thisptr.p=value
 
     @property
     def J_atom(self):
         return self._thisptr.J_atom
     @J_atom.setter
-    def J_atom(self,value):
+    def J_atom(self, value):
         self._thisptr.J_atom=value
 
     @property
     def D_atom(self):
         return self._thisptr.D_atom
     @D_atom.setter
-    def D_atom(self,value):
+    def D_atom(self, value):
         self._thisptr.D_atom=value
 
     @property
     def Ku1_atom(self):
         return self._thisptr.K_atom
     @Ku1_atom.setter
-    def Ku1_atom(self,value):
+    def Ku1_atom(self, value):
         self._thisptr.K_atom=value
 
     @property

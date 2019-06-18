@@ -22,7 +22,7 @@ TEST(NonEquiDemagField, EnergyTest) {
     af::array random_2 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
@@ -67,7 +67,7 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
     af::array random_2 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
@@ -110,7 +110,7 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     af::array random_2 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
@@ -149,7 +149,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     af::array random = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
@@ -185,13 +185,13 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     const int nx = 100, ny=25, nz=3, nz_ne=2;
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
-    af::array m = af::constant(0.0,mesh_ed.n0,mesh_ed.n1,mesh_ed.n2,3,f64);
-    m(af::seq(1,af::end-1),af::span,af::span,0) = af::constant(1.0,mesh_ed.n0-2,mesh_ed.n1,mesh_ed.n2,1,f64);
-    m(0,af::span,af::span,1 ) = af::constant(1.0,1,mesh_ed.n1,mesh_ed.n2,1,f64);
-    m(-1,af::span,af::span,1) = af::constant(1.0,1,mesh_ed.n1,mesh_ed.n2,1,f64);
+    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    m(af::seq(1, af::end-1), af::span, af::span, 0) = af::constant(1.0, mesh_ed.n0-2, mesh_ed.n1, mesh_ed.n2, 1, f64);
+    m(0, af::span, af::span, 1 ) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
+    m(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
     m(af::span, af::span, 0, af::span) = 0;
 
     State state_ed(mesh_ed, 8e5, m, false, true);
@@ -201,9 +201,9 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     std::vector<double> z_spacing = {z/nz, 2 * z/nz};
     NonequispacedMesh mesh_ne(nx, ny, x/nx, y/ny, z_spacing);
     af::array m2 = af::constant(0.0, mesh_ne.dims, f64);
-    m2(af::seq(1,af::end-1),af::span,af::span,0) = af::constant(1.0,mesh_ne.nx-2, mesh_ne.ny, mesh_ne.nz,1,f64);
-    m2(0,af::span,af::span,1 ) = af::constant(1.0,1,mesh_ne.ny,mesh_ne.nz,1,f64);
-    m2(-1,af::span,af::span,1) = af::constant(1.0,1,mesh_ne.ny,mesh_ne.nz,1,f64);
+    m2(af::seq(1, af::end-1), af::span, af::span, 0) = af::constant(1.0, mesh_ne.nx-2, mesh_ne.ny, mesh_ne.nz, 1, f64);
+    m2(0, af::span, af::span, 1 ) = af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
+    m2(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
     m2(af::span, af::span, 0, af::span) = 0;
 
     State state_ne(mesh_ne, 8e5, m2, false, true);
@@ -223,10 +223,10 @@ TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest) {
     const int nx = 100, ny=25, nz=3, nz_ne=2;
 
     // equi
-    Mesh mesh_ed(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material_ed = Material();
 
-    af::array m = af::constant(0.0,mesh_ed.n0,mesh_ed.n1,mesh_ed.n2,3,f64);
+    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = 1;
 
     State state_ed(mesh_ed, 8e5, m, false, true);

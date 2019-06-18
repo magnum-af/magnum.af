@@ -2,7 +2,7 @@
 #include "../../../src/func.cpp"
 
 TEST(Util, SerialTriangularMatrixTest) {
-    // serialized index k, matrix indices i,j
+    // serialized index k, matrix indices i, j
     for (int n = 1; n < 20; n++){
         std::vector<double> values;
         int k = 0;

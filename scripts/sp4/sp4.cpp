@@ -12,15 +12,15 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 100, ny=25 ,nz=1;
+    const int nx = 100, ny=25 , nz=1;
     const double A = 1.3e-11;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
 
     // Initial magnetic field
     State state(mesh, 8e5, mesh.init_sp4());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
     LlgTerms llgterm;
     llgterm.push_back( LlgTerm (new DemagField(mesh, true, true, 0)));
@@ -38,14 +38,14 @@ int main(int argc, char** argv)
         state.calc_mean_m(stream);
     }
     std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
-    vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
     // Prepare switch
-    af::array zeeswitch = af::constant(0.0,1,1,1,3,f64);
-    zeeswitch(0,0,0,0)=-24.6e-3/constants::mu0;
-    zeeswitch(0,0,0,1)=+4.3e-3/constants::mu0;
-    zeeswitch(0,0,0,2)=0.0;
-    zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
+    af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
+    zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
+    zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
+    zeeswitch(0, 0, 0, 2)=0.0;
+    zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
     Llg.alpha = 0.02;
 
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
         state.calc_mean_m(stream);
     }
     std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
-    vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "2ns").c_str());
     stream.close();
     std::cout<<"total [af-s]: "<< af::timer::stop(total_time) <<std::endl;
     return 0;

@@ -6,15 +6,15 @@ Material::Material(double D, double D_axis_x, double D_axis_y, double D_axis_z, 
 }
 
 //void Material::set_atomistic_from_micromagnetic(double dx){
-    //this->p = this->ms * pow(dx,3);
+    //this->p = this->ms * pow(dx, 3);
     //this->J_atom =2. * this->A * dx;
-    //this->D_atom = this->D * pow(dx,2);
-    //this->K_atom = this->Ku1 * pow(dx,3);
+    //this->D_atom = this->D * pow(dx, 2);
+    //this->K_atom = this->Ku1 * pow(dx, 3);
 //}
 
 //void Material::set_atomistic_from_micromagnetic(double dx, double ms, double A, double D, double Ku1){
-    //this->p = this->ms * pow(dx,3);
+    //this->p = this->ms * pow(dx, 3);
     //this->J_atom =2. * this->A * dx;
-    //this->D_atom = this->D * pow(dx,2);
-    //this->K_atom = this->Ku1 * pow(dx,3);
+    //this->D_atom = this->D * pow(dx, 2);
+    //this->K_atom = this->Ku1 * pow(dx, 3);
 //}

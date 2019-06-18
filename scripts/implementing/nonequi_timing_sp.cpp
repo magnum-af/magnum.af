@@ -15,18 +15,18 @@ int main(int argc, char** argv)
 
         // Parameter initialization
         const double x=5.e-7, y=1.25e-7, z=3.e-9;
-        const int nx = 100, ny=25;// ,nz=2;
+        const int nx = 100, ny=25;// , nz=2;
 
         //Generating Objects
-        Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+        Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
         Material material = Material();
         material.ms    = 8e5;
         material.A     = 1.3e-11;
         material.alpha = 1;
 
         // Initial magnetic field
-        State state(mesh,material, mesh.init_sp4());
-        vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+        State state(mesh, material, mesh.init_sp4());
+        vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
         LlgTerms llgterm;
         const bool nonequi = true;
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
         else{
             llgterm.push_back( LlgTerm (new DemagField(mesh, material, true, false, 1)));
         }
-        llgterm.push_back( LlgTerm (new ExchangeField(mesh,material)));
+        llgterm.push_back( LlgTerm (new ExchangeField(mesh, material)));
         LLGIntegrator Llg(llgterm);
 
         std::ofstream stream;
@@ -56,14 +56,14 @@ int main(int argc, char** argv)
         }
         double timerelax = af::timer::stop(t);
         std::cout<<"timerelax [af-s]: "<< timerelax << std::endl;
-        vti_writer_micro(state.m, mesh ,(filepath + "relax").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
         // Prepare switch
-        array zeeswitch = constant(0.0,1,1,1,3,f64);
-        zeeswitch(0,0,0,0)=-24.6e-3/constants::mu0;
-        zeeswitch(0,0,0,1)=+4.3e-3/constants::mu0;
-        zeeswitch(0,0,0,2)=0.0;
-        zeeswitch = tile(zeeswitch,mesh.n0,mesh.n1,mesh.n2);
+        array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+        zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
+        zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
+        zeeswitch(0, 0, 0, 2)=0.0;
+        zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
         Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
         state.material.alpha=0.02;
 
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
         }
         double timeintegrate = af::timer::stop(t);
         std::cout<<"time integrate 1ns [af-s]: "<< timeintegrate <<std::endl;
-        vti_writer_micro(state.m, mesh ,(filepath + "2ns").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "2ns").c_str());
         stream.close();
         double total = af::timer::stop(total_time);
         std::cout<<"total [af-s]: "<< total <<std::endl;

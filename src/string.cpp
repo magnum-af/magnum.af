@@ -13,7 +13,7 @@ String::String(double alpha, State statein, std::vector<State> inputimages, int 
     calc_x(inputimages);
 
     for(int i=0;i<n_interp;i++){
-        images.push_back(State(state.mesh, state.material, af::constant(2.,state.mesh.dims,f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
+        images.push_back(State(state.mesh, state.material, af::constant(2., state.mesh.dims, f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
     }
     for(int i=0;i<n_interp;i++){
         int j=0;
@@ -91,7 +91,7 @@ void String::integrate(){
         // Now skipping step backwards
         // double h=imagtime+dt-images[i].t;
         // double dummy_err;
-        // images[i].m += Llg.RKF45(images[i],h,dummy_err);
+        // images[i].m += Llg.RKF45(images[i], h, dummy_err);
 
         // NOTE:
         // af::eval(images[i].m);//If memory error occurs, uncomment this
@@ -184,14 +184,14 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
                 std::string name = filepath;
                 name.append("current_skyrm_image");
                 name.append(std::to_string(j));
-                vti_writer_micro(this->images[j].m, this->images[0].mesh ,name.c_str());
+                vti_writer_micro(this->images[j].m, this->images[0].mesh , name.c_str());
             }
         }
         std::cout   << i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
         stream_steps<< i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff <<  std::endl;
     }
-    std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    std::cout   <<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    stream_steps<<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
 
     std::ofstream myfileE;
     myfileE.precision(12);
@@ -208,12 +208,12 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
       std::string name = filepath;
       name.append("skyrm_image");
       name.append(std::to_string(i));
-      vti_writer_micro(this->images[i].m, this->images[0].mesh ,name.c_str());
+      vti_writer_micro(this->images[i].m, this->images[0].mesh , name.c_str());
       stream_max_lowest<<i<< "\t" << E_max_lowest[i]<<"\t" << E_max_lowest[i]-E_max_lowest[0]<<"\t" << E_max_lowest[i]-E_max_lowest[-1]<<std::endl;
       name = filepath;
       name.append("skyrm_image_max_lowest");
       name.append(std::to_string(i));
-      vti_writer_micro(images_max_lowest[i].m, this->images[0].mesh ,name.c_str());
+      vti_writer_micro(images_max_lowest[i].m, this->images[0].mesh , name.c_str());
     }
 
     //for(unsigned i=0;i<Llg.llgterms.size();++i){
@@ -237,14 +237,14 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //using namespace af;
 //
 //String::String(State statein, std::vector<State> inputimages, int n_interp_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):
-// state(statein), Llg(state,1e-6,1e-6,3.5e-10,1.0e-15, Fieldterms_in), n_interp(n_interp_in), images(inputimages){
+// state(statein), Llg(state, 1e-6, 1e-6, 3.5e-10, 1.0e-15, Fieldterms_in), n_interp(n_interp_in), images(inputimages){
 //
 //
 //  Llg.fdmdt_dissipation_term_only=true;//To only use the first term in llg equ
 //
 //  calc_x();
 //  for(int i=0;i<n_interp;i++){
-//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims,f64)));
+//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims, f64)));
 //  }
 //  lin_interpolate();
 //}
@@ -285,15 +285,15 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //    }
 //    vec_renormalize();
 //  }
-//  //for(int n=0; n<images.size();n++) print("images",images[n]);
+//  //for(int n=0; n<images.size();n++) print("images", images[n]);
 //  //for(int i=0; i<n_interp; i++) std::cout<< x[i]<<std::endl;
 //  //for(int i=0; i<n_interp; i++) std::cout<< x_interp[i]<<std::endl;
-//  //for(int n=0; n<n_interp;n++) print("images_interp",images_interp[n]);
+//  //for(int n=0; n<n_interp;n++) print("images_interp", images_interp[n]);
 //
 //  //for(int i=0; i<n_interp; i++){
 //  //  std::cout<< "i="<<i<<" x[i]"<< x[i]<<" x_interp[i] "<<x_interp[i]<<std::endl;
-//  //  print("images",images[i]);
-//  //  print("images_interp",images_interp[i]);
+//  //  print("images", images[i]);
+//  //  print("images_interp", images_interp[i]);
 //  //}
 //}
 //
@@ -308,7 +308,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //    }
 //    double h=dt-images[i].t;
 //    double dummy_err;
-//    images[i].m += Llg.RKF45(images[i].m,h,dummy_err);
+//    images[i].m += Llg.RKF45(images[i].m, h, dummy_err);
 //    //TODO time+=images.t;
 //  }
 //}

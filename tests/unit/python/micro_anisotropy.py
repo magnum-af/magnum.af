@@ -36,22 +36,22 @@ class MicroAnisotropyTest(unittest.TestCase):
     def test_Ku1_axis_field(self):
         Ku1 = 1
         Ku1_axis_field = af.constant(0, 2, 1, 1, 3, dtype = af.Dtype.f64)
-        Ku1_axis_field[0,0,0,0] = 1.
-        Ku1_axis_field[1,0,0,1] = -1.
+        Ku1_axis_field[0, 0, 0, 0] = 1.
+        Ku1_axis_field[1, 0, 0, 1] = -1.
         print (Ku1_axis_field)
         aniso = UniaxialAnisotropyField(Ku1, Ku1_axis_field)
-        mesh = Mesh(2,1,1,1,1,1)
+        mesh = Mesh(2, 1, 1, 1, 1, 1)
         m = af.constant(0, 2, 1, 1, 3, dtype = af.Dtype.f64)
-        m[0,:,:,0] = 1.
-        m[1,:,:,1] = 1.
+        m[0, :, :, 0] = 1.
+        m[1, :, :, 1] = 1.
         state = State(mesh, Ms = 1., m = m)
         h = aniso.h(state)
-        self.assertEqual(h[0,0,0,0].scalar(), 2/Constants.mu0)
-        self.assertEqual(h[0,0,0,1].scalar(), 0)
-        self.assertEqual(h[0,0,0,2].scalar(), 0)
-        self.assertEqual(h[1,0,0,0].scalar(), 0)
-        self.assertEqual(h[1,0,0,1].scalar(), 2/Constants.mu0)
-        self.assertEqual(h[1,0,0,2].scalar(), 0)
+        self.assertEqual(h[0, 0, 0, 0].scalar(), 2/Constants.mu0)
+        self.assertEqual(h[0, 0, 0, 1].scalar(), 0)
+        self.assertEqual(h[0, 0, 0, 2].scalar(), 0)
+        self.assertEqual(h[1, 0, 0, 0].scalar(), 0)
+        self.assertEqual(h[1, 0, 0, 1].scalar(), 2/Constants.mu0)
+        self.assertEqual(h[1, 0, 0, 2].scalar(), 0)
 
 
 if __name__ == '__main__':

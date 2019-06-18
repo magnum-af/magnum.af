@@ -41,33 +41,33 @@ print ("H_analytic=", H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K
 
 # Creating objects
 m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m[:,:,:nz/2,2] = af.constant( 1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:,:,:nz/2,1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:,:,nz/2:,2] = af.constant(-1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:,:,nz/2:,1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m[:, :, :nz/2, 2] = af.constant( 1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m[:, :, :nz/2, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m[:, :, nz/2:, 2] = af.constant(-1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m[:, :, nz/2:, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting A values as field
 A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-A_field[:,:,:nz/2,:] = af.constant(soft_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+A_field[:, :, :nz/2, :] = af.constant(soft_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 # hard
-A_field[:,:,nz/2:,:] = af.constant(hard_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+A_field[:, :, nz/2:, :] = af.constant(hard_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 # Setting Ms values as field
 Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-Ms_field[:,:,:nz/2,:] = af.constant(soft_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ms_field[:, :, :nz/2, :] = af.constant(soft_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 # hard
-Ms_field[:,:,nz/2:,:] = af.constant(hard_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ms_field[:, :, nz/2:, :] = af.constant(hard_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 # Setting Ku1 values as field
 Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 # soft
-Ku1_field[:,:,:nz/2,:] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ku1_field[:, :, :nz/2, :] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 # hard
-Ku1_field[:,:,nz/2:,:] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 state = State(mesh, Ms_field, m)
 state.normalize()
@@ -88,7 +88,7 @@ i = 0
 
 printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
 #print("m", state.m)
-#print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,0].scalar())
+#print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 0].scalar())
 #while i < 10:
 while (state.t < 1e-7/fastenup and state.m_mean(2) < (1. - 1e-6)):
   #print("m", state.m)
@@ -97,11 +97,11 @@ while (state.t < 1e-7/fastenup and state.m_mean(2) < (1. - 1e-6)):
   fields[0].set_homogeneous_field(0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
   Llg.step(state)
   printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
-  print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()*Constants.mu0)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0,0,0,2].scalar()))
+  print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()*Constants.mu0)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()))
   stream.flush()
   i = i + 1
 print("hysteresis for state.t=", state.t, " [s] in ", time.time() - timer, "[s]")
 stream.close()
-print("switched at Hext=", printzee[0,0,0,2].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
+print("switched at Hext=", printzee[0, 0, 0, 2].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
 print("total time =", time.time() - start, "[s]")

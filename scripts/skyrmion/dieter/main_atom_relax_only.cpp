@@ -25,7 +25,7 @@ int main(int argc, char** argv)
     std::cout << "nx = "<< nx << std::endl;
 
     //Generating Objects
-    Mesh mesh(nx,nx,1,dx,dx,dx);
+    Mesh mesh(nx, nx, 1, dx, dx, dx);
     Material material = Material();
     state.Ms    = 580000;
     material.A     = 15e-12;
@@ -34,32 +34,32 @@ int main(int argc, char** argv)
     material.Ku1=0.6e6;
 
     material.J_atom=2.*material.A*dx;
-    material.D_atom= material.D * pow(dx,2);
-    material.K_atom=material.Ku1*pow(dx,3);
-    material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+    material.D_atom= material.D * pow(dx, 2);
+    material.K_atom=material.Ku1*pow(dx, 3);
+    material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
      // Initial magnetic field
-     array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-     m(span,span,span,2) = -1;
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
              const double rx=double(ix)-mesh.n0/2.;
              const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx,2)+pow(ry,2));
-             if(r>nx/4.) m(ix,iy,span,2)=1.;
+             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
 
-    State state(mesh,material, m);
-    vti_writer_atom(state.m, mesh ,(filepath + "minit").c_str());
+    State state(mesh, material, m);
+    vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
     std::vector<llgt_ptr> llgterm;
 //    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+    llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+    llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state,llgterm);
+    LLG Llg(state, llgterm);
 
     std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
     timer t = af::timer::start();
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         state.m=Llg.step(state);
     }
     double timerelax= af::timer::stop(t);
-    vti_writer_atom(state.m, mesh ,filepath + "relax");
+    vti_writer_atom(state.m, mesh , filepath + "relax");
 
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
     return 0;

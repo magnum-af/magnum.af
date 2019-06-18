@@ -19,12 +19,12 @@ double LLG::E(const State& state){
 //}
 void LLG::write_fieldterms_atom(const State& state, const std::string filepath){
     for(unsigned i=0;i<Fieldterms.size();++i){
-        vti_writer_atom(Fieldterms[i]->h(state), state.mesh ,filepath + std::to_string(i));
+        vti_writer_atom(Fieldterms[i]->h(state), state.mesh , filepath + std::to_string(i));
     }
 }
 void LLG::write_fieldterms_micro(const State& state, const std::string filepath){
     for(unsigned i=0;i<Fieldterms.size();++i){
-        vti_writer_micro(Fieldterms[i]->h(state), state.mesh ,filepath + std::to_string(i));
+        vti_writer_micro(Fieldterms[i]->h(state), state.mesh , filepath + std::to_string(i));
     }
 }
 
@@ -45,10 +45,10 @@ array LLG::fdmdt(const array& m, const array& heff){
   calls_fdmdt++;
   timer_fdmdt=timer::start();
   if(fdmdt_dissipation_term_only){
-    dmdt = - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, cross4(m, heff));
+    dmdt = - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, cross4(m, heff));
   }
   else{
-    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, cross4(m, heff));
+    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, cross4(m, heff));
   }
   time_fdmdt+=af::timer::stop(timer_fdmdt);
   return dmdt;
@@ -56,17 +56,17 @@ array LLG::fdmdt(const array& m, const array& heff){
 
 array LLG::fdmdtminimal(array m, array heff){ //array LLG::fdmdt(array& m, array& heff){
   dmdt  =  cross4(m, heff);
-  return - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, dmdt);
+  return - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, dmdt);
 }
 
 
 // Calculation of effective field
 array LLG::fheff(const array& m){
-  array solution = constant(0.,state0.mesh.dims, f64);
+  array solution = constant(0., state0.mesh.dims, f64);
   timer_heff=timer::start();
 
   state0.m=m; //TODO avoid state0 in the first place
-  //TODO avoid this line  State temp(state0.mesh,state0.material,m);
+  //TODO avoid this line  State temp(state0.mesh, state0.material, m);
   for(unsigned i=0;i<Fieldterms.size();++i){
     solution+=Fieldterms[i]->h(state0);
   }
@@ -129,7 +129,7 @@ long int LLG::h_addr(const State& state){
 //    if (err == 0.0)
 //      scale = maxscale;
 //    else{
-//      scale=headroom*pow(err,-alpha)*pow(errold,beta);
+//      scale=headroom*pow(err, -alpha)*pow(errold, beta);
 //      if (scale < minscale){
 //        scale=minscale;
 //        counter_maxscale++;
@@ -140,7 +140,7 @@ long int LLG::h_addr(const State& state){
 //      }
 //    }
 //  if (reject)
-//    hnext=h*std::min(scale,1.0);//Do not increase stepsize if previous try was rejected
+//    hnext=h*std::min(scale, 1.0);//Do not increase stepsize if previous try was rejected
 //  else
 //    hnext=h*scale;
 //  if(hnext<=hmin) {
@@ -156,13 +156,13 @@ long int LLG::h_addr(const State& state){
 //  //if(hnext<=hmin) hnext=hmin, std::cout << "Warning: hmin reached in if, error bounds may be invalid"<<std::endl;
 //  //if(hnext>=hmax) hnext=hmax, std::cout << "Warning: hmax reached in if, error bounds may be invalid"<<std::endl;
 //
-//  errold=std::max(err,1.0e-4);//Why?
+//  errold=std::max(err, 1.0e-4);//Why?
 //  reject=false;
 //  counter_accepted++;
 //  return true;
 //  }
 //  else{
-//    scale=std::max(headroom*pow(err,-alpha),minscale);
+//    scale=std::max(headroom*pow(err, -alpha), minscale);
 //    h *= scale;
 //    if(h<=hmin) {
 //      h=hmin;
@@ -188,19 +188,19 @@ array LLG::step(State& state){
     //hnext=h;
     //Fixed Stepsize Integrators
     if (state.material.mode == 0){
-      mtemp= explicitEuler(state.m,h);
+      mtemp= explicitEuler(state.m, h);
     }
     else if (state.material.mode == 1){
-      mtemp= rk4(state.m,h);
+      mtemp= rk4(state.m, h);
     }
     else if (state.material.mode == 2){
-      mtemp= rk4minimal(state.m,h);
+      mtemp= rk4minimal(state.m, h);
     }
     else if (state.material.mode == 3){
-      mtemp= rk4_3o8(state.m,h);
+      mtemp= rk4_3o8(state.m, h);
     }
     else if (state.material.mode == 5){
-      mtemp= RKF5(state.m,h);
+      mtemp= RKF5(state.m, h);
     }
     //Adaptive Stepsize Integrators
     else{
@@ -210,38 +210,38 @@ array LLG::step(State& state){
         if(while_break>100) std::cout<<"Warning: While_break > 100, break called"<<std::endl;
         //BS3
         if (state.material.mode == 4){
-          mtemp = BS23(state.m,h,err);
+          mtemp = BS23(state.m, h, err);
         }
         //RKF
         else if (state.material.mode == 6){
-          mtemp = RKF45(state.m,h,err);
+          mtemp = RKF45(state.m, h, err);
         }
         //CK5
         else if (state.material.mode == 7){
-          mtemp = CK45(state.m,h,err);
+          mtemp = CK45(state.m, h, err);
         }
         //Tsit45
         else if (state.material.mode == 8){
-          mtemp = tsit45(state.m,h,err);
+          mtemp = tsit45(state.m, h, err);
         }
         //DP5
         else if (state.material.mode == 9){
           //rk_rel_tol_error=5.e-2;
-          mtemp= DP45(state.m,h,err);
+          mtemp= DP45(state.m, h, err);
         }
         //BS5
         else if (state.material.mode == 10){
-          mtemp = BS45(state.m,h,err);
+          mtemp = BS45(state.m, h, err);
         }
         //BS45 double error
         else if (state.material.mode == 11){
-          mtemp = BS45de(state.m,h,err);
+          mtemp = BS45de(state.m, h, err);
         }
         //DP8
         else if (state.material.mode == 12){
-          mtemp = DP78(state.m,h,err);
+          mtemp = DP78(state.m, h, err);
         }
-        if(controller.success(err,h))
+        if(controller.success(err, h))
           break;
 
       }while(while_break < 100);
@@ -253,7 +253,7 @@ array LLG::step(State& state){
     h=controller.get_hnext();
     if(state0.state.material.afsync) af::sync();
     time_integrator += timer::stop(timer_integrator);
-    //mean(mtemp,3); //TODO this is needed to avoid cuda crash?!?
+    //mean(mtemp, 3); //TODO this is needed to avoid cuda crash?!?
     state.steps ++;
     calls ++;
 
@@ -290,21 +290,21 @@ array LLG::BS23(const array& m, const double dt, double& err)
 {
   if(reject || calls==0 || llg_wasnormalized){
     heff = fheff(m);
-    k[1]   = fdmdt(m,heff);
+    k[1]   = fdmdt(m, heff);
     }
   else
     k[1]=k[4];
 
   heff = fheff(m + dt * ( 1./2. * k[1]                           )      );
-  k[2]   = fdmdt(m + dt * ( 1./2. * k[1]                           ) ,heff);
+  k[2]   = fdmdt(m + dt * ( 1./2. * k[1]                           ) , heff);
   heff = fheff(m + dt * (             + 3./4.  * k[2]            )      );
-  k[3]   = fdmdt(m + dt * (             + 3./4.  * k[2]            ) ,heff);
+  k[3]   = fdmdt(m + dt * (             + 3./4.  * k[2]            ) , heff);
   sumbk=           dt * (2./9.  * k[1]  + 1./3.* k[2]  + 4./9. * k[3]);
   heff = fheff(m + sumbk      );
   k[4]   = fdmdt(m + sumbk, heff);
 
   rk_error = sumbk - dt * (7./24.* k[1]  + 1./4.* k[2]  + 1./3. * k[3] + 1./8. * k[4]);
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   return sumbk;
 }
 
@@ -326,8 +326,8 @@ array LLG::rk4(const array& m, const double dt)
 array LLG::rk4minimal(const array& m, const double dt)
 {
   //array k, m_add;
-  array k = array(state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
-  array m_add = array(state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  array k = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  array m_add = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
 
   heff =       fheff(m                                              );
   k   =  dt * fdmdt(m                                        , heff);
@@ -402,7 +402,7 @@ array LLG::RKF45(const array& m, const double dt, double& err)
   rk_error = sumbk - (      25./216.  * k1  +                       1408./2565. * k3  +  2197./4104. * k4    -1./5.  * k5                     );
 
   //rk_abs_error = maxnorm(rk_error);
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   return sumbk;
 }
 
@@ -438,7 +438,7 @@ array LLG::CK45(const array& m, const double dt, double& err)
   sumbk = 37./378. * k1 + 250./621. * k3 + 125./594. * k4 + 512./1771. * k6;
   rk_error = sumbk - ( 2825./27648. * k1  + 18575./48384. * k3 + 13525./55296. * k4 + 277./14336. * k5 + 1./4. * k6 );
 
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   //err = maxnorm(rk_error);
   return sumbk;
 }
@@ -453,29 +453,29 @@ array LLG::tsit45(const array& m, const double dt, double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
   //Local extrapolation using 5th order approx
-  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   //Error estimation using 4th order approx
-  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     rk_error+=bhat[i]*k[i];
   }
   rk_error*=dt;
   //rk_error=sumbk-rk_error;
-  //print("rk_error",rk_error);
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  //print("rk_error", rk_error);
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   return sumbk;
 }
 
@@ -490,33 +490,33 @@ array LLG::DP45(const array& m, const double dt, double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
   //Local extrapolation using 5th order approx
-  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   //Error estimation using 4th order approx
-  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     rk_error+=e[i]*k[i];
   }
   rk_error*=dt;
   //!!!Note: here e is already the difference between the ususal b and bhat!!!! (no rk_error=sumbk-rk_error)
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   return sumbk;
 }
 
 
-// Bogacki 4,5 method with sigle error andstepsize control
+// Bogacki 4, 5 method with sigle error andstepsize control
 array LLG::BS45(const array& m, const double dt , double& err)
 {
   if(reject || calls==0 || llg_wasnormalized){
@@ -527,41 +527,41 @@ array LLG::BS45(const array& m, const double dt , double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
 
-  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
 
 
-  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
 
   return sumbk;
 }
 
-// Bogacki 4,5 method with double error estimation and with stepsize control
+// Bogacki 4, 5 method with double error estimation and with stepsize control
 array LLG::BS45de(const array& m, const double dt , double& err)
 {
   double e[9];
 
 //C  The coefficients E(*) refer to an estimate of the local error based on
 //C  the first formula of order 4.  It is the difference of the fifth order
-//C  result, here located in A(8,*), and the fourth order result.  By
+//C  result, here located in A(8, *), and the fourth order result.  By
 //C  construction both E(2) and E(7) are zero.
 //C
   e[1] = -3.e0/1280.e0;
@@ -580,61 +580,61 @@ array LLG::BS45de(const array& m, const double dt , double& err)
   else
     k[1]=k[s];
   //Compute stages 2 to 6  and check error, if accepted, succeed to stage 8, calc sumbk and check second error sumbk-bi*ki
-  for(int i=2;i<=6;i++){//i=2,...,6
+  for(int i=2;i<=6;i++){//i=2, ..., 6
   //for(int i=2;i<=s;i++){
-    rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
 
   //Check first 4th order approx yielding directly the error
-  rk_error=array(state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   rk_error=e[1]*k[1];
-  for(int i=3;i<=6;i++){//i=3,4,5,6
+  for(int i=3;i<=6;i++){//i=3, 4, 5, 6
     rk_error+=e[i]*k[i];
   }
   rk_error*=dt;
-  err=maxnorm(rk_error/controller.givescale(m));//TODO we only use m, not max(m,m+sumbk) for error estimate! Is this convenient?
-//std::cout<<"Test"<<afvalue(rk_error(0,0,0,0))<<"\t"<<maxnorm(rk_error)<<"\t"<<err<<std::endl;
+  err=maxnorm(rk_error/controller.givescale(m));//TODO we only use m, not max(m, m+sumbk) for error estimate! Is this convenient?
+//std::cout<<"Test"<<afvalue(rk_error(0, 0, 0, 0))<<"\t"<<maxnorm(rk_error)<<"\t"<<err<<std::endl;
 if(err>1.)
   std::cout<<"RKErr>1"<<std::endl;
 
   //We now check this error with the controller, if it passes (cont returns true), hnext is changed temporary but then overwritten in step after passing second controlling
   //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages
-  if(controller.success(err,h)==false){
+  if(controller.success(err, h)==false){
     std::cout<<"CONTROOOL"<<std::endl;
-    return constant(10000000.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+    return constant(10000000.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   }
 
   //7th and 8th stage
   for(int i=7;i<=8;i++){
-    rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
 
   // Calc sumbk
-  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   // Calc second and more precise 4th order error estimate
-  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
 
   return sumbk;
 }
@@ -647,29 +647,29 @@ array LLG::DP78(const array& m, const double dt , double& err)
   k[1]   =  fdmdt(m, heff);
   //Iterating over a-matrix, calculating k[i]s
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
     rktemp*=dt;
     heff= fheff(m + rktemp);
-    k[i]= fdmdt(m + rktemp,heff);
+    k[i]= fdmdt(m + rktemp, heff);
   }
   //Calculating 8th order approx (local extrapolation)
-  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     sumbk+=bhat[i]*k[i];
   }
   sumbk*=dt;
 
   //Calculating 7th order approx for error approx
-  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
   rk_error*=dt;
   rk_error=sumbk-rk_error;
-  err=maxnorm(rk_error/controller.givescale(max(m,m+sumbk)));
+  err=maxnorm(rk_error/controller.givescale(max(m, m+sumbk)));
   return sumbk;
 }
 
@@ -688,7 +688,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     s=7;
     //const int s=7;
     //Declare arrays and init with zeros
-    //double a[s+1][s+1], c[s+1],b[s+1],bhat[s+1];
+    //double a[s+1][s+1], c[s+1], b[s+1], bhat[s+1];
     //for(int i=0;i<=s;i++){
     //  c[i]=0.;
     //  b[i]=0.;
@@ -741,7 +741,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
   if (state0.material.mode == 9){
     s=7;
     //Declare arrays and init with zeros
-    //double a[s+1][s+1],e[s+1];//, c[s+1]
+    //double a[s+1][s+1], e[s+1];//, c[s+1]
     //for(int i=0;i<=s;i++){
     //  //c[i]=0.;
     //  e[i]=0.;
@@ -750,14 +750,14 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     //  }
     //}
 
-    //c[2]=0.2,c[3]=0.3,c[4]=0.8,c[5]=8.0/9.0;
-    a[2][1]=0.2,a[3][1]=3.0/40.0,
-    a[3][2]=9.0/40.0,a[4][1]=44.0/45.0,a[4][2]=-56.0/15.0,a[4][3]=32.0/9.0,a[5][1]=19372.0/6561.0,
-    a[5][2]=-25360.0/2187.0,a[5][3]=64448.0/6561.0,a[5][4]=-212.0/729.0,a[6][1]=9017.0/3168.0,
-    a[6][2]=-355.0/33.0,a[6][3]=46732.0/5247.0,a[6][4]=49.0/176.0,a[6][5]=-5103.0/18656.0,
-    a[7][1]=35.0/384.0,a[7][3]=500.0/1113.0,a[7][4]=125.0/192.0,a[7][5]=-2187.0/6784.0,
-    a[7][6]=11.0/84.0,e[1]=71.0/57600.0,e[3]=-71.0/16695.0,e[4]=71.0/1920.0,
-    e[5]=-17253.0/339200.0,e[6]=22.0/525.0,e[7]=-1.0/40.0;
+    //c[2]=0.2, c[3]=0.3, c[4]=0.8, c[5]=8.0/9.0;
+    a[2][1]=0.2, a[3][1]=3.0/40.0,
+    a[3][2]=9.0/40.0, a[4][1]=44.0/45.0, a[4][2]=-56.0/15.0, a[4][3]=32.0/9.0, a[5][1]=19372.0/6561.0,
+    a[5][2]=-25360.0/2187.0, a[5][3]=64448.0/6561.0, a[5][4]=-212.0/729.0, a[6][1]=9017.0/3168.0,
+    a[6][2]=-355.0/33.0, a[6][3]=46732.0/5247.0, a[6][4]=49.0/176.0, a[6][5]=-5103.0/18656.0,
+    a[7][1]=35.0/384.0, a[7][3]=500.0/1113.0, a[7][4]=125.0/192.0, a[7][5]=-2187.0/6784.0,
+    a[7][6]=11.0/84.0, e[1]=71.0/57600.0, e[3]=-71.0/16695.0, e[4]=71.0/1920.0,
+    e[5]=-17253.0/339200.0, e[6]=22.0/525.0, e[7]=-1.0/40.0;
 
 
    }
@@ -957,21 +957,21 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 
-//array LLG::llgstepEEold(array& m,double dt){
+//array LLG::llgstepEEold(array& m, double dt){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m);
 //    crosstemp  =  cross4(m, heff);
-//    array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp);
+//    array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, crosstemp);
 //    m += dt * dmdt;
 //    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 ////    std::cout << "T: heff.dims " << heff.dims() << " m.dims " << m.dims() << " cross4 " << crosstemp.dims()  << std::endl;
-//    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
+//    return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //};
-//array LLG::llgstepEEold(array& m,double dt, array& h_zee){
+//array LLG::llgstepEEold(array& m, double dt, array& h_zee){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m) + h_zee;
-//    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.state.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m,3)),1,1,1,3); };
+//    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.state.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3); };
 //
 ////Explicit Euler LLG stpe without zeeman field
 //array LLG::llgstepEE(array& m){
@@ -979,34 +979,34 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    m += explicitEuler(m, state0.material.dt);
 //    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
-//    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
+//    return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //};
 
 
 //// Dormand-Prince 4/5 method
 //array LLG::DP45(const array& m, const double dt, double& err)
 //{
-//  //double c2=0.2,c3=0.3,c4=0.8,c5=8.0/9.0;
-//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0,a41=44.0/45.0,a42=-56.0/15.0,a43=32.0/9.0,a51=19372.0/6561.0,
-//  a52=-25360.0/2187.0,a53=64448.0/6561.0,a54=-212.0/729.0,a61=9017.0/3168.0,
-//  a62=-355.0/33.0,a63=46732.0/5247.0,a64=49.0/176.0,a65=-5103.0/18656.0,
-//  a71=35.0/384.0,a73=500.0/1113.0,a74=125.0/192.0,a75=-2187.0/6784.0,
-//  a76=11.0/84.0,e1=71.0/57600.0,e3=-71.0/16695.0,e4=71.0/1920.0,
-//  e5=-17253.0/339200.0,e6=22.0/525.0,e7=-1.0/40.0;
-//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7};
+//  //double c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
+//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
+//  a52=-25360.0/2187.0, a53=64448.0/6561.0, a54=-212.0/729.0, a61=9017.0/3168.0,
+//  a62=-355.0/33.0, a63=46732.0/5247.0, a64=49.0/176.0, a65=-5103.0/18656.0,
+//  a71=35.0/384.0, a73=500.0/1113.0, a74=125.0/192.0, a75=-2187.0/6784.0,
+//  a76=11.0/84.0, e1=71.0/57600.0, e3=-71.0/16695.0, e4=71.0/1920.0,
+//  e5=-17253.0/339200.0, e6=22.0/525.0, e7=-1.0/40.0;
+//  const double e[8]={0, e1, 0, e3, e4, e5, e6, e7};
 //  const double a[8][8]={
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,a21, 0, 0, 0, 0, 0, 0},
-//    {0,a31, a32, 0, 0, 0, 0, 0},
-//    {0,a41, a42, a43, 0, 0, 0, 0},
-//    {0,a51, a52, a53, a54, 0, 0, 0},
-//    {0,a61, a62, a63, a64, a65, 0, 0},
-//    {0,a71, 0  , a73, a74, a75, a76,0.}
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, a21, 0, 0, 0, 0, 0, 0},
+//    {0, a31, a32, 0, 0, 0, 0, 0},
+//    {0, a41, a42, a43, 0, 0, 0, 0},
+//    {0, a51, a52, a53, a54, 0, 0, 0},
+//    {0, a61, a62, a63, a64, a65, 0, 0},
+//    {0, a71, 0  , a73, a74, a75, a76, 0.}
 //  };
 //
 // // if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl;
-////  std::cout<<"mini = "<<afvalue((m)(0,0,0,0))<<std::endl;
+////  std::cout<<"mini = "<<afvalue((m)(0, 0, 0, 0))<<std::endl;
 //
 //  if(reject || calls==0 || llg_wasnormalized){
 //    heff =  fheff(m);
@@ -1015,10 +1015,10 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  else
 //    k1=k7;
 //
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<"\n"<<std::endl;
-////  std::cout<<"k1 = "<<afvalue((k1)(0,0,0,0))<<"\n"<<std::endl;
+////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"k1 = "<<afvalue((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
 ////
-////  std::cout<<"m k1 = "<<afvalue((m)(0,0,0,0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k1= "<<afvalue(k1(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m,heff)(0,0,0,0))<<"\n"<<std::endl;
+////  std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl;
 //  heff =  fheff(m + dt *( a[2][1] * k1)                                                                                  );
 //  k2   =  fdmdt(m + dt *( a[2][1] * k1)                                                                           , heff);
 //  heff =  fheff(m + dt *( a[3][1] * k1 + a[3][2] * k2)                                                                   );
@@ -1034,25 +1034,25 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //
 //  sumbk    = dt*( a[7][1]*k1 + a[7][3]*k3 + a[7][4]*k4 + a[7][5]*k5 + a[7][6]*k6);
 //  rk_error = sumbk - dt*(e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 + e[5]*k5 + e[6]*k6 + e[7]*k7);
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
-//  //std::cout<<"mk7  = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6)(0,0,0,0))<<std::endl;
-////  std::cout<<"after heff = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0,0,0,0))<<std::endl;
-////  std::cout<<"after k7   = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0,0,0,0))<<"\n"<<std::endl;
-////  std::cout<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
+//  //std::cout<<"mk7  = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"after heff = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"after k7   = "<<afvalue((m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"h of k7 = "<<afvalue((heff)(0, 0, 0, 0))<<std::endl;
 //
 //  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
-//  //std::cout << maxnorm(k1(0,0,0,0)) << "\t" << maxnorm(k7(0,0,0,0)) << std::endl;
-////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0,0,0,0))<<std::endl;
+//  //std::cout << maxnorm(k1(0, 0, 0, 0)) << "\t" << maxnorm(k7(0, 0, 0, 0)) << std::endl;
+////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //  //rk_error = (a[7][1] - e[1] ) * k1 + (a[7][2] - e[2] * k2 ) + (a[7][3] - e[3] ) * k3 + ( a[7][4] -e[4] ) * k4 + (a[7][5] - e[5]) * k5 + (a[7][6] - e[6] )* k6 -e[7] * k7;
-//  //std::cout << "h = "<<h<< " error = "<<err<<" maxnorm(rk_error) "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m,m+sumbk)))<<std::endl;
+//  //std::cout << "h = "<<h<< " error = "<<err<<" maxnorm(rk_error) "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m, m+sumbk)))<<std::endl;
 //  //rk_abs_error = maxnorm(rk_error);
-//  //std::cout<<"m+s3 = "<<afvalue((m+sumbk)(0,0,0,0))<<std::endl;
+//  //std::cout<<"m+s3 = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //
-////  std::cout<<"k7 = "<<afvalue((dt * fdmdt(m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6, heff))(0,0,0,0))<<std::endl;
-//  //std::cout<<"m k7 = "<<afvalue((m+sumbk)(0,0,0,0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k7= "<<afvalue(k7(0,0,0,0))<<std::endl;
+////  std::cout<<"k7 = "<<afvalue((dt * fdmdt(m + a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6, heff))(0, 0, 0, 0))<<std::endl;
+//  //std::cout<<"m k7 = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<std::endl;
 //
-////  std::cout<<"m k7 = "<<afvalue((m + dt*(a[7][1] * k1+  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6))(0,0,0,0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k7= "<<afvalue(k7(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m + dt*(a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6),heff)(0,0,0,0))<<std::endl;
+////  std::cout<<"m k7 = "<<afvalue((m + dt*(a[7][1] * k1+  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6))(0, 0, 0, 0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m + dt*(a[7][1] * k1                +  a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6), heff)(0, 0, 0, 0))<<std::endl;
 //  return sumbk;
 //}
 
@@ -1069,7 +1069,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  else
 //    k1=k7;
 //
-//  //std::cout<<"m k1 = "<<afvalue((m)(0,0,0,0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k1= "<<afvalue(k1(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m,heff)(0,0,0,0))<<"\n"<<std::endl;
+//  //std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl;
 //  rktemp = m + dt * (1./5. *k1);
 //
 //  heff = fheff(rktemp      );
@@ -1102,9 +1102,9 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //
 //  sumbk =        dt * ( 35./384. * k1                    + 500./1113. * k3 + 125./192. * k4 -2187./6784. * k5 + 11./84. * k6);
 //  rk_error = sumbk - dt * ( 5179./57600. * k1           + 7571./16695. * k3 + 393/640. * k4 -92097./339200.* k5 + 187./2100. * k6 + 1./40. * k7);
-//  //std::cout<<"m k7 = "<<afvalue((m)(0,0,0,0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k7= "<<afvalue(k7(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m+sumbk,heff)(0,0,0,0))<<std::endl;
+//  //std::cout<<"m k7 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k7 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m+sumbk, heff)(0, 0, 0, 0))<<std::endl;
 //
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  return sumbk;
 //}
 
@@ -1114,7 +1114,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 
-//// Bogacki 4,5 method with stepsize control
+//// Bogacki 4, 5 method with stepsize control
 //array LLG::BS45(const array& m, const double h , double& err)
 //{
 //
@@ -1139,7 +1139,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  sumbk     =       2479.e0/34992.e0 * k1  + 123.e0/416.e0 * k3  + 612941.e0/3411720.e0 * k4 +43.e0/1440.e0 * k5  + 2272.e0/6561.e0*k6 + 79937.e0/1113912.e0 *k7   +3293.e0/556956.e0* k8    ;
 //  rk_error = sumbk - (     -3.e0/1280.e0  * k1  + 6561.e0/632320.e0* k3   -343.e0/20800.e0* k4  +243.e0/12800.e0  * k5  -1.e0/95.e0*k6);
 //
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  //err = maxnorm(rk_error);
 //  return sumbk;
 //}
@@ -1177,7 +1177,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  rk_error = sumbk - (      25./216.  * k1  +                       1408./2565. * k3  +  2197./4104. * k4    -1./5.  * k5                     );
 //
 //  double *rk_abs_error_host=NULL;
-//  rk_abs_error_host = max(max(max(max(abs(rk_error),0),1),2),3).host<double>();
+//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<double>();
 //  rk_abs_error = rk_abs_error_host[0];
 //  freeHost(rk_abs_error_host);
 //  return sumbk;
@@ -1224,7 +1224,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  rk_error = sumbk - ( 5179./57600. * k1 + 7571./16695. * k3 + 393/640. * k4 -92097./339200.* k5 + 187./2100. * k6 + 1./40. * k7);
 //
 //  double *rk_abs_error_host=NULL;
-//  rk_abs_error_host = max(max(max(max(abs(rk_error),0),1),2),3).host<double>();
+//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<double>();
 //  rk_abs_error = rk_abs_error_host[0];
 //  freeHost(rk_abs_error_host);
 //  return sumbk;
@@ -1234,21 +1234,21 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 ////RK4
 //array LLG::step(array& m){
 //    timer_integrator = timer::start();
-//    m += rk4(m,state0.material.dt);
+//    m += rk4(m, state0.material.dt);
 //    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    mean(m); //TODO this is needed to avoid cuda crash?!?
-//    return m/tile(sqrt(sum(m*m,3)),1,1,1,3);
+//    return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //};
 
 ////Explicit Euler LLG stpe without zeeman field
-//array LLG::llgstepEtesting(array& m,double dt){
+//array LLG::llgstepEtesting(array& m, double dt){
 //    timer_integrator = timer::start();
 //    m += explicitEuler(m, dt);
 //    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 //    std::cout << "TEST:bef" << " m.dims = "  << m.dims() << " heff.dims = "<< heff.dims() << std::endl;
-//    m/=tile(sqrt(sum(m*m,3)),1,1,1,3);
+//    m/=tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //    std::cout << "TEST:aft" << " m.dims = "  << m.dims() << " heff.dims = "<< heff.dims() << std::endl;
 //    return m;
 //};
@@ -1257,16 +1257,16 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    else if (state0.material.mode == 3){
 //      double *mdiff=NULL;
 //      array mtemp = m;
-//      //m += RKF45(m,state0.material.dt,rk_abs_error);
-//      m += RKF45(m,h,rk_abs_error);
-//      mdiff=max(max(max(max(abs(m-mtemp),0),1),2),3).host<double>();
+//      //m += RKF45(m, state0.material.dt, rk_abs_error);
+//      m += RKF45(m, h, rk_abs_error);
+//      mdiff=max(max(max(max(abs(m-mtemp), 0), 1), 2), 3).host<double>();
 //      //mdiff=max(abs(m-mtemp)).host<double>();
 //      rk_rel_error=rk_abs_error/(mdiff[0]);
 //      freeHost(mdiff);
-//      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.)));
-//      //For fixed stepsize: h_rel = state0.material.dt * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.)));
-//      h_abs = h * pow(headroom*rk_abs_tol_error/rk_abs_error,(1./(6.+1.))); //TODO is s=6?
-//      h_rel = h * pow(headroom*rk_rel_tol_error/rk_rel_error,(1./(6.))); //TODO is s=6?
+//      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error, (1./(6.+1.)));
+//      //For fixed stepsize: h_rel = state0.material.dt * pow(headroom*rk_rel_tol_error/rk_rel_error, (1./(6.)));
+//      h_abs = h * pow(headroom*rk_abs_tol_error/rk_abs_error, (1./(6.+1.))); //TODO is s=6?
+//      h_rel = h * pow(headroom*rk_rel_tol_error/rk_rel_error, (1./(6.))); //TODO is s=6?
 //      (h_abs < h_rel) ? h=h_abs : h=h_rel ;
 //      std::cout.precision(12);
 //      std::cout << "rk_abs_error : "<< rk_abs_error << "\t" << " rk_rel_error: " << rk_rel_error  << "\t"
@@ -1292,33 +1292,33 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //Slower: factor 1.14 :relative 1.2 instead of 1.06
-//array LLG::cross4(array& a,array& b){
-//  a=reorder(a,3,0,1,2);
-//  //array a=reorder(ain,3,0,1,2);
-//  b=reorder(b,3,0,1,2);
-//  array c=constant(0.0,3,a.dims(1),a.dims(2),a.dims(3),f64);
-//  //array c=constant(0.0,3,ain.dims(0),ain.dims(1),ain.dims(2),f64);
+//array LLG::cross4(array& a, array& b){
+//  a=reorder(a, 3, 0, 1, 2);
+//  //array a=reorder(ain, 3, 0, 1, 2);
+//  b=reorder(b, 3, 0, 1, 2);
+//  array c=constant(0.0, 3, a.dims(1), a.dims(2), a.dims(3), f64);
+//  //array c=constant(0.0, 3, ain.dims(0), ain.dims(1), ain.dims(2), f64);
 //  //std::cout << "DIMS: "<< a.dims() << "bdims: " << b.dims() << "c.dims() " << c.dims() << std::endl;
-//  c(0,span,span,span)=a(1,span,span,span)*b(2,span,span,span)-a(2,span,span,span)*b(1,span,span,span);
-//  c(1,span,span,span)=a(2,span,span,span)*b(0,span,span,span)-a(0,span,span,span)*b(2,span,span,span);
-//  c(2,span,span,span)=a(0,span,span,span)*b(1,span,span,span)-a(1,span,span,span)*b(0,span,span,span);
+//  c(0, span, span, span)=a(1, span, span, span)*b(2, span, span, span)-a(2, span, span, span)*b(1, span, span, span);
+//  c(1, span, span, span)=a(2, span, span, span)*b(0, span, span, span)-a(0, span, span, span)*b(2, span, span, span);
+//  c(2, span, span, span)=a(0, span, span, span)*b(1, span, span, span)-a(1, span, span, span)*b(0, span, span, span);
 //
-//  a=reorder(a,1,2,3,0);
-//  b=reorder(b,1,2,3,0);
-//  c=reorder(c,1,2,3,0);
+//  a=reorder(a, 1, 2, 3, 0);
+//  b=reorder(b, 1, 2, 3, 0);
+//  c=reorder(c, 1, 2, 3, 0);
 //  return c;
 //};
 
 //As well Slower
-//void LLG::cross4b(array& a,array& b){ // writes result into b
-//  b(span,span,span,0)=a(span,span,span,1)*b(span,span,span,2)-a(span,span,span,2)*b(span,span,span,1);
-//  b(span,span,span,1)=a(span,span,span,2)*b(span,span,span,0)-a(span,span,span,0)*b(span,span,span,2);
-//  b(span,span,span,2)=a(span,span,span,0)*b(span,span,span,1)-a(span,span,span,1)*b(span,span,span,0);
+//void LLG::cross4b(array& a, array& b){ // writes result into b
+//  b(span, span, span, 0)=a(span, span, span, 1)*b(span, span, span, 2)-a(span, span, span, 2)*b(span, span, span, 1);
+//  b(span, span, span, 1)=a(span, span, span, 2)*b(span, span, span, 0)-a(span, span, span, 0)*b(span, span, span, 2);
+//  b(span, span, span, 2)=a(span, span, span, 0)*b(span, span, span, 1)-a(span, span, span, 1)*b(span, span, span, 0);
 //};
 //With this in step
-//    cross4b(m,heff);
-//    cross4b(m,crosstemp);
-//    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha,2)) * heff - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,2)) * crosstemp;
+//    cross4b(m, heff);
+//    cross4b(m, crosstemp);
+//    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * heff - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * crosstemp;
 
 
 
@@ -1341,7 +1341,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //array LLG::DP78(const array& m, const double dt , double& err)
 //{
 //
-//  double ptr[14],a[14][14],b[14],bhat[14],c[14];
+//  double ptr[14], a[14][14], b[14], bhat[14], c[14];
 //  ptr[1] = 0;
 //  ptr[2] = 1;
 //  ptr[3] = 2;
@@ -1511,13 +1511,13 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  sumbk    =         dt*(bhat[1]*k1 + bhat[2]*k2+ bhat[3]*k3 + bhat[4]*k4 + bhat[5]*k5 + bhat[6]*k6 + bhat[7]*k7+ bhat[8]*k8+ bhat[9]*k9 + bhat[10]*k10 + bhat[11]*k11 + bhat[12]*k12 + bhat[13]*k13);
 //  rk_error = sumbk - dt*(b[1]*k1 + b[2]*k2 + b[3]*k3 + b[4]*k4 + b[5]*k5 + b[6]*k6 + b[7]*k7 + b[8]*k8+ b[9]*k9 + b[10]*k10 + b[11]*k11 + b[12]*k12 + b[13]*k13);
 //  //rk_error = sumbk - dt*(e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 + e[5]*k5 + e[6]*k6 + e[7]*k7);
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  return sumbk;
 //}
 
 
 
-//// Bogacki 4,5 method with stepsize control
+//// Bogacki 4, 5 method with stepsize control
 //array LLG::BS45(const array& m, const double dt , double& err)
 //{
 //
@@ -1565,7 +1565,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  b[8] = 3293.e0/556956.e0;
 ////C  The coefficients E(*) refer to an estimate of the local error based on
 ////C  the first formula of order 4.  It is the difference of the fifth order
-////C  result, here located in A(8,*), and the fourth order result.  By
+////C  result, here located in A(8, *), and the fourth order result.  By
 ////C  construction both E(2) and E(7) are zero.
 ////C
 //  e[1] = -3.e0/1280.e0;
@@ -1593,42 +1593,42 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  else
 //    k[1]=k[s];
 //  for(int i=2;i<=s;i++){
-//      rktemp=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+//      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
 //    for(int j=1;j<i;j++){
 //      //std::cout<<"a"<<i<<j<<std::endl;
 //      rktemp+=a[i][j] * k[j];
 //    }
 //    rktemp*=dt;
 //    heff= fheff(m + rktemp);
-//    k[i]= fdmdt(m + rktemp,heff);
+//    k[i]= fdmdt(m + rktemp, heff);
 //  //std::cout<<std::endl;
 //  }
-//  sumbk=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+//  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
 //  for(int i=1;i<s;i++){
 //    sumbk+=a[s][i]*k[i];
 //  }
 //  sumbk*=dt;
 //
-//  //rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
+//  //rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
 //  //for(int i=1;i<=s;i++){
 //  //  rk_error+=b[i]*k[i];
 //  //}
 //  //rk_error*=dt;
 //  //rk_error=sumbk-rk_error;
 //
-//  rk_error=constant(0.0,state0.mesh.n0, state0.mesh.n1,state0.mesh.n2,3,f64);
-//  for(int i=1;i<s;i++){//i=1,2,...,7
+//  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//  for(int i=1;i<s;i++){//i=1, 2, ..., 7
 //    rk_error+=e[i]*k[i];
 //  }
 //  rk_error*=dt;
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  //rk_error=sumbk-rk_error;
 //
 //  //TODO rk_error = sumbk - dt*(e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 + e[5]*k5 + e[6]*k6 + e[7]*k7 + ?);
 //
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<"\n"<<std::endl;
-////  std::cout<<"k1 = "<<afvalue((k1)(0,0,0,0))<<"\n"<<std::endl;
-////  std::cout<<"m k1 = "<<afvalue((m)(0,0,0,0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<"\t"<<"k1= "<<afvalue(k1(0,0,0,0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m,heff)(0,0,0,0))<<"\n"<<std::endl;
+////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"k1 = "<<afvalue((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl;
 //// Start Alternative
 ////  if(reject || calls==0 || llg_wasnormalized){
 ////    heff =  fheff(m);
@@ -1691,17 +1691,17 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  //double a7i = b i , i = 1, 2, · · · , 6
 //  //
 //  //double c[7]={c1, c2, c3, c4, c5, c6, c7};
-//  const double b[8]={0,b1, b2, b3, b4, b5, b6,0};
-//  const double b_hat[8]={0,b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat};
+//  const double b[8]={0, b1, b2, b3, b4, b5, b6, 0};
+//  const double b_hat[8]={0, b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat};
 //  const double a[8][8]={
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,c2, 0, 0, 0, 0, 0, 0},
-//    {0,c3-a32, a32, 0, 0, 0, 0, 0},
-//    {0,c4 - a42 - a43, a42, a43, 0, 0, 0, 0},
-//    {0,c5 - a52 - a53 - a54, a52, a53, a54, 0, 0, 0},
-//    {0,1 - a62 - a63 - a64 - a65, a62, a63, a64, a65, 0, 0},
-//    {0,b1, b2, b3, b4, b5, b6,0.}
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, c2, 0, 0, 0, 0, 0, 0},
+//    {0, c3-a32, a32, 0, 0, 0, 0, 0},
+//    {0, c4 - a42 - a43, a42, a43, 0, 0, 0, 0},
+//    {0, c5 - a52 - a53 - a54, a52, a53, a54, 0, 0, 0},
+//    {0, 1 - a62 - a63 - a64 - a65, a62, a63, a64, a65, 0, 0},
+//    {0, b1, b2, b3, b4, b5, b6, 0.}
 //  };
 //
 //  heff =       fheff(m                                                                                                     );
@@ -1723,7 +1723,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  //rk_error = (  b_hat[1] * k1 + b_hat[2]  * k2 +  b_hat[3]  * k3 + b_hat[4] * k4 + b_hat[5] * k5 + b_hat[6] * k6 + b_hat[7] * k7 );
 //  rk_error = sumbk - (  b_hat[1] * k1 + b_hat[2]  * k2 +  b_hat[3]  * k3 + b_hat[4] * k4 + b_hat[5] * k5 + b_hat[6] * k6 + b_hat[7] * k7 );
 //
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  //err = maxnorm(rk_error);
 //  return sumbk;
 //}
@@ -1731,28 +1731,28 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //// Dormand-Prince 4/5 method
 //array LLG::DP45(const array& m, const double dt, double& err)
 //{
-//  //double c2=0.2,c3=0.3,c4=0.8,c5=8.0/9.0;
-//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0,a41=44.0/45.0,a42=-56.0/15.0,a43=32.0/9.0,a51=19372.0/6561.0,
-//  a52=-25360.0/2187.0,a53=64448.0/6561.0,a54=-212.0/729.0,a61=9017.0/3168.0,
-//  a62=-355.0/33.0,a63=46732.0/5247.0,a64=49.0/176.0,a65=-5103.0/18656.0,
-//  a71=35.0/384.0,a73=500.0/1113.0,a74=125.0/192.0,a75=-2187.0/6784.0,
-//  a76=11.0/84.0,e1=71.0/57600.0,e3=-71.0/16695.0,e4=71.0/1920.0,
-//  e5=-17253.0/339200.0,e6=22.0/525.0,e7=-1.0/40.0;
-//  const double e[8]={0,e1, 0, e3, e4, e5, e6, e7};
+//  //double c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
+//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
+//  a52=-25360.0/2187.0, a53=64448.0/6561.0, a54=-212.0/729.0, a61=9017.0/3168.0,
+//  a62=-355.0/33.0, a63=46732.0/5247.0, a64=49.0/176.0, a65=-5103.0/18656.0,
+//  a71=35.0/384.0, a73=500.0/1113.0, a74=125.0/192.0, a75=-2187.0/6784.0,
+//  a76=11.0/84.0, e1=71.0/57600.0, e3=-71.0/16695.0, e4=71.0/1920.0,
+//  e5=-17253.0/339200.0, e6=22.0/525.0, e7=-1.0/40.0;
+//  const double e[8]={0, e1, 0, e3, e4, e5, e6, e7};
 //  const double a[8][8]={
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,0, 0, 0, 0, 0, 0, 0},
-//    {0,a21, 0, 0, 0, 0, 0, 0},
-//    {0,a31, a32, 0, 0, 0, 0, 0},
-//    {0,a41, a42, a43, 0, 0, 0, 0},
-//    {0,a51, a52, a53, a54, 0, 0, 0},
-//    {0,a61, a62, a63, a64, a65, 0, 0},
-//    {0,a71, 0  , a73, a74, a75, a76,0.}
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, 0, 0, 0, 0, 0, 0, 0},
+//    {0, a21, 0, 0, 0, 0, 0, 0},
+//    {0, a31, a32, 0, 0, 0, 0, 0},
+//    {0, a41, a42, a43, 0, 0, 0, 0},
+//    {0, a51, a52, a53, a54, 0, 0, 0},
+//    {0, a61, a62, a63, a64, a65, 0, 0},
+//    {0, a71, 0  , a73, a74, a75, a76, 0.}
 //  };
 //
-////  std::cout<<"m of k1 = "<<afvalue((m)(0,0,0,0))<<"\n"<<std::endl;
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
-////  std::cout<<"k1= "<<afvalue(k1(0,0,0,0))<<"\t"<<afvalue(k1(1,1,0,1))<<"\n"<<std::endl;
+////  std::cout<<"m of k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t"<<afvalue(k1(1, 1, 0, 1))<<"\n"<<std::endl;
 //  if(reject) std::cout<<"!!!!!!!!                                          Prev was rejected"<<std::endl;
 //  if(reject){
 //    heff =       fheff(m                               );
@@ -1784,20 +1784,20 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  sumbk=    a[7][1] * k1                 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
 //  heff =       fheff(m + sumbk      );
 //  k7   =  dt * fdmdt(m + sumbk, heff);
-////  std::cout<<"m of k7 = "<<afvalue((m + a[7][1]*k1 + a[7][3]*k3 + a[7][4]*k4 + a[7][5]*k5 + a[7][6]*k6)(0,0,0,0))<<std::endl;
-////  std::cout<<"h of k7 = "<<afvalue((heff)(0,0,0,0))<<std::endl;
-////  std::cout<<"k7= "<<afvalue(k7(0,0,0,0))<<"\t"<<afvalue(k7(1,1,0,1))<<std::endl;
+////  std::cout<<"m of k7 = "<<afvalue((m + a[7][1]*k1 + a[7][3]*k3 + a[7][4]*k4 + a[7][5]*k5 + a[7][6]*k6)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"h of k7 = "<<afvalue((heff)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<"\t"<<afvalue(k7(1, 1, 0, 1))<<std::endl;
 //
 //  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
-//  //std::cout << maxnorm(k1(0,0,0,0)) << "\t" << maxnorm(k7(0,0,0,0)) << std::endl;
+//  //std::cout << maxnorm(k1(0, 0, 0, 0)) << "\t" << maxnorm(k7(0, 0, 0, 0)) << std::endl;
 //
-////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0,0,0,0))<<std::endl;
+////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //  //rk_error = (a[7][1] - e[1] ) * k1 + (a[7][2] - e[2] * k2 ) + (a[7][3] - e[3] ) * k3 + ( a[7][4] -e[4] ) * k4 + (a[7][5] - e[5]) * k5 + (a[7][6] - e[6] )* k6 -e[7] * k7;
 //
 //  rk_error = sumbk - (e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 + e[5]*k5 + e[6]*k6 + e[7]*k7);
-//  err=maxnorm(rk_error/givescale(max(m,m+sumbk)));
-//  //std::cout << "h = "<<h<< " error = "<<err<<" maxnorm(rk_error) "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m,m+sumbk)))<<std::endl;
+//  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
+//  //std::cout << "h = "<<h<< " error = "<<err<<" maxnorm(rk_error) "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m, m+sumbk)))<<std::endl;
 //  //rk_abs_error = maxnorm(rk_error);
 //  return sumbk;
 //}

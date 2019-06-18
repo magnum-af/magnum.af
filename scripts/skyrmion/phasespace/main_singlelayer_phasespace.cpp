@@ -25,11 +25,11 @@ int main(int argc, char** argv)
    for (int i=0; i<argc; i++)
         cout << "Parameter " << i << " was " << argv[i] << "\n";
   //char* charptr;
-  //std::cout<<"argv"<<std::strtod(argv[1],&charptr)<<std::endl;
-  //std::cout<<"argv"<<std::strtod(argv[2],&charptr)<<std::endl;
+  //std::cout<<"argv"<<std::strtod(argv[1], &charptr)<<std::endl;
+  //std::cout<<"argv"<<std::strtod(argv[2], &charptr)<<std::endl;
 
   // Parameter initialization
-  const int nx = 112, ny=112 ,nz=1;//nz=5 -> lz=(5-1)*dx
+  const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
   const double dx=2.715e-10;
 
 
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
 
   //Generating Objects
-  Mesh mesh(nx,ny,nz,dx,dx,dx);
+  Mesh mesh(nx, ny, nz, dx, dx, dx);
   Material material = Material();
   state.Ms    = 1.1e6;
   material.A     = 1.5e-11;//TODO why this value? Check!
@@ -71,40 +71,40 @@ int main(int argc, char** argv)
   //material.Ku1_axis[2]=1;
 
   material.J_atom=2.*material.A*dx;
-  material.D_atom= material.D * pow(dx,2);
+  material.D_atom= material.D * pow(dx, 2);
   std::cout<<"D_atom="<<material.D_atom<<std::endl;
-  material.K_atom=material.Ku1*pow(dx,3);
+  material.K_atom=material.Ku1*pow(dx, 3);
   std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;
-  material.p=state.Ms*pow(dx,3);//Compensate nz=1 instead of nz=4
+  material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
 
    // Initial magnetic field
-   array m = constant(0.0,mesh.n0,mesh.n1,mesh.n2,3,f64);
-   m(span,span,span,2) = -1;
+   array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+   m(span, span, span, 2) = -1;
    for(int ix=0;ix<mesh.n0;ix++){
      for(int iy=0;iy<mesh.n1;iy++){
        const double rx=double(ix)-mesh.n0/2.;
        const double ry=double(iy)-mesh.n1/2.;
-       const double r = sqrt(pow(rx,2)+pow(ry,2));
-       if(r>ny/4.) m(ix,iy,span,2)=1.;
+       const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+       if(r>ny/4.) m(ix, iy, span, 2)=1.;
      }
    }
 
-  State state(mesh,material, m);
-  af_to_vti(state.m, mesh ,(filepath + "minit").c_str());
+  State state(mesh, material, m);
+  af_to_vti(state.m, mesh , (filepath + "minit").c_str());
 
   std::vector<llgt_ptr> llgterm;
-  //llgterm.push_back( llgt_ptr (new DemagField(mesh,material)));
-  //llgterm.push_back( llgt_ptr (new ExchangeField(mesh,material)));
-  //llgterm.push_back( llgt_ptr (new DmiField(mesh,material)));
-  //llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,material)));
+  //llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
+  //llgterm.push_back( llgt_ptr (new ExchangeField(mesh, material)));
+  //llgterm.push_back( llgt_ptr (new DmiField(mesh, material)));
+  //llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));
 
   llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
   llgterm.push_back( llgt_ptr (new AtomisticExchangeField(mesh)));
-  llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh,material)));
-  llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh,material)));
+  llgterm.push_back( llgt_ptr (new AtomisticDmiField(mesh, material)));
+  llgterm.push_back( llgt_ptr (new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-  LLG Llg(state,atol,rtol,hmax,hmin,llgterm);
+  LLG Llg(state, atol, rtol, hmax, hmin, llgterm);
 
   double energy_n0=1.e20;
   double energy_n1=1.e30;
@@ -122,22 +122,22 @@ int main(int argc, char** argv)
     energy_n0=Llg.E(state);
   }
   double timerelax= af::timer::stop(t);
-  af_to_vti(state.m, mesh ,(filepath + "relax").c_str());
+  af_to_vti(state.m, mesh , (filepath + "relax").c_str());
 
   std::cout<<"Relaxed after:"<<state.t<<" timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
 
 
 
 
-  array last   = constant( 0,mesh.dims,f64);
-  last(span,span,span,2)=1;
+  array last   = constant( 0, mesh.dims, f64);
+  last(span, span, span, 2)=1;
 
   std::vector<State> inputimages;
   inputimages.push_back(state);
-  inputimages.push_back(State(mesh,material, last));
+  inputimages.push_back(State(mesh, material, last));
 
-  String string(state,inputimages, n_interp, string_dt ,llgterm);
-  //String* string = new String(state,inputimages, n_interp ,llgterm);
+  String string(state, inputimages, n_interp, string_dt , llgterm);
+  //String* string = new String(state, inputimages, n_interp , llgterm);
   std::cout.precision(12);
 
   std::ofstream stream_E_barrier;
@@ -200,12 +200,12 @@ int main(int argc, char** argv)
        std::string name = filepath;
        name.append("current_skyrm_image");
        name.append(std::to_string(j));
-       af_to_vti(string.images[j].m, mesh ,name.c_str());
+       af_to_vti(string.images[j].m, mesh , name.c_str());
      }
     }
   }
-    std::cout   <<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
-    stream_steps<<"#i ,lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    std::cout   <<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
+    stream_steps<<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
     stream_E_barrier<<max_lowest<<"\t"<<nx<<"\t"<<dx<<"\t"<<material.D<<"\t"<<material.Ku1<<"\t"<<material.D_atom<<"\t"<<material.K_atom<<"\t"<<std::endl;
 
   std::ofstream myfileE;
@@ -223,13 +223,13 @@ int main(int argc, char** argv)
     std::string name = filepath;
     name.append("skyrm_image");
     name.append(std::to_string(i));
-    af_to_vti(string.images[i].m, mesh ,name.c_str());
-    //af_to_vtk(string.images_interp[i],name.c_str());
+    af_to_vti(string.images[i].m, mesh , name.c_str());
+    //af_to_vtk(string.images_interp[i], name.c_str());
     stream_max_lowest<<i<< "\t" << E_max_lowest[i]<<"\t" << E_max_lowest[i]-E_max_lowest[0]<<"\t" << E_max_lowest[i]-E_max_lowest[-1]<<std::endl;
     name = filepath;
     name.append("skyrm_image_max_lowest");
     name.append(std::to_string(i));
-    af_to_vti(images_max_lowest[i].m, mesh ,name.c_str());
+    af_to_vti(images_max_lowest[i].m, mesh , name.c_str());
   }
 
   for(unsigned i=0;i<Llg.Fieldterms.size();++i){

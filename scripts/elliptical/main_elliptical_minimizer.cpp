@@ -22,8 +22,8 @@ int main(int argc, char** argv)
         else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
         else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
         else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-        array zee = constant(0.0,state.mesh.n0,state.mesh.n1,state.mesh.n2,3,f64);
-        zee(span,span,span,0)=constant(field_Tesla/state.constants::mu0 ,state.mesh.n0,state.mesh.n1,state.mesh.n2,1,f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
@@ -44,22 +44,22 @@ int main(int argc, char** argv)
     const int nz = 1;
 
     //Generating Objects
-    Mesh mesh(nx,ny,nz,x/nx,y/ny,z/nz);
+    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
 
     long int n_cells=0;//Number of cells with Ms!=0
-    State state(mesh,material, mesh.ellipse(n_cells));
+    State state(mesh, material, mesh.ellipse(n_cells));
     state.calc_mean_m(std::cout, n_cells);
-    vti_writer_micro(state.m, mesh ,(filepath + "minit_nonnormalized").c_str());
-    vti_writer_micro(state.Ms, mesh ,(filepath + "Ms").c_str());
-    vti_writer_micro(state.m, mesh ,(filepath + "minit").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit_nonnormalized").c_str());
+    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
+    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
     mesh.print(std::cout);
 
     af::timer timer_llgterms = af::timer::start();
     //Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
     LBFGS_Minimizer minimizer = LBFGS_Minimizer();
-    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh,material)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh,material)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(mesh, material)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
     // Relaxation
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         timer t = af::timer::start();
         minimizer.Minimize(state);
         std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
-        vti_writer_micro(state.m, mesh ,(filepath + "mrelax").c_str());
+        vti_writer_micro(state.m, mesh , (filepath + "mrelax").c_str());
     }
     else{
         std::cout << "found mrelax. loading magnetization" << std::endl;
@@ -86,10 +86,10 @@ int main(int argc, char** argv)
     while (state.t < 4* hzee_max/rate){
         state.t+=1.;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, n_cells, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,0,0,2)));
+        state.calc_mean_m(stream, n_cells, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, 2)));
         state.steps++;
         if( state.steps % 1 == 0){
-            vti_writer_micro(state.m, mesh ,(filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
+            vti_writer_micro(state.m, mesh , (filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
         }
     }
 
