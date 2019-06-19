@@ -27,7 +27,8 @@ soft_Aex        = 0.25e-11
 soft_ms         = 0.25 / Constants.mu0
 soft_K_uni      = 1e5
 
-hard_Aex        = 1.0e-11
+hard_Aex        = soft_Aex
+#hard_Aex        = 1.0e-11
 hard_ms         = 1.0 / Constants.mu0
 hard_K_uni      = 1e6
 
@@ -38,6 +39,9 @@ def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
     eps_ms=soft_ms/hard_ms
     hard_J=hard_ms*Constants.mu0
     return 2*hard_K_uni/hard_J * ((1-eps_k*eps_A)/(1+sqrt(eps_ms*eps_A))**2)
+
+H_analytic = H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Constants.mu0 # in [T]
+print("H_analytic=", H_analytic, " [T]")
 
 # Creating objects
 m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
@@ -81,8 +85,8 @@ fields = [
 Llg = LLGIntegrator(alpha=1.0, terms=fields)
 
 maxField = 2./Constants.mu0 # 2 [T]
-#maxField = 0. # Note: for zero field, the domainwall does not pin to the interface for current implementation
-simtime = 10e-9 # [s]
+#simtime = 30e-9 # [s] yields H = 1.051427108983862 [T], H_analytic= 1.0053096491487339 [T]
+simtime = 100e-9 # [s] yields H = 1.027953317983681 [T], H_analytic= 1.0053096491487339 [T]
 #simtime = 3.1e-10 # [s] # yields correct result by coincidence
 
 print("Start 100 [ns] hysteresis")
@@ -97,7 +101,7 @@ while (state.t < simtime and state.m_mean(0) < (1. - 1e-6)):
     fields[0].set_homogeneous_field(state.t / simtime * maxField, 0.0, 0.0)
     Llg.step(state)
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
-    print(state.t/simtime, state.m_mean(0), state.t /simtime * maxField, printzee[0, 0, 0, 0].scalar()*Constants.mu0)
+    print(printzee[0, 0, 0, 0].scalar()*Constants.mu0 / H_analytic, state.t/simtime, state.m_mean(0), state.t /simtime * maxField, printzee[0, 0, 0, 0].scalar()*Constants.mu0)
     stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 0].scalar()))
     stream.flush()
     i = i + 1
@@ -106,5 +110,5 @@ stream.close()
 state.write_vti(sys.argv[1] + "m_switched")
 print("simulated", state.t, "[s] (out of", simtime, ") in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]\n")
-print("H_analytic=", H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Constants.mu0, " [T]")
+print("H_analytic=", H_analytic, " [T]")
 print("switched at Hext=", printzee[0, 0, 0, 0].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
