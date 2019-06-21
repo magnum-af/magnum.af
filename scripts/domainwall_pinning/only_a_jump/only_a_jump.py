@@ -18,18 +18,18 @@ y = 1.e-9
 z = 1.e-9
 
 # Discretization
-nx = 100
+nx = 80
 ny = 1
 nz = 1
 
 # Material
-soft_Aex        = 0.25e-11
-soft_ms         = 0.25 / Constants.mu0
+soft_Aex        = 1.0e-11/3.0
+soft_ms         = 1. / Constants.mu0
 soft_K_uni      = 1e5
 
 hard_Aex        = 1.0e-11
-hard_ms         = 1.0 / Constants.mu0
-hard_K_uni      = 1e6
+hard_ms         = soft_ms
+hard_K_uni      = soft_K_uni
 
 # Analytical Result
 def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
@@ -75,7 +75,7 @@ state.normalize()
 state.write_vti(sys.argv[1] + "minit")
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    ExchangeField(A_field),
+    SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis=[1., 0., 0.]),
     #DemagField(mesh),
 ]
