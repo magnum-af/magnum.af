@@ -46,6 +46,7 @@ m[:nx/2, :, :, 0] =  1.0
 m[:nx/2, :, :, 1] =  0.3
 m[nx/2:, :, :, 0] = -1.0
 m[nx/2:, :, :, 1] =  0.3
+m = Util.normalize(m)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
@@ -71,7 +72,6 @@ Ku1_field[:nx/2, :, :, :] = soft_K_uni
 Ku1_field[nx/2:, :, :, :] = hard_K_uni
 
 state = State(mesh, Ms_field, m)
-state.normalize()
 state.write_vti(sys.argv[1] + "minit")
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),

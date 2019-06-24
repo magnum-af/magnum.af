@@ -55,6 +55,14 @@ def array_from_addr(array_addr):
 
 class Util:
     @staticmethod
+    def normalize(a):
+        """Expects an vector array and returns the array normalized to 1."""
+        norm_a = af.tile(af.sqrt(af.sum(a*a, 3)), 1, 1, 1, 3)
+        normalized = a/norm_a
+        af.replace(normalized, norm_a != 0, 0)
+        return normalized
+
+    @staticmethod
     def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1, 0, 0], factor = 1.):
         """Returns a homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis and normed to factor."""
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
