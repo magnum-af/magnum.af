@@ -170,7 +170,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0+1, i1, i2, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
                         csr_ia++;
                     }
@@ -179,7 +179,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0-1, i1, i2, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -190,7 +190,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0-1, i1, i2, mesh.n0, mesh.n1)];
                     if (A_i_m != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0-1, i1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -200,7 +200,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0+1, i1, i2, mesh.n0, mesh.n1)];
                     if (A_i_p != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0+1, i1, i2, im, mesh) );
                         csr_ia++;
                     }
@@ -212,7 +212,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0, i1+1, i2, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -221,7 +221,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0, i1-1, i2, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -231,7 +231,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0, i1-1, i2, mesh.n0, mesh.n1)];
                     if (A_i_m != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0, i1-1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -240,7 +240,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0, i1+1, i2, mesh.n0, mesh.n1)];
                     if (A_i_p != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0, i1+1, i2, im, mesh ) );
                         csr_ia++;
                     }
@@ -252,7 +252,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0, i1, i2+1, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * 2.* A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                         csr_ia++;
                     }
@@ -261,7 +261,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0, i1, i2-1, mesh.n0, mesh.n1)];
                     if (A_i != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                         csr_ia++;
                     }
@@ -271,7 +271,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_m = a_host[util::stride(i0, i1, i2-1, mesh.n0, mesh.n1)];
                     if (A_i_m != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * A_i_m/(A_i_m + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
                         csr_ia++;
                     }
@@ -280,7 +280,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                     double A_i_p = a_host[util::stride(i0, i1, i2+1, mesh.n0, mesh.n1)];
                     if (A_i_p != 0){
-                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * A_i_p/(A_i_p + A_i));
+                        CSR_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dz, 2)) * 2.* A_i_p/(A_i_p + A_i));
                         CSR_JA.push_back( findex( i0, i1, i2+1, im, mesh ) );
                         csr_ia++;
                     }

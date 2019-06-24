@@ -231,9 +231,8 @@ if [[ -n "$postprocess" ]]; then
     cp $postprocess $outputdir
     postpr_filename=$(basename -- "$postprocess")
     postpr_extension="${postpr_filename##*.}"
-    postpr_filename="${postpr_filename%.*}"
     log "postpr_extension=$postpr_extension"
-    log "postpr_filename=$postpr_filename"
+    log "postpr_filename=${postpr_filename%.*}"
     if [ "$postpr_extension" = "gpi" ] || [ "$postpr_extension" = "plt" ] || [ "$postpr_extension" = "gnu" ] ;then
         gnu="true"
         log "gnu=$gnu"
@@ -276,7 +275,7 @@ if [ "$extension" == "py" ];then
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        workaround_for_gto="(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
+        workaround_for_gto="(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postpr_filename -persist || (./$postpr_filename)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
         screen -d -S GPU$GPU -m bash -c "$workaround_for_gto"
         echo "started magnum.af in screen. Track with 'screen -ls'."
         #[ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls # NOTE: problem on GTO: after screen -ls, this script stops
@@ -293,7 +292,7 @@ if [ "$extension" == "py" ];then
         fi
     else
         eval "PYTHONPATH=$magafdir/build/src $pythonversion -u $inputfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
-        if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
+        if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postpr_filename -persist || ./$postpr_filename); fi
     fi
 else
     log "Using cpp version"
@@ -331,7 +330,7 @@ else
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postprocess -persist || (./$postprocess)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) |& tee $outputdir/stdout.txt"
+        screen -d -S GPU$GPU -m bash -c "($runfile $outputdir_slash $GPU $@ && if [ -n '$postprocess' ]; then (cd $outputdir && ( [ -n '$gnu' ] && gnuplot $postpr_filename -persist || (./$postpr_filename)) ); fi && echo 'magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command' ) |& tee $outputdir/stdout.txt"
         echo "started $(basename $runfile) in screen"
         #[ "$v_flag" == "true" ] && log "running 'screen -ls':" && screen -ls #TODO#problem on GTO: after screen -ls, this script stops
         if [ "$s_flag" == "true" ];then
@@ -348,6 +347,6 @@ else
     else
         echo "starting $(basename $runfile)"
         eval "$runfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
-        if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postprocess -persist || ./$postprocess); fi
+        if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postpr_filename -persist || ./$postpr_filename); fi
     fi
 fi
