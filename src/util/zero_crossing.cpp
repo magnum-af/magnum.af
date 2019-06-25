@@ -1,7 +1,7 @@
 #include "zero_crossing.hpp"
 
 
-ZeroCrossing::ZeroCrossing(std::function<double (double)> f, double precision, int max_runs, double ix_min, double ix_max, int ix_n, bool verbose) :
+ZeroCrossing::ZeroCrossing(std::function<double (double)> f, double precision, int max_runs, double ix_min, double ix_max, int ix_n, int verbose) :
     f(f), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose)
 {
 }
@@ -18,7 +18,7 @@ std::array<double, 4> ZeroCrossing::run_loop(){
     for (int i = 0; i < ix_n; i++){
         const double x = ix_min + (double)i/(double)ix_n * (ix_max - ix_min);
         const double fx = f(x);
-        if(verbose) std::cout << "x=" << x << ", f(x) = " << fx << std::endl;
+        if(verbose > 2) std::cout << "x=" << x << ", f(x) = " << fx << std::endl;
         if(fx <= 0 and fx > f_max_minus_sign){
             f_max_minus_sign = fx;
             x_max_minus_sign = x;
@@ -42,14 +42,14 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f(){
         ix_min = result[0];
         ix_max = result[2];
         if(ix_min == ix_max){
-            std::cout << "Warning: ix_min == ix_max, break" << std::endl;
+            if(verbose) std::cout << "Warning: ZeroCrossing: ix_min == ix_max, break" << std::endl;
             break;
         }
         if(std::min(fabs(result[1]), fabs(result[3])) < precision){
-            std::cout << "Info: precision reached" << std::endl;
+            if(verbose) std::cout << "Info: ZeroCrossing: precision reached" << std::endl;
             break;
         }
-        if(verbose) std::cout << "i = " << i << ", ix_min = " << ix_min << ", ix_max = " << ix_max << std::endl << std::endl;
+        if(verbose > 1) std::cout << "i = " << i << ", ix_min = " << ix_min << ", ix_max = " << ix_max << std::endl << std::endl;
     }
     // only return x and f(x) closer to 0:
     if(fabs(result[1]) < fabs(result[3])) return std::pair<double, double> (result[0], result[1]);
