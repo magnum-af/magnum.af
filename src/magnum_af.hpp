@@ -28,4 +28,5 @@
 #include "vtk_IO.hpp"
 #include "pgfplot.hpp"
 #include "misc.hpp"
+#include "util/zero_crossing.hpp"
 #endif
