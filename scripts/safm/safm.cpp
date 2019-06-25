@@ -6,7 +6,7 @@ std::ofstream stream;
 double calc_hz(double dz){
     // Parameter initialization
     const double x=40.e-9, y=40e-9, z=4.e-9;
-    const int nx = 16, ny=16 , nz=4;
+    const int nx = 32, ny=32 , nz=4;
     const double Ms = 8e5;
 
     //Generating Objects
@@ -35,8 +35,6 @@ double calc_hz(double dz){
 }
 
 
-double return_x(double x){return x;}
-
 int main(int argc, char** argv)
 {
     // Checking input variables and setting GPU Device
@@ -50,11 +48,8 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open (filepath + "m.dat");
 
-    //std::cout << zc.f(0.975e-9) << std::endl;
-    //ZeroCrossing zc(return_x, 1e-12, 10, -1, 1.01, 101);
-    //calc(filepath, stream);
-    //ZeroCrossing zc(0, 1, 100);
-    ZeroCrossing zc(calc_hz, 1e-6, 10, 0.9e-9, 1.0e-9);
+    ZeroCrossing zc(calc_hz, 1e-6, 10, 0, 5.0e-9, 100, 3);
+    //for n=16//ZeroCrossing zc(calc_hz, 1e-6, 10, 0.9e-9, 1.0e-9);
     auto result = zc.calc_x_and_f();
     std::cout << "x = " << result.first << ", f(x) = " << result.second << std::endl;
 

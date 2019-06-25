@@ -15,7 +15,7 @@ std::array<double, 4> ZeroCrossing::run_loop(){
     double f_min_plus_sign = +1e300;
 
     double fx_prev = 0;
-    for (int i = 0; i < ix_n; i++){
+    for (int i = 0; i < ix_n + 1; i++){
         const double x = ix_min + (double)i/(double)ix_n * (ix_max - ix_min);
         const double fx = f(x);
         if(verbose > 2) std::cout << "x=" << x << ", f(x) = " << fx << std::endl;

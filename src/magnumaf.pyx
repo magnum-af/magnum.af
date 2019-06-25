@@ -1,3 +1,6 @@
+"""@package magnum.af
+A finite differences GPU-accelerated micromagnetic and atomistic simulation software.
+"""
 #!python
 #distutils: language = c++
 #cython: language_level=3
@@ -556,15 +559,19 @@ cdef class HeffTerm:
 
 cdef class DemagField(HeffTerm):
     """
-    Parameters
-    ----------
-    Attributes
-    ----------
-    Methods
-    -------
-    Examples
-    --------
+    Demagnetization Field Object.
+
+    mesh A mesh object
+    verbose manage output
+    caching enable reading and writing from cache
+    nthreads set number of threads to use for the demag tensor computation. 0 uses all aviable threads
     """
+    ## Demagnetization Field Object.
+    #
+    # @param mesh A mesh object
+    # @param verbose manage output
+    # @param caching enable reading and writing from cache
+    # @param nthreads set number of threads to use for the demag tensor computation. 0 uses all aviable threads
     cdef cDemagField* _thisptr
     def __cinit__(self, Mesh mesh, verbose = False, caching = False, nthreads = 4):
         self._thisptr = new cDemagField (deref(mesh._thisptr), verbose, caching, nthreads)
@@ -573,6 +580,7 @@ cdef class DemagField(HeffTerm):
         self._thisptr = NULL
     def print_Nfft(self):
         self._thisptr.print_Nfft()
+    ## Calculate energy contribution in [J]
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
