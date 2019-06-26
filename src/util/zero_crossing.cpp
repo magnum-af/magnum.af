@@ -39,10 +39,28 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f(){
     std::array<double, 4> result = {0};
     for (int i = 0; i < max_runs; i++){
         result = run_loop();
-        ix_min = result[0];
-        ix_max = result[2];
+        // Updating x range for next run
+        // Rescale x range if no crossing was found
+        if (result[0] == -1e300 or result[2] == 1e300){
+            if(verbose) std::cout << "No crossing found in given interval. Setting larger x range by a factor of 10" << std::endl;
+            // Setting ix_min < 0 < ix_max and scale by factor 10
+            if (ix_min > ix_max){
+                double temp = ix_min;
+                ix_min = ix_max;
+                ix_max = temp;
+            }
+            if(ix_min > 0) ix_min *= -1;
+            if(ix_max < 0) ix_max *= -1;
+            ix_min *= 10;
+            ix_max *= 10;
+        }
+        // Otherwise use obtained nearest values
+        else{
+            ix_min = result[0];
+            ix_max = result[2];
+        }
         if(ix_min == ix_max){
-            if(verbose) std::cout << "Warning: ZeroCrossing: ix_min == ix_max, break" << std::endl;
+            if(verbose) std::cout << "Warning: ZeroCrossing: ix_min == ix_max = " << ix_min << ", break!" << std::endl;
             break;
         }
         if(std::min(fabs(result[1]), fabs(result[3])) < precision){
