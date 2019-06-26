@@ -35,13 +35,25 @@ af::array SparseExchangeField::h(const State& state){
 
 // Energy calculation: E_ex = -mu0/2 * integral(M * Hex) dx
 double SparseExchangeField::E(const State& state){
-    return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    if( state.Ms_field.isempty() ){
+        return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h(state) * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    }
+    else{
+        return -constants::mu0/2. * afvalue(af::sum(af::sum(af::sum(af::sum(state.Ms_field * h(state) * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    }
 }
 
 
 double SparseExchangeField::E(const State& state, const af::array& h){
-    return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    if( state.Ms_field.isempty() ){
+        return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    }
+    else{
+        return -constants::mu0/2. * afvalue(af::sum(af::sum(af::sum(af::sum(state.Ms_field * h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    }
 }
+
+
 // Get inner index (index per matrix column)
 int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh){
     return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
