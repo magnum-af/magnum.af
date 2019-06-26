@@ -1,5 +1,4 @@
 #include "stochastic_llg.hpp"
-using namespace af;
 
 //Energy calculation
 double Stochastic_LLG::E(const State& state){
@@ -10,7 +9,7 @@ double Stochastic_LLG::E(const State& state){
     return solution;
 }
 
-array Stochastic_LLG::fheff(const State& state){
+af::array Stochastic_LLG::fheff(const State& state){
     af::array solution = Fieldterms[0]->h(state);
     for(unsigned i=1;i<Fieldterms.size();++i){
         solution+=Fieldterms[i]->h(state);
@@ -18,14 +17,14 @@ array Stochastic_LLG::fheff(const State& state){
     return solution;
 }
 
-array Stochastic_LLG::detfdmdt(const State& state){
+af::array Stochastic_LLG::detfdmdt(const State& state){
     fdmdt_calls++;
     const af::array heff = fheff(state);
     const af::array cross_temp = cross4(state.m, heff);
     return - constants::gamma/(1.+pow(this->alpha, 2)) * cross_temp - this->alpha*constants::gamma/(1.+pow(this->alpha, 2)) * cross4(state.m, cross_temp);
 }
 
-array Stochastic_LLG::stochfdmdt(const State& state, const array& h_th){
+af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th){
     stochfdmdt_calls++;
     const af::array h = fheff(state) + h_th;
     const af::array cross_temp = cross4(state.m, h);

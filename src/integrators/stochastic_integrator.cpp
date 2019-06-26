@@ -1,10 +1,9 @@
 #include "stochastic_integrator.hpp"
-using namespace af;
 
 af::array Stochastic_Integrator::Heun(const State& state)
 {
     const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
-    const array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
+    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     af::array k1 = dt * stochfdmdt(state, h_th_prev);
     af::array k2 = dt * stochfdmdt(state + k1, h_th);
     h_th_prev = h_th;
@@ -14,8 +13,8 @@ af::array Stochastic_Integrator::Heun(const State& state)
 af::array Stochastic_Integrator::SemiImplicitHeun(const State& state)
 {
     const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
-    const array h_th_init = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t
-    const array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
+    const af::array h_th_init = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t
+    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
     af::array m1= dt/2. * stochfdmdt (state   , h_th_init);
     af::array m2= dt/2. * stochfdmdt (state + m1, h_th);
     af::array m3= dt/2. * stochfdmdt (state + m2, h_th);
@@ -34,7 +33,7 @@ af::array Stochastic_Integrator::detRK4(const State& state)
 }
 
 void Stochastic_Integrator::step(State& state){//TODO remove dt as parameter here, inconsistency between Heun/SemiHeun
-    timer_stoch = timer::start();
+    timer_stoch = af::timer::start();
     if (mode == 0){
         state.m += Heun(state);
     }
@@ -47,7 +46,7 @@ void Stochastic_Integrator::step(State& state){//TODO remove dt as parameter her
     state.m = renormalize(state.m);
     state.t+=dt;
     calls ++;
-    timer += timer::stop(timer_stoch);
+    timer += af::timer::stop(timer_stoch);
     //std::cout<<" TIME  = "<<timer<<std::endl;
 }
 

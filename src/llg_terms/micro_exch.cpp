@@ -1,14 +1,13 @@
 #include "micro_exch.hpp"
-using namespace af;
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchangeField::E(const State& state){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h_withedges(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h_withedges(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 double ExchangeField::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
@@ -26,8 +25,8 @@ ExchangeField::ExchangeField (af::array A_field) : A_field(A_field){
 ExchangeField::ExchangeField (long int A_field_ptr) : A_field(*(new af::array( *((void **) A_field_ptr)))){
 }
 
-array ExchangeField::h_withedges(const State& state){
-    timer_exchsolve = timer::start();
+af::array ExchangeField::h_withedges(const State& state){
+    timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
     filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
@@ -37,30 +36,30 @@ array ExchangeField::h_withedges(const State& state){
     filtr(1, 1, 0)= 1 / pow(state.mesh.dz, 2);
     filtr(1, 1, 2)= 1 / pow(state.mesh.dz, 2);
     //Convolution
-    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
     //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
-    timer_edges = timer::start();
-    exch(0, span, span, span)+=state.m(0 , span, span, span)/ pow(state.mesh.dx, 2);
-    exch(-1, span, span, span)+=state.m(-1, span, span, span)/ pow(state.mesh.dx, 2);
+    timer_edges = af::timer::start();
+    exch(0, af::span, af::span, af::span)+=state.m(0 , af::span, af::span, af::span)/ pow(state.mesh.dx, 2);
+    exch(-1, af::span, af::span, af::span)+=state.m(-1, af::span, af::span, af::span)/ pow(state.mesh.dx, 2);
 
 
-    exch(span, 0 , span, span)+=state.m(span, 0 , span, span)/ pow(state.mesh.dy, 2);
-    exch(span, -1, span, span)+=state.m(span, -1, span, span)/ pow(state.mesh.dy, 2);
+    exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span, af::span)/ pow(state.mesh.dy, 2);
+    exch(af::span, -1, af::span, af::span)+=state.m(af::span, -1, af::span, af::span)/ pow(state.mesh.dy, 2);
 
-    exch(span, span, 0 , span)+=state.m(span, span, 0 , span)/ pow(state.mesh.dz, 2);
-    exch(span, span, -1, span)+=state.m(span, span, -1, span)/ pow(state.mesh.dz, 2);
+    exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 , af::span)/ pow(state.mesh.dz, 2);
+    exch(af::span, af::span, -1, af::span)+=state.m(af::span, af::span, -1, af::span)/ pow(state.mesh.dz, 2);
 
     if(state.afsync) af::sync();
-    time_edges += timer::stop(timer_edges);
-    computation_time_heff += timer::stop(timer_exchsolve);
+    time_edges += af::timer::stop(timer_edges);
+    computation_time_heff += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.Ms) * exch;
     }
     else if ( !state.Ms_field.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
+        af::array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
         replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -69,7 +68,7 @@ array ExchangeField::h_withedges(const State& state){
         return (2.* this->A_field)/(constants::mu0 * state.Ms) * exch;
     }
     else {
-        array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
+        af::array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
         replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -78,8 +77,8 @@ array ExchangeField::h_withedges(const State& state){
 //Terms proportional to m dorp out in the cross product of the LLG and thus is neglected
 //as arrayfire is extremely slow with indexing operations
 //NOTE: This yields no longer the physical exchange field but optimizes the caluclation
-array ExchangeField::h(const State& state){
-    timer_exchsolve = timer::start();
+af::array ExchangeField::h(const State& state){
+    timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
     filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
@@ -88,16 +87,16 @@ array ExchangeField::h(const State& state){
     filtr(1, 2, 1)= 1 / pow(state.mesh.dy, 2);
     filtr(1, 1, 0)= 1 / pow(state.mesh.dz, 2);
     filtr(1, 1, 2)= 1 / pow(state.mesh.dz, 2);
-    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
     if(state.afsync) af::sync();
-    computation_time_heff += timer::stop(timer_exchsolve);
+    computation_time_heff += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty())
     {
         return  (2.* this->A)/(constants::mu0 * state.Ms) * exch;
     }
     else if ( !state.Ms_field.isempty() && this->A_field.isempty())
     {
-        array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
+        af::array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
         replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -106,7 +105,7 @@ array ExchangeField::h(const State& state){
         return (2.* this->A_field)/(constants::mu0 * state.Ms) * exch;
     }
     else {
-        array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
+        af::array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
         replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
         return  heff;
     }
@@ -121,7 +120,6 @@ array ExchangeField::h(const State& state){
 
 ////Version with switch conv/sparseMatMul dropping the edges
 //#include "exch.hpp"
-//using namespace af;
 //
 //void showdims2(const array& a){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
@@ -130,7 +128,7 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
+//  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
 ////Function returns index
@@ -244,40 +242,40 @@ array ExchangeField::h(const State& state){
 //}
 //
 //array ExchangeField::h(const State& state){
-//  timer_exchsolve = timer::start();
+//  timer_exchsolve = af::timer::start();
 //
 //  if(mesh.n0*mesh.n1*mesh.n2>8128){
-//    timer_conv = timer::start();
+//    timer_conv = af::timer::start();
 //    //convolution
 //    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 //
 //    if(state.material.afsync) sync();
-//    time_conv += timer::stop(timer_conv);
+//    time_conv += af::timer::stop(timer_conv);
 //
 //    //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
-//    //timer_edges = timer::start();
-//    //exch(0, span, span, span)+=state.m(0 , span, span, span)/ pow(mesh.dx, 2);
-//    //exch(-1, span, span, span)+=state.m(-1, span, span, span)/ pow(mesh.dx, 2);
+//    //timer_edges = af::timer::start();
+//    //exch(0, af::span, af::span, af::span)+=state.m(0 , af::span, af::span, af::span)/ pow(mesh.dx, 2);
+//    //exch(-1, af::span, af::span, af::span)+=state.m(-1, af::span, af::span, af::span)/ pow(mesh.dx, 2);
 //    //
 //    //
-//    //exch(span, 0 , span, span)+=state.m(span, 0 , span, span)/ pow(mesh.dy, 2);
-//    //exch(span, -1, span, span)+=state.m(span, -1, span, span)/ pow(mesh.dy, 2);
+//    //exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span, af::span)/ pow(mesh.dy, 2);
+//    //exch(af::span, -1, af::span, af::span)+=state.m(af::span, -1, af::span, af::span)/ pow(mesh.dy, 2);
 //    //
-//    //exch(span, span, 0 , span)+=state.m(span, span, 0 , span)/ pow(mesh.dz, 2);
-//    //exch(span, span, -1, span)+=state.m(span, span, -1, span)/ pow(mesh.dz, 2);
+//    //exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 , af::span)/ pow(mesh.dz, 2);
+//    //exch(af::span, af::span, -1, af::span)+=state.m(af::span, af::span, -1, af::span)/ pow(mesh.dz, 2);
 //    if(state.material.afsync) sync();
-//    //time_edges += timer::stop(timer_edges);
-//    computation_time_heff += timer::stop(timer_exchsolve);
+//    //time_edges += af::timer::stop(timer_edges);
+//    computation_time_heff += af::timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
 //  else{
-//    timer_exchsolve = timer::start();
+//    timer_exchsolve = af::timer::start();
 //    array exch = matmul(matr, flat(state.m));
 //    exch=moddims(exch, mesh.n0, mesh.n1, mesh.n2, 3);
 //
 //    exch.eval();
 //    if(state.material.afsync) sync();
-//    computation_time_heff += timer::stop(timer_exchsolve);
+//    computation_time_heff += af::timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
@@ -289,7 +287,6 @@ array ExchangeField::h(const State& state){
 
 //Version yielding real Exchange Field with corrected edges and switch conv/sparseMatMul
 //#include "exch.hpp"
-//using namespace af;
 //
 //void showdims2(const array& a){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
@@ -298,7 +295,7 @@ array ExchangeField::h(const State& state){
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
 //double ExchangeField::E(const State& state){
-//  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
+//  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
 ////Function returns index
@@ -412,40 +409,40 @@ array ExchangeField::h(const State& state){
 //}
 //
 //array ExchangeField::h(const State& state){
-//  timer_exchsolve = timer::start();
+//  timer_exchsolve = af::timer::start();
 //
 //  if(mesh.n0*mesh.n1*mesh.n2>8128){
-//    timer_conv = timer::start();
+//    timer_conv = af::timer::start();
 //    //convolution
 //    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 //
 //    if(state.material.afsync) sync();
-//    time_conv += timer::stop(timer_conv);
+//    time_conv += af::timer::stop(timer_conv);
 //
 //    //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
-//    timer_edges = timer::start();
-//    exch(0, span, span, span)+=state.m(0 , span, span, span)/ pow(mesh.dx, 2);
-//    exch(-1, span, span, span)+=state.m(-1, span, span, span)/ pow(mesh.dx, 2);
+//    timer_edges = af::timer::start();
+//    exch(0, af::span, af::span, af::span)+=state.m(0 , af::span, af::span, af::span)/ pow(mesh.dx, 2);
+//    exch(-1, af::span, af::span, af::span)+=state.m(-1, af::span, af::span, af::span)/ pow(mesh.dx, 2);
 //
 //
-//    exch(span, 0 , span, span)+=state.m(span, 0 , span, span)/ pow(mesh.dy, 2);
-//    exch(span, -1, span, span)+=state.m(span, -1, span, span)/ pow(mesh.dy, 2);
+//    exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span, af::span)/ pow(mesh.dy, 2);
+//    exch(af::span, -1, af::span, af::span)+=state.m(af::span, -1, af::span, af::span)/ pow(mesh.dy, 2);
 //
-//    exch(span, span, 0 , span)+=state.m(span, span, 0 , span)/ pow(mesh.dz, 2);
-//    exch(span, span, -1, span)+=state.m(span, span, -1, span)/ pow(mesh.dz, 2);
+//    exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 , af::span)/ pow(mesh.dz, 2);
+//    exch(af::span, af::span, -1, af::span)+=state.m(af::span, af::span, -1, af::span)/ pow(mesh.dz, 2);
 //    if(state.material.afsync) sync();
-//    time_edges += timer::stop(timer_edges);
-//    computation_time_heff += timer::stop(timer_exchsolve);
+//    time_edges += af::timer::stop(timer_edges);
+//    computation_time_heff += af::timer::stop(timer_exchsolve);
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
 //  else{
-//    timer_exchsolve = timer::start();
+//    timer_exchsolve = af::timer::start();
 //    array exch = matmul(matr, flat(state.m));
 //    exch=moddims(exch, mesh.n0, mesh.n1, mesh.n2, 3);
 //
 //    exch.eval();
 //    if(state.material.afsync) sync();
-//    computation_time_heff += timer::stop(timer_exchsolve);
+//    computation_time_heff += af::timer::stop(timer_exchsolve);
 //
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
