@@ -1,6 +1,5 @@
 #ifndef MAGNUM_AF_H
 #define MAGNUM_AF_H
-#include "Faddeeva.hh"
 #include "mesh.hpp"
 #include "nonequispaced_mesh.hpp"
 #include "llg_terms/atomistic_anisotropy.hpp"
