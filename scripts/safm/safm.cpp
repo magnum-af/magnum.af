@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 {
     // Checking input variables and setting GPU Device
     af::timer total_time = af::timer::start();
-    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
+    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
     filepath = std::string(argc>1? argv[1]: "output_magnum.af/");
     af::setDevice(argc>2? std::stoi(argv[2]):0);
     af::info();
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open (filepath + "m.dat");
 
-    ZeroCrossing zc(calc_hz, 1e-6, 10, 0, 5.0e-9, 100, 3);
+    magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 0, 5.0e-9, 100, 3);
     //for n=16//ZeroCrossing zc(calc_hz, 1e-6, 10, 0.9e-9, 1.0e-9);
     auto result = zc.calc_x_and_f();
     std::cout << "x = " << result.first << ", f(x) = " << result.second << std::endl;

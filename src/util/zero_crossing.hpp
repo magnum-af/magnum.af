@@ -19,6 +19,9 @@
 ///             true  (==1): one status output after execution\n
 ///             2:           also print values for every loop\n
 ///             3:           also print values for every evaluation of f(x)
+
+namespace magnumaf{
+
 class ZeroCrossing{
     public:
         ZeroCrossing(std::function<double (double)> f, double precision = 1e-6, int max_runs = 5, double ix_min = 0, double ix_max = 1, int ix_n = 100, int verbose = true);
@@ -34,3 +37,5 @@ class ZeroCrossing{
 
         std::array<double, 4> run_loop();
 };
+
+}// namespace magnumaf

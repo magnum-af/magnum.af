@@ -2,6 +2,7 @@
 #include <math.h>
 #include "zero_crossing.hpp"
 
+using namespace magnumaf;
 
 ZeroCrossing::ZeroCrossing(std::function<double (double)> f, double precision, int max_runs, double ix_min, double ix_max, int ix_n, int verbose) :
     f(f), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose)
