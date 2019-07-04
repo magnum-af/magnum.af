@@ -6,6 +6,7 @@
 #include <iomanip>
 
 using namespace af;
+using namespace magnumaf;
 
 String::String(double alpha, State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
   state(statein), Llg(alpha, "RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){

@@ -3,6 +3,8 @@
 #include "../func.hpp"
 #include <memory>
 
+using namespace magnumaf;
+
 LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
 };
 

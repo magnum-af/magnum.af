@@ -88,7 +88,7 @@ cdef extern from "../../src/integrators/controller.hpp":
     cdef cppclass Controller:
         Controller(double hmin, double hmax, double atol, double rtol);
 
-cdef extern from "../../src/integrators/new_llg.hpp":
+cdef extern from "../../src/integrators/new_llg.hpp" namespace "magnumaf":
     cdef cppclass LLGIntegrator:
         LLGIntegrator (double alpha, vector[shared_ptr[LLGTerm]] vector_in, string mode, Controller);
         vector[shared_ptr[LLGTerm]] llgterms;

@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+namespace magnumaf{
+
 class String {
   public:
     String(double alpha, State state, std::vector<State> inputimages, int n_interp, double dt, LlgTerms Fieldterms_in);
@@ -29,3 +31,5 @@ class String {
     void write_vti(std::string file);
   private:
 };
+
+}// namespace magnumaf

@@ -2,6 +2,8 @@
 #include <array>
 #include <functional>
 
+namespace magnumaf{
+
 /// Class calculating the zero crossing of a monotonic function f(x) up to a given precision.
 
 /// Returns x and f(x) at the closest point to the zero crossing.
@@ -19,8 +21,6 @@
 ///             true  (==1): one status output after execution\n
 ///             2:           also print values for every loop\n
 ///             3:           also print values for every evaluation of f(x)
-
-namespace magnumaf{
 
 class ZeroCrossing{
     public:
