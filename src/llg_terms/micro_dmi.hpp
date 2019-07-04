@@ -1,5 +1,4 @@
-#ifndef MICRO_DMI_H
-#define MICRO_DMI_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -23,4 +22,3 @@ class DmiField : public LLGTerm {
     double     cpu_time{0.};
     af::timer timer_dmi;
 };
-#endif

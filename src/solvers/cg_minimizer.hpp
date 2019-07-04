@@ -1,5 +1,4 @@
-#ifndef CG_MINIMIZER_H
-#define CG_MINIMIZER_H
+#pragma once
 #include "arrayfire.h"
 #include "../state.hpp"
 #include "../misc.hpp"
@@ -25,4 +24,3 @@ class CG_Minimizer {
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
 };
 
-#endif

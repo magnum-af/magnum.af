@@ -1,5 +1,4 @@
-#ifndef STRING_H
-#define STRING_H
+#pragma once
 #include <vector>
 #include "arrayfire.h"
 #include "integrators/new_llg.hpp"
@@ -28,4 +27,3 @@ class String {
     void write_vti(std::string file);
   private:
 };
-#endif

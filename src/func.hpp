@@ -1,5 +1,4 @@
-#ifndef FUNC_H
-#define FUNC_H
+#pragma once
 #include <iostream>
 #include <chrono> //for af::randomEngine
 #include "arrayfire.h"
@@ -49,4 +48,3 @@ namespace util{
 
     af::randomEngine rand_engine_current_time();
 }
-#endif

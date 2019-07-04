@@ -1,5 +1,4 @@
-#ifndef AtomisticUniaxialAnisotropyField_H
-#define AtomisticUniaxialAnisotropyField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -22,4 +21,3 @@ class AtomisticUniaxialAnisotropyField : public LLGTerm {
     double     cpu_time{0.};
     af::timer timer_anisotropy;
 };
-#endif

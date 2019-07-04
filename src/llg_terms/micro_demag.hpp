@@ -1,5 +1,4 @@
-#ifndef MICRO_DEMAG_H
-#define MICRO_DEMAG_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -30,4 +29,3 @@ class DemagField : public LLGTerm {
         const unsigned nthreads;
         af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 };
-#endif

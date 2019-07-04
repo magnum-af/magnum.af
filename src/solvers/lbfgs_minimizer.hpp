@@ -1,5 +1,4 @@
-#ifndef LBFGS_MINIMIZER_H
-#define LBFGS_MINIMIZER_H
+#pragma once
 #include "../llg_terms/LLGTerm.hpp"
 #include <fstream>
 
@@ -36,4 +35,3 @@ class LBFGS_Minimizer {
         int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef Constants_H
-#define Constants_H
+#pragma once
 #include<math.h>
 
 namespace constants{
@@ -17,4 +16,3 @@ namespace constants{
 
     const double hbar = 1.0545718e-34; ///< [J s] Reduced Planck constant
 }
-#endif

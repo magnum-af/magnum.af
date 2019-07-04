@@ -1,5 +1,4 @@
-#ifndef SPARSE_EXCHANGE_FIELD_H
-#define SPARSE_EXCHANGE_FIELD_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -28,4 +27,3 @@ class SparseExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
     double af_time { 0 };
 };
-#endif

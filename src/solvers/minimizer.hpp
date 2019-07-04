@@ -1,5 +1,4 @@
-#ifndef MINIMIZER_H
-#define MINIMIZER_H
+#pragma once
 #include <memory>
 #include <list>
 #include <algorithm>
@@ -40,4 +39,3 @@ class Minimizer {
 
 };
 
-#endif

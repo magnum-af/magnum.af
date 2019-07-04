@@ -1,5 +1,4 @@
-#ifndef MICRO_SpinTransferTorqueField_H
-#define MICRO_SpinTransferTorqueField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../constants.hpp"
@@ -23,4 +22,3 @@ class SpinTransferTorqueField : public LLGTerm {
     double nu_fieldlike;
     double j_e;
 };
-#endif

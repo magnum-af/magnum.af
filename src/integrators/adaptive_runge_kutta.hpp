@@ -1,5 +1,4 @@
-#ifndef ADAPTIVE_INTEGRATOR_H
-#define ADAPTIVE_INTEGRATOR_H
+#pragma once
 #include "arrayfire.h"
 #include "controller.hpp"
 #include "../func.hpp"
@@ -31,4 +30,3 @@ class AdaptiveRungeKutta {
         af::array k_FSAL; // array which stores the last stage in methods with first same as last (FSAL) property
 };
 
-#endif

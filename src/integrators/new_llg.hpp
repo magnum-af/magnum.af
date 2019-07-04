@@ -1,5 +1,4 @@
-#ifndef NEW_LLG_H
-#define NEW_LLG_H
+#pragma once
 #include "arrayfire.h"
 #include "../state.hpp"
 #include "../func.hpp"
@@ -37,4 +36,3 @@ class LLGIntegrator : public AdaptiveRungeKutta{
 
 };
 
-#endif

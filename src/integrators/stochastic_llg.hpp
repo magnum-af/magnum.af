@@ -1,5 +1,4 @@
-#ifndef STOCHASTIC_LLG_H
-#define STOCHASTIC_LLG_H
+#pragma once
 #include "arrayfire.h"
 #include <memory>
 #include "../llg_terms/LLGTerm.hpp"
@@ -17,4 +16,3 @@ class Stochastic_LLG : public Stochastic_Integrator {
         af::array stochfdmdt(const State&, const af::array& h_th);
 };
 
-#endif

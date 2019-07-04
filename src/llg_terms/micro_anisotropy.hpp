@@ -1,5 +1,4 @@
-#ifndef MICRO_UniaxialAnisotropyField_H
-#define MICRO_UniaxialAnisotropyField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -34,4 +33,3 @@ class UniaxialAnisotropyField : public LLGTerm {
     std::array<double, 3> get_normalized_vector(std::array<double, 3> vector);
     af::array calc_heff(const State& state);
 };
-#endif

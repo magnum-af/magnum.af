@@ -1,5 +1,4 @@
-#ifndef AtomisticExchangeField_H
-#define AtomisticExchangeField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -24,4 +23,3 @@ class AtomisticExchangeField : public LLGTerm {
     double     time_edges{0.};
     af::timer timer_edges;
 };
-#endif

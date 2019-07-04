@@ -1,5 +1,4 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 #include "arrayfire.h"
 #include "../misc.hpp"
 #include <algorithm>
@@ -56,4 +55,3 @@ class Controller{
 };
 
 
-#endif

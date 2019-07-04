@@ -1,5 +1,4 @@
-#ifndef MAGNUM_AF_H
-#define MAGNUM_AF_H
+#pragma once
 #include "mesh.hpp"
 #include "nonequispaced_mesh.hpp"
 #include "llg_terms/atomistic_anisotropy.hpp"
@@ -28,4 +27,3 @@
 #include "pgfplot.hpp"
 #include "misc.hpp"
 #include "util/zero_crossing.hpp"
-#endif

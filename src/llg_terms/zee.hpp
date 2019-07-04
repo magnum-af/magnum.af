@@ -1,5 +1,4 @@
-#ifndef ZEE_H
-#define ZEE_H
+#pragma once
 #include <functional>
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
@@ -34,7 +33,6 @@ class ExternalField : public LLGTerm {
     //double af_time{0.};
 };
 
-#endif
 
 //for wrapping:
 //https://stackoverflow.com/questions/8800838/how-to-pass-a-function-pointer-to-an-external-program-in-cython

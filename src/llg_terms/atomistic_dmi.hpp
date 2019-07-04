@@ -1,5 +1,4 @@
-#ifndef AtomisticDmiField_H
-#define AtomisticDmiField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -25,4 +24,3 @@ class AtomisticDmiField : public LLGTerm {
     double     cpu_time{0.};
     af::timer timer_dmi;
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef MICRO_NONEQUI_DEMAG_H
-#define MICRO_NONEQUI_DEMAG_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -34,4 +33,3 @@ class NonEquiDemagField : public LLGTerm {
         const unsigned nthreads;
         af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, const std::vector<double> z_spacing);
 };
-#endif

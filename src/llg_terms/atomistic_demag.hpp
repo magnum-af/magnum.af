@@ -1,5 +1,4 @@
-#ifndef AtomisticDipoleDipoleField_H
-#define AtomisticDipoleDipoleField_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -21,4 +20,3 @@ class AtomisticDipoleDipoleField: public LLGTerm{
     double cpu_time{0.};
     af::timer timer_demagsolve;
 };
-#endif

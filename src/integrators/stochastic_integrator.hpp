@@ -1,5 +1,4 @@
-#ifndef STOCHASTIC_INTEGRATOR_H
-#define STOCHASTIC_INTEGRATOR_H
+#pragma once
 #include "arrayfire.h"
 #include <memory>
 #include <chrono>
@@ -45,4 +44,3 @@ class Stochastic_Integrator {
         af::randomEngine rand_engine;
 };
 
-#endif

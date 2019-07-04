@@ -1,5 +1,4 @@
-#ifndef MICRO_EXCH_H
-#define MICRO_EXCH_H
+#pragma once
 #include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
@@ -30,4 +29,3 @@ class ExchangeField : public LLGTerm {
     double     time_edges{0.};
     af::timer timer_edges;
 };
-#endif

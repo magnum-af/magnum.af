@@ -1,5 +1,4 @@
-#ifndef LLGTerm_H
-#define LLGTerm_H
+#pragma once
 #include <memory>
 #include "arrayfire.h"
 #include "../state.hpp"
@@ -18,4 +17,3 @@ class LLGTerm{
 using LlgTerm = std::shared_ptr<LLGTerm>;
 using LlgTerms = std::vector<LlgTerm>;
 
-#endif
