@@ -1,18 +1,12 @@
 #pragma once
-#include <memory>
-#include <list>
-#include <algorithm>
-#include "arrayfire.h"
-#include "../func.hpp"
 #include "../state.hpp"
 #include "../llg_terms/LLGTerm.hpp"
+#include "arrayfire.h"
 
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 
 // Energy minimizer using a semi-implicit update scheme applying the Barzilian-Borwein (BB) rule for stepsize calculation.
-typedef std::shared_ptr<LLGTerm> LlgTerm;
-typedef std::vector<LlgTerm> LlgTerms;
 
 class Minimizer {
     public:

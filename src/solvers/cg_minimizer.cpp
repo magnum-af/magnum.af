@@ -1,4 +1,6 @@
 #include "cg_minimizer.hpp"
+#include "../misc.hpp"
+#include "../func.hpp"
 
 CG_Minimizer::CG_Minimizer()
 {

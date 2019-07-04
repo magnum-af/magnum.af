@@ -1,4 +1,8 @@
 #include "minimizer.hpp"
+#include "../func.hpp"
+#include <memory>
+#include <list>
+#include <algorithm>
 
 //Energy calculation
 // only for testing, remove?

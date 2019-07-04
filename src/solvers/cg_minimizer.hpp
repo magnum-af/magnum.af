@@ -1,8 +1,6 @@
 #pragma once
 #include "arrayfire.h"
 #include "../state.hpp"
-#include "../misc.hpp"
-#include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 
 //For second Method, use interface class:
