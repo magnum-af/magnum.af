@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class AtomisticDipoleDipoleField: public LLGTerm{
   public:
     //Field contribution
@@ -19,3 +22,4 @@ class AtomisticDipoleDipoleField: public LLGTerm{
     double cpu_time{0.};
     af::timer timer_demagsolve;
 };
+}// namespace magnumaf

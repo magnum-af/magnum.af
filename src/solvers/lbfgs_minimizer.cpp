@@ -9,6 +9,9 @@
 #include <list>
 #include <algorithm>
 
+namespace magnumaf{
+
+
 LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {
 }
@@ -555,3 +558,4 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
   return 0;
 
 }
+}// namespace magnumaf

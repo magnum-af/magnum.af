@@ -1,6 +1,9 @@
 #pragma once
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class Controller{
     public:
         bool success(const double err, double& h);//Decide whether step is acceppted
@@ -51,3 +54,4 @@ class Controller{
 };
 
 
+}// namespace magnumaf

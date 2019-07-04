@@ -3,6 +3,9 @@
 #include "../llg_terms/LLGTerm.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 
@@ -33,3 +36,4 @@ class Minimizer {
 
 };
 
+}// namespace magnumaf

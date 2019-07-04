@@ -5,6 +5,9 @@
 #include <vector>
 #include <thread>
 
+namespace magnumaf{
+
+
 //Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){
     return - constants::mu0/2. * state.integral_nonequimesh(h(state) * state.m);
@@ -320,3 +323,4 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
     Naf = af::fftR2C<2>(Naf);
     return Naf;
 }
+}// namespace magnumaf

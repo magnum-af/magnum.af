@@ -2,6 +2,9 @@
 #include "arrayfire.h"
 #include "../../../src/func.cpp"
 
+using namespace magnumaf;
+
+
 // Exemplary unit test
 TEST(FullInnerProductTest, n) {
     af::array a = af::constant(1., 3, 3, 3, 3, f64);

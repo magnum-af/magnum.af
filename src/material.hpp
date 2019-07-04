@@ -1,4 +1,6 @@
 #pragma once
+namespace magnumaf{
+
 ///Struct holding all simulation parameters.
 struct Material{
     // Micromagneitc
@@ -26,3 +28,4 @@ struct Material{
 };
 
 //Note Js=mu0*Ms
+}// namespace magnumaf

@@ -2,6 +2,9 @@
 #include "../llg_terms/LLGTerm.hpp"
 #include <fstream>
 
+namespace magnumaf{
+
+
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 //
@@ -35,3 +38,4 @@ class LBFGS_Minimizer {
         int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info);
 };
 
+}// namespace magnumaf

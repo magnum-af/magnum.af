@@ -18,6 +18,9 @@
 #include <assert.h>
 #include <string>
 
+namespace magnumaf{
+
+
 
 //3D vtkImageData vtkCellData writer
 //Optimization should avoid generation of two vtkImageData objects
@@ -356,3 +359,4 @@ void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, st
     mesh=Mesh(grid_dims[0]-1, grid_dims[1]-1, grid_dims[2]-1, x_spacings[0], y_spacings[1], 0);//Note: dz is set to zero
     //TODO should be adapted with nonequi Mesh class
 }
+}// namespace magnumaf

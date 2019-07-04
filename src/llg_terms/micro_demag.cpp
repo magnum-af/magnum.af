@@ -3,6 +3,9 @@
 #include "../func.hpp"
 #include <thread>
 
+namespace magnumaf{
+
+
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
@@ -288,3 +291,4 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
     }
     return Naf;
 }
+}// namespace magnumaf

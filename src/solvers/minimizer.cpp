@@ -4,6 +4,9 @@
 #include <list>
 #include <algorithm>
 
+namespace magnumaf{
+
+
 //Energy calculation
 // only for testing, remove?
 double Minimizer::E(const State& state){
@@ -112,3 +115,4 @@ void Minimizer::minimize(State& state){
     }
     if (info) std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
 };
+}// namespace magnumaf

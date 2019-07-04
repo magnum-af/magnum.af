@@ -8,6 +8,9 @@
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
 
+using namespace magnumaf;
+
+
 // Exemplary unit test
 TEST(NonEquiDemag, NxxNxyNearTest) {
     int ix = 1;

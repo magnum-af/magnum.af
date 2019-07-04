@@ -1,6 +1,9 @@
 #pragma once
 #include<math.h>
 
+namespace magnumaf{
+
+
 namespace constants{
     // The following values are obtained from CODATA/NIST as of 04.03.2019:
 
@@ -16,3 +19,4 @@ namespace constants{
 
     constexpr double hbar = 1.0545718e-34; ///< [J s] Reduced Planck constant
 }
+}// namespace magnumaf

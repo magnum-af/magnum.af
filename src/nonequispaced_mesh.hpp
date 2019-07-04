@@ -1,6 +1,9 @@
 #pragma once
 #include "arrayfire.h"
 #include <iostream>
+
+namespace magnumaf{
+
 struct NonequispacedMesh{
     NonequispacedMesh(){};
     NonequispacedMesh (int nx, int ny, double dx, double dy, std::vector<double> z_spacing);
@@ -14,3 +17,4 @@ struct NonequispacedMesh{
 
     void print(std::ostream& stream);
 };
+}// namespace magnumaf

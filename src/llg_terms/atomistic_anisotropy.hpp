@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class AtomisticUniaxialAnisotropyField : public LLGTerm {
   public:
     //Field contribution
@@ -21,3 +24,4 @@ class AtomisticUniaxialAnisotropyField : public LLGTerm {
     double     cpu_time{0.};
     af::timer timer_anisotropy;
 };
+}// namespace magnumaf

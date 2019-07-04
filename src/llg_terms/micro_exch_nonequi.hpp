@@ -4,6 +4,9 @@
 #include "../nonequispaced_mesh.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 /// Nonequispaced Exchange Field.
 
 /// The second derivative for a nonequispaced mesh can be written as [1, eq. 1.4]: \f[ f_i^{''} = \frac{2 \Big[f_{i-1} + \frac{h_i}{h_{i-1}} f_{i-1} - \big(1 + \frac{h_i}{h_{i-1}} f_i\big)\Big]}{h_i h_{i-1} \big(1 + \frac{h_i}{h_{i-1}}\big)} - \frac{h_i - h_{i-1}}{3} f_i^{'''} + ...\f]
@@ -34,3 +37,4 @@ class NonequiExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
     double af_time { 0 };
 };
+}// namespace magnumaf

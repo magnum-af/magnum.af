@@ -1,5 +1,8 @@
 #include "micro_spintransfertorque.hpp"
 
+namespace magnumaf{
+
+
 double SpinTransferTorqueField::E(const State& state){
     return - constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
@@ -20,3 +23,4 @@ af::array SpinTransferTorqueField::h(const State& state){
     //evaluation_timing += af::timer::stop(timer_fieldlike);
     return - j_e * constants::hbar / (2. * constants::e * constants::mu0 * state.Ms) * (nu_dampinglike * cross4(state.m, polarization_field.array) + nu_fieldlike * polarization_field.array);
 }
+}// namespace magnumaf

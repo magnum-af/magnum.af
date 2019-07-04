@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class AtomisticExchangeField : public LLGTerm {
   public:
     //Field contribution
@@ -22,3 +25,4 @@ class AtomisticExchangeField : public LLGTerm {
     double     time_edges{0.};
     af::timer timer_edges;
 };
+}// namespace magnumaf

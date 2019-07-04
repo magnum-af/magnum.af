@@ -4,6 +4,9 @@
 #include "misc.hpp"
 #include <iomanip>
 
+namespace magnumaf{
+
+
 /// Overloaded '+' operator adds an af::array to af::array this->m
 State State::operator+(const af::array& a) const{
     State result = *this;
@@ -298,3 +301,4 @@ double State::integral_nonequimesh(const af::array& h_times_m) const{
     af::array xyz_integral = af::sum(xy_integral * z_spacing_afarray, 2);
     return afvalue( xyz_integral );
 }
+}// namespace magnumaf

@@ -3,6 +3,9 @@
 #include "stochastic_integrator.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class Stochastic_LLG : public Stochastic_Integrator {
     public:
         Stochastic_LLG(double alpha, double T, double dt, State state, std::vector<std::shared_ptr<LLGTerm>> terms, std::string smode): Stochastic_Integrator (alpha, T, dt, state, terms, smode){}
@@ -13,3 +16,4 @@ class Stochastic_LLG : public Stochastic_Integrator {
         af::array stochfdmdt(const State&, const af::array& h_th);
 };
 
+}// namespace magnumaf

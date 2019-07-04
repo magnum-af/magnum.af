@@ -10,6 +10,9 @@
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
 
+using namespace magnumaf;
+
+
 
 TEST(NonEquiDemagField, EnergyTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization

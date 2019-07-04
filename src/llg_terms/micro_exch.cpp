@@ -1,6 +1,8 @@
 #include "micro_exch.hpp"
 #include "../func.hpp"
 
+namespace magnumaf{
+
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 double ExchangeField::E(const State& state){
@@ -288,6 +290,7 @@ af::array ExchangeField::h(const State& state){
 
 //Version yielding real Exchange Field with corrected edges and switch conv/sparseMatMul
 //#include "exch.hpp"
+
 //
 //void showdims2(const array& a){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
@@ -448,3 +451,4 @@ af::array ExchangeField::h(const State& state){
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
 //}
+}// namespace magnumaf

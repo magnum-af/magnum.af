@@ -4,6 +4,9 @@
 #include "arrayfire.h"
 #include <functional>
 
+namespace magnumaf{
+
+
 class ExternalField : public LLGTerm {
   public:
     ExternalField(af::array zee_in);///< Constant Zeeman field.
@@ -35,3 +38,4 @@ class ExternalField : public LLGTerm {
 
 //for wrapping:
 //https://stackoverflow.com/questions/8800838/how-to-pass-a-function-pointer-to-an-external-program-in-cython
+}// namespace magnumaf

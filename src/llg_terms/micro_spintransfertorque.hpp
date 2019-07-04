@@ -4,6 +4,9 @@
 #include "../func.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 
 class SpinTransferTorqueField : public LLGTerm {
   public:
@@ -23,3 +26,4 @@ class SpinTransferTorqueField : public LLGTerm {
     double nu_fieldlike;
     double j_e;
 };
+}// namespace magnumaf

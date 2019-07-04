@@ -2,6 +2,9 @@
 #include <string>
 #include <sys/stat.h>
 
+namespace magnumaf{
+
+
 unsigned long long GetDirSize(std::string filepath);
 ///> Returns true if file "name" exists, false otherwise
 inline bool exists (const std::string& absolute_filepath) {
@@ -26,3 +29,4 @@ inline std::string green(const std::string str){return "\033[;32m"+str+"\033[0m"
 
 inline const char* Info(void){ return "\33[0;32mInfo:\33[0m";}
 inline const char* Warning(void){ return "\33[1;31mWarning:\33[0m";}
+}// namespace magnumaf

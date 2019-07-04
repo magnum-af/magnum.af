@@ -2,6 +2,9 @@
 #include "../func.hpp"
 #include <chrono>
 
+namespace magnumaf{
+
+
 af::array Stochastic_Integrator::Heun(const State& state)
 {
     const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
@@ -74,3 +77,4 @@ double Stochastic_Integrator::cpu_time(){
     }
     return cpu_time;
 }
+}// namespace magnumaf

@@ -1,5 +1,8 @@
 #include "atomistic_demag.hpp"
 #include "../func.hpp"
+
+namespace magnumaf{
+
 using namespace af;
 
 //Energy calculation
@@ -128,3 +131,4 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
   }
   return Naf;
 }
+}// namespace magnumaf

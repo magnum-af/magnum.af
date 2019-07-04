@@ -3,6 +3,9 @@
 #include "../../../src/func.cpp"
 #include "../../../src/vtk_IO.cpp"
 
+using namespace magnumaf;
+
+
 TEST(vtkIO, vtrWriteReadTest) {
     af::array a = af::randu(6, 5, 4, 10, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0);

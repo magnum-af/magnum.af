@@ -3,7 +3,7 @@
 #include "../func.hpp"
 #include <memory>
 
-using namespace magnumaf;
+namespace magnumaf{
 
 LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
 };
@@ -62,3 +62,4 @@ long int LLGIntegrator::h_addr(const State& state){
     af::array *heff = new af::array(fheff(state));
     return (long int) heff->get();
 }
+}// namespace magnumaf

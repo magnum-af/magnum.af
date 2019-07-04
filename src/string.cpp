@@ -5,8 +5,9 @@
 #include <fstream>
 #include <iomanip>
 
+namespace magnumaf{
 using namespace af;
-using namespace magnumaf;
+
 
 String::String(double alpha, State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
   state(statein), Llg(alpha, "RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
@@ -238,6 +239,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 
 //#include "string.hpp"
 //#include "func.hpp"
+
 //
 //using namespace af;
 //
@@ -329,3 +331,4 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //  for(unsigned int i=0; i<images_interp.size();i++) images_interp[i].m= renormalize(images_interp[i].m);
 //}
 
+}// namespace magnumaf

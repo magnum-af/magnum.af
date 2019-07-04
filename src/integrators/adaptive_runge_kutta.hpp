@@ -5,6 +5,9 @@
 #include <string>
 #include <stdio.h>
 
+namespace magnumaf{
+
+
 class AdaptiveRungeKutta {
     public:
         AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(), const bool renormalize_ = true, const bool verbose = false);
@@ -30,3 +33,4 @@ class AdaptiveRungeKutta {
         af::array k_FSAL; // array which stores the last stage in methods with first same as last (FSAL) property
 };
 
+}// namespace magnumaf

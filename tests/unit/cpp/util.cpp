@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include "../../../src/func.cpp"
 
+using namespace magnumaf;
+
+
 TEST(Util, SerialTriangularMatrixTest) {
     // serialized index k, matrix indices i, j
     for (int n = 1; n < 20; n++){

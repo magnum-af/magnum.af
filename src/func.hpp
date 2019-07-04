@@ -3,6 +3,9 @@
 #include <chrono> //for af::randomEngine
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class WrappedArray {
     public:
         WrappedArray(af::array array);
@@ -48,3 +51,4 @@ namespace util{
 
     af::randomEngine rand_engine_current_time();
 }
+}// namespace magnumaf

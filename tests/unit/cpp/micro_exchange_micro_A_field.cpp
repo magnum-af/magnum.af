@@ -11,6 +11,9 @@
 #include "../../../src/integrators/controller.cpp"
 #include "../../../src/llg_terms/micro_exch.cpp"
 
+using namespace magnumaf;
+
+
 // Testing whether material.A and state.micro_A_field yield same result
 TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
     double A = 1.3e-11;

@@ -2,6 +2,9 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 
+namespace magnumaf{
+
+
 CG_Minimizer::CG_Minimizer()
 {
 }
@@ -46,3 +49,4 @@ void CG_Minimizer::Minimize(State& state){
 
     std::cout << "CG_Minimizer: time = " << af::timer::stop(timer) << std::endl;
 };
+}// namespace magnumaf

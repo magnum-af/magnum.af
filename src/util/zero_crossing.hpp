@@ -4,6 +4,9 @@
 
 namespace magnumaf{
 
+
+namespace magnumaf{
+
 /// Class calculating the zero crossing of a monotonic function f(x) up to a given precision.
 
 /// Returns x and f(x) at the closest point to the zero crossing.
@@ -38,4 +41,5 @@ class ZeroCrossing{
         std::array<double, 4> run_loop();
 };
 
+}// namespace magnumaf
 }// namespace magnumaf

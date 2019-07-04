@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class NonEquiDemagField : public LLGTerm {
   public:
     //Field contribution
@@ -28,3 +31,4 @@ class NonEquiDemagField : public LLGTerm {
         const unsigned nthreads;
         af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, const std::vector<double> z_spacing);
 };
+}// namespace magnumaf

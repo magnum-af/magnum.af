@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <stdio.h>
 
+namespace magnumaf{
+
+
 
 bool Controller::success(const double err, double& h){
     double scale;
@@ -63,3 +66,4 @@ bool Controller::success(const double err, double& h){
         return false;
     }
 }
+}// namespace magnumaf

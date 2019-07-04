@@ -3,6 +3,9 @@
 #include "../../../src/material.cpp"
 #include "../../../src/constants.hpp"
 
+using namespace magnumaf;
+
+
 TEST(Material, Init_p_Test) {
     Material material;
     material.p = 2.5;

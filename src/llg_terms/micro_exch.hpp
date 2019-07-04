@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 class ExchangeField : public LLGTerm {
   public:
     ExchangeField (double A);
@@ -28,3 +31,4 @@ class ExchangeField : public LLGTerm {
     double     time_edges{0.};
     af::timer timer_edges;
 };
+}// namespace magnumaf

@@ -1,6 +1,9 @@
 #include "zee.hpp"
 #include "../func.hpp"
 
+namespace magnumaf{
+
+
 ExternalField::ExternalField(af::array zee_in) : zee_field(zee_in)
 {
 }
@@ -73,3 +76,4 @@ double ExternalField::E(const State& state, const af::array& h){
         return - constants::mu0 * afvalue(sum(sum(sum(sum(state.Ms_field * h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy *state.mesh.dz;
     }
 }
+}// namespace magnumaf

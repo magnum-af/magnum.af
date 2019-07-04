@@ -1,5 +1,8 @@
 #include "atomistic_dmi.hpp"
 #include "../func.hpp"
+
+namespace magnumaf{
+
 using namespace af;
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
@@ -91,6 +94,7 @@ array AtomisticDmiField::h(const State& state){
 
 ////VERSION FOR fixed e_z=(0, 0, 1)
 //#include "atomistic_dmi.hpp"
+
 //using namespace af;
 ////Energy calculation
 ////E=-mu0/2 integral(M . H) dx
@@ -148,3 +152,4 @@ array AtomisticDmiField::h(const State& state){
 //  return -state.material.D_atom/(2.*constants::mu0*state.material.p) * res;
 //  //return -state.material.D/2. * res;
 //}
+}// namespace magnumaf

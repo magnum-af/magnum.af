@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+namespace magnumaf{
+
+
 unsigned long long GetDirSize(std::string filepath)
 // Retuns size of directory in bytes
 // filepath is expected to be an absolute file path as the first word is detected by the first occurance of "/"
@@ -90,3 +93,4 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumb
         maxiter++;
     }
 }
+}// namespace magnumaf

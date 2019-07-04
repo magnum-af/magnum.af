@@ -2,9 +2,10 @@
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
 
+
 // Exemplary unit test
 TEST(Mesh, InitTest) {
-    Mesh mesh(1, 2, 3, 0.1, 0.2, 0.3);
+    magnumaf::Mesh mesh(1, 2, 3, 0.1, 0.2, 0.3);
     ASSERT_EQ(1, mesh.n0);
     ASSERT_EQ(2, mesh.n1);
     ASSERT_EQ(3, mesh.n2);

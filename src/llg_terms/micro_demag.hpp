@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
+namespace magnumaf{
+
+
 
 class DemagField : public LLGTerm {
   public:
@@ -27,3 +30,4 @@ class DemagField : public LLGTerm {
         const unsigned nthreads;
         af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 };
+}// namespace magnumaf

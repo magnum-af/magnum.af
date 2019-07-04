@@ -2,6 +2,9 @@
 #include <math.h>
 #include "zero_crossing.hpp"
 
+namespace magnumaf{
+
+
 using namespace magnumaf;
 
 ZeroCrossing::ZeroCrossing(std::function<double (double)> f, double precision, int max_runs, double ix_min, double ix_max, int ix_n, int verbose) :
@@ -76,3 +79,4 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f(){
     if(fabs(result[1]) < fabs(result[3])) return std::pair<double, double> (result[0], result[1]);
     else return std::pair<double, double> (result[2], result[3]);
 }
+}// namespace magnumaf

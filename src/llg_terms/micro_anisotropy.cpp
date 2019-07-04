@@ -4,6 +4,9 @@
 #include "micro_anisotropy.hpp"
 #include "../func.hpp"
 
+namespace magnumaf{
+
+
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double UniaxialAnisotropyField::E(const State& state){
@@ -123,3 +126,4 @@ long int UniaxialAnisotropyField::get_Ku1_field(){
     af::array *a = new af::array(Ku1_field);
     return (long int) a->get();
 }
+}// namespace magnumaf

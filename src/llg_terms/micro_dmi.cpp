@@ -1,6 +1,9 @@
 #include "micro_dmi.hpp"
 #include "../func.hpp"
 
+namespace magnumaf{
+
+
 
 void showdims(const af::array& a){
   std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
@@ -270,3 +273,4 @@ void apply_boundary_condition(af::array& hfield, const State& state){
 //  cpu_time += timer::stop(timer_dmi);
 //  return  -2.* material.D/material.Js * (first-second);//TODO Js not set
 //}
+}// namespace magnumaf

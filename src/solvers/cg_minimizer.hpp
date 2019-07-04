@@ -3,6 +3,9 @@
 #include "../state.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 
+namespace magnumaf{
+
+
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
 
@@ -22,3 +25,4 @@ class CG_Minimizer {
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
 };
 
+}// namespace magnumaf

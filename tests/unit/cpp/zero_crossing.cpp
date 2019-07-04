@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include "../../../src/util/zero_crossing.cpp"
 
+using namespace magnumaf;
+
+
 
 double x(double x){return x;}
 

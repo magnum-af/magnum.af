@@ -4,6 +4,9 @@
 #include "arrayfire.h"
 #include <memory>
 
+namespace magnumaf{
+
+
 class Stochastic_Integrator {
     public:
         Stochastic_Integrator (double alpha, double T, double dt, State state, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, std::string smode);
@@ -42,3 +45,4 @@ class Stochastic_Integrator {
         af::randomEngine rand_engine;
 };
 
+}// namespace magnumaf

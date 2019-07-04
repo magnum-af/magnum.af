@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include "arrayfire.h"
+
+namespace magnumaf{
+
 struct Mesh{
     Mesh (int, int, int, double, double, double);
     Mesh (){};
@@ -17,3 +20,4 @@ struct Mesh{
     af::array init_vortex(const bool positive_direction = true);
     af::array init_sp4();
 };
+}// namespace magnumaf

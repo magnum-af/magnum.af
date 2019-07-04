@@ -1,5 +1,8 @@
 #include "atomistic_exchange.hpp"
 #include "../func.hpp"
+
+namespace magnumaf{
+
 using namespace af;
 
 //Energy calculation
@@ -276,3 +279,4 @@ array AtomisticExchangeField::h(const State& state){
 //}
 //
 //
+}// namespace magnumaf
