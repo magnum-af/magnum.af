@@ -1,4 +1,6 @@
 #include "stochastic_integrator.hpp"
+#include "../func.hpp"
+#include <chrono>
 
 af::array Stochastic_Integrator::Heun(const State& state)
 {

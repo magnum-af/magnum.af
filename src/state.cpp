@@ -2,6 +2,7 @@
 #include "vtk_IO.hpp"
 #include "func.hpp"
 #include "misc.hpp"
+#include <iomanip>
 
 /// Overloaded '+' operator adds an af::array to af::array this->m
 State State::operator+(const af::array& a) const{

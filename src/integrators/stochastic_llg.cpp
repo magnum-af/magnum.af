@@ -1,4 +1,7 @@
 #include "stochastic_llg.hpp"
+#include "../llg_terms/LLGTerm.hpp"
+#include "../func.hpp"
+#include <memory>
 
 //Energy calculation
 double Stochastic_LLG::E(const State& state){

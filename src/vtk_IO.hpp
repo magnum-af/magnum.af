@@ -1,27 +1,6 @@
 #pragma once
-
-#include <string>
-#include "arrayfire.h"
 #include "mesh.hpp"
-#include <assert.h>
-
-//af_to_vti
-#include <vtkSmartPointer.h>
-#include <vtkXMLImageDataWriter.h>
-#include <vtkImageData.h>
-//af_to_vtk
-#include <vtkCellData.h>
-#include <vtkDoubleArray.h>
-#include <vtkExtractRectilinearGrid.h>
-#include <vtkPointData.h>
-//vti_to_af
-#include <vtkXMLImageDataReader.h>
-#include <vtkDataSet.h>
-#include <vtkSmartPointer.h>
-#include <vtkDoubleArray.h>
-
-#include <vtkXMLRectilinearGridWriter.h>
-#include <vtkXMLRectilinearGridReader.h>
+#include "arrayfire.h"
 
 void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname);//3D Image data
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, const std::string outputname);

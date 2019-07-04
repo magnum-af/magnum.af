@@ -1,4 +1,8 @@
 #include "controller.hpp"
+#include "../misc.hpp"
+#include <algorithm>
+#include <stdio.h>
+
 
 bool Controller::success(const double err, double& h){
     double scale;

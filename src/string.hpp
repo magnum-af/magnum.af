@@ -1,7 +1,9 @@
 #pragma once
-#include <vector>
-#include "arrayfire.h"
+#include "state.hpp"
 #include "integrators/new_llg.hpp"
+#include <vector>
+#include <algorithm>
+
 class String {
   public:
     String(double alpha, State state, std::vector<State> inputimages, int n_interp, double dt, LlgTerms Fieldterms_in);

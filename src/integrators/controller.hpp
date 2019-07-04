@@ -1,9 +1,5 @@
 #pragma once
 #include "arrayfire.h"
-#include "../misc.hpp"
-#include <algorithm>
-#include <stdio.h>
-
 
 class Controller{
     public:

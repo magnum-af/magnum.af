@@ -1,4 +1,7 @@
 #include "pgfplot.hpp"
+#include <iostream>
+#include <fstream>
+#include "func.hpp"
 
 void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice){
     std::cout<<"pgfplot_mz writing file "<< outputfile << std::endl;

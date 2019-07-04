@@ -1,4 +1,7 @@
 #include "new_llg.hpp"
+#include "../state.hpp"
+#include "../func.hpp"
+#include <memory>
 
 LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
 };

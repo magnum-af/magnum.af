@@ -1,10 +1,7 @@
 #pragma once
-#include "arrayfire.h"
-#include "../state.hpp"
-#include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 #include "adaptive_runge_kutta.hpp"
-#include <memory>//shared_ptr
+#include "arrayfire.h"
 
 ///
 /// The LLGIntegrator class performs time integration of the Landau–Lifshitz–Gilbert (LLG) equation on the magnetization passed by an State object.
@@ -15,7 +12,6 @@
 ///             - \alpha \gamma \boldsymbol{m} \times (\boldsymbol{m} \times \boldsymbol{H}_{\text{eff}})
 /// \f]
 ///
-
 
 class LLGIntegrator : public AdaptiveRungeKutta{
     public:

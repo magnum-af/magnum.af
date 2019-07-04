@@ -1,10 +1,8 @@
 #pragma once
-#include "arrayfire.h"
-#include <memory>
-#include <chrono>
 #include "../llg_terms/LLGTerm.hpp"
 #include "../state.hpp"
-#include "../func.hpp"
+#include "arrayfire.h"
+#include <memory>
 
 class Stochastic_Integrator {
     public:

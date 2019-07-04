@@ -1,9 +1,6 @@
 #pragma once
-#include <iostream>
-#include <fstream>
-#include "arrayfire.h"
 #include "mesh.hpp"
-#include "func.hpp"
+#include "arrayfire.h"
 
 void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice);
 void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice, int nmod);

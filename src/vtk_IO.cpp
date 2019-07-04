@@ -1,4 +1,22 @@
 #include "vtk_IO.hpp"
+//af_to_vti
+#include <vtkSmartPointer.h>
+#include <vtkXMLImageDataWriter.h>
+#include <vtkImageData.h>
+//af_to_vtk
+#include <vtkCellData.h>
+#include <vtkDoubleArray.h>
+#include <vtkExtractRectilinearGrid.h>
+#include <vtkPointData.h>
+//vti_to_af
+#include <vtkXMLImageDataReader.h>
+#include <vtkDataSet.h>
+#include <vtkSmartPointer.h>
+#include <vtkDoubleArray.h>
+#include <vtkXMLRectilinearGridWriter.h>
+#include <vtkXMLRectilinearGridReader.h>
+#include <assert.h>
+#include <string>
 
 
 //3D vtkImageData vtkCellData writer

@@ -1,6 +1,9 @@
 #include "string.hpp"
 #include "func.hpp"
 #include "vtk_IO.hpp"
+#include "arrayfire.h"
+#include <fstream>
+#include <iomanip>
 
 using namespace af;
 

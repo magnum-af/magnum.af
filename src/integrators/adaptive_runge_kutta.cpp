@@ -1,4 +1,6 @@
 #include "adaptive_runge_kutta.hpp"
+#include "../misc.hpp"
+#include "../func.hpp"
 
 AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_, const bool verbose):
   scheme_ (scheme_), controller_(controller_), renormalize_(renormalize_)

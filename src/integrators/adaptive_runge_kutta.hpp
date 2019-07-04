@@ -1,8 +1,8 @@
 #pragma once
-#include "arrayfire.h"
-#include "controller.hpp"
-#include "../func.hpp"
 #include "../state.hpp"
+#include "controller.hpp"
+#include "arrayfire.h"
+#include <string>
 #include <stdio.h>
 
 class AdaptiveRungeKutta {
