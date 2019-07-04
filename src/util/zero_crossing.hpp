@@ -2,9 +2,7 @@
 #define ZERO_CROSSING_H
 
 #include <array>
-#include <iostream>
 #include <functional>
-#include <math.h>
 
 /// Class calculating the zero crossing of a monotonic function f(x) up to a given precision.
 
