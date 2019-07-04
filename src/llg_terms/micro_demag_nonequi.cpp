@@ -1,4 +1,9 @@
 #include "micro_demag_nonequi.hpp"
+#include "../misc.hpp"
+#include "../func.hpp"
+#include <iostream>
+#include <vector>
+#include <thread>
 
 //Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
 double NonEquiDemagField::E(const State& state){

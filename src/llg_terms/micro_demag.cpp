@@ -1,4 +1,8 @@
 #include "micro_demag.hpp"
+#include "../misc.hpp"
+#include "../func.hpp"
+#include <thread>
+
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx

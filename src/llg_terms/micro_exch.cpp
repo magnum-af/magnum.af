@@ -1,4 +1,5 @@
 #include "micro_exch.hpp"
+#include "../func.hpp"
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx

@@ -1,10 +1,8 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
-#include "../misc.hpp"
-#include "../func.hpp"
-#include <thread>
+#include "arrayfire.h"
+
 
 class DemagField : public LLGTerm {
   public:

@@ -1,7 +1,8 @@
+#include "atomistic_anisotropy.hpp"
+#include "../func.hpp"
 //Ref Master Thesis Stifano
 //eq (19)
 //Han=N*K/2 - K/2 Sum_i(m_i*ez)^2
-#include "atomistic_anisotropy.hpp"
 using namespace af;
 
 

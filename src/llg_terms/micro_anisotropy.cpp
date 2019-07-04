@@ -2,6 +2,7 @@
 //Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m)
 //With higher order (not implemented): Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m) ( + 4 Ku2 /(mu0 Ms) eu ( eu . m)^3
 #include "micro_anisotropy.hpp"
+#include "../func.hpp"
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx

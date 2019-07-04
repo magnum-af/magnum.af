@@ -1,4 +1,5 @@
 #include "atomistic_dmi.hpp"
+#include "../func.hpp"
 using namespace af;
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx

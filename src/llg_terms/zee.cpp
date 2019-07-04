@@ -1,4 +1,5 @@
 #include "zee.hpp"
+#include "../func.hpp"
 
 ExternalField::ExternalField(af::array zee_in) : zee_field(zee_in)
 {

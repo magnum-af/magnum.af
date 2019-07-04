@@ -1,4 +1,5 @@
 #include "atomistic_demag.hpp"
+#include "../func.hpp"
 using namespace af;
 
 //Energy calculation

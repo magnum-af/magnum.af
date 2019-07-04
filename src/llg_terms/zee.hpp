@@ -1,9 +1,8 @@
 #pragma once
-#include <functional>
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
-#include "../func.hpp"
+#include "arrayfire.h"
+#include <functional>
 
 class ExternalField : public LLGTerm {
   public:

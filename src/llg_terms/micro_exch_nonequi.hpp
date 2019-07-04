@@ -1,9 +1,8 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
 #include "../nonequispaced_mesh.hpp"
-#include "../func.hpp"
+#include "arrayfire.h"
 
 /// Nonequispaced Exchange Field.
 

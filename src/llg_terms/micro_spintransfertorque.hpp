@@ -1,9 +1,10 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
-#include "../constants.hpp"
 #include "../state.hpp"
 #include "../func.hpp"
+#include "arrayfire.h"
+
+
 class SpinTransferTorqueField : public LLGTerm {
   public:
     af::array h(const State& state); ///< Effective field term contribution

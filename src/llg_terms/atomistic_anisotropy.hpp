@@ -1,8 +1,8 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
-#include "../func.hpp"
+#include "arrayfire.h"
+
 class AtomisticUniaxialAnisotropyField : public LLGTerm {
   public:
     //Field contribution

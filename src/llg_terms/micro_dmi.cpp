@@ -1,4 +1,5 @@
 #include "micro_dmi.hpp"
+#include "../func.hpp"
 
 
 void showdims(const af::array& a){

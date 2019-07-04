@@ -1,8 +1,9 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
-#include "../func.hpp"
+#include "arrayfire.h"
+
+
 class UniaxialAnisotropyField : public LLGTerm {
   public:
     UniaxialAnisotropyField (double Ku1, std::array<double, 3> Ku1_axis = {0, 0, 1});

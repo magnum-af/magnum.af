@@ -1,12 +1,7 @@
 #pragma once
-#include "arrayfire.h"
 #include "LLGTerm.hpp"
 #include "../state.hpp"
-#include "../misc.hpp"
-#include "../func.hpp"
-#include <iostream>
-#include <vector>
-#include <thread>
+#include "arrayfire.h"
 
 class NonEquiDemagField : public LLGTerm {
   public:
