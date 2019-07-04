@@ -26,6 +26,7 @@ namespace magnumaf{
 //Optimization should avoid generation of two vtkImageData objects
 void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname){
 
+    try{
     double* host_a = field.host<double>();
 
     vtkSmartPointer<vtkImageData> imageDataPointCentered = vtkSmartPointer<vtkImageData>::New();
@@ -71,6 +72,10 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
          writer->SetInputData(imageDataCellCentered);
     #endif
     writer->Write();
+    }
+    catch(const std::exception& e){
+        printf("\33[1;31mWarning:\33[0m exception in vti_writer_micro:\n%s\n", e.what());
+    }
 }
 
 void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname){
