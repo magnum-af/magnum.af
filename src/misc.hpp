@@ -1,16 +1,6 @@
-#ifndef MISC_H
-#define MISC_H
-#include <iostream>
-#include <sys/stat.h>
-#include <unistd.h>
+#pragma once
 #include <string>
-#include <cstring>
-#include <pwd.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
+#include <sys/stat.h>
 
 unsigned long long GetDirSize(std::string filepath);
 ///> Returns true if file "name" exists, false otherwise
@@ -36,5 +26,3 @@ inline std::string green(const std::string str){return "\033[;32m"+str+"\033[0m"
 
 inline const char* Info(void){ return "\33[0;32mInfo:\33[0m";}
 inline const char* Warning(void){ return "\33[1;31mWarning:\33[0m";}
-
-#endif

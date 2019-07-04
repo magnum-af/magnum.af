@@ -1,13 +1,7 @@
 #ifndef LBFGS_MINIMIZER_H
 #define LBFGS_MINIMIZER_H
-#include <memory>
-#include <list>
-#include <algorithm>
-#include "arrayfire.h"
-#include "../state.hpp"
-#include "../misc.hpp"
-#include "../func.hpp"
 #include "../llg_terms/LLGTerm.hpp"
+#include <fstream>
 
 //For second Method, use interface class:
 //https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members

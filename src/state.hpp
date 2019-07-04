@@ -1,12 +1,9 @@
-#ifndef STATE_H
-#define STATE_H
-#include "arrayfire.h"
+#pragma once
 #include "mesh.hpp"
+#include "material.hpp"//remove
 #include "nonequispaced_mesh.hpp"
-#include "material.hpp"
-#include "vtk_IO.hpp"
-#include "func.hpp"
-#include "misc.hpp"
+#include "arrayfire.h"
+#include <iostream>
 
 
 class State{
@@ -75,5 +72,3 @@ class State{
     //void check_discretization();
     //void check_nonequispaced_discretization();
 };
-
-#endif

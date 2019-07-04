@@ -1,5 +1,4 @@
-#ifndef MESH_H
-#define MESH_H
+#pragma once
 #include <iostream>
 #include "arrayfire.h"
 struct Mesh{
@@ -18,4 +17,3 @@ struct Mesh{
     af::array init_vortex(const bool positive_direction = true);
     af::array init_sp4();
 };
-#endif

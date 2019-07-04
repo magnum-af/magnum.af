@@ -1,4 +1,5 @@
 #include "micro_exch_sparse.hpp"
+#include "../misc.hpp"
 
 SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
 {

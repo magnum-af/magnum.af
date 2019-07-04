@@ -1,6 +1,4 @@
-#ifndef PARAM_H
-#define PARAM_H
-#include<math.h>
+#pragma once
 ///Struct holding all simulation parameters.
 struct Material{
     // Micromagneitc
@@ -26,6 +24,5 @@ struct Material{
     // For wrapping only
     Material(double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
 };
-#endif
 
 //Note Js=mu0*Ms

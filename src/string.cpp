@@ -1,5 +1,6 @@
 #include "string.hpp"
 #include "func.hpp"
+#include "vtk_IO.hpp"
 
 using namespace af;
 

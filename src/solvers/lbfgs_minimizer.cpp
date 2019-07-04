@@ -1,4 +1,13 @@
 #include "lbfgs_minimizer.hpp"
+#include "../state.hpp"
+#include "../misc.hpp"
+#include "../func.hpp"
+#include "../llg_terms/LLGTerm.hpp"
+#include "arrayfire.h"
+#include <iomanip>
+#include <memory>
+#include <list>
+#include <algorithm>
 
 LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {

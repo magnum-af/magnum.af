@@ -1,4 +1,5 @@
 #include "micro_exch_nonequi.hpp"
+#include "../misc.hpp"
 
 NonequiExchangeField::NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
 {

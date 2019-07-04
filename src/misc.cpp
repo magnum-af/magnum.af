@@ -1,4 +1,13 @@
 #include "misc.hpp"
+#include <iostream>
+#include <unistd.h>
+#include <cstring>
+#include <pwd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 unsigned long long GetDirSize(std::string filepath)
 // Retuns size of directory in bytes

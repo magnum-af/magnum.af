@@ -1,6 +1,4 @@
-#ifndef ZERO_CROSSING_H
-#define ZERO_CROSSING_H
-
+#pragma once
 #include <array>
 #include <functional>
 
@@ -36,5 +34,3 @@ class ZeroCrossing{
 
         std::array<double, 4> run_loop();
 };
-
-#endif

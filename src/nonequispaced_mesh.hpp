@@ -1,7 +1,6 @@
-#ifndef NONEQUIDISTANT_MESH_H
-#define NONEQUIDISTANT_MESH_H
-#include <iostream>
+#pragma once
 #include "arrayfire.h"
+#include <iostream>
 struct NonequispacedMesh{
     NonequispacedMesh(){};
     NonequispacedMesh (int nx, int ny, double dx, double dy, std::vector<double> z_spacing);
@@ -15,4 +14,3 @@ struct NonequispacedMesh{
 
     void print(std::ostream& stream);
 };
-#endif
