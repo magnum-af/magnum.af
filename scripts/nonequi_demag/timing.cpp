@@ -19,85 +19,100 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25;
-    const int nz=(argc>4? std::stoi(argv[4]):10);
     const int loops(argc>3? std::stoi(argv[3]):100);
+    const int nnz=(argc>4? std::stoi(argv[4]):10);
 
     //Generating Objects
-    af::array m = Mesh(nx, ny, nz, x/nx, y/ny, z/nz).init_sp4();
+
+    std::ofstream stream;
+    stream.precision(12);
+    stream.open( filepath + "timing.dat" );
+    stream << "# info: timings for heff evaluations non-equidistant and equidistant evaluations" << std::endl;
+    stream << "#" << loops << " evaluations of heff" << std::endl;
+    stream << "# nz     mean_eq          stdev_eq        mean_ne         stdev_ne" << std::endl;
 
     //equidistant mesh
-    {
-        Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
-        State state(mesh, 8e5, m);
-        DemagField demag(mesh, true, true, 0);
-        std::cout << "demag setup [af-s]: " << af::timer::stop(timer) << std::endl;
-        //af::print("demag", demag.h(state));
+    for (int nz = 1; nz < nnz; nz++){
+        std::cout << "nz = " << nz << std::endl;
+        stream << nz << "\t";
+        af::array m = Mesh(nx, ny, nz, x/nx, y/ny, z/nz).init_sp4();
+        {
+            Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
+            State state(mesh, 8e5, m);
+            DemagField demag(mesh, true, true, 0);
+            //af::print("demag", demag.h(state));
 
-        //const int loops = 100;
-        //std::array<double, loops> times = {0};
-        //double times[loops] = {0};
-        timer = af::timer::start();
-        demag.h(state);//init run
-        if(sync) af::sync();
-        std::cout << "demag init [af-s]: " << af::timer::stop(timer) << std::endl;
-
-        std::vector<double> times;
-        timer = af::timer::start();
-        for(int i = 0; i<loops; i++){
-            af::timer timer_loop = af::timer::start();
-            af::array h = demag.h(state);
+            //const int loops = 100;
+            //std::array<double, loops> times = {0};
+            //double times[loops] = {0};
+            timer = af::timer::start();
+            demag.h(state);//init run
             if(sync) af::sync();
-            times.push_back(af::timer::stop(timer_loop));
-            //times[i] = af::timer::stop(timer_loop);
-            //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
-        }
-        if(sync) af::sync();
-        std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
-        std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
-        std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
+            std::cout << "h(state) JIT init [af-s]: " << af::timer::stop(timer) << std::endl;
 
-
-        auto m_stdev = mean_stdev_w_minus(times);
-        std::cout << "mean = " << m_stdev.first << std::endl;
-        std::cout << "stdev = " << m_stdev.second << std::endl;
-    }
-
-    //nonequidistant mesh
-    {
-        std::vector<double> z_spacing;
-        for (int i = 0; i < nz; ++i){
-            z_spacing.push_back(z/nz);
-        }
-        NonequispacedMesh mesh_ne(nx, ny, x/nx, y/ny, z_spacing);
-        State state_ne(mesh_ne, 8e5, m, false, true);
-        NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 0);
-        std::vector<double> times;
-        const bool sync = true;
-
-        timer = af::timer::start();
-        demag_ne.h(state_ne);//init run
-        if(sync) af::sync();
-        std::cout << "demag init [af-s]: " << af::timer::stop(timer) << std::endl;
-
-        timer = af::timer::start();
-        for(int i = 0; i<loops; i++){
-            af::timer timer_loop = af::timer::start();
-            af::array h = demag_ne.h(state_ne);
+            std::vector<double> times;
+            timer = af::timer::start();
+            for(int i = 0; i<loops; i++){
+                af::timer timer_loop = af::timer::start();
+                af::array h = demag.h(state);
+                if(sync) af::eval(h);
+                if(sync) af::sync();
+                times.push_back(af::timer::stop(timer_loop));
+                //times[i] = af::timer::stop(timer_loop);
+                //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
+            }
             if(sync) af::sync();
-            times.push_back(af::timer::stop(timer_loop));
-            //times[i] = af::timer::stop(timer_loop);
-            //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
+            std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
+            std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
+            std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
+
+
+            auto m_stdev = mean_stdev_w_minus(times);
+            std::cout << "mean = " << m_stdev.first << std::endl;
+            std::cout << "stdev = " << m_stdev.second << std::endl;
+            stream << m_stdev.first << "\t" << m_stdev.second << "\t";
         }
-        if(sync) af::sync();
-        std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
-        std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
-        std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
+
+        //nonequidistant mesh
+        {
+            std::vector<double> z_spacing;
+            for (int i = 0; i < nz; ++i){
+                z_spacing.push_back(z/nz);
+            }
+            NonequispacedMesh mesh_ne(nx, ny, x/nx, y/ny, z_spacing);
+            State state_ne(mesh_ne, 8e5, m, false, true);
+            NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, true, false, 0);
+            std::vector<double> times;
+            const bool sync = true;
+
+            timer = af::timer::start();
+            demag_ne.h(state_ne);//init run
+            if(sync) af::sync();
+            std::cout << "h(state) JIT init [af-s]: " << af::timer::stop(timer) << std::endl;
+
+            timer = af::timer::start();
+            for(int i = 0; i<loops; i++){
+                af::timer timer_loop = af::timer::start();
+                af::array h = demag_ne.h(state_ne);
+                if(sync) af::eval(h);
+                if(sync) af::sync();
+                times.push_back(af::timer::stop(timer_loop));
+                //times[i] = af::timer::stop(timer_loop);
+                //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
+            }
+            if(sync) af::sync();
+            std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
+            std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
+            std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
 
 
-        auto m_stdev = mean_stdev_w_minus(times);
-        std::cout << "mean = " << m_stdev.first << std::endl;
-        std::cout << "stdev = " << m_stdev.second << std::endl;
-    }
+            auto m_stdev = mean_stdev_w_minus(times);
+            std::cout << "mean = " << m_stdev.first << std::endl;
+            std::cout << "stdev = " << m_stdev.second << std::endl;
+            stream << m_stdev.first << "\t" << m_stdev.second << std::endl;
+        }
+    }//for
+    stream.close();
 
     return 0;
 }
