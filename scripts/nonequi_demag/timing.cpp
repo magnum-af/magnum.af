@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
 
 
-    auto m_stdev = mean_stdev(times);
+    auto m_stdev = mean_stdev_w_minus(times);
     std::cout << "mean = " << m_stdev.first << std::endl;
     std::cout << "stdev = " << m_stdev.second << std::endl;
 
