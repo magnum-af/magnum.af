@@ -27,6 +27,7 @@
 #include "pgfplot.hpp"
 #include "misc.hpp"
 #include "util/zero_crossing.hpp"
+#include "util/util.hpp"
 
 namespace magnumaf{
 
