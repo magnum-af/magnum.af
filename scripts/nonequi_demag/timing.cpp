@@ -33,22 +33,18 @@ int main(int argc, char** argv)
 
     //equidistant mesh
     for (int nz = 1; nz < nnz; nz++){
-        std::cout << "nz = " << nz << std::endl;
+        std::cout << "nz = " << nz << ", ";
         stream << nz << "\t";
         af::array m = Mesh(nx, ny, nz, x/nx, y/ny, z/nz).init_sp4();
         {
             Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
             State state(mesh, 8e5, m);
-            DemagField demag(mesh, true, true, 0);
-            //af::print("demag", demag.h(state));
+            DemagField demag(mesh, false, true, 0);
 
-            //const int loops = 100;
-            //std::array<double, loops> times = {0};
-            //double times[loops] = {0};
             timer = af::timer::start();
             demag.h(state);//init run
             if(sync) af::sync();
-            std::cout << "h(state) JIT init [af-s]: " << af::timer::stop(timer) << std::endl;
+            std::cout << "eqJIT [s] = " << af::timer::stop(timer) << ", ";
 
             std::vector<double> times;
             timer = af::timer::start();
@@ -58,18 +54,16 @@ int main(int argc, char** argv)
                 if(sync) af::eval(h);
                 if(sync) af::sync();
                 times.push_back(af::timer::stop(timer_loop));
-                //times[i] = af::timer::stop(timer_loop);
-                //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
             }
             if(sync) af::sync();
-            std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
-            std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
-            std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
+            std::cout << loops << " loops in [s]: " << af::timer::stop(timer);
+            std::cout << ", max [s] " << *std::max_element(times.begin(), times.end());
+            std::cout << ", min [s] " << *std::min_element(times.begin(), times.end());
 
 
             auto m_stdev = mean_stdev_w_minus(times);
-            std::cout << "mean = " << m_stdev.first << std::endl;
-            std::cout << "stdev = " << m_stdev.second << std::endl;
+            std::cout << ", mean = " << m_stdev.first;
+            std::cout << ", stdev = " << m_stdev.second;
             stream << m_stdev.first << "\t" << m_stdev.second << "\t";
         }
 
@@ -81,14 +75,14 @@ int main(int argc, char** argv)
             }
             NonequispacedMesh mesh_ne(nx, ny, x/nx, y/ny, z_spacing);
             State state_ne(mesh_ne, 8e5, m, false, true);
-            NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, true, false, 0);
+            NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 0);
             std::vector<double> times;
             const bool sync = true;
 
             timer = af::timer::start();
             demag_ne.h(state_ne);//init run
             if(sync) af::sync();
-            std::cout << "h(state) JIT init [af-s]: " << af::timer::stop(timer) << std::endl;
+            std::cout << ", neJIT [s] = " << af::timer::stop(timer) << ", ";
 
             timer = af::timer::start();
             for(int i = 0; i<loops; i++){
@@ -97,18 +91,16 @@ int main(int argc, char** argv)
                 if(sync) af::eval(h);
                 if(sync) af::sync();
                 times.push_back(af::timer::stop(timer_loop));
-                //times[i] = af::timer::stop(timer_loop);
-                //std::cout << i <<", h timing [af-s]: " << times[i] << std::endl;
             }
             if(sync) af::sync();
-            std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer) << std::endl;
-            std::cout << "max [s] " << *std::max_element(times.begin(), times.end()) << std::endl;
-            std::cout << "min [s] " << *std::min_element(times.begin(), times.end()) << std::endl;
+            std::cout << loops << " loops in [af-s]: " << af::timer::stop(timer);
+            std::cout << ", max [s] " << *std::max_element(times.begin(), times.end());
+            std::cout << ", min [s] " << *std::min_element(times.begin(), times.end());
 
 
             auto m_stdev = mean_stdev_w_minus(times);
-            std::cout << "mean = " << m_stdev.first << std::endl;
-            std::cout << "stdev = " << m_stdev.second << std::endl;
+            std::cout << ", mean = " << m_stdev.first;
+            std::cout << ", stdev = " << m_stdev.second << std::endl;
             stream << m_stdev.first << "\t" << m_stdev.second << std::endl;
         }
     }//for
