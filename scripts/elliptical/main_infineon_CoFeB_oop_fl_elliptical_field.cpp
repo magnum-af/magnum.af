@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <fstream>
 
+using namespace magnumaf;
+
+
 using namespace af;
 
 // argv[1]: filepath,  argv[2]: Device, argv[3]: A in mT, argv[4]: quotient B/A in percent, argv[5] t_full_rotation in seconds

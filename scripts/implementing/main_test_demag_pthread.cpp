@@ -2,6 +2,9 @@
 #include "func.hpp"
 #include "llg_terms/micro_demag_pthread.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
     for (int nz = 1; nz < 11; nz++){

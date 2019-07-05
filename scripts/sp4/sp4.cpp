@@ -1,11 +1,14 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
     // Checking input variables and setting GPU Device
     af::timer total_time = af::timer::start();
-    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
+    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
     std::string filepath(argc>1? argv[1]: "output_magnum.af/");
     af::setDevice(argc>2? std::stoi(argv[2]):0);
     af::info();

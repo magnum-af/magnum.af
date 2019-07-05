@@ -1,5 +1,8 @@
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 std::string filepath;
 std::ofstream stream;
 

@@ -1,6 +1,9 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
     std::string filepath(argc > 1 ? argv[1]: "../Data/Testing/");

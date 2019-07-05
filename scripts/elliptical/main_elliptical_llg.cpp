@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <fstream>
 
+using namespace magnumaf;
+
+
 af::array zee_func(State state){
     double field_Tesla = 0;
     double rate = 0.34e6 ; //[T/s]

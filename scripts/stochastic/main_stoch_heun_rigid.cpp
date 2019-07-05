@@ -5,6 +5,9 @@
 #include <complex>
 #include "arrayfire.h"
 #include "magnum_af.hpp"
+
+using namespace magnumaf;
+
 using namespace af;
 //TODO//compilererror//using namespace std::complex_literals;
 using Faddeeva::erfi;
@@ -28,7 +31,7 @@ void calcm(State state, std::ostream& myfile){
 int main(int argc, char** argv)
 {
     std::cout<<"argc"<<argc<<std::endl;
-    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << "\n";}
+    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << "\n";}
     std::string filepath(argc>1? argv[1]: "../Data/rigid");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;

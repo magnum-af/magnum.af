@@ -2,6 +2,9 @@
 #include <complex>
 #include "arrayfire.h"
 #include "magnum_af.hpp"
+
+using namespace magnumaf;
+
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
@@ -12,7 +15,7 @@ void calcm(State state, std::ostream& myfile){
 int main(int argc, char** argv)
 {
     std::cout<<"argc"<<argc<<std::endl;
-    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << "\n";}
+    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << "\n";}
     std::string filepath(argc>1? argv[1]: "../Data/Testing");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;

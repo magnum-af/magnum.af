@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <fstream>
 
+using namespace magnumaf;
+
+
 double rate = 0.20e6 ; //[T/s]
 double hzee_max = 0.20; //[T]
 

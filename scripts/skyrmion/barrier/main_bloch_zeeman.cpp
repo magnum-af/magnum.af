@@ -1,6 +1,9 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 using namespace af;
 
 int main(int argc, char** argv)

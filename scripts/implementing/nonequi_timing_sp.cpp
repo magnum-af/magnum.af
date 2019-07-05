@@ -2,9 +2,12 @@
 #include "magnum_af.hpp"
 #include "llg_terms/micro_demag_nonequi.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
-    for (int i=0; i<argc; i++){cout << "Parameter " << i << " was " << argv[i] << std::endl;}
+    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
     std::string filepath(argc>1? argv[1]: "output_magnum.af/");
     setDevice(argc>2? std::stoi(argv[2]):0);
     info();

@@ -1,6 +1,9 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
     std::cout<<"argc"<<argc<<std::endl;

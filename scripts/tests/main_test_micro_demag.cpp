@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <string>
 #include <memory>
+
+using namespace magnumaf;
+
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calcm(State state, std::ostream& myfile);
 

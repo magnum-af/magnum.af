@@ -16,6 +16,9 @@
 #include "vtk_IO.hpp"
 #include "string.hpp"
 #include "stochastic_llg.hpp"
+
+using namespace magnumaf;
+
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 //void calcm(State state, std::ostream& myfile);
 void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz);

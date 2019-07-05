@@ -1,9 +1,11 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
-    using namespace magnumaf;
     using namespace af;
     std::cout<<"argc"<<argc<<std::endl;
     for (int i=0; i<argc; i++) std::cout << "Parameter " << i << " was " << argv[i] << "\n";

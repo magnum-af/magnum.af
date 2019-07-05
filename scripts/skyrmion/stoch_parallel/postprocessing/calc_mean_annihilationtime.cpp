@@ -8,6 +8,9 @@
 #include <list>
 #include <sstream>
 #include <vector>
+
+using namespace magnumaf;
+
 using namespace std;
 
 int main(int argc, char** argv){

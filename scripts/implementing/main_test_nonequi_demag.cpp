@@ -2,6 +2,9 @@
 #include "llg_terms/micro_demag.hpp"
 #include "llg_terms/micro_demag_nonequi.hpp"
 
+using namespace magnumaf;
+
+
 int main(int argc, char** argv)
 {
     const int run_test = 3; // specify test no., 0 is all

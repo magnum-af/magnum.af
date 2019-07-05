@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <iostream>
 
+using namespace magnumaf;
+
+
 using namespace af;
 
 //Energy calculation

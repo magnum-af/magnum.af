@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "cpp_test.h"
 
+using namespace magnumaf;
+
+
 Test::Test() { }
 
 Test::~Test()
