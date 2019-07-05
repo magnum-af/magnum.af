@@ -2,6 +2,7 @@
 #include <numeric>
 #include <utility>
 #include <algorithm>
+#include <cmath>
 
 namespace magnumaf{
 
@@ -15,7 +16,7 @@ std::pair<double, double> mean_stdev(T vec){
     std::for_each (std::begin(vec), std::end(vec), [&](const double d) {
         accum += (d - m) * (d - m);
     });
-    double stdev = sqrt(accum / (vec.size()-1));
+    double stdev = std::sqrt(accum / (vec.size()-1));
     return {m, stdev};
 }
 
