@@ -40,11 +40,10 @@ print("relaxed in", time.time() - timer, "[s]")
 
 # Preparing switch by resetting alpha and adding Zeeman field
 llg.alpha=0.02
-zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
-zeeswitch[0, 0, 0, 0] = -24.6e-3/Constants.mu0
-zeeswitch[0, 0, 0, 1] = +4.3e-3/Constants.mu0
-zeeswitch[0, 0, 0, 2] = 0.0
-zeeswitch = af.tile(zeeswitch, nx, ny, nz)
+zeeswitch = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+zeeswitch[:, :, :, 0] = -24.6e-3/Constants.mu0
+zeeswitch[:, :, :, 1] = +4.3e-3/Constants.mu0
+zeeswitch[:, :, :, 2] = 0.0
 zee = ExternalField(zeeswitch)
 llg.add_terms(zee)
 
