@@ -39,6 +39,7 @@ from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
+from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 #TODO#from magnum_af_decl cimport DmiField as cDMI
 
@@ -466,6 +467,10 @@ cdef class State:
         def __set__(self, Mesh mesh):
             self._thisptr.mesh = deref(mesh._thisptr)
 
+    property nonequimesh:
+        def __set__(self, NonequispacedMesh ne_mesh):
+            self._thisptr.nonequimesh = deref(ne_mesh._thisptr)
+
     property material:
         def __get__(self):
             material = Material()
@@ -704,6 +709,24 @@ cdef class SparseExchangeField(HeffTerm):
             self._thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
             self._thisptr = new cSparseExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
+cdef class NonequiExchangeField(HeffTerm):
+    cdef cNonequiExchangeField* _thisptr
+    def __cinit__(self, A, NonequispacedMesh mesh, verbose = True):
+        if hasattr(A, 'arr'):
+            self._thisptr = new cNonequiExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
+        else:
+            self._thisptr = new cNonequiExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
         del self._thisptr

@@ -25,6 +25,13 @@ cdef extern from "../../src/llg_terms/micro_exch_sparse.hpp" namespace "magnumaf
         double E(const State& state);
         double get_cpu_time();
 
+cdef extern from "../../src/llg_terms/micro_exch_nonequi.hpp" namespace "magnumaf":
+    cdef cppclass NonequiExchangeField:
+        NonequiExchangeField (long int A_exchange_field_ptr, NonequispacedMesh mesh, bool verbose);
+        NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose);
+        double E(const State& state);
+        double get_cpu_time();
+
 cdef extern from "../../src/mesh.hpp" namespace "magnumaf":
     cdef cppclass Mesh:
         int n0,n1,n2;
@@ -58,6 +65,7 @@ cdef extern from "../../src/state.hpp" namespace "magnumaf":
         double t;
         unsigned long long steps;
         Mesh mesh;
+        NonequispacedMesh nonequimesh;
         Material material;
         double Ms;
 
