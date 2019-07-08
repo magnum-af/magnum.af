@@ -1,0 +1,10 @@
+set terminal pdf enhanced;
+set output "domainwall_pinning_mumax3_vs_magnumaf.pdf";
+set xlabel "t [ns]";
+set ylabel "<m_x>";
+set title "domainwall pinning";
+p "table.txt" u ($1*1e9):2 w l t "mumax3", "m.dat" u ($1*1e9):2 w l t "magnum.af"
+
+set terminal pop
+set output
+replot

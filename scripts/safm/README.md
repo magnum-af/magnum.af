@@ -1,0 +1,1 @@
+# Synthetic Antiferromagnet (SAFM)
