@@ -177,7 +177,7 @@ long int State::get_Ms_field(){
     return (long int) a->get();
 }
 
-void State::_vti_writer_micro(std::string outputname){
+void State::write_vti(std::string outputname){
     vti_writer_micro(m, mesh, outputname);
 }
 void State::_vti_writer_micro_boolean(std::string outputname){

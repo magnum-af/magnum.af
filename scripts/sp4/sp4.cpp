@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
     // Initial magnetic field
     State state(mesh, 8e5, mesh.init_sp4());
-    vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
+    state.write_vti(filepath + "minit");
 
     LlgTerms llgterm;
     llgterm.push_back( LlgTerm (new DemagField(mesh, true, true, 0)));
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
     std::ofstream stream;
     stream.precision(12);
-    stream.open ((filepath + "m.dat").c_str());
+    stream.open(filepath + "m.dat");
 
     // Relax
     af::timer t = af::timer::start();
@@ -40,15 +40,14 @@ int main(int argc, char** argv)
         Llg.step(state);
         state.calc_mean_m(stream);
     }
-    std::cout<<"timerelax [af-s]: "<< af::timer::stop(t) <<std::endl;
-    vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
+    std::cout<<"relax     [s]: "<< af::timer::stop(t) <<std::endl;
+    state.write_vti(filepath + "relax");
 
     // Prepare switch
-    af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
-    zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
-    zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
-    zeeswitch(0, 0, 0, 2)=0.0;
-    zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+    af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
+    zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3/constants::mu0;
+    zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3/constants::mu0;
+    zeeswitch(af::span, af::span, af::span, 2) = 0.0;
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));
     Llg.alpha = 0.02;
 
@@ -58,9 +57,9 @@ int main(int argc, char** argv)
         Llg.step(state);
         state.calc_mean_m(stream);
     }
-    std::cout<<"time integrate 1ns [af-s]: "<< af::timer::stop(t) <<std::endl;
-    vti_writer_micro(state.m, mesh , (filepath + "2ns").c_str());
+    std::cout<<"integrate [s]: "<< af::timer::stop(t) <<std::endl;
+    state.write_vti(filepath + "2ns");
     stream.close();
-    std::cout<<"total [af-s]: "<< af::timer::stop(total_time) <<std::endl;
+    std::cout<<"total     [s]: "<< af::timer::stop(total_time) <<std::endl;
     return 0;
 }

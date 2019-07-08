@@ -4,4 +4,4 @@
 cd $( dirname "${BASH_SOURCE[0]}" )
 
 # running magnum.af
-../magnum.af -p plot_sp4.gpi sp4.cpp $PWD/output_sp4
+../magnum.af -p plot_sp4.gpi sp4.cpp $HOME/data_magnum.af/sp4/

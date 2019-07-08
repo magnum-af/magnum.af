@@ -54,7 +54,7 @@ cdef extern from "../../src/state.hpp" namespace "magnumaf":
         Material material;
         double Ms;
 
-        void _vti_writer_micro(string outputname);
+        void write_vti(string outputname);
         void _vti_writer_micro_boolean(string outputname);
         void _vti_writer_atom (string outputname);
         void _vti_reader(string inputname);
