@@ -30,6 +30,7 @@ from math import pi
 from numpy import zeros as np_zeros
 
 from magnumaf_decl cimport Mesh as cMesh
+from magnumaf_decl cimport NonequispacedMesh as cNonequispacedMesh
 from magnumaf_decl cimport Material as cParam
 from magnumaf_decl cimport State as cState
 from magnumaf_decl cimport Controller as cController
@@ -281,6 +282,82 @@ cdef class Mesh:
     def dz(self, value):
         self._thisptr.dz=value
 
+
+
+cdef class NonequispacedMesh:
+    """
+    Nonequispaced Mesh object.
+    """
+    def __init__(self, nx, ny, dx, dy, z_spacing):
+        pass
+
+    cdef cNonequispacedMesh* _thisptr
+    cdef object owner # None if this is our own # From [1]
+    #def __cinit__(self, int nx, int ny, double dx, double dy, vector[double] z_spacing):
+    def __cinit__(self, int nx, int ny, double dx, double dy, z_spacing):
+        cdef vector[double] z_spacing_cvec
+        for val in z_spacing:
+            z_spacing_cvec.push_back(val)
+        self._thisptr = new cNonequispacedMesh(nx, ny, dx, dy, z_spacing)
+        owner = None # see [1]
+    cdef set_ptr(self, cNonequispacedMesh* ptr, owner):
+        if self.owner is None:
+            del self._thisptr
+        self._thisptr = ptr
+        self.owner = owner
+    def __dealloc__(self):
+        if self.owner is None: # only free if we own it: see [1]
+            del self._thisptr
+            self._thisptr = NULL
+
+    @property
+    def nx(self):
+        return self._thisptr.nx
+    @nx.setter
+    def nx(self, value):
+        self._thisptr.nx=value
+
+    @property
+    def ny(self):
+        return self._thisptr.ny
+    @ny.setter
+    def ny(self, value):
+        self._thisptr.ny=value
+
+    @property
+    def nz(self):
+        return self._thisptr.nz
+    @nz.setter
+    def nz(self, value):
+        self._thisptr.nz=value
+
+    @property
+    def dx(self):
+        return self._thisptr.dx
+    @dx.setter
+    def dx(self, value):
+        self._thisptr.dx=value
+
+    @property
+    def dy(self):
+        return self._thisptr.dy
+    @dy.setter
+    def dy(self, value):
+        self._thisptr.dy=value
+
+    @property
+    def z_spacing(self):
+        values = []
+        for val in range(self._thisptr.nz):
+            values.append(self._thisptr.z_spacing[val])
+        return values
+    #only add if needed, otherwise write only:
+    #@z_spacing.setter
+    #def z_spacing(self, values):
+    #    cdef vector[double] cvec
+    #    for val in values:
+    #        cvec.push_back(val)
+    #    self._thisptr.z_spacing = cvec
 
 
 cdef class State:

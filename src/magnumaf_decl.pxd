@@ -32,6 +32,13 @@ cdef extern from "../../src/mesh.hpp" namespace "magnumaf":
         int n0_exp, n1_exp, n2_exp;
         Mesh (int, int, int, double, double, double)
 
+cdef extern from "../../src/nonequispaced_mesh.hpp" namespace "magnumaf":
+    cdef cppclass NonequispacedMesh:
+        int nx, ny, nz;
+        double dx, dy;
+        vector[double] z_spacing;
+        NonequispacedMesh (int, int, double, double, vector[double] z_spacing);
+
 cdef extern from "../../src/state.hpp" namespace "magnumaf":
     cdef cppclass State:
         State ()
