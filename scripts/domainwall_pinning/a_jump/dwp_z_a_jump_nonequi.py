@@ -46,8 +46,19 @@ m[:, :, :nz/2, 2] = af.constant( 1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 m[:, :, :nz/2, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 m[:, :, nz/2:, 2] = af.constant(-1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
 m[:, :, nz/2:, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m = Util.normalize(m)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
+z_spacing = []
+length=0
+for i in range(nz):
+    print("i=", i, z/nz)
+    length = length + z/nz
+    z_spacing.append(z/nz)
+ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
+print("length=", length)
+print(ne_mesh.nz)
+print(ne_mesh.z_spacing)
 
 # Setting A values as field
 A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
@@ -71,12 +82,13 @@ Ku1_field[:, :, :nz/2, :] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=
 Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
 
 state = State(mesh, Ms_field, m)
-state.normalize()
+state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    SparseExchangeField(A_field, mesh),
+    NonequiExchangeField(A_field, ne_mesh, verbose = True),
+    #SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
 Llg = LLGIntegrator(alpha=1.0, terms=fields)

@@ -79,7 +79,7 @@ Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=
 
 
 state = State(mesh = mesh, Ms = 1e5, m = m)
-state.nonequimesh = ne_mesh #TODO will be handley in more obj-ori way
+state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 print("test post")
 state.normalize()
 state.write_vti(sys.argv[1] + "minit")
