@@ -42,10 +42,10 @@ print ("H_analytic=", H_analytic, " [T]")
 
 # Creating objects
 m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m[:, :, :nz/2, 2] = af.constant( 1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:, :, :nz/2, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:, :, nz/2:, 2] = af.constant(-1.0, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
-m[:, :, nz/2:, 1] = af.constant( 0.3, nx, ny, int(nz/2), 1, dtype=af.Dtype.f64)
+m[:, :, :nz/2, 2] =  1.0
+m[:, :, :nz/2, 1] =  0.3
+m[:, :, nz/2:, 2] = -1.0
+m[:, :, nz/2:, 1] =  0.3
 m = Util.normalize(m)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
@@ -97,7 +97,7 @@ Llg = LLGIntegrator(alpha=1.0, terms=fields)
 maxField = 2./Constants.mu0 # 2 [T]
 #TODO# maxField = 0. # Note: for zero field, the domainwall does not pin to the interface for current implementation i.e. sparse yielding correct Hanalytic
 #simtime = 30e-9 # [s]
-simtime = 100e-9 # [s]
+simtime = 200e-9 # [s]
 
 print("Start", simtime, " [ns] run")
 stream = open(sys.argv[1]+"m.dat", "w")
