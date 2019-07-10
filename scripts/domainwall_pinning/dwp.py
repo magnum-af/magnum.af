@@ -45,13 +45,13 @@ else:
 # Discretization
 
 # Material
-soft_Aex        = 1.0e-11/3.0
-soft_ms         = 1. / Constants.mu0
+soft_Aex        = 0.25e-11
+soft_ms         = 0.25 / Constants.mu0
 soft_K_uni      = 1e5
 
 hard_Aex        = 1.0e-11
-hard_ms         = soft_ms
-hard_K_uni      = soft_K_uni
+hard_ms         = 1.0 / Constants.mu0
+hard_K_uni      = 1e6
 
 # Analytical Result
 def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
