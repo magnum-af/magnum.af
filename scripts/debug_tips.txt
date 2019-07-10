@@ -86,3 +86,15 @@ Guess: cmake, cython messing around with python versions?
 -----------------------------------------------------
 Docker:
 Segfault in for cuda and opencl when using: '$ docker run'  instead of '$ nvidia-docker run'
+
+-----------------------------------------------------
+-----------------------------------------------------
+Be a memer of the user group!
+Error:
+terminate called after throwing an instance of 'af::exception'
+  what():  ArrayFire Exception (Internal error:998):
+OpenCL Error (-1001): Unknown OpenCL Error (-1001) when calling clGetPlatformIDs
+In function void af::setDevice(int)
+
+Fix:
+$sudo usermod -aG video $USER
