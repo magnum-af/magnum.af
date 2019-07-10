@@ -41,16 +41,20 @@ For running simulations, use the provided script in 'scripts/magnum.af.docker', 
 
 ### GPU Driver Installation
 
-In the following, choose either NVIDIA or AMD:
+Make sure your user is part of the video group using `$groups | grep video`. 
 
-#### NVIDIA: nvidia-driver and CUDA:
+If not, add your user to the video group:
+
+`$ sudo usermod -a -G video $LOGNAME`
+
+perform a logout-login for the changes to have effect.
+
+In the following, choose either NVIDIA or AMD depending on your hardware:
+
+#### a) NVIDIA: nvidia-driver and CUDA:
 following [linuxconfig.org](https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux):
 
 `$ sudo ubuntu-drivers autoinstall`
-
-add your user to the video group
-
-`$ sudo usermod -a -G video $LOGNAME`
 
 Note:
 if the driver version provided by the repo is not sufficient, use a ppa instead:
@@ -66,7 +70,7 @@ install CUDA with
 
 `$ sudo apt install nvidia-cuda-toolkit`
 
-#### AMD: AMDGPU driver and OpenCL
+#### b) AMD: AMDGPU driver and OpenCL
 Follow [linuxconfig.org](https://linuxconfig.org/how-to-install-the-latest-amd-radeon-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
 for cmake to find OpenCl run:
