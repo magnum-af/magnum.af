@@ -85,26 +85,6 @@ elif wire_dir == "x":
 m = Util.normalize(m)
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-z_spacing = []
-length=0
-factor_cell2_vs_cell1 = 1 # range{0.5, inf}
-for i in range(nz):
-    print("i=", i)
-    if nz == 1:
-        z_spacing.append(z/nz)
-        length = length + z/nz
-    elif i % 2 == 0:
-        zval = (1/factor_cell2_vs_cell1) * z/nz
-        z_spacing.append(zval)
-        length = length + zval
-    else:
-        zval = (2 - 1/factor_cell2_vs_cell1) * z/nz
-        z_spacing.append(zval)
-        length = length + zval
-ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
-print("length=", length)
-print(ne_mesh.nz)
-print(ne_mesh.z_spacing)
 
 # Setting A, Ms and Ku1 values as fields
 A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
@@ -137,19 +117,22 @@ elif wire_dir == "x":
     Ku1_axis=[1, 0, 0]
 
 state = State(mesh, Ms_field, m)
-state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    NonequiExchangeField(A_field, ne_mesh, verbose = True),
-    #SparseExchangeField(A_field, mesh),
+    SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis),
 ]
-Llg = LLGIntegrator(alpha=1.0, terms=fields)
-
 
 ##TODO# maxField = 0. # Note: for zero field, the domainwall does not pin to the interface for current implementation i.e. sparse yielding correct Hanalytic
+# TODO minimizer not working and yielding mean_m = nan
+
+llg_before_mini = True
+if llg_before_mini == True:
+    Llg = LLGIntegrator(alpha=1.0, terms=fields)
+else:
+    minimizer = LBFGS_Minimizer(fields)
 
 class Field:
     def __init__(self, maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0/Constants.mu0):
@@ -158,6 +141,7 @@ class Field:
         self.startField = startField # [Oe]
     def from_time(self, time):
         return self.startField + time / self.simtime * self.maxField
+        #const#return 0.9 * H_analytic/Constants.mu0
 
 field = Field(maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0.9 * H_analytic/Constants.mu0)
 print("Start", field.simtime, " [ns] run")
@@ -175,7 +159,11 @@ while (state.t < field.simtime and state.m_mean(wire_dir_val) < (1. - 1e-6)):
         fields[0].set_homogeneous_field(0.0,  field.from_time(state.t), 0.0)
     elif wire_dir == "x":
         fields[0].set_homogeneous_field(field.from_time(state.t), 0.0, 0.0)
-    Llg.step(state)
+    if llg_before_mini == True:
+        Llg.step(state)
+    else:
+        minimizer.minimize(state)
+
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
 
     if i%20 == 0:
