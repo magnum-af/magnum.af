@@ -87,15 +87,20 @@ m = Util.normalize(m)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 z_spacing = []
 length=0
-factor_cell2_vs_cell1 = 4 # range{0.5, inf}
+factor_cell2_vs_cell1 = 1 # range{0.5, inf}
 for i in range(nz):
-    print("i=", i, )
-    if i % 2 == 0:
+    print("i=", i)
+    if nz == 1:
+        z_spacing.append(z/nz)
+        length = length + z/nz
+    elif i % 2 == 0:
         zval = (1/factor_cell2_vs_cell1) * z/nz
+        z_spacing.append(zval)
+        length = length + zval
     else:
         zval = (2 - 1/factor_cell2_vs_cell1) * z/nz
-    length = length + zval
-    z_spacing.append(zval)
+        z_spacing.append(zval)
+        length = length + zval
 ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
 print("length=", length)
 print(ne_mesh.nz)
@@ -150,10 +155,10 @@ Llg = LLGIntegrator(alpha=1.0, terms=fields)
 #simtime = 100e-9 # [s]
 #startField = 0.9 * H_analytic
 class Field:
-    def __init__(self, maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0):
-        self.maxField = maxField
-        self.simtime = simtime
-        self.startField = startField
+    def __init__(self, maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0/Constants.mu0):
+        self.maxField = maxField # [Oe]
+        self.simtime = simtime # [s]
+        self.startField = startField # [Oe]
     def from_time(self, time):
         return self.startField + time / self.simtime * self.maxField
 
@@ -177,7 +182,7 @@ while (state.t < field.simtime and state.m_mean(wire_dir_val) < (1. - 1e-6)):
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
 
     if i%20 == 0:
-        print("%field=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "%time=", "{:6.4f}".format(state.t/field.simtime), "mean_m=", "{:5.4f}".format(state.m_mean(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0))
+        print("H[%analytic]", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "time[%]=", "{:6.4f}".format(state.t/field.simtime), "mean_m=", "{:5.4f}".format(state.m_mean(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0))
     stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), field.from_time(state.t), printzee[0, 0, 0, wire_dir_val].scalar()))
     stream.flush()
     i = i + 1
