@@ -291,7 +291,7 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
                 else if( i2 > 0 && i2 < mesh.nz - 1){
                     const double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                     const double A_i_m = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
-                    const double h_divisor = mesh.z_spacing[i2] * mesh.z_spacing[i2-1] * (1. + mesh.z_spacing[i2]/mesh.z_spacing[i2-1]);
+                    const double h_divisor = h.at(i2) * h.at(i2-1) * (1. + h.at(i2)/h.at(i2-1));
                     if (A_i_m != 0){
                         CSR_values.push_back( 2.* A_i/constants::mu0 * (2. * h.at(i2)/h.at(i2-1))/h_divisor * 2.* A_i_m/(A_i_m + A_i));
                         CSR_JA.push_back( findex( i0, i1, i2-1, im, mesh ) );
