@@ -1,5 +1,6 @@
 #pragma once
 #include "arrayfire.h"
+#include <ostream>
 #include <iostream>
 
 namespace magnumaf{
@@ -15,6 +16,6 @@ struct NonequispacedMesh{
     int nx_expanded, ny_expanded; // Expanded cell sizes for demag FFT
     af::dim4 dims;
 
-    void print(std::ostream& stream);
+    void print(std::ostream& stream = std::cout);
 };
 }// namespace magnumaf

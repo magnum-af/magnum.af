@@ -38,7 +38,7 @@ int main(int argc, char** argv)
         Llg.step(state);
         state.calc_mean_m(stream);
     }
-    timer.print_stage(std::cout, "relax ");
+    timer.print_stage("relax ");
     state.write_vti(filepath + "relax");
 
     // Prepare switch
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     }
     state.write_vti(filepath + "2ns");
     stream.close();
-    timer.print_stage(std::cout, "switch");
-    timer.print_accumulated(std::cout);
+    timer.print_stage("switch");
+    timer.print_accumulated();
     return 0;
 }
