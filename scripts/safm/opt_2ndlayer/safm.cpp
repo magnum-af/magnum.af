@@ -24,7 +24,6 @@ double calc_hz(double dz){
     State state(mesh, Ms, m, false);
     vtr_writer(state.m, Mesh(nx, ny, nz, x/nx, y/ny, 0) , z_spacing, filepath + "minit");
 
-    LlgTerms llgterm;
     NonEquiDemagField demag(mesh, false, false, 0);
 
     af::array h = demag.h(state);

@@ -7,7 +7,6 @@ using namespace magnumaf;
 int main(int argc, char** argv)
 {
     // Checking input variables and setting GPU Device
-    af::timer timer_total = af::timer::start();
     for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
     std::string filepath(argc>1? argv[1]: "output_magnum.af/");
     af::setDevice(argc>2? std::stoi(argv[2]):0);
@@ -34,12 +33,12 @@ int main(int argc, char** argv)
     stream.open(filepath + "m.dat");
 
     // Relax
-    af::timer timer = af::timer::start();
+    StageTimer timer;
     while (state.t < 1e-9){
         Llg.step(state);
         state.calc_mean_m(stream);
     }
-    std::cout<<"relax     [s]: "<< af::timer::stop(timer) <<std::endl;
+    timer.print_stage(std::cout, "relax ");
     state.write_vti(filepath + "relax");
 
     // Prepare switch
@@ -50,14 +49,13 @@ int main(int argc, char** argv)
     Llg.alpha = 0.02;
 
     // Switch
-    timer = af::timer::start();
     while (state.t < 2e-9){
         Llg.step(state);
         state.calc_mean_m(stream);
     }
-    std::cout<<"integrate [s]: "<< af::timer::stop(timer) <<std::endl;
     state.write_vti(filepath + "2ns");
     stream.close();
-    std::cout<<"total     [s]: "<< af::timer::stop(timer_total) <<std::endl;
+    timer.print_stage(std::cout, "switch");
+    timer.print_accumulated(std::cout);
     return 0;
 }
