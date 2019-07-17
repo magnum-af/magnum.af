@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     std::string filepath(argc>1? argv[1]: "../Data/Testing");
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<< filepath <<std::endl;
-    setDevice(argc>2? std::stoi(argv[2]):0);
+    af::setDevice(argc>2? std::stoi(argv[2]):0);
     const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
     const unsigned int steps_full_hysteresis =(argc > 4 ? std::stoi(argv[4]) : 200);
 
@@ -34,8 +34,8 @@ int main(int argc, char** argv)
             field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
         }
         //std::cout << "fild= "<< field_Tesla << std::endl;
-        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(span, span, span, 0)=constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        zee(af::span, af::span, af::span, 0) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return  zee;
     };
 
@@ -45,12 +45,11 @@ int main(int argc, char** argv)
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material = Material();
-    state.Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    material.A     = 1.5e-11;//[J/m]
+    double Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    double A     = 1.5e-11;//[J/m]
 
-    State state(mesh, material, mesh.init_vortex());
-    vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
+    State state(mesh, Ms, mesh.init_vortex());
+    vti_writer_micro(state.Ms_field, mesh, filepath + "Ms");
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh , (filepath + "minit_nonnormalized").c_str());
@@ -60,8 +59,8 @@ int main(int argc, char** argv)
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
-    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh, material)));
-    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh, material)));
+    minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh)));
+    minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(A)));
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
@@ -69,7 +68,7 @@ int main(int argc, char** argv)
     stream.precision(24);
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
-    timer t_hys = af::timer::start();
+    af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++){
         minimizer.Minimize(state);
         state.calc_mean_m_steps(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, 0)));
