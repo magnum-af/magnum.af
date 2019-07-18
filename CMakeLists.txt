@@ -49,4 +49,6 @@ include( UseCython )
 
 
 # build items in subdirectories
-add_subdirectory(src)
+add_subdirectory(src) # build src library
+enable_testing()
+add_subdirectory(tests) # build unit tests
