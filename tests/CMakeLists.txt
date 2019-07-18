@@ -66,7 +66,7 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
         set(testname test_cuda_${testname})
         # Adding executables and linking
         add_executable( ${testname} ${testsourcefile} )
-        target_link_libraries( ${testname} ${GTEST_LIBRARIES} ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} pthread )
+        target_link_libraries( ${testname} ${GTEST_LIBRARIES} ${ArrayFire_CUDA_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB} ${VTK_LIBRARIES} pthread )
         add_test(NAME ${testname} COMMAND ${testname} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
     endforeach( testsourcefile ${APP_SOURCES} )
 ENDIF()
