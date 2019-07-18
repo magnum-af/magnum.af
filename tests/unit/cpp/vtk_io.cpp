@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
 #include "../../../src/mesh.cpp"
 #include "../../../src/func.cpp"
 #include "../../../src/vtk_IO.cpp"
+#include <gtest/gtest.h>
+#include <stdio.h>
 
 using namespace magnumaf;
 
@@ -18,6 +19,7 @@ TEST(vtkIO, vtrWriteReadTest) {
     std::vector<double> read_z_spacing;
 
     vtr_reader(read_a, read_mesh, read_z_spacing, "vtr_unittest", false);
+    ASSERT_EQ(remove( "vtr_unittest.vtr" ), 0);
 
     ASSERT_EQ(read_mesh.n0, 6);
     ASSERT_EQ(read_mesh.n1, 5);
@@ -44,6 +46,7 @@ TEST(vtkIO, vtrWriteReadScalarFieldTest) {
     af::array read_a;
 
     vtr_reader(read_a, mesh, z_spacing, "vtr_unittest", false);
+    ASSERT_EQ(remove( "vtr_unittest.vtr" ), 0);
 
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
@@ -59,6 +62,7 @@ TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
     af::array read_a;
 
     vtr_reader(read_a, mesh, z_spacing, "unittesting_a.vtr", false);
+    ASSERT_EQ(remove( "unittesting_a.vtr" ), 0);
 
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 
@@ -67,6 +71,7 @@ TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
     vtr_reader(read_b, mesh, z_spacing, "unittesting_b", false);
 
     ASSERT_EQ(max_abs_diff(read_b, a), 0);
+    ASSERT_EQ(remove( "unittesting_b.vtr" ), 0);
 }
 
 int main(int argc, char **argv) {
