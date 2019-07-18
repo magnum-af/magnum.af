@@ -140,7 +140,6 @@ then
 else
     filename=$(basename -- "$inputfile")
     extension="${filename##*.}"
-    filename="${filename%.*}"
     log "\$extension=$extension"
     log "\$filename=$filename"
     if [[ $extension != "cpp" &&  $extension != "py" ]];then
@@ -163,9 +162,13 @@ if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == 
     $magafdir/scripts/bash/check_main.sh $v_flag
 
     log "building"
-    [ "$extension" == "cpp" ] && cp $inputfile $magafdir/src || cp $magafdir/scripts/main_empty.cpp $magafdir/src
+    if [ "$extension" == "cpp" ] && [ ! -f "$magafdir/src/$(basename $inputfile)" ]; then
+        cp $inputfile $magafdir/src/
+        rm_main_file_in_src="true"
+    fi
     $magafdir/scripts/bash/build.sh $magafdir $v_flag
-    [ "$extension" == "cpp" ] && rm $magafdir/src/$(basename $inputfile) || rm $magafdir/src/main_empty.cpp
+    # remove .cpp mainfile if it was copied to src/
+    [ "$extension" == "cpp" ] && [ "$rm_main_file_in_src" == "true" ] && rm $magafdir/src/$(basename $inputfile)
 
     log "moving possible old main back"
     $magafdir/scripts/bash/check_main_remove.sh $v_flag
