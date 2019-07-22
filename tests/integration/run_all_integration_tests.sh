@@ -3,8 +3,6 @@
 
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
 
-./cpp/runall.sh
-
 # switch between python2 and python3
 command -v pip3 >/dev/null 2>&1 && pip3_output="$(pip3 show arrayfire)" # Note: output of 'pip3 show' is empty if package not found
 if [ -n "$pip3_output" ]; then

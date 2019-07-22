@@ -1,6 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(magnum.af)
-#Note in new projects, set VTK_DIR by export VTK_DIR=/home/.../VTK-build:$VTK_DIR
 
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
@@ -47,8 +46,10 @@ include( UseCython )
 #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 #include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
 
-
 # build items in subdirectories
 add_subdirectory(src) # build src library
-enable_testing()
-add_subdirectory(tests) # build unit tests
+
+# Testing
+enable_testing() # enables CTest with 'make test' and 'ctest' commands
+add_subdirectory(tests/unit/cpp) # adding unit tests
+add_subdirectory(tests/integration/cpp) # adding integration tests
