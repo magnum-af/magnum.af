@@ -18,7 +18,7 @@ TEST(NonEquiDemagField, EnergyTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     // NOTE: this test is only sensitive to i_source >= i_target (in NonEquiDemagField::h() method)
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 10, ny=10, nz=3, nz_ne=2;
+    const int nx = 10, ny=10, nz=3;
 
     af::randomEngine rand_engine = util::rand_engine_current_time();
     af::array random_1 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
@@ -26,15 +26,13 @@ TEST(NonEquiDemagField, EnergyTest) {
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, 0, af::span) = random_1;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_2;
 
-    State state_ed(mesh_ed, material_ed, m, false, true);
-    state_ed.Ms    = 8e5;
+    State state_ed(mesh_ed, 8e5, m, false, true);
     DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
@@ -62,8 +60,7 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     // NOTE: this test is only sensitive to i_source >= i_target (in NonEquiDemagField::h() method)
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 10, ny=10, nz=3, nz_ne=2;
-    //const int nx = 100, ny=25, nz=3, nz_ne=2;
+    const int nx = 10, ny=10, nz=3;
 
     af::randomEngine rand_engine = util::rand_engine_current_time();
     af::array random_1 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
@@ -71,15 +68,13 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, 0, af::span) = random_1;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_2;
 
-    State state_ed(mesh_ed, material_ed, m, false, true);
-    state_ed.Ms    = 8e5;
+    State state_ed(mesh_ed,  8e5, m, false, true);
     DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
@@ -105,8 +100,7 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     // Same as above but testing else{} in nedemag.h(state) method
     // NOTE: this test is only sensitive to i_source < i_target (in NonEquiDemagField::h() method)
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 10, ny=10, nz=3, nz_ne=2;
-    //const int nx = 100, ny=25, nz=3, nz_ne=2;
+    const int nx = 10, ny=10, nz=3;
 
     af::randomEngine rand_engine = util::rand_engine_current_time();
     af::array random_1 = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
@@ -114,15 +108,13 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, 0, af::span) = random_2;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_1;
 
-    State state_ed(mesh_ed, material_ed, m, false, true);
-    state_ed.Ms    = 8e5;
+    State state_ed(mesh_ed, 8e5, m, false, true);
     DemagField demag_ed = DemagField(mesh_ed, false, false, 1);
 
     // nonequi
@@ -146,14 +138,13 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
 TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 100, ny=25, nz=3, nz_ne=2;
+    const int nx = 100, ny=25, nz=3;
 
     af::randomEngine rand_engine = util::rand_engine_current_time();
     af::array random = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, 1, af::span) = random;
@@ -185,11 +176,10 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
 TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     // Compare SP4 layer (with ↑ → → → → ↑ magnetization) once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 100, ny=25, nz=3, nz_ne=2;
+    const int nx = 100, ny=25, nz=3;
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::seq(1, af::end-1), af::span, af::span, 0) = af::constant(1.0, mesh_ed.n0-2, mesh_ed.n1, mesh_ed.n2, 1, f64);
@@ -223,11 +213,10 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
 TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x=5.e-7, y=1.25e-7, z=3.e-9;
-    const int nx = 100, ny=25, nz=3, nz_ne=2;
+    const int nx = 100, ny=25, nz=3;
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x/nx, y/ny, z/nz);
-    Material material_ed = Material();
 
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = 1;
