@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 #include "../../../src/mesh.cpp"
 #include "../../../src/nonequispaced_mesh.cpp"
 #include "../../../src/constants.hpp"
@@ -9,9 +8,46 @@
 #include "../../../src/misc.cpp"
 #include "../../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../../src/llg_terms/micro_demag.cpp"
+#include <gtest/gtest.h>
 
 using namespace magnumaf;
 
+
+TEST(NonEquiDemag, energy_homogenuous_cube) {
+    // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
+    const double dx=1e-9, dy=1e-9, dz=1e-9;
+    const int nx=10, ny=10, nz=10;
+    const double Ms = 8e5;
+
+    std::vector<double> z_spacing;
+    for(int i=0; i<nz; i++){
+        if( i%2 == 0){
+            z_spacing.push_back(0.5 * dz);
+        }
+        else {
+            z_spacing.push_back(1.5 * dz);
+        }
+    }
+    NonequispacedMesh mesh_ne(nx, ny, dx, dy, z_spacing);
+    af::array m2 = af::constant(0.0, mesh_ne.dims, f64);
+    m2(af::span, af::span, af::span, 2) = 1;
+
+    State state(mesh_ne, Ms, m2, false, true);
+    NonEquiDemagField demag = NonEquiDemagField(mesh_ne, false, false, 1);
+
+    double E_analytic = 1./6. * nx * pow(dx, 3) * pow(state.Ms, 2) * constants::mu0;
+
+    af::array h_demag = demag.h(state);
+    // testing state.Ms
+    EXPECT_NEAR(demag.E(state), E_analytic, 3.7e-19);
+    EXPECT_NEAR(demag.E(state, h_demag), E_analytic, 3.7e-19);
+
+    // testing state.Ms_field switch
+    state.Ms_field = af::constant(8e5, mesh_ne.dims, f64);
+    h_demag = demag.h(state);
+    EXPECT_NEAR(demag.E(state), E_analytic, 3.7e-19);
+    EXPECT_NEAR(demag.E(state, h_demag), E_analytic, 3.7e-19);
+}
 
 
 TEST(NonEquiDemagField, EnergyTest) {
