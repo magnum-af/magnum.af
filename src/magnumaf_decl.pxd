@@ -133,6 +133,19 @@ cdef extern from "../../src/llg_terms/micro_anisotropy.hpp" namespace "magnumaf"
         long int get_Ku1_field();
         double get_cpu_time();
 
+cdef extern from "../../src/llg_terms/micro_anisotropy_nonequi.hpp" namespace "magnumaf":
+    cdef cppclass NonequiUniaxialAnisotropyField:
+        NonequiUniaxialAnisotropyField (long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
+        NonequiUniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr);
+        double E(const State& state);
+        long int h_ptr(const State& state);
+        double Ku1;
+        double get_ku1_axis(int i);
+        long int get_Ku1_field();
+        double get_cpu_time();
+
 cdef extern from "../../src/llg_terms/atomistic_demag.hpp" namespace "magnumaf":
     cdef cppclass AtomisticDipoleDipoleField:
         AtomisticDipoleDipoleField(Mesh);

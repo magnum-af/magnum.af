@@ -87,7 +87,7 @@ state.write_vti(sys.argv[1] + "minit")
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
     NonequiExchangeField(A_field, ne_mesh, verbose = True),
-    UniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
+    NonequiUniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
 print ("test")
 Llg = LLGIntegrator(alpha=1.0, terms=fields)

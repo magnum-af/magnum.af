@@ -37,6 +37,7 @@ from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
 from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
+from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
@@ -749,6 +750,51 @@ cdef class UniaxialAnisotropyField(HeffTerm):
             self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
             self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+    @property
+    def Ku1(self):
+        return self._thisptr.Ku1
+    #@Ku1.setter
+    #def Ku1(self, value):
+    #  self._thisptr.Ku1=value
+
+    @property
+    def Ku1_axis(self):
+        return self._thisptr.get_ku1_axis(0), self._thisptr.get_ku1_axis(1), self._thisptr.get_ku1_axis(2)
+    #@Ku1_axis.setter
+    #def Ku1_axis(self, values):
+    #  self._thisptr.Ku1_axis[0] = values[0]
+    #  self._thisptr.Ku1_axis[1] = values[1]
+    #  self._thisptr.Ku1_axis[2] = values[2]
+    @property
+    def Ku1_field(self):
+        return array_from_addr(self._thisptr.get_Ku1_field())
+    #@micro_Ku1_field.setter
+    #def micro_Ku1_field(self, micro_Ku1_field_in):
+    #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
+
+
+cdef class NonequiUniaxialAnisotropyField(HeffTerm):
+    cdef cNonequiUniaxialAnisotropyField* _thisptr
+    def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
+        if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
+        elif hasattr(Ku1, 'arr') :
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+        elif hasattr(Ku1_axis, 'arr'):
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
+        else:
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
