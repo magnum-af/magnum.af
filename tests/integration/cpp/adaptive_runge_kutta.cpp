@@ -1,11 +1,12 @@
-#include <gtest/gtest.h>
 #include "../../../src/integrators/adaptive_runge_kutta.cpp"
 #include "../../../src/integrators/controller.cpp"
 #include "../../../src/state.cpp"
 #include "../../../src/mesh.cpp"
+#include "../../../src/nonequispaced_mesh.cpp"//TODO needed for vtk_IO, include headers instead?
 #include "../../../src/func.cpp"
 #include "../../../src/misc.cpp"
 #include "../../../src/vtk_IO.cpp"
+#include <gtest/gtest.h>
 
 using namespace magnumaf;
 
