@@ -34,6 +34,33 @@ TEST(State, integral_nonequimesh_dz_as_gauss_sum) {
     ASSERT_NEAR(state.integral_nonequimesh(m), result, 1e-35);
 }
 
+
+TEST(State, vtkIO_vtrWriteReadTest) {
+    af::array a = af::randu(6, 5, 4, 10, f64);
+    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+    NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
+    State state(mesh, 0, a, false, true);
+
+    state.vtr_writer("vtr_unittest");
+
+    State read_state(NonequispacedMesh(0, 0, 0, 0, {0}), 0, af::array(), false, true);
+    state.vtr_reader("vtr_unittest");
+    ASSERT_EQ(remove( "vtr_unittest.vtr" ), 0);
+
+    ASSERT_EQ(read_state.nonequimesh.nx, 6);
+    ASSERT_EQ(read_state.nonequimesh.ny, 5);
+    ASSERT_EQ(read_state.nonequimesh.nz, 4);
+    ASSERT_EQ(read_state.nonequimesh.dx, 0.1);
+    ASSERT_EQ(read_state.nonequimesh.dy, 0.2);
+
+    for (unsigned i = 0; i < z_spacing.size(); i++){
+        ASSERT_NEAR(z_spacing.at(i), read_state.nonequimesh.z_spacing.at(i), 2e-16);
+    }
+
+    ASSERT_EQ(max_abs_diff(read_state.m, a), 0);
+}
+
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

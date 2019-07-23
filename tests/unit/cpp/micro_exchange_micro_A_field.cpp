@@ -1,6 +1,5 @@
-#include <gtest/gtest.h>
-#include <iostream>
 #include "../../../src/mesh.cpp"
+#include "../../../src/nonequispaced_mesh.cpp"//TODO needed for vtk_IO, include headers instead?
 #include "../../../src/material.cpp"
 #include "../../../src/state.cpp"
 #include "../../../src/func.cpp"
@@ -10,6 +9,8 @@
 #include "../../../src/integrators/new_llg.cpp"
 #include "../../../src/integrators/controller.cpp"
 #include "../../../src/llg_terms/micro_exch.cpp"
+#include <gtest/gtest.h>
+#include <iostream>
 
 using namespace magnumaf;
 

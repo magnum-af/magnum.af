@@ -1,4 +1,5 @@
 #include "../../../src/mesh.cpp"
+#include "../../../src/nonequispaced_mesh.cpp"//TODO needed for vtk_IO, include headers instead?
 #include "../../../src/llg_terms/micro_demag.cpp"
 #include "../../../src/integrators/new_llg.cpp"
 #include "../../../src/integrators/adaptive_runge_kutta.cpp"

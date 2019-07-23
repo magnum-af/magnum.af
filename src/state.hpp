@@ -50,8 +50,8 @@ class State{
     void _vti_writer_atom (std::string outputname);
     void _vti_reader(std::string inputname);
 
-    void _vtr_writer(std::string outputname);
-    void _vtr_reader(std::string inputname);
+    void vtr_writer(std::string outputname);
+    void vtr_reader(std::string inputname);
     double meani(const int i);
     void calc_mean_m( std::ostream& myfile);
     void calc_mean_m( std::ostream& myfile, double hzee);

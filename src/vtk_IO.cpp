@@ -213,8 +213,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath){
     mesh=Mesh(dims[0], dims[1], dims[2], spacing[0], spacing[1], spacing[2]);
 }
 
-
-void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<double> z_spacing, std::string outputname, const bool verbose){
+void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double> z_spacing, std::string outputname, const bool verbose){
     // writes af::array field as vtkRectilinearGrid to file outputname.vtr
     // Uses cell data, thus xyz dimensions are increased by 1:  field.dims(0)+1, field.dims(1)+1, field.dims(2)+1
     // supports arbitrary field.dims(3) (e.g. 3 for vector field, 1 for scalar field)
@@ -234,13 +233,13 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     // Calculate and populate coordinate vectors
     //x
     for(int j=0; j < field.dims(0)+1; ++j){
-        double val = (double)j * mesh.dx;
+        double val = (double)j * dx;
         coords[0]->SetTuple(j, &val);
     }
 
     //y
     for(int j=0; j < field.dims(1)+1; ++j){
-        double val = (double)j * mesh.dy;
+        double val = (double)j * dy;
         coords[1]->SetTuple(j, &val);
     }
 
@@ -299,8 +298,13 @@ void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<doubl
     delete[] host_a;
 }
 
+// wrapped function
+void vtr_writer(const af::array& field, const NonequispacedMesh& nonequimesh, std::string outputname, const bool verbose){
+    vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, outputname, verbose);
+}
 
-void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, std::string filepath, const bool verbose){
+
+void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath, const bool verbose){
     // Counterpart to vtr_writer()
     // Reads vktRectilinearGrid cell data from file
     // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
@@ -360,8 +364,8 @@ void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, st
 
     // Setting output variables
     field = A;
-    z_spacing = vec_z_spacing;
-    mesh=Mesh(grid_dims[0]-1, grid_dims[1]-1, grid_dims[2]-1, x_spacings[0], y_spacings[1], 0);//Note: dz is set to zero
+    //z_spacing = vec_z_spacing;
+    mesh=NonequispacedMesh(grid_dims[0]-1, grid_dims[1]-1, x_spacings[0], y_spacings[1], vec_z_spacing);//Note: dz is set to zero
     //TODO should be adapted with nonequi Mesh class
 }
 }// namespace magnumaf

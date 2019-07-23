@@ -1,5 +1,6 @@
 #pragma once
 #include "mesh.hpp"
+#include "nonequispaced_mesh.hpp"
 #include "arrayfire.h"
 
 namespace magnumaf{
@@ -14,6 +15,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath);
 //void vti_reader_atom(af::array& field, Mesh& mesh, std::string filepath);
 
 //void vtr_writer(const af::array field, const Mesh& mesh, std::string outputname);//Rectilinear grid writer
-void vtr_writer(const af::array field, const Mesh& mesh, const std::vector<double> z_spacing, std::string outputname, const bool verbose = false);//Rectilinear grid writer
-void vtr_reader(af::array& field, Mesh& mesh, std::vector<double>& z_spacing, std::string filepath, const bool verbose = true);
+void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double> z_spacing, std::string outputname, const bool verbose = false);//Rectilinear grid writer
+void vtr_writer(const af::array& field, const NonequispacedMesh& nonequimesh, std::string outputname, const bool verbose = false);//Rectilinear grid writer
+void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath, const bool verbose = true);
 }// namespace magnumaf
