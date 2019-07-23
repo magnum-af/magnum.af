@@ -30,8 +30,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 # we have custom CMake configuration files, tell CMake to use them:
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
+
+# build items in subdirectories
+add_subdirectory(src) # build src library
+
+# Testing
+enable_testing() # enables CTest with 'make test' and 'ctest' commands
+add_subdirectory(tests/unit/cpp) # adding unit tests
+add_subdirectory(tests/integration/cpp) # adding integration tests
+
+# Adding python bindings
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
 # Instruction for use can be found at the top of CMakeModules/UseCython.cmake.
+set(PYTHON_EXECUTABLE "/usr/bin/python3") # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from https://github.com/pytorch/ELF/issues/98
 include( UseCython )
 ##Currently not needed, but maybe interesting at some point:
 # With CMake, a clean separation can be made between the source tree and the
@@ -45,12 +56,4 @@ include( UseCython )
 #  ${CMAKE_CURRENT_BINARY_DIR}
 #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 #include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
-
-# build items in subdirectories
-add_subdirectory(src) # build src library
 add_subdirectory(python) # build python binding lib
-
-# Testing
-enable_testing() # enables CTest with 'make test' and 'ctest' commands
-add_subdirectory(tests/unit/cpp) # adding unit tests
-add_subdirectory(tests/integration/cpp) # adding integration tests
