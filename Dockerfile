@@ -111,7 +111,7 @@ COPY --chown=magnum.af.user . /home/magnum.af
 
 WORKDIR /home/magnum.af
 
-RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
+RUN (mkdir build && cd build && cmake .. && make -j) && \
     doxygen .doxygen-config
 
 ENV PYTHONPATH=/home/magnum.af/build/python/
