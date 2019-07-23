@@ -5,6 +5,7 @@ project(magnum.af)# this adapts compiler flags from parent
 set(PYTHON_EXECUTABLE "/usr/bin/python3") # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from https://github.com/pytorch/ELF/issues/98
 #Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing") # in response to "dereferencing type-punned pointer will break strict-aliasing rules" warning # hint: https://github.com/cython/cython/issues/958
 
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
 # Instruction for use can be found at the top of CMakeModules/UseCython.cmake.
 include( UseCython )

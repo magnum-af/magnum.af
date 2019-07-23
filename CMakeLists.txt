@@ -1,6 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(magnum.af)
 
+option(EXAMPLES "Build examples." ON)
+option(TESTING "Build unit and integration tests." ON)
+option(PYTHON_BINDINGS "Build python bindings" ON)
+
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
 # Found this hint in https://www.reddit.com/r/emacs/comments/7zxl37/trouble_setting_up_ycmd/
@@ -35,15 +39,24 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 add_subdirectory(src)
 
 # build examples
-add_subdirectory(examples)
+if(EXAMPLES)
+    message(STATUS "Building example simulation scripts (option 'EXAMPLES').")
+    add_subdirectory(examples)
+endif()
 
 # build tests
-enable_testing() # enables CTest with 'make test' and 'ctest' commands
-add_subdirectory(test/unit/cpp) # adding unit tests
-add_subdirectory(test/integration/cpp) # adding integration tests
+if(TESTING)
+    message(STATUS "Enable unit and integration testing (option 'TESTING').")
+    enable_testing() # enables CTest with 'make test' and 'ctest' commands
+    add_subdirectory(test/unit/cpp) # adding unit tests
+    add_subdirectory(test/integration/cpp) # adding integration tests
+endif()
 
 # build single scripts for simulations
 add_subdirectory(scripts/single_script_build)
 
 # build python bindings
-add_subdirectory(python)
+if(PYTHON_BINDINGS)
+    message(STATUS "Building python bindings (option 'PYTHON_BINDINGS').")
+    add_subdirectory(python)
+endif()
