@@ -40,35 +40,5 @@ FILE(GLOB SOURCE "*.cpp" "*/*.cpp")
 # Here we take a different approach to compilation. We build all of the source
 # files into a CMake object library and then link this library against the
 # different ArrayFire backends.
-ADD_LIBRARY(magnum.af_CORE OBJECT ${SOURCE})
-
-# Build the program, linking specifically with designated backends
-# ArrayFire CPU backend
-if(${ArrayFire_CPU_FOUND})
-    MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
-    ADD_EXECUTABLE(magnum.af-cpu $<TARGET_OBJECTS:magnum.af_CORE>)
-    TARGET_LINK_LIBRARIES(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT})
-ENDIF()
-
-# ArrayFire OpenCL backend
-FIND_PACKAGE(OpenCL)
-IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
-    # We need to find OpenCL as transitive linking is disabled on some OSes
-    MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
-    ADD_EXECUTABLE(magnum.af-opencl $<TARGET_OBJECTS:magnum.af_CORE>)
-    TARGET_LINK_LIBRARIES(magnum.af-opencl ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-ENDIF()
-
-# ArrayFire CUDA backend
-FIND_PACKAGE(CUDA)
-IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
-    # We need to find CUDA and NVVM as transitive linking is disabled on some OSes
-    FIND_PACKAGE(CUDA REQUIRED)
-    FIND_PACKAGE(NVVM REQUIRED)
-    MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
-    MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
-    ADD_EXECUTABLE(magnum.af-cuda $<TARGET_OBJECTS:magnum.af_CORE>)
-    TARGET_LINK_LIBRARIES(magnum.af-cuda ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
-ENDIF()
+ADD_LIBRARY(magnum.af_CORE OBJECT ${SOURCE}) # TODO error with python when not OBJECT
+ADD_LIBRARY(magnum.af_CORE_SHARED SHARED ${SOURCE})

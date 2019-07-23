@@ -1,5 +1,5 @@
+#include "../src/magnum_af.hpp"
 #include "arrayfire.h"
-#include "magnum_af.hpp"
 
 using namespace magnumaf;
 

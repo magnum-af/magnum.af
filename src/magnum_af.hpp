@@ -30,7 +30,3 @@
 #include "util/zero_crossing.hpp"
 #include "util/util.hpp"
 #include "util/timer.hpp"
-
-namespace magnumaf{
-
-}// namespace magnumaf

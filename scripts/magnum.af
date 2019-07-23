@@ -158,17 +158,17 @@ fi
 
 log "checking if build is necessary"
 if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/python/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
-    log "checking if other main exists in /src"
+    log "checking if other main exists in /scripts/single_script_build"
     $magafdir/scripts/bash/check_main.sh $v_flag
 
     log "building"
-    if [ "$extension" == "cpp" ] && [ ! -f "$magafdir/src/$(basename $inputfile)" ]; then
-        cp $inputfile $magafdir/src/
+    if [ "$extension" == "cpp" ] && [ ! -f "$magafdir/scripts/single_script_build/$(basename $inputfile)" ]; then
+        cp $inputfile $magafdir/scripts/single_script_build/
         rm_main_file_in_src="true"
     fi
     $magafdir/scripts/bash/build.sh $magafdir $v_flag
-    # remove .cpp mainfile if it was copied to src/
-    [ "$extension" == "cpp" ] && [ "$rm_main_file_in_src" == "true" ] && rm $magafdir/src/$(basename $inputfile)
+    # remove .cpp mainfile if it was copied to scripts/single_script_build/
+    [ "$extension" == "cpp" ] && [ "$rm_main_file_in_src" == "true" ] && rm $magafdir/scripts/single_script_build/$(basename $inputfile)
 
     log "moving possible old main back"
     $magafdir/scripts/bash/check_main_remove.sh $v_flag
