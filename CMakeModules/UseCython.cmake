@@ -1,3 +1,5 @@
+# Adapted from https://github.com/thewtex/cython-cmake-example/blob/master/cmake/UseCython.cmake
+
 # Define a function to create Cython modules.
 #
 # For more information on the Cython project, see http://cython.org/.

@@ -1,10 +1,28 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af)# needed for 'inheritance'
+project(magnum.af)# this adapts compiler flags from parent
 
+# building with python3 only
+set(PYTHON_EXECUTABLE "/usr/bin/python3") # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from https://github.com/pytorch/ELF/issues/98
+#Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing") # in response to "dereferencing type-punned pointer will break strict-aliasing rules" warning # hint: https://github.com/cython/cython/issues/958
+
+# Include the CMake script UseCython.cmake.  This defines add_cython_module().
+# Instruction for use can be found at the top of CMakeModules/UseCython.cmake.
+include( UseCython )
+##Currently not needed, but maybe interesting at some point:
+# With CMake, a clean separation can be made between the source tree and the
+# build tree.  When all source is compiled, as with pure C/C++, the source is
+# no-longer needed in the build tree.  However, with pure *.py source, the
+# source is processed directly.  To handle this, we reproduce the availability
+# of the source files in the build tree.
+
+#add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+#  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+#  ${CMAKE_CURRENT_BINARY_DIR}
+#  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+#include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
 # If the pyx file is a C++ file, we should specify that here.
 set_source_files_properties(
   ${magnum.af_SOURCE_DIR}/magnumaf.pyx
-  # MESSAGE(STATUS "----> PTH: PATH : ${magnum.af_SOURCE_DIR}")
   #Additional files would come here as follows:
   #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )

@@ -31,31 +31,19 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 # we have custom CMake configuration files, tell CMake to use them:
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 
-# build items in subdirectories
-add_subdirectory(src) # build src library
+# build library
+add_subdirectory(src)
 
-# Testing
+# build examples
+add_subdirectory(examples)
+
+# build tests
 enable_testing() # enables CTest with 'make test' and 'ctest' commands
 add_subdirectory(test/unit/cpp) # adding unit tests
 add_subdirectory(test/integration/cpp) # adding integration tests
-add_subdirectory(scripts/single_script_build) #
-add_subdirectory(examples) #
 
-# Adding python bindings
-# Include the CMake script UseCython.cmake.  This defines add_cython_module().
-# Instruction for use can be found at the top of CMakeModules/UseCython.cmake.
-set(PYTHON_EXECUTABLE "/usr/bin/python3") # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from https://github.com/pytorch/ELF/issues/98
-include( UseCython )
-##Currently not needed, but maybe interesting at some point:
-# With CMake, a clean separation can be made between the source tree and the
-# build tree.  When all source is compiled, as with pure C/C++, the source is
-# no-longer needed in the build tree.  However, with pure *.py source, the
-# source is processed directly.  To handle this, we reproduce the availability
-# of the source files in the build tree.
+# build single scripts for simulations
+add_subdirectory(scripts/single_script_build)
 
-#add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
-#  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
-#  ${CMAKE_CURRENT_BINARY_DIR}
-#  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
-#include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
-add_subdirectory(python) # build python binding lib
+# build python bindings
+add_subdirectory(python)
