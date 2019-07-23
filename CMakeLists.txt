@@ -36,8 +36,8 @@ add_subdirectory(src) # build src library
 
 # Testing
 enable_testing() # enables CTest with 'make test' and 'ctest' commands
-add_subdirectory(tests/unit/cpp) # adding unit tests
-add_subdirectory(tests/integration/cpp) # adding integration tests
+add_subdirectory(test/unit/cpp) # adding unit tests
+add_subdirectory(test/integration/cpp) # adding integration tests
 
 # Adding python bindings
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().

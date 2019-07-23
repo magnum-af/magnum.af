@@ -5,7 +5,7 @@ MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
 # build:     $ docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest -f Dockerfile.cpu --build-arg user="$UID" .
 # push:      $ docker push git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest
 # run image: $ docker run --rm -ti magnum.af.cpu /bin/bash
-# run tests: $ docker run --rm -t magnum.af.cpu ./tests/runall.sh .
+# run tests: $ docker run --rm -t magnum.af.cpu ./test/runall.sh .
 
 RUN apt-get update && apt-get install -y software-properties-common && \
     apt-get install -y --no-install-recommends \
