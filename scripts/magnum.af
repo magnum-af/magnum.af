@@ -157,7 +157,7 @@ if [ "$b_flag" == "true" ]; then
 fi
 
 log "checking if build is necessary"
-if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/src/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
+if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == "py" ] && ([ ! -e "$magafdir/build/python/magnumaf.so" ] || [ "$r_flag" == "true" ]));then
     log "checking if other main exists in /src"
     $magafdir/scripts/bash/check_main.sh $v_flag
 
@@ -278,7 +278,7 @@ if [ "$extension" == "py" ];then
     fi
 
     if [ "$s_flag" == "true" ] || [ "$S_flag" == "true" ] ;then
-        workaround_for_gto="(PYTHONPATH=$magafdir/build/src LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postpr_filename -persist || (./$postpr_filename)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
+        workaround_for_gto="(PYTHONPATH=$magafdir/build/python LD_LIBRARY_PATH=$LD_LIBRARY_PATH $pythonversion -u $inputfile $outputdir_slash $GPU $@ && if [ -n "\'""$postprocess""\'" ]; then (cd $outputdir && ( [ -n "\'""$gnu""\'" ] && gnuplot $postpr_filename -persist || (./$postpr_filename)) ); fi && echo "\'"magnum.af finished, press <ctrl+c> to exit currently running \"tail -f\" command"\'") |& tee $outputdir/stdout.txt"
         screen -d -S GPU$GPU -m bash -c "$workaround_for_gto"
         echo "started magnum.af in screen. Track with 'screen -ls'."
         #[ "$v_flag" == "true" ] && log "Running 'screen -ls':" && screen -ls # NOTE: problem on GTO: after screen -ls, this script stops
@@ -294,7 +294,7 @@ if [ "$extension" == "py" ];then
             tail -f -n 0 $outputdir/stdout.txt
         fi
     else
-        eval "PYTHONPATH=$magafdir/build/src $pythonversion -u $inputfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
+        eval "PYTHONPATH=$magafdir/build/python $pythonversion -u $inputfile $outputdir_slash $GPU $@ |& tee $outputdir/stdout.txt"
         if [ -n "$postprocess" ]; then (cd $outputdir && [ -n "$gnu" ] && gnuplot $postpr_filename -persist || ./$postpr_filename); fi
     fi
 else

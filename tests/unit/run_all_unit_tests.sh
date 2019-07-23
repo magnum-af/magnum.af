@@ -13,5 +13,5 @@ fi
 
 # running all python tests
 for filename in ./python/*.py; do
-    PYTHONPATH=../../build/src/ $python $filename
+    PYTHONPATH=../../build/python/ $python $filename
 done

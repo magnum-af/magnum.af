@@ -48,6 +48,7 @@ include( UseCython )
 
 # build items in subdirectories
 add_subdirectory(src) # build src library
+add_subdirectory(python) # build python binding lib
 
 # Testing
 enable_testing() # enables CTest with 'make test' and 'ctest' commands

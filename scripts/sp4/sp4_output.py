@@ -1,5 +1,5 @@
 # run with:
-#PYTHONPATH=../../build/src/ python sp4_output.py path/to/write/in
+#PYTHONPATH=../../build/python/ python sp4_output.py path/to/write/in
 import arrayfire as af
 import magnumaf
 import os

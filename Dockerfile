@@ -114,4 +114,4 @@ WORKDIR /home/magnum.af
 RUN scripts/magnum.af -vf -o build/main_empty scripts/main_empty.cpp && \
     doxygen .doxygen-config
 
-ENV PYTHONPATH=/home/magnum.af/build/src/
+ENV PYTHONPATH=/home/magnum.af/build/python/
