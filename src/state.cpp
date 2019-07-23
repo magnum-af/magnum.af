@@ -192,10 +192,10 @@ void State::_vti_reader(std::string inputname){
 
 
 void State::vtr_writer(std::string outputname){
-    ::magnumaf::vtr_writer(this->m, this->nonequimesh, outputname);
+    ::magnumaf::vtr_writer(this->m, this->nonequimesh, outputname, false);
 }
 void State::vtr_reader(std::string inputname){
-    ::magnumaf::vtr_reader(this->m, this->nonequimesh, inputname);
+    ::magnumaf::vtr_reader(this->m, this->nonequimesh, inputname, false);
 }
 
 double State::meani(const int i){

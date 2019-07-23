@@ -43,15 +43,15 @@ TEST(State, vtkIO_vtrWriteReadTest) {
 
     state.vtr_writer("vtr_unittest");
 
-    State read_state(NonequispacedMesh(0, 0, 0, 0, {0}), 0, af::array(), false, true);
-    state.vtr_reader("vtr_unittest");
-    ASSERT_EQ(remove( "vtr_unittest.vtr" ), 0);
+    State read_state(NonequispacedMesh(0, 0, 0, 0, {0}), 4e5, af::constant(0, 1, f64), false, true);
+    read_state.vtr_reader("vtr_unittest");
+    EXPECT_EQ(remove( "vtr_unittest.vtr" ), 0);
 
-    ASSERT_EQ(read_state.nonequimesh.nx, 6);
-    ASSERT_EQ(read_state.nonequimesh.ny, 5);
-    ASSERT_EQ(read_state.nonequimesh.nz, 4);
-    ASSERT_EQ(read_state.nonequimesh.dx, 0.1);
-    ASSERT_EQ(read_state.nonequimesh.dy, 0.2);
+    EXPECT_EQ(read_state.nonequimesh.nx, 6);
+    EXPECT_EQ(read_state.nonequimesh.ny, 5);
+    EXPECT_EQ(read_state.nonequimesh.nz, 4);
+    EXPECT_EQ(read_state.nonequimesh.dx, 0.1);
+    EXPECT_EQ(read_state.nonequimesh.dy, 0.2);
 
     for (unsigned i = 0; i < z_spacing.size(); i++){
         ASSERT_NEAR(z_spacing.at(i), read_state.nonequimesh.z_spacing.at(i), 2e-16);

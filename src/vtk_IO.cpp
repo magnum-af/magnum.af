@@ -364,8 +364,6 @@ void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath,
 
     // Setting output variables
     field = A;
-    //z_spacing = vec_z_spacing;
-    mesh=NonequispacedMesh(grid_dims[0]-1, grid_dims[1]-1, x_spacings[0], y_spacings[1], vec_z_spacing);//Note: dz is set to zero
-    //TODO should be adapted with nonequi Mesh class
+    mesh=NonequispacedMesh(grid_dims[0]-1, grid_dims[1]-1, x_spacings[0], y_spacings[1], vec_z_spacing);
 }
 }// namespace magnumaf
