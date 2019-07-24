@@ -40,5 +40,4 @@ FILE(GLOB SOURCE "*.cpp" "*/*.cpp")
 # Here we take a different approach to compilation. We build all of the source
 # files into a CMake object library and then link this library against the
 # different ArrayFire backends.
-ADD_LIBRARY(magnum.af_CORE OBJECT ${SOURCE}) # TODO error with python when not OBJECT
 ADD_LIBRARY(magnum.af_CORE_SHARED SHARED ${SOURCE})

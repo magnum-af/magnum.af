@@ -28,5 +28,12 @@ set_source_files_properties(
   #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
-cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE>)
+FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
+cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
+
+## Linking with magnum.af_CORE_SHARED would be useful for avoiding second source build, but cython is currently now working with shared library
+#FIND_PACKAGE(ArrayFire REQUIRED)
+#INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})# Include the ArrayFire hreaders
+#ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE_FOR_PYBINDING}) # TODO error with python when not OBJECT
+#cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
