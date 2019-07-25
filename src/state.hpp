@@ -28,8 +28,8 @@ class State{
     ~State(){};
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array m to values obtained from wrapped af.array
     long int get_m_addr();
-    Mesh mesh;
-    NonequispacedMesh nonequimesh;
+    Mesh mesh{0, 0, 0, 0, 0, 0};
+    NonequispacedMesh nonequimesh{0, 0, 0, 0, {0}};
     Material material;
     double t{0.};//time
     double Ms{0};//!< Saturation magnetization in [J/T/m^3]
