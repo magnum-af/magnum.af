@@ -4,6 +4,7 @@ project(magnum.af)
 option(EXAMPLES "Build examples." ON)
 option(TESTING "Build unit and integration tests." ON)
 option(PYTHON_BINDINGS "Build python bindings" ON)
+option(DEBUG "Build with debugging flag '-g'." OFF)
 
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
@@ -29,6 +30,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+if(DEBUG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+endif()
 
 # indicate we wish for the binaries to be written to the bin directory
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
