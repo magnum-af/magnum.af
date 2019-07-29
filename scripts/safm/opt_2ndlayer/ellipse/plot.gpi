@@ -1,0 +1,15 @@
+set terminal pdfcairo enhanced;
+set output "safm_ellipse_rk_hys.pdf";
+set xlabel "H_{ext} [T]";
+set ylabel "<m_x>";
+set grid;
+set title "Ellipse easy axis loop";
+
+p "m.dat" u 5:2 w l notitle;
+#p "m.dat" u 5:2 w lp t "<mx>", "" u 5:3 w lp t "<my>", "" u 5:4 w lp t "<mz>"
+#p "m.dat" u 6:2 w lp t "<mx>", "" u 6:3 w lp t "<my>", "" u 6:4 w lp t "<mz>"
+#p "m.dat" u 7:2 w lp t "<mx>", "" u 7:3 w lp t "<my>", "" u 7:4 w lp t "<mz>"
+#
+#p "m_int.dat" u 5:2 w lp t "<mx>", "" u 5:3 w lp t "<my>", "" u 5:4 w lp t "<mz>"
+#p "m_int.dat" u 6:2 w lp t "<mx>", "" u 6:3 w lp t "<my>", "" u 6:4 w lp t "<mz>"
+#p "m_int.dat" u 7:2 w lp t "<mx>", "" u 7:3 w lp t "<my>", "" u 7:4 w lp t "<mz>"
