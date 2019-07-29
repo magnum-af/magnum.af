@@ -166,7 +166,34 @@ if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == 
         cp $inputfile $magafdir/scripts/single_script_build/
         rm_main_file_in_src="true"
     fi
-    $magafdir/scripts/bash/build.sh $magafdir $v_flag
+    currdir=$PWD
+    if [ -d $magafdir/bin ]
+    then
+        if [ -z "(ls -A $magafdir/bin)" ]; then
+            [ "$v_flag" == "true" ] && echo "removing files in $magafdir/bin/*"
+            rm $magafdir/bin/magnum.af-*
+        fi
+    fi
+    if [ ! -d $magafdir/build ]
+    then
+        mkdir $magafdir/build
+    fi
+    cd $magafdir/build
+
+    [ "$v_flag" == "true" ] && cmake .. || cmake .. > /dev/null
+
+    # try make and restore existing file in fodler if errors occur
+    make -j || main_failed="true"
+    if [ "$main_failed" == "true" ]; then
+        if [ "$rm_main_file_in_src" == "true" ]; then
+            rm $magafdir/scripts/single_script_build/$(basename $inputfile)
+        fi
+        $magafdir/scripts/bash/check_main_remove.sh $v_flag
+        echo "make error occured, aborting..."
+        exit 1
+    fi
+    echo "passed"
+    cd $currdir
     # remove .cpp mainfile if it was copied to scripts/single_script_build/
     [ "$extension" == "cpp" ] && [ "$rm_main_file_in_src" == "true" ] && rm $magafdir/scripts/single_script_build/$(basename $inputfile)
 

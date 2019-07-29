@@ -22,12 +22,12 @@ double calc_hz(double dz){
     m(af::span, af::span, 0, 2) = 1;
     m(af::span, af::span, 1, 2) = -1;
     State state(mesh, Ms, m, false);
-    vtr_writer(state.m, Mesh(nx, ny, nz, x/nx, y/ny, 0) , z_spacing, filepath + "minit");
+    state.vtr_writer(filepath + "minit");
 
     NonEquiDemagField demag(mesh, false, false, 0);
 
     af::array h = demag.h(state);
-    vtr_writer(h, Mesh(nx, ny, nz, x/nx, y/ny, 0) , z_spacing, filepath + "h");
+    vtr_writer(h, mesh, filepath + "h");
     //af::print("h slice", h(nx/2, ny/2, af::span, af::span));
     //af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
     //mesh.print(stream);
