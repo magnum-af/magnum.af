@@ -50,7 +50,9 @@ int main(int argc, char** argv)
     const int quater_steps =(argc > 7 ? std::stoi(argv[7]) : 10);
     //af::timer timer = af::timer::start();
     //Generating Objects
-    std::vector<double> z_spacing = {z/4., 1e-10, 9.84825e-10, z/4., z/4.};
+    //std::vector<double> z_spacing = {z/4., 1e-10, 9.84825e-10, z/4., z/4.};
+    double dz = 10e-9;
+    std::vector<double> z_spacing = {dz, 1e-10, dz, dz, dz};
     //std::vector<double> z_spacing = {z/nz, 9.84825e-10, z/nz, z/nz};
     NonequispacedMesh mesh(nx, ny, x/nx, y/ny, z_spacing);
     mesh.print();
@@ -104,7 +106,7 @@ int main(int argc, char** argv)
 
     af::array h = demag->h(state);
     //vtr_writer(h, Mesh(nx, ny, nz, x/nx, y/ny, 0) , z_spacing, filepath + "h");
-    vtr_writer(h, state.nonequimesh, filepath + "m_init");
+    vtr_writer(h, state.nonequimesh, filepath + "h_init");
 
     std::ofstream stream;
     stream.precision(12);
