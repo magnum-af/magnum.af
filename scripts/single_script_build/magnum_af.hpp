@@ -27,6 +27,8 @@
 #include "../../src/vtk_IO.hpp"
 #include "../../src/pgfplot.hpp"
 #include "../../src/misc.hpp"
+#include "../../src/util/gradient_decent.hpp"
+#include "../../src/util/newton_iteration.hpp"
 #include "../../src/util/zero_crossing.hpp"
 #include "../../src/util/util.hpp"
 #include "../../src/util/timer.hpp"

@@ -192,7 +192,6 @@ if ([ "$extension" == "cpp" ] && [ "$r_flag" != "true" ]) || ([ "$extension" == 
         echo "make error occured, aborting..."
         exit 1
     fi
-    echo "passed"
     cd $currdir
     # remove .cpp mainfile if it was copied to scripts/single_script_build/
     [ "$extension" == "cpp" ] && [ "$rm_main_file_in_src" == "true" ] && rm $magafdir/scripts/single_script_build/$(basename $inputfile)
