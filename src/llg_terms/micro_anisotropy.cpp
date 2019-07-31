@@ -7,27 +7,6 @@
 namespace magnumaf{
 
 
-//Energy calculation
-//Edemag=-mu0/2 integral(M . Hdemag) dx
-double UniaxialAnisotropyField::E(const State& state){
-    if( state.Ms_field.isempty() ){
-        return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h(state) * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    }
-    else{
-        return -constants::mu0/2. * afvalue(af::sum(af::sum(af::sum(af::sum(state.Ms_field * h(state) * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    }
-}
-
-double UniaxialAnisotropyField::E(const State& state, const af::array& h){
-    if( state.Ms_field.isempty() ){
-        return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    }
-    else{
-        return -constants::mu0/2. * afvalue(af::sum(af::sum(af::sum(af::sum(state.Ms_field * h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    }
-}
-
-
 UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, std::array<double, 3> Ku1_axis) : Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)){
 }
 
@@ -57,15 +36,8 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, double Ku1_axis_0,
 UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
 
+
 af::array UniaxialAnisotropyField::h(const State& state){
-    return calc_heff(state);
-}
-
-long int UniaxialAnisotropyField::h_ptr(const State& state){
-    return (long int) (new af::array(calc_heff(state)))->get();
-}
-
-af::array UniaxialAnisotropyField::calc_heff(const State& state){
     af::timer timer_anisotropy = af::timer::start();
 
     // switch Ku1_axis and Ku1_axis_field

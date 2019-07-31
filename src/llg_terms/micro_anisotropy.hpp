@@ -18,9 +18,6 @@ class UniaxialAnisotropyField : public LLGTerm {
     UniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr);//!< wrapping only
 
     af::array h(const State& state);//Field contribution
-    long int h_ptr(const State& state);// For wrapping only: pointer to heff
-    double E(const State& state);//Energy contribution
-    double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
     double get_cpu_time(){return computation_time_heff;}//!< accumulated heff computation time in [s]
 
     const double Ku1{0};//!< [J/m^3]  Uniaxial Anisotropy
@@ -35,6 +32,5 @@ class UniaxialAnisotropyField : public LLGTerm {
   private:
     double computation_time_heff{0.};
     std::array<double, 3> get_normalized_vector(std::array<double, 3> vector);
-    af::array calc_heff(const State& state);
 };
 }// namespace magnumaf

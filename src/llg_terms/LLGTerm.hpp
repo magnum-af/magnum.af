@@ -7,8 +7,6 @@
 
 namespace magnumaf{
 
-
-
 // Abstract basis class for all terms in the LLG equation.
 class LLGTerm{
   public:
@@ -33,6 +31,11 @@ class LLGTerm{
         }
     }
     virtual double get_cpu_time()=0;
+
+    /// For wrapping only: pointer to h()
+    virtual long int h_ptr(const State& state){
+        return (long int) (new af::array(h(state)))->get();
+    }
     virtual ~LLGTerm(){};
 };
 
@@ -40,4 +43,5 @@ class LLGTerm{
 // Aliases used to initialize objects wich inherit from this class
 using LlgTerm = std::shared_ptr<LLGTerm>;
 using LlgTerms = std::vector<LlgTerm>;
+
 }// namespace magnumaf
