@@ -17,7 +17,6 @@ class ExchangeField : public LLGTerm {
     af::array h_withedges(const State& state);
     //Energy contribution
     double E(const State& state);
-    double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
 
     double get_cpu_time(){return computation_time_heff;}//!< accumulated heff computation time in [s]
 

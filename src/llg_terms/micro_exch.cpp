@@ -5,12 +5,10 @@ namespace magnumaf{
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
+// Virtual method is overwritten as to use h_withedges
+// Note: maybe this is irrelevant and can be dropped.
 double ExchangeField::E(const State& state){
   return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h_withedges(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
-}
-
-double ExchangeField::E(const State& state, const af::array& h){//TODO this should use h_width_edges, check if h instead of h_withedges makes difference
-  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
