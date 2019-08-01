@@ -12,9 +12,9 @@ int main(int argc, char** argv)
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<< filepath <<std::endl;
     af::setDevice(argc>2? std::stoi(argv[2]):0);
-    std::string path_h_fl(argc>3? argv[3]: filepath + "h_free_layer.vti"); // path to freelayer h vti
-    const double hzee_max = (argc > 4 ? std::stod(argv[4]): 0.12); //[Tesla]
-    const unsigned int steps_full_hysteresis =(argc > 5 ? std::stoi(argv[5]) : 200);
+    const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
+    const unsigned int steps_full_hysteresis =(argc > 4 ? std::stoi(argv[4]) : 200);
+    std::string path_h_fl(argc>5? argv[5]: filepath + "h_free_layer.vti"); // path to freelayer h vti
 
     af::info();
     std::cout.precision(24);
@@ -31,7 +31,7 @@ int main(int argc, char** argv)
         else if (state.steps < 3*steps_full_hysteresis/4){
             field_Tesla = - hzee_max * 4. * state.steps/steps_full_hysteresis + 2*hzee_max;
         }
-        else if(state.steps < steps_full_hysteresis){
+        else if(state.steps < steps_full_hysteresis * 5./4.){
             field_Tesla = hzee_max * 4. *state.steps/steps_full_hysteresis - 4*hzee_max;
         }
         else {
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     double Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     double A     = 1.5e-11;//[J/m]
 
-    State state(mesh, Ms, mesh.ellipse());
+    State state(mesh, Ms, mesh.ellipse(1));
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
 
@@ -70,14 +70,14 @@ int main(int argc, char** argv)
     stream.open ((filepath + "m.dat").c_str());
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
     af::timer t_hys = af::timer::start();
-    for (unsigned i = 0; i < steps_full_hysteresis; i++){
+    for (unsigned i = 0; i < steps_full_hysteresis * 5./4.; i++){
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, 0)));
+        state.calc_mean_m_steps(stream, constants::mu0 * afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, 0)));
         if( state.steps % 10 == 0){
             vti_writer_micro(state.m, mesh , (filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
         }
         state.steps++;
-        std::cout << "i=" << i << std::endl;
+        std::cout << "i=" << i << ", mean=" << state.meani(0) << ", h=" << constants::mu0 * afvalue(minimizer.llgterms_.back()->h(state)(0, 0, 0, 0)) << std::endl;
     }
     stream.close();
     std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys) <<std::endl;

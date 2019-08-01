@@ -1,10 +1,10 @@
 #!/bin/bash
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-writedir="$HOME"/data_magnum.af/safm/opt_2nd/ellipse
-hzee_max="0.08" # maximum H_external for hysteresis loop
+hzee_max="0.03" # maximum H_external for hysteresis loop
+integr_time="200e-9"
 #integr_time="200e-9"
-integr_time="800e-9"
+writedir="$HOME"/data_magnum.af/safm/opt_2ndlayer/ellipse_rk_int_"$hzee_max"T_"$integr_time"ns
 
 if [ ! -f "$writedir/h_free_layer.vti" ]; then
     ../../../magnum.af -f safm_ellipse.cpp "$writedir"

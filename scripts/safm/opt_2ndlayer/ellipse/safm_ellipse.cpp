@@ -59,7 +59,9 @@ double calc_hz(double dz){
     vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer");
     stream << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, index_free_layer, 0)) << ", " << afvalue(h(nx/2, ny/2, index_free_layer, 1)) << ", " << afvalue(h(nx/2, ny/2, index_free_layer, 2)) << std::endl;
     //std::cout << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, 3, 0)) << ", " << afvalue(h(nx/2, ny/2, 3, 1)) << ", " << afvalue(h(nx/2, ny/2, 3, 2)) << std::endl;
-    return afvalue(h(nx/2, ny/2, index_free_layer, 2));
+    //NOTE: previously used//return afvalue(h(nx/2, ny/2, index_free_layer, 2));
+    //std::cout << "test dims: " << af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0).dims() << std::endl;
+    return afvalue(af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0));
 }
 
 
@@ -76,11 +78,13 @@ int main(int argc, char** argv)
     stream.precision(12);
     stream.open (filepath + "m.dat");
 
-    magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
-    auto result = zc.calc_x_and_f();
-    std::cout << "x = " << result.first << ", f(x) = " << result.second << std::endl;
+    //magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
+    //auto result = zc.calc_x_and_f();
+    magnumaf::NewtonIteration ni(calc_hz);
+    auto result = ni.run(X0(8e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
+    std::cout << "result: x = " << result.first << ", f(x) = " << result.second << std::endl;
 
     stream.close();
-    std::cout<<"total [af-s]: "<< af::timer::stop(total_time) <<std::endl;
+    std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
     return 0;
 }
