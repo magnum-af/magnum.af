@@ -1,9 +1,9 @@
 #!/bin/bash
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-hzee_max="0.03" # maximum H_external for hysteresis loop
-integr_time="200e-9"
-#integr_time="200e-9"
+hzee_max="0.11" # maximum H_external for hysteresis loop
+integr_time="3000e-9"
+#testing#integr_time="600e-9"
 writedir="$HOME"/data_magnum.af/safm/opt_2ndlayer/ellipse_rk_int_"$hzee_max"T_"$integr_time"ns
 
 if [ ! -f "$writedir/h_free_layer.vti" ]; then
