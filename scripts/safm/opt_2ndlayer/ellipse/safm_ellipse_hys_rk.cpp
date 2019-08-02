@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
     af::timer t_hys = af::timer::start();
     while (state.t < 5* hzee_max/rate){
-        if (state.steps % 100 == 0) std::cout << "%=" << state.t/integr_time * 4./5. << ", i=" << state.steps << ", t=" << state.t << ", hzee=" << constants::mu0 * afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)) << std::endl;
+        if (state.steps % 100 == 0) std::cout << "%=" << state.t/integr_time * 4./5. << ", i=" << state.steps << ", t=" << state.t << ", <m>=" << state.meani(0) <<  ", hzee=" << constants::mu0 * afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)) << std::endl;
         llg.step(state);
         state.calc_mean_m_steps(stream, constants::mu0 * afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)));
         if( state.steps % 1000 == 0){
