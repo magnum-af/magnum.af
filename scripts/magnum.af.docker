@@ -174,7 +174,7 @@ shift $min
 
 log "checking if docker images exist (takes ~0.1s)"
 #nvidia_smi=$(command -v nvidia-smi || true)
-command -v nvidia-smi >/dev/null 2>&1 && docker image inspect magnum.af >/dev/null 2>&1 && docker_image_exists="true"  || docker image inspect magnum.af.cpu >/dev/null 2>&1 && docker_image_exists="true"
+command -v nvidia-smi >/dev/null 2>&1 && docker image inspect git.exp.univie.ac.at:4567/paul/magnum.af >/dev/null 2>&1 && docker_image_exists="true"  || docker git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev >/dev/null 2>&1 && docker_image_exists="true"
 
 log "building docker image if not exist or B_flag is set"
 if [[ "$docker_image_exists" != "true" ]] || [[ "$B_flag" == "true" ]]; then
