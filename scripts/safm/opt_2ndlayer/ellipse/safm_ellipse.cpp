@@ -9,7 +9,9 @@ std::ofstream stream;
 double calc_hz(double dz){
     // Parameter initialization
     const double x=4000.e-9, y=1000e-9;
-    const int nx = 256, ny= 64;
+    //const int nx = 256, ny= 64;
+    //const int nx = 512, ny= 128;
+    const int nx = 1024, ny= 256;
     double Ms    = 1.393e6;//Vortex val//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     //TODO//double A     = 1.5e-11;//Vortex val//[J/m]
 
