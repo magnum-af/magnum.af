@@ -637,7 +637,10 @@ cdef class LLGIntegrator:
 
 # base class for clearification (especially for heritage diagramms in docu)
 cdef class HeffTerm:
-    pass
+    def h(self, State state):
+        pass
+    def E(self, State state):
+        pass
 
 
 cdef class DemagField(HeffTerm):
