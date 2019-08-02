@@ -16,7 +16,7 @@ steps="200"
 # write dirs
 rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/ellipse_"$nx"nx_"$ny"ny_"$x"x_"$y"y/
 writedir_hf="$rootdir"h_free_layer/
-writedir_hys="$rootdir"rk_"$hzee_max"T_"$integr_time"s/
+writedir_hys="$rootdir"min_"$hzee_max"T_"$steps"steps/
 
 # calculating h_free_layer.vti for mesh if not existant
 if [ ! -f "$writedir_hf/h_free_layer.vti" ]; then
