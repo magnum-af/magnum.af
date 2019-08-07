@@ -98,3 +98,16 @@ In function void af::setDevice(int)
 
 Fix:
 $sudo usermod -aG video $USER
+
+-----------------------------------------------------
+-----------------------------------------------------
+Restart deamon after apt upgrade:
+Error:
+    docker: Error response from daemon: Unknown runtime specified nvidia.
+Fix:
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+Link:
+    https://github.com/NVIDIA/nvidia-docker/issues/838#issuecomment-439346505
+-----------------------------------------------------
+-----------------------------------------------------
