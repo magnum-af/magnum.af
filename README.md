@@ -73,6 +73,11 @@ install CUDA with
 #### b) AMD: AMDGPU driver and OpenCL
 Follow [linuxconfig.org](https://linuxconfig.org/how-to-install-the-latest-amd-radeon-drivers-on-ubuntu-18-04-bionic-beaver-linux)
 
+On the tested system, the install script needed to be invoked with the option `--opencl=legacy`
+(tested with driver: amdgpu-pro-19.20-812932-ubuntu-18.04 for Radeon 580 series GPU):
+
+`$ ./amdgpu-pro-install --opencl=legacy -y`
+
 for cmake to find OpenCl run:
 
 `$ sudo apt install ocl-icd-opencl-dev`
