@@ -17,7 +17,8 @@ int main(int argc, char** argv)
     const double y (argc>6? std::stod(argv[6]) : 25e-9);
     std::cout << "read in values: " << nx << "\t"  << ny << "\t"  << x << "\t"  << y << "\t" << std::endl;
 
-    auto calc_hz = [nx, ny, x, y, filepath] (double dz) -> double{
+    int i_callback = 0;
+    auto calc_hz = [nx, ny, x, y, filepath, &i_callback] (double dz) -> double{
         // Parameter initialization
         double Ms    = 1.393e6;//Vortex val//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
         //TODO//double A     = 1.5e-11;//Vortex val//[J/m]
@@ -60,6 +61,7 @@ int main(int argc, char** argv)
 
         af::array h = demag.h(state);
         vtr_writer(h, mesh, filepath + "h");
+        vtr_writer(h, mesh, filepath + "h_" + std::to_string(i_callback));
         //af::print("h slice", h(nx/2, ny/2, af::span, af::span));
         //af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
         //mesh.print(stream);
@@ -76,6 +78,7 @@ int main(int argc, char** argv)
         //NOTE: previously used//return afvalue(h(nx/2, ny/2, index_free_layer, 2));
         //std::cout << "test dims: " << af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0).dims() << std::endl;
         stream.close();
+        i_callback++;
         return afvalue(af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0));
     };
 
