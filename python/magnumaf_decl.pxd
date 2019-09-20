@@ -15,6 +15,7 @@ cdef extern from "../../src/llg_terms/micro_exch.hpp" namespace "magnumaf":
     cdef cppclass ExchangeField:
         ExchangeField (long int A_field_ptr);
         ExchangeField (double A);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
@@ -22,6 +23,7 @@ cdef extern from "../../src/llg_terms/micro_exch_sparse.hpp" namespace "magnumaf
     cdef cppclass SparseExchangeField:
         SparseExchangeField (long int A_exchange_field_ptr, Mesh mesh, bool verbose);
         SparseExchangeField (double A_exchange, Mesh mesh, bool verbose);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
@@ -29,6 +31,7 @@ cdef extern from "../../src/llg_terms/micro_exch_nonequi.hpp" namespace "magnuma
     cdef cppclass NonequiExchangeField:
         NonequiExchangeField (long int A_exchange_field_ptr, NonequispacedMesh mesh, bool verbose);
         NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
@@ -96,6 +99,7 @@ cdef extern from "../../src/material.hpp" namespace "magnumaf":
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp" namespace "magnumaf":
     cdef cppclass AtomisticDmiField:
         AtomisticDmiField(Mesh, Material);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
@@ -116,6 +120,7 @@ cdef extern from "../../src/integrators/new_llg.hpp" namespace "magnumaf":
 cdef extern from "../../src/llg_terms/micro_demag.hpp" namespace "magnumaf":
     cdef cppclass DemagField:
         DemagField (Mesh mesh_in, bool verbose, bool caching, unsigned nthreads);
+        long int h_ptr(const State& state);
         double E(const State& state);
         void print_Nfft();
         double get_cpu_time();
@@ -149,18 +154,21 @@ cdef extern from "../../src/llg_terms/micro_anisotropy_nonequi.hpp" namespace "m
 cdef extern from "../../src/llg_terms/atomistic_demag.hpp" namespace "magnumaf":
     cdef cppclass AtomisticDipoleDipoleField:
         AtomisticDipoleDipoleField(Mesh);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_anisotropy.hpp" namespace "magnumaf":
     cdef cppclass AtomisticUniaxialAnisotropyField:
         AtomisticUniaxialAnisotropyField(Mesh, Material);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_exchange.hpp" namespace "magnumaf":
     cdef cppclass AtomisticExchangeField:
         AtomisticExchangeField(Mesh);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
@@ -168,8 +176,8 @@ cdef extern from "../../src/llg_terms/zee.hpp" namespace "magnumaf":
     cdef cppclass ExternalField:
         ExternalField (long int m_in);
         long int get_m_addr();
-        double E(const State& state);
         long int h_ptr(const State& state);
+        double E(const State& state);
         double get_cpu_time();
         void set_homogeneous_field(const double x, const double y, const double z);
 
@@ -191,6 +199,7 @@ cdef extern from "../../src/func.hpp" namespace "magnumaf":
 cdef extern from "../../src/llg_terms/micro_spintransfertorque.hpp" namespace "magnumaf":
     cdef cppclass SpinTransferTorqueField:
         SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e);
+        long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
         WrappedArray polarization_field;
