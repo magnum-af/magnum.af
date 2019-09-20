@@ -667,6 +667,8 @@ cdef class DemagField(HeffTerm):
     def print_Nfft(self):
         self._thisptr.print_Nfft()
     ## Calculate energy contribution in [J]
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -685,6 +687,8 @@ cdef class ExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -717,6 +721,8 @@ cdef class SparseExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -735,6 +741,8 @@ cdef class NonequiExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -839,6 +847,8 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -854,6 +864,8 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -869,6 +881,8 @@ cdef class AtomisticExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -884,6 +898,8 @@ cdef class AtomisticDmiField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -899,6 +915,8 @@ cdef class ExternalField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def cpu_time(self):
@@ -907,8 +925,6 @@ cdef class ExternalField(HeffTerm):
             self._thisptr.set_homogeneous_field(x, y, z)
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
-    def h(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
 
 
 cdef class SpinTransferTorqueField(HeffTerm):
@@ -918,6 +934,8 @@ cdef class SpinTransferTorqueField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
     def _get_thisptr(self):
