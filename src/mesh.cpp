@@ -4,7 +4,7 @@
 namespace magnumaf{
 
 
-Mesh::Mesh (int inn0, int inn1, int inn2, double indx, double indy, double indz):
+Mesh::Mesh (int inn0, int inn1, int inn2, float indx, float indy, float indz):
              n0(inn0), n1(inn1), n2(inn2),    dx(indx),    dy(indy),    dz(indz),
              n0_exp(2*n0), n1_exp(2*n1), n2_exp((n2 == 1)? 1 : 2*n2)
 {
@@ -20,7 +20,7 @@ void Mesh::print(std::ostream& stream){
 af::array Mesh::skyrmconf(const bool point_up){
 // Returns a initial configuration to be relaxed into a skyrmion
 // if point_up is true, skyrmion centers points in +z, if false in -z
-     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f32);
      if (point_up){
          m(af::span, af::span, af::span, 2) = 1.;
      }
@@ -29,9 +29,9 @@ af::array Mesh::skyrmconf(const bool point_up){
      }
      for(int ix=0;ix<this->n0;ix++){
          for(int iy=0;iy<this->n1;iy++){
-             const double rx=double(ix)-this->n0/2.;
-             const double ry=double(iy)-this->n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-this->n0/2.;
+             const float ry=float(iy)-this->n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>this->n0/4.){
                  if (point_up){
                      m(ix, iy, af::span, 2) = -1.;
@@ -51,14 +51,14 @@ af::array Mesh::ellipse(const int xyz, const bool positive_direction){
 // n_cells gives number of cells with non-zero Ms
 // xyz gives direction of initial magnetization direction,
 // positive_direction true points +, false in - direction
-    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f32);
     for(int ix=0;ix<this->n0;ix++){
         for(int iy=0;iy<this->n1;iy++){
-            const double a= (double)(this->n0/2);
-            const double b= (double)(this->n1/2);
-            const double rx=double(ix)-this->n0/2.;
-            const double ry=double(iy)-this->n1/2.;
-            const double r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
+            const float a= (float)(this->n0/2);
+            const float b= (float)(this->n1/2);
+            const float rx=float(ix)-this->n0/2.;
+            const float ry=float(iy)-this->n1/2.;
+            const float r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
             if(r<1){
                 for(int iz=0;iz<this->n2;iz++){
                 }
@@ -75,12 +75,12 @@ af::array Mesh::init_vortex(const bool positive_direction){
 // Returns an initial vortex magnetization
 // n_cells gives number of cells with non-zero Ms
 // positive_direction true, core points in +, false in - direction
-    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f32);
     for(int ix=0;ix<this->n0;ix++){
         for(int iy=0;iy<this->n1;iy++){
-            const double rx=double(ix)-this->n0/2.;
-            const double ry=double(iy)-this->n1/2.;
-            const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+            const float rx=float(ix)-this->n0/2.;
+            const float ry=float(iy)-this->n1/2.;
+            const float r = sqrt(pow(rx, 2)+pow(ry, 2));
             if(r<this->n0/2.){
                 for(int iz=0;iz<this->n2;iz++){
                 }
@@ -103,7 +103,7 @@ af::array Mesh::init_vortex(const bool positive_direction){
     return m;
 }
 af::array Mesh::init_sp4(){
-    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f32);
     m(af::seq(1, af::end-1), af::span, af::span, 0) = 1;
     m(0, af::span, af::span, 1 ) = 1;
     m(-1, af::span, af::span, 1) = 1;

@@ -20,12 +20,12 @@ int main(int argc, char** argv)
         // Checking input variables and setting GPU Device
         af::timer total_time = af::timer::start();
         // Parameter initialization
-        const double z=5.e-7, y=1.25e-7, x=3.e-9;
+        const float z=5.e-7, y=1.25e-7, x=3.e-9;
         const int nx = 1, ny=25 , nz=100;
-        const double A = 1.3e-11;
+        const float A = 1.3e-11;
 
         //Generating Objects
-        std::vector<double> dz_spacing;
+        std::vector<float> dz_spacing;
         for (int i = 0; i < nz; i++){
             dz_spacing.push_back(z/nz);
         }
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         NonequispacedMesh ne_mesh(nx, ny, x/nx, y/ny, dz_spacing);
 
         // Initial magnetic field
-        af::array m = af::constant(0.0, nx, ny, nz, 3, f64);
+        af::array m = af::constant(0.0, nx, ny, nz, 3, f32);
         m(af::span, af::span, af::seq(1, af::end-1), 2) = 1;
         m(af::span, af::span, 0, 1 ) = 1;
         m(af::span, af::span, -1, 1) = 1;
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
         LlgTerms llgterm;
         llgterm.push_back( LlgTerm (new DemagField(mesh, true, true, 0)));
         if(conv) llgterm.push_back( LlgTerm (new ExchangeField(A)));
-        else llgterm.push_back( LlgTerm (new NonequiExchangeField(af::constant(A, mesh.dims, f64), ne_mesh)));
+        else llgterm.push_back( LlgTerm (new NonequiExchangeField(af::constant(A, mesh.dims, f32), ne_mesh)));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         vti_writer_micro(state.m, mesh , (filepath + "z_relax").c_str());
 
         // Prepare switch
-        af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
+        af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f32);
         zeeswitch(0, 0, 0, 2)=-24.6e-3/constants::mu0;
         zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
@@ -87,9 +87,9 @@ int main(int argc, char** argv)
         af::timer total_time = af::timer::start();
 
         // Parameter initialization
-        const double x=5.e-7, y=1.25e-7, z=3.e-9;
+        const float x=5.e-7, y=1.25e-7, z=3.e-9;
         const int nx = 100, ny=25 , nz=1;
-        const double A = 1.3e-11;
+        const float A = 1.3e-11;
 
         //Generating Objects
         Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
         vti_writer_micro(state.m, mesh , (filepath + "x_relax").c_str());
 
         // Prepare switch
-        af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
+        af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f32);
         zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
         zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);

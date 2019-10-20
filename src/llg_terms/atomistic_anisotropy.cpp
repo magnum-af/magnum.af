@@ -9,19 +9,19 @@ namespace magnumaf{
 using namespace af;
 
 
-double AtomisticUniaxialAnisotropyField::E(const State& state){
+float AtomisticUniaxialAnisotropyField::E(const State& state){
   return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
-double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
+float AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
   return - (constants::mu0*state.material.p/2.) * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
 
 AtomisticUniaxialAnisotropyField::AtomisticUniaxialAnisotropyField (const Mesh& mesh, const Material& material){
   //Normal vector
-  double norm=sqrt(pow(material.K_atom_axis[0], 2)+ pow(material.K_atom_axis[1], 2) + pow(material.K_atom_axis[2], 2));
-  eu=array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+  float norm=sqrt(pow(material.K_atom_axis[0], 2)+ pow(material.K_atom_axis[1], 2) + pow(material.K_atom_axis[2], 2));
+  eu=array(mesh.n0, mesh.n1, mesh.n2, 3, f32);
   eu(span, span, span, 0)=material.K_atom_axis[0]/norm;
   eu(span, span, span, 1)=material.K_atom_axis[1]/norm;
   eu(span, span, span, 2)=material.K_atom_axis[2]/norm;
@@ -54,7 +54,7 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 
 ////Energy calculation
 ////Edemag=-mu0/2 integral(M . Hdemag) dx
-//double AtomisticUniaxialAnisotropyField::E(const State& state){
+//float AtomisticUniaxialAnisotropyField::E(const State& state){
 //  return - constants::mu0  * state.material.p/2. *  afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 //   //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 //}
@@ -62,8 +62,8 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 //
 ////AtomisticUniaxialAnisotropyField::AtomisticUniaxialAnisotropyField (const Mesh& mesh, const Material& material){
 ////  //Normal vector
-////  double norm=sqrt(pow(material.Ku1_axis[0], 2)+ pow(material.Ku1_axis[1], 2) + pow(material.Ku1_axis[2], 2));
-////  eu=array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+////  float norm=sqrt(pow(material.Ku1_axis[0], 2)+ pow(material.Ku1_axis[1], 2) + pow(material.Ku1_axis[2], 2));
+////  eu=array(mesh.n0, mesh.n1, mesh.n2, 3, f32);
 ////  eu(span, span, span, 0)=material.Ku1_axis[0]/norm;
 ////  eu(span, span, span, 1)=material.Ku1_axis[1]/norm;
 ////  eu(span, span, span, 2)=material.Ku1_axis[2]/norm;
@@ -71,8 +71,8 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 //
 //array AtomisticUniaxialAnisotropyField::h(const State& state){
 //  timer_anisotropy = timer::start();
-//  double norm=sqrt(pow(state.material.Ku1_axis[0], 2)+ pow(state.material.Ku1_axis[1], 2) + pow(state.material.Ku1_axis[2], 2));
-//  array anisotropy=array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+//  float norm=sqrt(pow(state.material.Ku1_axis[0], 2)+ pow(state.material.Ku1_axis[1], 2) + pow(state.material.Ku1_axis[2], 2));
+//  array anisotropy=array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
 //  //array anisotropy = eu*state.m;
 //  anisotropy(span, span, span, 0)=state.material.Ku1_axis[0]/norm * state.m(span, span, span, 0);
 //  anisotropy(span, span, span, 1)=state.material.Ku1_axis[1]/norm * state.m(span, span, span, 1);

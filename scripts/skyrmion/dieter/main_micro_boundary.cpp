@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 90, nz=1;
-    const double dx=2.0e-9;
-    const double dz=0.6e-9;
+    const float dx=2.0e-9;
+    const float dz=0.6e-9;
 
     //Generating Objects
     Mesh mesh(nx, nx, nz, dx, dx, dz);

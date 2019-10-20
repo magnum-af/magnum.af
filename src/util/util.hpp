@@ -10,27 +10,27 @@ namespace magnumaf{
 /// standard deviation with -1
 // from https://stackoverflow.com/questions/7616511/calculate-mean-and-standard-deviation-from-a-vector-of-samples-in-c-using-boos
 template<class T>
-std::pair<double, double> mean_stdev_w_minus(T vec){
-    double sum = std::accumulate(std::begin(vec), std::end(vec), 0.0);
-    double m =  sum / vec.size();
-    double accum = 0.0;
-    std::for_each (std::begin(vec), std::end(vec), [&](const double d) {
+std::pair<float, float> mean_stdev_w_minus(T vec){
+    float sum = std::accumulate(std::begin(vec), std::end(vec), 0.0);
+    float m =  sum / vec.size();
+    float accum = 0.0;
+    std::for_each (std::begin(vec), std::end(vec), [&](const float d) {
         accum += (d - m) * (d - m);
     });
-    double stdev = std::sqrt(accum / (vec.size()-1));
+    float stdev = std::sqrt(accum / (vec.size()-1));
     return {m, stdev};
 }
 
 /// standard deviation without -1
 template<class T>
-std::pair<double, double> mean_stdev_no_minus(T vec){
-    double sum = std::accumulate(std::begin(vec), std::end(vec), 0.0);
-    double m =  sum / vec.size();
-    double accum = 0.0;
-    std::for_each (std::begin(vec), std::end(vec), [&](const double d) {
+std::pair<float, float> mean_stdev_no_minus(T vec){
+    float sum = std::accumulate(std::begin(vec), std::end(vec), 0.0);
+    float m =  sum / vec.size();
+    float accum = 0.0;
+    std::for_each (std::begin(vec), std::end(vec), [&](const float d) {
         accum += (d - m) * (d - m);
     });
-    double stdev = std::sqrt(accum / (vec.size()));
+    float stdev = std::sqrt(accum / (vec.size()));
     return {m, stdev};
 }
 

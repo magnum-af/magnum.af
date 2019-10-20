@@ -72,7 +72,7 @@ class Util:
     def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1, 0, 0], factor = 1.):
         """Returns a homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis and normed to factor."""
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
-        array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
+        array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f32)
         array [0, 0, 0, 0] = factor * axis[0]/norm
         array [0, 0, 0, 1] = factor * axis[1]/norm
         array [0, 0, 0, 2] = factor * axis[2]/norm
@@ -227,7 +227,7 @@ cdef class Mesh:
 
     cdef cMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
-    def __cinit__(self, int nx, int ny, int nz, double dx, double dy, double dz):
+    def __cinit__(self, int nx, int ny, int nz, float dx, float dy, float dz):
         self._thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
         owner = None # see [1]
     cdef set_ptr(self, cMesh* ptr, owner):
@@ -295,9 +295,9 @@ cdef class NonequispacedMesh:
 
     cdef cNonequispacedMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
-    #def __cinit__(self, int nx, int ny, double dx, double dy, vector[double] z_spacing):
-    def __cinit__(self, int nx, int ny, double dx, double dy, z_spacing):
-        cdef vector[double] z_spacing_cvec
+    #def __cinit__(self, int nx, int ny, float dx, float dy, vector[float] z_spacing):
+    def __cinit__(self, int nx, int ny, float dx, float dy, z_spacing):
+        cdef vector[float] z_spacing_cvec
         for val in z_spacing:
             z_spacing_cvec.push_back(val)
         self._thisptr = new cNonequispacedMesh(nx, ny, dx, dy, z_spacing)
@@ -356,7 +356,7 @@ cdef class NonequispacedMesh:
     #only add if needed, otherwise write only:
     #@z_spacing.setter
     #def z_spacing(self, values):
-    #    cdef vector[double] cvec
+    #    cdef vector[float] cvec
     #    for val in values:
     #        cvec.push_back(val)
     #    self._thisptr.z_spacing = cvec
@@ -374,7 +374,7 @@ cdef class State:
             Saturation magnetization either set globally (float) or at each node (af.array)
     m : af.array
         Magnetization configuration which defines a vector at each node.
-        The expected size is [mesh.nx, mesh.ny, mesh.nz, 3] and dtype=af.Dtype.f64
+        The expected size is [mesh.nx, mesh.ny, mesh.nz, 3] and dtype=af.Dtype.f32
     verbose : bool(True)
         Print info messages, defaults to true
     mute_warning : bool(False)
@@ -387,7 +387,7 @@ cdef class State:
         Only set when input parameter Ms is float
     Ms_field : af.array
         Only set when input parameter Ms is af.array
-    m : af.array [mesh.nx, mesh.ny, mesh.nz, 3, dtype=af.Dtype.f64]
+    m : af.array [mesh.nx, mesh.ny, mesh.nz, 3, dtype=af.Dtype.f32]
     t : float
         Physical time in [s] manipulated by the LLGIntegrator object and initialized to 0
 
@@ -403,7 +403,7 @@ cdef class State:
     Examples
     --------
     mesh = Mesh(1, 1, 1, 0.1, 0.1, 0.1)
-    m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+    m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
     m0[:, :, :, 0] = 1
     state = State(mesh, 8e5, m0)
     """
@@ -423,8 +423,8 @@ cdef class State:
             self._thisptr.Ms = Ms
         # end legacy
         else:
-            self._thisptr = new cState (deref(mesh._thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
-        #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
+            self._thisptr = new cState (deref(mesh._thisptr), <float> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
+        #af.device.lock_array(m_in)#This does not avoid memory corruption caused by float free
     def __dealloc__(self): # causes segfault on every cleanup
         del self._thisptr
         self._thisptr = NULL
@@ -683,7 +683,7 @@ cdef class ExchangeField(HeffTerm):
         if hasattr(A, 'arr'):
             self._thisptr = new cExchangeField (<long int> addressof(A.arr))
         else:
-            self._thisptr = new cExchangeField (<double> A)
+            self._thisptr = new cExchangeField (<float> A)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -716,7 +716,7 @@ cdef class SparseExchangeField(HeffTerm):
         if hasattr(A, 'arr'):
             self._thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
-            self._thisptr = new cSparseExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            self._thisptr = new cSparseExchangeField (<float> A, deref(mesh._thisptr), <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
         del self._thisptr
@@ -736,7 +736,7 @@ cdef class NonequiExchangeField(HeffTerm):
         if hasattr(A, 'arr'):
             self._thisptr = new cNonequiExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
-            self._thisptr = new cNonequiExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            self._thisptr = new cNonequiExchangeField (<float> A, deref(mesh._thisptr), <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
         del self._thisptr
@@ -756,11 +756,11 @@ cdef class UniaxialAnisotropyField(HeffTerm):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
             self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
         elif hasattr(Ku1, 'arr') :
-            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <float> Ku1_axis[0], <float> Ku1_axis[1], <float> Ku1_axis[2])
         elif hasattr(Ku1_axis, 'arr'):
-            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
+            self._thisptr = new cUniaxialAnisotropyField (<float> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
-            self._thisptr = new cUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cUniaxialAnisotropyField (<float> Ku1, <float> Ku1_axis[0], <float> Ku1_axis[1], <float> Ku1_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -801,11 +801,11 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
             self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
         elif hasattr(Ku1, 'arr') :
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <float> Ku1_axis[0], <float> Ku1_axis[1], <float> Ku1_axis[2])
         elif hasattr(Ku1_axis, 'arr'):
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<float> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cNonequiUniaxialAnisotropyField (<float> Ku1, <float> Ku1_axis[0], <float> Ku1_axis[1], <float> Ku1_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL

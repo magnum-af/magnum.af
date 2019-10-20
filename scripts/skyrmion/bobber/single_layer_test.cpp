@@ -20,34 +20,34 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const double x=400e-9;
-    const double y=400e-9;
-    const double z=3e-9;
+    const float x=400e-9;
+    const float y=400e-9;
+    const float z=3e-9;
 
     const int nx = 128, ny=128 , nz=1;
-    const double dx= x/nx;
-    const double dy= y/ny;
-    const double dz= z/nz;
+    const float dx= x/nx;
+    const float dy= y/ny;
+    const float dz= z/nz;
 
     // SK layer params
-    const double Ms =1371e3;// A/m
-    const double A = 15e-12;// J/m
-    const double Ku = 1.411e6;// J/m^3
-    const double D =2.5e-3;// J/m^2
-    const double Hz = 130e-3/constants::mu0;
+    const float Ms =1371e3;// A/m
+    const float A = 15e-12;// J/m
+    const float Ku = 1.411e6;// J/m^3
+    const float D =2.5e-3;// J/m^2
+    const float Hz = 130e-3/constants::mu0;
 
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(af::span, af::span, af::span, 2) = -1;
     for(int ix=0;ix<mesh.n0;ix++){
         for(int iy=0;iy<mesh.n1;iy++){
-            const double rx=double(ix)-mesh.n0/2.;
-            const double ry=double(iy)-mesh.n1/2.;
-            const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+            const float rx=float(ix)-mesh.n0/2.;
+            const float ry=float(iy)-mesh.n1/2.;
+            const float r = sqrt(pow(rx, 2)+pow(ry, 2));
             if(r>nx/4.) m(ix, iy, af::span, 2)=1.;
         }
     }
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     material.D_axis[2]= -1;
     auto dmi = LlgTerm (new DmiField(mesh, material));
 
-    array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = LlgTerm (new ExternalField(zee));
 
@@ -82,11 +82,11 @@ int main(int argc, char** argv)
     state.write_vti(filepath + "m_relaxed");
 
     // preparing string method
-//    double n_interp = 60;
-//    double string_dt=1e-13;
+//    float n_interp = 60;
+//    float string_dt=1e-13;
 //    const int string_steps = 10000;
 
-//    array last   = constant( 0, mesh.dims, f64);
+//    array last   = constant( 0, mesh.dims, f32);
 //    last(span, span, span, 2)=1;
 //
 //    std::vector<State> inputimages;

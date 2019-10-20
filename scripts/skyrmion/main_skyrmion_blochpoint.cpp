@@ -24,13 +24,13 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nxy = 30, nz=1;
-    const double dx=1e-9;
+    const float dx=1e-9;
 
-    double n_interp = 60;
-    double string_dt=5e-14;
+    float n_interp = 60;
+    float string_dt=5e-14;
     const int string_steps = 10000;
-    double string_abort_rel_diff = 1e-12;
-    double string_abort_abs_diff = 1e-27;
+    float string_abort_rel_diff = 1e-12;
+    float string_abort_abs_diff = 1e-27;
 
 
     //Generating Objects
@@ -49,13 +49,13 @@ int main(int argc, char** argv)
 
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>30/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -71,19 +71,19 @@ int main(int argc, char** argv)
     LLG Llg(state, llgterm);
 
     timer t = af::timer::start();
-    double E_prev=1e20;
+    float E_prev=1e20;
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-20){
         E_prev=Llg.E(state);
         state.m=Llg.step(state);
         if( state.steps % 1000 == 0) std::cout << "step " << state.steps << std::endl;
     }
     std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
-    double timerelax= af::timer::stop(t);
+    float timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh , (filepath + "relax").c_str());
 
     std::cout<<"timerelax [af-s]: "<< timerelax << ", steps = " << state.steps << std::endl;
 
-    array last   = constant( 0, mesh.dims, f64);
+    array last   = constant( 0, mesh.dims, f32);
     last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;
@@ -104,11 +104,11 @@ int main(int argc, char** argv)
     stream_E_curves.precision(12);
     stream_E_curves.open ((filepath + "E_curves.dat").c_str());
 
-    double max_lowest=1e100;
-    double max_prev_step=1e100;
+    float max_lowest=1e100;
+    float max_prev_step=1e100;
     int i_max_lowest=-1;
     std::vector<State> images_max_lowest;
-    std::vector<double> E_max_lowest;
+    std::vector<float> E_max_lowest;
     for(int i=0; i<string_steps;i++){
         //af::printMemInfo();
         string.step();

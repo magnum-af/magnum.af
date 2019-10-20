@@ -24,7 +24,7 @@ af::array CG_Minimizer::Heff(const State& state){
     return solution;
 }
 
-double CG_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
+float CG_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
     if( llgterms_.size() == 0){
         std::cout<< bold_red("ERROR: LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms_! Aborting...")<<std::endl;
         exit (EXIT_FAILURE);
@@ -32,7 +32,7 @@ double CG_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
     af::timer timer=af::timer::start();
     //Avoiding array with zeros, starting loop with second term in llgterms
     af::array h = llgterms_[0]->h(state);
-    double energy = llgterms_[0]->E(state, h);
+    float energy = llgterms_[0]->E(state, h);
     for(unsigned i = 1; i < llgterms_.size() ; ++i ){
         af::array temp_h = llgterms_[i]->h(state);
         h+=temp_h;

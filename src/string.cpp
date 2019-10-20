@@ -9,7 +9,7 @@ namespace magnumaf{
 using namespace af;
 
 
-String::String(double alpha, State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
+String::String(float alpha, State statein, std::vector<State> inputimages, int n_interp_in, float dt_in, LlgTerms Fieldterms_in):
   state(statein), Llg(alpha, "RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
 
   //If set true, this only uses the energy dissipation term (i.e. Mx(MxH)) in the LLG
@@ -19,7 +19,7 @@ String::String(double alpha, State statein, std::vector<State> inputimages, int 
     calc_x(inputimages);
 
     for(int i=0;i<n_interp;i++){
-        images.push_back(State(state.mesh, state.material, af::constant(2., state.mesh.dims, f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
+        images.push_back(State(state.mesh, state.material, af::constant(2., state.mesh.dims, f32))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
     }
     for(int i=0;i<n_interp;i++){
         int j=0;
@@ -51,7 +51,7 @@ void String::calc_x(){
     }
     x_interp.clear();
     for(int i=0;i<n_interp;i++){
-        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
+        x_interp.push_back((float)i/(float)(n_interp-1)*x.back());
     }
 }
 
@@ -64,7 +64,7 @@ void String::calc_x(std::vector<State> inputimages){
     }
     x_interp.clear();
     for(int i=0;i<n_interp;i++){
-        x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
+        x_interp.push_back((float)i/(float)(n_interp-1)*x.back());
     }
 }
 
@@ -90,13 +90,13 @@ void String::lin_interpolate(){
 
 void String::integrate(){
     for(unsigned int i=0;i<images.size();i++){
-        double imagtime=images[i].t;
+        float imagtime=images[i].t;
         while (images[i].t < imagtime + dt){
             Llg.step(images[i]);
         }
         // Now skipping step backwards
-        // double h=imagtime+dt-images[i].t;
-        // double dummy_err;
+        // float h=imagtime+dt-images[i].t;
+        // float dummy_err;
         // images[i].m += Llg.RKF45(images[i], h, dummy_err);
 
         // NOTE:
@@ -128,7 +128,7 @@ void String::write_vti(std::string file){
 }
 
 
-double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps){
+float String::run(const std::string filepath, const float string_abort_rel_diff, const float string_abort_abs_diff, const int string_steps){
 
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
@@ -144,11 +144,11 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     stream_E_curves.precision(12);
     stream_E_curves.open ((filepath + "E_curves.dat").c_str());
 
-    double max_lowest=1e100;
-    double max_prev_step=1e100;
+    float max_lowest=1e100;
+    float max_prev_step=1e100;
     int i_max_lowest=-1;
     std::vector<State> images_max_lowest;
-    std::vector<double> E_max_lowest;
+    std::vector<float> E_max_lowest;
     for(int i=0; i<string_steps;i++){
         af::timer t = af::timer::start();
         //af::printMemInfo();
@@ -163,8 +163,8 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             E_max_lowest=this->E;
         }
         // Check for convergence
-        const double abs_diff = fabs(*max-this->E[0]-max_prev_step);
-        const double rel_diff = fabs((2.* abs_diff)/(*max-this->E[0]+max_prev_step));
+        const float abs_diff = fabs(*max-this->E[0]-max_prev_step);
+        const float rel_diff = fabs((2.* abs_diff)/(*max-this->E[0]+max_prev_step));
         if(i > 25 && rel_diff < string_abort_rel_diff){
             std::cout <<      "String run: relative difference of two consecutive E_barriers is: rel_diff= " << rel_diff << " This is smaller than " << string_abort_rel_diff <<std::endl;
             stream_steps <<  "#String run: relative difference of two consecutive E_barriers is: rel_diff= " << rel_diff << " This is smaller than " << string_abort_rel_diff <<std::endl;
@@ -251,7 +251,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //
 //  calc_x();
 //  for(int i=0;i<n_interp;i++){
-//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims, f64)));
+//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims, f32)));
 //  }
 //  lin_interpolate();
 //}
@@ -271,11 +271,11 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //
 //  x_interp.clear();
 //  for(int i=0;i<n_interp;i++){
-//      x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
+//      x_interp.push_back((float)i/(float)(n_interp-1)*x.back());
 //  }
 ////  std::cout<<"test1"<<x.size()<<std::endl;
-////  for(std::vector<double>::size_type i = 0; i != x.size(); i++){std::cout<< x[i]<<std::endl;}
-////  for(std::vector<double>::size_type i = 0; i != x_interp.size(); i++) std::cout<< x_interp[i]<<std::endl;
+////  for(std::vector<float>::size_type i = 0; i != x.size(); i++){std::cout<< x[i]<<std::endl;}
+////  for(std::vector<float>::size_type i = 0; i != x_interp.size(); i++) std::cout<< x_interp[i]<<std::endl;
 //}
 //
 //void String::lin_interpolate(){
@@ -313,8 +313,8 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //    while (images[i].t < dt){
 //      images[i].m=Llg.step(images[i]);
 //    }
-//    double h=dt-images[i].t;
-//    double dummy_err;
+//    float h=dt-images[i].t;
+//    float dummy_err;
 //    images[i].m += Llg.RKF45(images[i].m, h, dummy_err);
 //    //TODO time+=images.t;
 //  }

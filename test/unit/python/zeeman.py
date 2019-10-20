@@ -11,7 +11,7 @@ class ZeemanTest(unittest.TestCase):
     m_np = zeros(3)
     m_np[0] = 1.0
     pystate=magnumaf.State(mesh, Ms = 0, m = af.reorder(af.from_ndarray(m_np), 1, 2, 3, 0))
-    zeefield = af.constant(0.0, 3, 1, 1, 3, dtype=af.Dtype.f64)
+    zeefield = af.constant(0.0, 3, 1, 1, 3, dtype=af.Dtype.f32)
     zeefield[0, 0, 0, 0]=1
     zeefield[1, 0, 0, 1]=1
     zeefield[2, 0, 0, 2]=1

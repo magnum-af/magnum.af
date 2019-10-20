@@ -8,15 +8,15 @@ using namespace magnumaf;
 
 
 af::array zee_func(State state){
-    double field_Tesla = 0;
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.25; //[T]
+    float field_Tesla = 0;
+    float rate = 0.34e6 ; //[T/s]
+    float hzee_max = 0.25; //[T]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-    zee(span, span, span, 2)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+    zee(span, span, span, 2)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
     return  zee;
 }
 
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     material.Ku1 = 1.4e6;
     material.alpha = 0.02;
 
-    const double x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
+    const float x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
     const int nx = 343;
     const int ny = 1920;
     const int nz = 2;
@@ -78,8 +78,8 @@ int main(int argc, char** argv)
     stream << "# t	<mx>" << std::endl;
 
     timer t_hys = af::timer::start();
-    double rate = 0.34e6 ; //[T/s]
-    double hzee_max = 0.25; //[T]
+    float rate = 0.34e6 ; //[T/s]
+    float hzee_max = 0.25; //[T]
     Llg.llgterms.push_back( LlgTerm (new ExternalField(&zee_func))); //Rate in T/s
     while (state.t < 4* hzee_max/rate){
          Llg.step(state);

@@ -33,19 +33,19 @@ int main(int argc, char** argv)
 
   // Parameter initialization
   const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
-  const double dx=2.715e-10;
+  const float dx=2.715e-10;
 
 
   //Simulation Parameters
-  double hmax = 3.5e-10;
-  double hmin = 1.0e-15;
+  float hmax = 3.5e-10;
+  float hmin = 1.0e-15;
 
-  double atol = 1e-6;
+  float atol = 1e-6;
 
-  double rtol = atol;
+  float rtol = atol;
 
-  double n_interp = 60;
-  double string_dt=5e-13;
+  float n_interp = 60;
+  float string_dt=5e-13;
   const int string_steps = 10000;
   std::string filepath(argc>0? argv[1]: "../Data/Testing/");
   if(argc>0)filepath.append("/");
@@ -82,13 +82,13 @@ int main(int argc, char** argv)
 
 
    // Initial magnetic field
-   array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+   array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
    m(span, span, span, 2) = -1;
    for(int ix=0;ix<mesh.n0;ix++){
      for(int iy=0;iy<mesh.n1;iy++){
-       const double rx=double(ix)-mesh.n0/2.;
-       const double ry=double(iy)-mesh.n1/2.;
-       const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+       const float rx=float(ix)-mesh.n0/2.;
+       const float ry=float(iy)-mesh.n1/2.;
+       const float r = sqrt(pow(rx, 2)+pow(ry, 2));
        if(r>ny/4.) m(ix, iy, span, 2)=1.;
      }
    }
@@ -109,8 +109,8 @@ int main(int argc, char** argv)
 
   LLG Llg(state, atol, rtol, hmax, hmin, llgterm);
 
-  double energy_n0=1.e20;
-  double energy_n1=1.e30;
+  float energy_n0=1.e20;
+  float energy_n1=1.e30;
   int irel=0;
   timer t = af::timer::start();
   while (state.t < 1.e-8){
@@ -124,7 +124,7 @@ int main(int argc, char** argv)
     }
     energy_n0=Llg.E(state);
   }
-  double timerelax= af::timer::stop(t);
+  float timerelax= af::timer::stop(t);
   af_to_vti(state.m, mesh , (filepath + "relax").c_str());
 
   std::cout<<"Relaxed after:"<<state.t<<" timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
 
 
 
-  array last   = constant( 0, mesh.dims, f64);
+  array last   = constant( 0, mesh.dims, f32);
   last(span, span, span, 2)=1;
 
   std::vector<State> inputimages;
@@ -155,11 +155,11 @@ int main(int argc, char** argv)
   stream_E_curves.precision(12);
   stream_E_curves.open ((filepath + "E_curves.dat").c_str());
 
-  double max_lowest=1e100;
-  double max_prev_step=1e100;
+  float max_lowest=1e100;
+  float max_prev_step=1e100;
   int i_max_lowest=-1;
   std::vector<State> images_max_lowest;
-  std::vector<double> E_max_lowest;
+  std::vector<float> E_max_lowest;
   for(int i=0; i<string_steps;i++){
     string.step();
     string.calc_E();

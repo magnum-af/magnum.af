@@ -9,7 +9,7 @@ void DemagField::print_Nfft(){
     af::print("Nfft=", Nfft);
 }
 
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
+af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, float dx, float dy, float dz);
 
 DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
@@ -42,9 +42,9 @@ DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads
             Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize){
-                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
+                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (float)magafdir_size_in_bytes/1e6, (float)maxsize/1e6, (float)reducedsize/1e6);
                 remove_oldest_files_until_size(magafdir.c_str(), reducedsize, verbose);
-                if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (double)GetDirSize(magafdir)/1e6);
+                if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (float)GetDirSize(magafdir)/1e6);
             }
             if (GetDirSize(magafdir) < maxsize){
                 try{
@@ -104,30 +104,30 @@ af::array DemagField::h(const State&  state){
 }
 
 namespace newell{
-    double f(double x, double y, double z){
+    float f(float x, float y, float z){
       x=fabs(x);
       y=fabs(y);
       z=fabs(z);
-      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-      const double xx = pow(x, 2);
-      const double yy = pow(y, 2);
-      const double zz = pow(z, 2);
+      const float R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const float xx = pow(x, 2);
+      const float yy = pow(y, 2);
+      const float zz = pow(z, 2);
 
-      double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
+      float result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
       if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
       if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
       return result;
     }
 
-    double g(const double x, const double y, double z){
+    float g(const float x, const float y, float z){
       z=fabs(z);
-      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-      const double xx = pow(x, 2);
-      const double yy = pow(y, 2);
-      const double zz = pow(z, 2);
+      const float R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const float xx = pow(x, 2);
+      const float yy = pow(y, 2);
+      const float zz = pow(z, 2);
 
-      double result = - x*y * R / 3.0;
+      float result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
       if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
@@ -137,11 +137,11 @@ namespace newell{
       return result;
     }
 
-    double Nxx(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
-      const double x = dx*ix;
-      const double y = dy*iy;
-      const double z = dz*iz;
-      double result = 8.0 * f( x,    y,    z   ) \
+    float Nxx(const int ix, const int iy, const int iz, const float dx, const float dy, const float dz){
+      const float x = dx*ix;
+      const float y = dy*iy;
+      const float z = dz*iz;
+      float result = 8.0 * f( x,    y,    z   ) \
              - 4.0 * f( x+dx, y,    z   ) \
              - 4.0 * f( x-dx, y,    z   ) \
              - 4.0 * f( x,    y+dy, z   ) \
@@ -171,11 +171,11 @@ namespace newell{
       return - result / (4.0 * M_PI * dx * dy * dz);
     }
 
-    double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz){
-      const double x = dx*ix;
-      const double y = dy*iy;
-      const double z = dz*iz;
-      double result = 8.0 * g( x,    y,    z   ) \
+    float Nxy(const int ix, const int iy, const int iz, const float dx, const float dy, const float dz){
+      const float x = dx*ix;
+      const float y = dy*iy;
+      const float z = dz*iz;
+      float result = 8.0 * g( x,    y,    z   ) \
                     - 4.0 * g( x+dx, y,    z   ) \
                     - 4.0 * g( x-dx, y,    z   ) \
                     - 4.0 * g( x,    y+dy, z   ) \
@@ -207,21 +207,21 @@ namespace newell{
     }
 
 
-    double* N_setup = NULL;
+    float* N_setup = NULL;
 
 
     struct LoopInfo {
         LoopInfo(){}
-        LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  double dx,  double dy,  double dz):
+        LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,  float dx,  float dy,  float dz):
             i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz){}
         int i0_start;
         int i0_end;
         int n0_exp;
         int n1_exp;
         int n2_exp;
-        double dx;
-        double dy;
-        double dz;
+        float dx;
+        float dy;
+        float dz;
     };
 
 
@@ -249,16 +249,16 @@ namespace newell{
 }
 
 
-af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
+af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, float dx, float dy, float dz){
     std::thread t[nthreads];
     struct newell::LoopInfo loopinfo[nthreads];
     for (unsigned i = 0; i < nthreads; i++){
-        unsigned start = i * (double)n0_exp/nthreads;
-        unsigned end = (i +1) * (double)n0_exp/nthreads;
+        unsigned start = i * (float)n0_exp/nthreads;
+        unsigned end = (i +1) * (float)n0_exp/nthreads;
         loopinfo[i]=newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
     }
 
-    newell::N_setup = new double[n0_exp*n1_exp*n2_exp*6];
+    newell::N_setup = new float[n0_exp*n1_exp*n2_exp*6];
 
     for (unsigned i = 0; i < nthreads; i++){
         t[i] = std::thread(newell::setup_N, &loopinfo[i]);

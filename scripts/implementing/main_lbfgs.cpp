@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
     std::string filepath(argc > 1 ? argv[1]: "../Data/Testing/");
 
-    const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 , nz=1;
 
     //Generating Objects
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(mesh, material)));
     std::cout<<"Llgterms assembled in [s]: "<< af::timer::stop(timer_llgterms) <<std::endl;
 
-    double f = minimizer.Minimize(state);
+    float f = minimizer.Minimize(state);
     std::cout << "main: f= "<< f << std::endl;
     std::cout << green("Starting second run ")<< std::endl;
     f = minimizer.Minimize(state);

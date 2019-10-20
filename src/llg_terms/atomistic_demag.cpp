@@ -7,20 +7,20 @@ using namespace af;
 
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
-double AtomisticDipoleDipoleField::E(const State& state){
+float AtomisticDipoleDipoleField::E(const State& state){
   return -constants::mu0/2 * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
   //return -state.material.p/2 * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
-double AtomisticDipoleDipoleField::E(const State& state, const af::array& h){
+float AtomisticDipoleDipoleField::E(const State& state, const af::array& h){
   return -constants::mu0/2 * state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
-array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
+array N_atomistic(int n0_exp, int n1_exp, int n2_exp, float dx, float dy, float dz);
 
 AtomisticDipoleDipoleField::AtomisticDipoleDipoleField (Mesh mesh){
   Nfft=N_atomistic(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
-  //h   =array (mesh.n0_exp    , mesh.n1_exp, mesh.n2_exp, 3, f64);
+  //h   =array (mesh.n0_exp    , mesh.n1_exp, mesh.n2_exp, 3, f32);
 }
 
 
@@ -64,9 +64,9 @@ array AtomisticDipoleDipoleField::h(const State& state){
   }
 }
 
-array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-  double* N = NULL;
-  N = new double[n0_exp*n1_exp*n2_exp*6];
+array N_atomistic(int n0_exp, int n1_exp, int n2_exp, float dx, float dy, float dz){
+  float* N = NULL;
+  N = new float[n0_exp*n1_exp*n2_exp*6];
   //Experimental
   for (int i0 = 0; i0 < n0_exp; i0++){
     const int j0 = (i0 + n0_exp/2) % n0_exp - n0_exp/2;
@@ -75,10 +75,10 @@ array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, doub
       for (int i2 = 0; i2 < n2_exp; i2++ ){
         const int j2 = (i2 + n2_exp/2) % n2_exp - n2_exp/2;
         const int idx = 6*(i2+n2_exp*(i1+n1_exp*i0));
-        const double rx=j0*dx;
-        const double ry=j1*dy;
-        const double rz=j2*dz;
-        const double r = sqrt(pow(rx, 2)+pow(ry, 2)+pow(rz, 2));
+        const float rx=j0*dx;
+        const float ry=j1*dy;
+        const float rz=j2*dz;
+        const float r = sqrt(pow(rx, 2)+pow(ry, 2)+pow(rz, 2));
         if(r==0.){ //TODO repsace with if (j0 == 0 && j1 == 0 && j2 == 0)
           //std::cout<<"In AtomisticDipoleDipoleField::N_atomistic: r==0"<<std::endl;
           //std::cout<<"In AtomisticDipoleDipoleField::setting n to 1/3."<<std::endl;

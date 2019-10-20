@@ -25,11 +25,11 @@ ExternalField::ExternalField(std::function<af::array(State)> lamda_callback): la
 
 
 ///< Sets internal af::array to a global field (x, y, z) for all spacial dimensions
-void ExternalField::set_homogeneous_field(const double x, const double y, const double z){
+void ExternalField::set_homogeneous_field(const float x, const float y, const float z){
     af::dim4 dim = af::dim4(zee_field.dims(0), zee_field.dims(1), zee_field.dims(2), 1);
-    zee_field(af::span, af::span, af::span, 0) = af::constant(x, dim, f64);
-    zee_field(af::span, af::span, af::span, 1) = af::constant(y, dim, f64);
-    zee_field(af::span, af::span, af::span, 2) = af::constant(z, dim, f64);
+    zee_field(af::span, af::span, af::span, 0) = af::constant(x, dim, f32);
+    zee_field(af::span, af::span, af::span, 1) = af::constant(y, dim, f32);
+    zee_field(af::span, af::span, af::span, 2) = af::constant(z, dim, f32);
 }
 
 
@@ -58,7 +58,7 @@ af::array ExternalField::calc_heff(const State& state){
 
 
 //Zeeman energy term
-double ExternalField::E(const State& state){
+float ExternalField::E(const State& state){
     if (state.nonequimesh.nx != 0) {
         std::cout << "nonequmesh is set" << std::endl;
         return - constants::mu0 * state.integral_nonequimesh(h(state) * state.m);
@@ -74,7 +74,7 @@ double ExternalField::E(const State& state){
 }
 
 
-double ExternalField::E(const State& state, const af::array& h){
+float ExternalField::E(const State& state, const af::array& h){
     if (state.nonequimesh.nx != 0) {
         std::cout << "nonequmesh is set" << std::endl;
         return - constants::mu0 * state.integral_nonequimesh(h * state.m);

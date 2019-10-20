@@ -16,25 +16,25 @@ namespace magnumaf{
 /// [1] "A simple finite-difference grid with non-constant intervals" by Hilding Sundqvist & George Veronis
 class NonequiExchangeField : public LLGTerm {
   public:
-    NonequiExchangeField (double A_exchange, NonequispacedMesh, bool verbose = true);
+    NonequiExchangeField (float A_exchange, NonequispacedMesh, bool verbose = true);
     NonequiExchangeField (const af::array& A_exchange_field, NonequispacedMesh, bool verbose = true);
     NonequiExchangeField (long int A_exchange_field_ptr, NonequispacedMesh mesh, bool verbose = true);
 
     af::array h(const State& state);//Field contribution
-    double E(const State& state);//Energy contribution
-    double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
+    float E(const State& state);//Energy contribution
+    float E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
 
-    double get_cpu_time(){return af_time;}//af time
+    float get_cpu_time(){return af_time;}//af time
 
-    //const double A_exchange { 0 };
+    //const float A_exchange { 0 };
     //const af::array A_exchange_field = af::array();// empty array if not specified in constructor
 
 
   private:
     const af::array matr;
-    af::array calc_CSR_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
+    af::array calc_CSR_matrix(const float A_exchange, const NonequispacedMesh&, const bool verbose);
     af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
     int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
-    double af_time { 0 };
+    float af_time { 0 };
 };
 }// namespace magnumaf

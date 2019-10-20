@@ -17,20 +17,20 @@ namespace magnumaf{
 
 class LLGIntegrator : public AdaptiveRungeKutta{
     public:
-        LLGIntegrator(double alpha, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
-        LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
-        double alpha{0};//!< Unitless damping constant in the Landau-Lifshitz-Gilbert equation
+        LLGIntegrator(float alpha, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        LLGIntegrator(float alpha, LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(), bool dissipation_term_only = false);
+        float alpha{0};//!< Unitless damping constant in the Landau-Lifshitz-Gilbert equation
         LlgTerms llgterms;
         const bool dissipation_term_only;
-        double E(const State&);
+        float E(const State&);
 
-        double get_time_heff(){return time_heff;}
-        void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
+        float get_time_heff(){return time_heff;}
+        void relax(State& state, float precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
         long int h_addr(const State& state);
     private:
         af::array f(const State& state);
         af::array fheff(const State& state);
-        double time_heff{0};
+        float time_heff{0};
 
 };
 

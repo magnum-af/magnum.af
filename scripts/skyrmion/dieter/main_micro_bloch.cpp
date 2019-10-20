@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nxy = 90, nz=1;
-    const double dx=1.0e-9;
-    const double dz=0.6e-9;
+    const float dx=1.0e-9;
+    const float dz=0.6e-9;
 
     //Generating Objects
     Mesh mesh(nxy, nxy, nz, dx, dx, dz);
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
         vti_reader(state.m, state.mesh, path_mrelax);
     }
 
-    array last   = constant( 0, mesh.dims, f64);
+    array last   = constant( 0, mesh.dims, f32);
     last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;

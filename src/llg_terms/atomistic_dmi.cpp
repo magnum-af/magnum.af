@@ -6,24 +6,24 @@ namespace magnumaf{
 using namespace af;
 //Energy calculation
 //E=-mu0/2 integral(M . H) dx
-double AtomisticDmiField::E(const State& state){
+float AtomisticDmiField::E(const State& state){
   return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
-double AtomisticDmiField::E(const State& state, const af::array& h){
+float AtomisticDmiField::E(const State& state, const af::array& h){
   return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
 AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){
     //initialize finite difference first order derivative filter
-    double norm=sqrt(pow(material.D_atom_axis[0], 2)+ pow(material.D_atom_axis[1], 2) + pow(material.D_atom_axis[2], 2));
-    n=array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    float norm=sqrt(pow(material.D_atom_axis[0], 2)+ pow(material.D_atom_axis[1], 2) + pow(material.D_atom_axis[2], 2));
+    n=array(mesh.n0, mesh.n1, mesh.n2, 3, f32);
     n(span, span, span, 0)=material.D_atom_axis[0]/norm;
     n(span, span, span, 1)=material.D_atom_axis[1]/norm;
     n(span, span, span, 2)=material.D_atom_axis[2]/norm;
     //print("n", n);
 
-    filtr_fd1=constant(0.0, 3, 3, 3, 3, f64);
+    filtr_fd1=constant(0.0, 3, 3, 3, 3, f32);
     //dmx/dx
     filtr_fd1(0, 1, 1, 0)= 1;
     filtr_fd1(2, 1, 1, 0)=-1;
@@ -61,20 +61,20 @@ array AtomisticDmiField::h(const State& state){
 //array AtomisticDmiField::h(const State& state){
 //    timer_dmi = timer::start();
 //
-//    array filterHdx=constant(0., 3, 1, 1, 3, f64);
+//    array filterHdx=constant(0., 3, 1, 1, 3, f32);
 //    filterHdx(2, 0, 0, 2)=-1;
 //    filterHdx(0, 0, 0, 2)= 1;
 //    array Hdx = convolve( state.m, filterHdx, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span, span, span, 2);
 //    //print ("filterHdx", filterHdx);
 //    //print ("Hdx", Hdx);
 //
-//    array filterHdy=constant(0., 1, 3, 1, 3, f64);
+//    array filterHdy=constant(0., 1, 3, 1, 3, f32);
 //    filterHdy(0, 2, 0, 2)=-1;
 //    filterHdy(0, 0, 0, 2)= 1;
 //    array Hdy = convolve( state.m, filterHdy, AF_CONV_DEFAULT, AF_CONV_SPATIAL)(span, span, span, 2);
 //    //print ("Hdy", Hdy);
 //
-//    array filterHdz=constant(0., 3, 3, 1, 3, f64);
+//    array filterHdz=constant(0., 3, 3, 1, 3, f32);
 //    filterHdz(2, 1, 0, 0)= 1;
 //    filterHdz(0, 1, 0, 0)=-1;
 //    filterHdz(1, 2, 0, 1)= 1;
@@ -98,7 +98,7 @@ array AtomisticDmiField::h(const State& state){
 //using namespace af;
 ////Energy calculation
 ////E=-mu0/2 integral(M . H) dx
-//double AtomisticDmiField::E(const State& state){
+//float AtomisticDmiField::E(const State& state){
 //  return - constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 //  //return -constants::mu0/2. * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 //  //return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
@@ -106,17 +106,17 @@ array AtomisticDmiField::h(const State& state){
 //
 //AtomisticDmiField::AtomisticDmiField (const Mesh& mesh, const Material& material){
 //  //initialize finite difference first order derivative filter
-//  double norm=sqrt(pow(material.D_axis[0], 2)+ pow(material.D_axis[1], 2) + pow(material.D_axis[2], 2));
-//  n=array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+//  float norm=sqrt(pow(material.D_axis[0], 2)+ pow(material.D_axis[1], 2) + pow(material.D_axis[2], 2));
+//  n=array(mesh.n0, mesh.n1, mesh.n2, 3, f32);
 //  n(span, span, span, 0)=material.D_axis[0]/norm;
 //  n(span, span, span, 1)=material.D_axis[1]/norm;
 //  n(span, span, span, 2)=material.D_axis[2]/norm;
 //  //print("n", n);
 //
 //  //initialize finite difference first order derivative filter
-//  filtr_atom_dmi_x=constant(0.0, 3, 3, 3, 3, f64);
-//  filtr_atom_dmi_y=constant(0.0, 3, 3, 3, 3, f64);
-//  filtr_atom_dmi_z=constant(0.0, 3, 3, 3, 3, f64);
+//  filtr_atom_dmi_x=constant(0.0, 3, 3, 3, 3, f32);
+//  filtr_atom_dmi_y=constant(0.0, 3, 3, 3, 3, f32);
+//  filtr_atom_dmi_z=constant(0.0, 3, 3, 3, 3, f32);
 //  //dmx/dx
 //  filtr_atom_dmi_x(0, 1, 1, 2)= 1;
 //  filtr_atom_dmi_x(2, 1, 1, 2)=-1;

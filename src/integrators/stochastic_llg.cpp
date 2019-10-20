@@ -7,8 +7,8 @@ namespace magnumaf{
 
 
 //Energy calculation
-double Stochastic_LLG::E(const State& state){
-    double solution = 0.;
+float Stochastic_LLG::E(const State& state){
+    float solution = 0.;
     for(unsigned i=0;i<Fieldterms.size();++i){
         solution+=Fieldterms[i]->E(state);
     }

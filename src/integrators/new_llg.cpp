@@ -5,14 +5,14 @@
 
 namespace magnumaf{
 
-LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
+LLGIntegrator::LLGIntegrator(float alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
 };
 
-LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
+LLGIntegrator::LLGIntegrator(float alpha, LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
 };
 
 af::array LLGIntegrator::fheff(const State& state){
-  af::array solution = constant(0., state.mesh.dims, f64);
+  af::array solution = constant(0., state.mesh.dims, f32);
   af::timer timer_heff = af::timer::start();
 
   for(unsigned i=0;i<llgterms.size();++i){
@@ -37,17 +37,17 @@ af::array LLGIntegrator::f(const State& state){
 }
 
 //Energy calculation
-double LLGIntegrator::E(const State& state){
-  double solution = 0.;
+float LLGIntegrator::E(const State& state){
+  float solution = 0.;
   for(unsigned i=0;i<llgterms.size();++i){
     solution+=llgterms[i]->E(state);
   }
   return solution;
 }
 
-void LLGIntegrator::relax(State& state, const double precision, const int iloop, const int iwritecout){
+void LLGIntegrator::relax(State& state, const float precision, const int iloop, const int iwritecout){
     af::timer t = af::timer::start();
-    double E_prev=1e20;
+    float E_prev=1e20;
     while (fabs((E_prev-E(state))/E_prev) > precision){
         E_prev=E(state);
         for ( int i = 0; i<iloop; i++){

@@ -17,9 +17,9 @@ using namespace magnumaf;
 
 // Testing whether material.A and state.micro_A_field yield same result
 TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
-    double A = 1.3e-11;
-    double alpha = 1;
-    double Ms    = 8e5;
+    float A = 1.3e-11;
+    float alpha = 1;
+    float Ms    = 8e5;
     Mesh mesh(3, 3, 3, 0.1, 0.2, 0.3);
     State state(mesh, Ms, mesh.init_sp4());
     LlgTerms llgterms;
@@ -30,7 +30,7 @@ TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
 
     llgterms.clear();
 
-    af::array A_field = af::constant(A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    af::array A_field = af::constant(A, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A_field)));
     LLGIntegrator llg_local(alpha, llgterms);
 

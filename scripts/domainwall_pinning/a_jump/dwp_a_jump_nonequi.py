@@ -65,7 +65,7 @@ H_analytic = H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Con
 print ("H_analytic=", H_analytic, " [T]")
 
 # setting initial m (maybe rotation should be considered)
-m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 if wire_dir == "z":
     m[:, :, :nz/2, 2] =  1.0
     m[:, :, :nz/2, 1] =  0.3
@@ -107,9 +107,9 @@ print(ne_mesh.nz)
 print(ne_mesh.z_spacing)
 
 # Setting A, Ms and Ku1 values as fields
-A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
+Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
+Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 
 if wire_dir == "z":
     A_field  [:, :, :nz/2, :] = soft_Aex # soft
@@ -141,7 +141,7 @@ state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
-    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)),
     NonequiExchangeField(A_field, ne_mesh, verbose = True),
     #SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis),

@@ -9,7 +9,7 @@ using namespace magnumaf;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-void calcm(State state, std::ostream& myfile, double get_avg){
+void calcm(State state, std::ostream& myfile, float get_avg){
     myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
     //myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t" <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
     //myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m, 1))<< "\t" <<fabs(meani(state.m, 2))<< std::endl;
@@ -34,30 +34,30 @@ void calcm(State state, std::ostream& myfile, double get_avg){
 
 class Detector{
     public:
-        Detector(unsigned int length_in, double threshold_in): length( length_in ), threshold( threshold_in ){}
+        Detector(unsigned int length_in, float threshold_in): length( length_in ), threshold( threshold_in ){}
         bool gt {true};// avg greater than (gt) threshold:  if true, avg > threshold, else avg < threshold
         unsigned int length;// = 3000;
-        double threshold; // = 0.75;
+        float threshold; // = 0.75;
         bool event {false};// The event is the annihilation/decay of the skyrmion
-        void add_data(double value){
+        void add_data(float value){
             if(data.size()<length){data.push_back(value);}
             else{
                 data.pop_front();
                 data.push_back(value);
                 avg=0;
-                for( double values : data){
+                for( float values : data){
                     avg+=values;
                 }
-                avg/=(double)length;
+                avg/=(float)length;
                 if(gt == true  && std::fabs(avg) > threshold) {event = true;}
                 if(gt == false && std::fabs(avg) < threshold) {event = true;}
             }
         }
-        double get_avg(){return avg;}
+        float get_avg(){return avg;}
 
 
-        std::list<double> data; //The data to take the average on
-        double avg{NaN};
+        std::list<float> data; //The data to take the average on
+        float avg{NaN};
     private:
 
 };
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     info();
 
     //Reading energy barrier from calculation performed with main_n30.cpp
-    double e_barrier=NaN;//TODO
+    float e_barrier=NaN;//TODO
     ////ifstream stream(filepath+"E_barrier/E_barrier.dat");
     //ifstream stream(indatapath + "E_barrier.dat");
     ////ifstream stream("../../E_barrier/E_barrier.dat");
@@ -93,21 +93,21 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 30, ny=30 , nz=1;
-    const double dx=1e-9;
+    const float dx=1e-9;
 
-    double dt;
+    float dt;
     if(argc>4){
-        std::istringstream os(argv[4]); // Reading double in scientific notation
+        std::istringstream os(argv[4]); // Reading float in scientific notation
         os >> dt;
     }
     else{
         dt = 1e-13;
     }
     std::cout << "dt = " << dt << std::endl;
-    //const double dt = 1e-13;//Integration step
-    const double threshold = 0.9;
+    //const float dt = 1e-13;//Integration step
+    const float threshold = 0.9;
     const int samples = 10;
-    const double maxtime = 1e-5;
+    const float maxtime = 1e-5;
     //std::cout << "Simulating "<<maxtime<<" [s] with " << maxtime/dt << " steps, estimated computation time is " << maxtime/dt*3e-3 << " [s] " << std::endl;
     unsigned long long dir_size_max=2e9; // in Bytes
 
@@ -133,13 +133,13 @@ int main(int argc, char** argv)
     if(!exists (path_mrelax)){
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         // Initial magnetic field
-        array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
         m(span, span, span, 2) = -1;
         for(int ix=0;ix<mesh.n0;ix++){
             for(int iy=0;iy<mesh.n1;iy++){
-                const double rx=double(ix)-mesh.n0/2.;
-                const double ry=double(iy)-mesh.n1/2.;
-                const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+                const float rx=float(ix)-mesh.n0/2.;
+                const float ry=float(iy)-mesh.n1/2.;
+                const float r = sqrt(pow(rx, 2)+pow(ry, 2));
                 if(r>nx/4.) m(ix, iy, span, 2)=1.;
             }
         }
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
         while (state.t < 8.e-10){
             state.m=Llg.step(state);
         }
-        double timerelax= af::timer::stop(t);
+        float timerelax= af::timer::stop(t);
         vti_writer_atom(state.m, mesh , (filepath + "relax").c_str());
         m_temp=m;
     }
@@ -176,9 +176,9 @@ int main(int argc, char** argv)
     af::array m = m_temp; //NOTE: not beautiful
 
 
-    double A = pow(10, 9);
-    double k = pow(10, 8);
-    double T = e_barrier/(constants::kb*(log(A)-log(k)));
+    float A = pow(10, 9);
+    float k = pow(10, 8);
+    float T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
 
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
     std::ofstream ofs_antime((filepath + "antime.dat").c_str());
     ofs_antime.precision(12);
     ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse " << std::endl;
-    std::vector<double> antimes;// appends annihilation time for each iteration to calculate mean
+    std::vector<float> antimes;// appends annihilation time for each iteration to calculate mean
     // Iterations to obtain mean annihilaiton time
     for(int j = 0; j < samples; j++){
         state = State(mesh, material, m);
@@ -227,11 +227,11 @@ int main(int argc, char** argv)
         }
         vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10, 9)
 
-        double detect_time = state.t;
+        float detect_time = state.t;
         Detector detector2 = Detector((int)(5e-12/dt), threshold);
         detector2.gt=false;
         int reverse=0;
-        for (std::list<double>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
+        for (std::list<float>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
             detector2.add_data(*rit);
             reverse++;
             if(detector2.event == true) break;
@@ -247,18 +247,18 @@ int main(int argc, char** argv)
     }
     ofs_antime.close();
 
-    double mean_antime = 0;
-    for (double n : antimes){
+    float mean_antime = 0;
+    for (float n : antimes){
         mean_antime+=n;
     }
-    mean_antime/= (double) antimes.size();
+    mean_antime/= (float) antimes.size();
 
-    double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
-    for (double n : antimes){
+    float unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
+    for (float n : antimes){
         unbiased_sample_variance += pow( n - mean_antime , 2);
     }
-    unbiased_sample_variance/=( (double)antimes.size() -1 );
-    double unbiased_sample_sigma = sqrt(unbiased_sample_variance);
+    unbiased_sample_variance/=( (float)antimes.size() -1 );
+    float unbiased_sample_sigma = sqrt(unbiased_sample_variance);
 
     std::cout<<"antimes.size() = "<< antimes.size() << std::endl;
     std::cout<<"mean_antime = "<< mean_antime << std::endl;

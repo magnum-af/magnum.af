@@ -12,18 +12,18 @@
 namespace magnumaf{
 
 
-LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
+LBFGS_Minimizer::LBFGS_Minimizer(float tolerance, size_t maxIter, int verbose): tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {
 }
 
-LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance, size_t maxIter, int verbose): llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
+LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, float tolerance, size_t maxIter, int verbose): llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose)
 {
 }
 
 
 //Energy calculation
-double LBFGS_Minimizer::E(const State& state){
-  double solution = 0.;
+float LBFGS_Minimizer::E(const State& state){
+  float solution = 0.;
   for(unsigned i=0;i<llgterms_.size();++i){
     solution+=llgterms_[i]->E(state);
   }
@@ -44,7 +44,7 @@ af::array LBFGS_Minimizer::Heff(const State& state){
     return solution;
 }
 
-double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
+float LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradient){
     if( llgterms_.size() == 0){
         std::cout<< bold_red("ERROR: LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to LBFGS_Minimizer.llgterms_! Aborting...")<<std::endl;
         exit (EXIT_FAILURE);
@@ -52,11 +52,11 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
     af::timer timer=af::timer::start();
     //Avoiding array with zeros, starting loop with second term in llgterms
     af::array h = llgterms_[0]->h(state);
-    double energy = llgterms_[0]->E(state, h);
+    float energy = llgterms_[0]->E(state, h);
     for(unsigned i = 1; i < llgterms_.size() ; ++i ){
     //Alternative:
-    //af::array h = af::constant(0, state.mesh.dims, f64);//llgterms_[0]->h(state);
-    //double energy = 0;//llgterms_[0]->E(state, h);
+    //af::array h = af::constant(0, state.mesh.dims, f32);//llgterms_[0]->h(state);
+    //float energy = 0;//llgterms_[0]->E(state, h);
     //for(unsigned i = 0; i < llgterms_.size() ; ++i ){
         af::array temp_h = llgterms_[i]->h(state);
         h+=temp_h;
@@ -80,38 +80,38 @@ af::array LBFGS_Minimizer::Gradient(const State& state){
     //return state.Ms * cross4(state.m, cross4(state.m, Heff(state)));
 }
 
-double mydot (const af::array& a, const af::array& b){
+float mydot (const af::array& a, const af::array& b){
     return full_inner_product(a, b);
 }
-double mynorm(const af::array &a) {
+float mynorm(const af::array &a) {
   return sqrt( mydot(a, a) );
 }
 
-double LBFGS_Minimizer::mxmxhMax(const State& state) {
+float LBFGS_Minimizer::mxmxhMax(const State& state) {
     return maxnorm(Gradient(state));
 }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 //TODO Currently Minimize() fails when called second time, i.e. when m already relaxed linesearch rate is 0 even with changed zeeman field
-double LBFGS_Minimizer::Minimize(State& state){
+float LBFGS_Minimizer::Minimize(State& state){
     std::cout.precision(24);
     af::timer timer = af::timer::start();
     //af::print("h in minimize", af::mean(Heff(state)));//TODEL
     //af::print("Gradient", Gradient(state));//TODEL
 
-    double eps  = 2.22e-16;
-    double eps2 = sqrt(eps);
-    double epsr = pow(eps, 0.9);
-    //double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
-    double tolf2 = sqrt(tolerance_);
-    double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
-    //double f = this->E(state);
+    float eps  = 2.22e-16;
+    float eps2 = sqrt(eps);
+    float epsr = pow(eps, 0.9);
+    //float tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
+    float tolf2 = sqrt(tolerance_);
+    float tolf3 = pow(tolerance_, 0.3333333333333333333333333);
+    //float f = this->E(state);
     //af::array grad = this->Gradient(state);
     af::array grad;
-    double f = this->EnergyAndGradient(state, grad);
-    //double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for not calculating Heff double
+    float f = this->EnergyAndGradient(state, grad);
+    //float f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for not calculating Heff float
     // NOTE: objFunc.both calcs gradient and energy E
-    double gradNorm = maxnorm(grad);
+    float gradNorm = maxnorm(grad);
     //af::print("grad", grad);
     if(this->verbose > 0){std::cout << "f= " << f << std::endl;}
     if ( gradNorm < (epsr*(1+fabs(f))) ) {
@@ -120,28 +120,28 @@ double LBFGS_Minimizer::Minimize(State& state){
     const size_t m = 5;
 
     // array container
-    af::array af_zero = (af::constant(0.0, state.mesh.dims, f64));
+    af::array af_zero = (af::constant(0.0, state.mesh.dims, f32));
     std::array<af::array, m> sVector {{af_zero, af_zero, af_zero, af_zero, af_zero}};
     std::array<af::array, m> yVector {{af_zero, af_zero, af_zero, af_zero, af_zero}};
 
     // vector container
-    //std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims, f64);
-    //std::vector<af::array> yVector; //= af::constant(0.0, state.mesh.dims, f64);
+    //std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims, f32);
+    //std::vector<af::array> yVector; //= af::constant(0.0, state.mesh.dims, f32);
     //for (size_t i = 0; i < m; i++){
-    //    sVector.push_back(af::constant(0.0, state.mesh.dims, f64));
-    //    yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+    //    sVector.push_back(af::constant(0.0, state.mesh.dims, f32));
+    //    yVector.push_back(af::constant(0.0, state.mesh.dims, f32));
     //}
 
-    std::array<double, m> alpha = {0., 0., 0., 0., 0.};
-    af::array q = af::constant(0.0, state.mesh.dims, f64);
-    af::array s = af::constant(0.0, state.mesh.dims, f64);
-    af::array y = af::constant(0.0, state.mesh.dims, f64);
-    double f_old = 0.0;
-    af::array grad_old = af::constant(0.0, state.mesh.dims, f64);
+    std::array<float, m> alpha = {0., 0., 0., 0., 0.};
+    af::array q = af::constant(0.0, state.mesh.dims, f32);
+    af::array s = af::constant(0.0, state.mesh.dims, f32);
+    af::array y = af::constant(0.0, state.mesh.dims, f32);
+    float f_old = 0.0;
+    af::array grad_old = af::constant(0.0, state.mesh.dims, f32);
     af::array x_old = state.m;
 
     size_t iter = 0, globIter = 0;
-    double H0k = 1;
+    float H0k = 1;
         do {
             //TODO TODEL
             //
@@ -160,19 +160,19 @@ double LBFGS_Minimizer::Minimize(State& state){
             q = grad;
             const int k = std::min(m, iter);
             for (int i = k - 1; i >= 0; i--) {
-                const double rho = 1.0 / mydot(sVector[i], yVector[i]);
+                const float rho = 1.0 / mydot(sVector[i], yVector[i]);
                 alpha[i] = rho * mydot(sVector[i], q);
                 q -= alpha[i] * yVector[i];
             }
             q = H0k * q; // NOTE: cg step skipped and only used else
             for (int i = 0; i < k; i++) {
-                const double rho = 1.0 / mydot(sVector[i], yVector[i]);
-                const double beta = rho * mydot(yVector[i], q);
+                const float rho = 1.0 / mydot(sVector[i], yVector[i]);
+                const float beta = rho * mydot(yVector[i], q);
                 q += sVector[i] * (alpha[i] - beta);
             }
 
             // line 291 in .fe: decent = -grad.dot(q)
-            double phiPrime0 = -mydot(grad, q);
+            float phiPrime0 = -mydot(grad, q);
             if (phiPrime0 > 0) {
                 q = grad;
                 iter = 0;
@@ -190,9 +190,9 @@ double LBFGS_Minimizer::Minimize(State& state){
                    std::cout << "Minimizer: Convergence reached (due to almost zero gradient (|g|=" << gradNorm << " < " << eps*(1.+fabs(f))<< ")!" << std::endl;
                }
             }
-            //const double rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
-            const double rate = linesearch(state, f, x_old, grad, -q, tolerance_);
-            //TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
+            //const float rate = MyMoreThuente<T, decltype(objFunc), 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
+            const float rate = linesearch(state, f, x_old, grad, -q, tolerance_);
+            //TODO/old/todel//const float rate = this->cvsrch(state, x_old, x0, f, grad, -q, tolf);
             if (rate == 0.0) {
                 if(this->verbose>0 ){
                     std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate == 0.0. This should not happen, elaborate! (maybe m is already relaxed?)") << std::endl;
@@ -200,15 +200,15 @@ double LBFGS_Minimizer::Minimize(State& state){
                 }
               //TODO//exit(0);// why exit with 0 (= sucess)? maybe change to return(0) or, (if necessary)//exit(EXIT_FAILURE);
             }
-            double f1 = 1+fabs(f);
-            double gradNorm = maxnorm(grad);
+            float f1 = 1+fabs(f);
+            float gradNorm = maxnorm(grad);
             if (gradNorm < (epsr*f1)) {
               return f;
             }
             s = state.m - x_old;
             if (this->verbose > 1) {
-              //std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 1);
-              std::cout << std::setprecision(std::numeric_limits<double>::digits10+12);
+              //std::cout << std::setprecision(std::numeric_limits<float>::digits10 + 1);
+              std::cout << std::setprecision(std::numeric_limits<float>::digits10+12);
               std::cout << "bb> " << globIter << " " << f << " " << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
             }
             if (of_convergence.is_open()){
@@ -220,7 +220,7 @@ double LBFGS_Minimizer::Minimize(State& state){
               break;
             }
             y = grad - grad_old;
-            double ys = mydot(y, s);
+            float ys = mydot(y, s);
             if (ys <= eps2*mynorm(y)*mynorm(s)) { // Dennis, Schnabel 9.4.1
               if (this->verbose>2) {
                 std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
@@ -262,32 +262,32 @@ double LBFGS_Minimizer::Minimize(State& state){
     if( this->verbose > 0) {std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;}
 };
 
-double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) {
-    double rate = 1.0;
+float LBFGS_Minimizer::linesearch(State& state, float &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const float tolf) {
+    float rate = 1.0;
     cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
     return rate;
 }
 
-//static int cvsrch(P &objFunc, const vex::vector<double> &wa, vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const vex::vector<double> &s, double tolf) {
-//TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf) {// ak = 1.0 == double &stp moved into function
-int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::array &g, double &stp, const af::array &s, const double tolf) {
+//static int cvsrch(P &objFunc, const vex::vector<float> &wa, vex::vector<float> &x, float &f, vex::vector<float> &g, float &stp, const vex::vector<float> &s, float tolf) {
+//TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array &wa, af::array &x, float &f, af::array &g, const af::array &s, float tolf) {// ak = 1.0 == float &stp moved into function
+int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, float &f, af::array &g, float &stp, const af::array &s, const float tolf) {
   // we rewrite this from MIN-LAPACK and some MATLAB code
 
   int info           = 0;
   int infoc          = 1;
 
 //  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
-  const double xtol   = 1e-15;
-  const double ftol   = 1.0e-4;  // c1
-  const double gtol   = 0.9;   // c2
-  const double eps    = tolf;
-  const double stpmin = 1e-15;
-  const double stpmax = 1e15;
-  const double xtrapf = 4;
+  const float xtol   = 1e-15;
+  const float ftol   = 1.0e-4;  // c1
+  const float gtol   = 0.9;   // c2
+  const float eps    = tolf;
+  const float stpmin = 1e-15;
+  const float stpmax = 1e15;
+  const float xtrapf = 4;
   const int maxfev   = 20;
   int nfev           = 0;
 
-  double dginit = mydot(g, s);
+  float dginit = mydot(g, s);
   if (dginit >= 0.0) {
     // no descent direction
     // TODO: handle this case
@@ -298,22 +298,22 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
   bool brackt      = false;
   bool stage1      = true;
 
-  double finit      = f;
-  double dgtest     = ftol * dginit;
-  double width      = stpmax - stpmin;
-  double width1     = 2 * width;
-  // vex::vector<double> wa(x.queue_list(), x.size());
+  float finit      = f;
+  float dgtest     = ftol * dginit;
+  float width      = stpmax - stpmin;
+  float width1     = 2 * width;
+  // vex::vector<float> wa(x.queue_list(), x.size());
   // wa = x;
 
-  double stx        = 0.0;
-  double fx         = finit;
-  double dgx        = dginit;
-  double sty        = 0.0;
-  double fy         = finit;
-  double dgy        = dginit;
+  float stx        = 0.0;
+  float fx         = finit;
+  float dgx        = dginit;
+  float sty        = 0.0;
+  float fy         = finit;
+  float dgy        = dginit;
 
-  double stmin;
-  double stmax;
+  float stmin;
+  float stmax;
 
   while (true) {
 
@@ -347,10 +347,10 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
     state.m = renormalize_handle_zero_values(state.m);
     f = this->EnergyAndGradient(state, g);
     nfev++;
-    double dg = mydot(g, s);
-    double ftest1 = finit + stp * dgtest;
-    double ftest2 = finit + eps*fabs(finit);
-    double ft = 2*ftol-1;
+    float dg = mydot(g, s);
+    float ftest1 = finit + stp * dgtest;
+    float ftest2 = finit + eps*fabs(finit);
+    float ft = 2*ftol-1;
 
     // all possible convergence tests
     if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0))
@@ -387,12 +387,12 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
 
     // if (stage1 & (f <= fx) & (f > ftest1)) {
     if (stage1 & (f <= fx) & (not ((f<=ftest2)&&(ft*dginit>=dg)))) { // not wolfe 1 --> not approx wolfe 1
-      double fm = f - stp * dgtest;
-      double fxm = fx - stx * dgtest;
-      double fym = fy - sty * dgtest;
-      double dgm = dg - dgtest;
-      double dgxm = dgx - dgtest;
-      double dgym = dgy - dgtest;
+      float fm = f - stp * dgtest;
+      float fxm = fx - stx * dgtest;
+      float fym = fy - sty * dgtest;
+      float dgm = dg - dgtest;
+      float dgxm = dgx - dgtest;
+      float dgym = dgy - dgtest;
 
       int rsl = cstep(stx, fxm, dgxm, sty, fym, dgym, stp, fm, dgm, brackt, stmin, stmax, infoc); (void) rsl;
 
@@ -418,8 +418,8 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array &wa, double &f, af::ar
   return 0;
 }
 
-int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp,
-double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) {
+int LBFGS_Minimizer::cstep(float& stx, float& fx, float& dx, float& sty, float& fy, float& dy, float& stp,
+float& fp, float& dp, bool& brackt, float& stpmin, float& stpmax, int& info) {
   info = 0;
   bool bound = false;
 
@@ -429,23 +429,23 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
     return -1;
   }
 
-  double sgnd = dp * (dx / fabs(dx));
+  float sgnd = dp * (dx / fabs(dx));
 
-  double stpf = 0;
-  double stpc = 0;
-  double stpq = 0;
+  float stpf = 0;
+  float stpc = 0;
+  float stpq = 0;
 
   if (fp > fx) {
     info = 1;
     bound = true;
-    double theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
-    double s = std::max(theta, std::max(dx, dp));
-    double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
+    float theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
+    float s = std::max(theta, std::max(dx, dp));
+    float gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
     if (stp < stx)
       gamma = -gamma;
-    double p = (gamma - dx) + theta;
-    double q = ((gamma - dx) + gamma) + dp;
-    double r = p / q;
+    float p = (gamma - dx) + theta;
+    float q = ((gamma - dx) + gamma) + dp;
+    float r = p / q;
     stpc = stx + r * (stp - stx);
     stpq = stx + ((dx / ((fx - fp) / (stp - stx) + dx)) / 2.) * (stp - stx);
     if (fabs(stpc - stx) < fabs(stpq - stx))
@@ -456,15 +456,15 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
   } else if (sgnd < 0.0) {
     info = 2;
     bound = false;
-    double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
-    double s = std::max(theta, std::max(dx, dp));
-    double gamma = s * sqrt((theta / s) * (theta / s)  - (dx / s) * (dp / s));
+    float theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    float s = std::max(theta, std::max(dx, dp));
+    float gamma = s * sqrt((theta / s) * (theta / s)  - (dx / s) * (dp / s));
     if (stp > stx)
       gamma = -gamma;
 
-    double p = (gamma - dp) + theta;
-    double q = ((gamma - dp) + gamma) + dx;
-    double r = p / q;
+    float p = (gamma - dp) + theta;
+    float q = ((gamma - dp) + gamma) + dx;
+    float r = p / q;
     stpc = stp + r * (stx - stp);
     stpq = stp + (dp / (dp - dx)) * (stx - stp);
     if (fabs(stpc - stp) > fabs(stpq - stp))
@@ -475,14 +475,14 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
   } else if (fabs(dp) < fabs(dx)) {
     info = 3;
     bound = 1;
-    double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
-    double s = std::max(theta, std::max( dx, dp));
-    double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
+    float theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
+    float s = std::max(theta, std::max( dx, dp));
+    float gamma = s * sqrt(std::max((float) 0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
     if (stp > stx)
       gamma = -gamma;
-    double p = (gamma - dp) + theta;
-    double q = (gamma + (dx - dp)) + gamma;
-    double r = p / q;
+    float p = (gamma - dp) + theta;
+    float q = (gamma + (dx - dp)) + gamma;
+    float r = p / q;
     if ((r < 0.0) & (gamma != 0.0)) {
       stpc = stp + r * (stx - stp);
     } else if (stp > stx) {
@@ -509,15 +509,15 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
     info = 4;
     bound = false;
     if (brackt) {
-      double theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
-      double s = std::max(theta, std::max(dy, dp));
-      double gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
+      float theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
+      float s = std::max(theta, std::max(dy, dp));
+      float gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
       if (stp > sty)
         gamma = -gamma;
 
-      double p = (gamma - dp) + theta;
-      double q = ((gamma - dp) + gamma) + dy;
-      double r = p / q;
+      float p = (gamma - dp) + theta;
+      float q = ((gamma - dp) + gamma) + dy;
+      float r = p / q;
       stpc = stp + r * (sty - stp);
       stpf = stpc;
     } else if (stp > stx)
@@ -549,9 +549,9 @@ double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info)
 
   if (brackt & bound) {
     if (sty > stx) {
-      stp = std::min(stx + 0.66 * (sty - stx), stp);
+      stp = std::min(stx + (float) 0.66 * (sty - stx), stp);
     } else {
-      stp = std::max(stx + 0.66 * (sty - stx), stp);
+      stp = std::max(stx + (float) 0.66 * (sty - stx), stp);
     }
   }
 

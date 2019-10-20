@@ -3,19 +3,19 @@
 namespace magnumaf{
 
 
-double SpinTransferTorqueField::E(const State& state){
+float SpinTransferTorqueField::E(const State& state){
     return - constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
-double SpinTransferTorqueField::E(const State& state, const af::array& h){
+float SpinTransferTorqueField::E(const State& state, const af::array& h){
     return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
-SpinTransferTorqueField::SpinTransferTorqueField (af::array polarization_field, double nu_dampinglike, double nu_fieldlike, double j_e) : polarization_field(polarization_field), nu_dampinglike(nu_dampinglike), nu_fieldlike(nu_fieldlike), j_e(j_e) {
+SpinTransferTorqueField::SpinTransferTorqueField (af::array polarization_field, float nu_dampinglike, float nu_fieldlike, float j_e) : polarization_field(polarization_field), nu_dampinglike(nu_dampinglike), nu_fieldlike(nu_fieldlike), j_e(j_e) {
 }
 
-SpinTransferTorqueField::SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_fieldlike, double j_e) : polarization_field(polarization_field_ptr), nu_dampinglike(nu_dampinglike), nu_fieldlike(nu_fieldlike), j_e(j_e) {
+SpinTransferTorqueField::SpinTransferTorqueField (long int polarization_field_ptr, float nu_dampinglike, float nu_fieldlike, float j_e) : polarization_field(polarization_field_ptr), nu_dampinglike(nu_dampinglike), nu_fieldlike(nu_fieldlike), j_e(j_e) {
 }
 
 af::array SpinTransferTorqueField::h(const State& state){

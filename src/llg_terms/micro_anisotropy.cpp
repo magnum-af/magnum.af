@@ -7,11 +7,11 @@
 namespace magnumaf{
 
 
-UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, std::array<double, 3> Ku1_axis) : Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)){
+UniaxialAnisotropyField::UniaxialAnisotropyField (float Ku1, std::array<float, 3> Ku1_axis) : Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)){
 }
 
 
-UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, std::array<double, 3> Ku1_axis) : Ku1_field(Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis)){
+UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, std::array<float, 3> Ku1_axis) : Ku1_field(Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis)){
 }
 
 
@@ -19,7 +19,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (af::array Ku1_field, af::array
 }
 
 
-UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr) : Ku1(Ku1), Ku1_axis_field(*( new af::array( *((void**) Ku1_axis_field_ptr)))){
+UniaxialAnisotropyField::UniaxialAnisotropyField (float Ku1, long int Ku1_axis_field_ptr) : Ku1(Ku1), Ku1_axis_field(*( new af::array( *((void**) Ku1_axis_field_ptr)))){
 }
 
 
@@ -28,12 +28,12 @@ UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, long i
 
 
 // For wrapping only
-UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1(Ku1), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
+UniaxialAnisotropyField::UniaxialAnisotropyField (float Ku1, float Ku1_axis_0, float Ku1_axis_1, float Ku1_axis_2) : Ku1(Ku1), Ku1_axis(get_normalized_vector(std::array<float, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
 
 
 // For wrapping only
-UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
+UniaxialAnisotropyField::UniaxialAnisotropyField (long int Ku1_field_ptr, float Ku1_axis_0, float Ku1_axis_1, float Ku1_axis_2) : Ku1_field(*( new af::array( *((void**) Ku1_field_ptr)))), Ku1_axis(get_normalized_vector(std::array<float, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})){
 }
 
 
@@ -43,7 +43,7 @@ af::array UniaxialAnisotropyField::h(const State& state){
     // switch Ku1_axis and Ku1_axis_field
     af::array eu; // Array containing normal vectors
     if ( Ku1_axis_field.isempty() ){
-        eu = af::array(state.mesh.dims, f64);
+        eu = af::array(state.mesh.dims, f32);
         eu(af::span, af::span, af::span, 0) = Ku1_axis[0];
         eu(af::span, af::span, af::span, 1) = Ku1_axis[1];
         eu(af::span, af::span, af::span, 2) = Ku1_axis[2];
@@ -77,13 +77,13 @@ af::array UniaxialAnisotropyField::h(const State& state){
 }
 
 
-std::array<double, 3> UniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector){
-    double norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
-    return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
+std::array<float, 3> UniaxialAnisotropyField::get_normalized_vector(std::array<float, 3> vector){
+    float norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
+    return std::array<float, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
 }
 
 
-double UniaxialAnisotropyField::get_ku1_axis(int i){
+float UniaxialAnisotropyField::get_ku1_axis(int i){
     return Ku1_axis[i];
 }
 

@@ -13,7 +13,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p =self.p
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -42,7 +42,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p =self.p
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -71,7 +71,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p = self.p
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -100,7 +100,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(1, 2, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p = self.p
-    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -119,7 +119,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(1, 2, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p =self.p
-    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 1
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 0
@@ -138,7 +138,7 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
     material=magnumaf.Material()
     material.p =self.p
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 1
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 0

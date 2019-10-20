@@ -7,8 +7,8 @@ namespace magnumaf{
 
 af::array Stochastic_Integrator::Heun(const State& state)
 {
-    const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
-    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
+    const float D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f32, rand_engine);// Random thermal field at t+dt/2
     af::array k1 = dt * stochfdmdt(state, h_th_prev);
     af::array k2 = dt * stochfdmdt(state + k1, h_th);
     h_th_prev = h_th;
@@ -17,9 +17,9 @@ af::array Stochastic_Integrator::Heun(const State& state)
 
 af::array Stochastic_Integrator::SemiImplicitHeun(const State& state)
 {
-    const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
-    const af::array h_th_init = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t
-    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Random thermal field at t+dt/2
+    const float D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const af::array h_th_init = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f32, rand_engine);// Random thermal field at t
+    const af::array h_th = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f32, rand_engine);// Random thermal field at t+dt/2
     af::array m1= dt/2. * stochfdmdt (state   , h_th_init);
     af::array m2= dt/2. * stochfdmdt (state + m1, h_th);
     af::array m3= dt/2. * stochfdmdt (state + m2, h_th);
@@ -55,13 +55,13 @@ void Stochastic_Integrator::step(State& state){//TODO remove dt as parameter her
     //std::cout<<" TIME  = "<<timer<<std::endl;
 }
 
-Stochastic_Integrator::Stochastic_Integrator (double alpha, double T, double dt, State state, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, std::string smode):
+Stochastic_Integrator::Stochastic_Integrator (float alpha, float T, float dt, State state, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in, std::string smode):
   alpha(alpha), T(T), dt(dt), Fieldterms(Fieldterms_in), m_prev(state.m)
 {
-    const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const float D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
     unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now().time_since_epoch()).count();
     rand_engine=af::randomEngine(af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed));
-    h_th_prev = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Initial random thermal field at t=0
+    h_th_prev = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f32, rand_engine);// Initial random thermal field at t=0
 
     //Setting int mode for usage in void step(...)
     if (smode == "Heun" || smode == "0"){ mode = 0;}
@@ -70,8 +70,8 @@ Stochastic_Integrator::Stochastic_Integrator (double alpha, double T, double dt,
     else {std::cout<< "ERROR: Constructor Stochastic_Ingetrator: Integrator Mode not recognized"<<std::endl;}
 }
 
-double Stochastic_Integrator::cpu_time(){
-    double cpu_time = 0.;
+float Stochastic_Integrator::cpu_time(){
+    float cpu_time = 0.;
     for(unsigned i=0;i<Fieldterms.size();++i){
         cpu_time+=Fieldterms[i]->get_cpu_time();
     }

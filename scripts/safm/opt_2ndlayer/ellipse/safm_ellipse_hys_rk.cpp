@@ -12,8 +12,8 @@ int main(int argc, char** argv)
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<< filepath <<std::endl;
     af::setDevice(argc>2? std::stoi(argv[2]):0);
-    const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
-    const double integr_time = (argc > 4 ? std::stod(argv[4]): 4 * 50e-9); //[s]
+    const float hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
+    const float integr_time = (argc > 4 ? std::stod(argv[4]): 4 * 50e-9); //[s]
     std::string path_h_fl(argc>5? argv[5]: filepath + "h_free_layer.vti"); // path to freelayer h vti
 
     af::info();
@@ -23,16 +23,16 @@ int main(int argc, char** argv)
     Mesh mesh;
     vti_reader(h_demag_safm, mesh, path_h_fl);
     // Defining H_zee via lamdas
-    double integr_time_per_quater = integr_time/4.;
-    double rate = hzee_max/integr_time_per_quater; //[T/s]
+    float integr_time_per_quater = integr_time/4.;
+    float rate = hzee_max/integr_time_per_quater; //[T/s]
     std::cout << "hzee_max= " << hzee_max << ", rate=" << rate << ", integr_time_per_quater=" << integr_time_per_quater << std::endl;
     auto zee_func= [h_demag_safm, hzee_max, rate] ( State state ) -> af::array {
-        double field_Tesla = 0;
+        float field_Tesla = 0;
         if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
         else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
         else if(state.t < 5*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
         else {field_Tesla =  rate*state.t - 4*hzee_max; std::cout << "NOTE: zee time out of range" << std::endl;}
-        //double field_Tesla;
+        //float field_Tesla;
         //if(state.steps < steps_full_hysteresis/4){
         //    field_Tesla = hzee_max * 4. * state.steps/steps_full_hysteresis;
         //}
@@ -46,16 +46,16 @@ int main(int argc, char** argv)
         //    field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
         //}
         //std::cout << "fild= "<< field_Tesla << std::endl;
-        af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(af::span, af::span, af::span, 0) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+        zee(af::span, af::span, af::span, 0) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
         //std::cout << "dims= " << zee.dims() << ", "<< h_demag_safm.dims() << std::endl;
         return  zee + h_demag_safm;
     };
 
     // Parameter initialization
     ////Generating Objects
-    double Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    double A     = 1.5e-11;//[J/m]
+    float Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    float A     = 1.5e-11;//[J/m]
 
     State state(mesh, Ms, mesh.ellipse(1));
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");

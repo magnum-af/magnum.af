@@ -30,7 +30,7 @@ Ms = 1.6/Constants.mu0
 
 print(x, y, z, dx, dy, dz)
 mesh = Mesh(nx, ny, nz, dx, dy, dz)
-m = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+m = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 print(m[:, :, 0:4, :].dims(), Util.disk(nx, ny, 5, [0, 1, 0]).dims())
 m[:, :, 0:5, :] = Util.disk(nx, ny, 5, [0, 1, 0])
 state = State(mesh, Ms, m)

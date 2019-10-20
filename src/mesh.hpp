@@ -5,12 +5,12 @@
 namespace magnumaf{
 
 struct Mesh{
-    Mesh (int, int, int, double, double, double);
+    Mesh (int, int, int, float, float, float);
     Mesh (){};
 
     int n0, n1, n2;               // Number of cells in x, y, z
-    double dx, dy, dz;            // Distance between cells
-    double V;                   // Volume of one cell
+    float dx, dy, dz;            // Distance between cells
+    float V;                   // Volume of one cell
     int n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
     af::dim4 dims;
     af::dim4 dims_expanded;

@@ -16,14 +16,14 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
-    const double dx=2.715e-10;
+    const float dx=2.715e-10;
 
 
-    double n_interp = 60;
-    double string_dt=5e-14;
+    float n_interp = 60;
+    float string_dt=5e-14;
     const int string_max_steps = 10000;
-    double rel_diff = 1e-12;
-    double abs_diff = 1e-27;
+    float rel_diff = 1e-12;
+    float abs_diff = 1e-27;
 
 
     //Generating Objects
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     state.t=0;
 
 
-    array last   = constant( 0, mesh.dims, f64);
+    array last   = constant( 0, mesh.dims, f32);
     last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;

@@ -13,32 +13,32 @@ int main(int argc, char** argv)
     af::info();
     const int nx (argc>3? std::stoi(argv[3]) : 128);
     const int ny (argc>4? std::stoi(argv[4]) : 32);
-    const double x (argc>5? std::stod(argv[5]) : 100e-9);
-    const double y (argc>6? std::stod(argv[6]) : 25e-9);
+    const float x (argc>5? std::stod(argv[5]) : 100e-9);
+    const float y (argc>6? std::stod(argv[6]) : 25e-9);
     std::cout << "read in values: " << nx << "\t"  << ny << "\t"  << x << "\t"  << y << "\t" << std::endl;
 
     int i_callback = 0;
-    auto calc_hz = [nx, ny, x, y, filepath, &i_callback] (double dz) -> double{
+    auto calc_hz = [nx, ny, x, y, filepath, &i_callback] (float dz) -> float{
         // Parameter initialization
-        double Ms    = 1.393e6;//Vortex val//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-        //TODO//double A     = 1.5e-11;//Vortex val//[J/m]
+        float Ms    = 1.393e6;//Vortex val//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+        //TODO//float A     = 1.5e-11;//Vortex val//[J/m]
 
         //Generating Objects
-        const double  dz_fl = 10e-9;
-        std::vector<double> z_spacing = {10e-9, 0.3e-9, dz, 5e-9, dz_fl};
+        const float  dz_fl = 10e-9;
+        std::vector<float> z_spacing = {10e-9, 0.3e-9, dz, 5e-9, dz_fl};
         NonequispacedMesh mesh(nx, ny, x/nx, y/ny, z_spacing);
         //mesh.print(std::cout);
 
         // Initial magnetic field
-        af::array m = af::constant(0, mesh.dims, f64);
+        af::array m = af::constant(0, mesh.dims, f32);
 
         for(int ix=0;ix<nx;ix++){
             for(int iy=0;iy<ny;iy++){
-                const double a= (double)(nx/2);
-                const double b= (double)(ny/2);
-                const double rx=double(ix)-nx/2.;
-                const double ry=double(iy)-ny/2.;
-                const double r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
+                const float a= (float)(nx/2);
+                const float b= (float)(ny/2);
+                const float rx=float(ix)-nx/2.;
+                const float ry=float(iy)-ny/2.;
+                const float r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
                 if(r<1){
                     for(int iz=0;iz<mesh.nz;iz++){
                     }

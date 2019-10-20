@@ -7,23 +7,23 @@ using namespace magnumaf;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-void calc_mean_m(const State& state, std::ostream& myfile, double hzee){
+void calc_mean_m(const State& state, std::ostream& myfile, float hzee){
     array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) << "\t" << afvalue(sum_dim3(span, span, span, 1))<< "\t" << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee << std::endl;
 }
 
-double hzee_max = 2.; //[T]
+float hzee_max = 2.; //[T]
 int quater_steps=100; // One 4th of total steps
 
 af::array zee_func(State state){
-    double field_Tesla = 0;
-    double rate = hzee_max/quater_steps; //[T/s]
+    float field_Tesla = 0;
+    float rate = hzee_max/quater_steps; //[T/s]
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
     return  zee;
 }
 
@@ -42,8 +42,8 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    double length = 90e-9; //[nm]
-    const double dx=0.5e-9;
+    float length = 90e-9; //[nm]
+    const float dx=0.5e-9;
     const int nx = (int)(length/dx);
     std::cout << "nx = "<< nx << std::endl;
 
@@ -62,13 +62,13 @@ int main(int argc, char** argv)
     material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
     calc_mean_m(state, stream, 0);
 
     timer t_hys = af::timer::start();
-    double rate = hzee_max/quater_steps; //[T/s]
+    float rate = hzee_max/quater_steps; //[T/s]
     minimizer.llgterms.push_back( LlgTerm (new ExternalField(&zee_func)));
     while (state.t < 4* hzee_max/rate){
         minimizer.minimize(state);

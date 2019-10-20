@@ -6,19 +6,19 @@ using namespace magnumaf;
 std::string filepath;
 std::ofstream stream;
 
-double calc_hz(double dz){
+float calc_hz(float dz){
     // Parameter initialization
-    const double x=40.e-9, y=40e-9, z=4.e-9;
+    const float x=40.e-9, y=40e-9, z=4.e-9;
     const int nx = 32, ny=32 , nz=4;
-    const double Ms = 8e5;
+    const float Ms = 8e5;
 
     //Generating Objects
-    std::vector<double> z_spacing = {z/nz, dz, z/nz, z/nz};
+    std::vector<float> z_spacing = {z/nz, dz, z/nz, z/nz};
     NonequispacedMesh mesh(nx, ny, x/nx, y/ny, z_spacing);
     //mesh.print(std::cout);
 
     // Initial magnetic field
-    af::array m = af::constant(0, mesh.dims, f64);
+    af::array m = af::constant(0, mesh.dims, f32);
     m(af::span, af::span, 0, 2) = 1;
     m(af::span, af::span, 1, 2) = -1;
     State state(mesh, Ms, m, false);

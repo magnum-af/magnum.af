@@ -22,24 +22,24 @@ af::array dotproduct(const af::array& a, const af::array& b);
 af::array renormalize(const af::array& a);
 af::array renormalize_handle_zero_values(const af::array& a);
 af::array vecnorm(const af::array& a);
-double afvalue(const af::array& a); //give value of a 1, 1, 1, 1 af af::array
+float afvalue(const af::array& a); //give value of a 1, 1, 1, 1 af af::array
 unsigned int afvalue_u32(const af::array& a); // Returns value an af::array of type u32 == 6 and size [1, 1, 1, 1]
-double full_inner_product(const af::array& a, const af::array& b);
-double maxnorm(const af::array& a);
-double minval(const af::array& a);
-double meani(const af::array& a, const int i);
-double FrobeniusNorm(const af::array& a);
+float full_inner_product(const af::array& a, const af::array& b);
+float maxnorm(const af::array& a);
+float minval(const af::array& a);
+float meani(const af::array& a, const int i);
+float FrobeniusNorm(const af::array& a);
 //TODO void calcm(State state, LLG Llg, std::ostream& myfile);
-double euclnorm(const af::array& a);
-//TODO auto rk4(af::array f(double, af::array));
-double mean_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
-double mean_rel_diff(const af::array& a, const af::array& b); //!< relative difference
-double max_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
-double max_rel_diff(const af::array& a, const af::array& b); //!< relative difference
-bool abs_diff_lt_precision(af::array first, af::array second, double precision = 4e-8, bool verbose = true); //!< Absolute difference less than precision
-bool rel_diff_lt_precision(af::array first, af::array second, double precision = 2e-3, bool verbose = true); //!< Relative difference less than precision
-double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose = true, double start_precision = 1e0, double factor1 = 0.1, double factor2 = 0.9);//!< Calculates upper bound with abs_diff_lt_precision
-double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose = true, double start_precision = 1e0, double factor1 = 0.1, double factor2 = 0.9);//!< Calculates upper bound with rel_diff_lt_precision
+float euclnorm(const af::array& a);
+//TODO auto rk4(af::array f(float, af::array));
+float mean_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
+float mean_rel_diff(const af::array& a, const af::array& b); //!< relative difference
+float max_abs_diff(const af::array& a, const af::array& b); //!< absolute difference
+float max_rel_diff(const af::array& a, const af::array& b); //!< relative difference
+bool abs_diff_lt_precision(af::array first, af::array second, float precision = 4e-8, bool verbose = true); //!< Absolute difference less than precision
+bool rel_diff_lt_precision(af::array first, af::array second, float precision = 2e-3, bool verbose = true); //!< Relative difference less than precision
+float abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose = true, float start_precision = 1e0, float factor1 = 0.1, float factor2 = 0.9);//!< Calculates upper bound with abs_diff_lt_precision
+float rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose = true, float start_precision = 1e0, float factor1 = 0.1, float factor2 = 0.9);//!< Calculates upper bound with rel_diff_lt_precision
 
 // utility functions
 namespace util{

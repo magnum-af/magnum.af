@@ -25,8 +25,8 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const double x=1, y=1, z=1;
-    //const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=1, y=1, z=1;
+    //const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 10, ny=10 , nz=1;
 
     //Generating Objects
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     material.J_atom= 1;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 

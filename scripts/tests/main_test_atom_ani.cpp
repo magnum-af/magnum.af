@@ -5,7 +5,7 @@ using namespace magnumaf;
 
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-bool compare(double a, double b){
+bool compare(float a, float b){
     //std::cout << "COM:"<< a <<", " << b <<", "<<fabs(a-b)/fabs(a+b)<<std::endl;
     if(a == 0 && b == 0) return false;
     if(fabs(a-b)/fabs(a+b)<1e-30) return false;
@@ -18,8 +18,8 @@ int main(int argc, char** argv)
     std::cout.precision(32);
     std::string filepath(argc>0? argv[1]: "../Data/Testing/");
     int nx = 2, ny=1 , nz=1;//nz=5 -> lz=(5-1)*dx
-    //const double dx=1;
-    const double dx=2.715e-10;
+    //const float dx=1;
+    const float dx=2.715e-10;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     //material.p=9.274009994e-24;
 
     //-------------------------------------------------------
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     //std::cout << "H_exch_2   = " <<0<<", "<<0<<", "<< material.J_atom/constants::mu0/material.p <<std::endl;
 
 //    //-------------------------------------------------------
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     //std::cout << "H_exch_1   = " <<material.J_atom/constants::mu0/material.p<<", "<<0<<", "<<0  <<std::endl;
     //std::cout << "H_exch_2   = " <<0<<", "<<0<<", "<< material.J_atom/constants::mu0/material.p <<std::endl;
     //-------------------------------------------------------
-//    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+//    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
 //    m(0, 0, 0, 0) = 0;
 //    m(0, 0, 0, 1) = 0;
 //    m(0, 0, 0, 2) = 1;
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 ////
     nx = 1, ny=2 , nz=1;
     mesh=Mesh(nx, ny, nz, dx, dx, dx);
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
     if(compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 1)), 0)) std::cout <<"!!! TEST 4 FAILED !!!"<< std::endl;
     if(compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 2)), 2*material.K_atom/constants::mu0/material.p)) std::cout <<"!!! TEST 4 FAILED !!!"<< std::endl;
 ////    //-------------------------------------------------------
-////    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+////    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
 ////    m(0, 0, 0, 0) = 1;
 ////    m(0, 0, 0, 1) = 0;
 ////    m(0, 0, 0, 2) = 0;

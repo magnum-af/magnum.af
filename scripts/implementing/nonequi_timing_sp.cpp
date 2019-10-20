@@ -17,7 +17,7 @@ int main(int argc, char** argv)
         timer total_time = af::timer::start();
 
         // Parameter initialization
-        const double x=5.e-7, y=1.25e-7, z=3.e-9;
+        const float x=5.e-7, y=1.25e-7, z=3.e-9;
         const int nx = 100, ny=25;// , nz=2;
 
         //Generating Objects
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         const bool nonequi = true;
 
         if (nonequi){
-            std::vector<double> z_spacing;// = {z/nz, z/nz};
+            std::vector<float> z_spacing;// = {z/nz, z/nz};
             for ( int j = 0; j < nz; j++){
                 z_spacing.push_back(z/nz);
             }
@@ -57,12 +57,12 @@ int main(int argc, char** argv)
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        double timerelax = af::timer::stop(t);
+        float timerelax = af::timer::stop(t);
         std::cout<<"timerelax [af-s]: "<< timerelax << std::endl;
         vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
         // Prepare switch
-        array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+        array zeeswitch = constant(0.0, 1, 1, 1, 3, f32);
         zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
         zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
         zeeswitch(0, 0, 0, 2)=0.0;
@@ -76,11 +76,11 @@ int main(int argc, char** argv)
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        double timeintegrate = af::timer::stop(t);
+        float timeintegrate = af::timer::stop(t);
         std::cout<<"time integrate 1ns [af-s]: "<< timeintegrate <<std::endl;
         vti_writer_micro(state.m, mesh , (filepath + "2ns").c_str());
         stream.close();
-        double total = af::timer::stop(total_time);
+        float total = af::timer::stop(total_time);
         std::cout<<"total [af-s]: "<< total <<std::endl;
 
         stream.open(filepath + "timing.dat", std::ofstream::app);

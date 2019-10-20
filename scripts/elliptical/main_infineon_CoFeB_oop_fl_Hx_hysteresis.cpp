@@ -7,17 +7,17 @@
 using namespace magnumaf;
 
 
-double rate = 0.20e6 ; //[T/s]
-double hzee_max = 0.20; //[T]
+float rate = 0.20e6 ; //[T/s]
+float hzee_max = 0.20; //[T]
 
 af::array zee_func(State state){
-    double field_Tesla = 0;
+    float field_Tesla = 0;
     if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
     else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
     else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
     else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
     return  zee;
 }
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 
 
     // Parameter initialization
-    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
+    const float x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
     const int nx = 250, ny=250 , nz=1;
 
     //Generating Objects

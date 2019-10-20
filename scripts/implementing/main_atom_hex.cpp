@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 5, ny=5 , nz=1;//nz=5 -> lz=(5-1)*dx
-    const double dx=1.e-10;
+    const float dx=1.e-10;
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     material.J_atom=1;
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      //m(span, span, span, 2) = -1;
      m(1, 1, 0) = 1;
 

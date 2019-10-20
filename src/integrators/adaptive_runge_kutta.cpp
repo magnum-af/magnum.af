@@ -71,7 +71,7 @@ void AdaptiveRungeKutta::step(State& state){
 
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err_)
+af::array AdaptiveRungeKutta::RKF45(const State& state, const float dt, float& err_)
 {
     State tempstate=state;
     //stage1
@@ -112,13 +112,13 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 
 
 // Dormand-Prince 4/5 method
-af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_)
+af::array AdaptiveRungeKutta::DP45(const State& state, const float dt, float& err_)
 {
     State tempstate=state;
 
-    double a[8][7]={{0}};
-    double e[8]={0};
-    double c[8]={0};
+    float a[8][7]={{0}};
+    float e[8]={0};
+    float c[8]={0};
 
     c[2]=0.2, c[3]=0.3, c[4]=0.8, c[5]=8.0/9.0, c[6]=1, c[7]=1;
     e[1]=71.0/57600.0, e[3]=-71.0/16695.0, e[4]=71.0/1920.0, e[5]=-17253.0/339200.0, e[6]=22.0/525.0, e[7]=-1.0/40.0,
@@ -180,13 +180,13 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
 
 
 // Bogacki 4, 5 method with sigle error andstepsize control
-af::array AdaptiveRungeKutta::BS45(const State& state, const double dt , double& err_)
+af::array AdaptiveRungeKutta::BS45(const State& state, const float dt , float& err_)
 {
     State tempstate=state;
 
-    double a[9][8]={{0.}};
-    double b[9]={0.};
-    double c[9]={0.};
+    float a[9][8]={{0.}};
+    float b[9]={0.};
+    float c[9]={0.};
 
     a[2][1] = 1.0e0/6.0e0;
     a[3][1] = 2.e0/27.e0;
@@ -290,14 +290,14 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt , double&
 
 
 // Dormand Prince 7, 8  method
-af::array AdaptiveRungeKutta::DP78(const State& state, const double dt , double& err_)
+af::array AdaptiveRungeKutta::DP78(const State& state, const float dt , float& err_)
 {
     State tempstate=state;
 
-    double a[14][13]={{0.}};
-    double b[14]={0.};
-    double bhat[14]={0.};
-    double c[14]={0.};
+    float a[14][13]={{0.}};
+    float b[14]={0.};
+    float bhat[14]={0.};
+    float c[14]={0.};
 
     a[2][1] = 5.55555555555555555555555555556e-2;
     a[3][1] = 2.08333333333333333333333333333e-2;
@@ -494,7 +494,7 @@ af::array AdaptiveRungeKutta::DP78(const State& state, const double dt , double&
 }
 
 // Bogacki-Shampine 2/3rd order  with stepsize control
-af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& err)
+af::array AdaptiveRungeKutta::BS23(const State& state, const float dt, float& err)
 {
     State tempstate=state;
     af::array k1;
@@ -536,16 +536,16 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //////TODO far too high error in integration test
 //// Dormand-Prince 4/5 method
 //// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
-//af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_)
+//af::array AdaptiveRungeKutta::DP45(const State& state, const float dt, float& err_)
 //{
 //    State tempstate=state;
 //    // Iterating over a-matrix and calculating k[i]s
 //    af::array k[8];
 //    const int s = 7;
 //
-//    double a[8][7]={{0}};
-//    double e[8]={0};
-//    double c[8]={0};
+//    float a[8][7]={{0}};
+//    float e[8]={0};
+//    float c[8]={0};
 //
 //    c[2]=0.2, c[3]=0.3, c[4]=0.8, c[5]=8.0/9.0, c[6]=1, c[7]=1;
 //    e[1]=71.0/57600.0, e[3]=-71.0/16695.0, e[4]=71.0/1920.0, e[5]=-17253.0/339200.0, e[6]=22.0/525.0, e[7]=-1.0/40.0,
@@ -567,7 +567,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    }
 //    // Stages 2-7
 //    for(int i=2;i<=s;i++){
-//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //        for(int j=1;j<i;j++){
 //            rktemp+=a[i][j] * k[j];
 //        }
@@ -576,12 +576,12 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //        k[i]= dt * f(tempstate);
 //    }
 //    //Local extrapolation using 5th order approx
-//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //    for(int i=1;i<s;i++){
 //        sumbk+=a[s][i]*k[i];
 //    }
 //    //Error estimation using 4th order approx
-//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //    for(int i=1;i<=s;i++){
 //        rk_error+=e[i]*k[i];
 //    }
@@ -593,15 +593,15 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 
 //// Bogacki 4, 5 method with sigle error andstepsize control
 ////TODO far too high error in integration test
-//af::array AdaptiveRungeKutta::BS45(const State& state, const double dt , double& err_)
+//af::array AdaptiveRungeKutta::BS45(const State& state, const float dt , float& err_)
 //{
 //    State tempstate=state;
 //
 //    af::array k[9];
 //    const int s=8;
-//    double a[9][8]={{0.}};
-//    double b[9]={0.};
-//    double c[9]={0.};
+//    float a[9][8]={{0.}};
+//    float b[9]={0.};
+//    float c[9]={0.};
 //
 //    a[2][1] = 1.0e0/6.0e0;
 //    a[3][1] = 2.e0/27.e0;
@@ -660,7 +660,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    else
 //      k[1]=k[s];
 //    for(int i=2;i<=s;i++){
-//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //      for(int j=1;j<i;j++){
 //        rktemp+=a[i][j] * k[j];
 //      }
@@ -671,14 +671,14 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //      //k[i]= f(t + c[i], m + rktemp);
 //    }
 //
-//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //    for(int i=1;i<s;i++){
 //      sumbk+=a[s][i]*k[i];
 //    }
 //    sumbk*=dt;
 //
 //
-//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f32);
 //    for(int i=1;i<=s;i++){
 //      rk_error+=b[i]*k[i];
 //    }

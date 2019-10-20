@@ -15,7 +15,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 //Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
-double mean_mz_analytical (double chi){
+float mean_mz_analytical (float chi){
     return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi
 }
 
@@ -53,19 +53,19 @@ int main(int argc, char** argv)
     stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.T<<  mean_mz";
     stream2<<" abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
-    const double x=1.e-9, y=1.e-9, z=1.e-9;
+    const float x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 , nz=1;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
     Material material = Material();
-    double Ku1   = 6.9e6;
-    double alpha = 0.1;
-    double T = 10;
-    double dt = 1e-15;
+    float Ku1   = 6.9e6;
+    float alpha = 0.1;
+    float T = 10;
+    float dt = 1e-15;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 2)=1.;
     State state(mesh, material, m);//ATTENTION, to be set in each loop
     state.Ms    = 1281197;
@@ -73,9 +73,9 @@ int main(int argc, char** argv)
     Stochastic_LLG Stoch(alpha, T, dt, state, llgterm, "Heun");
 
     //Declare Variables
-    double mean_mz;
-    double abs_mean_mz;
-    double chi;
+    float mean_mz;
+    float abs_mean_mz;
+    float chi;
     //Initialize others
 
     //MEASURE

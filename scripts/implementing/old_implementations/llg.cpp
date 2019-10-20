@@ -9,8 +9,8 @@ using namespace magnumaf;
 using namespace af;
 
 //Energy calculation
-double LLG::E(const State& state){
-  double solution = 0.;
+float LLG::E(const State& state){
+  float solution = 0.;
   for(unsigned i=0;i<Fieldterms.size();++i){
     solution+=Fieldterms[i]->E(state);
   }
@@ -31,9 +31,9 @@ void LLG::write_fieldterms_micro(const State& state, const std::string filepath)
     }
 }
 
-void LLG::relax(State& state, const double precision, const int iloop, const int iwritecout){
+void LLG::relax(State& state, const float precision, const int iloop, const int iwritecout){
     timer t = af::timer::start();
-    double E_prev=1e20;
+    float E_prev=1e20;
     while (fabs((E_prev-E(state))/E_prev) > precision){
         E_prev=E(state);
         for ( int i = 0; i<iloop; i++){
@@ -65,7 +65,7 @@ array LLG::fdmdtminimal(array m, array heff){ //array LLG::fdmdt(array& m, array
 
 // Calculation of effective field
 array LLG::fheff(const array& m){
-  array solution = constant(0., state0.mesh.dims, f64);
+  array solution = constant(0., state0.mesh.dims, f32);
   timer_heff=timer::start();
 
   state0.m=m; //TODO avoid state0 in the first place
@@ -78,8 +78,8 @@ array LLG::fheff(const array& m){
   return solution;
 }
 
-double LLG::cpu_time(){
-  double cpu_time = 0.;
+float LLG::cpu_time(){
+  float cpu_time = 0.;
   for(unsigned i=0;i<Fieldterms.size();++i){
     cpu_time+=Fieldterms[i]->get_cpu_time();
   }
@@ -118,14 +118,14 @@ long int LLG::h_addr(const State& state){
 //}
 
 
-//bool LLG::controller(const double err, double& h){
-//  static const double beta =0.4/5.0;
-//  static const double alpha = 0.2 - 0.75*beta;
-//  static const double headroom{0.9};
-//  static const double minscale{0.2};
-//  static const double maxscale{10.};
+//bool LLG::controller(const float err, float& h){
+//  static const float beta =0.4/5.0;
+//  static const float alpha = 0.2 - 0.75*beta;
+//  static const float headroom{0.9};
+//  static const float minscale{0.2};
+//  static const float maxscale{10.};
 //
-//  double scale;
+//  float scale;
 //
 ////  std::cout << "err = " << err << " h= " << h << "reject "<< reject << " t="<<true << " f=" <<false << std::endl;
 //  if (err <= 1.0){
@@ -236,7 +236,7 @@ array LLG::step(State& state){
         else if (state.material.mode == 10){
           mtemp = BS45(state.m, h, err);
         }
-        //BS45 double error
+        //BS45 float error
         else if (state.material.mode == 11){
           mtemp = BS45de(state.m, h, err);
         }
@@ -282,14 +282,14 @@ array LLG::step(State& state){
 };
 
 // Time Integrators
-array LLG::explicitEuler(const array& m, double dt){
+array LLG::explicitEuler(const array& m, float dt){
   heff=fheff(m);
   return dt * fdmdt(m, heff);
 
 }
 
 // Bogacki-Shampine 2/3rd order  with stepsize control
-array LLG::BS23(const array& m, const double dt, double& err)
+array LLG::BS23(const array& m, const float dt, float& err)
 {
   if(reject || calls==0 || llg_wasnormalized){
     heff = fheff(m);
@@ -312,7 +312,7 @@ array LLG::BS23(const array& m, const double dt, double& err)
 }
 
 // Standard Runge-Kutta 4th order method
-array LLG::rk4(const array& m, const double dt)
+array LLG::rk4(const array& m, const float dt)
 {
   heff =       fheff(m                                              );
   k1   =  dt * fdmdt(m                                        , heff);
@@ -326,11 +326,11 @@ array LLG::rk4(const array& m, const double dt)
   return            (          k1 +    2.*k2 + 2.*k3 + k4    ) / 6.;
 }
 // Standard Runge-Kutta 4th order method
-array LLG::rk4minimal(const array& m, const double dt)
+array LLG::rk4minimal(const array& m, const float dt)
 {
   //array k, m_add;
-  array k = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
-  array m_add = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  array k = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
+  array m_add = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
 
   heff =       fheff(m                                              );
   k   =  dt * fdmdt(m                                        , heff);
@@ -349,7 +349,7 @@ array LLG::rk4minimal(const array& m, const double dt)
 
 
 // Runge-Kutta 3/8 variation
-array LLG::rk4_3o8(const array& m, const double dt)
+array LLG::rk4_3o8(const array& m, const float dt)
 {
   heff =       fheff(m                                                );
   k1   =  dt * fdmdt(m                                          , heff);
@@ -363,7 +363,7 @@ array LLG::rk4_3o8(const array& m, const double dt)
   return            (            k1  + 3.*k2   + 3.*k3 + k4  ) / 8.;
 }
 // Runge-Kutta-Fehlberg 5th order method
-array LLG::RKF5(const array& m, const double dt)
+array LLG::RKF5(const array& m, const float dt)
 {
 
   heff =       fheff(m                                                                                                                         );
@@ -384,7 +384,7 @@ array LLG::RKF5(const array& m, const double dt)
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-array LLG::RKF45(const array& m, const double dt, double& err)
+array LLG::RKF45(const array& m, const float dt, float& err)
 {
   //state0.t+=dt;
 
@@ -411,7 +411,7 @@ array LLG::RKF45(const array& m, const double dt, double& err)
 
 
 // Cash-Karp  method
-array LLG::CK45(const array& m, const double dt, double& err)
+array LLG::CK45(const array& m, const float dt, float& err)
 {
   //state0.t+=dt;
 
@@ -447,7 +447,7 @@ array LLG::CK45(const array& m, const double dt, double& err)
 }
 
 // Tsitorous 4/5
-array LLG::tsit45(const array& m, const double dt, double& err)
+array LLG::tsit45(const array& m, const float dt, float& err)
 {
   if(reject || calls==0 || llg_wasnormalized){
     heff =  fheff(m);
@@ -456,7 +456,7 @@ array LLG::tsit45(const array& m, const double dt, double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -465,13 +465,13 @@ array LLG::tsit45(const array& m, const double dt, double& err)
     k[i]= fdmdt(m + rktemp, heff);
   }
   //Local extrapolation using 5th order approx
-  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   //Error estimation using 4th order approx
-  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     rk_error+=bhat[i]*k[i];
   }
@@ -483,7 +483,7 @@ array LLG::tsit45(const array& m, const double dt, double& err)
 }
 
 // Dormand-Prince 4/5 method
-array LLG::DP45(const array& m, const double dt, double& err)
+array LLG::DP45(const array& m, const float dt, float& err)
 {
   // Iterating over a-matrix and calculating k[i]s
   if(reject || calls==0 || llg_wasnormalized){
@@ -493,7 +493,7 @@ array LLG::DP45(const array& m, const double dt, double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -502,13 +502,13 @@ array LLG::DP45(const array& m, const double dt, double& err)
     k[i]= fdmdt(m + rktemp, heff);
   }
   //Local extrapolation using 5th order approx
-  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   //Error estimation using 4th order approx
-  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     rk_error+=e[i]*k[i];
   }
@@ -520,7 +520,7 @@ array LLG::DP45(const array& m, const double dt, double& err)
 
 
 // Bogacki 4, 5 method with sigle error andstepsize control
-array LLG::BS45(const array& m, const double dt , double& err)
+array LLG::BS45(const array& m, const float dt , float& err)
 {
   if(reject || calls==0 || llg_wasnormalized){
   //Note: in generalized rkcall use: if(FSAL==false || reject || calls==0 || llg_wasnormalized){
@@ -530,7 +530,7 @@ array LLG::BS45(const array& m, const double dt , double& err)
   else
     k[1]=k[s];
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -539,14 +539,14 @@ array LLG::BS45(const array& m, const double dt , double& err)
     k[i]= fdmdt(m + rktemp, heff);
   }
 
-  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
 
 
-  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
@@ -557,10 +557,10 @@ array LLG::BS45(const array& m, const double dt , double& err)
   return sumbk;
 }
 
-// Bogacki 4, 5 method with double error estimation and with stepsize control
-array LLG::BS45de(const array& m, const double dt , double& err)
+// Bogacki 4, 5 method with float error estimation and with stepsize control
+array LLG::BS45de(const array& m, const float dt , float& err)
 {
-  double e[9];
+  float e[9];
 
 //C  The coefficients E(*) refer to an estimate of the local error based on
 //C  the first formula of order 4.  It is the difference of the fifth order
@@ -585,7 +585,7 @@ array LLG::BS45de(const array& m, const double dt , double& err)
   //Compute stages 2 to 6  and check error, if accepted, succeed to stage 8, calc sumbk and check second error sumbk-bi*ki
   for(int i=2;i<=6;i++){//i=2, ..., 6
   //for(int i=2;i<=s;i++){
-    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -595,7 +595,7 @@ array LLG::BS45de(const array& m, const double dt , double& err)
   }
 
   //Check first 4th order approx yielding directly the error
-  rk_error=array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   rk_error=e[1]*k[1];
   for(int i=3;i<=6;i++){//i=3, 4, 5, 6
     rk_error+=e[i]*k[i];
@@ -610,12 +610,12 @@ if(err>1.)
   //This 2 error method shoud save some computational cost if the first error estimate already detects a too large error, we save comp cost of 2 stages
   if(controller.success(err, h)==false){
     std::cout<<"CONTROOOL"<<std::endl;
-    return constant(10000000.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    return constant(10000000.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   }
 
   //7th and 8th stage
   for(int i=7;i<=8;i++){
-    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -625,13 +625,13 @@ if(err>1.)
   }
 
   // Calc sumbk
-  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<s;i++){
     sumbk+=a[s][i]*k[i];
   }
   sumbk*=dt;
   // Calc second and more precise 4th order error estimate
-  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
@@ -644,13 +644,13 @@ if(err>1.)
 
 
 // Dormand-Prince 7/8 method with stepsize control
-array LLG::DP78(const array& m, const double dt , double& err)
+array LLG::DP78(const array& m, const float dt , float& err)
 {
   heff =  fheff(m);
   k[1]   =  fdmdt(m, heff);
   //Iterating over a-matrix, calculating k[i]s
   for(int i=2;i<=s;i++){
-      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
     for(int j=1;j<i;j++){
       rktemp+=a[i][j] * k[j];
     }
@@ -659,14 +659,14 @@ array LLG::DP78(const array& m, const double dt , double& err)
     k[i]= fdmdt(m + rktemp, heff);
   }
   //Calculating 8th order approx (local extrapolation)
-  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     sumbk+=bhat[i]*k[i];
   }
   sumbk*=dt;
 
   //Calculating 7th order approx for error approx
-  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
   for(int i=1;i<=s;i++){
     rk_error+=b[i]*k[i];
   }
@@ -677,7 +677,7 @@ array LLG::DP78(const array& m, const double dt , double& err)
 }
 
 LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in){
-//LLG::LLG (State state0_in, double atol_in, double  rtol_in, double  hmax_in, double  hmin_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in), atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){
+//LLG::LLG (State state0_in, float atol_in, float  rtol_in, float  hmax_in, float  hmin_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in), atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){
 
   if ((state0.material.mode == 0) || (state0.material.mode == 1) || (state0.material.mode == 2) || (state0.material.mode == 3) || (state0.material.mode == 5)){
     h=controller.hmax;
@@ -691,7 +691,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
     s=7;
     //const int s=7;
     //Declare arrays and init with zeros
-    //double a[s+1][s+1], c[s+1], b[s+1], bhat[s+1];
+    //float a[s+1][s+1], c[s+1], b[s+1], bhat[s+1];
     //for(int i=0;i<=s;i++){
     //  c[i]=0.;
     //  b[i]=0.;
@@ -744,7 +744,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
   if (state0.material.mode == 9){
     s=7;
     //Declare arrays and init with zeros
-    //double a[s+1][s+1], e[s+1];//, c[s+1]
+    //float a[s+1][s+1], e[s+1];//, c[s+1]
     //for(int i=0;i<=s;i++){
     //  //c[i]=0.;
     //  e[i]=0.;
@@ -960,7 +960,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 
-//array LLG::llgstepEEold(array& m, double dt){
+//array LLG::llgstepEEold(array& m, float dt){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m);
 //    crosstemp  =  cross4(m, heff);
@@ -971,7 +971,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 ////    std::cout << "T: heff.dims " << heff.dims() << " m.dims " << m.dims() << " cross4 " << crosstemp.dims()  << std::endl;
 //    return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //};
-//array LLG::llgstepEEold(array& m, double dt, array& h_zee){
+//array LLG::llgstepEEold(array& m, float dt, array& h_zee){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m) + h_zee;
 //    crosstemp  =  cross4(m, heff); array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff) - state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, crosstemp); m += dt * dmdt; if(state0.state.material.afsync) af::sync(); time_integrator += timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3); };
@@ -987,17 +987,17 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Dormand-Prince 4/5 method
-//array LLG::DP45(const array& m, const double dt, double& err)
+//array LLG::DP45(const array& m, const float dt, float& err)
 //{
-//  //double c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
-//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
+//  //float c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
+//  float a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
 //  a52=-25360.0/2187.0, a53=64448.0/6561.0, a54=-212.0/729.0, a61=9017.0/3168.0,
 //  a62=-355.0/33.0, a63=46732.0/5247.0, a64=49.0/176.0, a65=-5103.0/18656.0,
 //  a71=35.0/384.0, a73=500.0/1113.0, a74=125.0/192.0, a75=-2187.0/6784.0,
 //  a76=11.0/84.0, e1=71.0/57600.0, e3=-71.0/16695.0, e4=71.0/1920.0,
 //  e5=-17253.0/339200.0, e6=22.0/525.0, e7=-1.0/40.0;
-//  const double e[8]={0, e1, 0, e3, e4, e5, e6, e7};
-//  const double a[8][8]={
+//  const float e[8]={0, e1, 0, e3, e4, e5, e6, e7};
+//  const float a[8][8]={
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, a21, 0, 0, 0, 0, 0, 0},
@@ -1063,7 +1063,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Dormand-Prince 4/5 method
-//array LLG::DP45(const array& m, const double dt, double& err)
+//array LLG::DP45(const array& m, const float dt, float& err)
 //{
 //  if(reject || calls==0 || llg_wasnormalized){
 //    heff =  fheff(m);
@@ -1118,7 +1118,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Bogacki 4, 5 method with stepsize control
-//array LLG::BS45(const array& m, const double h , double& err)
+//array LLG::BS45(const array& m, const float h , float& err)
 //{
 //
 //  heff =       fheff(m                                                                                                                                                                                              );
@@ -1149,7 +1149,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Runge-Kutta-Fehlberg method with stepsize control
-//array LLG::RKF45(array m, double dt, double& rk_abs_error)
+//array LLG::RKF45(array m, float dt, float& rk_abs_error)
 //{
 //  //state0.t+=dt;
 //
@@ -1179,15 +1179,15 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  sumbk     =                16./135.  * k1  +                       6656./12825.* k3  + 28561./56430.* k4    -9./50. * k5 + 2./55. *k6         ;
 //  rk_error = sumbk - (      25./216.  * k1  +                       1408./2565. * k3  +  2197./4104. * k4    -1./5.  * k5                     );
 //
-//  double *rk_abs_error_host=NULL;
-//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<double>();
+//  float *rk_abs_error_host=NULL;
+//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<float>();
 //  rk_abs_error = rk_abs_error_host[0];
 //  freeHost(rk_abs_error_host);
 //  return sumbk;
 //}
 
 //// Dormand-Prince 4/5 method
-//array LLG::DP45(array m, double dt, double& rk_abs_error)
+//array LLG::DP45(array m, float dt, float& rk_abs_error)
 //{
 //  //state0.t+=dt;
 //  //if(calls == 0) {
@@ -1226,8 +1226,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  sumbk =    35./384. * k1 + 500./1113. * k3 + 125./192. * k4 -2187./6784. * k5 + 11./84. * k6;
 //  rk_error = sumbk - ( 5179./57600. * k1 + 7571./16695. * k3 + 393/640. * k4 -92097./339200.* k5 + 187./2100. * k6 + 1./40. * k7);
 //
-//  double *rk_abs_error_host=NULL;
-//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<double>();
+//  float *rk_abs_error_host=NULL;
+//  rk_abs_error_host = max(max(max(max(abs(rk_error), 0), 1), 2), 3).host<float>();
 //  rk_abs_error = rk_abs_error_host[0];
 //  freeHost(rk_abs_error_host);
 //  return sumbk;
@@ -1245,7 +1245,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //};
 
 ////Explicit Euler LLG stpe without zeeman field
-//array LLG::llgstepEtesting(array& m, double dt){
+//array LLG::llgstepEtesting(array& m, float dt){
 //    timer_integrator = timer::start();
 //    m += explicitEuler(m, dt);
 //    if(state0.state.material.afsync) af::sync();
@@ -1258,12 +1258,12 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //    else if (state0.material.mode == 3){
-//      double *mdiff=NULL;
+//      float *mdiff=NULL;
 //      array mtemp = m;
 //      //m += RKF45(m, state0.material.dt, rk_abs_error);
 //      m += RKF45(m, h, rk_abs_error);
-//      mdiff=max(max(max(max(abs(m-mtemp), 0), 1), 2), 3).host<double>();
-//      //mdiff=max(abs(m-mtemp)).host<double>();
+//      mdiff=max(max(max(max(abs(m-mtemp), 0), 1), 2), 3).host<float>();
+//      //mdiff=max(abs(m-mtemp)).host<float>();
 //      rk_rel_error=rk_abs_error/(mdiff[0]);
 //      freeHost(mdiff);
 //      //For fixed stepsize: h_abs = state0.material.dt * pow(headroom*rk_abs_tol_error/rk_abs_error, (1./(6.+1.)));
@@ -1277,8 +1277,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    }
 
 
-//array LLG::rk4s(array f(array, array), double dt, array m, array heff)
-////array LLG::rk4s(array (*f)(array, array), double dt, array m, array heff)
+//array LLG::rk4s(array f(array, array), float dt, array m, array heff)
+////array LLG::rk4s(array (*f)(array, array), float dt, array m, array heff)
 //{
 //	array	k1 = dt * f(m,          heff),
 //		k2 = dt * f(m + k1 / 2, heff),
@@ -1299,8 +1299,8 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  a=reorder(a, 3, 0, 1, 2);
 //  //array a=reorder(ain, 3, 0, 1, 2);
 //  b=reorder(b, 3, 0, 1, 2);
-//  array c=constant(0.0, 3, a.dims(1), a.dims(2), a.dims(3), f64);
-//  //array c=constant(0.0, 3, ain.dims(0), ain.dims(1), ain.dims(2), f64);
+//  array c=constant(0.0, 3, a.dims(1), a.dims(2), a.dims(3), f32);
+//  //array c=constant(0.0, 3, ain.dims(0), ain.dims(1), ain.dims(2), f32);
 //  //std::cout << "DIMS: "<< a.dims() << "bdims: " << b.dims() << "c.dims() " << c.dims() << std::endl;
 //  c(0, span, span, span)=a(1, span, span, span)*b(2, span, span, span)-a(2, span, span, span)*b(1, span, span, span);
 //  c(1, span, span, span)=a(2, span, span, span)*b(0, span, span, span)-a(0, span, span, span)*b(2, span, span, span);
@@ -1341,10 +1341,10 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Dormand-Prince 7/8 method with stepsize control
-//array LLG::DP78(const array& m, const double dt , double& err)
+//array LLG::DP78(const array& m, const float dt , float& err)
 //{
 //
-//  double ptr[14], a[14][14], b[14], bhat[14], c[14];
+//  float ptr[14], a[14][14], b[14], bhat[14], c[14];
 //  ptr[1] = 0;
 //  ptr[2] = 1;
 //  ptr[3] = 2;
@@ -1521,13 +1521,13 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 
 
 //// Bogacki 4, 5 method with stepsize control
-//array LLG::BS45(const array& m, const double dt , double& err)
+//array LLG::BS45(const array& m, const float dt , float& err)
 //{
 //
-//  double a[9][9];
-//  double b[9];
-//  double c[9];
-//  double e[9];
+//  float a[9][9];
+//  float b[9];
+//  float c[9];
+//  float e[9];
 //  a[2][1] = 1.0e0/6.0e0;
 //  a[3][1] = 2.e0/27.e0;
 //  a[3][2] = 4.e0/27.e0;
@@ -1596,7 +1596,7 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  else
 //    k[1]=k[s];
 //  for(int i=2;i<=s;i++){
-//      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
 //    for(int j=1;j<i;j++){
 //      //std::cout<<"a"<<i<<j<<std::endl;
 //      rktemp+=a[i][j] * k[j];
@@ -1606,20 +1606,20 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //    k[i]= fdmdt(m + rktemp, heff);
 //  //std::cout<<std::endl;
 //  }
-//  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
 //  for(int i=1;i<s;i++){
 //    sumbk+=a[s][i]*k[i];
 //  }
 //  sumbk*=dt;
 //
-//  //rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//  //rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
 //  //for(int i=1;i<=s;i++){
 //  //  rk_error+=b[i]*k[i];
 //  //}
 //  //rk_error*=dt;
 //  //rk_error=sumbk-rk_error;
 //
-//  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f32);
 //  for(int i=1;i<s;i++){//i=1, 2, ..., 7
 //    rk_error+=e[i]*k[i];
 //  }
@@ -1661,42 +1661,42 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //  return sumbk;
 //}
 //// Tsitorous 4/5
-//array LLG::tsit45(const array& m, const double dt, double& err)
+//array LLG::tsit45(const array& m, const float dt, float& err)
 //{
 //  //state0.t+=dt;
-//  const double c2 = 0.161;
-//  const double c3 = 0.327;
-//  const double c4 = 0.9;
-//  const double c5 = 0.9800255409045097;
-//  const double a32 = 0.3354806554923570;
-//  const double a42 = -6.359448489975075;
-//  const double a43 = 4.362295432869581;
-//  const double a52 = -11.74888356406283;
-//  const double a53 = 7.495539342889836;
-//  const double a54 = -0.09249506636175525;
-//  const double a62 = -12.92096931784711;
-//  const double a64 = -0.07158497328140100;
-//  const double a63 = 8.159367898576159;
-//  const double a65 = -0.02826905039406838;
-//  const double b1 = 0.09646076681806523;
-//  const double b3 = 0.4798896504144996;
-//  const double b5 = -3.290069515436081;
-//  const double b2 = 0.01;
-//  const double b4 = 1.379008574103742;
-//  const double b6 = 2.324710524099774;
-//  const double b1_hat = 0.001780011052226;
-//  const double b2_hat = 0.000816434459657;
-//  const double b3_hat = -0.007880878010262;
-//  const double b4_hat = 0.144711007173263;
-//  const double b5_hat = -0.582357165452555;
-//  const double b6_hat = 0.458082105929187;
-//  const double b7_hat = 1./66.;
-//  //double a7i = b i , i = 1, 2, · · · , 6
+//  const float c2 = 0.161;
+//  const float c3 = 0.327;
+//  const float c4 = 0.9;
+//  const float c5 = 0.9800255409045097;
+//  const float a32 = 0.3354806554923570;
+//  const float a42 = -6.359448489975075;
+//  const float a43 = 4.362295432869581;
+//  const float a52 = -11.74888356406283;
+//  const float a53 = 7.495539342889836;
+//  const float a54 = -0.09249506636175525;
+//  const float a62 = -12.92096931784711;
+//  const float a64 = -0.07158497328140100;
+//  const float a63 = 8.159367898576159;
+//  const float a65 = -0.02826905039406838;
+//  const float b1 = 0.09646076681806523;
+//  const float b3 = 0.4798896504144996;
+//  const float b5 = -3.290069515436081;
+//  const float b2 = 0.01;
+//  const float b4 = 1.379008574103742;
+//  const float b6 = 2.324710524099774;
+//  const float b1_hat = 0.001780011052226;
+//  const float b2_hat = 0.000816434459657;
+//  const float b3_hat = -0.007880878010262;
+//  const float b4_hat = 0.144711007173263;
+//  const float b5_hat = -0.582357165452555;
+//  const float b6_hat = 0.458082105929187;
+//  const float b7_hat = 1./66.;
+//  //float a7i = b i , i = 1, 2, · · · , 6
 //  //
-//  //double c[7]={c1, c2, c3, c4, c5, c6, c7};
-//  const double b[8]={0, b1, b2, b3, b4, b5, b6, 0};
-//  const double b_hat[8]={0, b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat};
-//  const double a[8][8]={
+//  //float c[7]={c1, c2, c3, c4, c5, c6, c7};
+//  const float b[8]={0, b1, b2, b3, b4, b5, b6, 0};
+//  const float b_hat[8]={0, b1_hat, b2_hat, b3_hat, b4_hat, b5_hat, b6_hat, b7_hat};
+//  const float a[8][8]={
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, c2, 0, 0, 0, 0, 0, 0},
@@ -1732,17 +1732,17 @@ LLG::LLG (State state0_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in)
 //}
 
 //// Dormand-Prince 4/5 method
-//array LLG::DP45(const array& m, const double dt, double& err)
+//array LLG::DP45(const array& m, const float dt, float& err)
 //{
-//  //double c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
-//  double a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
+//  //float c2=0.2, c3=0.3, c4=0.8, c5=8.0/9.0;
+//  float a21=0.2, a31=3.0/40.0, a32=9.0/40.0, a41=44.0/45.0, a42=-56.0/15.0, a43=32.0/9.0, a51=19372.0/6561.0,
 //  a52=-25360.0/2187.0, a53=64448.0/6561.0, a54=-212.0/729.0, a61=9017.0/3168.0,
 //  a62=-355.0/33.0, a63=46732.0/5247.0, a64=49.0/176.0, a65=-5103.0/18656.0,
 //  a71=35.0/384.0, a73=500.0/1113.0, a74=125.0/192.0, a75=-2187.0/6784.0,
 //  a76=11.0/84.0, e1=71.0/57600.0, e3=-71.0/16695.0, e4=71.0/1920.0,
 //  e5=-17253.0/339200.0, e6=22.0/525.0, e7=-1.0/40.0;
-//  const double e[8]={0, e1, 0, e3, e4, e5, e6, e7};
-//  const double a[8][8]={
+//  const float e[8]={0, e1, 0, e3, e4, e5, e6, e7};
+//  const float a[8][8]={
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, 0, 0, 0, 0, 0, 0, 0},
 //    {0, a21, 0, 0, 0, 0, 0, 0},

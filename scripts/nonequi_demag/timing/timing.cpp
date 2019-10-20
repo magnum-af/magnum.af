@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 
     timer = af::timer::start();
     // Parameter initialization
-    const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25;
     const int loops(argc>3? std::stoi(argv[3]):100);
     const int nnz=(argc>4? std::stoi(argv[4]):10);
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
             if(sync) af::sync();
             std::cout << "eqJIT [s] = " << af::timer::stop(timer) << ", ";
 
-            std::vector<double> times;
+            std::vector<float> times;
             timer = af::timer::start();
             for(int i = 0; i<loops; i++){
                 af::timer timer_loop = af::timer::start();
@@ -69,14 +69,14 @@ int main(int argc, char** argv)
 
         //nonequidistant mesh
         {
-            std::vector<double> z_spacing;
+            std::vector<float> z_spacing;
             for (int i = 0; i < nz; ++i){
                 z_spacing.push_back(z/nz);
             }
             NonequispacedMesh mesh_ne(nx, ny, x/nx, y/ny, z_spacing);
             State state_ne(mesh_ne, 8e5, m, false, true);
             NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 0);
-            std::vector<double> times;
+            std::vector<float> times;
             const bool sync = true;
 
             timer = af::timer::start();

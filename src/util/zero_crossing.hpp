@@ -24,18 +24,18 @@ namespace magnumaf{
 
 class ZeroCrossing{
     public:
-        ZeroCrossing(std::function<double (double)> f, double precision = 1e-6, int max_runs = 5, double ix_min = 0, double ix_max = 1, int ix_n = 100, int verbose = true);
-        std::pair<double, double> calc_x_and_f(); ///< Calculates x and f(x)
+        ZeroCrossing(std::function<float (float)> f, float precision = 1e-6, int max_runs = 5, float ix_min = 0, float ix_max = 1, int ix_n = 100, int verbose = true);
+        std::pair<float, float> calc_x_and_f(); ///< Calculates x and f(x)
     private:
-        std::function<double (double)> f;
-        const double precision;
+        std::function<float (float)> f;
+        const float precision;
         const int max_runs;
-        double ix_min; // current x range min
-        double ix_max; // current x range max
+        float ix_min; // current x range min
+        float ix_max; // current x range max
         const int ix_n; // x range discretization
         const int verbose;
 
-        std::array<double, 4> run_loop();
+        std::array<float, 4> run_loop();
 };
 
 }// namespace magnumaf

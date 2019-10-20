@@ -4,7 +4,7 @@
 
 using namespace magnumaf;
 
-double polyn(double x){
+float polyn(float x){
     return pow(x, 4) - 3 * pow(x, 3) + 2;
 }
 

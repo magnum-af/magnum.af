@@ -6,13 +6,13 @@ namespace magnumaf{
 
 class Controller{
     public:
-        bool success(const double err, double& h);//Decide whether step is acceppted
+        bool success(const float err, float& h);//Decide whether step is acceppted
 
-        Controller(double hmin = 1e-15, double hmax = 3.5e-10, double atol = 1e-6, double rtol = 1e-6): hmin(hmin), hmax(hmax), atol(atol), rtol(rtol){}
+        Controller(float hmin = 1e-15, float hmax = 3.5e-10, float atol = 1e-6, float rtol = 1e-6): hmin(hmin), hmax(hmax), atol(atol), rtol(rtol){}
 
-        const double hmin;
-        const double hmax;
-        double get_hnext () const { return hnext ;};// # of rejections
+        const float hmin;
+        const float hmax;
+        float get_hnext () const { return hnext ;};// # of rejections
         af::array  givescale(const af::array& a){return atol+rtol*af::abs(a);};
         //Access counters in read only
         unsigned long long int get_counter_reject  () const { return counter_reject  ;};// # of rejections
@@ -26,20 +26,20 @@ class Controller{
 
         //TODO better solution?
         // Scale function return= atol + abs(y) * rtol
-        const double atol;//Tolerated absolute error
-        const double rtol;//Tolerated relative error
+        const float atol;//Tolerated absolute error
+        const float rtol;//Tolerated relative error
     private:
         //Numerical Recipies 3rd Edition suggests these values:
-        const double beta = 0.4/5.0;
-        const double alpha = 0.2 - 0.75*beta;
-        const double headroom = 0.9;
-        const double minscale = 0.2;
-        const double maxscale = 10.;
+        const float beta = 0.4/5.0;
+        const float alpha = 0.2 - 0.75*beta;
+        const float headroom = 0.9;
+        const float minscale = 0.2;
+        const float maxscale = 10.;
 
 
         bool reject{false};
-        double errold{1.0e-4};//This value is max(err, 1.0e-4)
-        double hnext;
+        float errold{1.0e-4};//This value is max(err, 1.0e-4)
+        float hnext;
 
         //Counters to check performance
         unsigned long long int counter_reject{0};// # of rejections
@@ -49,7 +49,7 @@ class Controller{
         unsigned long long int counter_maxscale{0};// # of rejections
         unsigned long long int counter_minscale{0};// # of rejections
     //Member of LLG:
-    //double  err{0};      // Estimated error
+    //float  err{0};      // Estimated error
 
 };
 

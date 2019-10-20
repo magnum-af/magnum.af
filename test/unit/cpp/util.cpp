@@ -7,7 +7,7 @@ using namespace magnumaf;
 TEST(Util, SerialTriangularMatrixTest) {
     // serialized index k, matrix indices i, j
     for (int n = 1; n < 20; n++){
-        std::vector<double> values;
+        std::vector<float> values;
         int k = 0;
         for (int i = 0; i < n; i ++){
             for (int j = 0; j < n; j ++){
@@ -44,10 +44,10 @@ TEST(Util, SerialTriangularMatrixTest) {
 
 TEST(Util, 2DimStrideAccessTest) {
     const int ni = 5, nj = 4, nk = 1, nl = 1;
-    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f32);
 
-    double *host=NULL;
-    host = a.host<double>();
+    float *host=NULL;
+    host = a.host<float>();
 
     for (int i = 0; i < ni; i ++){
         for (int j = 0; j < nj; j ++){
@@ -60,10 +60,10 @@ TEST(Util, 2DimStrideAccessTest) {
 
 TEST(Util, 3DimStrideAccessTest) {
     const int ni = 5, nj = 4, nk = 3, nl = 1;
-    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f32);
 
-    double *host=NULL;
-    host = a.host<double>();
+    float *host=NULL;
+    host = a.host<float>();
 
     for (int i = 0; i < ni; i ++){
         for (int j = 0; j < nj; j ++){
@@ -78,10 +78,10 @@ TEST(Util, 3DimStrideAccessTest) {
 
 TEST(Util, 4DimStrideAccessTest) {
     const int ni = 5, nj = 4, nk = 3, nl = 2;
-    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f64);
+    af::array a = af::iota(af::dim4(ni, nj, nk, nl), af::dim4(1, 1, 1, 1), f32);
 
-    double *host=NULL;
-    host = a.host<double>();
+    float *host=NULL;
+    host = a.host<float>();
 
     for (int i = 0; i < ni; i ++){
         for (int j = 0; j < nj; j ++){

@@ -55,7 +55,7 @@ print (nx, ny, nz)
 mesh=Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 ms_in = float(sys.argv[5])*1e-3/Constants.mu0 if len(sys.argv) > 5 else 1.75/Constants.mu0
 material = Material(ms=ms_in)
-m = af.constant(0., nx, ny, nz, 3, dtype=af.Dtype.f64)
+m = af.constant(0., nx, ny, nz, 3, dtype=af.Dtype.f32)
 m[0:nx_disk, 0:ny_disk, :, :] = disk
 m[0:nx_disk, ny_disk+1+int(ny_disk*a_y_factor):ny_disk+1+int(ny_disk*a_y_factor)+ny_disk, :, :] = disk
 m[0:nx_disk, -ny_disk-1:-1, :, :] = disk

@@ -13,9 +13,9 @@ int main(int argc, char** argv)
     af::info();
 
     // Parameter initialization
-    const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 , nz=1;
-    const double A = 1.3e-11;
+    const float A = 1.3e-11;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     state.write_vti(filepath + "relax");
 
     // Prepare switch
-    af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
+    af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f32);
     zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3/constants::mu0;
     zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3/constants::mu0;
     Llg.llgterms.push_back( LlgTerm (new ExternalField(zeeswitch)));

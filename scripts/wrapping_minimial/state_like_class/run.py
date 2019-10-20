@@ -3,7 +3,7 @@ import arrayfire
 import test
 
 x = test.pyTest()
-a = arrayfire.constant(2., 4, dtype=arrayfire.Dtype.f64)
+a = arrayfire.constant(2., 4, dtype=arrayfire.Dtype.f32)
 print "py: a=", a
 
 x.py_initialize_m(a)

@@ -9,8 +9,8 @@ using namespace magnumaf;
 
 
 TEST(vtkIO, vtrWriteReadTest) {
-    af::array a = af::randu(6, 5, 4, 10, f64);
-    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+    af::array a = af::randu(6, 5, 4, 10, f32);
+    std::vector<float> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "vtr_unittest", false);
@@ -36,8 +36,8 @@ TEST(vtkIO, vtrWriteReadTest) {
 
 
 TEST(vtkIO, vtrWriteReadScalarFieldTest) {
-    af::array a = af::randu(6, 5, 4, 1, f64);
-    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+    af::array a = af::randu(6, 5, 4, 1, f32);
+    std::vector<float> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "vtr_unittest", false);
@@ -52,8 +52,8 @@ TEST(vtkIO, vtrWriteReadScalarFieldTest) {
 
 
 TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
-    af::array a = af::randu(6, 5, 4, 1, f64);
-    std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
+    af::array a = af::randu(6, 5, 4, 1, f32);
+    std::vector<float> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "unittesting_a", false);

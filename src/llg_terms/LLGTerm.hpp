@@ -13,7 +13,7 @@ class LLGTerm{
     virtual af::array h (const State& state) =0;
     /// Calculating the micromagnetic energy \f$E\f$.
     /// This is a prototype for all llgterms with are linear in m and must be overwritten in e.g. zeeman where factor 1/2 becomes 1.
-    virtual double E (const State& state){
+    virtual float E (const State& state){
         if( state.Ms_field.isempty() ){
             return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h(state) * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
@@ -22,7 +22,7 @@ class LLGTerm{
         }
     }
     ///< Calculating the micromagnetic energy for a already calculated h field (to save computational cost)
-    virtual double E (const State& state, const af::array& h){
+    virtual float E (const State& state, const af::array& h){
         if( state.Ms_field.isempty() ){
             return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum( h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
@@ -30,7 +30,7 @@ class LLGTerm{
             return -constants::mu0/2. * afvalue(af::sum(af::sum(af::sum(af::sum(state.Ms_field * h * state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
     }
-    virtual double get_cpu_time()=0;
+    virtual float get_cpu_time()=0;
 
     /// For wrapping only: pointer to h()
     virtual long int h_ptr(const State& state){

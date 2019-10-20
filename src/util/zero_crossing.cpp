@@ -7,23 +7,23 @@ namespace magnumaf{
 
 using namespace magnumaf;
 
-ZeroCrossing::ZeroCrossing(std::function<double (double)> f, double precision, int max_runs, double ix_min, double ix_max, int ix_n, int verbose) :
+ZeroCrossing::ZeroCrossing(std::function<float (float)> f, float precision, int max_runs, float ix_min, float ix_max, int ix_n, int verbose) :
     f(f), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose)
 {
 }
 
 
-std::array<double, 4> ZeroCrossing::run_loop(){
-    double x_max_minus_sign = -1e300;
-    double f_max_minus_sign = -1e300;
+std::array<float, 4> ZeroCrossing::run_loop(){
+    float x_max_minus_sign = -1e300;
+    float f_max_minus_sign = -1e300;
 
-    double x_min_plus_sign = +1e300;
-    double f_min_plus_sign = +1e300;
+    float x_min_plus_sign = +1e300;
+    float f_min_plus_sign = +1e300;
 
-    double fx_prev = 0;
+    float fx_prev = 0;
     for (int i = 0; i < ix_n + 1; i++){
-        const double x = ix_min + (double)i/(double)ix_n * (ix_max - ix_min);
-        const double fx = f(x);
+        const float x = ix_min + (float)i/(float)ix_n * (ix_max - ix_min);
+        const float fx = f(x);
         if(verbose > 2) std::cout << "x=" << x << ", f(x) = " << fx << std::endl;
         if(fx <= 0 and fx > f_max_minus_sign){
             f_max_minus_sign = fx;
@@ -37,12 +37,12 @@ std::array<double, 4> ZeroCrossing::run_loop(){
         if (i > 0 and fx_prev < 0 and fx >= 0) break;
         fx_prev = fx;
     }
-    return std::array<double, 4> {x_max_minus_sign, f_max_minus_sign, x_min_plus_sign, f_min_plus_sign};
+    return std::array<float, 4> {x_max_minus_sign, f_max_minus_sign, x_min_plus_sign, f_min_plus_sign};
 }
 
 
-std::pair<double, double> ZeroCrossing::calc_x_and_f(){
-    std::array<double, 4> result = {0};
+std::pair<float, float> ZeroCrossing::calc_x_and_f(){
+    std::array<float, 4> result = {0};
     for (int i = 0; i < max_runs; i++){
         result = run_loop();
         // Updating x range for next run
@@ -51,7 +51,7 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f(){
             if(verbose) std::cout << "No crossing found in given interval. Setting larger x range by a factor of 10" << std::endl;
             // Setting ix_min < 0 < ix_max and scale by factor 10
             if (ix_min > ix_max){
-                double temp = ix_min;
+                float temp = ix_min;
                 ix_min = ix_max;
                 ix_max = temp;
             }
@@ -76,7 +76,7 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f(){
         if(verbose > 1) std::cout << "i = " << i << ", ix_min = " << ix_min << ", ix_max = " << ix_max << std::endl << std::endl;
     }
     // only return x and f(x) closer to 0:
-    if(fabs(result[1]) < fabs(result[3])) return std::pair<double, double> (result[0], result[1]);
-    else return std::pair<double, double> (result[2], result[3]);
+    if(fabs(result[1]) < fabs(result[3])) return std::pair<float, float> (result[0], result[1]);
+    else return std::pair<float, float> (result[2], result[3]);
 }
 }// namespace magnumaf

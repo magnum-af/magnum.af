@@ -9,7 +9,7 @@ using namespace magnumaf;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-void calcm(State state, std::ostream& myfile, double get_avg){
+void calcm(State state, std::ostream& myfile, float get_avg){
     myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
     //myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t" <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg << std::endl;
     //myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m, 1))<< "\t" <<fabs(meani(state.m, 2))<< std::endl;
@@ -18,22 +18,22 @@ void calcm(State state, std::ostream& myfile, double get_avg){
 void set_boundary_mz(array& m);
 class Detector{
     public:
-        Detector(unsigned int length_in, double threshold_in): length( length_in ), threshold( threshold_in ){}
+        Detector(unsigned int length_in, float threshold_in): length( length_in ), threshold( threshold_in ){}
         bool gt {true};// avg greater than (gt) threshold:  if true, avg > threshold, else avg < threshold
         unsigned int length;// = 3000;
-        double threshold; // = 0.75;
+        float threshold; // = 0.75;
         bool event {false};// The event is the annihilation/decay of the skyrmion
-        double get_avg(){return avg;}
+        float get_avg(){return avg;}
 
-        std::list<double> data; //The data to take the average on
-        std::list<double> data_avg; //The calculated avarages of the data
-        void add_data(double value);
-        double avg{NaN};
+        std::list<float> data; //The data to take the average on
+        std::list<float> data_avg; //The calculated avarages of the data
+        void add_data(float value);
+        float avg{NaN};
     private:
 
 };
 
-void Detector::add_data(double value){
+void Detector::add_data(float value){
     if(data.size()<length){
         data.push_back(value);
     }
@@ -41,10 +41,10 @@ void Detector::add_data(double value){
         data.pop_front();
         data.push_back(value);
         avg=0;
-        for( double values : data){
+        for( float values : data){
             avg+=values;
         }
-        avg/=(double)length;
+        avg/=(float)length;
         if(data_avg.size()<length){
             data_avg.push_back(avg);
         }
@@ -76,9 +76,9 @@ int main(int argc, char** argv)
     indatapath.append("/");
 
     //Timestep
-    double dt;
+    float dt;
     if(argc>3){
-        std::istringstream os(argv[3]); // Reading double in scientific notation
+        std::istringstream os(argv[3]); // Reading float in scientific notation
         os >> dt;
     }
     else{
@@ -87,10 +87,10 @@ int main(int argc, char** argv)
     std::cout << "dt = " << dt << std::endl;
 
     //Temperature
-    double T_in(argc>4? std::stod(argv[4]):300);
+    float T_in(argc>4? std::stod(argv[4]):300);
 
     int ID (argc>5? std::stoi(argv[5]) : -1);
-    //const double dt = 1e-13;//Integration step
+    //const float dt = 1e-13;//Integration step
 
     //GPU device
     setDevice(argc>6? std::stoi(argv[6]):0);
@@ -99,11 +99,11 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 30, ny=30 , nz=1;
-    const double dx=1e-9;
+    const float dx=1e-9;
 
-    const double threshold = 0.85;
+    const float threshold = 0.85;
     const int samples = 1;
-    const double maxtime = 1e-5;
+    const float maxtime = 1e-5;
 
     std::list<af::array> images; //The data to take the average on
     unsigned int images_length=25;
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
     Mesh testmesh(nx, ny, nz, dx, dx, dx);
     vti_reader(m, testmesh, indatapath + "relax.vti");
     //Reading energy barrier from calculation performed with main_n30.cpp
-    double e_barrier;
+    float e_barrier;
     //ifstream stream(filepath+"E_barrier/E_barrier.dat");
     ifstream stream(indatapath + "E_barrier.dat");
     if (stream.is_open()){
@@ -141,9 +141,9 @@ int main(int argc, char** argv)
     std::cout.precision(12);
     std::cout <<"E_barrier from prev calculation = "<< e_barrier <<std::endl;
 
-    double A = pow(10, 9);
-    double k = pow(10, 8);
-    double T = e_barrier/(constants::kb*(log(A)-log(k)));
+    float A = pow(10, 9);
+    float k = pow(10, 8);
+    float T = e_barrier/(constants::kb*(log(A)-log(k)));
     std::cout << "Calculated T for decay in 1e-8 sec = "<< T << std::endl;
     //material.T = T;
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
     Stochastic_LLG Stoch(state, llgterm, dt , "Heun");
 
     //ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse " << std::endl;
-  //  std::vector<double> antimes;// appends annihilation time for each iteration to calculate mean
+  //  std::vector<float> antimes;// appends annihilation time for each iteration to calculate mean
     // Iterations to obtain mean annihilaiton time
     state = State(mesh, material, m);
     std::cout<<"TEST (should be 0): state.t = "<< state.t << std::endl;
@@ -211,11 +211,11 @@ int main(int argc, char** argv)
     }
     //vti_writer_atom(state.m, state.mesh, filepath+"skyrm"+std::to_string(j));//state.t*pow(10, 9)
 
-    double detect_time = state.t;
+    float detect_time = state.t;
     Detector detector2 = Detector((int)(5e-12/dt), threshold);
     detector2.gt=false;
     int reverse=0;
-    for (std::list<double>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
+    for (std::list<float>::reverse_iterator rit=detector.data.rbegin(); rit!=detector.data.rend(); ++rit){
         detector2.add_data(*rit);
         reverse++;
         if(detector2.event == true) break;
@@ -254,18 +254,18 @@ void set_boundary_mz(array& m){
     //vti_reader(m, testmesh, filepath+"E_barrier/relax.vti");
     //vti_writer_atom(m, mesh , (filepath + "test_readin").c_str());
 
-  //  double mean_antime = 0;
-  //  for (double n : antimes){
+  //  float mean_antime = 0;
+  //  for (float n : antimes){
   //      mean_antime+=n;
   //  }
-  //  mean_antime/= (double) antimes.size();
+  //  mean_antime/= (float) antimes.size();
 
-  //  double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
-  //  for (double n : antimes){
+  //  float unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
+  //  for (float n : antimes){
   //      unbiased_sample_variance += pow( n - mean_antime , 2);
   //  }
-  //  unbiased_sample_variance/=( (double)antimes.size() -1 );
-  //  double unbiased_sample_sigma = sqrt(unbiased_sample_variance);
+  //  unbiased_sample_variance/=( (float)antimes.size() -1 );
+  //  float unbiased_sample_sigma = sqrt(unbiased_sample_variance);
 
   //  std::cout<<"antimes.size() = "<< antimes.size() << std::endl;
   //  std::cout<<"mean_antime = "<< mean_antime << std::endl;

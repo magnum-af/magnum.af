@@ -7,7 +7,7 @@ using namespace magnumaf;
 int main(int argc, char** argv)
 {
     std::string filepath(argc > 1 ? argv[1]: "../Data/Testing/");
-    const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 , nz=1;
 
     //Generating Objects

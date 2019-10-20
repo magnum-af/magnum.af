@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const double x=1.e-9, y=1e-9, z=0.6e-9;
+    const float x=1.e-9, y=1e-9, z=0.6e-9;
     const int nx = 2, ny=2 , nz=2;
     //const int nx = 1, ny=1 , nz=1;
 
@@ -30,10 +30,10 @@ int main(int argc, char** argv)
     material.Ku1_axis[2]=0;
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, nx, ny, nz, 3, f64);
+    af::array m = af::constant(0.0, nx, ny, nz, 3, f32);
     m(af::span, af::span, af::span, 0 )=1.;
 
-    af::array pol = af::constant(0.0, nx, ny, nz, 3, f64);
+    af::array pol = af::constant(0.0, nx, ny, nz, 3, f32);
     pol(af::span, af::span, af::span, 0 )=1/sqrt(2);
     pol(af::span, af::span, af::span, 1 )=1/sqrt(2);
 

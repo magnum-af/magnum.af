@@ -41,7 +41,7 @@ H_analytic = H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Con
 print ("H_analytic=", H_analytic, " [T]")
 
 # Creating objects
-m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 m[:, :, :nz/2, 2] =  1.0
 m[:, :, :nz/2, 1] =  0.3
 m[:, :, nz/2:, 2] = -1.0
@@ -61,32 +61,32 @@ print(ne_mesh.nz)
 print(ne_mesh.z_spacing)
 
 # Setting A values as field
-A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
-A_field[:, :, :nz/2, :] = af.constant(soft_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+A_field[:, :, :nz/2, :] = af.constant(soft_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 # hard
-A_field[:, :, nz/2:, :] = af.constant(hard_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+A_field[:, :, nz/2:, :] = af.constant(hard_Aex, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 
 # Setting Ms values as field
-Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
-Ms_field[:, :, :nz/2, :] = af.constant(soft_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ms_field[:, :, :nz/2, :] = af.constant(soft_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 # hard
-Ms_field[:, :, nz/2:, :] = af.constant(hard_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ms_field[:, :, nz/2:, :] = af.constant(hard_ms, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 
 # Setting Ku1 values as field
-Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
-Ku1_field[:, :, :nz/2, :] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ku1_field[:, :, :nz/2, :] = af.constant(soft_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 # hard
-Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f64)
+Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=af.Dtype.f32)
 
 state = State(mesh, Ms_field, m)
 state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
-    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)),
     NonequiExchangeField(A_field, ne_mesh, verbose = True),
     #SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),

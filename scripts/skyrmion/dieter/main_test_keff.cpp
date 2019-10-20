@@ -22,9 +22,9 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    //double length = 00.1e-9; //[nm]
+    //float length = 00.1e-9; //[nm]
     const int nx = 2500;
-    const double dx=1.e-9;
+    const float dx=1.e-9;
     //const int nx = (int)(length/dx);
     //std::cout << "nx = "<< nx << std::endl;
 
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
      // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(span, span, span, 0)=1.;
 
     State state(mesh, material, m);
@@ -55,26 +55,26 @@ int main(int argc, char** argv)
 
     // Inplane
     vti_writer_micro(state.m, state.mesh , (filepath + "m_inplane").c_str());
-    const double E_inplane = Llg.E(state);
+    const float E_inplane = Llg.E(state);
     Llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
 
     // Out-of-plane
-    state.m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    state.m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     state.m(span, span, span, 2)=1.;
     vti_writer_micro(state.m, state.mesh , (filepath + "m_ouf_of_plane").c_str());
-    const double E_out_of_plane = Llg.E(state);
+    const float E_out_of_plane = Llg.E(state);
     Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
 
     // Keff
-    const double Keff = - 0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
+    const float Keff = - 0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
 
-    const double g_electron = 2.002319;
-    const double correction = 1.07831;
+    const float g_electron = 2.002319;
+    const float correction = 1.07831;
 
-    const double mub = 9.27400999e-24;
-    const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub, 2)/pow(dx, 3);
+    const float mub = 9.27400999e-24;
+    const float deltaEd = 2 * M_PI * correction * pow( g_electron * mub, 2)/pow(dx, 3);
     //TODO
-    //const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub, 2)/pow(dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
+    //const float deltaEd = 2 * M_PI * correction * pow( g_electron * mub, 2)/pow(dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
 
     std::cout << "deltaEd = " << deltaEd << std::endl;
 

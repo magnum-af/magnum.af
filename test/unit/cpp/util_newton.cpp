@@ -4,7 +4,7 @@
 
 using namespace magnumaf;
 
-double x_sqare(double x){
+float x_sqare(float x){
     return pow(x, 2) - 1;
 }
 

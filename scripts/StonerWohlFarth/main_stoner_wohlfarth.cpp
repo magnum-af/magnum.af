@@ -26,9 +26,9 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const double x=2.e-9, y=2.e-9, z=2.e-9;
+    const float x=2.e-9, y=2.e-9, z=2.e-9;
     const int nx = 1, ny=1 , nz=1;
-    const double dt = 1e-14;
+    const float dt = 1e-14;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
@@ -38,10 +38,10 @@ int main(int argc, char** argv)
     material.T = 1;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 2)=1.;
     std::vector<llgt_ptr> llgterm;
-    array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+    array zeeswitch = constant(0.0, 1, 1, 1, 3, f32);
     zeeswitch(0, 0, 0, 2)=1./constants::mu0;
     llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch, mesh, material)));
     State state(mesh, material, m);

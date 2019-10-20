@@ -8,7 +8,7 @@ using namespace magnumaf;
 int main(int argc, char** argv)
 {
     for (int nz = 1; nz < 11; nz++){
-        const double x=5.e-7, y=1.25e-7, z=3.e-9;
+        const float x=5.e-7, y=1.25e-7, z=3.e-9;
         const int nx = 400, ny=250;
         std::cout << "nz = " << nz << std::endl;
         //const int nx = 400, ny=250 , nz=10;
@@ -30,5 +30,5 @@ int main(int argc, char** argv)
     //std::cout << boolean.type() << std::endl;
     //af::array zero_if_equal = af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3);
     //std::cout << zero_if_equal.type() << std::endl;
-    //double zero_if_equal = afvalue(af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3));
+    //float zero_if_equal = afvalue(af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3));
 

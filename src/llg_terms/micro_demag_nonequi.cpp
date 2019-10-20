@@ -9,12 +9,12 @@ namespace magnumaf{
 
 
 //Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
-double NonEquiDemagField::E(const State& state){
+float NonEquiDemagField::E(const State& state){
     return - constants::mu0/2. * state.integral_nonequimesh(h(state) * state.m);
 }
 
 
-double NonEquiDemagField::E(const State& state, const af::array& h){
+float NonEquiDemagField::E(const State& state, const af::array& h){
     return - constants::mu0/2. * state.integral_nonequimesh(h * state.m);
 }
 
@@ -56,9 +56,9 @@ NonEquiDemagField::NonEquiDemagField (NonequispacedMesh mesh, bool verbose, bool
             Nfft=calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing);
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize){
-                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
+                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (float)magafdir_size_in_bytes/1e6, (float)maxsize/1e6, (float)reducedsize/1e6);
                 remove_oldest_files_until_size(magafdir.c_str(), reducedsize, verbose);
-                if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (double)GetDirSize(magafdir)/1e6);
+                if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (float)GetDirSize(magafdir)/1e6);
             }
             if (GetDirSize(magafdir) < maxsize){
                 try{
@@ -116,7 +116,7 @@ af::array NonEquiDemagField::h(const State&  state){
         }
     }
 
-    af::array one_over_tau_vec = af::array(1, 1, state.nonequimesh.nz, 1, f64);
+    af::array one_over_tau_vec = af::array(1, 1, state.nonequimesh.nz, 1, f32);
     for (int i = 0; i < state.nonequimesh.nz; i++){
         one_over_tau_vec(0, 0, i, 0) = 1./(state.nonequimesh.dx * state.nonequimesh.dy * state.nonequimesh.z_spacing[i]);
         //std::cout << afvalue(one_over_tau_vec(0, 0, i, 0)) << "\n";
@@ -136,30 +136,30 @@ af::array NonEquiDemagField::h(const State&  state){
 
 namespace newell_nonequi{
 
-    double f(double x, double y, double z){
+    float f(float x, float y, float z){
       x=fabs(x);
       y=fabs(y);
       z=fabs(z);
-      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-      const double xx = pow(x, 2);
-      const double yy = pow(y, 2);
-      const double zz = pow(z, 2);
+      const float R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const float xx = pow(x, 2);
+      const float yy = pow(y, 2);
+      const float zz = pow(z, 2);
 
-      double result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
+      float result = 1.0 / 6.0 * (2.0*xx - yy - zz) * R;
       if(xx + zz > 0) result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
       if(xx + yy > 0) result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
       if(x  *  R > 0) result += - x*y*z * atan(y*z / (x * R));
       return result;
     }
 
-    double g(double x, double y, double z){
+    float g(float x, float y, float z){
       z=fabs(z);
-      const double R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-      const double xx = pow(x, 2);
-      const double yy = pow(y, 2);
-      const double zz = pow(z, 2);
+      const float R = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+      const float xx = pow(x, 2);
+      const float yy = pow(y, 2);
+      const float zz = pow(z, 2);
 
-      double result = - x*y * R / 3.0;
+      float result = - x*y * R / 3.0;
       if(xx + yy > 0) result += x*y*z * asinh(z / (sqrt(xx + yy)));
       if(yy + zz > 0) result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
       if(xx + zz > 0) result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
@@ -169,25 +169,25 @@ namespace newell_nonequi{
       return result;
     }
 
-    //double F2(const double x, const double y, const double z){
+    //float F2(const float x, const float y, const float z){
     //    return f(x, y, z);
     //    //Last three terms cancel out//return f(x, y, z) - f(x, 0, z) - f(x, y, 0) + f(x, 0, 0);
     //}
 
-    double F1(const double x, const double y, const double z, const double dz, const double dZ){
+    float F1(const float x, const float y, const float z, const float dz, const float dZ){
         return f(x, y, z + dZ) - f(x, y, z) - f(x, y, z - dz + dZ) + f(x, y, z - dz);
     }
 
-    double F0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){
+    float F0(const float x, const float y, const float z, const float dy, const float dY, const float dz, const float dZ){
         return F1(x, y + dY, z, dz, dZ) - F1(x, y, z, dz, dZ) - F1(x, y - dy + dY, z, dz, dZ) + F1(x, y - dy, z, dz, dZ);
     }
 
 
-    double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+    float Nxx(const float x, const float y, const float z, const float dx, const float dy, const float dz, const float dX, const float dY, const float dZ){
         // x, y, z is vector from source cuboid to target cuboid
         // dx, dy, dz are source cuboid dimensions
         // dX, dY, dZ are target cuboid dimensions
-        //const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
+        //const float tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
         //return -1./(4.0 * M_PI * tau) * (
         return -1./(4.0 * M_PI) * ( \
                   F0(x          , y, z, dy, dY, dz, dZ) \
@@ -196,25 +196,25 @@ namespace newell_nonequi{
                 + F0(x - dx + dX, y, z, dy, dY, dz, dZ));
     }
 
-    //double G2(const double x, const double y, const double z){
+    //float G2(const float x, const float y, const float z){
     //    return g(x, y, z);
     //    //return g(x, y, z) - g(x, y, 0);
     //    //return g(x, y, z) - g(x, 0, z) - g(x, y, 0) + g(x, 0, 0);
     //}
 
-    double G1(const double x, const double y, const double z, const double dz, const double dZ){
+    float G1(const float x, const float y, const float z, const float dz, const float dZ){
         return g(x, y, z + dZ) - g(x, y, z) - g(x, y, z - dz + dZ) + g(x, y, z - dz);
     }
 
-    double G0(const double x, const double y, const double z, const double dy, const double dY, const double dz, const double dZ){
+    float G0(const float x, const float y, const float z, const float dy, const float dY, const float dz, const float dZ){
         return G1(x, y + dY, z, dz, dZ) - G1(x, y, z, dz, dZ) - G1(x, y - dy + dY, z, dz, dZ) + G1(x, y - dy, z, dz, dZ);
     }
 
-    double Nxy(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ){
+    float Nxy(const float x, const float y, const float z, const float dx, const float dy, const float dz, const float dX, const float dY, const float dZ){
         // x, y, z is vector from source cuboid to target cuboid
         // dx, dy, dz are source cuboid dimensions
         // dX, dY, dZ are target cuboid dimensions
-        //const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
+        //const float tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid (one could alternatively choose dx, dy, dz with implications on x, y, z)
         //return -1./(4.0 * M_PI * tau) * (
         return -1./(4.0 * M_PI) * ( \
                   G0(x          , y, z, dy, dY, dz, dZ) \
@@ -226,28 +226,28 @@ namespace newell_nonequi{
     class NonequiLoopInfo {
         public:
         NonequiLoopInfo(){}
-        NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2,  double dx,  double dy):
+        NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2,  float dx,  float dy):
             ix_start(ix_start), ix_end(ix_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy){}
         int ix_start;
         int ix_end;
         int n0_exp;
         int n1_exp;
         int n2;
-        double dx;
-        double dy;
-        static std::vector<double> z_spacing;
+        float dx;
+        float dy;
+        static std::vector<float> z_spacing;
     };
 
-    std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; //Declare static member
+    std::vector<float> newell_nonequi::NonequiLoopInfo::z_spacing; //Declare static member
 
-    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j, const bool verbose = true){
+    float nonequi_index_distance(const std::vector<float> spacings, const unsigned i, const unsigned j, const bool verbose = true){
         //Calculates the signed distance beween elements by summing up i < j: sum_(k=i)^(j-1)[spacings[k]] or i > j: sum_(k=j)^(i-1)[ - spacings[k]]
         //Note that spacings[spacings.size()-1] is never used
         if (verbose and (i == spacings.size() or j == spacings.size())){
             printf("%s in nonequi_index_distance: index == vector.size(), the distance includes the last element which is not wanted behaviour\n", Warning());
         }
 
-        double result = 0;
+        float result = 0;
         if(i > j){
             for (unsigned k = i; k > j; k--){
                 result -= spacings.at(k-1);
@@ -262,7 +262,7 @@ namespace newell_nonequi{
     }
 
 
-    double* N_ptr = NULL;
+    float* N_ptr = NULL;
 
     void* init_N(void* arg)
     {
@@ -277,9 +277,9 @@ namespace newell_nonequi{
                         if (i_source <= i_target){
                             const int idx = 6*(util::ij2k(i_source, i_target, loopinfo->n2) + ((loopinfo->n2 * (loopinfo->n2 + 1))/2)*(iy+loopinfo->n1_exp*ix));
                             //std::cout << "idx=" << idx << " of " << loopinfo->n0_exp * loopinfo->n1_exp * (loopinfo->n2 * (loopinfo->n2 + 1))/2 * 6 << std::endl;
-                            const double x = loopinfo->dx * (double)jx;
-                            const double y = loopinfo->dy * (double)jy;
-                            const double z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
+                            const float x = loopinfo->dx * (float)jx;
+                            const float y = loopinfo->dy * (float)jy;
+                            const float z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
 
                             newell_nonequi::N_ptr[idx+0] = newell_nonequi::Nxx(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
                             newell_nonequi::N_ptr[idx+1] = newell_nonequi::Nxy(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
@@ -297,17 +297,17 @@ namespace newell_nonequi{
 }
 
 
-af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy, const std::vector<double> z_spacing){
+af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, float dx, float dy, const std::vector<float> z_spacing){
     std::thread t[nthreads];
     struct newell_nonequi::NonequiLoopInfo loopinfo[nthreads];
     newell_nonequi::NonequiLoopInfo::z_spacing = z_spacing;
     for (unsigned i = 0; i < nthreads; i++){
-        unsigned start = i * (double)n0_exp/nthreads;
-        unsigned end = (i +1) * (double)n0_exp/nthreads;
+        unsigned start = i * (float)n0_exp/nthreads;
+        unsigned end = (i +1) * (float)n0_exp/nthreads;
         loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy);
     }
 
-    newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
+    newell_nonequi::N_ptr = new float[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
 
     for (unsigned i = 0; i < nthreads; i++){
         t[i] = std::thread(newell_nonequi::init_N, &loopinfo[i]);

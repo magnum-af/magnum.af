@@ -9,15 +9,15 @@ namespace magnumaf{
 
 //Energy calculation
 // only for testing, remove?
-double Minimizer::E(const State& state){
-  double solution = 0.;
+float Minimizer::E(const State& state){
+  float solution = 0.;
   for(unsigned i=0;i<llgterms.size();++i){
     solution+=llgterms[i]->E(state);
   }
   return solution;
 }
 
-Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples, bool info): scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info)
+Minimizer::Minimizer(std::string scheme, float tau_min, float tau_max, float dm_max, int samples, bool info): scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info)
 {
 }
 
@@ -40,7 +40,7 @@ af::array Minimizer::dm(const State& state){
     return cross4( state.m, cross4( state.m, h(state)));
 }
 
-af::array Minimizer::m_next(const State& state, const double tau){
+af::array Minimizer::m_next(const State& state, const float tau){
 
     const af::array Mx = state.m(af::span, af::span, af::span, 0);
     const af::array My = state.m(af::span, af::span, af::span, 1);
@@ -58,7 +58,7 @@ af::array Minimizer::m_next(const State& state, const double tau){
     const af::array MxH_z = MxH(af::span, af::span, af::span, 2);
 
 
-    af::array result = af::constant(0., state.mesh.dims, f64);
+    af::array result = af::constant(0., state.mesh.dims, f32);
 
     result(af::span, af::span, af::span, 0)= (4*Mx + 4*tau * (MxH_y*Mz - MxH_z*My) + tau*tau*Mx * (  MxH_x*MxH_x - MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_x * (MxH_y*My + MxH_z*Mz)) / N;
     result(af::span, af::span, af::span, 1)= (4*My + 4*tau * (MxH_z*Mx - MxH_x*Mz) + tau*tau*My * (- MxH_x*MxH_x + MxH_y*MxH_y - MxH_z*MxH_z) + 2*tau*tau*MxH_y * (MxH_z*Mz + MxH_x*Mx)) / N;
@@ -68,10 +68,10 @@ af::array Minimizer::m_next(const State& state, const double tau){
 }
 
 void Minimizer::minimize(State& state){
-    double tau = tau_min;
+    float tau = tau_min;
     unsigned long int step = 0;
-    double dm_max = 1e18;
-    std::list<double> last_dm_max;
+    float dm_max = 1e18;
+    std::list<float> last_dm_max;
     af::timer timer = af::timer::start();
 
     while (last_dm_max.size() < samples || *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) > dm_max){

@@ -9,8 +9,8 @@ int main(int argc, char** argv)
     std::string filepath(argc > 1? argv[1]: "../Data/Testing");
     if( argc > 1 ){ filepath.append("/");}
     setDevice( argc > 2 ? std::stoi( argv[2]) : 0);
-    const double A = double(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (double)(0.05/(4e-7 * M_PI)));// Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
-    const double B = double(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
+    const float A = float(argc > 3 ? std::stod(argv[3])*1e-3/(4e-7 * M_PI) : (float)(0.05/(4e-7 * M_PI)));// Input a in mT, argv[3]=25 mT is converted to 0.025 T and divided by mu0
+    const float B = float(argc > 4 ? std::stod(argv[4])/100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     std::cout << "A=" << A << "B= " << B << std::endl;
     std::cout.precision(24);
@@ -18,21 +18,21 @@ int main(int argc, char** argv)
 
     // Defining lamdas
     auto zee_func = [ A, B ] ( State state ) -> af::array {
-        double phi = 2 * M_PI * (state.t);
+        float phi = 2 * M_PI * (state.t);
         af::dim4 dim = af::dim4(state.mesh.n0, state.mesh.n1, state.mesh.n2, 1);
-        array zee = array(state.mesh.dims, f64);
-        //zee(span, span, span, 0)=constant(A * std::cos(phi), dim, f64);
-        //zee(span, span, span, 1)=constant(A * std::sin(phi), dim, f64);
-        //zee(span, span, span, 2)=constant(0.0              , dim, f64);
-        zee(span, span, span, 0)=constant( A * std::cos(phi), dim, f64);
-        zee(span, span, span, 1)=constant( B * std::sin(phi), dim, f64);
-        zee(span, span, span, 2)=constant( A * std::sin(phi), dim, f64);
-        //zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        array zee = array(state.mesh.dims, f32);
+        //zee(span, span, span, 0)=constant(A * std::cos(phi), dim, f32);
+        //zee(span, span, span, 1)=constant(A * std::sin(phi), dim, f32);
+        //zee(span, span, span, 2)=constant(0.0              , dim, f32);
+        zee(span, span, span, 0)=constant( A * std::cos(phi), dim, f32);
+        zee(span, span, span, 1)=constant( B * std::sin(phi), dim, f32);
+        zee(span, span, span, 2)=constant( A * std::sin(phi), dim, f32);
+        //zee(span, span, span, 2)=constant( A * std::sin(phi) , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
         return  zee;
     };
 
     // Parameter initialization
-    const double x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
+    const float x=800e-9, y=800e-9, z=1.3e-3/1.056e6;//[m] // z for 100mT lin range t_CoFeB = 1.3e-3/1.056e6
     const int nx = 250, ny=250 , nz=1;
 
     //Generating Objects
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     timer t_hys = af::timer::start();
     const int max_i = 100;
     for (int i = 0; i <= max_i; i++){
-        state.t = (double)i/(double)max_i;
+        state.t = (float)i/(float)max_i;
         state.steps++;
         minimizer.Minimize(state);
         state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));

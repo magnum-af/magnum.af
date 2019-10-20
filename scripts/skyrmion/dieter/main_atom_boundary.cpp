@@ -16,13 +16,13 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    double length = 90e-9; //[nm]
-    const double dx=0.5e-9;
+    float length = 90e-9; //[nm]
+    const float dx=0.5e-9;
     const int nx = (int)(length/dx);
     std::cout << "nx = "<< nx << std::endl;
 
-    double n_interp = 60;
-    double string_dt=1e-13;
+    float n_interp = 60;
+    float string_dt=1e-13;
 
     //Generating Objects
     Mesh mesh(nx, nx, 1, dx, dx, dx);
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     }
 
 
-    array last   = constant( 0, mesh.dims, f64);
+    array last   = constant( 0, mesh.dims, f32);
     last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;

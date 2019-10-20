@@ -7,9 +7,9 @@ namespace magnumaf{
 
 class StageTimer{
   public:
-    double get_time_and_restart(){
+    float get_time_and_restart(){
         if (sync) af::sync();
-        double time = af::timer::stop(timer);
+        float time = af::timer::stop(timer);
         accumulated_time += time;
         timer = af::timer::start();
         //timer.start();
@@ -29,7 +29,7 @@ class StageTimer{
     af::timer timer{af::timer::start()};
     int stage{0};
     bool sync {true};
-    double accumulated_time{0};
+    float accumulated_time{0};
 };
 
 }// namespace magnumaf

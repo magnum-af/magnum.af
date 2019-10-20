@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     if(argc>0)filepath.append("/");
     std::cout<<"Writing into path "<< filepath <<std::endl;
     af::setDevice(argc>2? std::stoi(argv[2]):0);
-    const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
+    const float hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
     const unsigned int steps_full_hysteresis =(argc > 4 ? std::stoi(argv[4]) : 200);
 
     af::info();
@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
     // Defining H_zee via lamdas
     auto zee_func= [ hzee_max, steps_full_hysteresis ] ( State state ) -> af::array {
-        double field_Tesla;
+        float field_Tesla;
         if(state.steps < steps_full_hysteresis/4){
             field_Tesla = hzee_max * 4. * state.steps/steps_full_hysteresis;
         }
@@ -34,19 +34,19 @@ int main(int argc, char** argv)
             field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
         }
         //std::cout << "fild= "<< field_Tesla << std::endl;
-        af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(af::span, af::span, af::span, 0) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+        zee(af::span, af::span, af::span, 0) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
         return  zee;
     };
 
     // Parameter initialization
     const int nx = 250, ny=250 , nz=1;
-    const double x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
+    const float x=1600e-9, y=1600e-9, z=65e-9;//[m] // Physical dimensions
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
-    double Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    double A     = 1.5e-11;//[J/m]
+    float Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    float A     = 1.5e-11;//[J/m]
 
     State state(mesh, Ms, mesh.init_vortex());
     vti_writer_micro(state.Ms_field, mesh, filepath + "Ms");

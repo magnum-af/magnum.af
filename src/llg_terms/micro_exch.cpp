@@ -7,13 +7,13 @@ namespace magnumaf{
 //Eex=-mu0/2 integral(M . Hex) dx
 // Virtual method is overwritten as to use h_withedges
 // Note: maybe this is irrelevant and can be dropped.
-double ExchangeField::E(const State& state){
+float ExchangeField::E(const State& state){
   return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h_withedges(state)*state.m, 0), 1), 2), 3)) * state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
 
 /// Constructor for a global exchange constant
-ExchangeField::ExchangeField (double A) : A(A){
+ExchangeField::ExchangeField (float A) : A(A){
 }
 
 
@@ -28,7 +28,7 @@ ExchangeField::ExchangeField (long int A_field_ptr) : A_field(*(new af::array( *
 
 af::array ExchangeField::h_withedges(const State& state){
     timer_exchsolve = af::timer::start();
-    af::array filtr = af::constant(0.0, 3, 3, 3, f64);
+    af::array filtr = af::constant(0.0, 3, 3, 3, f32);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
     filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
     filtr(2, 1, 1)= 1 / pow(state.mesh.dx, 2);
@@ -80,7 +80,7 @@ af::array ExchangeField::h_withedges(const State& state){
 //NOTE: This yields no longer the physical exchange field but optimizes the caluclation
 af::array ExchangeField::h(const State& state){
     timer_exchsolve = af::timer::start();
-    af::array filtr = af::constant(0.0, 3, 3, 3, f64);
+    af::array filtr = af::constant(0.0, 3, 3, 3, f32);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
     filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
     filtr(2, 1, 1)= 1 / pow(state.mesh.dx, 2);
@@ -128,7 +128,7 @@ af::array ExchangeField::h(const State& state){
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-//double ExchangeField::E(const State& state){
+//float ExchangeField::E(const State& state){
 //  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
@@ -145,7 +145,7 @@ af::array ExchangeField::h(const State& state){
 //ExchangeField::ExchangeField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
 //  if(mesh.n0*mesh.n1*mesh.n2>8128){
 //    //initialize filters
-//    filtr=constant(0.0, 3, 3, 3, f64);
+//    filtr=constant(0.0, 3, 3, 3, f32);
 //    //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
 //
 //    filtr(0, 1, 1)= 1 / pow(mesh.dx, 2);
@@ -160,8 +160,8 @@ af::array ExchangeField::h(const State& state){
 //  //Currently better performance for small systems with matmul
 //  else{
 //    const int dimension=mesh.n0*mesh.n1*mesh.n2*3;
-//    double* vmatr = NULL;
-//    vmatr = new double[dimension*dimension];
+//    float* vmatr = NULL;
+//    vmatr = new float[dimension*dimension];
 //    for (int id = 0; id < dimension; id++){
 //      for (int im = 0; im < 3; im++){
 //        for (int i2 = 0; i2 < mesh.n2; i2++){
@@ -296,7 +296,7 @@ af::array ExchangeField::h(const State& state){
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-//double ExchangeField::E(const State& state){
+//float ExchangeField::E(const State& state){
 //  return -constants::mu0/2. * state.Ms * afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
 //}
 //
@@ -313,7 +313,7 @@ af::array ExchangeField::h(const State& state){
 //ExchangeField::ExchangeField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
 //  if(mesh.n0*mesh.n1*mesh.n2>8128){
 //    //initialize filters
-//    filtr=constant(0.0, 3, 3, 3, f64);
+//    filtr=constant(0.0, 3, 3, 3, f32);
 //    filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
 //
 //    filtr(0, 1, 1)= 1 / pow(mesh.dx, 2);
@@ -328,8 +328,8 @@ af::array ExchangeField::h(const State& state){
 //  //Currently better performance for small systems with matmul
 //  else{
 //    const int dimension=mesh.n0*mesh.n1*mesh.n2*3;
-//    double* vmatr = NULL;
-//    vmatr = new double[dimension*dimension];
+//    float* vmatr = NULL;
+//    vmatr = new float[dimension*dimension];
 //    for (int id = 0; id < dimension; id++){
 //      for (int im = 0; im < 3; im++){
 //        for (int i2 = 0; i2 < mesh.n2; i2++){

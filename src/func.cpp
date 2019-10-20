@@ -20,7 +20,7 @@ long int WrappedArray::get_array_addr(){
 }
 
 af::array cross4(const af::array& a, const af::array& b){
-  af::array c= af::array(a.dims(0), a.dims(1), a.dims(2), 3, f64);
+  af::array c= af::array(a.dims(0), a.dims(1), a.dims(2), 3, f32);
   c(af::span, af::span, af::span, 0)=a(af::span, af::span, af::span, 1)*b(af::span, af::span, af::span, 2)-a(af::span, af::span, af::span, 2)*b(af::span, af::span, af::span, 1);
   c(af::span, af::span, af::span, 1)=a(af::span, af::span, af::span, 2)*b(af::span, af::span, af::span, 0)-a(af::span, af::span, af::span, 0)*b(af::span, af::span, af::span, 2);
   c(af::span, af::span, af::span, 2)=a(af::span, af::span, af::span, 0)*b(af::span, af::span, af::span, 1)-a(af::span, af::span, af::span, 1)*b(af::span, af::span, af::span, 0);
@@ -32,13 +32,13 @@ af::array dotproduct(const af::array& a, const af::array& b){
 }
 
 /// Returns the value of array with only one element
-double afvalue(const af::array& a){
+float afvalue(const af::array& a){
     if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1){
         std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array with dim4 =[" << a.dims() <<"] != [1 1 1 1]. Only first entry will be returned. This may lead to unexpected behaviour." << std::endl;
     }
-    double *dhost=NULL;
-    dhost = a.host<double>();
-    double value = dhost[0];
+    float *dhost=NULL;
+    dhost = a.host<float>();
+    float value = dhost[0];
     af::freeHost(dhost);
     return value;
 }
@@ -51,7 +51,7 @@ unsigned int afvalue_u32(const af::array& a){
   return value;
 }
 
-double full_inner_product(const af::array& a, const af::array& b){
+float full_inner_product(const af::array& a, const af::array& b){
   return afvalue(sum(sum(sum(sum(a*b, 3), 2), 1), 0));
 }
 
@@ -75,58 +75,58 @@ af::array vecnorm(const af::array& a){
 
 
 //Mean value of i = 0, 1, 2 entry entry
-double meani(const af::array& a, const int i){
-  double *norm_host=NULL;
-  norm_host = mean(mean(mean(a(af::span, af::span, af::span, i), 0), 1), 2).host<double>();
-  double norm = norm_host[0];
+float meani(const af::array& a, const int i){
+  float *norm_host=NULL;
+  norm_host = mean(mean(mean(a(af::span, af::span, af::span, i), 0), 1), 2).host<float>();
+  float norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
 }
 //Frobenius Norm
 //||A||=sqrt(sum(fabs(a)))
-double FrobeniusNorm(const af::array& a){
-  double *norm_host=NULL;
-  norm_host = sqrt(mean(mean(mean(mean(a*a, 0), 1), 2), 3)).host<double>();
-  double norm = norm_host[0];
+float FrobeniusNorm(const af::array& a){
+  float *norm_host=NULL;
+  norm_host = sqrt(mean(mean(mean(mean(a*a, 0), 1), 2), 3)).host<float>();
+  float norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
 }
 
 //Experimental: eucledian norm
-double euclnorm(const af::array& a){
-  double *norm_host=NULL;
-  norm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<double>();
-  double norm = norm_host[0];
+float euclnorm(const af::array& a){
+  float *norm_host=NULL;
+  norm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<float>();
+  float norm = norm_host[0];
   af::freeHost(norm_host);
   return norm;
 }
 
 /// Mean of absolute difference
-double mean_abs_diff(const af::array& a, const af::array& b){
+float mean_abs_diff(const af::array& a, const af::array& b){
     return afvalue(af::mean(af::mean(af::mean(af::mean(af::abs(a - b), 0), 1), 2), 3));
 }
 
 /// Mean of relative difference
-double mean_rel_diff(const af::array& first, const af::array& second){
+float mean_rel_diff(const af::array& first, const af::array& second){
     af::array temp = af::abs(2*(first - second)/(first + second));
-    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f32));// Avoiding division by zero: setting element to zero if both input elements are zero
     return afvalue(af::mean(af::mean(af::mean(af::mean(temp, 0), 1), 2), 3));
 }
 
 /// Max of absolute difference
-double max_abs_diff(const af::array& a, const af::array& b){
+float max_abs_diff(const af::array& a, const af::array& b){
     return afvalue(af::max(af::max(af::max(af::max(af::abs(a - b), 0), 1), 2), 3));
 }
 
 /// Max of relative difference
-double max_rel_diff(const af::array& first, const af::array& second){
+float max_rel_diff(const af::array& first, const af::array& second){
     af::array temp = af::abs(2*(first - second)/(first + second));
-    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));// Avoiding division by zero: setting element to zero if both input elements are zero
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f32));// Avoiding division by zero: setting element to zero if both input elements are zero
     return afvalue(af::max(af::max(af::max(af::max(temp, 0), 1), 2), 3));
 }
 
 /// Absolute difference less than precision: Element-wise comparision of absolute difference of two arrays. Checks whether | x - y | < precision. Returns true if all values are below precision and false otherwise.
-bool abs_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
+bool abs_diff_lt_precision(af::array first, af::array second, float precision, bool verbose){
     unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(af::abs(first - second) < precision), 0), 1), 2), 3));
     if (verbose){
         if (zero_if_equal == 0) std::cout << "\33[1;32mSucess:\33[0m All " << first.elements() << " absolute values of element-wise differences are below precision of " << precision << std::endl;
@@ -139,9 +139,9 @@ bool abs_diff_lt_precision(af::array first, af::array second, double precision, 
 }
 
 /// Relative difference less than precision: Element-wise comparision of relative difference of two arrays. Checks whether | 2(x-y)/(x+y) | < precision. Returns true if all values are below precision and false otherwise.
-bool rel_diff_lt_precision(af::array first, af::array second, double precision, bool verbose){
+bool rel_diff_lt_precision(af::array first, af::array second, float precision, bool verbose){
     af::array temp = af::abs(2*(first - second)/(first + second));
-    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f64));//set element to zero if both input elements are zero
+    af::replace(temp, first!=0 || second!=0, af::constant(0., temp.dims(), f32));//set element to zero if both input elements are zero
     unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum( !(temp < precision), 0), 1), 2), 3));
     if (verbose){
         if (zero_if_equal == 0) std::cout << "\33[1;32mSucess:\33[0m All " << first.elements() << " relative values of element-wise differences are below precision of " << precision << std::endl;
@@ -154,9 +154,9 @@ bool rel_diff_lt_precision(af::array first, af::array second, double precision, 
 }
 
 /// Upper bound for absolute difference
-double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
-    double prec = start_precision;
-    double prec_prev = prec;
+float abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose, float start_precision, float factor1, float factor2){
+    float prec = start_precision;
+    float prec_prev = prec;
     while(abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
     {
         if (verbose) std::cout << "prec = " <<prec << std::endl;
@@ -175,9 +175,9 @@ double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 }
 
 /// Upper bound for relative difference
-double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose, double start_precision, double factor1, double factor2){
-    double prec = start_precision;
-    double prec_prev = prec;
+float rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose, float start_precision, float factor1, float factor2){
+    float prec = start_precision;
+    float prec_prev = prec;
     while(rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300)
     {
         if (verbose) std::cout << "prec = " <<prec << std::endl;
@@ -196,20 +196,20 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 }
 
 //Experimental: eucledian norm
-//double maxnorm(const af::array& a){
-//  double *maxnorm_host=NULL;
-//  maxnorm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<double>();
-//  //maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
-//  double maxnorm = maxnorm_host[0];
+//float maxnorm(const af::array& a){
+//  float *maxnorm_host=NULL;
+//  maxnorm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<float>();
+//  //maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<float>();
+//  float maxnorm = maxnorm_host[0];
 //  af::freeHost(maxnorm_host);
 //  return maxnorm;
 //}
 
 //void calcm(State state, LLG Llg, std::ostream& myfile){
-//  double *host_mx=NULL, *host_my=NULL, *host_mz=NULL;
-//  host_mx = mean(mean(mean(state.m(af::span, af::span, af::span, 0), 0), 1), 2).host<double>();
-//  host_my = mean(mean(mean(state.m(af::span, af::span, af::span, 1), 0), 1), 2).host<double>();
-//  host_mz = mean(mean(mean(state.m(af::span, af::span, af::span, 2), 0), 1), 2).host<double>();
+//  float *host_mx=NULL, *host_my=NULL, *host_mz=NULL;
+//  host_mx = mean(mean(mean(state.m(af::span, af::span, af::span, 0), 0), 1), 2).host<float>();
+//  host_my = mean(mean(mean(state.m(af::span, af::span, af::span, 1), 0), 1), 2).host<float>();
+//  host_mz = mean(mean(mean(state.m(af::span, af::span, af::span, 2), 0), 1), 2).host<float>();
 //  myfile << std::setw(12) << state.t << "\t";
 //  myfile << std::setw(12) << state.t*1e9 << "\t" << host_mx[0] << "\t"<< host_my[0] << "\t";
 //  myfile << host_mz[0] <<"\t" << Llg.E(state) <<std::endl;
@@ -223,19 +223,19 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 
 
 // Maximum value norm
-double maxnorm(const af::array& a){
-  double *maxnorm_host=NULL;
-  maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
-  double maxnorm = maxnorm_host[0];
+float maxnorm(const af::array& a){
+  float *maxnorm_host=NULL;
+  maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<float>();
+  float maxnorm = maxnorm_host[0];
   af::freeHost(maxnorm_host);
   return maxnorm;
 }
 
 // Minimum value
-double minval(const af::array& a){
-  double *minval_host=NULL;
-  minval_host = min(min(min(min(a, 0), 1), 2), 3).host<double>();
-  double minval = minval_host[0];
+float minval(const af::array& a){
+  float *minval_host=NULL;
+  minval_host = min(min(min(min(a, 0), 1), 2), 3).host<float>();
+  float minval = minval_host[0];
   af::freeHost(minval_host);
   return minval;
 }
@@ -266,10 +266,10 @@ af::randomEngine util::rand_engine_current_time(){
 
 //TODO check with c++14 (we used uncommented due to incompability with c++11 needed by cython)
 ////RK4 based on https://rosettacode.org/wiki/Runge-Kutta_method
-//auto rk4(af::array f(double, af::array))
+//auto rk4(af::array f(float, af::array))
 //{
 //        return
-//        [       f            ](double t,  af::array y, double dt ) -> af::array { return
+//        [       f            ](float t,  af::array y, float dt ) -> af::array { return
 //        [t, y, dt, f            ](                    af::array  dy1) -> af::array { return
 //        [t, y, dt, f, dy1        ](                    af::array  dy2) -> af::array { return
 //        [t, y, dt, f, dy1, dy2    ](                    af::array  dy3) -> af::array { return
@@ -284,17 +284,17 @@ af::randomEngine util::rand_engine_current_time(){
 
 //int main(void)
 //{
-//        const double TIME_MAXIMUM = 10.0, WHOLE_TOLERANCE = 1e-12 ;
-//        const double T_START = 0.0, Y_START = 1.0, DT = 0.10;
+//        const float TIME_MAXIMUM = 10.0, WHOLE_TOLERANCE = 1e-12 ;
+//        const float T_START = 0.0, Y_START = 1.0, DT = 0.10;
 //
-//        auto eval_diff_eqn = [               ](double t, double y)->double{ return t*sqrt(y)                         ; } ;
-//        auto eval_solution = [               ](double t          )->double{ return pow(t*t+4, 2)/16                   ; } ;
-//        auto find_error    = [eval_solution  ](double t, double y)->double{ return fabs(y-eval_solution(t))          ; } ;
-//        auto is_whole      = [WHOLE_TOLERANCE](double t          )->bool  { return fabs(t-round(t)) < WHOLE_TOLERANCE; } ;
+//        auto eval_diff_eqn = [               ](float t, float y)->float{ return t*sqrt(y)                         ; } ;
+//        auto eval_solution = [               ](float t          )->float{ return pow(t*t+4, 2)/16                   ; } ;
+//        auto find_error    = [eval_solution  ](float t, float y)->float{ return fabs(y-eval_solution(t))          ; } ;
+//        auto is_whole      = [WHOLE_TOLERANCE](float t          )->bool  { return fabs(t-round(t)) < WHOLE_TOLERANCE; } ;
 //
 //        auto dy = rk4( eval_diff_eqn ) ;
 //
-//        double y = Y_START, t = T_START ;
+//        float y = Y_START, t = T_START ;
 //
 //        while(t <= TIME_MAXIMUM) {
 //          if (is_whole(t)) { printf("y(%4.1f)\t=%12.6f \t error: %12.6e\n", t, y, find_error(t, y)); }

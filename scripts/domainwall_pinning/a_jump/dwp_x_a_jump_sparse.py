@@ -41,7 +41,7 @@ def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
 
 H_analytic = H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Constants.mu0 # in [T]
 # Creating objects
-m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+m = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 m[:nx/2, :, :, 0] =  1.0
 m[:nx/2, :, :, 1] =  0.3
 m[nx/2:, :, :, 0] = -1.0
@@ -51,21 +51,21 @@ m = Util.normalize(m)
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 
 # Setting A values as field
-A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+A_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
 A_field[:nx/2, :, :, :] = soft_Aex
 # hard
 A_field[nx/2:, :, :, :] = hard_Aex
 
 # Setting Ms values as field
-Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+Ms_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
 Ms_field[:nx/2, :, :, :] = soft_ms
 # hard
 Ms_field[nx/2:, :, :, :] = hard_ms
 
 # Setting Ku1 values as field
-Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+Ku1_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 # soft
 Ku1_field[:nx/2, :, :, :] = soft_K_uni
 # hard
@@ -74,7 +74,7 @@ Ku1_field[nx/2:, :, :, :] = hard_K_uni
 state = State(mesh, Ms_field, m)
 state.write_vti(sys.argv[1] + "minit")
 fields = [
-    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)),
     SparseExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis=[1., 0., 0.]),
     #DemagField(mesh),

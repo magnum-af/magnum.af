@@ -7,8 +7,8 @@ namespace magnumaf{
 
 
 
-bool Controller::success(const double err, double& h){
-    double scale;
+bool Controller::success(const float err, float& h){
+    float scale;
 
     if (err <= 1.0) {
         if (err == 0.0) {
@@ -26,7 +26,7 @@ bool Controller::success(const double err, double& h){
             }
         }
         if (reject) {
-            hnext=h*std::min(scale, 1.0);//Do not increase stepsize if previous try was rejected
+            hnext=h*std::min(scale, (float) 1.0);//Do not increase stepsize if previous try was rejected
         }
         else {
             hnext=h*scale;
@@ -41,13 +41,13 @@ bool Controller::success(const double err, double& h){
             counter_hmax++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: proposed stepsize hnext=%e >= maximum allowed stepsize hmax=%e\nStepsize will be limited to hmax to preserve given error bounds.\n", red("Warning:").c_str(), hnext, hmax);
         }
-        errold=std::max(err, 1.0e-4);//Why?
+        errold=std::max(err, (float) 1.0e-4);//Why?
         reject=false;
         counter_accepted++;
         return true;
     }
     else {
-        scale=std::max(headroom*pow(err, -alpha), minscale);
+        scale=std::max(headroom * (float) pow(err, -alpha), minscale);
         h *= scale;
         if (h<=hmin) {
             h=hmin;

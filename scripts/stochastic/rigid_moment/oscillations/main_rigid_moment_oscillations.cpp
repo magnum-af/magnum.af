@@ -15,7 +15,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 //Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
-double mean_mz_analytical (double chi){
+float mean_mz_analytical (float chi){
     return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi
 }
 
@@ -29,7 +29,7 @@ void calcm(State state, std::ostream& myfile){
 }
 
 //This should handle other cases as well
-bool signbit(double a){
+bool signbit(float a){
     if(a>=0) return true;
     if(a<0) return false;
 }
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
 
     // Parameter initialization
-    const double x=1.e-9, y=1.e-9, z=1.e-9;
+    const float x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 , nz=1;
 
     //Generating Objects
@@ -62,8 +62,8 @@ int main(int argc, char** argv)
     material.T = 0;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    const double tile=M_PI/4.;
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
+    const float tile=M_PI/4.;
     m(0, 0, 0, 0)=sin(tile);
     m(0, 0, 0, 1)=0.;
     m(0, 0, 0, 2)=cos(tile);
@@ -71,16 +71,16 @@ int main(int argc, char** argv)
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state, llgterm, 0., "Heun");//ATTENTION, to be set in each loop
 
-    double dt = 5e-16;
+    float dt = 5e-16;
 
     std::cout << "T_analytic (=1/f) = " << 2*M_PI/material.gamma/(2*material.Ku1/(constants::mu0*state.Ms)) << " [s]" << std::endl;
 
     int count_zero_x=0;
-    double prev_x=0;
-    double prev_x_t=0;
+    float prev_x=0;
+    float prev_x_t=0;
     int count_zero_y=0;
-    double prev_y=0;
-    double prev_y_t=0;
+    float prev_y=0;
+    float prev_y_t=0;
 
     state=State(mesh, material, m);
     llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh, material)));

@@ -13,13 +13,13 @@ int main(int argc, char** argv)
           cout << "Parameter " << i << " was " << argv[i] << "\n";
     // Parameter initialization
     const int nx = 112, ny=112 , nz=1;//nz=5 -> lz=(5-1)*dx
-    const double dx=2.715e-10;
+    const float dx=2.715e-10;
 
-    double n_interp = 60;
-    double string_dt=5e-14;
+    float n_interp = 60;
+    float string_dt=5e-14;
     const int string_steps = 10000;
-    double string_abort_rel_diff = 1e-12;
-    double string_abort_abs_diff = 1e-27;
+    float string_abort_rel_diff = 1e-12;
+    float string_abort_abs_diff = 1e-27;
 
     std::string filepath(argc>0? argv[1]: "../Data/Testing/");
     if(argc>0)filepath.append("/");
@@ -47,8 +47,8 @@ int main(int argc, char** argv)
     material.J_atom=2.*material.A*dx;
     material.D_atom= material.D * pow(dx, 2);
     //old values in prev versions, this is now wrong in pthmag:
-    //const double wrong_J_atom=4.*material.A*dx;
-    const double wrong_D_atom= 2.* material.D * pow(dx, 2);
+    //const float wrong_J_atom=4.*material.A*dx;
+    const float wrong_D_atom= 2.* material.D * pow(dx, 2);
     std::cout<<"D_atom="<<material.D_atom<<std::endl;
     material.K_atom=material.Ku1*pow(dx, 3);
     std::cout<<"Ku1_atom="<<material.K_atom<<std::endl;

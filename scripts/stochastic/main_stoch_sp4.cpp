@@ -36,16 +36,16 @@ int main(int argc, char** argv)
   info();
 
   // Parameter initialization
-  const double x=5.e-7, y=1.25e-7, z=3.e-9;
+  const float x=5.e-7, y=1.25e-7, z=3.e-9;
   const int nx = 100, ny=25 , nz=1;
-  double dt = 2e-13;
+  float dt = 2e-13;
 
 
   //Simulation Parameters
-  //double hmax = 3.5e-10;
-  //double hmin = 1.0e-15;
-  //double atol = 1e-8;
-  //double rtol = atol;
+  //float hmax = 3.5e-10;
+  //float hmin = 1.0e-15;
+  //float atol = 1e-8;
+  //float rtol = atol;
 
   //Generating Objects
   Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
@@ -57,10 +57,10 @@ int main(int argc, char** argv)
   material.T  = 300;
 
   // Initial magnetic field
-  array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-  m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f64);
-  m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
-  m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
+  array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
+  m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f32);
+  m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
+  m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
   State state(mesh, material, m);
   vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
   //vti_reader(state.m, mesh, "/home/pth/git/magnum.af/Data/Testing/minit.vti");
@@ -87,14 +87,14 @@ int main(int argc, char** argv)
   std::cout<<"prelim CPU TIME  = "<<Stoch.cpu_time()<<"\n"<<std::endl;
   std::cout<<"prelim TIME  = "<<Stoch.get_time()<<"\n"<<std::endl;
 //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
-  double timerelax= af::timer::stop(t);
+  float timerelax= af::timer::stop(t);
   std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
   vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
 //  std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;
 
   // Prepare switch
-  array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+  array zeeswitch = constant(0.0, 1, 1, 1, 3, f32);
   zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
   zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
   zeeswitch(0, 0, 0, 2)=0.0;

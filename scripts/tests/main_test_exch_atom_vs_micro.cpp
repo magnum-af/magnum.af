@@ -5,7 +5,7 @@ using namespace magnumaf;
 
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-bool compare(double a, double b){
+bool compare(float a, float b){
     //std::cout << "COM:"<< a <<", " << b <<", "<<fabs(a-b)/fabs(a+b)<<std::endl;
     if(a == 0 && b == 0) return false;
     if(fabs(a + b ) == 0) {std::cout << "DIVISION by 0 in compare" <<  std::endl; return true;}
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     info();
     std::cout.precision(32);
     int nx = 5, ny=5 , nz=5;
-    const double dx=2.715e-10;
+    const float dx=2.715e-10;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     material.p=state.Ms*pow(dx, 3);
 
     //-------------------------------------------------------
-    array m = randu(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = randu(mesh.n0, mesh.n1, mesh.n2, 3, f32);
     State state(mesh, material, m);
 
     std::vector<llgt_ptr> llgterm;

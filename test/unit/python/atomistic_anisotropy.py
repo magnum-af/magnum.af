@@ -15,7 +15,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     material=magnumaf.Material()
     material.p=self.p
     material.Ku1_atom=self.k
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -45,7 +45,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     material=magnumaf.Material()
     material.p =self.p
     material.Ku1_atom =self.k
-    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1
@@ -75,7 +75,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     material=magnumaf.Material()
     material.p =self.p
     material.Ku1_atom =self.k
-    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f64)
+    m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f32)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
     m[0, 0, 0, 2] = 1

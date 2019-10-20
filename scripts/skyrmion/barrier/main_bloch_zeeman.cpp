@@ -23,10 +23,10 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 30, ny=30 , nz=1;
-    const double dx=1e-9;
+    const float dx=1e-9;
 
-    double n_interp = 60;
-    double string_dt=1e-13;
+    float n_interp = 60;
+    float string_dt=1e-13;
 
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
@@ -44,13 +44,13 @@ int main(int argc, char** argv)
 
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh , (filepath + "minit").c_str());
 
-    array zee = constant(0.0, 1, 1, 1, 3, f64);
+    array zee = constant(0.0, 1, 1, 1, 3, f32);
     zee(0, 0, 0, 2)=(argc > 3 ? std::stod(argv[3])/constants::mu0 : 0./constants::mu0);
     af::print("zee_pre_tile", zee);
     zee = tile(zee, mesh.n0, mesh.n1, mesh.n2);
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh , filepath + "relax");
     state.t=0;
 
-    array last   = constant( 0, mesh.dims, f64);
+    array last   = constant( 0, mesh.dims, f32);
     last(span, span, span, 2)=1;
 
     std::vector<State> inputimages;

@@ -8,11 +8,11 @@ using namespace af;
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 
-double AtomisticExchangeField::E(const State& state){
+float AtomisticExchangeField::E(const State& state){
   return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
-double AtomisticExchangeField::E(const State& state, const af::array& h){
+float AtomisticExchangeField::E(const State& state, const af::array& h){
   return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
@@ -21,7 +21,7 @@ AtomisticExchangeField::AtomisticExchangeField (const Mesh& mesh){
 
 array AtomisticExchangeField::h(const State& state){
 
-    array filtr=constant(0.0, 3, 3, 3, 3, f64);
+    array filtr=constant(0.0, 3, 3, 3, 3, f32);
     if(state.material.hexagonal_close_packed == true){
         std::cout << "WARNING: Experimental hcp exchange" << std::endl;
         filtr(0, 1, 1, span)= 1.;
@@ -65,12 +65,12 @@ array AtomisticExchangeField::h(const State& state){
 
 
 //  //testing
-//  array m = constant(0.0, state.mesh.dims, f64);
+//  array m = constant(0.0, state.mesh.dims, f32);
 //  m(span, span, span, 2)=1;
 //  //m(span, span, span, 1)=2;
 //  //m(span, span, span, 2)=3;
 //  print("m", m);
-//  array filtr_x=constant(0.0, 3, 3, 3, 3, f64);
+//  array filtr_x=constant(0.0, 3, 3, 3, 3, f32);
 //  print("test", convolve(m, filtr_x, AF_CONV_DEFAULT, AF_CONV_SPATIAL));
 
 
@@ -90,9 +90,9 @@ array AtomisticExchangeField::h(const State& state){
 
 
 //AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
-//  array exch = array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+//  array exch = array(mesh.n0, mesh.n1, mesh.n2, 3, f32);
 //  //initialize filters
-//  filtr=constant(0.0, 3, 3, 3, f64);
+//  filtr=constant(0.0, 3, 3, 3, f32);
 //  filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
 //
 //  filtr(0, 1, 1)= 1 / pow(mesh.dx, 2);
@@ -149,8 +149,8 @@ array AtomisticExchangeField::h(const State& state){
 //
 //AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
 //  const int dimension=mesh.n0*mesh.n1*mesh.n2*3;
-//  double* vmatr = NULL;
-//  vmatr = new double[dimension*dimension];
+//  float* vmatr = NULL;
+//  vmatr = new float[dimension*dimension];
 //  for (int id = 0; id < dimension; id++){
 //    for (int im = 0; im < 3; im++){
 //      for (int i2 = 0; i2 < mesh.n2; i2++){

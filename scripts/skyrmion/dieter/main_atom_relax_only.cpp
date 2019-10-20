@@ -22,8 +22,8 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    double length = 90e-9; //[nm]
-    const double dx=0.5e-9;
+    float length = 90e-9; //[nm]
+    const float dx=0.5e-9;
     const int nx = (int)(length/dx);
     std::cout << "nx = "<< nx << std::endl;
 
@@ -42,13 +42,13 @@ int main(int argc, char** argv)
     material.p=state.Ms*pow(dx, 3);//Compensate nz=1 instead of nz=4
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     while (state.t < 15.e-10){
         state.m=Llg.step(state);
     }
-    double timerelax= af::timer::stop(t);
+    float timerelax= af::timer::stop(t);
     vti_writer_atom(state.m, mesh , filepath + "relax");
 
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;

@@ -7,21 +7,21 @@ using namespace magnumaf;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-void calc_mean_m(const State& state, std::ostream& myfile, double hzee){
+void calc_mean_m(const State& state, std::ostream& myfile, float hzee){
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     const int ncells = state.mesh.n0 * state.mesh.n1 * state.mesh.n2;
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0))/ncells << "\t" << afvalue(sum_dim3(span, span, span, 1))/ncells<< "\t" << afvalue(sum_dim3(span, span, span, 2))/ncells << "\t" << hzee << std::endl;
 }
 
-const double hzee_max = 2; //[T]
-const double simtime = 100e-9;
-const double rate = hzee_max/simtime; //[T/s]
+const float hzee_max = 2; //[T]
+const float simtime = 100e-9;
+const float rate = hzee_max/simtime; //[T/s]
 
 af::array zee_func(State state){
-    double field_Tesla = 0;
+    float field_Tesla = 0;
     field_Tesla = rate *state.t;
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+    zee(span, span, span, 0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
     return  zee;
 }
 
@@ -41,8 +41,8 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 90, nz=1;
-    const double dx=1.0e-9;
-    const double dz=0.6e-9;
+    const float dx=1.0e-9;
+    const float dz=0.6e-9;
 
     //Generating Objects
     Mesh mesh(nx, nx, nz, dx, dx, dz);
@@ -54,13 +54,13 @@ int main(int argc, char** argv)
     material.Ku1=0.6e6;
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
     LLG Llg(state, llgterm);
 
     timer t = af::timer::start();
-    double E_prev=1e20;
+    float E_prev=1e20;
     while (fabs((E_prev-Llg.E(state))/E_prev) > 1e-8){
         E_prev=Llg.E(state);
         for ( int i = 0; i<100; i++){

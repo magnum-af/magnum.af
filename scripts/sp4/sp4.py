@@ -18,8 +18,8 @@ nx, ny, nz = 100, 25, 1
 mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 
 # Initial magnetization configuration
-m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-m0[1:-1, :, :, 0] = af.constant(1.0, nx-2 , ny, nz, 1, dtype=af.Dtype.f64)
+m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
+m0[1:-1, :, :, 0] = af.constant(1.0, nx-2 , ny, nz, 1, dtype=af.Dtype.f32)
 m0[0, :, :, 1]    = 1.
 m0[-1, :, :, 1]   = 1.
 
@@ -40,7 +40,7 @@ print("relaxed in", time.time() - timer, "[s]")
 
 # Preparing switch by resetting alpha and adding Zeeman field
 llg.alpha=0.02
-zeeswitch = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+zeeswitch = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 zeeswitch[:, :, :, 0] = -24.6e-3/Constants.mu0
 zeeswitch[:, :, :, 1] = +4.3e-3/Constants.mu0
 zeeswitch[:, :, :, 2] = 0.0

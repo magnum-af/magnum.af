@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     info();
 
     // Parameter initialization
-    const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    const float x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 100, ny=25 , nz=1;
 
     //Generating Objects
@@ -35,10 +35,10 @@ int main(int argc, char** argv)
     material.T  = 300;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f64);
-    m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
-    m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
+    m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f32);
+    m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
+    m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
     State state(mesh, material, m);
     vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
     // Relax
     timer t = af::timer::start();
-    double time=0;
+    float time=0;
     while (state.t < 5.e-10){
         timer t2 = af::timer::start();
         Llg.step(state);
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
     // Prepare switch
-    array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+    array zeeswitch = constant(0.0, 1, 1, 1, 3, f32);
     zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
     zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
     zeeswitch(0, 0, 0, 2)=0.0;

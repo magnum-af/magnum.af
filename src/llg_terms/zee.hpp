@@ -17,13 +17,13 @@ class ExternalField : public LLGTerm {
     af::array h(const State& state);//Field contribution
     long int h_ptr(const State& state);// For wrapping
 
-    double E(const State& state);//Energy contribution
-    double E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
+    float E(const State& state);//Energy contribution
+    float E(const State& state, const af::array& h);///< Calculating the micromagnetic energy for a already calculated h field
 
     long int get_m_addr();// For wrapping only
-    void set_homogeneous_field(const double x, const double y, const double z);///< Setting homogeneous zeeman field with x, y, z components of static Zeeman field.
+    void set_homogeneous_field(const float x, const float y, const float z);///< Setting homogeneous zeeman field with x, y, z components of static Zeeman field.
 
-    double get_cpu_time(){return 0;}// use or remove
+    float get_cpu_time(){return 0;}// use or remove
 
   private:
     af::array calc_heff(const State& state);
@@ -32,7 +32,7 @@ class ExternalField : public LLGTerm {
     const bool callback{false};
     std::function<af::array(State)> lamda_callback;
     const bool is_lamda{false};
-    //double af_time{0.};
+    //float af_time{0.};
 };
 
 

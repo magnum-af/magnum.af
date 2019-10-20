@@ -23,8 +23,8 @@ int main(int argc, char** argv)
 
     // Parameter initialization
     const int nx = 90, nz=1;
-    const double dx=1.0e-9;
-    const double dz=0.6e-9;
+    const float dx=1.0e-9;
+    const float dz=0.6e-9;
 
     //Generating Objects
     Mesh mesh(nx, nx, nz, dx, dx, dz);
@@ -36,13 +36,13 @@ int main(int argc, char** argv)
     material.Ku1=0.6e6;
 
      // Initial magnetic field
-     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
      m(span, span, span, 2) = -1;
      for(int ix=0;ix<mesh.n0;ix++){
          for(int iy=0;iy<mesh.n1;iy++){
-             const double rx=double(ix)-mesh.n0/2.;
-             const double ry=double(iy)-mesh.n1/2.;
-             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
+             const float rx=float(ix)-mesh.n0/2.;
+             const float ry=float(iy)-mesh.n1/2.;
+             const float r = sqrt(pow(rx, 2)+pow(ry, 2));
              if(r>nx/4.) m(ix, iy, span, 2)=1.;
          }
      }
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     while (state.t < 15.e-10){
         state.m=Llg.step(state);
     }
-    double timerelax= af::timer::stop(t);
+    float timerelax= af::timer::stop(t);
     vti_writer_micro(state.m, mesh , filepath + "relax");
 
     std::cout<<"timerelax [af-s]: "<< timerelax << " for "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<< Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< " Steps rejected" << std::endl;

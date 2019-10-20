@@ -13,30 +13,30 @@ int main(int argc, char** argv)
     if(argc>1)filepath.append("/");
     std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
     af::setDevice(argc>2? std::stoi(argv[2]):0);
-    const double hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
+    const float hzee_max = (argc > 3 ? std::stod(argv[3]): 0.12); //[Tesla]
     const int quater_steps =(argc > 4 ? std::stoi(argv[4]) : 100);
     std::string path_mrelax(argc > 5? argv[3]: "");
     af::info();
     std::cout.precision(24);
 
     auto zee_func= [ hzee_max, quater_steps ] ( State state ) -> af::array {
-        double field_Tesla = 0;
-        double rate = hzee_max/quater_steps; //[T/s]
+        float field_Tesla = 0;
+        float rate = hzee_max/quater_steps; //[T/s]
         if(state.t < hzee_max/rate) field_Tesla = rate *state.t;
         else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t + 2*hzee_max;
         else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t - 4*hzee_max;
         else {field_Tesla = 0; std::cout << "WARNING ZEE time out of range" << std::endl;}
-        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(span, span, span, 0)=constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f32);
+        zee(span, span, span, 0)=constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f32);
         return  zee;
     };
 
     // Parameter initialization
-    double Ms    = 2./constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    double A     = 1.5e-11;//[J/m]
-    double Ku1 = 1.4e6;
+    float Ms    = 2./constants::mu0;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    float A     = 1.5e-11;//[J/m]
+    float Ku1 = 1.4e6;
 
-    const double x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
+    const float x=1000e-9, y=6000e-9, z=5e-9;//[m] // Physical dimensions
     //const int nx = 343;
     //const int ny = 1920;
     //const int nz = 2;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
     state.calc_mean_m(stream, n_cells);
 
     timer t_hys = af::timer::start();
-    double rate = hzee_max/quater_steps; //[T/s]
+    float rate = hzee_max/quater_steps; //[T/s]
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     while (state.t < 4* hzee_max/rate){
         state.t+=1.;

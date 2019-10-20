@@ -7,8 +7,8 @@ using namespace magnumaf;
 
 // Exemplary unit test
 TEST(FullInnerProductTest, n) {
-    af::array a = af::constant(1., 3, 3, 3, 3, f64);
-    af::array b = af::constant(2., 3, 3, 3, 3, f64);
+    af::array a = af::constant(1., 3, 3, 3, 3, f32);
+    af::array b = af::constant(2., 3, 3, 3, 3, f32);
     ASSERT_EQ(3*3*3*3*2., full_inner_product(a, b));
 }
 

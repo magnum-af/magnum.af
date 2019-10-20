@@ -15,7 +15,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 //Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1 )/(int(exp(x * z^2)) dz from 0 to 1)
-double mean_mz_analytical (double chi){
+float mean_mz_analytical (float chi){
     return (exp(chi) - 1.)/(sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); //TODO erfi
 }
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     stream2<<" mean_mz << abs_mean_mz << mean_mz_analytical(chi) <<Stoch.material.T<<  mean_mz";
     stream2<<" abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"<<std::endl;
     // Parameter initialization
-    const double x=1.e-9, y=1.e-9, z=1.e-9;
+    const float x=1.e-9, y=1.e-9, z=1.e-9;
     const int nx = 1, ny=1 , nz=1;
 
     //Generating Objects
@@ -65,18 +65,18 @@ int main(int argc, char** argv)
     material.T = 10;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
     m(0, 0, 0, 2)=1.;
     State state(mesh, material, m);//ATTENTION, to be set in each loop
     std::vector<llgt_ptr> llgterm;
     Stochastic_LLG Stoch(state, llgterm, 0., "SemiHeun");//ATTENTION, to be set in each loop
 
     //Declare Variables
-    double mean_mz;
-    double abs_mean_mz;
-    double chi;
+    float mean_mz;
+    float abs_mean_mz;
+    float chi;
     //Initialize others
-    double dt = 1e-15;
+    float dt = 1e-15;
 
     //MEASURE
 

@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
 //    //TODO  Include in python testing
 //    //TEST RENORMALIZE
-//    array test_renorm=constant(0.0, 6, 1, 1, 3, f64);
+//    array test_renorm=constant(0.0, 6, 1, 1, 3, f32);
 //    //nx=0: (1, 0, 0)
 //    test_renorm(0, 0, 0, 0)=1;
 //    test_renorm(0, 0, 0, 1)=0;
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
 
     // Parameter initialization
-    //const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    //const float x=5.e-7, y=1.25e-7, z=3.e-9;
     //const int nx = 100, ny=25 , nz=1; //NOTE This with CASE 1 yields same results as backups
     const int nx = 120, ny=45 , nz=3; //Total Box dimensions
     const int spnx = 100, spny=25 , spnz=1;// Box dimensions without vacuum
@@ -85,19 +85,19 @@ int main(int argc, char** argv)
 
     // Initial magnetic field
     //CASE 1
-    //array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    //m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f64);
-    //m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
-    //m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
+    //array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
+    //m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f32);
+    //m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
+    //m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f32);
     //CASE 1
 
     //CASE 2
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq((nx-spnx)/2+1, end-(nx-spnx)/2-1), seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 0) = constant(1.0, spnx-2, spny, spnz, 1, f64);
-    m((ny-spny)/2, seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1 ) = constant(1.0, 1, spny, spnz, 1, f64);
-    m(-(ny-spny)/2-1, seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1) = constant(1.0, 1, spny, spnz, 1, f64);
+    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f32);
+    m(seq((nx-spnx)/2+1, end-(nx-spnx)/2-1), seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 0) = constant(1.0, spnx-2, spny, spnz, 1, f32);
+    m((ny-spny)/2, seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1 ) = constant(1.0, 1, spny, spnz, 1, f32);
+    m(-(ny-spny)/2-1, seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1) = constant(1.0, 1, spny, spnz, 1, f32);
     //std::cout << m(seq((nx-spnx)/2+1, end-(nx-spnx)/2-1), seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 0).dims() << std::endl;
-    //std::cout << constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f64).dims() << std::endl;
+    //std::cout << constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1, f32).dims() << std::endl;
     //std::cout << m(-(ny-spny)/2-1, seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1).dims() << std::endl;
     //print ("case 2 m:", m);
     //CASE 2
@@ -106,31 +106,31 @@ int main(int argc, char** argv)
     vti_writer_micro(state.m, mesh , (filepath + "minit").c_str());
 
     //CASE 1
-    //state.Ms=constant(state.Ms, state.mesh.dims, f64);
+    //state.Ms=constant(state.Ms, state.mesh.dims, f32);
     //CASE 1
 
     //CASE 2
-    state.Ms =constant(0.0, state.mesh.dims, f64);
-    state.Ms(seq((nx-spnx)/2, end-(nx-spnx)/2), seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), span) = constant(state.Ms, spnx, spny, spnz, 3, f64);
+    state.Ms =constant(0.0, state.mesh.dims, f32);
+    state.Ms(seq((nx-spnx)/2, end-(nx-spnx)/2), seq((ny-spny)/2, end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), span) = constant(state.Ms, spnx, spny, spnz, 3, f32);
     //CASE 2
 
     vti_writer_micro(state.Ms, mesh , (filepath + "Ms").c_str());
 
     //testing MS
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
-    //state.Ms=constant(state.Ms, state.mesh.dims, f64);
+    //state.Ms=constant(state.Ms, state.mesh.dims, f32);
     //std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
     //(state.Ms.isempty()? std::cout << "TRUE" << true <<std::endl : std::cout << "flase" << false <<std::endl);
     //if (state.Ms.isempty()){std::cout << "state.MS.isempts()"<<std::endl;}
     //else {std::cout << "state.MS.is NOT empty()"<<std::endl;}
 
     //mesh=Mesh(4, 4, 4, x/nx, y/ny, z/nz);
-    //m=constant(0, mesh.dims, f64);
-    //m(span, span, span, 0) = constant(1.0, mesh.n0 , mesh.n1, mesh.n2, 1, f64);
+    //m=constant(0, mesh.dims, f32);
+    //m(span, span, span, 0) = constant(1.0, mesh.n0 , mesh.n1, mesh.n2, 1, f32);
     //print("m", m);
 
-    //array Ms=constant(1., mesh.dims, f64);
-    //Ms(0, 0, 0, span)=constant(0. , 1, 1, 1, 3, f64);
+    //array Ms=constant(1., mesh.dims, f32);
+    //Ms(0, 0, 0, span)=constant(0. , 1, 1, 1, 3, f32);
     //print("Ms", Ms);
 
     //array Div = m/Ms;
@@ -160,12 +160,12 @@ int main(int argc, char** argv)
       calcm(state, std::cout, nx, ny, nz, spnx, spny, spnz);
       calcm(state, stream   , nx, ny, nz, spnx, spny, spnz);
     }
-    double timerelax= af::timer::stop(t);
+    float timerelax= af::timer::stop(t);
     std::cout<<"timerelax [af-s]: "<< timerelax <<std::endl;
     vti_writer_micro(state.m, mesh , (filepath + "relax").c_str());
 
     // Prepare switch
-    array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
+    array zeeswitch = constant(0.0, 1, 1, 1, 3, f32);
     zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
     zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
     zeeswitch(0, 0, 0, 2)=0.0;

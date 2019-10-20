@@ -15,7 +15,7 @@ Util.test_sum_of_difference_of_abs(polarization, polarization)
 
 fieldlike = SpinTransferTorqueField(polarization, 1., 1., 1.)
 Util.test_sum_of_difference_of_abs(polarization, fieldlike.polarization_field)
-fieldlike.polarization_field = af.constant(2.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+fieldlike.polarization_field = af.constant(2.0, nx, ny, nz, 3, dtype=af.Dtype.f32)
 Util.test_sum_of_difference_of_abs(2*polarization, fieldlike.polarization_field)
 fieldlike.polarization_field = polarization
 
