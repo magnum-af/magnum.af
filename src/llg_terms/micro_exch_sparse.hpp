@@ -18,9 +18,6 @@ class SparseExchangeField : public LLGTerm {
 
     double get_cpu_time(){return af_time;}//af time
 
-    //const double A_exchange { 0 };
-    //const af::array A_exchange_field = af::array();// empty array if not specified in constructor
-
 
   private:
     const af::array matr;
