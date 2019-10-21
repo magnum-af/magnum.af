@@ -46,7 +46,7 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
         # String replace, to get filename without extension
         string( REPLACE ".cpp" "" EXAMPLE ${EXAMPLE_SOURCE_FILE} )
         get_filename_component(EXAMPLE ${EXAMPLE} NAME )
-        set(EXAMPLE ${EXAMPLE}_TODO)
+        set(EXAMPLE ${EXAMPLE}_cuda)
         add_executable( ${EXAMPLE} ${EXAMPLE_SOURCE_FILE} )
         TARGET_LINK_LIBRARIES(${EXAMPLE} magnum.af_CORE_SHARED ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
     endforeach( EXAMPLE_SOURCE_FILE ${EXAMPLES} )
