@@ -3,7 +3,7 @@
 #include "../../../src/material.cpp"
 #include "../../../src/constants.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 TEST(Material, Init_p_Test) {

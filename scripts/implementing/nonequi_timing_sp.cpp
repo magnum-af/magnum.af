@@ -2,7 +2,7 @@
 #include "magnum_af.hpp"
 #include "llg_terms/micro_demag_nonequi.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 int main(int argc, char** argv)

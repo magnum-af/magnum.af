@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <fstream>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 af::array zee_func(State state){

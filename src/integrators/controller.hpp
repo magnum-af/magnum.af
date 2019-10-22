@@ -1,7 +1,7 @@
 #pragma once
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class Controller{
@@ -54,4 +54,4 @@ class Controller{
 };
 
 
-}// namespace magnumaf
+}// namespace magnumafcpp

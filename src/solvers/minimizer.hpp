@@ -3,7 +3,7 @@
 #include "../llg_terms/LLGTerm.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 //For second Method, use interface class:
@@ -36,4 +36,4 @@ class Minimizer {
 
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

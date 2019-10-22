@@ -2,7 +2,7 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 NonequiExchangeField::NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
@@ -319,4 +319,4 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
     }
     return result;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

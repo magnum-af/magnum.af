@@ -9,7 +9,7 @@
 #include <sstream>
 #include <vector>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 using namespace std;
 

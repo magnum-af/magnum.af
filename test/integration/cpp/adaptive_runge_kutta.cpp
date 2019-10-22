@@ -8,7 +8,7 @@
 #include "../../../src/vtk_IO.cpp"
 #include <gtest/gtest.h>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 class RK : public AdaptiveRungeKutta{

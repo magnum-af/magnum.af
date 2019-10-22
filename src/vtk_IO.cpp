@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <string>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 
@@ -366,4 +366,4 @@ void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath,
     field = A;
     mesh=NonequispacedMesh(grid_dims[0]-1, grid_dims[1]-1, x_spacings[0], y_spacings[1], vec_z_spacing);
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "cpp_test.h"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 Test::Test() { }

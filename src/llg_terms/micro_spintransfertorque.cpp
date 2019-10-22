@@ -1,6 +1,6 @@
 #include "micro_spintransfertorque.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 double SpinTransferTorqueField::E(const State& state){
@@ -23,4 +23,4 @@ af::array SpinTransferTorqueField::h(const State& state){
     //evaluation_timing += af::timer::stop(timer_fieldlike);
     return - j_e * constants::hbar / (2. * constants::e * constants::mu0 * state.Ms) * (nu_dampinglike * cross4(state.m, polarization_field.array) + nu_fieldlike * polarization_field.array);
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

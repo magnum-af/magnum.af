@@ -3,7 +3,7 @@
 #include "adaptive_runge_kutta.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 ///
 /// The LLGIntegrator class performs time integration of the Landau–Lifshitz–Gilbert (LLG) equation on the magnetization passed by an State object.
@@ -34,4 +34,4 @@ class LLGIntegrator : public AdaptiveRungeKutta{
 
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

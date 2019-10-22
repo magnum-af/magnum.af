@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 // Testing whether material.A and state.micro_A_field yield same result

@@ -5,7 +5,7 @@
 #include <vector>
 #include <thread>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 //Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
@@ -323,4 +323,4 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
     Naf = af::fftR2C<2>(Naf);
     return Naf;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

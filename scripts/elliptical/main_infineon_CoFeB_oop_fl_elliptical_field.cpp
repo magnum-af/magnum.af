@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <fstream>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 using namespace af;

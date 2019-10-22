@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <stdio.h>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 
@@ -66,4 +66,4 @@ bool Controller::success(const double err, double& h){
         return false;
     }
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

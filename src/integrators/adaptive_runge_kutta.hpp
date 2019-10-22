@@ -5,7 +5,7 @@
 #include <string>
 #include <stdio.h>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class AdaptiveRungeKutta {
@@ -33,4 +33,4 @@ class AdaptiveRungeKutta {
         af::array k_FSAL; // array which stores the last stage in methods with first same as last (FSAL) property
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

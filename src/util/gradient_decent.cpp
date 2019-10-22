@@ -2,8 +2,8 @@
 #include<math.h>
 #include<iostream>
 
-namespace magnumaf{
-//magnumaf::GradientDecent::GradientDecent(std::function<double (double)> f, Precision precision){
+namespace magnumafcpp{
+//magnumafcpp::GradientDecent::GradientDecent(std::function<double (double)> f, Precision precision){
 //    std::cout << precision.get() << std::endl;
 //}
 
@@ -35,4 +35,4 @@ std::pair<double, double> GradientDecent::minimize(){
     return std::pair<double, double> (x_next, f(x_next));
 }
 
-}// namespace magnumaf
+}// namespace magnumafcpp

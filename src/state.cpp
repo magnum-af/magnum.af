@@ -4,7 +4,7 @@
 #include "misc.hpp"
 #include <iomanip>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 /// Overloaded '+' operator adds an af::array to af::array this->m
@@ -192,10 +192,10 @@ void State::_vti_reader(std::string inputname){
 
 
 void State::vtr_writer(std::string outputname){
-    ::magnumaf::vtr_writer(this->m, this->nonequimesh, outputname, false);
+    ::magnumafcpp::vtr_writer(this->m, this->nonequimesh, outputname, false);
 }
 void State::vtr_reader(std::string inputname){
-    ::magnumaf::vtr_reader(this->m, this->nonequimesh, inputname, false);
+    ::magnumafcpp::vtr_reader(this->m, this->nonequimesh, inputname, false);
 }
 
 double State::meani(const int i){
@@ -301,4 +301,4 @@ double State::integral_nonequimesh(const af::array& h_times_m) const{
     af::array xyz_integral = af::sum(xy_integral * z_spacing_afarray, 2);
     return afvalue( xyz_integral );
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

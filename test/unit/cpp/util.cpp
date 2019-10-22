@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../../src/func.cpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 TEST(Util, SerialTriangularMatrixTest) {

@@ -3,7 +3,7 @@
 #include "stochastic_integrator.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class Stochastic_LLG : public Stochastic_Integrator {
@@ -16,4 +16,4 @@ class Stochastic_LLG : public Stochastic_Integrator {
         af::array stochfdmdt(const State&, const af::array& h_th);
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

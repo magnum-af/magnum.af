@@ -3,7 +3,7 @@
 #include "../func.hpp"
 #include <memory>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 //Energy calculation
@@ -37,4 +37,4 @@ af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th){
     return  - constants::gamma/(1.+pow(this->alpha, 2)) * cross_temp - this->alpha*constants::gamma/(1.+pow(this->alpha, 2)) * cross4(state.m, cross_temp);
 }
 
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -2,7 +2,7 @@
 #include "../func.hpp"
 #include <chrono>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 af::array Stochastic_Integrator::Heun(const State& state)
@@ -77,4 +77,4 @@ double Stochastic_Integrator::cpu_time(){
     }
     return cpu_time;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -3,7 +3,7 @@
 #include "arrayfire.h"
 #include <cmath>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 int main(int argc, char** argv)

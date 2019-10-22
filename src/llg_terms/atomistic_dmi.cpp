@@ -1,7 +1,7 @@
 #include "atomistic_dmi.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 using namespace af;
 //Energy calculation
@@ -152,4 +152,4 @@ array AtomisticDmiField::h(const State& state){
 //  return -state.material.D_atom/(2.*constants::mu0*state.material.p) * res;
 //  //return -state.material.D/2. * res;
 //}
-}// namespace magnumaf
+}// namespace magnumafcpp

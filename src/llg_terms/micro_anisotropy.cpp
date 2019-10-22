@@ -4,7 +4,7 @@
 #include "micro_anisotropy.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 UniaxialAnisotropyField::UniaxialAnisotropyField (double Ku1, std::array<double, 3> Ku1_axis) : Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)){
@@ -98,4 +98,4 @@ long int UniaxialAnisotropyField::get_Ku1_field(){
     af::array *a = new af::array(Ku1_field);
     return (long int) a->get();
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -1,7 +1,7 @@
 #include "micro_anisotropy_nonequi.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 double NonequiUniaxialAnisotropyField::E(const State& state){
@@ -105,4 +105,4 @@ long int NonequiUniaxialAnisotropyField::get_Ku1_field(){
     af::array *a = new af::array(Ku1_field);
     return (long int) a->get();
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -6,7 +6,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 using namespace af;
 //TODO//compilererror//using namespace std::complex_literals;

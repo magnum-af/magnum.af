@@ -1,6 +1,6 @@
 #include "magnum_af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 std::string filepath;

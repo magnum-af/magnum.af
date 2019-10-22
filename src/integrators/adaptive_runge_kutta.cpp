@@ -2,7 +2,7 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_, const bool verbose):
@@ -688,4 +688,4 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //
 //    return sumbk;
 //}
-}// namespace magnumaf
+}// namespace magnumafcpp

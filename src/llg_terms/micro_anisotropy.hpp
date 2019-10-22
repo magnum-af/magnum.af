@@ -3,7 +3,7 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 
@@ -33,4 +33,4 @@ class UniaxialAnisotropyField : public LLGTerm {
     double computation_time_heff{0.};
     std::array<double, 3> get_normalized_vector(std::array<double, 3> vector);
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

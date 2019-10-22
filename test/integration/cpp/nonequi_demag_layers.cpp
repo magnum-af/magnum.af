@@ -10,7 +10,7 @@
 #include "../../../src/llg_terms/micro_demag.cpp"
 #include <gtest/gtest.h>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 TEST(NonEquiDemag, energy_homogenuous_cube) {

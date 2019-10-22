@@ -3,7 +3,7 @@
 #include "integrators/integrator.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;

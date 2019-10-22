@@ -5,7 +5,7 @@
 #include "arrayfire.h"
 #include <iostream>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 
@@ -75,4 +75,4 @@ class State{
     //void check_discretization();
     //void check_nonequispaced_discretization();
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

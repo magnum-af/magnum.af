@@ -2,7 +2,7 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 SparseExchangeField::SparseExchangeField (double A_exchange, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
@@ -228,4 +228,4 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     }
     return result;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

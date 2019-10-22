@@ -3,7 +3,7 @@
 #include <fstream>
 #include "func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice){
@@ -86,4 +86,4 @@ void pgfplot_nz_quiver(af::array m, Mesh mesh, std::string outputfile, int mz_sl
     stream.close();
 }
 
-}// namespace magnumaf
+}// namespace magnumafcpp

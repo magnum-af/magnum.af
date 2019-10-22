@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 using namespace af;

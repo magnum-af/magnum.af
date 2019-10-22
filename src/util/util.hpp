@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 /// template function calculating the mean and the standard deviation of a given template container data
 /// standard deviation with -1
@@ -34,4 +34,4 @@ std::pair<double, double> mean_stdev_no_minus(T vec){
     return {m, stdev};
 }
 
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -4,7 +4,7 @@
 #include "arrayfire.h"
 #include <memory>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class Stochastic_Integrator {
@@ -45,4 +45,4 @@ class Stochastic_Integrator {
         af::randomEngine rand_engine;
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -3,7 +3,7 @@
 #include <ostream>
 #include <iostream>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 class StageTimer{
   public:
@@ -32,4 +32,4 @@ class StageTimer{
     double accumulated_time{0};
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

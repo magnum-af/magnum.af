@@ -3,7 +3,7 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class SparseExchangeField : public LLGTerm {
@@ -26,4 +26,4 @@ class SparseExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
     double af_time { 0 };
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

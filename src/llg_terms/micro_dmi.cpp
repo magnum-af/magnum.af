@@ -1,7 +1,7 @@
 #include "micro_dmi.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 
@@ -273,4 +273,4 @@ void apply_boundary_condition(af::array& hfield, const State& state){
 //  cpu_time += timer::stop(timer_dmi);
 //  return  -2.* material.D/material.Js * (first-second);//TODO Js not set
 //}
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -1,7 +1,7 @@
 #include "mesh.hpp"
 #include "func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 Mesh::Mesh (int inn0, int inn1, int inn2, double indx, double indy, double indz):
@@ -110,4 +110,4 @@ af::array Mesh::init_sp4(){
     return m;
 
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

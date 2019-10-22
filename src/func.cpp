@@ -1,6 +1,6 @@
 #include "func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 WrappedArray::WrappedArray(af::array array) : array(array) {
 }
@@ -303,4 +303,4 @@ af::randomEngine util::rand_engine_current_time(){
 //        return 0;
 //}
 
-}// namespace magnumaf
+}// namespace magnumafcpp

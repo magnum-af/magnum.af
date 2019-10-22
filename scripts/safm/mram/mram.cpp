@@ -1,6 +1,6 @@
 #include "magnum_af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 void print_m(const af::array& m, std::string name, std::ostream& stream = std::cout){
     af::array m_mean = af::mean(af::mean(af::mean(m, 0), 1), 2);

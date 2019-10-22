@@ -2,7 +2,7 @@
 #include <string>
 #include <sys/stat.h>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 unsigned long long GetDirSize(std::string filepath);
@@ -29,4 +29,4 @@ inline std::string green(const std::string str){return "\033[;32m"+str+"\033[0m"
 
 inline const char* Info(void){ return "\33[0;32mInfo:\33[0m";}
 inline const char* Warning(void){ return "\33[1;31mWarning:\33[0m";}
-}// namespace magnumaf
+}// namespace magnumafcpp

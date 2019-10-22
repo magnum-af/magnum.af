@@ -2,7 +2,7 @@
 #include "../llg_terms/LLGTerm.hpp"
 #include <fstream>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 //For second Method, use interface class:
@@ -38,4 +38,4 @@ class LBFGS_Minimizer {
         int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info);
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

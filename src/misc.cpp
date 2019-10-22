@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 unsigned long long GetDirSize(std::string filepath)
@@ -93,4 +93,4 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long  maxNumb
         maxiter++;
     }
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

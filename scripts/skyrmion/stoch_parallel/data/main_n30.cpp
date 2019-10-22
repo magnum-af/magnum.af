@@ -1,7 +1,7 @@
 #include "arrayfire.h"
 #include "pth_mag.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 using namespace af;

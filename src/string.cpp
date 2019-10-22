@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iomanip>
 
-namespace magnumaf{
+namespace magnumafcpp{
 using namespace af;
 
 
@@ -331,4 +331,4 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 //  for(unsigned int i=0; i<images_interp.size();i++) images_interp[i].m= renormalize(images_interp[i].m);
 //}
 
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cmath>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 using namespace af;

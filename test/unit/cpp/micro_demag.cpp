@@ -9,7 +9,7 @@
 #include "../../../src/misc.cpp"
 #include "../../../src/vtk_IO.cpp"
 #include <gtest/gtest.h>
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 TEST(MicroDemag, EnergyOfHomogeneousCube) {
     const double x=1.e-9, y=1.e-9, z=1.e-9;

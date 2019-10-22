@@ -1,7 +1,7 @@
 #include "nonequispaced_mesh.hpp"
 #include "func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 NonequispacedMesh::NonequispacedMesh (int nx, int ny, double dx, double dy, std::vector<double> z_spacing):
@@ -20,4 +20,4 @@ void NonequispacedMesh::print(std::ostream& stream){
     }
     stream << std::endl;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

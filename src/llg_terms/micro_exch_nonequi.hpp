@@ -4,7 +4,7 @@
 #include "../nonequispaced_mesh.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 /// Nonequispaced Exchange Field.
@@ -37,4 +37,4 @@ class NonequiExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
     double af_time { 0 };
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

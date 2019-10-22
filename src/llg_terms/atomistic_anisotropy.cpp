@@ -1,7 +1,7 @@
 #include "atomistic_anisotropy.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 //Ref Master Thesis Stifano
 //eq (19)
@@ -87,4 +87,4 @@ array AtomisticUniaxialAnisotropyField::h(const State& state){
 //  cpu_time += timer::stop(timer_anisotropy);
 //  return  state.mesh.n0*state.mesh.n1*state.mesh.n2*3*state.material.Ku1/2. - state.material.Ku1/2. * anisotropy;
 //}
-}// namespace magnumaf
+}// namespace magnumafcpp

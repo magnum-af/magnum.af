@@ -4,7 +4,7 @@
 #include "arrayfire.h"
 #include "../util/named_type.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 using RKKY_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
 using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
@@ -41,4 +41,4 @@ class RKKYExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
     double af_time { 0 };
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

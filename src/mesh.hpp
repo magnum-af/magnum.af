@@ -2,7 +2,7 @@
 #include <iostream>
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 struct Mesh{
     Mesh (int, int, int, double, double, double);
@@ -20,4 +20,4 @@ struct Mesh{
     af::array init_vortex(const bool positive_direction = true);
     af::array init_sp4();
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

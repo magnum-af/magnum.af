@@ -1,5 +1,5 @@
 #pragma once
-namespace magnumaf{
+namespace magnumafcpp{
 
 ///Struct holding all simulation parameters.
 struct Material{
@@ -28,4 +28,4 @@ struct Material{
 };
 
 //Note Js=mu0*Ms
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -1,7 +1,7 @@
 #include "zee.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 ExternalField::ExternalField(af::array zee_in) : zee_field(zee_in)
@@ -88,4 +88,4 @@ double ExternalField::E(const State& state, const af::array& h){
         }
     }
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

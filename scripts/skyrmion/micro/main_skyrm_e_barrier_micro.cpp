@@ -1,6 +1,6 @@
 #include "magnum.af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 //TODO this file was used to see wether the skyrmion changes by employing boundary conditions as stated in Paper in implementation. This currently lacks unit testing
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;

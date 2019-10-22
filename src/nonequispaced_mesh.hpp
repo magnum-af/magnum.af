@@ -3,7 +3,7 @@
 #include <ostream>
 #include <iostream>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 struct NonequispacedMesh{
     NonequispacedMesh(){};
@@ -18,4 +18,4 @@ struct NonequispacedMesh{
 
     void print(std::ostream& stream = std::cout);
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

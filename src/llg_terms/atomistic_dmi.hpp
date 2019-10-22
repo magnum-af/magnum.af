@@ -3,7 +3,7 @@
 #include "../state.hpp"
 #include "arrayfire.h"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 class AtomisticDmiField : public LLGTerm {
   public:
@@ -26,4 +26,4 @@ class AtomisticDmiField : public LLGTerm {
     double     cpu_time{0.};
     af::timer timer_dmi;
 };
-}// namespace magnumaf
+}// namespace magnumafcpp

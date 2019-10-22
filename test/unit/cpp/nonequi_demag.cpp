@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 // Exemplary unit test

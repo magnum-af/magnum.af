@@ -5,7 +5,7 @@
 #include "arrayfire.h"
 #include <memory>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 // Abstract basis class for all terms in the LLG equation.
 class LLGTerm{
@@ -44,4 +44,4 @@ class LLGTerm{
 using LlgTerm = std::shared_ptr<LLGTerm>;
 using LlgTerms = std::vector<LlgTerm>;
 
-}// namespace magnumaf
+}// namespace magnumafcpp

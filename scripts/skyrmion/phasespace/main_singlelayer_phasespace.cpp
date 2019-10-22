@@ -16,7 +16,7 @@
 #include "vtk_writer.hpp"
 #include "string.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 using namespace af; typedef std::shared_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv)

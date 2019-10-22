@@ -3,7 +3,7 @@
 #include "../state.hpp"
 #include "../llg_terms/LLGTerm.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 //For second Method, use interface class:
@@ -25,4 +25,4 @@ class CG_Minimizer {
         double time_calc_heff_{0};///< Timer measuring calls to effective field _h
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

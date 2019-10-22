@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 TEST(vtkIO, vtrWriteReadTest) {

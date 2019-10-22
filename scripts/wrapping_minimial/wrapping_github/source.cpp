@@ -1,6 +1,6 @@
 #include "source.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 Wrap:: Wrap() {}

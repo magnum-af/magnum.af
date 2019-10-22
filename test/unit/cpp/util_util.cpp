@@ -2,7 +2,7 @@
 #include "../../../src/util/util.hpp"
 #include <cmath>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 // calculating arithmetic series a_n = n i.e:  {1, 2, ..., n-1, n}

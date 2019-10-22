@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <fstream>
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 double rate = 0.34e6 ; //[T/s]

@@ -2,7 +2,7 @@
 #include "func.hpp"
 #include "llg_terms/micro_demag_pthread.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 int main(int argc, char** argv)

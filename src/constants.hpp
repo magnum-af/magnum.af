@@ -1,7 +1,7 @@
 #pragma once
 #include<math.h>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 namespace constants{
@@ -19,4 +19,4 @@ namespace constants{
 
     constexpr double hbar = 1.0545718e-34; ///< [J s] Reduced Planck constant
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

@@ -1,7 +1,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 int main(int argc, char** argv)

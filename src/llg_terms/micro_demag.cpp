@@ -3,7 +3,7 @@
 #include "../func.hpp"
 #include <thread>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 void DemagField::print_Nfft(){
     af::print("Nfft=", Nfft);
@@ -279,4 +279,4 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
     }
     return Naf;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

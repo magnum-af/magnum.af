@@ -2,7 +2,7 @@
 #include "../misc.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 RKKYExchangeField::RKKYExchangeField (RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, bool verbose) : matr(calc_CSR_matrix(rkky_values.get(), exchange_values.get(), mesh, verbose))
@@ -154,4 +154,4 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     }
     return result;
 }
-}// namespace magnumaf
+}// namespace magnumafcpp

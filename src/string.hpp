@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 
 class String {
@@ -33,4 +33,4 @@ class String {
   private:
 };
 
-}// namespace magnumaf
+}// namespace magnumafcpp

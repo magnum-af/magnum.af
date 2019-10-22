@@ -1,7 +1,7 @@
 #include "atomistic_exchange.hpp"
 #include "../func.hpp"
 
-namespace magnumaf{
+namespace magnumafcpp{
 
 using namespace af;
 
@@ -279,4 +279,4 @@ array AtomisticExchangeField::h(const State& state){
 //}
 //
 //
-}// namespace magnumaf
+}// namespace magnumafcpp

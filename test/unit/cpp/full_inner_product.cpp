@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include "../../../src/func.cpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 // Exemplary unit test
