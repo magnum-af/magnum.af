@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <math.h>
-#include "../../../src/material.cpp"
-#include "../../../src/constants.hpp"
+#include "../../src/material.cpp"
+#include "../../src/constants.hpp"
 
 using namespace magnumafcpp;
 

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../../src/util/util.hpp"
+#include "../../src/util/util.hpp"
 #include <cmath>
 
 using namespace magnumafcpp;

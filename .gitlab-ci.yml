@@ -33,7 +33,7 @@ test_cpu:
   stage: test
   script:
     - docker pull $CPU_TEST_IMAGE
-    - docker run --rm $CPU_TEST_IMAGE ./test/runall.sh
+    - docker run --rm $CPU_TEST_IMAGE ./scripts/runalltests.sh
   tags:
     - packer
 
@@ -41,7 +41,7 @@ test_gpu:
   stage: test
   script:
     - docker pull $CUDA_TEST_IMAGE
-    - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./test/runall.sh
+    - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./scripts/runalltests.sh
     - ./scripts/bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
   tags:
     - gpu

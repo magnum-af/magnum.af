@@ -1,4 +1,4 @@
-#include "../../../src/util/newton_iteration.hpp"
+#include "../../src/util/newton_iteration.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 

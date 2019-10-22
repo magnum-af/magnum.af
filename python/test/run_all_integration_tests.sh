@@ -12,6 +12,7 @@ else
 fi
 
 # running all python tests
-for filename in ./python/*.py; do
+for filename in ./integration/*.py; do
+    echo "running $filename"
     PYTHONPATH=../../build/python/ $python $filename
 done

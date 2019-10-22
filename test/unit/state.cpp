@@ -1,8 +1,8 @@
-#include "../../../src/mesh.cpp"
-#include "../../../src/nonequispaced_mesh.cpp"
-#include "../../../src/func.cpp"
-#include "../../../src/state.cpp"
-#include "../../../src/vtk_IO.cpp"
+#include "../../src/mesh.cpp"
+#include "../../src/nonequispaced_mesh.cpp"
+#include "../../src/func.cpp"
+#include "../../src/state.cpp"
+#include "../../src/vtk_IO.cpp"
 //#include "arrayfire.h"
 #include <gtest/gtest.h>
 #include <vector>

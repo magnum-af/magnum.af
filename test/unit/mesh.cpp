@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../../src/mesh.cpp"
-#include "../../../src/func.cpp"
+#include "../../src/mesh.cpp"
+#include "../../src/func.cpp"
 
 
 // Exemplary unit test

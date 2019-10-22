@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../../src/func.cpp"
+#include "../../src/func.cpp"
 
 using namespace magnumafcpp;
 

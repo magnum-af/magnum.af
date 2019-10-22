@@ -52,8 +52,8 @@ endif()
 if(TESTING)
     message(STATUS "Enable unit and integration testing (option 'TESTING').")
     enable_testing() # enables CTest with 'make test' and 'ctest' commands
-    add_subdirectory(test/unit/cpp) # adding unit tests
-    add_subdirectory(test/integration/cpp) # adding integration tests
+    add_subdirectory(test/unit) # adding unit tests
+    add_subdirectory(test/integration) # adding integration tests
 endif()
 
 # build single scripts for simulations
