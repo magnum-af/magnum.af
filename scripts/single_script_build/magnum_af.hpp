@@ -14,6 +14,7 @@
 #include "../../src/llg_terms/micro_exch.hpp"
 #include "../../src/llg_terms/micro_exch_sparse.hpp"
 #include "../../src/llg_terms/micro_exch_nonequi.hpp"
+#include "../../src/llg_terms/micro_exch_rkky.hpp"
 #include "../../src/llg_terms/micro_dmi.hpp"
 #include "../../src/llg_terms/zee.hpp"
 #include "../../src/llg_terms/micro_spintransfertorque.hpp"
