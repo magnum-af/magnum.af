@@ -3,75 +3,94 @@
 
 namespace magnumafcpp{
 
-
-
 void showdims(const af::array& a){
   std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
 }
 void apply_boundary_condition(af::array& hfield, const State& state);
-//Energy calculation
-//E=-mu0/2 integral(M . H) dx
-double DmiField::E(const State& state){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
+void correct_edges(af::array& out, const af::array& in, Mesh mesh);
+
+DmiField::DmiField (double D, std::array<double, 3> D_axis) : D(D), D_axis(D_axis) {
 }
 
-double DmiField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) * mesh.dx * mesh.dy * mesh.dz;
+DmiField::DmiField (af::array D_constants, std::array<double, 3> D_axis) : D_constants(D_constants), D_axis(D_axis) {
 }
 
-DmiField::DmiField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
-  //Normal vector
-  double norm=sqrt(pow(material.D_axis[0], 2)+ pow(material.D_axis[1], 2) + pow(material.D_axis[2], 2));
-  n=af::array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
-  n(af::span, af::span, af::span, 0)=material.D_axis[0]/norm;
-  n(af::span, af::span, af::span, 1)=material.D_axis[1]/norm;
-  n(af::span, af::span, af::span, 2)=material.D_axis[2]/norm;
-  //print("n", n);
-
-  //initialize finite difference first order derivative filter
-  //Central finite difference in 2nd order
-  //https://en.wikipedia.org/wiki/Finite_difference_coefficient
-  filtr_fd1=af::constant(0.0, 3, 3, 3, 3, f64);
-  //dmx/dx
-  filtr_fd1(0, 1, 1, 0)= 1 / (2.*mesh.dx);
-  filtr_fd1(2, 1, 1, 0)=-1 / (2.*mesh.dx);
-
-  //dmy/dy
-  filtr_fd1(1, 0, 1, 1)= 1 / (2.*mesh.dy);
-  filtr_fd1(1, 2, 1, 1)=-1 / (2.*mesh.dy);
-
-  //dmz/dz
-  filtr_fd1(1, 1, 0, 2)= 1 / (2.*mesh.dz);
-  filtr_fd1(1, 1, 2, 2)=-1 / (2.*mesh.dz);
-}
 
 
 af::array DmiField::h(const State& state){
-  timer_dmi = af::timer::start();
+    af::timer timer_dmi = af::timer::start();
+    //Normal vector
+    double norm=sqrt(pow(D_axis[0], 2)+ pow(D_axis[1], 2) + pow(D_axis[2], 2));
+    af::array n=af::array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    n(af::span, af::span, af::span, 0)=D_axis[0]/norm;
+    n(af::span, af::span, af::span, 1)=D_axis[1]/norm;
+    n(af::span, af::span, af::span, 2)=D_axis[2]/norm;
+    //print("n", n);
 
-  //First: n(div m)
-  //Gradient and edges
-  af::array first = convolve(state.m, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    //initialize finite difference first order derivative filter
+    //Central finite difference in 2nd order
+    //https://en.wikipedia.org/wiki/Finite_difference_coefficient
+    af::array filtr_fd1=af::constant(0.0, 3, 3, 3, 3, f64);
+    //dmx/dx
+    filtr_fd1(0, 1, 1, 0)= 1 / (2.*state.mesh.dx);
+    filtr_fd1(2, 1, 1, 0)=-1 / (2.*state.mesh.dx);
 
-  //correct_edges(first, state.m);
-  apply_boundary_condition(first, state);
-  //Make Divergence
-  first=sum(first, 3);
-  first=tile(first, 1, 1, 1, 3);
-  first=n*first;
+    //dmy/dy
+    filtr_fd1(1, 0, 1, 1)= 1 / (2.*state.mesh.dy);
+    filtr_fd1(1, 2, 1, 1)=-1 / (2.*state.mesh.dy);
 
-  //Second: fd1(n . m)
-  //Dot product
-  af::array second = sum(n*state.m, 3);
-  //Expand for fd1 convolution
-  second = tile(second, 1, 1, 1, 3);
-  second = convolve(second, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-  //correct_edges(second, state.m);
-  apply_boundary_condition(second, state);
+    //dmz/dz
+    filtr_fd1(1, 1, 0, 2)= 1 / (2.*state.mesh.dz);
+    filtr_fd1(1, 1, 2, 2)=-1 / (2.*state.mesh.dz);
 
-  if(state.material.afsync) af::sync();
-  cpu_time += af::timer::stop(timer_dmi);
-  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note: Js=mu0*Ms
+    //First: n(div m)
+    //Gradient and edges
+    af::array first = convolve(state.m, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+
+    //correct_edges(first, state.m);
+    //TODO causes segfault//apply_boundary_condition(first, state);
+    //Make Divergence
+    first=sum(first, 3);
+    first=tile(first, 1, 1, 1, 3);
+    first=n*first;
+
+    //Second: fd1(n . m)
+    //Dot product
+    af::array second = sum(n*state.m, 3);
+    //Expand for fd1 convolution
+    second = tile(second, 1, 1, 1, 3);
+    second = convolve(second, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    //correct_edges(second, state.m);
+    //TODO causes segfault//apply_boundary_condition(second, state);
+
+    if(state.material.afsync) af::sync();
+    cpu_time += af::timer::stop(timer_dmi);
+    //if (state.Ms_field.isempty()){
+    //  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note: Js=mu0*Ms
+    //}
+    //else{
+    //  return 2.* material.D/(constants::mu0*state.Ms_field) * (first-second);//Note: Js=mu0*Ms
+    //}
+
+    if (state.Ms_field.isempty() && this->D_constants.isempty())
+    {
+        return  (2.* this->D)/(constants::mu0 * state.Ms) * (first-second);
+    }
+    else if ( !state.Ms_field.isempty() && this->D_constants.isempty())
+    {
+        af::array heff = (2.* this->D)/(constants::mu0*state.Ms_field) * (first-second);
+        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
+    else if ( state.Ms_field.isempty() && !this->D_constants.isempty())
+    {
+        return (2.* this->D_constants)/(constants::mu0 * state.Ms) * (first-second);
+    }
+    else {
+        af::array heff = (2.* this->D_constants)/(constants::mu0*state.Ms_field) * (first-second);
+        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
+        return  heff;
+    }
 }
 
 
@@ -84,7 +103,7 @@ af::array DmiField::h(const State& state){
 // thus we take         ||-1/2|1/2|...
 // so after the convolution we have to add the edges with -1/(2*dx)
 
-void DmiField::correct_edges(af::array& out, const af::array& in){
+void correct_edges(af::array& out, const af::array& in, Mesh mesh){
   //Lower x edge:
   out( 0, af::span, af::span, 0)+= -0.5* in( 0, af::span, af::span, 0)/mesh.dx;
   //Upper x edge:
