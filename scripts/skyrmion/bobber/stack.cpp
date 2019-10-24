@@ -22,10 +22,10 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=400e-9;
     const double y=400e-9;
-    const double z=5e-9;
+    const double z=4e-9;
     //TODO fix RKKY adjacent layers problem and move from 5 4 layers
 
-    const int nx = 80, ny=80 , nz=5;//TODO this discretiyation stabiliyes skym with scaled RKKYval=0.8e-3 * 1e-9
+    const int nx = 128, ny=128 , nz=4;//TODO this discretiyation stabiliyes skym with scaled RKKYval=0.8e-3 * 1e-9
     //const int nx = 128, ny=128 , nz=5;
     const double dx= x/nx;
     const double dy= y/ny;
@@ -49,34 +49,36 @@ int main(int argc, char** argv)
     Ms(af::span, af::span, 0, af::span) = SK_Ms;
     Ms(af::span, af::span, 1, af::span) = IL_Ms;
     Ms(af::span, af::span, 2, af::span) = IL_Ms;
-    Ms(af::span, af::span, 3, af::span) = IL_Ms;
-    Ms(af::span, af::span, 4, af::span) = SK_Ms;
+    Ms(af::span, af::span, 3, af::span) = SK_Ms;
 
     array A = af::constant(0.0, nx, ny, nz, 3, f64);
     A(af::span, af::span, 0, af::span) = SK_A;
     A(af::span, af::span, 1, af::span) = IL_A;
     A(af::span, af::span, 2, af::span) = IL_A;
-    A(af::span, af::span, 3, af::span) = IL_A;
-    A(af::span, af::span, 4, af::span) = SK_A;
+    A(af::span, af::span, 3, af::span) = SK_A;
 
     array Ku = af::constant(0.0, nx, ny, nz, 3, f64);
     Ku(af::span, af::span, 0, af::span) = SK_Ku;
     Ku(af::span, af::span, 1, af::span) = IL_Ku;
     Ku(af::span, af::span, 2, af::span) = IL_Ku;
-    Ku(af::span, af::span, 3, af::span) = IL_Ku;
-    Ku(af::span, af::span, 4, af::span) = SK_Ku;
+    Ku(af::span, af::span, 3, af::span) = SK_Ku;
 
     array D = af::constant(0.0, nx, ny, nz, 3, f64);
     D(af::span, af::span, 0, af::span) = SK_D;
-    D(af::span, af::span, 4, af::span) = SK_D;
+    D(af::span, af::span, 3, af::span) = SK_D;
 
 
     array RKKY = af::constant(0.0, nx, ny, nz, 3, f64);
     RKKY(af::span, af::span, 0, af::span) = RKKY_val;
     RKKY(af::span, af::span, 1, af::span) = RKKY_val;
-    RKKY(af::span, af::span, 2, af::span) = 0.;
+    RKKY(af::span, af::span, 2, af::span) = RKKY_val;
     RKKY(af::span, af::span, 3, af::span) = RKKY_val;
-    RKKY(af::span, af::span, 4, af::span) = RKKY_val;
+
+    array RKKYindices = af::constant(0, nx, ny, nz, 3, u32);
+    RKKYindices(af::span, af::span, 0, af::span) = 1;
+    RKKYindices(af::span, af::span, 1, af::span) = 1;
+    RKKYindices(af::span, af::span, 2, af::span) = 2;
+    RKKYindices(af::span, af::span, 3, af::span) = 2;
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
@@ -99,7 +101,7 @@ int main(int argc, char** argv)
     auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
     //auto exch = LlgTerm (new ExchangeField(A));
     //TODO causes Nans//auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
     auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, (std::array<double ,3>) {0, 0, 1}));
 
     auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
@@ -109,7 +111,7 @@ int main(int argc, char** argv)
     auto external = LlgTerm (new ExternalField(zee));
 
     //af::print("dmi", dmi->h(state));
-    af::print("exch", exch->h(state));
+    //af::print("exch", exch->h(state));
 
     LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
     //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
