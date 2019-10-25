@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     //const int nx =20, ny=30 , nz=40;
     //max diff nonzero// const int nx = 30, ny=4 , nz=5;
     //2nd field crashes with invalid buffer size//const int nx = 128, ny=128 , nz=4;
-    const int nx = 30, ny=4 , nz=5;
+    const int nx = 30, ny=40, nz=5;
     //const int nx = 30, ny=40 , nz=5;
     //good numerics//const int nx = 30, ny=11 , nz=12;
     const double dx = 1e-9, dy=2e-9, dz=3e-9;
@@ -83,9 +83,9 @@ int main(int argc, char** argv)
     A = A * 1e-12;//(nx*nz*ny);
     array RKKY = af::constant(0, nx, ny, nz, 3, f64);
     Mesh mesh(nx, ny, nz, dx, dy, dz);
-    auto coo = RKKYExchangeField(int(2), RKKY_values(RKKY), Exchange_values(A), mesh, af::array());
+    auto coo = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, af::array(), true, true);
     af::array coo_to_dense = af::sparseConvertTo(coo.matr, AF_STORAGE_DENSE);
-    auto csr = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh);
+    auto csr = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, af::array(), true, false);
     af::array csr_to_dense = af::sparseConvertTo(csr.matr, AF_STORAGE_DENSE);
     //af::print("", exch.matr);
     //af::print("", csr_to_dense);
