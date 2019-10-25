@@ -11,6 +11,7 @@ using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>
 
 /// Combined Field for RKKY interaction between z-neighbour-cells and exchange interaction between not-RKKY-coupled cells.
 
+///
 /// RKKY_values and Exchange_values expect an array with RKKY and exchange constants for each cell, respectively.
 /// Both material parameters can be zero or non-zero, where zero values can be used to decouple certain cells.
 /// If of two z-neighbouring cells have nonzero RKKY constants they are coupled by
@@ -26,10 +27,12 @@ using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>
 /// layers 1 and 2 are RKKY coupled (counting from 0 to 3)
 /// layers 0 and 1 as well as 2 and 3 are exchange coupled
 /// All cells are exchange coupled along the xy plane.
+/// @param COO Switch between COO and CSR sparse matrix format, true is COO.
+
+
 class RKKYExchangeField : public LLGTerm {
   public:
-    RKKYExchangeField (RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, const af::array& rkky_indices = af::array(), bool verbose = true);
-    RKKYExchangeField (int todelswitch, RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, const af::array& rkky_indices);
+    RKKYExchangeField (RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);
 
     af::array h(const State& state);//Field contribution
 
