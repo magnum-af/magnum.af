@@ -86,53 +86,6 @@ int main(int argc, char** argv)
     RKKY(af::span, af::span, 18, af::span) = RKKY_val;
     RKKY(af::span, af::span, 19, af::span) = RKKY_val;
 
-    //array Ms = af::constant(0.0, nx, ny, nz, 3, f64);
-    //Ms(af::span, af::span,  0, af::span) = SK_Ms;
-    //Ms(af::span, af::span,  3, af::span) = SK_Ms;
-    //Ms(af::span, af::span,  6, af::span) = SK_Ms;
-    //Ms(af::span, af::span,  9, af::span) = SK_Ms;
-    //Ms(af::span, af::span, 12, af::span) = SK_Ms;
-
-    //Ms(af::span, af::span, 15, af::span) = IL_Ms;
-    //Ms(af::span, af::span, 16, af::span) = IL_Ms;
-    //Ms(af::span, af::span, 17, af::span) = IL_Ms;
-    //Ms(af::span, af::span, 18, af::span) = IL_Ms;
-
-    //Ms(af::span, af::span, 19, af::span) = SK_Ms;
-    //Ms(af::span, af::span, 22, af::span) = SK_Ms;
-    //Ms(af::span, af::span, 25, af::span) = SK_Ms;
-    //Ms(af::span, af::span, 28, af::span) = SK_Ms;
-    //Ms(af::span, af::span, 31, af::span) = SK_Ms;
-
-//    array A = af::constant(0.0, nx, ny, nz, 3, f64);
-//    A(af::span, af::span, 0, af::span) = SK_A;
-//    A(af::span, af::span, 1, af::span) = IL_A;
-//    A(af::span, af::span, 2, af::span) = IL_A;
-//    A(af::span, af::span, 3, af::span) = SK_A;
-//
-//    array Ku = af::constant(0.0, nx, ny, nz, 3, f64);
-//    Ku(af::span, af::span, 0, af::span) = SK_Ku;
-//    Ku(af::span, af::span, 1, af::span) = IL_Ku;
-//    Ku(af::span, af::span, 2, af::span) = IL_Ku;
-//    Ku(af::span, af::span, 3, af::span) = SK_Ku;
-//
-//    //array D = af::constant(0.0, nx, ny, nz, 3, f64);
-//    //D(af::span, af::span, 0, af::span) = SK_D;
-//    //D(af::span, af::span, 3, af::span) = SK_D;
-//
-//
-//    array RKKY = af::constant(0.0, nx, ny, nz, 3, f64);
-//    RKKY(af::span, af::span, 0, af::span) = RKKY_val;
-//    RKKY(af::span, af::span, 1, af::span) = RKKY_val;
-//    RKKY(af::span, af::span, 2, af::span) = RKKY_val;
-//    RKKY(af::span, af::span, 3, af::span) = RKKY_val;
-//
-//    array RKKYindices = af::constant(0, nx, ny, nz, 3, u32);
-//    RKKYindices(af::span, af::span, 0, af::span) = 1;
-//    RKKYindices(af::span, af::span, 1, af::span) = 1;
-//    RKKYindices(af::span, af::span, 2, af::span) = 2;
-//    RKKYindices(af::span, af::span, 3, af::span) = 2;
-
     //Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
