@@ -25,15 +25,17 @@ int main(int argc, char** argv)
     const double z=4e-9;
     //TODO fix RKKY adjacent layers problem and move from 5 4 layers
 
-    const int nx = 128, ny=128 , nz=4;//TODO this discretiyation stabiliyes skym with scaled RKKYval=0.8e-3 * 1e-9
-    //const int nx = 128, ny=128 , nz=5;
+    const int nx = 400, ny=400 , nz=4;//TODO this discretiyation stabiliyes skym with scaled RKKYval=0.8e-3 * 1e-9
+    //const int nx = 128, ny=128 , nz=4;
     const double dx= x/nx;
     const double dy= y/ny;
     const double dz= z/nz;
 
     const double Hz = 130e-3/constants::mu0;
-    //const double RKKY_val = 0.8e-3;
-    const double RKKY_val = 0.8e-3 * 1e-9;//TODO
+    const double RKKY_val = 0.8e-3 * 1e-9;
+    //TODO maybe 0.5 factor (see mumax3):
+    //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
+    //NOTE//const double RKKY_val = 0.8e-3;//NOTE: causes NaNs during integration
     // SK layer params
     const double SK_Ms =1371e3;// A/m
     const double SK_A = 15e-12;// J/m
@@ -63,9 +65,9 @@ int main(int argc, char** argv)
     Ku(af::span, af::span, 2, af::span) = IL_Ku;
     Ku(af::span, af::span, 3, af::span) = SK_Ku;
 
-    array D = af::constant(0.0, nx, ny, nz, 3, f64);
-    D(af::span, af::span, 0, af::span) = SK_D;
-    D(af::span, af::span, 3, af::span) = SK_D;
+    //array D = af::constant(0.0, nx, ny, nz, 3, f64);
+    //D(af::span, af::span, 0, af::span) = SK_D;
+    //D(af::span, af::span, 3, af::span) = SK_D;
 
 
     array RKKY = af::constant(0.0, nx, ny, nz, 3, f64);
@@ -104,7 +106,8 @@ int main(int argc, char** argv)
     auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
     auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, (std::array<double ,3>) {0, 0, 1}));
 
-    auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
+    auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
+    //auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
