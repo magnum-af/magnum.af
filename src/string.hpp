@@ -9,11 +9,9 @@ namespace magnumafcpp{
 
 class String {
   public:
-    String(double alpha, State state, std::vector<State> inputimages, int n_interp, double dt, LlgTerms Fieldterms_in);
+    String(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
     double run(const std::string filepath, const double string_abort_rel_diff = 1e-12, const double string_abort_abs_diff = 1e-27, const int string_steps = 10000);
 
-    State state;// TODO remove this state instace
-    //Mesh mesh;
     LLGIntegrator Llg;//(state_relax, atol, rtol, hmax, hmin);
     const int n_interp;
     const double dt;

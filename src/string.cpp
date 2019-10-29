@@ -9,17 +9,20 @@ namespace magnumafcpp{
 using namespace af;
 
 
-String::String(double alpha, State statein, std::vector<State> inputimages, int n_interp_in, double dt_in, LlgTerms Fieldterms_in):
-  state(statein), Llg(alpha, "RKF45", Controller(), true), n_interp(n_interp_in), dt(dt_in){
-
-  //If set true, this only uses the energy dissipation term (i.e. Mx(MxH)) in the LLG
-  // in init  Llg.fdmdt_dissipation_term_only=true;
-  Llg.llgterms = Fieldterms_in;
+String::String(State state, std::vector<State> inputimages, int n_interp_in, double dt_in, LLGIntegrator llg): Llg(llg), n_interp(n_interp_in), dt(dt_in){
 
     calc_x(inputimages);
 
+    std::cout << "test debug" << std::endl;
     for(int i=0;i<n_interp;i++){
-        images.push_back(State(state.mesh, state.material, af::constant(2., state.mesh.dims, f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms creation
+        if (state.Ms_field.isempty()){
+            std::cout << "Ms const test debug start " << i << " out of " << n_interp << std::endl;
+            images.push_back(State(state.mesh, state.Ms, af::constant(2., state.mesh.dims, f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms_field creation
+        }
+        else {
+            std::cout << "Msfield test debug start " << i << " out of " << n_interp << std::endl;
+            images.push_back(State(state.mesh, state.Ms_field, af::constant(2., state.mesh.dims, f64))); // Note: this is set to 2. to notice error if norm != 1 and not to trigger state.Ms_field creation
+        }
     }
     for(int i=0;i<n_interp;i++){
         int j=0;
@@ -114,7 +117,7 @@ void String::step(){
 
 void String::vec_renormalize(){
     for(unsigned int i=0; i<images.size();i++){
-        images[i].m= renormalize(images[i].m);
+        images[i].m= renormalize_handle_zero_values(images[i].m);
         //af::eval avoids JIT crash here!
         af::eval(images[i].m);
     }
@@ -123,7 +126,8 @@ void String::vec_renormalize(){
 
 void String::write_vti(std::string file){
     for(unsigned j = 0; j < images.size(); j++){
-        vti_writer_atom(images[j].m, state.mesh , file + std::to_string(j));
+        vti_writer_micro(images[j].m, images[j].mesh , file + std::to_string(j));
+        //vti_writer_atom(images[j].m, images[j].mesh , file + std::to_string(j));
     }
 }
 
@@ -235,100 +239,5 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     stream_max_lowest.close();
     return max_lowest;
 };
-
-
-//#include "string.hpp"
-//#include "func.hpp"
-
-//
-//using namespace af;
-//
-//String::String(State statein, std::vector<State> inputimages, int n_interp_in, std::vector<std::shared_ptr<LLGTerm> > Fieldterms_in):
-// state(statein), Llg(state, 1e-6, 1e-6, 3.5e-10, 1.0e-15, Fieldterms_in), n_interp(n_interp_in), images(inputimages){
-//
-//
-//  Llg.fdmdt_dissipation_term_only=true;//To only use the first term in llg equ
-//
-//  calc_x();
-//  for(int i=0;i<n_interp;i++){
-//    images_interp.push_back(State(state.mesh, state.material, array(state.mesh.dims, f64)));
-//  }
-//  lin_interpolate();
-//}
-//
-//void String::calc_E(){
-//  if(E.empty()==false) E.clear();
-//  for(int i=0; i<n_interp; i++) E.push_back(Llg.E(images_interp[i]));
-//  //for(int i=0; i<n_interp; i++) std::cout<<"E= "<<E[i]<<"\t["<<i<<"]"<<std::endl;
-//}
-//
-//void String::calc_x(){
-//  x.clear();
-//  x.push_back(0.);
-//  for(unsigned int i=1; i<images.size(); i++){
-//      x.push_back(x[i-1] + FrobeniusNorm(images[i].m-images[i-1].m));
-//  }
-//
-//  x_interp.clear();
-//  for(int i=0;i<n_interp;i++){
-//      x_interp.push_back((double)i/(double)(n_interp-1)*x.back());
-//  }
-////  std::cout<<"test1"<<x.size()<<std::endl;
-////  for(std::vector<double>::size_type i = 0; i != x.size(); i++){std::cout<< x[i]<<std::endl;}
-////  for(std::vector<double>::size_type i = 0; i != x_interp.size(); i++) std::cout<< x_interp[i]<<std::endl;
-//}
-//
-//void String::lin_interpolate(){
-//  for(int i=0;i<n_interp;i++){
-//    int j=0;
-//    while(x[j]<x_interp[i] && j<n_interp) j++;
-//    if(j>0) j--;
-//    if(j<n_interp-1){
-//      images_interp[i].m=images[j].m+(x_interp[i]-x[j])*(images[j+1].m-images[j].m)/(x[j+1]-x[j]);
-//    }
-//    else{
-//      std::cout<<"Warning: x_interp[j="<<j<<"] exceedes x range, y_interp[j] value set to y[j]"<<std::endl;
-//      images_interp[i]=images[j];
-//    }
-//    vec_renormalize();
-//  }
-//  //for(int n=0; n<images.size();n++) print("images", images[n]);
-//  //for(int i=0; i<n_interp; i++) std::cout<< x[i]<<std::endl;
-//  //for(int i=0; i<n_interp; i++) std::cout<< x_interp[i]<<std::endl;
-//  //for(int n=0; n<n_interp;n++) print("images_interp", images_interp[n]);
-//
-//  //for(int i=0; i<n_interp; i++){
-//  //  std::cout<< "i="<<i<<" x[i]"<< x[i]<<" x_interp[i] "<<x_interp[i]<<std::endl;
-//  //  print("images", images[i]);
-//  //  print("images_interp", images_interp[i]);
-//  //}
-//}
-//
-//void String::integrate(){
-//
-//  images.clear();
-//  for(unsigned int i=0;i<images_interp.size();i++){
-//    images.push_back(images_interp[i]);
-//    images[i].t=0;//TODO handle time
-//    while (images[i].t < dt){
-//      images[i].m=Llg.step(images[i]);
-//    }
-//    double h=dt-images[i].t;
-//    double dummy_err;
-//    images[i].m += Llg.RKF45(images[i].m, h, dummy_err);
-//    //TODO time+=images.t;
-//  }
-//}
-//
-//void String::step(){
-//  integrate();
-//  calc_x();
-//  lin_interpolate();
-//}
-//
-//void String::vec_renormalize(){
-//  for(unsigned int i=0; i<images.size();i++) images[i].m= renormalize(images[i].m);
-//  for(unsigned int i=0; i<images_interp.size();i++) images_interp[i].m= renormalize(images_interp[i].m);
-//}
 
 }// namespace magnumafcpp
