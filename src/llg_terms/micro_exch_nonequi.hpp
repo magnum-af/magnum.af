@@ -26,11 +26,8 @@ class NonequiExchangeField : public LLGTerm {
 
     double get_cpu_time(){return af_time;}//af time
 
-    //const double A_exchange { 0 };
-    //const af::array A_exchange_field = af::array();// empty array if not specified in constructor
-
-
     const af::array matr;
+
   private:
     af::array calc_CSR_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
     af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
@@ -39,4 +36,5 @@ class NonequiExchangeField : public LLGTerm {
     int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
     double af_time { 0 };
 };
+
 }// namespace magnumafcpp
