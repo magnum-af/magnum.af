@@ -16,8 +16,8 @@ namespace magnumafcpp{
 /// [1] "A simple finite-difference grid with non-constant intervals" by Hilding Sundqvist & George Veronis
 class NonequiExchangeField : public LLGTerm {
   public:
-    NonequiExchangeField (double A_exchange, NonequispacedMesh, bool verbose = true);
-    NonequiExchangeField (const af::array& A_exchange_field, NonequispacedMesh, bool verbose = true);
+    NonequiExchangeField (double A_exchange, NonequispacedMesh, bool verbose = true, bool COO = true);
+    NonequiExchangeField (const af::array& A_exchange_field, NonequispacedMesh, bool verbose = true, bool COO = true);
     NonequiExchangeField (long int A_exchange_field_ptr, NonequispacedMesh mesh, bool verbose = true);
 
     af::array h(const State& state);//Field contribution
@@ -30,10 +30,12 @@ class NonequiExchangeField : public LLGTerm {
     //const af::array A_exchange_field = af::array();// empty array if not specified in constructor
 
 
-  private:
     const af::array matr;
+  private:
     af::array calc_CSR_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
     af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
+    af::array calc_COO_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
+    af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
     int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
     double af_time { 0 };
 };

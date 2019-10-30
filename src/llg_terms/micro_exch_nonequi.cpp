@@ -5,12 +5,12 @@
 namespace magnumafcpp{
 
 
-NonequiExchangeField::NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange, mesh, verbose))
+NonequiExchangeField::NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose, bool COO) : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose) : calc_CSR_matrix(A_exchange, mesh, verbose))
 {
 }
 
 
-NonequiExchangeField::NonequiExchangeField (const af::array& A_exchange_field, NonequispacedMesh mesh, bool verbose) : matr(calc_CSR_matrix(A_exchange_field, mesh, verbose))
+NonequiExchangeField::NonequiExchangeField (const af::array& A_exchange_field, NonequispacedMesh mesh, bool verbose, bool COO) : matr( COO ? calc_COO_matrix(A_exchange_field, mesh, verbose) : calc_CSR_matrix(A_exchange_field, mesh, verbose))
 {
 }
 
@@ -50,6 +50,275 @@ double NonequiExchangeField::E(const State& state, const af::array& h){
 // Get inner index (index per matrix column)
 int NonequiExchangeField::findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh){
     return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*im));
+}
+
+
+af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange, const NonequispacedMesh& mesh, const bool verbose){
+    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning()); fflush(stdout);
+    af::timer t;
+    if(verbose) af::timer::start();
+
+    std::vector<double> h;// spacings between discretization points h = (dz[n] + dz[n+1])/2
+    for(unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++){
+        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i+1))/2.);
+    }
+
+    const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
+
+    std::vector<double> COO_values;// matrix values,  of length "number of elements"
+    std::vector<int> COO_ROW;//
+    std::vector<int> COO_COL;//
+    for (int im = 0; im < 3; im++){
+        for (int i2 = 0; i2 < mesh.nz; i2++){
+            for (int i1 = 0; i1 < mesh.ny; i1++){
+                for (int i0 = 0; i0 < mesh.nx; i0++){
+                    const int ind=findex(i0, i1, i2, im, mesh);
+                    //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
+                    //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
+                    //x
+                    if(i0 == 0 && mesh.nx > 1 ){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow( mesh.dx, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0+1, i1, i2, im, mesh) );
+                    }
+                    if (i0 == mesh.nx - 1 && mesh.nx > 1){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0-1, i1, i2, im, mesh ) );
+                    }
+                    if(i0>0 && i0< mesh.nx - 1 ){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0-1, i1, i2, im, mesh ) );
+
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dx, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0+1, i1, i2, im, mesh) );
+                    }
+
+                    //y
+                    if(i1 == 0 && mesh.ny > 1 ){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                    }
+                    if (i1 == mesh.ny - 1 && mesh.ny > 1){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                    }
+                    if(i1>0 && i1< mesh.ny-1){
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(mesh.dy, 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                    }
+
+                    // z from ref [1]
+                    if (i2 == 0 && mesh.nz > 1 ){//TODO check
+                      // Note: skipping f-1 term as it drops out in llg: neumann bc is assumed, which would consider fictive m[-1] with value m[0]
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2), 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                    }
+                    else if (i2 == mesh.nz - 1 && mesh.nz > 1){//TODO check
+                      // Note: skipping f+1 term as it drops out in llg: neumann bc is assumed, which would consider fictive m[n] with value m[n-1]
+                        COO_values.push_back( (2.* A_exchange)/(constants::mu0) * 1./pow(h.at(i2-1), 2) );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                    }
+                    else if( i2 > 0 && i2 < mesh.nz - 1){
+                        double h_divisor = h.at(i2) * h.at(i2-1) * (1. + h.at(i2)/h.at(i2-1));
+                        // f_{i-1} term
+                        COO_values.push_back( (2.* A_exchange / constants::mu0) * (2. * h.at(i2)/h.at(i2-1))/h_divisor);
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                        // f_{i+1} term
+                        COO_values.push_back( (2.* A_exchange / constants::mu0) * 2./h_divisor );
+                        COO_ROW.push_back(ind);
+                        COO_COL.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                    }
+                }
+            }
+        }
+    }
+    af::array matr_COO = af::sparse((dim_t) dimension, (dim_t) dimension, af::array(COO_values.size(), COO_values.data()), af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    double time = t.stop();
+
+    af::timer timer_convert = af::timer::start();
+    af::array matr_CSR = af::sparseConvertTo(matr_COO, AF_STORAGE_CSR);
+    double time_convert = timer_convert.stop();
+
+    if(verbose) {
+        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
+        fflush(stdout);
+    }
+    return matr_CSR;
+}
+
+
+
+// Assembly of sparse matrix for spacially varying exchange energy A_exchange_field
+af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_field, const NonequispacedMesh& mesh, const bool verbose){
+    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning()); fflush(stdout);
+    af::timer t;
+    if(verbose) af::timer::start();
+
+    std::vector<double> h;// spacings between discretization points h = (dz[n] + dz[n+1])/2
+    for(unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++){
+        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i+1))/2.);
+    }
+
+    const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
+
+    std::vector<double> COO_values;// matrix values,  of length "number of elements"
+    std::vector<int> COO_ROW;//
+    std::vector<int> COO_COL;//
+    double* a_host = NULL;
+    a_host = A_exchange_field.host<double>();
+    for (int im = 0; im < 3; im++){
+        for (int i2 = 0; i2 < mesh.nz; i2++){
+            for (int i1 = 0; i1 < mesh.ny; i1++){
+                for (int i0 = 0; i0 < mesh.nx; i0++){
+                    const int ind=findex(i0, i1, i2, im, mesh);
+                    //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
+                    // x
+                    if(i0 == 0 && mesh.nx > 1){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0+1, i1, i2, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0+1, i1, i2, im, mesh) );
+                        }
+                    }
+                    else if (i0 == mesh.nx - 1 && mesh.nx > 1){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0-1, i1, i2, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0-1, i1, i2, im, mesh ) );
+                        }
+                    }
+                    else if(i0>0 && i0< mesh.nx - 1 ){
+                        //i_x +u1
+                        {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0-1, i1, i2, mesh.nx, mesh.ny)];
+                        if (A_i_m != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0-1, i1, i2, im, mesh ) );
+                        }
+                        }
+
+                        {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0+1, i1, i2, mesh.nx, mesh.ny)];
+                        if (A_i_p != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0+1, i1, i2, im, mesh) );
+                        }
+                        }
+                    }
+
+                    // y
+                    if(i1 == 0 && mesh.ny > 1 ){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0, i1+1, i2, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                        }
+                    }
+                    else if (i1 == mesh.ny - 1 && mesh.ny > 1){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0, i1-1, i2, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                        }
+                    }
+                    else if(i1>0 && i1< mesh.ny-1){
+                        {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0, i1-1, i2, mesh.nx, mesh.ny)];
+                        if (A_i_m != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1-1, i2, im, mesh ) );
+                        }
+                        }
+                        {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0, i1+1, i2, mesh.nx, mesh.ny)];
+                        if (A_i_p != 0){
+                            COO_values.push_back( (2.* A_i)/(constants::mu0 * pow(mesh.dx, 2)) * 2.* A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1+1, i2, im, mesh ) );
+                        }
+                        }
+                    }
+
+                    // z
+                    if (i2 == 0 && mesh.nz > 1 ){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( 2.* A_i/constants::mu0 * 1./pow(h.at(i2), 2) * 2.* A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                        }
+                    }
+                    else if (i2 == mesh.nz - 1 && mesh.nz > 1){
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
+                        if (A_i != 0){
+                            COO_values.push_back( 2.* A_i/constants::mu0 * 1./pow(h.at(i2-1), 2) * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                        }
+                    }
+                    else if( i2 > 0 && i2 < mesh.nz - 1){
+                        const double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        const double A_i_m = a_host[util::stride(i0, i1, i2-1, mesh.nx, mesh.ny)];
+                        const double h_divisor = h.at(i2) * h.at(i2-1) * (1. + h.at(i2)/h.at(i2-1));
+                        if (A_i_m != 0){
+                            COO_values.push_back( 2.* A_i/constants::mu0 * (2. * h.at(i2)/h.at(i2-1))/h_divisor * 2.* A_i_m/(A_i_m + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1, i2-1, im, mesh ) );
+                        }
+                        const double A_i_p = a_host[util::stride(i0, i1, i2+1, mesh.nx, mesh.ny)];
+                        if (A_i_p != 0){
+                            COO_values.push_back( 2.* A_i/constants::mu0 * 2./h_divisor * 2.* A_i_p/(A_i_p + A_i));
+                            COO_ROW.push_back(ind);
+                            COO_COL.push_back( findex( i0, i1, i2+1, im, mesh ) );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    af::freeHost(a_host);
+    af::array matr_COO = af::sparse((dim_t) dimension, (dim_t) dimension, af::array(COO_values.size(), COO_values.data()), af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    double time = t.stop();
+
+    af::timer timer_convert = af::timer::start();
+    af::array matr_CSR = af::sparseConvertTo(matr_COO, AF_STORAGE_CSR);
+    double time_convert = timer_convert.stop();
+
+    if(verbose) {
+        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
+        fflush(stdout);
+    }
+
+    return matr_CSR;
 }
 
 
