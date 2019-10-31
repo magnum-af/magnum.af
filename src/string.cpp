@@ -137,16 +137,12 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     this->write_vti(filepath+"init_string");
     std::cout.precision(12);
 
-    std::ofstream stream_E_barrier;
-    stream_E_barrier.precision(12);
-
-    std::ofstream stream_steps;
+    std::ofstream stream_steps(filepath + "dE_over_iteration.dat");
+    stream_steps << "# i \t dE [J] \t dE rel_diff to step i-1 \t dE abs_diff to step i-1" << std::endl;
     stream_steps.precision(12);
-    stream_steps.open ((filepath + "steps.dat").c_str());
 
-    std::ofstream stream_E_curves;
+    std::ofstream stream_E_curves(filepath + "E_curves.dat");
     stream_E_curves.precision(12);
-    stream_E_curves.open ((filepath + "E_curves.dat").c_str());
 
     double max_lowest=1e100;
     double max_prev_step=1e100;
@@ -179,9 +175,13 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             stream_steps<< "#String run: absolute difference of two consecutive E_barriers is: abs_diff= " << abs_diff << " is smaller than " << string_abort_abs_diff <<std::endl;
             break;
         }
-        stream_E_barrier.open ((filepath + "E_barrier.dat").c_str());
+
+        std::ofstream stream_E_barrier(filepath + "E_barrier.dat");
+        stream_E_barrier << "# max_lowest \t this->images[0].mesh.n0 \t this->images[0].mesh.dx \t this->images[0].material.D \t this->images[0].material.K_atom \t this->images[0].material.D_atom" << std::endl;
+        stream_E_barrier.precision(12);
         stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.D<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
         stream_E_barrier.close();
+
         for(unsigned j=0;j<this->E.size();++j)
         {
             stream_E_curves<<i<<" "<<j<<" "<<this->E[j]-this->E[0]<<" "<<this->E[j]-this->E[-1]<<" "<<this->E[j]<<std::endl;
@@ -197,7 +197,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
                 vti_writer_micro(this->images[j].m, this->images[0].mesh , name.c_str());
             }
         }
-        std::cout   << i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
+        std::cout << std::scientific << i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff << "\t"<< 1./(af::timer::stop(t)) << " [1/s] \t" << this->dt/(af::timer::stop(t)) << " [dt/s]" << std::endl;
         stream_steps<< i << "\t" << std::setw(18) << *max-this->E[0 ]<< "\t" << rel_diff << "\t" << abs_diff <<  std::endl;
     }
     std::cout   <<"#i , lowest overall:   max-[0], max-[-1] max [J]: "<<i_max_lowest<<"\t"<<max_lowest<<"\t"<<max_lowest+E_max_lowest[0]-E_max_lowest[-1]<<"\t"<<max_lowest+E_max_lowest[0]<< std::endl;
@@ -205,11 +205,11 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
 
     std::ofstream myfileE;
     myfileE.precision(12);
-    myfileE.open ((filepath + "E_last_step.dat").c_str());
+    myfileE.open (filepath + "E_last_step.dat");
 
     std::ofstream stream_max_lowest;
     stream_max_lowest.precision(12);
-    stream_max_lowest.open ((filepath + "E_max_lowest.dat").c_str());
+    stream_max_lowest.open( filepath + "E_max_lowest.dat" );
 
     std::cout<<this->E.size()<<"\t"<<this->images.size()<< "\t" <<std::endl;
     for(unsigned i = 0; i < this->images.size(); i++){

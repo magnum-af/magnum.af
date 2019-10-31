@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     af::array A  = ( SK_A  * (geom == 1) + IL_A  * (geom == 2)) * todouble;
     af::array Ku = ( SK_Ku * (geom == 1) + IL_Ku * (geom == 2)) * todouble;
     af::array D  = ( SK_D  * (geom == 1) + IL_D  * (geom == 2)) * todouble; // + IL_D * (geom == 2);
-    std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
+    //std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
     //af::print("Ms", Ms);
     //af::print("1e12 * A", 1e12 * A);
@@ -138,36 +138,36 @@ int main(int argc, char** argv)
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = LlgTerm (new ExternalField(zee));
 
-    //af::print("dmi", dmi->h(state));
-    //af::print("exch", exch->h(state));
+    //af::print("dmi", dmi->h(state_1));
+    //af::print("exch", exch->h(state_1));
 
     LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     timer.print_stage("init ");
 
-    State state(mesh, Ms, m);
+    State state_1(mesh, Ms, m);
 
     if (! exists(filepath + "m_relaxed.vti" ) ){
         std::cout << "Relaxing minit" << std::endl;
-        state.write_vti(filepath + "minit");
+        state_1.write_vti(filepath + "minit");
         //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-        while (state.t < 3e-9){
-            if (state.steps % 100 == 0) state.write_vti(filepath + "m_step" + std::to_string(state.steps));
-            llg.step(state);
-            std::cout << state.steps << "\t" << state.t << "\t" <<  state.meani(2) << "\t" << llg.E(state) << std::endl;
+        while (state_1.t < 3e-9){
+            if (state_1.steps % 100 == 0) state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
+            llg.step(state_1);
+            std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" <<  state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
         }
-        //Llg.relax(state);
+        //Llg.relax(state_1);
         timer.print_stage("relax");
-        state.write_vti(filepath + "m_relaxed");
-        vti_writer_micro(state.m(af::span, af::span,  0, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer1");
-        vti_writer_micro(state.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer5");
-        vti_writer_micro(state.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed__ferri_layer1");
-        vti_writer_micro(state.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer1");
-        vti_writer_micro(state.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer5");
+        state_1.write_vti(filepath + "m_relaxed");
+        vti_writer_micro(state_1.m(af::span, af::span,  0, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer1");
+        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer5");
+        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed__ferri_layer1");
+        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer1");
+        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer5");
     }
     else {
-        std::cout << "Found m_relaxed, reading in state." << std::endl;
-        state._vti_reader(filepath + "m_relaxed.vti");
-        state.write_vti(filepath + "m_relaxed_from_read_in");
+        std::cout << "Found m_relaxed, reading in state_1." << std::endl;
+        state_1._vti_reader(filepath + "m_relaxed.vti");
+        state_1.write_vti(filepath + "m_relaxed_from_read_in");
 
     }
 
@@ -176,26 +176,34 @@ int main(int argc, char** argv)
     double string_dt=1e-13;
     //const int string_steps = 1000;
 
-    af::array last = state.m;
-    last(af::span, af::span, 19, af::span) = 0;
-    last(af::span, af::span, 22, af::span) = 0;
-    last(af::span, af::span, 25, af::span) = 0;
-    last(af::span, af::span, 28, af::span) = 0;
-    last(af::span, af::span, 31, af::span) = 0;
+    State state_2(mesh, Ms, state_1.m);
+    state_2.m(af::span, af::span, 19, af::span) = 0;
+    state_2.m(af::span, af::span, 22, af::span) = 0;
+    state_2.m(af::span, af::span, 25, af::span) = 0;
+    state_2.m(af::span, af::span, 28, af::span) = 0;
+    state_2.m(af::span, af::span, 31, af::span) = 0;
 
-    last(af::span, af::span, 19, 2) = 1;
-    last(af::span, af::span, 22, 2) = 1;
-    last(af::span, af::span, 25, 2) = 1;
-    last(af::span, af::span, 28, 2) = 1;
-    last(af::span, af::span, 31, 2) = 1;
+    state_2.m(af::span, af::span, 19, 2) = 1;
+    state_2.m(af::span, af::span, 22, 2) = 1;
+    state_2.m(af::span, af::span, 25, 2) = 1;
+    state_2.m(af::span, af::span, 28, 2) = 1;
+    state_2.m(af::span, af::span, 31, 2) = 1;
 
-    vti_writer_micro(last, state.mesh, filepath + "last_for_stringmethod");
+    vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
+
+    while (state_2.t < 3e-9){
+        if (state_2.steps % 100 == 0) state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
+        llg.step(state_2);
+        std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" <<  state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
+    }
+    vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
+    timer.print_stage("state2 relaxed");
 
     std::vector<State> inputimages;
-    inputimages.push_back(state);
-    inputimages.push_back(State(mesh, Ms, last));
+    inputimages.push_back(state_1);
+    inputimages.push_back(state_2);
 
-    String string(state, inputimages, n_interp, string_dt , llg);
+    String string(state_1, inputimages, n_interp, string_dt , llg);
     string.run(filepath);
     timer.print_stage("string relaxed");
     return 0;
