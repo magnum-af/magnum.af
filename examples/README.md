@@ -1,6 +1,6 @@
 # Examples
 
-This folder contains simulation scripts for C++ users and should help you get started with **magnum.af**. Python examples can be found in [python/examples/](https://git.exp.univie.ac.at/paul/magnum.af/tree/master/python).
+This folder contains simulation scripts for C++ users and should help you get started with **magnum.af**. Python examples can be found in [python/examples/](https://git.exp.univie.ac.at/paul/magnum.af/tree/master/python/examples).
 
 ### SP4
 Problem statement for the [micro MAG Standard Problem #4](https://www.ctcms.nist.gov/~rdm/std4/spec4.html).
