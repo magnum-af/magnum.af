@@ -57,3 +57,18 @@ while state.t < 2e-9:
 stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
+
+# plotting data with gnuplot
+from os import system
+system('gnuplot -e "\
+    set terminal pdf;\
+    set output \'' + sys.argv[1] + 'm.pdf\';\
+    set xlabel \'t [ns]\';\
+    set ylabel \'<m>\';\
+    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'<m_x>\',\
+    \'\' u 1:3 w l t \'<m_y>\',\
+    \'\' u 1:4 w l t \'<m_z>\';\
+"')
+
+# show pdf with evince
+system('evince ' + sys.argv[1] +'m.pdf')
