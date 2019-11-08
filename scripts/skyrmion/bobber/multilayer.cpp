@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     // Parameter initialization
     const double x=400e-9;
     const double y=400e-9;
-    const double z=34e-9;
+    const double z=32e-9;
 
     const int nx = 100, ny=100 , nz=32;
     const double dx= x/nx;
@@ -31,8 +31,8 @@ int main(int argc, char** argv)
     const double dz= z/nz;
 
     const double Hz = 130e-3/constants::mu0;
-    const double RKKY_val = 0.8e-3 * 1e-9;
-    //TODO maybe 0.5 factor (see mumax3):
+    const double RKKY_val = 0.8e-3 * 1e-9;//TODO
+    //Note: maybe 0.5 factor (see mumax3):
     //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
 
     // SK layer params
