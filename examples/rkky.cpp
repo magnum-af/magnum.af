@@ -56,6 +56,7 @@ int main(int argc, char** argv)
         std::cout << "i = " << i <<  ", E= " << E << std::endl;
         streamE   << i << "\t" << E << std::endl;
         state.calc_mean_m(stream);
+        state.write_vti(filepath + "m_field_" + std::to_string(i));
     }
     stream.close();
     streamE.close();
