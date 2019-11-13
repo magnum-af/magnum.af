@@ -87,15 +87,17 @@ RUN groupadd -g $user magnum.af.user && \
     useradd -r -u $user -g magnum.af.user magnum.af.user && \
     mkdir /home/magnum.af.user && \
     chown -R magnum.af.user /home/magnum.af.user
-USER magnum.af.user
-ENV HOME=/home/magnum.af.user
 
 # Add magnum.af repository
-COPY --chown=magnum.af.user . /home/magnum.af
+COPY --chown=magnum.af.user . /home/magnum.af/
 
-WORKDIR /home/magnum.af
-
+# building magnum.af and docu
+WORKDIR /home/magnum.af/
 RUN (mkdir build && cd build && cmake .. && make -j) && \
-    doxygen .doxygen-config
+    doxygen .doxygen-config && \
+    chmod -R 777 /home/magnum.af/
 
-ENV PYTHONPATH=/home/magnum.af/build/python/
+# set non-root user
+USER magnum.af.user
+ENV HOME=/home/magnum.af.user \
+    PYTHONPATH=/home/magnum.af/build/python/
