@@ -18,6 +18,7 @@ class WrappedArray {
 };
 
 af::array cross4(const af::array& a, const af::array& b);
+af::array cross4shift(const af::array& a, const af::array& b);
 af::array dotproduct(const af::array& a, const af::array& b);
 af::array renormalize(const af::array& a);
 af::array renormalize_handle_zero_values(const af::array& a);
