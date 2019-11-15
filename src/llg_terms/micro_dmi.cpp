@@ -16,7 +16,16 @@ DmiField::DmiField (af::array D_constants, std::array<double, 3> D_axis) : D_con
 }
 
 
-
+///
+/// Bulk Dzyaloshinskii–Moriya interaction.
+/// Calculates effective field [1, eq (7)]
+/// \f[
+///     \boldsymbol{H}_{DMI} = \frac{2 D}{\mu_0 M_s} [(\nabla \cdot \boldsymbol{m}) \hat{n} - \nabla (\boldsymbol{m} \cdot \hat{n}) ]
+/// \f]
+/// , where \f$ \hat{n} \f$ defines the dmi unit-vector which is passed in the consturctor.
+///
+/// [1] Rohart S and Thiaville A 2013 Skyrmion confinement in ultrathin film nanostructures in the presence of Dzyaloshinskii–Moriya interaction Phys. Rev. B 88 184422
+///
 af::array DmiField::h(const State& state){
     af::timer timer_dmi = af::timer::start();
     //Normal vector
@@ -48,7 +57,8 @@ af::array DmiField::h(const State& state){
     af::array first = convolve(state.m, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
     //correct_edges(first, state.m);
-    //TODO causes segfault//apply_boundary_condition(first, state);
+    //TODO causes segfault//
+    //apply_boundary_condition(first, state);
     //Make Divergence
     first=sum(first, 3);
     first=tile(first, 1, 1, 1, 3);
@@ -61,9 +71,10 @@ af::array DmiField::h(const State& state){
     second = tile(second, 1, 1, 1, 3);
     second = convolve(second, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
     //correct_edges(second, state.m);
-    //TODO causes segfault//apply_boundary_condition(second, state);
+    //TODO causes segfault//
+    //apply_boundary_condition(second, state);
 
-    if(state.material.afsync) af::sync();
+    if(state.afsync) af::sync();
     cpu_time += af::timer::stop(timer_dmi);
     //if (state.Ms_field.isempty()){
     //  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note: Js=mu0*Ms
@@ -133,10 +144,10 @@ void correct_edges(af::array& out, const af::array& in, Mesh mesh){
 // dm/dn = 1/xi (n_DM x n_surface) x m ; xi = 2 A/D
 // here:
 // dm/dn = 1/xi (D_axis x n_surface) x m ; xi = 2 A/D
-void apply_boundary_condition(af::array& hfield, const State& state){
+void DmiField::apply_boundary_condition(af::array& hfield, const State& state){
     //DM Vector:
-    const af::array n_DM(1, 1, 1, 3, state.material.D_axis);
-    double A = 0;//TODO set exchange A as class member and pass in constructor
+    const af::array n_DM(1, 1, 1, 3, this->D_axis.data());
+    double A = 15e-12;//TODO set exchange A as class member and pass in constructor
 
     if(state.m.dims(0)==1){
         hfield(af::span, af::span, af::span, 0)=0.;
@@ -149,7 +160,7 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_x_surface_low[]={-1, 0, 0};
         const af::array n_x_surface_low(1, 1, 1, 3, c_n_x_surface_low); // normal vector to the x-surface at boundary with lower index i=0
         const af::array n_DMxn_x_surf_low=tile(cross4(n_DM, n_x_surface_low), 1, state.m.dims(1), state.m.dims(2), 1);
-        const af::array x_minus_1 = state.m(1, af::span, af::span, 0) + 2 * state.mesh.dx * (state.material.D/(2*A))  * cross4(n_DMxn_x_surf_low , state.m(0, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
+        const af::array x_minus_1 = state.m(1, af::span, af::span, 0) + 2 * state.mesh.dx * (this->D/(2*A))  * cross4(n_DMxn_x_surf_low , state.m(0, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
         hfield(0, af::span, af::span, 0)+= - 0.5 * x_minus_1 / state.mesh.dx; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dx )  with m_{i-1} being replaced
 
         // high x boundary:
@@ -159,7 +170,7 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_x_surface_high[]={1, 0, 0};
         const af::array n_x_surface_high(1, 1, 1, 3, c_n_x_surface_high); // normal vector to the x-surface at boundary with higher index i=0
         const af::array n_DMxn_x_surf_high=tile(cross4(n_DM, n_x_surface_high), 1, state.m.dims(1), state.m.dims(2), 1);
-        const af::array x_i_plus_1 = state.m(-1, af::span, af::span, 0) + 2 * state.mesh.dx * (state.material.D/(2*A))  * cross4(n_DMxn_x_surf_high , state.m(-1, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
+        const af::array x_i_plus_1 = state.m(-1, af::span, af::span, 0) + 2 * state.mesh.dx * (this->D/(2*A))  * cross4(n_DMxn_x_surf_high , state.m(-1, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
         hfield(-1, af::span, af::span, 0)+= 0.5 * x_i_plus_1 / state.mesh.dx;
     }
 
@@ -174,7 +185,7 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_y_surface_low[]={0, -1, 0};
         const af::array n_y_surface_low(1, 1, 1, 3, c_n_y_surface_low); // normal vector to the y-surface at boundary with lower indey i=0
         const af::array n_DMxn_y_surf_low=tile(cross4(n_DM, n_y_surface_low), state.m.dims(0), 1, state.m.dims(2), 1);
-        const af::array y_minus_1 = state.m(af::span, 1, af::span, 1) + 2 * state.mesh.dy * (state.material.D/(2*A))  * cross4(n_DMxn_y_surf_low , state.m(af::span, 0, af::span, af::span))(af::span, af::span, af::span, 1);
+        const af::array y_minus_1 = state.m(af::span, 1, af::span, 1) + 2 * state.mesh.dy * (this->D/(2*A))  * cross4(n_DMxn_y_surf_low , state.m(af::span, 0, af::span, af::span))(af::span, af::span, af::span, 1);
         hfield(af::span, 0, af::span, 1)+= - 0.5 * y_minus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dy )  with m_{i-1} being replaced
 
         // high y boundary:
@@ -182,7 +193,7 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_y_surface_high[]={0, 1, 0};
         const af::array n_y_surface_high(1, 1, 1, 3, c_n_y_surface_high); // normal vector to the y-surface at boundary with higher indey i=0
         const af::array n_DMxn_y_surf_high=tile(cross4(n_DM, n_y_surface_high), state.m.dims(0), 1, state.m.dims(2), 1);
-        const af::array y_i_plus_1 = state.m(af::span, -1, af::span, 1) + 2 * state.mesh.dy * (state.material.D/(2*A))  * cross4(n_DMxn_y_surf_high , state.m(af::span, -1, af::span, af::span))(af::span, af::span, af::span, 1);
+        const af::array y_i_plus_1 = state.m(af::span, -1, af::span, 1) + 2 * state.mesh.dy * (this->D/(2*A))  * cross4(n_DMxn_y_surf_high , state.m(af::span, -1, af::span, af::span))(af::span, af::span, af::span, 1);
         hfield(af::span, -1, af::span, 1)+= 0.5 * y_i_plus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dy )  with m_{i-1} being replaced
     }
 
@@ -198,7 +209,7 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_z_surface_low[]={0, 0, -1};
         const af::array n_z_surface_low(1, 1, 1, 3, c_n_z_surface_low); // normal vector to the z-surface at boundary with lower index i=0
         const af::array n_DMxn_z_surf_low=tile(cross4(n_DM, n_z_surface_low), state.m.dims(0), state.m.dims(1), 1, 1);
-        const af::array z_minus_1 = state.m(af::span, af::span, 1, 2) + 2 * state.mesh.dz * (state.material.D/(2*A))  * cross4(n_DMxn_z_surf_low , state.m(af::span, af::span, 0, af::span))(af::span, af::span, af::span, 2);
+        const af::array z_minus_1 = state.m(af::span, af::span, 1, 2) + 2 * state.mesh.dz * (this->D/(2*A))  * cross4(n_DMxn_z_surf_low , state.m(af::span, af::span, 0, af::span))(af::span, af::span, af::span, 2);
         hfield(af::span, af::span, 0, 2)+= - 0.5 * z_minus_1 / state.mesh.dz; // Minus due to: (m_{i+1} - m_{i-1})/( 2*dz )  with m_{i-1} being replaced
 
         // high z boundary:
@@ -208,88 +219,8 @@ void apply_boundary_condition(af::array& hfield, const State& state){
         const double c_n_z_surface_high[]={0, 0, 1};
         const af::array n_z_surface_high(1, 1, 1, 3, c_n_z_surface_high); // normal vector to the z-surface at boundary with higher index i=0
         const af::array n_DMxn_z_surf_high=tile(cross4(n_DM, n_z_surface_high), state.m.dims(0), state.m.dims(1), 1, 1);
-        const af::array z_i_plus_1 = state.m(af::span, af::span, -1, 2) + 2 * state.mesh.dz * (state.material.D/(2*A))  * cross4(n_DMxn_z_surf_high , state.m(af::span, af::span, -1, af::span))(af::span, af::span, af::span, 2);
+        const af::array z_i_plus_1 = state.m(af::span, af::span, -1, 2) + 2 * state.mesh.dz * (this->D/(2*A))  * cross4(n_DMxn_z_surf_high , state.m(af::span, af::span, -1, af::span))(af::span, af::span, af::span, 2);
         hfield(af::span, af::span, -1, 2)+= 0.5 * z_i_plus_1 / state.mesh.dz;
     }
 }
-
-//--------------------------------------------------------------------------------------------------------------------------------
-
-//void DmiField::correct_edges(af::array& out, const af::array& in){
-//  //Lower x bound: after convolve it is:  1/2 * (1)
-//  //i.e.                  filtr_grad(0, 1, 1, 0) * in(0, af::span, af::span, 0)
-//  //We want it to be:                  -1*(0) + 1* (1)
-//  //So we take                        1/2*(1) - 1* (0)
-//
-//  //Lower x edge:
-//  out( 0, af::span, af::span, 0)+= in( 1, af::span, af::span, 0)/(2.*mesh.dx) - in( 0, af::span, af::span, 0)/mesh.dx;
-//  //Upper x edge:
-//  out(-1, af::span, af::span, 0)-= in(-2, af::span, af::span, 0)/(2.*mesh.dx) - in(-1, af::span, af::span, 0)/mesh.dx;
-//
-//  //Lower y edge:
-//  out(af::span, 0, af::span, 1)+= in(af::span, 1, af::span, 1)/(2.*mesh.dy) - in(af::span, 0, af::span, 1)/mesh.dy;
-//  //Upper y edge:
-//  out(af::span, -1, af::span, 1)-= in(af::span, -2, af::span, 1)/(2.*mesh.dy) - in(af::span, -1, af::span, 1)/mesh.dy;
-//
-//  //z
-//  if(in.dims(2)==1){
-//    out(af::span, af::span, af::span, 2)=0.;
-//  }
-//  else{
-//    //Lower z edge:
-//    out(af::span, af::span, 0, 2)+= in(af::span, af::span, 1, 2)/(2.*mesh.dz) - in(af::span, af::span, 0, 2)/mesh.dz;
-//    //Upper z edge:
-//    out(af::span, af::span, -1, 2)-= in(af::span, af::span, -2, 2)/(2.*mesh.dz) - in(af::span, af::span, -1, 2)/mesh.dz;
-//  }
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//DmiField::DmiField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
-//  //Normal vector
-//  n=af::array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
-//  n(af::span, af::span, af::span, 0)=nx;
-//  n(af::span, af::span, af::span, 1)=ny;
-//  n(af::span, af::span, af::span, 2)=nz;
-//  //print("n", n);
-//
-//  //TODO:
-//  //initialize filters
-//  filtr=af::constant(0.0, 3, 3, 3, f64);
-//  //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-//
-//  filtr(0, 1, 1)=-1 / (2.*mesh.dx);
-//  filtr(2, 1, 1)= 1 / (2.*mesh.dx);
-//
-//  filtr(1, 0, 1)=-1 / (2.*mesh.dy);
-//  filtr(1, 2, 1)= 1 / (2.*mesh.dy);
-//
-//  filtr(1, 1, 0)=-1 / (2.*mesh.dz);
-//  filtr(1, 1, 2)= 1 / (2.*mesh.dz);
-//}
-//af::array DmiField::h(af::array m){
-//  timer_dmi = timer::start();
-//  af::array first = convolve(m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-//  showdims(first);
-//  first=n*tile(sum(first, 3), 1, 1, 1, 3);
-//  showdims(first);
-//  af::array second = convolve(tile(sum(n*m, 3), 1, 1, 1, 3), filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-//  showdims(second);
-//
-//  if(state.material.afsync) sync();
-//  cpu_time += timer::stop(timer_dmi);
-//  return  -2.* material.D/material.Js * (first-second);//TODO Js not set
-//}
 }// namespace magnumafcpp
