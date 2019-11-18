@@ -5,9 +5,6 @@
 #include "../../src/func.cpp"
 #include "../../src/vtk_IO.cpp"
 #include "../../src/misc.cpp"
-#include "../../src/integrators/adaptive_runge_kutta.cpp"
-#include "../../src/integrators/new_llg.cpp"
-#include "../../src/integrators/controller.cpp"
 #include "../../src/llg_terms/micro_exch.cpp"
 #include <gtest/gtest.h>
 #include <iostream>
@@ -18,30 +15,22 @@ using namespace magnumafcpp;
 // Testing whether material.A and state.micro_A_field yield same result
 TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
     double A = 1.3e-11;
-    double alpha = 1;
     double Ms    = 8e5;
     Mesh mesh(3, 3, 3, 0.1, 0.2, 0.3);
     State state(mesh, Ms, mesh.init_sp4());
-    LlgTerms llgterms;
-    llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A)));
-
-    LLGIntegrator llg_global(alpha, llgterms);
-    af::array constantA = llg_global.llgterms[0]->h(state);
-
-    llgterms.clear();
+    ExchangeField exch_global(A);
+    af::array globalA = exch_global.h(state);
 
     af::array A_field = af::constant(A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    llgterms.push_back(  std::shared_ptr<LLGTerm> (new ExchangeField(A_field)));
-    LLGIntegrator llg_local(alpha, llgterms);
-
-    af::array variableA = llg_local.llgterms[0]->h(state);
+    ExchangeField exch_local(A_field);
+    af::array localA = exch_local.h(state);
 
     for (int n0 = 0; n0 < mesh.n0; n0++){
         for (int n1 = 0; n1 < mesh.n1; n1++){
             for (int n2 = 0; n2 < mesh.n2; n2++){
                 for (int n3 = 0; n3 < 3; n3++){
                     //std::cout << afvalue(constantA(n0, n1, n2, n3)) << "\t" <<  afvalue(variableA(n0, n1, n2, n3)) << std::endl;
-                    ASSERT_EQ(afvalue(constantA(n0, n1, n2, n3)), afvalue(variableA(n0, n1, n2, n3)));
+                    ASSERT_EQ(globalA(n0, n1, n2, n3).scalar<double>(), localA(n0, n1, n2, n3).scalar<double>());
                 }
             }
         }
