@@ -1,6 +1,6 @@
 #include "magnum_af.hpp"
 
-using namespace magnumaf;
+using namespace magnumafcpp;
 
 
 int main(int argc, char** argv)
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     std::cout.precision(18);
     //magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
     //auto result = zc.calc_x_and_f();
-    magnumaf::NewtonIteration ni(calc_hz);
+    NewtonIteration ni(calc_hz);
     auto result = ni.run(X0(5e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
     std::cout << "result: x = " << result.first << ", f(x) = " << result.second << std::endl;
 

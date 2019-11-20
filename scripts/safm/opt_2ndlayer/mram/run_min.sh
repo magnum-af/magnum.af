@@ -4,17 +4,17 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 GPU="0"
 
 # geometry
-x="100e-9"
-y="25e-9"
-nx="128"
-ny="32"
+x="60e-9"
+y="60e-9"
+nx="64"
+ny="64"
 
 # hys info
 hzee_max="2.0" # maximum H_external for hysteresis loop
 steps="200"
 
 # write dirs
-rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/ellipse_"$x"x_"$y"y_"$nx"nx_"$ny"ny/
+rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/mram/"$x"x_"$y"y_"$nx"nx_"$ny"ny/
 writedir_hf="$rootdir"h_free_layer/
 writedir_hys="$rootdir"min_"$hzee_max"T_"$steps"steps/
 
