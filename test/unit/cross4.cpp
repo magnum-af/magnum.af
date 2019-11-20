@@ -11,9 +11,6 @@ TEST(Func, Cross4) {
     af::array a(x, y, z, 3, aval);
     af::array b(x, y, z, 3, bval);
     af::array c = cross4(a, b);
-    af::print("a", a);
-    af::print("b", b);
-    af::print("c", c);
     EXPECT_EQ(c(0, 0, 0, 0).scalar<double>(), -3.);
     EXPECT_EQ(c(0, 0, 0, 1).scalar<double>(),  6.);
     EXPECT_EQ(c(0, 0, 0, 2).scalar<double>(), -3.);
