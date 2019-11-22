@@ -24,7 +24,8 @@ int main(int argc, char** argv)
     vti_reader(h_demag_safm, mesh, path_h_fl);
     // Defining H_zee via lamdas
     const int im_free_layer = 2;//0 == x, 2 == z
-    auto zee_func= [h_demag_safm, hzee_max, steps_full_hysteresis ] ( State state ) -> af::array {
+    const double hext_angle = 5;
+    auto zee_func= [h_demag_safm, hzee_max, steps_full_hysteresis, hext_angle] ( State state ) -> af::array {
         double field_Tesla;
         if(state.steps < steps_full_hysteresis/4){
             field_Tesla = hzee_max * 4. * state.steps/steps_full_hysteresis;
@@ -39,8 +40,12 @@ int main(int argc, char** argv)
             field_Tesla = 0; std::cout << "WARNING ZEE time out of range, setting external field to zero" << std::endl;
         }
         //std::cout << "fild= "<< field_Tesla << std::endl;
+        //{0.08715574, 0, 0.996194698};//field tile 5 degree sin\cos(5/360 * 2 pi)
         af:: array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(af::span, af::span, af::span, im_free_layer) = af::constant(field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        const double hext_x_factor = std::sin(hext_angle/360 * 2 * M_PI);
+        const double hext_z_factor = std::cos(hext_angle/360 * 2 * M_PI);
+        zee(af::span, af::span, af::span, 0) = af::constant(hext_x_factor * field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(af::span, af::span, af::span, im_free_layer) = af::constant(hext_z_factor * field_Tesla/constants::mu0 , state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         //std::cout << "dims= " << zee.dims() << ", "<< h_demag_safm.dims() << std::endl;
         return  zee + h_demag_safm;
     };
@@ -50,7 +55,7 @@ int main(int argc, char** argv)
     double Ms    = 1.393e6;//[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     double A     = 1.5e-11;//[J/m]
 
-    State state(mesh, Ms, mesh.ellipse(1));
+    State state(mesh, Ms, mesh.ellipse({0, 0, -2}, true));
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= "<< state.get_n_cells_() << std::endl;
 
@@ -63,7 +68,7 @@ int main(int argc, char** argv)
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
     minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh)));
     minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(A)));
-    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(1.5*Ms, {0, 0, 1})));//TODO: factor
+    minimizer.llgterms_.push_back( LlgTerm (new UniaxialAnisotropyField(1.5*Ms, {0, 0, 1})));
     minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
     std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms) <<std::endl;
 
@@ -74,7 +79,8 @@ int main(int argc, char** argv)
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis * 5./4.; i++){
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream, constants::mu0 * afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, im_free_layer)));
+        //state.calc_mean_m_steps(stream, constants::mu0 * afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, im_free_layer)));
+        state.calc_mean_m_steps(stream, constants::mu0 * minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0, 0, 0, af::span));
         if( state.steps % 10 == 0){
             vti_writer_micro(state.m, mesh , (filepath + "m_hysteresis_"+std::to_string(state.steps)).c_str());
         }

@@ -68,6 +68,7 @@ int main(int argc, char** argv)
         const int index_free_layer = 4;
         Mesh mesh_fl(nx, ny, 1, x/nx, y/ny, dz_fl);
         vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer");
+        vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer_it_" + std::to_string(i_callback));
 
         std::ofstream stream;
         stream.precision(12);

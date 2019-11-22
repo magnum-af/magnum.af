@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
 #include "arrayfire.h"
+#include <iostream>
+#include <array>
 
 namespace magnumafcpp{
 
@@ -16,6 +17,7 @@ struct Mesh{
     af::dim4 dims_expanded;
     void print(std::ostream& stream);
     af::array skyrmconf(const bool point_up = false);
+    af::array ellipse(std::array<double, 3> vector, const bool verbose = true);
     af::array ellipse(const int xyz = 0, const bool positive_direction = true);
     af::array init_vortex(const bool positive_direction = true);
     af::array init_sp4();

@@ -1,5 +1,6 @@
 #include "mesh.hpp"
 #include "func.hpp"
+#include <cmath>
 
 namespace magnumafcpp{
 
@@ -45,6 +46,37 @@ af::array Mesh::skyrmconf(const bool point_up){
      return m;
 }
 
+
+/// Initializes a homogeneous magnetic field pointing in the direction of \param vector within the largest cylinder which fits into the mesh. 
+//TODO should be rename to cylinder
+af::array Mesh::ellipse(std::array<double, 3> vector, const bool verbose){
+    const double norm = std::sqrt(std::pow(vector[0], 2) + std::pow(vector[1], 2) + std::pow(vector[2], 2));
+    vector[0] = vector[0]/norm;
+    vector[1] = vector[1]/norm;
+    vector[2] = vector[2]/norm;
+    if(verbose) std::cout << "Mesh::ellipse: norm=" << norm << std::endl;
+    if(verbose) std::cout << "Mesh::ellipse: normalized vector={" << vector[0] << ", " <<  vector[1] << ", " << vector[2] << "}" << std::endl;
+
+    long unsigned cells_within = 0;
+    af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
+    for(int ix=0;ix<this->n0;ix++){
+        for(int iy=0;iy<this->n1;iy++){
+            const double a= (double)(this->n0/2);
+            const double b= (double)(this->n1/2);
+            const double rx=double(ix)-this->n0/2.;
+            const double ry=double(iy)-this->n1/2.;
+            const double r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
+            if(r<1){
+                m(ix, iy, af::span, 0)= vector[0];
+                m(ix, iy, af::span, 1)= vector[1];
+                m(ix, iy, af::span, 2)= vector[2];
+                cells_within++;
+            }
+        }
+    }
+    if (verbose) std::cout << "Info: Mesh::ellipse(): cells within cylinder = " << cells_within <<", which should be approx a*b*M_PI*n2 = " << this->n0/2*this->n1/2*M_PI*this->n2 << std::endl;
+    return m;
+}
 
 af::array Mesh::ellipse(const int xyz, const bool positive_direction){
 // Returns an initial elliptical magnetization

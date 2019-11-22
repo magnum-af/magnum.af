@@ -10,7 +10,7 @@ nx="64"
 ny="64"
 
 # hys info
-hzee_max="2.0" # maximum H_external for hysteresis loop
+hzee_max="1.0" # maximum H_external for hysteresis loop
 steps="200"
 
 # write dirs
@@ -25,4 +25,10 @@ fi
 
 
 # calculating hysteresis
-../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer.vti
+#../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer.vti
+
+for it in {0..16..2}
+do
+    writedir_hys="$rootdir"min_"$hzee_max"T_"$steps"steps_it_5degree/it"$it"/
+    ../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer_it_"$it".vti
+done
