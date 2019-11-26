@@ -54,7 +54,7 @@ RUN git clone https://github.com/glfw/glfw.git && \
 # for more information
 ENV AF_PATH=/opt/arrayfire AF_DISABLE_GRAPHICS=1
 ARG COMPILE_GRAPHICS=OFF
-RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b master && \
+RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.6.4 && \
     cd arrayfire && mkdir build && cd build && \
     cmake .. -DCMAKE_INSTALL_PREFIX=/opt/arrayfire-3 \
              -DCMAKE_BUILD_TYPE=Release \
