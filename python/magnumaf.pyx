@@ -42,6 +42,7 @@ from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
+from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
 #TODO#from magnum_af_decl cimport DmiField as cDMI
 
 from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
@@ -940,13 +941,25 @@ cdef class SpinTransferTorqueField(HeffTerm):
         return self._thisptr.E(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
-
     @property
     def polarization_field(self):
         return array_from_addr(self._thisptr.polarization_field.get_array_addr())
     @polarization_field.setter
     def polarization_field(self, array):
         self._thisptr.polarization_field.set_array(addressof(array.arr))
+
+
+cdef class RKKYExchangeField(HeffTerm):
+    cdef cRKKYExchangeField* _thisptr
+    def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices = af.array(), verbose = True):
+        self._thisptr = new cRKKYExchangeField (addressof(rkky_values.arr), addressof(exchange_values.arr), deref(mesh._thisptr), addressof(rkky_indices.arr), <bool> verbose)
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
 
 
 cdef class LBFGS_Minimizer:

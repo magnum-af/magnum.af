@@ -111,3 +111,11 @@ Link:
     https://github.com/NVIDIA/nvidia-docker/issues/838#issuecomment-439346505
 -----------------------------------------------------
 -----------------------------------------------------
+Error:
+    error: aggregate ‘__pyx_pf_8magnumaf_17RKKYExchangeField___cinit__(__pyx_obj_8magnumaf_RKKYExchangeField*, PyObject*, PyObject*, __pyx_obj_8magnumaf_Mesh*, PyObject*, PyObject*)::__pyx_opt_args_17RKKYExchangeField_RKKYExchangeField __pyx_t_10’ has incomplete type and cannot be defined
+Cause:
+    Cpp default values defined in pxd file, not allowed by cython
+    CppClass(bool verbose = true)
+Fix:
+    Remove cpp default values
+    CppClass(bool verbose)

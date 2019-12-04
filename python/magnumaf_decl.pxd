@@ -204,5 +204,11 @@ cdef extern from "../../src/llg_terms/micro_spintransfertorque.hpp" namespace "m
         double get_cpu_time();
         WrappedArray polarization_field;
 
+cdef extern from "../../src/llg_terms/micro_exch_rkky.hpp" namespace "magnumafcpp":
+    cdef cppclass RKKYExchangeField:
+        RKKYExchangeField (long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices, bool verbose);
+        long int h_ptr(const State& state);
+        double E(const State& state);
+
 cdef extern from "../../src/vtk_IO.hpp" namespace "magnumafcpp":
     void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);

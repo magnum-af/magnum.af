@@ -10,6 +10,11 @@ RKKYExchangeField::RKKYExchangeField (RKKY_values rkky_values, Exchange_values e
 }
 
 
+RKKYExchangeField::RKKYExchangeField (long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices, bool verbose) : matr(calc_COO_matrix(*(new af::array( *((void **) rkky_values))), *(new af::array( *((void **) exchange_values))), mesh, *(new af::array( *((void **) rkky_indices))), verbose))
+{
+}
+
+
 af::array RKKYExchangeField::h(const State& state){
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
