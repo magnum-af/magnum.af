@@ -181,7 +181,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
 
 // Assembly of sparse matrix for spacially varying exchange energy A_exchange_field
 af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh& mesh, const af::array& rkky_indices, const bool verbose){
-    printf("%s RKKYExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
+    //printf("%s RKKYExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
+    printf("%s Starting RKKYExchangeField sparse matrix setup\n", Info());
     fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
@@ -307,7 +308,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     double time_convert = timer_convert.stop();
 
     if(verbose) {
-        printf("%s Initialized sparse COO RKKY-exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
+        printf("%s Finished sparse matrix setup in %f [s]. Initialized COO matrix in %f [s]. Converted COO to CSR format in %f [s]. Sparsity = %f\n", Info(), time + time_convert, time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
         fflush(stdout);
     }
 

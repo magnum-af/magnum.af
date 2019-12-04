@@ -951,7 +951,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
 
 cdef class RKKYExchangeField(HeffTerm):
     cdef cRKKYExchangeField* _thisptr
-    def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices = af.array(), verbose = True):
+    def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices, verbose = True):
         self._thisptr = new cRKKYExchangeField (addressof(rkky_values.arr), addressof(exchange_values.arr), deref(mesh._thisptr), addressof(rkky_indices.arr), <bool> verbose)
     def __dealloc__(self):
         del self._thisptr
@@ -960,6 +960,8 @@ cdef class RKKYExchangeField(HeffTerm):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 
 cdef class LBFGS_Minimizer:

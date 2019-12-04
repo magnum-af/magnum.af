@@ -14,9 +14,9 @@ af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
 DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads) : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()){
     af::timer demagtimer = af::timer::start();
     if (caching == false){
-        Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
         if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
-        if (verbose) printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
+        Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+        if (verbose) printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     }
     else{
         std::string magafdir = setup_magafdir();
