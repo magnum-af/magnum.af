@@ -250,7 +250,7 @@ double minval(const af::array& a){
 }
 
 std::pair<int, int> util::k2ij(const int k, const int n){
-    const int i = n - 1 - std::floor(std::sqrt(-8*k + 4*n*(n+1)-7)/2.0 - 0.5);
+    const int i = n - 1 - static_cast<int>(std::floor(std::sqrt(-8*k + 4*n*(n+1)-7)/2.0 - 0.5));
     const int j = k + i - n*(n+1)/2 + (n-i)*((n-i)+1)/2;
     return std::make_pair(i, j);
 }
@@ -266,8 +266,8 @@ unsigned int util::stride(const unsigned int i, const unsigned int j, const unsi
 
 
 af::randomEngine util::rand_engine_current_time(){
-    unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >\
-                                  (std::chrono::system_clock::now().time_since_epoch()).count();
+    unsigned long long int seed = static_cast<unsigned long long int>(std::chrono::duration_cast< std::chrono::nanoseconds >\
+                                  (std::chrono::system_clock::now().time_since_epoch()).count());
     return af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed);
 }
 

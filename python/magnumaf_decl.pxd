@@ -37,7 +37,7 @@ cdef extern from "../../src/llg_terms/micro_exch_nonequi.hpp" namespace "magnuma
 
 cdef extern from "../../src/mesh.hpp" namespace "magnumafcpp":
     cdef cppclass Mesh:
-        int n0,n1,n2;
+        unsigned long n0,n1,n2;
         double dx,dy,dz;
         int n0_exp, n1_exp, n2_exp;
         Mesh (int, int, int, double, double, double)

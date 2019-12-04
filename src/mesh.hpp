@@ -2,14 +2,15 @@
 #include "arrayfire.h"
 #include <iostream>
 #include <array>
+#include <cstdint>
 
 namespace magnumafcpp{
 
 struct Mesh{
-    Mesh (int, int, int, double, double, double);
+    Mesh (uint32_t, uint32_t, uint32_t, double, double, double);
     Mesh (){};
 
-    int n0, n1, n2;               // Number of cells in x, y, z
+    uint32_t n0, n1, n2;               // Number of cells in x, y, z
     double dx, dy, dz;            // Distance between cells
     double V;                   // Volume of one cell
     int n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
