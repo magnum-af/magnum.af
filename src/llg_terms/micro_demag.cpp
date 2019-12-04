@@ -20,8 +20,8 @@ DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads
     }
     else{
         std::string magafdir = setup_magafdir();
-        unsigned long long maxsize = 2000000;
-        unsigned long long reducedsize = 1000000;
+        const unsigned long long maxsize_bytes = 2000000;
+        const unsigned long long reducedsize_bytes = 1000000;
         std::string nfft_id = "n0exp_"+std::to_string(mesh.n0_exp)+"_n1exp_"+std::to_string(mesh.n1_exp)+"_n2exp_"+std::to_string(mesh.n2_exp)+"_dx_"+std::to_string(1e9*mesh.dx)+"_dy_"+std::to_string(1e9*mesh.dy)+"_dz_"+std::to_string(1e9*mesh.dz);
         std::string path_to_nfft_cached = magafdir+nfft_id;
         int checkarray=-1;
@@ -30,34 +30,33 @@ DemagField::DemagField (Mesh mesh, bool verbose, bool caching, unsigned nthreads
                 checkarray = af::readArrayCheck(path_to_nfft_cached.c_str(), "");
             }
             catch (const af::exception& e){
-                printf("Warning, af::readArrayCheck failed, omit reading array.\n%s\n", e.what());
+                printf("%s af::readArrayCheck failed. Omit reading demag tensor, calculating it instead.\n%s\n", Warning(), e.what());
             }
         }
         if(checkarray > -1){
-            if (verbose) printf("Reading demag tensor from '%s'\n", path_to_nfft_cached.c_str());
+            if (verbose) printf("%s Reading demag tensor from '%s'\n", Info(), path_to_nfft_cached.c_str());
             Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
         }
         else{
             if (verbose) printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads, std::thread::hardware_concurrency());
             Nfft=N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+            if (verbose) printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
-            if (magafdir_size_in_bytes > maxsize){
-                if (verbose) printf("Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize/1e6, (double)reducedsize/1e6);
-                remove_oldest_files_until_size(magafdir.c_str(), reducedsize, verbose);
-                if (verbose) printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(), (double)GetDirSize(magafdir)/1e6);
+            if (magafdir_size_in_bytes > maxsize_bytes){
+                if (verbose) printf("%s Maintainance: size of '%s' is %f GB > %f GB, removing oldest files until size < %f GB\n", Info(), magafdir.c_str(), (double)magafdir_size_in_bytes/1e6, (double)maxsize_bytes/1e6, (double)reducedsize_bytes/1e6);
+                remove_oldest_files_until_size(magafdir.c_str(), reducedsize_bytes, verbose);
+                if (verbose) printf("%s Maintainance finished: '%s' has now %f GB\n", Info(), magafdir.c_str(), (double)GetDirSize(magafdir)/1e6);
             }
-            if (GetDirSize(magafdir) < maxsize){
+            if (GetDirSize(magafdir) < maxsize_bytes){
                 try{
-                    if (verbose) printf("Saving demag tensor to'%s'\n", path_to_nfft_cached.c_str());
+                    if (verbose) printf("%s Saving calculated demag tensor to'%s'\n", Info(), path_to_nfft_cached.c_str());
                     af::saveArray("", Nfft, path_to_nfft_cached.c_str());
-                    if (verbose) printf("Saved demag tensor to'%s'\n", path_to_nfft_cached.c_str());
                 }
                 catch (const af::exception& e){
-                    printf("Warning, af::saveArray failed, omit saving demag tensor.\n%s\n", e.what());
+                    printf("%s af::saveArray failed, omit saving demag tensor.\n%s\n", Warning(), e.what());
                 }
             }
         }
-        if (verbose) printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     }
 }
 
