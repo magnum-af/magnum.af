@@ -240,7 +240,7 @@ namespace newell_nonequi{
 
     std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; //Declare static member
 
-    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j, const bool verbose = true){
+    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j, const bool verbose){
         //Calculates the signed distance beween elements by summing up i < j: sum_(k=i)^(j-1)[spacings[k]] or i > j: sum_(k=j)^(i-1)[ - spacings[k]]
         //Note that spacings[spacings.size()-1] is never used
         if (verbose and (i == spacings.size() or j == spacings.size())){

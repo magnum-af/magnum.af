@@ -5,6 +5,11 @@
 
 namespace magnumafcpp{
 
+namespace newell_nonequi{
+    double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ);
+    double Nxy(const double x, const double y, const double z, const double dx, const double dy, const double dz, const double dX, const double dY, const double dZ);
+    double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j, const bool verbose = true);
+}
 
 class NonEquiDemagField : public LLGTerm {
   public:

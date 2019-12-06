@@ -1,11 +1,11 @@
-#include "../../src/mesh.cpp"
-#include "../../src/nonequispaced_mesh.cpp"//TODO needed for vtk_IO, include headers instead?
-#include "../../src/material.cpp"
-#include "../../src/state.cpp"
-#include "../../src/func.cpp"
-#include "../../src/vtk_IO.cpp"
-#include "../../src/misc.cpp"
-#include "../../src/llg_terms/micro_exch.cpp"
+#include "../../src/mesh.hpp"
+#include "../../src/nonequispaced_mesh.hpp"//TODO needed for vtk_IO, include headers instead?
+#include "../../src/material.hpp"
+#include "../../src/state.hpp"
+#include "../../src/func.hpp"
+#include "../../src/vtk_IO.hpp"
+#include "../../src/misc.hpp"
+#include "../../src/llg_terms/micro_exch.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
 

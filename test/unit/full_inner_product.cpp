@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "arrayfire.h"
-#include "../../src/func.cpp"
+#include "../../src/func.hpp"
 
 using namespace magnumafcpp;
 

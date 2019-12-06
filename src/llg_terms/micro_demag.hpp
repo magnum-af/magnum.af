@@ -5,6 +5,10 @@
 
 namespace magnumafcpp{
 
+namespace newell{
+    double Nxx(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz);
+    double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz);
+}
 
 
 class DemagField : public LLGTerm {
