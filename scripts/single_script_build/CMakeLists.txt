@@ -12,7 +12,7 @@ FILE(GLOB EXECUTABLE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
 if(${ArrayFire_CPU_FOUND})
     MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
     ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE})
-    TARGET_LINK_LIBRARIES(magnum.af-cpu magnum.af_CORE_SHARED ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    TARGET_LINK_LIBRARIES(magnum.af-cpu magnum.af_CORE_SHARED ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
 ENDIF()
 
 # ArrayFire OpenCL backend
@@ -21,7 +21,7 @@ IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
     ADD_EXECUTABLE(magnum.af-opencl  ${EXECUTABLE})
-    TARGET_LINK_LIBRARIES(magnum.af-opencl magnum.af_CORE_SHARED ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    TARGET_LINK_LIBRARIES(magnum.af-opencl magnum.af_CORE_SHARED ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
 ENDIF()
 
 # ArrayFire CUDA backend
@@ -33,5 +33,5 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
     MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
     ADD_EXECUTABLE(magnum.af-cuda  ${EXECUTABLE})
-    TARGET_LINK_LIBRARIES(magnum.af-cuda magnum.af_CORE_SHARED ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
+    TARGET_LINK_LIBRARIES(magnum.af-cuda magnum.af_CORE_SHARED ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB} stdc++fs)
 ENDIF()

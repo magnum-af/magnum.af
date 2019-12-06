@@ -1,0 +1,8 @@
+set terminal pdf
+
+set xlabel "nz"
+set ylabel "dE [J]"
+set output "dE_over_nz.pdf"
+p "dE_over_nz.dat" u 0:1 w lp
+set logscale y
+p "dE_over_nz.dat" u 0:1 w lp
