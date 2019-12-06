@@ -1,11 +1,11 @@
-#include "../../src/integrators/adaptive_runge_kutta.cpp"
-#include "../../src/integrators/controller.cpp"
-#include "../../src/state.cpp"
-#include "../../src/mesh.cpp"
-#include "../../src/nonequispaced_mesh.cpp"//TODO needed for vtk_IO, include headers instead?
-#include "../../src/func.cpp"
-#include "../../src/misc.cpp"
-#include "../../src/vtk_IO.cpp"
+#include "../../src/integrators/adaptive_runge_kutta.hpp"
+#include "../../src/integrators/controller.hpp"
+#include "../../src/state.hpp"
+#include "../../src/mesh.hpp"
+#include "../../src/nonequispaced_mesh.hpp"//TODO needed for vtk_IO, include headers instead?
+#include "../../src/func.hpp"
+#include "../../src/misc.hpp"
+#include "../../src/vtk_IO.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

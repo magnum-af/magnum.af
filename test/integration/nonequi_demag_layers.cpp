@@ -1,13 +1,13 @@
-#include "../../src/mesh.cpp"
-#include "../../src/nonequispaced_mesh.cpp"
+#include "../../src/mesh.hpp"
+#include "../../src/nonequispaced_mesh.hpp"
 #include "../../src/constants.hpp"
-#include "../../src/material.cpp"
-#include "../../src/state.cpp"
-#include "../../src/vtk_IO.cpp"
-#include "../../src/func.cpp"
-#include "../../src/misc.cpp"
-#include "../../src/llg_terms/micro_demag_nonequi.cpp"
-#include "../../src/llg_terms/micro_demag.cpp"
+#include "../../src/material.hpp"
+#include "../../src/state.hpp"
+#include "../../src/vtk_IO.hpp"
+#include "../../src/func.hpp"
+#include "../../src/misc.hpp"
+#include "../../src/llg_terms/micro_demag_nonequi.hpp"
+#include "../../src/llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

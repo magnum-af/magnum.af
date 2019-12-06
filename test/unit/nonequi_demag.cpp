@@ -5,9 +5,7 @@
 #include "../../src/misc.hpp"
 #include "../../src/vtk_IO.hpp"
 #include "../../src/llg_terms/micro_demag_nonequi.hpp"
-//#include "../../src/llg_terms/micro_demag_nonequi.cpp"
 #include "../../src/llg_terms/micro_demag.hpp"
-//#include "../../src/llg_terms/micro_demag.cpp"
 #include <gtest/gtest.h>
 #include <vector>
 
