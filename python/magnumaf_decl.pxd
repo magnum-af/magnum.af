@@ -39,8 +39,8 @@ cdef extern from "../../src/mesh.hpp" namespace "magnumafcpp":
     cdef cppclass Mesh:
         unsigned long n0,n1,n2;
         double dx,dy,dz;
-        int n0_exp, n1_exp, n2_exp;
-        Mesh (int, int, int, double, double, double)
+        unsigned long n0_exp, n1_exp, n2_exp;
+        Mesh (unsigned long, unsigned long, unsigned long, double, double, double)
 
 cdef extern from "../../src/nonequispaced_mesh.hpp" namespace "magnumafcpp":
     cdef cppclass NonequispacedMesh:
