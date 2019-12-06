@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-GPU="0"
+GPU="2"
 
 # geometry
 x="60e-9"
@@ -11,7 +11,7 @@ ny="64"
 
 # hys info
 hzee_max="1.0" # maximum H_external for hysteresis loop
-steps="200"
+steps="2000"
 
 # write dirs
 rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/mram/"$x"x_"$y"y_"$nx"nx_"$ny"ny/
@@ -27,8 +27,15 @@ fi
 # calculating hysteresis
 #../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer.vti
 
-for it in {0..16..2}
+writedir="$rootdir"min_"$hzee_max"T_"$steps"steps_it_5degree_zee/
+mkdir "$writedir"
+cp "${BASH_SOURCE[0]}" "$writedir"
+cp plot_multi_hys.gpi "$writedir"
+for it in {0..14..2} # specific range for one example
 do
-    writedir_hys="$rootdir"min_"$hzee_max"T_"$steps"steps_it_5degree/it"$it"/
-    ../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer_it_"$it".vti
+    writedir_hys="$writedir"it"$it"/
+    #../../../magnum.af -g "$GPU" -p plot.gpi safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer_it_"$it".vti
+    ../../../magnum.af -g "$GPU" safm_ellipse_hys_minimizer.cpp "$writedir_hys" "$hzee_max" "$steps" "$writedir_hf"/h_free_layer_it_"$it".vti
 done
+cd "$writedir"
+gnuplot plot_multi_hys.gpi

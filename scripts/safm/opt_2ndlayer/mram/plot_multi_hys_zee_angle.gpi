@@ -1,0 +1,16 @@
+set terminal pdfcairo enhanced;
+set output "hysteresis.pdf";
+set xlabel "H_{ext} [T]";
+set ylabel "<m_z>";
+set grid;
+
+list = system('ls it*/m.dat')
+
+angl = 5
+set title sprintf("Easy-axis hysteresis loop %d degree zee", angl)
+
+# if external field is tiled by angl, we must consider dot product of m with ext-unit verctor <m> . n_{ext}
+plot for [file in list] file u ($7/cos(angl/360 * 2 * pi)):($2*sin(angl/360 * 2 * pi) + $4 * cos(angl/360 * 2 * pi)) w l title file
+
+set terminal pop
+replot
