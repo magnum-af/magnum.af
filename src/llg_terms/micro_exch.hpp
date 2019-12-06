@@ -12,7 +12,7 @@ class ExchangeField : public LLGTerm {
     ExchangeField (af::array A_field);
     ExchangeField (long int A_field_ptr);
     //Field contribution
-    af::array h(const State& state);
+    af::array h(const State& state) override;
     //Field contribution with edges for Energy calculation
     af::array h_withedges(const State& state);
     //Energy contribution

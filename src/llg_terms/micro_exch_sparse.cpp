@@ -106,7 +106,7 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
     double time_convert = timer_convert.stop();
 
     if(verbose) {
-        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
+        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }
     return matr_CSR;
@@ -174,7 +174,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
     }
 
     af::array result = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
-    if(verbose) printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(matr) / (float)matr.elements());
+    if(verbose) printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), static_cast<double>(af::sparseGetNNZ(matr)) / static_cast<double>(matr.elements()));
     return result;
 }
 
@@ -270,7 +270,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     af::freeHost(a_host);
     af::array result = af::sparse((dim_t) dimension, (dim_t) dimension, (dim_t) CSR_values.size(), (void*) CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if(verbose) {
-        printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), (float)af::sparseGetNNZ(result) / (float)result.elements());
+        printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of CSR_matrix = %f\n", Info(), t.stop(), static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
         fflush(stdout);
     }
     return result;
@@ -368,7 +368,7 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
     double time_convert = timer_convert.stop();
 
     if(verbose) {
-        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, (float)af::sparseGetNNZ(matr_CSR) / (float)matr_CSR.elements());
+        printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted COO to CSR in %f [s]. Sparsity = %f\n", Info(), time, time_convert, static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }
     return matr_CSR;

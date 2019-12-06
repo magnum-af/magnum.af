@@ -1,5 +1,6 @@
 #include "vtk_IO.hpp"
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic ignored "-Wunused"
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
