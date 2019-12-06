@@ -44,7 +44,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
     std::vector<int> CSR_IA (dimension + 1);// recursive row indices of length (n_rows + 1): IA[0] = 0; IA[i] = IA[i-1] + (number of nonzero elements on the i-1-th row in the original matrix)
@@ -56,14 +56,14 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     unsigned int* rkky_indices_raw = NULL;
     //af::print("", rkky_indices);
     if ( ! rkky_indices.isempty() ) rkky_indices_raw = rkky_indices.host<unsigned int>();
-    for (int id = 0; id < dimension; id++){// loop over rows (or cols?^^)
+    for (uint32_t id = 0; id < dimension; id++){// loop over rows (or cols?^^)
       int csr_ia = 0; // counter for SCR_IA
       //Would run but only marginal speedup. COO approach way faster//#pragma omp parallel for
-      for (int im = 0; im < 3; im++){
-        for (int i2 = 0; i2 < mesh.n2; i2++){
-          for (int i1 = 0; i1 < mesh.n1; i1++){
-            for (int i0 = 0; i0 < mesh.n0; i0++){
-              const int ind=findex(i0, i1, i2, im, mesh);
+      for (uint32_t im = 0; im < 3; im++){
+        for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+          for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+            for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
+              const uint32_t ind = static_cast<uint32_t>(findex(i0, i1, i2, im, mesh));
               if(ind==id) {
                 //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
                 // x
@@ -186,7 +186,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
     std::vector<double> COO_values;// matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
     std::vector<int> COO_ROW;
@@ -198,10 +198,10 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     //af::print("", rkky_indices);
     if ( ! rkky_indices.isempty() ) rkky_indices_raw = rkky_indices.host<unsigned int>();
     //NOTE aborts program//#pragma omp parallel for
-    for (int im = 0; im < 3; im++){
-        for (int i2 = 0; i2 < mesh.n2; i2++){
-            for (int i1 = 0; i1 < mesh.n1; i1++){
-                for (int i0 = 0; i0 < mesh.n0; i0++){
+    for (uint32_t im = 0; im < 3; im++){
+        for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+            for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+                for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
                     const int ind=findex(i0, i1, i2, im, mesh);
                     //TODO check if COL and ROW are correct ordered
                     // x

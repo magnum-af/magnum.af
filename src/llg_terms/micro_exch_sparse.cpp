@@ -47,16 +47,16 @@ int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh){
 af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool verbose){
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> COO_values;// matrix values,  of length "number of elements"
     std::vector<int> COO_ROW;//
     std::vector<int> COO_COL;//
-        for (int im = 0; im < 3; im++){
-            for (int i2 = 0; i2 < mesh.n2; i2++){
-              for (int i1 = 0; i1 < mesh.n1; i1++){
-                for (int i0 = 0; i0 < mesh.n0; i0++){
-                    const int ind=findex(i0, i1, i2, im, mesh);
+        for (uint32_t im = 0; im < 3; im++){
+            for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+              for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+                for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
+                    const uint32_t ind=findex(i0, i1, i2, im, mesh);
                     //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
                     //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
                     //x: interaction from (i0, i1, i2) to (i0+-1, i1, i2)
@@ -115,18 +115,18 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
 af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool verbose){
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
     std::vector<int> CSR_IA (dimension + 1);// recursive row indices of length (n_rows + 1): IA[0] = 0; IA[i] = IA[i-1] + (number of nonzero elements on the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;// comumn index of each element, hence of length "number of elements"
-    for (int id = 0; id < dimension; id++){// loop over rows (or cols?^^)
+    for (uint32_t id = 0; id < dimension; id++){// loop over rows (or cols?^^)
       int csr_ia = 0; // counter for SCR_IA
-      for (int im = 0; im < 3; im++){
-        for (int i2 = 0; i2 < mesh.n2; i2++){
-          for (int i1 = 0; i1 < mesh.n1; i1++){
-            for (int i0 = 0; i0 < mesh.n0; i0++){
-              const int ind=findex(i0, i1, i2, im, mesh);
+      for (uint32_t im = 0; im < 3; im++){
+        for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+          for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+            for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
+              const uint32_t ind=findex(i0, i1, i2, im, mesh);
               if(ind==id) {
                 //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
                 //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -184,20 +184,20 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> CSR_values;// matrix values,  of length "number of elements"
     std::vector<int> CSR_IA (dimension + 1);// recursive row indices of length (n_rows + 1): IA[0] = 0; IA[i] = IA[i-1] + (number of nonzero elements on the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;// comumn index of each element, hence of length "number of elements"
     double* a_host = NULL;
     a_host = A_exchange_field.host<double>();
-    for (int id = 0; id < dimension; id++){// loop over rows (or cols?^^)
+    for (uint32_t id = 0; id < dimension; id++){// loop over rows (or cols?^^)
       int csr_ia = 0; // counter for SCR_IA
-      for (int im = 0; im < 3; im++){
-        for (int i2 = 0; i2 < mesh.n2; i2++){
-          for (int i1 = 0; i1 < mesh.n1; i1++){
-            for (int i0 = 0; i0 < mesh.n0; i0++){
-              const int ind=findex(i0, i1, i2, im, mesh);
+      for (uint32_t im = 0; im < 3; im++){
+        for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+          for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+            for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
+              const uint32_t ind=findex(i0, i1, i2, im, mesh);
               if(ind==id) {
                 //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
                 //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -282,18 +282,18 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
     fflush(stdout);
     af::timer t;
     if(verbose) af::timer::start();
-    const int dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double> COO_values;// matrix values,  of length "number of elements"
     std::vector<int> COO_COL;// column indices
     std::vector<int> COO_ROW;// row indices
     double* a_raw = NULL;
     a_raw = A_exchange_field.host<double>();
-    for (int im = 0; im < 3; im++){
-        for (int i2 = 0; i2 < mesh.n2; i2++){
-            for (int i1 = 0; i1 < mesh.n1; i1++){
-                for (int i0 = 0; i0 < mesh.n0; i0++){
-                  const int ind=findex(i0, i1, i2, im, mesh);
+    for (uint32_t im = 0; im < 3; im++){
+        for (uint32_t i2 = 0; i2 < mesh.n2; i2++){
+            for (uint32_t i1 = 0; i1 < mesh.n1; i1++){
+                for (uint32_t i0 = 0; i0 < mesh.n0; i0++){
+                    const int ind=findex(i0, i1, i2, im, mesh);
                     //std::cout << ind << ", " << id << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
                     //Note: skippable due to cross product property://vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
                     // x
