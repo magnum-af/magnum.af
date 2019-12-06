@@ -8,6 +8,7 @@ namespace magnumafcpp{
 
 class ExchangeField : public LLGTerm {
   public:
+    using LLGTerm::E;
     ExchangeField (double A);
     ExchangeField (af::array A_field);
     ExchangeField (long int A_field_ptr);
