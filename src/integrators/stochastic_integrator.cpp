@@ -60,7 +60,7 @@ Stochastic_Integrator::Stochastic_Integrator (double alpha, double T, double dt,
 {
     const double D = (this->alpha * constants::kb * this->T)/ (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
     unsigned long long int seed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now().time_since_epoch()).count();
-    rand_engine=af::randomEngine(af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed));
+    rand_engine=af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed);
     h_th_prev = sqrt ((2. * D)/dt) * randn(state.mesh.dims, f64, rand_engine);// Initial random thermal field at t=0
 
     //Setting int mode for usage in void step(...)
