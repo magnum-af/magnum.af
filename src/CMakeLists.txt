@@ -61,5 +61,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuseless-cast")
 # files into a CMake object library and then link this library against the
 # different ArrayFire backends.
 
-#ADD_LIBRARY(magnum.af_CORE_SHARED SHARED ${SOURCE})
-ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
+ADD_LIBRARY(magnum.af_CORE_STATIC STATIC ${SOURCE})
+ADD_LIBRARY(magnum.af_CORE_SHARED SHARED ${SOURCE})
+#ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
