@@ -6,10 +6,10 @@
 namespace magnumafcpp{
 
 LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {
-};
+}
 
 LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme, Controller controller, bool dissipation_term_only) : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(llgterms),  dissipation_term_only(dissipation_term_only) {
-};
+}
 
 af::array LLGIntegrator::fheff(const State& state){
   af::array solution = constant(0., state.mesh.dims, f64);

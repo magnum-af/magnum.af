@@ -16,7 +16,7 @@ double AtomisticExchangeField::E(const State& state, const af::array& h){
   return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
-AtomisticExchangeField::AtomisticExchangeField (const Mesh& mesh){
+AtomisticExchangeField::AtomisticExchangeField (){
 }
 
 array AtomisticExchangeField::h(const State& state){

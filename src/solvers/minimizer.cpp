@@ -114,5 +114,5 @@ void Minimizer::minimize(State& state){
         //std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<< tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " << dm_max <<"*std::max_element()"<< *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) << std::endl;
     }
     if (info) std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
-};
+}
 }// namespace magnumafcpp

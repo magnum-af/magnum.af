@@ -48,5 +48,5 @@ void CG_Minimizer::Minimize(State& state){
     af::print("h in minimize", af::mean(Heff(state)));//TODO
 
     std::cout << "CG_Minimizer: time = " << af::timer::stop(timer) << std::endl;
-};
+}
 }// namespace magnumafcpp

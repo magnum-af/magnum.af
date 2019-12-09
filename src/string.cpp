@@ -238,6 +238,6 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     stream_E_curves.close();
     stream_max_lowest.close();
     return max_lowest;
-};
+}
 
 }// namespace magnumafcpp

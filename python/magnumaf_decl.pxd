@@ -37,10 +37,10 @@ cdef extern from "../../src/llg_terms/micro_exch_nonequi.hpp" namespace "magnuma
 
 cdef extern from "../../src/mesh.hpp" namespace "magnumafcpp":
     cdef cppclass Mesh:
-        unsigned long n0,n1,n2;
+        unsigned int n0,n1,n2;
         double dx,dy,dz;
-        unsigned long n0_exp, n1_exp, n2_exp;
-        Mesh (unsigned long, unsigned long, unsigned long, double, double, double)
+        unsigned int n0_exp, n1_exp, n2_exp;
+        Mesh (unsigned int, unsigned int, unsigned int, double, double, double)
 
 cdef extern from "../../src/nonequispaced_mesh.hpp" namespace "magnumafcpp":
     cdef cppclass NonequispacedMesh:
@@ -167,7 +167,7 @@ cdef extern from "../../src/llg_terms/atomistic_anisotropy.hpp" namespace "magnu
 
 cdef extern from "../../src/llg_terms/atomistic_exchange.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticExchangeField:
-        AtomisticExchangeField(Mesh);
+        AtomisticExchangeField();
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();

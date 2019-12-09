@@ -1,6 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 project(magnum.af)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuseless-cast")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
+
 # Find the ArrayFire package.
 FIND_PACKAGE(ArrayFire REQUIRED)
 # If ArrayFire is found, the following variables will be defined:
@@ -32,26 +35,6 @@ INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})
 
 # Get a list of all of the source files in the directory:
 FILE(GLOB SOURCE "*.cpp" "*/*.cpp")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmisleading-indentation")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-cond")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wduplicated-branches")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wlogical-op")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnull-dereference")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=2")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuseless-cast")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic")
 
 # There are several ways of compiling source code in CMake. In most cases you
 # specify the source files to an ADD_EXCUTABLE call. Because we intend to

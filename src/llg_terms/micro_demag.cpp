@@ -249,18 +249,18 @@ namespace newell{
 
 
 af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz){
-    std::thread t[nthreads];
-    struct newell::LoopInfo loopinfo[nthreads];
+    std::vector<std::thread> t;
+    std::vector<newell::LoopInfo> loopinfo;
     for (unsigned i = 0; i < nthreads; i++){
         unsigned start = i * (double)n0_exp/nthreads;
         unsigned end = (i +1) * (double)n0_exp/nthreads;
-        loopinfo[i]=newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz);
+        loopinfo.push_back(newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
     }
 
     newell::N_setup = new double[n0_exp*n1_exp*n2_exp*6];
 
     for (unsigned i = 0; i < nthreads; i++){
-        t[i] = std::thread(newell::setup_N, &loopinfo[i]);
+        t.push_back(std::thread(newell::setup_N, &loopinfo[i]));
      }
 
     for (unsigned i = 0; i < nthreads; i++){

@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
     //auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
     auto exch = LlgTerm (new ExchangeField(A));
-    auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, (std::array<double ,3>) {0, 0, 1}));
+    auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, {0, 0, 1}));
     auto dmi = LlgTerm (new DmiField(D, {0, 0, 1}));
     LLGIntegrator Llg(1, {exch, aniso, dmi});
 
@@ -47,6 +47,7 @@ int main(int argc, char** argv)
         state.calc_mean_m(stream);
         if (state.steps % 100 == 0) state.write_vti(filepath + "m_step" + std::to_string(state.steps));
     }
+    //Llg.relax(state, 1e-10, 100, 1);
     stream.close();
     timer.print_stage("relax ");
     state.write_vti(filepath + "relax");

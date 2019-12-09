@@ -25,7 +25,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     m[1, 0, 0, 2] = 1
 
     state=magnumaf.State(mesh, Ms = 0, m = m, material = material)
-    atom_exch=magnumaf.AtomisticExchangeField(mesh)
+    atom_exch=magnumaf.AtomisticExchangeField()
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_exch])
 
     self.assertAlmostEqual(Llg.E(state), -material.J_atom)

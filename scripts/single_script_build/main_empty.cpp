@@ -3,7 +3,7 @@
 using namespace magnumafcpp;
 
 
-int main(int argc, char** argv)
+int main()
 {
     std::cout << "running empty main" << std::endl;
     return 0;

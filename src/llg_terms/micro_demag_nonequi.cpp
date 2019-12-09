@@ -298,19 +298,19 @@ namespace newell_nonequi{
 
 
 af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy, const std::vector<double> z_spacing){
-    std::thread t[nthreads];
-    struct newell_nonequi::NonequiLoopInfo loopinfo[nthreads];
+    std::vector<std::thread> t;
+    std::vector<newell_nonequi::NonequiLoopInfo> loopinfo;
     newell_nonequi::NonequiLoopInfo::z_spacing = z_spacing;
     for (unsigned i = 0; i < nthreads; i++){
         unsigned start = i * (double)n0_exp/nthreads;
         unsigned end = (i +1) * (double)n0_exp/nthreads;
-        loopinfo[i]=newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy);
+        loopinfo.push_back(newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy));
     }
 
     newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1))/2 * 6];
 
     for (unsigned i = 0; i < nthreads; i++){
-        t[i] = std::thread(newell_nonequi::init_N, &loopinfo[i]);
+        t.push_back( std::thread(newell_nonequi::init_N, &loopinfo[i]) );
      }
 
     for (unsigned i = 0; i < nthreads; i++){

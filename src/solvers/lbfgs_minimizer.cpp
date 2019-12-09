@@ -260,7 +260,7 @@ double LBFGS_Minimizer::Minimize(State& state){
 
 
     if( this->verbose > 0) {std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;}
-};
+}
 
 double LBFGS_Minimizer::linesearch(State& state, double &fval, const af::array &x_old, af::array &g, const af::array &searchDir, const double tolf) {
     double rate = 1.0;

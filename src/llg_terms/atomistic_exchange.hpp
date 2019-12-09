@@ -16,7 +16,7 @@ class AtomisticExchangeField : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    AtomisticExchangeField (const Mesh& mesh);
+    AtomisticExchangeField ();
 
     double     cpu_time{0.};
     af::timer timer_solve;

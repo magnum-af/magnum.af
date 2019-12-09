@@ -877,8 +877,8 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
 
 cdef class AtomisticExchangeField(HeffTerm):
     cdef cAtomisticExchangeField* _thisptr
-    def __cinit__(self, Mesh mesh):
-        self._thisptr = new cAtomisticExchangeField (deref(mesh._thisptr))
+    def __cinit__(self):
+        self._thisptr = new cAtomisticExchangeField ()
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
