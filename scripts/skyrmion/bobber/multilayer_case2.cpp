@@ -96,7 +96,7 @@ int main(int argc, char** argv)
             const double rx=double(ix)-mesh.n0/2.;
             const double ry=double(iy)-mesh.n1/2.;
             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
-            if(r>nx/4.) m(ix, iy, af::span, 2)=1.;
+            if(r>nx/16.) m(ix, iy, af::span, 2)=1.;
         }
     }
     m(af::span, af::span, 1, af::span) = 0;

@@ -1,5 +1,6 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
+#include <iostream>
 
 using namespace magnumafcpp;
 
@@ -20,12 +21,21 @@ int main(int argc, char** argv)
     info();
     StageTimer timer;
 
+    //icase 1: DMI in IL = 0, minit skyrm in all layers
+    //icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers
+    //icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
+    const int icase (argc>3? std::stoi(argv[3]):1);
+    std::cout << "case=" << icase << std::endl;
+    const double r_ratio_to_sample (argc>4 ? std::stod(argv[4]) : 16.);// r=4 means radius of init skryrm is 1/4 x
+    std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
+    const double  t_relax_state1_sec (argc>5 ? std::stod(argv[5]) : 3e-9);// relaxtime for state1 in seconds
+    std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
     // Parameter initialization
     const double x=400e-9;
     const double y=400e-9;
     const double z=32e-9;
 
-    const int nx = 100, ny=100 , nz=32;
+    const uint32_t nx = 100, ny=100 , nz=32;
     const double dx= x/nx;
     const double dy= y/ny;
     const double dz= z/nz;
@@ -45,7 +55,7 @@ int main(int argc, char** argv)
     const double IL_Ms = 488.2e3;// A/m
     const double IL_A = 4e-12;// J/m
     const double IL_Ku = 486.6e3;// J/m^3
-    const double IL_D = 0.8e-3;// J/m^2
+    const double IL_D = (icase == 1 ? 0. : 0.8e-3);// J/m^2
 
     array geom = af::constant(0.0, nx, ny, nz, 3, f64);
     geom(af::span, af::span,  0, af::span) = 1;
@@ -91,12 +101,12 @@ int main(int argc, char** argv)
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for(int ix=0;ix<mesh.n0;ix++){
-        for(int iy=0;iy<mesh.n1;iy++){
+    for(uint32_t ix=0;ix<mesh.n0;ix++){
+        for(uint32_t iy=0;iy<mesh.n1;iy++){
             const double rx=double(ix)-mesh.n0/2.;
             const double ry=double(iy)-mesh.n1/2.;
             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
-            if(r>nx/4.) m(ix, iy, af::span, 2)=1.;
+            if(r>nx/r_ratio_to_sample) m(ix, iy, af::span, 2)=1.;
         }
     }
     m(af::span, af::span, 1, af::span) = 0;
@@ -126,13 +136,21 @@ int main(int argc, char** argv)
     m(af::span, af::span, 29, af::span) = 0;
     m(af::span, af::span, 30, af::span) = 0;
 
+    if(icase == 3){
+        // Setting IL layer ferromagnetic
+        m(af::span, af::span, 13, 2) = 1.;
+        m(af::span, af::span, 14, 2) = 1.;
+        m(af::span, af::span, 15, 2) = 1.;
+        m(af::span, af::span, 16, 2) = 1.;
+    }
+
     // defining interactions
     auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
     auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
     auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, (std::array<double ,3>) {0, 0, 1}));
 
     //NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
-    auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
+    auto dmi = LlgTerm (new DmiField(D, {0, 0, 1}));
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
@@ -150,7 +168,7 @@ int main(int argc, char** argv)
         std::cout << "Relaxing minit" << std::endl;
         state_1.write_vti(filepath + "minit");
         //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-        while (state_1.t < 3e-9){
+        while (state_1.t < t_relax_state1_sec){
             if (state_1.steps % 100 == 0) state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
             llg.step(state_1);
             std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" <<  state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
@@ -176,22 +194,26 @@ int main(int argc, char** argv)
     double string_dt=1e-13;
     //const int string_steps = 1000;
 
-    State state_2(mesh, Ms, state_1.m);
-    state_2.m(af::span, af::span, 19, af::span) = 0;
-    state_2.m(af::span, af::span, 22, af::span) = 0;
-    state_2.m(af::span, af::span, 25, af::span) = 0;
-    state_2.m(af::span, af::span, 28, af::span) = 0;
-    state_2.m(af::span, af::span, 31, af::span) = 0;
+    af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m2(af::span, af::span, af::span, 2) = 1.;
+    State state_2(mesh, Ms, m2);
+    //state_2.m(af::span, af::span, 19, af::span) = 0;
+    //state_2.m(af::span, af::span, 22, af::span) = 0;
+    //state_2.m(af::span, af::span, 25, af::span) = 0;
+    //state_2.m(af::span, af::span, 28, af::span) = 0;
+    //state_2.m(af::span, af::span, 31, af::span) = 0;
 
-    state_2.m(af::span, af::span, 19, 2) = 1;
-    state_2.m(af::span, af::span, 22, 2) = 1;
-    state_2.m(af::span, af::span, 25, 2) = 1;
-    state_2.m(af::span, af::span, 28, 2) = 1;
-    state_2.m(af::span, af::span, 31, 2) = 1;
+    //state_2.m(af::span, af::span, 19, 2) = 1;
+    //state_2.m(af::span, af::span, 22, 2) = 1;
+    //state_2.m(af::span, af::span, 25, 2) = 1;
+    //state_2.m(af::span, af::span, 28, 2) = 1;
+    //state_2.m(af::span, af::span, 31, 2) = 1;
 
-    vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
+    //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
+    state_2.write_vti(filepath + "m_state_2_init");
 
-    while (state_2.t < 3e-9){
+    std::cout.precision(16);
+    while (state_2.t < 10e-9){// 3ns not sufficient
         if (state_2.steps % 100 == 0) state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
         llg.step(state_2);
         std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" <<  state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;

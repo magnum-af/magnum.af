@@ -96,7 +96,7 @@ int main(int argc, char** argv)
             const double rx=double(ix)-mesh.n0/2.;
             const double ry=double(iy)-mesh.n1/2.;
             const double r = sqrt(pow(rx, 2)+pow(ry, 2));
-            if(r>nx/4.) m(ix, iy, af::span, 2)=1.;
+            if(r>nx/16.) m(ix, iy, af::span, 2)=1.;
         }
     }
     m(af::span, af::span, 1, af::span) = 0;
@@ -191,7 +191,8 @@ int main(int argc, char** argv)
 
     vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
 
-    while (state_2.t < 3e-9){
+    std::cout.precision(16);
+    while (state_2.t < 10e-9){// 3ns not sufficient
         if (state_2.steps % 100 == 0) state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
         llg.step(state_2);
         std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" <<  state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
