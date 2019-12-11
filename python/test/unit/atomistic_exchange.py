@@ -9,6 +9,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
   p  = 1e-12
   J  = 1e-12
   dx = 2.715e-10
+  #TODO# add init test#self.assertEqual(self.J_atom, material.J_atom)
 
   def test_atomistic_exchange_2_1_1_z_z(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)

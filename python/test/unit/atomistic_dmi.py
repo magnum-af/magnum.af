@@ -9,6 +9,11 @@ class AtomisticDmiFieldTest(unittest.TestCase):
   p  = 1e-20
   D  = 1e20
   dx = 1.1
+  #TODO init test
+  #TODO#D_atom = 8.5
+  #TODO#D_atom_axis = [1., 1., 1.]
+      #TODO#self.assertEqual(self.D_atom, material.D_atom)
+      #TODO#self.assertEqual((1./sqrt(3.), 1./sqrt(3.), 1./sqrt(3.)), material.D_atom_axis)
 
   def test_atomistic_dmi_2_1_1_z_z(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)

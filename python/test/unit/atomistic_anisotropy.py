@@ -9,6 +9,9 @@ class AtomisticAnisotropyTest(unittest.TestCase):
   p  = 1e-20
   k  = 1e-20
   dx = 2.715e-10
+  #TODO init test
+  #TODO#Ku1_atom_axis = [0., 3., 0.]
+    #TODO#self.assertEqual((0., 1., 0.), material.Ku1_atom_axis)
 
   def test_atomistic_anisotropy_2_1_1_z_z(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
