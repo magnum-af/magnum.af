@@ -193,6 +193,7 @@ void write_plotfile(const std::string filepath)
 
 double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const bool verbose)
 {
+    const int every_string_to_vti = 50;
     write_plotfile(filepath);
 
     this->write_vti(filepath + "init_string");
@@ -203,6 +204,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     stream_steps.precision(12);
 
     std::ofstream stream_E_curves(filepath + "E_curves.dat");
+    stream_E_curves << "# step \t image \t dE=E[j]-E[0] \t E[j]-E[-1] \t E[j]" << std::endl;
     stream_E_curves.precision(12);
 
     double max_lowest = 1e100;
@@ -254,7 +256,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
         stream_E_curves << i << "\n\n"
                         << std::endl;
         max_prev_step = *max - this->E[0];
-        if (i % 50 == 1)
+        if (i % every_string_to_vti == 0)
         {
             std::cout << "Writing current skyrm images for iteration" << i << std::endl;
             for (unsigned j = 0; j < this->images.size(); j++)
@@ -265,19 +267,24 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
                 vti_writer_micro(this->images[j].m, this->images[0].mesh, name.c_str());
             }
         }
-        std::cout << std::scientific << i << "\t" << std::setw(18) << *max - this->E[0] << "\t" << rel_diff << "\t" << abs_diff << "\t" << 1. / (af::timer::stop(t)) << " [1/s] \t" << this->dt / (af::timer::stop(t)) << " [dt/s]" << std::endl;
+        std::cout << std::scientific << "step=" << i << "\t" << std::setw(18) << "dE[J]=" << *max - this->E[0] << "\t"
+                  << "rel_diff[J]=" << rel_diff << "\t"
+                  << "abs_diff[J]=" << abs_diff << "\t"
+                  << "steprate[1/s] =" << 1. / (af::timer::stop(t)) << std::endl;
         stream_steps << i << "\t" << std::setw(18) << *max - this->E[0] << "\t" << rel_diff << "\t" << abs_diff << std::endl;
     }
     std::cout << "#i , lowest overall:   max-[0], max-[-1] max [J]: " << i_max_lowest << "\t" << max_lowest << "\t" << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t" << max_lowest + E_max_lowest[0] << std::endl;
     stream_steps << "#i , lowest overall:   max-[0], max-[-1] max [J]: " << i_max_lowest << "\t" << max_lowest << "\t" << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t" << max_lowest + E_max_lowest[0] << std::endl;
 
     std::ofstream myfileE;
-    myfileE.precision(12);
     myfileE.open(filepath + "E_last_step.dat");
+    myfileE << " i \t << E[i] \t << dE = E[i] - E[0] \t << E[i] - E[-1] " << std::endl;
+    myfileE.precision(12);
 
     std::ofstream stream_max_lowest;
-    stream_max_lowest.precision(12);
     stream_max_lowest.open(filepath + "E_max_lowest.dat");
+    stream_max_lowest << " i \t << E_max_lowest[i] \t << E_max_lowest[i] - E_max_lowest[0] \t << E_max_lowest[i] - E_max_lowest[-1]" << std::endl;
+    stream_max_lowest.precision(12);
 
     std::cout << this->E.size() << "\t" << this->images.size() << "\t" << std::endl;
     for (unsigned i = 0; i < this->images.size(); i++)

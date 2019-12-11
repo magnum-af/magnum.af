@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     LLGIntegrator Llg(alpha, llgterm);
 
     af::timer t = af::timer::start();
-    Llg.relax(state, 1e-10, 100, 100);
+    Llg.relax(state, 1e-12, 100, 100);
 
     af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
     af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
