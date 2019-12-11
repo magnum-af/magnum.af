@@ -67,6 +67,11 @@ int main(int argc, char **argv)
 
     af::timer t = af::timer::start();
     Llg.relax(state, 1e-10, 100, 100);
+
+    af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
+    af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
+    af::print("ani ", af::mean(af::mean(af::mean(af::mean(llgterm[2]->h(state), 0), 1), 2), 3));
+
     state.calc_mean_m(std::cout);
     vti_writer_atom(state.m, mesh, filepath + "relax");
 
@@ -77,7 +82,10 @@ int main(int argc, char **argv)
 
     std::vector<State> inputimages;
     inputimages.push_back(state);
-    inputimages.push_back(State(mesh, material, last));
+    State state_last = state;
+    state_last.m = last;
+    inputimages.push_back(state_last);
+    //inputimages.push_back(State(mesh, material, last));
 
     double n_interp = 60;
     double string_dt = 5e-14;
@@ -86,6 +94,17 @@ int main(int argc, char **argv)
     double string_abort_abs_diff = 1e-27;
 
     String string(state, inputimages, n_interp, string_dt, Llg);
-    string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
+    double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
+
+    double expected_barrier = 4.420526609492e-20;
+    double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier)/(barrier + expected_barrier);
+    if(rel_diff_barrier < 1e-3)
+    {
+        std::cout << "Barrier as expected, relative difference to expected is " << rel_diff_barrier << std::endl;
+    }
+    else
+    {
+        std::cout << "Warning, barrier differs from expected with " << rel_diff_barrier << std::endl;
+    }
     return 0;
 }
