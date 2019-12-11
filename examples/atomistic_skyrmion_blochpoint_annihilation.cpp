@@ -55,13 +55,14 @@ int main(int argc, char **argv)
         }
     }
 
-    State state(mesh, material, m);
+    State state(mesh, Ms, m);
+    state.material = material;
     vti_writer_atom(state.m, mesh, filepath + "minit");
 
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField()));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(Ku1)));
 
     LLGIntegrator Llg(alpha, llgterm);
 

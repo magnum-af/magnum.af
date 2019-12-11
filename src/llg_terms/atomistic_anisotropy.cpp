@@ -1,6 +1,5 @@
 #include "atomistic_anisotropy.hpp"
 #include "../func.hpp"
-#include "../util/util.hpp"
 
 namespace magnumafcpp
 {
@@ -32,5 +31,12 @@ af::array AtomisticUniaxialAnisotropyField::h(const State &state)
     cpu_time += af::timer::stop(timer_anisotropy);
     return 2 * K_atom / (constants::mu0 * state.Ms) * anisotropy * eu;
 }
+
+
+std::array<double, 3> AtomisticUniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector){
+    double norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
+    return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
+}
+
 
 }// namespace mangumafcpp
