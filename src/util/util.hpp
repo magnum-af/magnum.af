@@ -3,6 +3,7 @@
 #include <utility>
 #include <algorithm>
 #include <cmath>
+#include <array>
 
 namespace magnumafcpp{
 
@@ -33,5 +34,12 @@ std::pair<double, double> mean_stdev_no_minus(T vec){
     double stdev = std::sqrt(accum / (vec.size()));
     return {m, stdev};
 }
+
+
+std::array<double, 3> get_normalized_vector(std::array<double, 3> vector){
+    double norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
+    return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
+}
+
 
 }// namespace magnumafcpp
