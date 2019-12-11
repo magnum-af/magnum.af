@@ -179,7 +179,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
         std::ofstream stream_E_barrier(filepath + "E_barrier.dat");
         stream_E_barrier << "# max_lowest \t this->images[0].mesh.n0 \t this->images[0].mesh.dx \t this->images[0].material.D \t this->images[0].material.K_atom \t this->images[0].material.D_atom" << std::endl;
         stream_E_barrier.precision(12);
-        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.D<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
+        stream_E_barrier<<max_lowest<<"\t"<<this->images[0].mesh.n0 <<"\t"<<this->images[0].mesh.dx<<"\t"<<this->images[0].material.K_atom<<"\t"<<this->images[0].material.D_atom<<std::endl;
         stream_E_barrier.close();
 
         for(unsigned j=0;j<this->E.size();++j)

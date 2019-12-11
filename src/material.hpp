@@ -3,10 +3,6 @@ namespace magnumafcpp{
 
 ///Struct holding all simulation parameters.
 struct Material{
-    // Micromagneitc
-    double D{0.};			//!< [D/m^2] 	// DM interaction constant
-    double D_axis[3]={0, 0, -1};		//!<		// DMI axis
-
     // Atomistic
     void set_atomistic_from_micromagnetic(double dx);
     void set_atomistic_from_micromagnetic(double dx, double ms, double A, double D, double Ku1);
@@ -24,7 +20,7 @@ struct Material{
     // Default constructor
     Material(){};
     // For wrapping only
-    Material(double D, double D_axis_x, double D_axis_y, double D_axis_z, double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
+    Material(double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
 };
 
 //Note Js=mu0*Ms
