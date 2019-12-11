@@ -6,6 +6,36 @@ using namespace magnumafcpp;
 
 using namespace af;
 
+void set_air_to_zero(af::array& m){
+    m(af::span, af::span, 1, af::span) = 0;
+    m(af::span, af::span, 2, af::span) = 0;
+
+    m(af::span, af::span, 4, af::span) = 0;
+    m(af::span, af::span, 5, af::span) = 0;
+
+    m(af::span, af::span, 7, af::span) = 0;
+    m(af::span, af::span, 8, af::span) = 0;
+
+    m(af::span, af::span, 10, af::span) = 0;
+    m(af::span, af::span, 11, af::span) = 0;
+
+    m(af::span, af::span, 17, af::span) = 0;
+    m(af::span, af::span, 18, af::span) = 0;
+
+    m(af::span, af::span, 20, af::span) = 0;
+    m(af::span, af::span, 21, af::span) = 0;
+
+    m(af::span, af::span, 23, af::span) = 0;
+    m(af::span, af::span, 24, af::span) = 0;
+
+    m(af::span, af::span, 26, af::span) = 0;
+    m(af::span, af::span, 27, af::span) = 0;
+
+    m(af::span, af::span, 29, af::span) = 0;
+    m(af::span, af::span, 30, af::span) = 0;
+}
+
+
 int main(int argc, char** argv)
 {
 
@@ -30,6 +60,7 @@ int main(int argc, char** argv)
     std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
     const double  t_relax_state1_sec (argc>5 ? std::stod(argv[5]) : 3e-9);// relaxtime for state1 in seconds
     std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
+    const bool int_over_relax = true;// true== interate, false relax
     // Parameter initialization
     const double x=400e-9;
     const double y=400e-9;
@@ -109,32 +140,7 @@ int main(int argc, char** argv)
             if(r>nx/r_ratio_to_sample) m(ix, iy, af::span, 2)=1.;
         }
     }
-    m(af::span, af::span, 1, af::span) = 0;
-    m(af::span, af::span, 2, af::span) = 0;
-
-    m(af::span, af::span, 4, af::span) = 0;
-    m(af::span, af::span, 5, af::span) = 0;
-
-    m(af::span, af::span, 7, af::span) = 0;
-    m(af::span, af::span, 8, af::span) = 0;
-
-    m(af::span, af::span, 10, af::span) = 0;
-    m(af::span, af::span, 11, af::span) = 0;
-
-    m(af::span, af::span, 17, af::span) = 0;
-    m(af::span, af::span, 18, af::span) = 0;
-
-    m(af::span, af::span, 20, af::span) = 0;
-    m(af::span, af::span, 21, af::span) = 0;
-
-    m(af::span, af::span, 23, af::span) = 0;
-    m(af::span, af::span, 24, af::span) = 0;
-
-    m(af::span, af::span, 26, af::span) = 0;
-    m(af::span, af::span, 27, af::span) = 0;
-
-    m(af::span, af::span, 29, af::span) = 0;
-    m(af::span, af::span, 30, af::span) = 0;
+    set_air_to_zero(m);
 
     if(icase == 3){
         // Setting IL layer ferromagnetic
@@ -167,13 +173,17 @@ int main(int argc, char** argv)
     if (! exists(filepath + "m_relaxed.vti" ) ){
         std::cout << "Relaxing minit" << std::endl;
         state_1.write_vti(filepath + "minit");
-        //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-        while (state_1.t < t_relax_state1_sec){
-            if (state_1.steps % 100 == 0) state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
-            llg.step(state_1);
-            std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" <<  state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
+        if (int_over_relax) {
+            while (state_1.t < t_relax_state1_sec){
+                if (state_1.steps % 100 == 0) state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
+                llg.step(state_1);
+                std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" <<  state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
+            }
         }
-        //Llg.relax(state_1);
+        else
+        {
+            llg.relax(state_1, 1e-12);
+        }
         timer.print_stage("relax");
         state_1.write_vti(filepath + "m_relaxed");
         vti_writer_micro(state_1.m(af::span, af::span,  0, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer1");
@@ -196,6 +206,7 @@ int main(int argc, char** argv)
 
     af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m2(af::span, af::span, af::span, 2) = 1.;
+    set_air_to_zero(m2);
     State state_2(mesh, Ms, m2);
     //state_2.m(af::span, af::span, 19, af::span) = 0;
     //state_2.m(af::span, af::span, 22, af::span) = 0;
@@ -212,11 +223,17 @@ int main(int argc, char** argv)
     //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
     state_2.write_vti(filepath + "m_state_2_init");
 
-    std::cout.precision(16);
-    while (state_2.t < 10e-9){// 3ns not sufficient
-        if (state_2.steps % 100 == 0) state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
-        llg.step(state_2);
-        std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" <<  state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
+    //std::cout.precision(16);
+    if (int_over_relax) {
+        while (state_2.t < 10e-9){// 3ns not sufficient
+            if (state_2.steps % 100 == 0) state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
+            llg.step(state_2);
+            std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" <<  state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
+        }
+    }
+    else
+    {
+        llg.relax(state_2, 1e-12);
     }
     vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
     timer.print_stage("state2 relaxed");
