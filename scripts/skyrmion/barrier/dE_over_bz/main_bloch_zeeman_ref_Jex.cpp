@@ -43,6 +43,7 @@ int main(int argc, char** argv)
 
     double bz_in_dims_of_J_atom(argc > 3 ? std::stod(argv[3]) : 0.);
     std::cout << "bz_in_dims_of_J_atom = " << bz_in_dims_of_J_atom << std::endl;
+    const int demag(argc > 4 ? std::stoi(argv[4]) : 0); // 0 == false, else true
 
      // Initial magnetic field
      array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
@@ -65,7 +66,9 @@ int main(int argc, char** argv)
     zee = tile(zee, mesh.n0, mesh.n1, mesh.n2);
 
     LLGIntegrator Llg(alpha);
-    //demag?//llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
+    if(demag){
+        Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    }
     Llg.llgterms.push_back( LlgTerm (new AtomisticExchangeField(J_atom)));
     Llg.llgterms.push_back( LlgTerm (new AtomisticDmiField(D_atom, {0, 0, -1})));
     Llg.llgterms.push_back( LlgTerm (new AtomisticUniaxialAnisotropyField(K_atom)));
