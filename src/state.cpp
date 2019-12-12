@@ -87,14 +87,6 @@ State::State (Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool m
 }
 
 
-State::State (Mesh mesh, Material param, af::array m, bool verbose, bool mute_warning): mesh(mesh), material(param), m(m), verbose(verbose), mute_warning(mute_warning)
-{
-    check_m_norm();
-    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-    //check_discretization();
-}
-
-
 State::State (NonequispacedMesh nonequimesh, double Ms, af::array m, bool verbose, bool mute_warning):
               nonequimesh(nonequimesh), Ms(Ms), m(m), verbose(verbose), mute_warning(mute_warning)
 {
@@ -108,47 +100,6 @@ State::State (NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bo
 {
     check_m_norm();
     set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-}
-
-
-///< State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean):
-              mesh(mesh_in), material(param_in), m(m_in), evaluate_mean_(evaluate_mean)
-{
-    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-    //check_discretization();
-    check_m_norm();
-    evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_, 0), 1), 2));
-    evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
-    if (verbose) printf("%s state.cpp: evaluate_mean_is_1_= %u\n", Info(), evaluate_mean_is_1_);
-}
-
-State::State (Mesh mesh_in, Material param_in, long int aptr): mesh(mesh_in), material(param_in), verbose(false)
-{
-    void **a = (void **)aptr;
-    m = *( new af::array( *a ));
-    //m.lock();
-    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-    //check_discretization();
-    check_m_norm();
-}
-
-///< For wrapping: State method taking additional boolean array for specific mean evaluation where this array is true (==1)
-State::State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr): mesh(mesh_in), material(param_in), verbose(false)
-{
-    void **a = (void **)aptr;
-    m = *( new af::array( *a ));
-    //m.lock();
-
-    void **b = (void **)evaluate_mean_ptr;
-    evaluate_mean_ = *( new af::array( *b ));
-    //evaluate_mean_.lock();
-
-    set_Ms_field_if_m_minvalnorm_is_zero( this->m, this->Ms_field);
-    //check_discretization();
-    check_m_norm();
-    evaluate_mean_is_1_ = afvalue_u32(af::sum(af::sum(af::sum(evaluate_mean_, 0), 1), 2));
-    evaluate_mean_ = af::tile(evaluate_mean_, 1, 1, 1, 3);// expanding to 3 vector dimensions, now calculating evaluate_mean_is_1_ would be 3 times too high
 }
 
 

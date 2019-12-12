@@ -23,38 +23,38 @@ AtomisticExchangeField::AtomisticExchangeField (double J_atom) : J_atom(J_atom)
 array AtomisticExchangeField::h(const State& state){
 
     array filtr=constant(0.0, 3, 3, 3, 3, f64);
-    if(state.material.hexagonal_close_packed == true){
-        std::cout << "WARNING: Experimental hcp exchange" << std::endl;
-        filtr(0, 1, 1, span)= 1.;
-        filtr(0, 2, 1, span)= 1.;// hex lattice
-        filtr(2, 1, 1, span)= 1.;
-        filtr(2, 0, 1, span)= 1.;// hex lattice
-        filtr(1, 0, 1, span)= 1.;
-        filtr(1, 2, 1, span)= 1.;
-        filtr(1, 1, 0, span)= 1.;
-        filtr(1, 1, 2, span)= 1.;
-        //TODO hex in z: filtr(, , , span)= 1.;// hex lattice
-        //NOTE: numers of NN is 12, so 3 in +z and 3 in +z slice
-        af::print("filtr", filtr);
+    filtr(0, 1, 1, span)= 1.;
+    filtr(2, 1, 1, span)= 1.;
+    filtr(1, 0, 1, span)= 1.;
+    filtr(1, 2, 1, span)= 1.;
+    filtr(1, 1, 0, span)= 1.;
+    filtr(1, 1, 2, span)= 1.;
+    //if(state.material.hexagonal_close_packed == true){
+    //    std::cout << "WARNING: Experimental hcp exchange" << std::endl;
+    //    filtr(0, 1, 1, span)= 1.;
+    //    filtr(0, 2, 1, span)= 1.;// hex lattice
+    //    filtr(2, 1, 1, span)= 1.;
+    //    filtr(2, 0, 1, span)= 1.;// hex lattice
+    //    filtr(1, 0, 1, span)= 1.;
+    //    filtr(1, 2, 1, span)= 1.;
+    //    filtr(1, 1, 0, span)= 1.;
+    //    filtr(1, 1, 2, span)= 1.;
+    //    //TODO hex in z: filtr(, , , span)= 1.;// hex lattice
+    //    //NOTE: numers of NN is 12, so 3 in +z and 3 in +z slice
+    //    af::print("filtr", filtr);
 
-    }
+    //}
     //else if(state.material.atom_fcc=true){
     //    //https://www.physics-in-a-nutshell.com/article/11/close-packed-structures-fcc-and-hcp
     //}
-    else{
-        filtr(0, 1, 1, span)= 1.;
-        filtr(2, 1, 1, span)= 1.;
-        filtr(1, 0, 1, span)= 1.;
-        filtr(1, 2, 1, span)= 1.;
-        filtr(1, 1, 0, span)= 1.;
-        filtr(1, 1, 2, span)= 1.;
-    }
+    //else{
+    //}
 
   timer_solve = timer::start();
   //convolution
   array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
-  if(state.material.afsync) af::sync();
+  if(state.afsync) af::sync();
   cpu_time += timer::stop(timer_solve);
   return J_atom/(constants::mu0*state.Ms)* mj;
 }

@@ -19,10 +19,6 @@ class State{
     State (NonequispacedMesh nonequimesh, double Ms_field, af::array m, bool verbose = true, bool mute_warning = false);
     State (NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bool verbose = true, bool mute_warning = false);
 
-    State (Mesh mesh_in, Material param_in, af::array m_in, bool verbose = true, bool mute_warning = false);
-    State (Mesh mesh_in, Material param_in, af::array m_in, af::array evaluate_mean);
-    State (Mesh mesh_in, Material param_in, long int aptr);
-    State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
     State operator+(const af::array&) const;
     State(){};
     ~State(){};
@@ -30,7 +26,6 @@ class State{
     long int get_m_addr();
     Mesh mesh{0, 0, 0, 0, 0, 0};
     NonequispacedMesh nonequimesh{0, 0, 0, 0, {0}};
-    Material material;
     double t{0.};//time
     double Ms{0};//!< Saturation magnetization in [J/T/m^3]
     af::array Ms_field;//<! Non-homugenuous, mesh dependent saturation magnetization defined at every node in units of [J/T/m^3]. Is impicitly set and used when magnetization has values of norm 0.
