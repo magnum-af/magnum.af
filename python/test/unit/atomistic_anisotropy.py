@@ -11,13 +11,12 @@ class AtomisticAnisotropyTest(unittest.TestCase):
   dx = 2.715e-10
   #TODO init test
   #TODO#Ku1_atom_axis = [0., 3., 0.]
-    #TODO#self.assertEqual((0., 1., 0.), material.Ku1_atom_axis)
+    #TODO#self.assertEqual((0., 1., 0.), Ku1_atom_axis)
 
   def test_atomistic_anisotropy_2_1_1_z_z(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
-    material=magnumaf.Material()
-    material.p=self.p
-    material.Ku1_atom=self.k
+    p=self.p
+    Ku1_atom=self.k
     m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
@@ -27,27 +26,26 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[1, 0, 0, 1] = 0
     m[1, 0, 0, 2] = 1
 
-    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
-    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
+    state=magnumaf.State(mesh, Ms = p, m = m)
+    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(Ku1_atom, [0, 0, 1])
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(state), -2*Ku1_atom)
 
-    af_heff = Llg.h(pystate)
+    af_heff = Llg.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[0, 0, 0, 1], 0 )
-    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*material.Ku1_atom/magnumaf.Constants.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*Ku1_atom/magnumaf.Constants.mu0/p )
     self.assertAlmostEqual(np_heff[1, 0, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[1, 0, 0, 1], 0 )
-    self.assertAlmostEqual(np_heff[1, 0, 0, 2], 2*material.Ku1_atom/magnumaf.Constants.mu0/material.p )
+    self.assertAlmostEqual(np_heff[1, 0, 0, 2], 2*Ku1_atom/magnumaf.Constants.mu0/p )
 
   def test_atomistic_anisotropy_2_1_1_z_x(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
-    material=magnumaf.Material()
-    material.p =self.p
-    material.Ku1_atom =self.k
+    p =self.p
+    Ku1_atom =self.k
     m=af.constant(0.0, 2, 1, 1, 3, dtype=af.Dtype.f64)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
@@ -57,27 +55,26 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[1, 0, 0, 1] = 0
     m[1, 0, 0, 2] = 0
 
-    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
-    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
+    state=magnumaf.State(mesh, Ms = p, m = m)
+    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(Ku1_atom, [0, 0, 1])
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.E(pystate), -material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(state), -Ku1_atom)
 
-    af_heff = Llg.h(pystate)
+    af_heff = Llg.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[0, 0, 0, 1], 0 )
-    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*material.Ku1_atom/magnumaf.Constants.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*Ku1_atom/magnumaf.Constants.mu0/p )
     self.assertAlmostEqual(np_heff[1, 0, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[1, 0, 0, 1], 0 )
     self.assertAlmostEqual(np_heff[1, 0, 0, 2], 0 )
 
   def test_atomistic_anisotropy_1_2_1_z_z(self):
     mesh=magnumaf.Mesh(1, 2, 1, self.dx, self.dx, self.dx)
-    material=magnumaf.Material()
-    material.p =self.p
-    material.Ku1_atom =self.k
+    p =self.p
+    Ku1_atom =self.k
     m=af.constant(0.0, 1, 2, 1, 3, dtype=af.Dtype.f64)
     m[0, 0, 0, 0] = 0
     m[0, 0, 0, 1] = 0
@@ -87,21 +84,21 @@ class AtomisticAnisotropyTest(unittest.TestCase):
     m[0, 1, 0, 1] = 0
     m[0, 1, 0, 2] = 1
 
-    pystate=magnumaf.State(mesh, Ms = 0, m = m, material = material)
-    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(mesh, material)
+    state=magnumaf.State(mesh, Ms = p, m = m)
+    atom_ani=magnumaf.AtomisticUniaxialAnisotropyField(Ku1_atom, [0, 0, 1])
     Llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_ani])
 
-    self.assertAlmostEqual(Llg.E(pystate), -2*material.Ku1_atom)
+    self.assertAlmostEqual(Llg.E(state), -2*Ku1_atom)
 
-    af_heff = Llg.h(pystate)
+    af_heff = Llg.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[0, 0, 0, 1], 0 )
-    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*material.Ku1_atom/magnumaf.Constants.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0, 0, 0, 2], 2*Ku1_atom/magnumaf.Constants.mu0/p )
     self.assertAlmostEqual(np_heff[0, 1, 0, 0], 0 )
     self.assertAlmostEqual(np_heff[0, 1, 0, 1], 0 )
-    self.assertAlmostEqual(np_heff[0, 1, 0, 2], 2*material.Ku1_atom/magnumaf.Constants.mu0/material.p )
+    self.assertAlmostEqual(np_heff[0, 1, 0, 2], 2*Ku1_atom/magnumaf.Constants.mu0/p )
 
 if __name__ == '__main__':
   unittest.main()

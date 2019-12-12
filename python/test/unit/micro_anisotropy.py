@@ -38,7 +38,7 @@ class MicroAnisotropyTest(unittest.TestCase):
         Ku1_axis_field = af.constant(0, 2, 1, 1, 3, dtype = af.Dtype.f64)
         Ku1_axis_field[0, 0, 0, 0] = 1.
         Ku1_axis_field[1, 0, 0, 1] = -1.
-        print (Ku1_axis_field)
+        #print (Ku1_axis_field)
         aniso = UniaxialAnisotropyField(Ku1, Ku1_axis_field)
         mesh = Mesh(2, 1, 1, 1, 1, 1)
         m = af.constant(0, 2, 1, 1, 3, dtype = af.Dtype.f64)
