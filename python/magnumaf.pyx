@@ -842,8 +842,9 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
 
 cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
-    def __cinit__(self, double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z):
-        self._thisptr = new cAtomisticUniaxialAnisotropyField (K_atom, K_atom_axis_x, K_atom_axis_y, K_atom_axis_z)
+    def __cinit__(self, double K_atom, K_atom_axis = [0., 0., 1.]):
+    #def __cinit__(self, double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z):
+        self._thisptr = new cAtomisticUniaxialAnisotropyField (K_atom, K_atom_axis[0], K_atom_axis[1], K_atom_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -876,8 +877,8 @@ cdef class AtomisticExchangeField(HeffTerm):
 
 cdef class AtomisticDmiField(HeffTerm):
     cdef cAtomisticDmiField* _thisptr
-    def __cinit__(self, double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z):
-        self._thisptr = new cAtomisticDmiField (D_atom, D_atom_axis_x, D_atom_axis_y, D_atom_axis_z)
+    def __cinit__(self, double D_atom, D_atom_axis = [0., 0., -1.]):
+        self._thisptr = new cAtomisticDmiField (D_atom, D_atom_axis[0], D_atom_axis[1], D_atom_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
