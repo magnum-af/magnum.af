@@ -33,6 +33,7 @@ int main(int argc, char **argv)
     const double A = 1.6e-11;
     const double D = 2 * 5.76e-3;
     const double Ku1 = 6.4e6;
+    const double ext = 10e-3/constants::mu0;
 
     //Material material = Material();
     //material.J_atom = 2. * A * dx;
@@ -70,6 +71,9 @@ int main(int argc, char **argv)
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(D_atom, {0, 0, -1})));
     llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
+    af::array zee = af::constant(0, mesh.dims, f64);
+    zee(af::span, af::span, af::span, 2) = ext;
+    llgterm.push_back(llgt_ptr(new AtomisticExternalField(zee)));
 
     LLGIntegrator Llg(alpha, llgterm);
 

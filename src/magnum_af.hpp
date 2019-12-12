@@ -6,6 +6,7 @@
 #include "llg_terms/atomistic_dmi.hpp"
 #include "llg_terms/atomistic_exchange.hpp"
 #include "llg_terms/atomistic_dmi.hpp"
+#include "llg_terms/atomistic_external_field.hpp"
 #include "llg_terms/micro_anisotropy.hpp"
 #include "llg_terms/micro_anisotropy_nonequi.hpp"
 #include "llg_terms/micro_demag.hpp"
