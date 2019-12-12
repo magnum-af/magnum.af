@@ -8,12 +8,12 @@ using namespace af;
 //Energy calculation
 //Edemag=-mu0/2 integral(M . Hdemag) dx
 double AtomisticDipoleDipoleField::E(const State& state){
-  return -constants::mu0/2 * state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
-  //return -state.material.p/2 * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+  return -constants::mu0/2 * state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+  //return -state.Ms/2 * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
 double AtomisticDipoleDipoleField::E(const State& state, const af::array& h){
-  return -constants::mu0/2 * state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
+  return -constants::mu0/2 * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
 array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
@@ -51,16 +51,16 @@ array AtomisticDipoleDipoleField::h(const State& state){
   array h_field;
   if (state.mesh.n2_exp == 1){
     h_field=fftC2R<2>(hfft);
-    //af::print("h_dip", state.material.p * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1)));//TODO hack
-    if(state.material.afsync) af::sync();
+    //af::print("h_dip", state.Ms * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1)));//TODO hack
+    if(state.afsync) af::sync();
     cpu_time += timer::stop(timer_demagsolve);
-    return state.material.p * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1));//TODO consider p density, then we have to multip at m before fft
+    return state.Ms * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1));//TODO consider p density, then we have to multip at m before fft
   }
   else {
     h_field=fftC2R<3>(hfft);
-    if(state.material.afsync) af::sync();
+    if(state.afsync) af::sync();
     cpu_time += timer::stop(timer_demagsolve);
-    return state.material.p * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1), seq(0, state.mesh.n2_exp/2-1), span);
+    return state.Ms * h_field(seq(0, state.mesh.n0_exp/2-1), seq(0, state.mesh.n1_exp/2-1), seq(0, state.mesh.n2_exp/2-1), span);
   }
 }
 

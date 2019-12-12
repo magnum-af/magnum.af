@@ -26,7 +26,7 @@ double analytic_result(double time){
 TEST(AdaptiveRungeKutta, BS23IntegrationTest) {
     RK rk("BS23", Controller(1e-15, 1e15, 1e-10, 1e-10));
     af::array m = af::constant(1.0, 1, f64);
-    State state(Mesh(0, 0, 0, 0, 0, 0), Material(), m);
+    State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i=0; i<200; i++){
          rk.step(state);
          ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-12 );
@@ -37,7 +37,7 @@ TEST(AdaptiveRungeKutta, BS23IntegrationTest) {
 TEST(AdaptiveRungeKutta, BS45IntegrationTest) {
     RK callback("BS45", Controller(1e-15, 1e15, 1e-10, 1e-10));
     af::array m = af::constant(1.0, 1, f64);
-    State state(Mesh(0, 0, 0, 0, 0, 0), Material(), m);
+    State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i=0; i<100; i++){
          callback.step(state);
          ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8 );
@@ -48,7 +48,7 @@ TEST(AdaptiveRungeKutta, BS45IntegrationTest) {
 TEST(AdaptiveRungeKutta, DP45IntegrationTest) {
     RK callback("DP45", Controller(1e-15, 1e15, 1e-10, 1e-10));
     af::array m = af::constant(1.0, 1, f64);
-    State state(Mesh(0, 0, 0, 0, 0, 0), Material(), m);
+    State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i=0; i<100; i++){
          callback.step(state);
          ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8 );
@@ -58,7 +58,7 @@ TEST(AdaptiveRungeKutta, DP45IntegrationTest) {
 TEST(AdaptiveRungeKutta, RKF45IntegrationTest) {
     RK callback("RKF45", Controller(1e-15, 1e15, 1e-10, 1e-10));
     af::array m = af::constant(1.0, 1, f64);
-    State state(Mesh(0, 0, 0, 0, 0, 0), Material(), m);
+    State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i=0; i<100; i++){
          callback.step(state);
          ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8 );
@@ -69,7 +69,7 @@ TEST(AdaptiveRungeKutta, RKF45IntegrationTest) {
 TEST(AdaptiveRungeKutta, DP78IntegrationTest) {
     RK callback("DP78", Controller(1e-15, 1e15, 1e-14, 1e-14));
     af::array m = af::constant(1.0, 1, f64);
-    State state(Mesh(0, 0, 0, 0, 0, 0), Material(), m);
+    State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i=0; i<100; i++){
          callback.step(state);
          ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8 );

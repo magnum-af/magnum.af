@@ -128,7 +128,7 @@ af::array NonEquiDemagField::h(const State&  state){
     // IFFT reversing padding
     af::array h_field;
     h_field=af::fftC2R<2>(hfft);
-    if(state.material.afsync) af::sync();
+    if(state.afsync) af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
     //return h_field(af::seq(0, state.nonequimesh.nx_expanded/2-1), af::seq(0, state.nonequimesh.ny_expanded/2-1));
     return one_over_tau_vec * h_field(af::seq(0, state.nonequimesh.nx_expanded/2-1), af::seq(0, state.nonequimesh.ny_expanded/2-1));

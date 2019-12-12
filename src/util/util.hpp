@@ -3,6 +3,7 @@
 #include <utility>
 #include <algorithm>
 #include <cmath>
+#include <array>
 
 namespace magnumafcpp{
 

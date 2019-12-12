@@ -409,20 +409,10 @@ cdef class State:
     state = State(mesh, 8e5, m0)
     """
     cdef cState* _thisptr
-    def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False, Material material = None, evaluate_mean = None):
+    def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False):
         # switch for evaluate_mean value
         if hasattr(Ms, 'arr'):
             self._thisptr = new cState (deref(mesh._thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
-        # legacy
-        elif (material is not None and evaluate_mean is None):
-            print("Warning: State constructor: legacy code, will be dopped soon")
-            self._thisptr = new cState (deref(mesh._thisptr), deref(material._thisptr), addressof(m.arr))
-            self._thisptr.Ms = Ms
-        elif (material is not None):
-            print("Warning: State constructor: legacy code, will be dopped soon")
-            self._thisptr = new cState (deref(mesh._thisptr), deref(material._thisptr), addressof(m.arr), addressof(evaluate_mean.arr))
-            self._thisptr.Ms = Ms
-        # end legacy
         else:
             self._thisptr = new cState (deref(mesh._thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
@@ -472,14 +462,6 @@ cdef class State:
     property nonequimesh:
         def __set__(self, NonequispacedMesh ne_mesh):
             self._thisptr.nonequimesh = deref(ne_mesh._thisptr)
-
-    property material:
-        def __get__(self):
-            material = Material()
-            material.set_ptr(&self._thisptr.material, self)
-            return material
-        def __set__(self, Material material_in):
-            self._thisptr.material = deref(material_in._thisptr)
 
     @property
     def m(self):
@@ -860,8 +842,9 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
 
 cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
-    def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticUniaxialAnisotropyField (deref(mesh._thisptr), deref(param_in._thisptr))
+    def __cinit__(self, double K_atom, K_atom_axis = [0., 0., 1.]):
+    #def __cinit__(self, double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z):
+        self._thisptr = new cAtomisticUniaxialAnisotropyField (K_atom, K_atom_axis[0], K_atom_axis[1], K_atom_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -877,8 +860,8 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
 
 cdef class AtomisticExchangeField(HeffTerm):
     cdef cAtomisticExchangeField* _thisptr
-    def __cinit__(self):
-        self._thisptr = new cAtomisticExchangeField ()
+    def __cinit__(self, double J_atom):
+        self._thisptr = new cAtomisticExchangeField (J_atom)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -894,8 +877,8 @@ cdef class AtomisticExchangeField(HeffTerm):
 
 cdef class AtomisticDmiField(HeffTerm):
     cdef cAtomisticDmiField* _thisptr
-    def __cinit__(self, Mesh mesh, Material param_in):
-        self._thisptr = new cAtomisticDmiField (deref(mesh._thisptr), deref(param_in._thisptr))
+    def __cinit__(self, double D_atom, D_atom_axis = [0., 0., -1.]):
+        self._thisptr = new cAtomisticDmiField (D_atom, D_atom_axis[0], D_atom_axis[1], D_atom_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL

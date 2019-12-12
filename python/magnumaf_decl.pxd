@@ -54,8 +54,6 @@ cdef extern from "../../src/state.hpp" namespace "magnumafcpp":
         State ()
         State (Mesh mesh_in, double Ms, long int m_in, bool verbose, bool mute_warning);
         State (Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose, bool mute_warning);
-        State (Mesh mesh_in, Material param_in, long int m_in);
-        State (Mesh mesh_in, Material param_in, long int aptr, long int evaluate_mean_ptr);
         void Normalize();
 
         array m;
@@ -69,7 +67,6 @@ cdef extern from "../../src/state.hpp" namespace "magnumafcpp":
         unsigned long long steps;
         Mesh mesh;
         NonequispacedMesh nonequimesh;
-        Material material;
         double Ms;
 
         void write_vti(string outputname);
@@ -98,7 +95,7 @@ cdef extern from "../../src/material.hpp" namespace "magnumafcpp":
 
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDmiField:
-        AtomisticDmiField(Mesh, Material);
+        AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
@@ -160,14 +157,14 @@ cdef extern from "../../src/llg_terms/atomistic_demag.hpp" namespace "magnumafcp
 
 cdef extern from "../../src/llg_terms/atomistic_anisotropy.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticUniaxialAnisotropyField:
-        AtomisticUniaxialAnisotropyField(Mesh, Material);
+        AtomisticUniaxialAnisotropyField(const double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z);
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
 
 cdef extern from "../../src/llg_terms/atomistic_exchange.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticExchangeField:
-        AtomisticExchangeField();
+        AtomisticExchangeField(double J_atom);
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();

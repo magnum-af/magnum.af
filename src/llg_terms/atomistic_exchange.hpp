@@ -8,6 +8,7 @@ namespace magnumafcpp{
 
 class AtomisticExchangeField : public LLGTerm {
   public:
+    AtomisticExchangeField(double J_atom);
     //Field contribution
     af::array h(const State& state);
     //Energy contribution
@@ -16,7 +17,7 @@ class AtomisticExchangeField : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    AtomisticExchangeField ();
+    const double J_atom; //!< Atomistic exchange energy [J]
 
     double     cpu_time{0.};
     af::timer timer_solve;
