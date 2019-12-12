@@ -34,11 +34,15 @@ int main(int argc, char **argv)
     const double D = 2 * 5.76e-3;
     const double Ku1 = 6.4e6;
 
-    Material material = Material();
-    material.J_atom = 2. * A * dx;
-    material.D_atom = D * pow(dx, 2);
-    material.K_atom = Ku1 * pow(dx, 3);
-    material.p = Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
+    //Material material = Material();
+    //material.J_atom = 2. * A * dx;
+    //material.D_atom = D * pow(dx, 2);
+    //material.K_atom = Ku1 * pow(dx, 3);
+    //material.p = Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
+    const double J_atom = 2. * A * dx;
+    const double D_atom = D * pow(dx, 2);
+    const double K_atom = Ku1 * pow(dx, 3);
+    const double p = Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
 
     // Initial magnetic field
     af::array m = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
@@ -55,19 +59,22 @@ int main(int argc, char **argv)
         }
     }
 
-    State state(mesh, Ms, m);
-    state.material = material;
+    State state(mesh, p, m);
+    //TODO Consider Energy calculation without dx^3
+    //TODO//State state(mesh, Ms * std::pow(dx, 3), m);
+    std::cout << "Ms=" << state.Ms << std::endl;
     vti_writer_atom(state.m, mesh, filepath + "minit");
 
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField()));
-    llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(Ku1)));
+    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(J_atom)));
+    llgterm.push_back(llgt_ptr(new AtomisticDmiField(D_atom, {0, 0, -1})));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
+    llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
 
     LLGIntegrator Llg(alpha, llgterm);
 
     af::timer t = af::timer::start();
-    Llg.relax(state, 1e-12, 100, 100);
+    Llg.relax(state, 1e-8, 100, 100);
 
     af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
     af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
@@ -90,7 +97,7 @@ int main(int argc, char **argv)
 
     double n_interp = 60;
     double string_dt = 5e-14;
-    const int string_steps = 10000;
+    const int string_steps = 10;
     double string_abort_rel_diff = 1e-12;
     double string_abort_abs_diff = 1e-27;
 

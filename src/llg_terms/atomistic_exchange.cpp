@@ -9,14 +9,15 @@ using namespace af;
 //Eex=-mu0/2 integral(M . Hex) dx
 
 double AtomisticExchangeField::E(const State& state){
-  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
 }
 
 double AtomisticExchangeField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. *state.material.p * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
+  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
-AtomisticExchangeField::AtomisticExchangeField (){
+AtomisticExchangeField::AtomisticExchangeField (double J_atom) : J_atom(J_atom)
+{
 }
 
 array AtomisticExchangeField::h(const State& state){
@@ -55,10 +56,10 @@ array AtomisticExchangeField::h(const State& state){
 
   if(state.material.afsync) af::sync();
   cpu_time += timer::stop(timer_solve);
-  return state.material.J_atom/(constants::mu0*state.material.p)* mj;
+  return J_atom/(constants::mu0*state.Ms)* mj;
 }
   //return state.material.J/(state.mesh.dx*constants::mu0) * mj;
-  //return state.material.J/(state.mesh.dx*constants::mu0*state.material.p) * mj;
+  //return state.material.J/(state.mesh.dx*constants::mu0*state.Ms) * mj;
   //return state.material.J/state.mesh.dx * mj;
 
 

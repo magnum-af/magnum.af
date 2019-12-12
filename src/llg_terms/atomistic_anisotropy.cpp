@@ -4,6 +4,14 @@
 namespace magnumafcpp
 {
 
+double AtomisticUniaxialAnisotropyField::E(const State& state){
+  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+}
+
+double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
+  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
+}
+
 //Ref Master Thesis Stifano
 //eq (19)
 //Han=N*K/2 - K/2 Sum_i(m_i*ez)^2
