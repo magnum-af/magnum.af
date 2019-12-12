@@ -2,7 +2,8 @@
 #include <array>
 #include <functional>
 
-namespace magnumafcpp{
+namespace magnumafcpp
+{
 
 /// Class calculating the zero crossing of a monotonic function f(x) up to a given precision.
 
@@ -22,20 +23,21 @@ namespace magnumafcpp{
 ///             2:           also print values for every loop\n
 ///             3:           also print values for every evaluation of f(x)
 
-class ZeroCrossing{
-    public:
-        ZeroCrossing(std::function<double (double)> f, double precision = 1e-6, int max_runs = 5, double ix_min = 0, double ix_max = 1, int ix_n = 100, int verbose = true);
-        std::pair<double, double> calc_x_and_f(); ///< Calculates x and f(x)
-    private:
-        std::function<double (double)> f;
-        const double precision;
-        const int max_runs;
-        double ix_min; // current x range min
-        double ix_max; // current x range max
-        const int ix_n; // x range discretization
-        const int verbose;
+class ZeroCrossing
+{
+public:
+    ZeroCrossing(std::function<double(double)> f, double precision = 1e-6, int max_runs = 5, double ix_min = 0, double ix_max = 1, int ix_n = 100, int verbose = true);
+    std::pair<double, double> calc_x_and_f(); ///< Calculates x and f(x)
+private:
+    std::function<double(double)> f;
+    const double precision;
+    const int max_runs;
+    double ix_min;  // current x range min
+    double ix_max;  // current x range max
+    const int ix_n; // x range discretization
+    const int verbose;
 
-        std::array<double, 4> run_loop();
+    std::array<double, 4> run_loop();
 };
 
-}// namespace magnumafcpp
+} // namespace magnumafcpp

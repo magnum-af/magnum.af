@@ -2,9 +2,9 @@
 #include "../../src/mesh.hpp"
 #include "../../src/func.hpp"
 
-
 // Exemplary unit test
-TEST(Mesh, InitTest) {
+TEST(Mesh, InitTest)
+{
     magnumafcpp::Mesh mesh(1, 2, 3, 0.1, 0.2, 0.3);
     ASSERT_EQ(1, mesh.n0);
     ASSERT_EQ(2, mesh.n1);
@@ -14,7 +14,8 @@ TEST(Mesh, InitTest) {
     ASSERT_EQ(0.3, mesh.dz);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

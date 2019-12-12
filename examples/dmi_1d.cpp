@@ -4,25 +4,27 @@
 
 using namespace magnumafcpp;
 
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     // Checking input variables and setting GPU Device
-    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
-    std::string filepath(argc>1? argv[1]: "output_magnum.af/");
-    af::setDevice(argc>2? std::stoi(argv[2]):0);
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
+    }
+    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
+    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
     // Parameter initialization
     const double x = 1.e-7, y = 1e-9, z = 1e-9;
-    const int nx = 100, ny = 1 , nz = 1;
+    const int nx = 100, ny = 1, nz = 1;
     const double A = 13e-12;
     const double D = 3e-3;
     const double Ms = 0.86e6;
     const double Ku = 0.4e6;
 
     //Generating Objects
-    Mesh mesh(nx, ny, nz, x/nx, y/ny, z/nz);
+    Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     // Initial magnetic field
     af::array m = af::constant(0, mesh.dims, f64);
@@ -31,9 +33,9 @@ int main(int argc, char** argv)
     state.write_vti(filepath + "minit");
 
     //auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm (new ExchangeField(A));
-    auto aniso = LlgTerm (new UniaxialAnisotropyField(Ku, {0, 0, 1}));
-    auto dmi = LlgTerm (new DmiField(D, {0, 0, 1}));
+    auto exch = LlgTerm(new ExchangeField(A));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
+    auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
     LLGIntegrator Llg(1, {exch, aniso, dmi});
 
     std::ofstream stream;
@@ -42,10 +44,12 @@ int main(int argc, char** argv)
 
     // Relax
     StageTimer timer;
-    while (state.t < 2e-10){
+    while (state.t < 2e-10)
+    {
         Llg.step(state);
         state.calc_mean_m(stream);
-        if (state.steps % 100 == 0) state.write_vti(filepath + "m_step" + std::to_string(state.steps));
+        if (state.steps % 100 == 0)
+            state.write_vti(filepath + "m_step" + std::to_string(state.steps));
     }
     //Llg.relax(state, 1e-10, 100, 1);
     stream.close();
@@ -56,7 +60,8 @@ int main(int argc, char** argv)
     // plot with; gnuplot -e 'set terminal pdf; set output "m.pdf"; set xlabel "x [nm]"; set ylabel "m_i"; p "mrelaxed.dat" u 1:2 w lp t "mx", "" u 1:4 w lp t "mz"'
     std::ofstream mstream(filepath + "mrelaxed.dat");
     mstream << "# idx, mx, my, mz" << std::endl;
-    for (int i = 0; i<nx; i++){
+    for (int i = 0; i < nx; i++)
+    {
         mstream << i << "\t" << state.m(i, 0, 0, 0).scalar<double>() << "\t" << state.m(i, 0, 0, 1).scalar<double>() << "\t" << state.m(i, 0, 0, 2).scalar<double>() << std::endl;
     }
     mstream.close();

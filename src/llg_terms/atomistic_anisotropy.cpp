@@ -4,14 +4,15 @@
 namespace magnumafcpp
 {
 
-double AtomisticUniaxialAnisotropyField::E(const State& state){
-  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+double AtomisticUniaxialAnisotropyField::E(const State &state)
+{
+    return -constants::mu0 / 2. * state.Ms * afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3));
 }
 
-double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
+double AtomisticUniaxialAnisotropyField::E(const State &state, const af::array &h)
+{
+    return -constants::mu0 / 2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
-
 
 //TODO causes error multiple definition of `magnumafcpp::get_normalized_vector(std::array<double, 3ul>)'
 //std::array<double, 3> get_normalized_vector(std::array<double, 3> vector){
@@ -19,11 +20,11 @@ double AtomisticUniaxialAnisotropyField::E(const State& state, const af::array& 
 //    return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
 //}
 
-std::array<double, 3> AtomisticUniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector){
-    double norm = sqrt(pow(vector[0], 2)+ pow(vector[1], 2) + pow(vector[2], 2));
-    return std::array<double, 3> {vector[0]/norm, vector[1]/norm, vector[2]/norm};
+std::array<double, 3> AtomisticUniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector)
+{
+    double norm = sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));
+    return std::array<double, 3>{vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
-
 
 //Ref Master Thesis Stifano
 //eq (19)
@@ -57,4 +58,4 @@ af::array AtomisticUniaxialAnisotropyField::h(const State &state)
     return 2 * K_atom / (constants::mu0 * state.Ms) * anisotropy * eu;
 }
 
-}// namespace mangumafcpp
+} // namespace magnumafcpp

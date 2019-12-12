@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     const double A = 1.6e-11;
     const double D = 2 * 5.76e-3;
     const double Ku1 = 6.4e6;
-    const double ext = 10e-3/constants::mu0;
+    const double ext = 10e-3 / constants::mu0;
 
     // Atomistic parameters
     const double J_atom = 2. * A * dx;
@@ -103,9 +103,9 @@ int main(int argc, char **argv)
     double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
     //without demag and zee//double expected_barrier = 4.420526609492e-20;
-    double expected_barrier = 1.045386540512e-19;//Value with demag and zee
-    double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier)/(barrier + expected_barrier);
-    if(rel_diff_barrier < 1e-3)
+    double expected_barrier = 1.045386540512e-19; //Value with demag and zee
+    double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier) / (barrier + expected_barrier);
+    if (rel_diff_barrier < 1e-3)
     {
         std::cout << "Barrier as expected, relative difference to expected is " << rel_diff_barrier << std::endl;
     }

@@ -5,17 +5,19 @@
 
 using namespace magnumafcpp;
 
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     // Checking input variables and setting GPU Device
-    for (int i=0; i<argc; i++){std::cout << "Parameter " << i << " was " << argv[i] << std::endl;}
-    std::string filepath(argc>1? argv[1]: "output_magnum.af/");
-    af::setDevice(argc>2? std::stoi(argv[2]):0);
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
+    }
+    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
+    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
     // Parameter initialization
-    const int nx = 10, ny=10 , nz=2;
+    const int nx = 10, ny = 10, nz = 2;
     const double dx = 1e-9;
 
     const double Ms = 1e6;
@@ -30,11 +32,11 @@ int main(int argc, char** argv)
     m(af::span, af::span, af::span, 0) = 1.;
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
-    af::array rkkyvals = af::constant(RKKY/2., mesh.dims, f64);
+    af::array rkkyvals = af::constant(RKKY / 2., mesh.dims, f64);
     af::array exchvals = af::constant(A, mesh.dims, f64);
-    auto rkky = LlgTerm (new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals),  mesh));
+    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
-    auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
+    auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
     LLGIntegrator Llg(1, {demag, rkky});
 
     std::ofstream stream(filepath + "m.dat");
@@ -45,16 +47,17 @@ int main(int argc, char** argv)
 
     std::vector<double> vecE;
 
-    for (int i = 0; i < 360; i ++){
-        const double mix = std::cos(i * M_PI/180.);
-        const double miy = std::sin(i * M_PI/180.);
+    for (int i = 0; i < 360; i++)
+    {
+        const double mix = std::cos(i * M_PI / 180.);
+        const double miy = std::sin(i * M_PI / 180.);
         state.m(af::span, af::span, 1, 0) = mix;
         state.m(af::span, af::span, 1, 1) = miy;
 
         double E = Llg.E(state);
         vecE.push_back(E);
-        std::cout << "i = " << i <<  ", E= " << E << std::endl;
-        streamE   << i << "\t" << E << std::endl;
+        std::cout << "i = " << i << ", E= " << E << std::endl;
+        streamE << i << "\t" << E << std::endl;
         state.calc_mean_m(stream);
         state.write_vti(filepath + "m_field_" + std::to_string(i));
     }

@@ -1,128 +1,134 @@
 #include "micro_exch.hpp"
 #include "../func.hpp"
 
-namespace magnumafcpp{
+namespace magnumafcpp
+{
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 // Virtual method is overwritten as to use h_withedges
 // Note: maybe this is irrelevant and can be dropped.
-double ExchangeField::E(const State& state){
-    if( state.Ms_field.isempty() ){
-        return -constants::mu0/2. * state.Ms * af::sum(af::sum(af::sum(af::sum( h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+double ExchangeField::E(const State &state)
+{
+    if (state.Ms_field.isempty())
+    {
+        return -constants::mu0 / 2. * state.Ms * af::sum(af::sum(af::sum(af::sum(h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
-    else{
-        return -constants::mu0/2. * af::sum(af::sum(af::sum(af::sum(state.Ms_field * h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx * state.mesh.dy * state.mesh.dz;
+    else
+    {
+        return -constants::mu0 / 2. * af::sum(af::sum(af::sum(af::sum(state.Ms_field * h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
 }
-
 
 /// Constructor for a global exchange constant
-ExchangeField::ExchangeField (double A) : A(A){
+ExchangeField::ExchangeField(double A) : A(A)
+{
 }
-
 
 /// Constructor taking spacially varying exchange constant af af::array
-ExchangeField::ExchangeField (af::array A_field) : A_field(A_field){
+ExchangeField::ExchangeField(af::array A_field) : A_field(A_field)
+{
 }
-
 
 // For wrapping only
-ExchangeField::ExchangeField (long int A_field_ptr) : A_field(*(new af::array( *((void **) A_field_ptr)))){
+ExchangeField::ExchangeField(long int A_field_ptr) : A_field(*(new af::array(*((void **)A_field_ptr))))
+{
 }
 
-af::array ExchangeField::h_withedges(const State& state){
+af::array ExchangeField::h_withedges(const State &state)
+{
     timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-    filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
-    filtr(2, 1, 1)= 1 / pow(state.mesh.dx, 2);
-    filtr(1, 0, 1)= 1 / pow(state.mesh.dy, 2);
-    filtr(1, 2, 1)= 1 / pow(state.mesh.dy, 2);
-    filtr(1, 1, 0)= 1 / pow(state.mesh.dz, 2);
-    filtr(1, 1, 2)= 1 / pow(state.mesh.dz, 2);
+    filtr(0, 1, 1) = 1 / pow(state.mesh.dx, 2);
+    filtr(2, 1, 1) = 1 / pow(state.mesh.dx, 2);
+    filtr(1, 0, 1) = 1 / pow(state.mesh.dy, 2);
+    filtr(1, 2, 1) = 1 / pow(state.mesh.dy, 2);
+    filtr(1, 1, 0) = 1 / pow(state.mesh.dz, 2);
+    filtr(1, 1, 2) = 1 / pow(state.mesh.dz, 2);
     //Convolution
     af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
     //Accounting for boundary conditions by adding initial m values on the boundaries by adding all 6 boundary surfaces
     timer_edges = af::timer::start();
-    exch(0, af::span, af::span, af::span)+=state.m(0 , af::span, af::span, af::span)/ pow(state.mesh.dx, 2);
-    exch(-1, af::span, af::span, af::span)+=state.m(-1, af::span, af::span, af::span)/ pow(state.mesh.dx, 2);
+    exch(0, af::span, af::span, af::span) += state.m(0, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
+    exch(-1, af::span, af::span, af::span) += state.m(-1, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
 
+    exch(af::span, 0, af::span, af::span) += state.m(af::span, 0, af::span, af::span) / pow(state.mesh.dy, 2);
+    exch(af::span, -1, af::span, af::span) += state.m(af::span, -1, af::span, af::span) / pow(state.mesh.dy, 2);
 
-    exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span, af::span)/ pow(state.mesh.dy, 2);
-    exch(af::span, -1, af::span, af::span)+=state.m(af::span, -1, af::span, af::span)/ pow(state.mesh.dy, 2);
+    exch(af::span, af::span, 0, af::span) += state.m(af::span, af::span, 0, af::span) / pow(state.mesh.dz, 2);
+    exch(af::span, af::span, -1, af::span) += state.m(af::span, af::span, -1, af::span) / pow(state.mesh.dz, 2);
 
-    exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 , af::span)/ pow(state.mesh.dz, 2);
-    exch(af::span, af::span, -1, af::span)+=state.m(af::span, af::span, -1, af::span)/ pow(state.mesh.dz, 2);
-
-    if(state.afsync) af::sync();
+    if (state.afsync)
+        af::sync();
     time_edges += af::timer::stop(timer_edges);
     computation_time_heff += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty())
     {
-        return  (2.* this->A)/(constants::mu0 * state.Ms) * exch;
+        return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     }
-    else if ( !state.Ms_field.isempty() && this->A_field.isempty())
+    else if (!state.Ms_field.isempty() && this->A_field.isempty())
     {
-        af::array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
-        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
-        return  heff;
+        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
+        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        return heff;
     }
-    else if ( state.Ms_field.isempty() && !this->A_field.isempty())
+    else if (state.Ms_field.isempty() && !this->A_field.isempty())
     {
-        return (2.* this->A_field)/(constants::mu0 * state.Ms) * exch;
+        return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     }
-    else {
-        af::array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
-        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
-        return  heff;
+    else
+    {
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
+        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        return heff;
     }
 }
 
 //Terms proportional to m dorp out in the cross product of the LLG and thus is neglected
 //as arrayfire is extremely slow with indexing operations
 //NOTE: This yields no longer the physical exchange field but optimizes the caluclation
-af::array ExchangeField::h(const State& state){
+af::array ExchangeField::h(const State &state)
+{
     timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-    filtr(0, 1, 1)= 1 / pow(state.mesh.dx, 2);
-    filtr(2, 1, 1)= 1 / pow(state.mesh.dx, 2);
-    filtr(1, 0, 1)= 1 / pow(state.mesh.dy, 2);
-    filtr(1, 2, 1)= 1 / pow(state.mesh.dy, 2);
-    filtr(1, 1, 0)= 1 / pow(state.mesh.dz, 2);
-    filtr(1, 1, 2)= 1 / pow(state.mesh.dz, 2);
+    filtr(0, 1, 1) = 1 / pow(state.mesh.dx, 2);
+    filtr(2, 1, 1) = 1 / pow(state.mesh.dx, 2);
+    filtr(1, 0, 1) = 1 / pow(state.mesh.dy, 2);
+    filtr(1, 2, 1) = 1 / pow(state.mesh.dy, 2);
+    filtr(1, 1, 0) = 1 / pow(state.mesh.dz, 2);
+    filtr(1, 1, 2) = 1 / pow(state.mesh.dz, 2);
     af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-    if(state.afsync) af::sync();
+    if (state.afsync)
+        af::sync();
     computation_time_heff += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty())
     {
-        return  (2.* this->A)/(constants::mu0 * state.Ms) * exch;
+        return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     }
-    else if ( !state.Ms_field.isempty() && this->A_field.isempty())
+    else if (!state.Ms_field.isempty() && this->A_field.isempty())
     {
-        af::array heff = (2.* this->A)/(constants::mu0*state.Ms_field) * exch;
-        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
-        return  heff;
+        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
+        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        return heff;
     }
-    else if ( state.Ms_field.isempty() && !this->A_field.isempty())
+    else if (state.Ms_field.isempty() && !this->A_field.isempty())
     {
-        return (2.* this->A_field)/(constants::mu0 * state.Ms) * exch;
+        return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     }
-    else {
-        af::array heff = (2.* this->A_field)/(constants::mu0*state.Ms_field) * exch;
-        replace(heff, state.Ms_field!=0, 0); // set all cells where Ms==0 to 0
-        return  heff;
+    else
+    {
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
+        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        return heff;
     }
 }
 
 //void showdims2(const array& a){
 //  std::cout<<"Exchange matrix: dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
 //}
-
-
-
 
 ////Version with switch conv/sparseMatMul dropping the edges
 //#include "exch.hpp"
@@ -287,10 +293,6 @@ af::array ExchangeField::h(const State& state){
 //  }
 //}
 
-
-
-
-
 //Version yielding real Exchange Field with corrected edges and switch conv/sparseMatMul
 //#include "exch.hpp"
 
@@ -454,4 +456,4 @@ af::array ExchangeField::h(const State& state){
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
 //}
-}// namespace magnumafcpp
+} // namespace magnumafcpp

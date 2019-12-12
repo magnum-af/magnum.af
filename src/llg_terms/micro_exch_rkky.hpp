@@ -4,10 +4,11 @@
 #include "arrayfire.h"
 #include "../util/named_type.hpp"
 
-namespace magnumafcpp{
+namespace magnumafcpp
+{
 
-using RKKY_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
-using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
+using RKKY_values = NamedType<const af::array &, struct NamedTypeRKKY_values>;
+using Exchange_values = NamedType<const af::array &, struct NamedTypeRKKY_values>;
 
 /// Combined Field for RKKY interaction between z-neighbour-cells and exchange interaction between not-RKKY-coupled cells.
 
@@ -29,22 +30,21 @@ using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>
 /// All cells are exchange coupled along the xy plane.
 /// @param COO Switch between COO and CSR sparse matrix format, true is COO.
 
+class RKKYExchangeField : public LLGTerm
+{
+public:
+    RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, const af::array &rkky_indices = af::array(), bool verbose = true, bool COO = true);
+    RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices, bool verbose = true);
 
-class RKKYExchangeField : public LLGTerm {
-  public:
-    RKKYExchangeField (RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh, const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);
-    RKKYExchangeField (long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices, bool verbose = true);
+    af::array h(const State &state); //Field contribution
 
-    af::array h(const State& state);//Field contribution
+    double get_cpu_time() { return af_time; } //af time
 
-    double get_cpu_time(){return af_time;}//af time
-
-
-    const af::array matr;//TODO private
-  private:
-    af::array calc_CSR_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&, const af::array& rkky_indices, const bool verbose);
-    af::array calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&, const af::array& rkky_indices, const bool verbose);
+    const af::array matr; //TODO private
+private:
+    af::array calc_CSR_matrix(const af::array &RKKY_field, const af::array &A_exchange_field, const Mesh &, const af::array &rkky_indices, const bool verbose);
+    af::array calc_COO_matrix(const af::array &RKKY_field, const af::array &A_exchange_field, const Mesh &, const af::array &rkky_indices, const bool verbose);
     int findex(int i0, int i1, int i2, int im, Mesh mesh);
-    double af_time { 0 };
+    double af_time{0};
 };
-}// namespace magnumafcpp
+} // namespace magnumafcpp

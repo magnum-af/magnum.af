@@ -1,34 +1,38 @@
 #include "atomistic_exchange.hpp"
 #include "../func.hpp"
 
-namespace magnumafcpp{
+namespace magnumafcpp
+{
 
 using namespace af;
 
 //Energy calculation
 //Eex=-mu0/2 integral(M . Hex) dx
 
-double AtomisticExchangeField::E(const State& state){
-  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1), 2), 3));
+double AtomisticExchangeField::E(const State &state)
+{
+    return -constants::mu0 / 2. * state.Ms * afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3));
 }
 
-double AtomisticExchangeField::E(const State& state, const af::array& h){
-  return -constants::mu0/2. *state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
+double AtomisticExchangeField::E(const State &state, const af::array &h)
+{
+    return -constants::mu0 / 2. * state.Ms * afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
 }
 
-AtomisticExchangeField::AtomisticExchangeField (double J_atom) : J_atom(J_atom)
+AtomisticExchangeField::AtomisticExchangeField(double J_atom) : J_atom(J_atom)
 {
 }
 
-array AtomisticExchangeField::h(const State& state){
+array AtomisticExchangeField::h(const State &state)
+{
 
-    array filtr=constant(0.0, 3, 3, 3, 3, f64);
-    filtr(0, 1, 1, span)= 1.;
-    filtr(2, 1, 1, span)= 1.;
-    filtr(1, 0, 1, span)= 1.;
-    filtr(1, 2, 1, span)= 1.;
-    filtr(1, 1, 0, span)= 1.;
-    filtr(1, 1, 2, span)= 1.;
+    array filtr = constant(0.0, 3, 3, 3, 3, f64);
+    filtr(0, 1, 1, span) = 1.;
+    filtr(2, 1, 1, span) = 1.;
+    filtr(1, 0, 1, span) = 1.;
+    filtr(1, 2, 1, span) = 1.;
+    filtr(1, 1, 0, span) = 1.;
+    filtr(1, 1, 2, span) = 1.;
     //if(state.material.hexagonal_close_packed == true){
     //    std::cout << "WARNING: Experimental hcp exchange" << std::endl;
     //    filtr(0, 1, 1, span)= 1.;
@@ -50,20 +54,18 @@ array AtomisticExchangeField::h(const State& state){
     //else{
     //}
 
-  timer_solve = timer::start();
-  //convolution
-  array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    timer_solve = timer::start();
+    //convolution
+    array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
-  if(state.afsync) af::sync();
-  cpu_time += timer::stop(timer_solve);
-  return J_atom/(constants::mu0*state.Ms)* mj;
+    if (state.afsync)
+        af::sync();
+    cpu_time += timer::stop(timer_solve);
+    return J_atom / (constants::mu0 * state.Ms) * mj;
 }
-  //return state.material.J/(state.mesh.dx*constants::mu0) * mj;
-  //return state.material.J/(state.mesh.dx*constants::mu0*state.Ms) * mj;
-  //return state.material.J/state.mesh.dx * mj;
-
-
-
+//return state.material.J/(state.mesh.dx*constants::mu0) * mj;
+//return state.material.J/(state.mesh.dx*constants::mu0*state.Ms) * mj;
+//return state.material.J/state.mesh.dx * mj;
 
 //  //testing
 //  array m = constant(0.0, state.mesh.dims, f64);
@@ -74,21 +76,11 @@ array AtomisticExchangeField::h(const State& state){
 //  array filtr_x=constant(0.0, 3, 3, 3, 3, f64);
 //  print("test", convolve(m, filtr_x, AF_CONV_DEFAULT, AF_CONV_SPATIAL));
 
-
-
-
-
-
-
-
-
-  //return -state.material.J/(2. * state.mesh.dx) * mj;//TODO not dx
-  //array result =-state.material.J/(2. * state.mesh.dx) * mj;
-  //Wrong: this would be the Energy, not the field:   array result =tile(-state.material.J/2. * sum(state.m*mj, 3), 1, 1, 1, 3);
-  //return result;
-  //return  -state.material.J/2. * sum(state.m*mj, 3);
-
-
+//return -state.material.J/(2. * state.mesh.dx) * mj;//TODO not dx
+//array result =-state.material.J/(2. * state.mesh.dx) * mj;
+//Wrong: this would be the Energy, not the field:   array result =tile(-state.material.J/2. * sum(state.m*mj, 3), 1, 1, 1, 3);
+//return result;
+//return  -state.material.J/2. * sum(state.m*mj, 3);
 
 //AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material paramin) : material(paramin), mesh(meshin){
 //  array exch = array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
@@ -280,4 +272,4 @@ array AtomisticExchangeField::h(const State& state){
 //}
 //
 //
-}// namespace magnumafcpp
+} // namespace magnumafcpp
