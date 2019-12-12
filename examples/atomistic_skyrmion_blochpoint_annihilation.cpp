@@ -102,8 +102,8 @@ int main(int argc, char **argv)
     String string(state, inputimages, n_interp, string_dt, Llg);
     double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
-    //without dmi and zee//double expected_barrier = 4.420526609492e-20;
-    double expected_barrier = 4.420526609492e-20;//TODO
+    //without demag and zee//double expected_barrier = 4.420526609492e-20;
+    double expected_barrier = 1.045386540512e-19;//Value with demag and zee
     double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier)/(barrier + expected_barrier);
     if(rel_diff_barrier < 1e-3)
     {
