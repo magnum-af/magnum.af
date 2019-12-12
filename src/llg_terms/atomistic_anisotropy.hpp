@@ -19,6 +19,7 @@ public:
     double get_cpu_time() { return cpu_time; }
 
     AtomisticUniaxialAnisotropyField(const double K_atom, std::array<double, 3> K_atom_axis = {0, 0, 1});
+    AtomisticUniaxialAnisotropyField(const double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z);
 
     af::array eu; //Uniaxial anisotropy normal vector
 

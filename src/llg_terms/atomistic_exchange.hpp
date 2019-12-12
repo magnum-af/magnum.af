@@ -17,8 +17,7 @@ class AtomisticExchangeField : public LLGTerm {
     //CPU time
     double get_cpu_time(){return cpu_time;}
 
-    AtomisticExchangeField ();
-    const double J_atom{0.}; //!< Atomistic exchange energy [J]
+    const double J_atom; //!< Atomistic exchange energy [J]
 
     double     cpu_time{0.};
     af::timer timer_solve;

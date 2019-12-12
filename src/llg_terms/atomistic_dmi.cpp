@@ -22,6 +22,12 @@ AtomisticDmiField::AtomisticDmiField (const double D_atom, std::array<double, 3>
 {
 }
 
+
+AtomisticDmiField::AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z) : D_atom(D_atom), D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z}))
+{
+}
+
+
 af::array AtomisticDmiField::h(const State& state){
     af::timer timer_dmi = af::timer::start();
 
