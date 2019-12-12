@@ -2,7 +2,6 @@
 
 using namespace magnumafcpp;
 
-
 int main()
 {
     std::cout << "running empty main" << std::endl;

@@ -5,20 +5,20 @@
 using namespace magnumafcpp;
 using namespace af;
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 
-    std::cout<<"argc = "<<argc<<std::endl;
-     for (int i=0; i<argc; i++)
-          std::cout << "Parameter " << i << " was " << argv[i] << "\n";
+    std::cout << "argc = " << argc << std::endl;
+    for (int i = 0; i < argc; i++)
+        std::cout << "Parameter " << i << " was " << argv[i] << "\n";
 
-    std::string filepath(argc>1? argv[1]: "./run/");
-    if(argc>1)filepath.append("/");
-    std::cout<<"Writing into path "<<filepath.c_str()<<std::endl;
+    std::string filepath(argc > 1 ? argv[1] : "./run/");
+    if (argc > 1)
+        filepath.append("/");
+    std::cout << "Writing into path " << filepath.c_str() << std::endl;
 
-    setDevice(argc>2? std::stoi(argv[2]):0);
+    setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     info();
-
 
     //const int nx=4, ny=4 , nz=5;
     //af::array values = af::iota(af::dim4(nx * ny * nz * 3, 1), af::dim4(1), f64);
@@ -72,15 +72,15 @@ int main(int argc, char** argv)
     //const int nx =20, ny=30 , nz=40;
     //max diff nonzero// const int nx = 30, ny=4 , nz=5;
     //2nd field crashes with invalid buffer size//const int nx = 128, ny=128 , nz=4;
-    const int nx = 30, ny=40, nz=5;
+    const int nx = 30, ny = 40, nz = 5;
     //const int nx = 30, ny=40 , nz=5;
     //good numerics//const int nx = 30, ny=11 , nz=12;
-    const double dx = 1e-9, dy=2e-9, dz=3e-9;
+    const double dx = 1e-9, dy = 2e-9, dz = 3e-9;
     //array A = af::constant(1e-5, nx, ny, nz, 3, f64);
     array A = af::randu(nx, ny, nz, 3, f64);
     //array A = af::iota(af::dim4(nx, ny, nz, 3), af::dim4(1,1,1,1), f64);
     //A = A + 1;
-    A = A * 1e-12;//(nx*nz*ny);
+    A = A * 1e-12; //(nx*nz*ny);
     array RKKY = af::constant(0, nx, ny, nz, 3, f64);
     Mesh mesh(nx, ny, nz, dx, dy, dz);
     auto coo = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, af::array(), true, true);
@@ -95,9 +95,9 @@ int main(int argc, char** argv)
     af::print("logic max", af::max(af::flat(csr_to_dense == coo_to_dense)));
     af::print("logic min", af::min(af::flat(csr_to_dense == coo_to_dense)));
 
-    af::print("max  csr", af::max (af::flat(csr_to_dense)));
+    af::print("max  csr", af::max(af::flat(csr_to_dense)));
     af::print("mean csr", af::mean(af::flat(csr_to_dense)));
-    af::print("min  csr", af::min (af::flat(csr_to_dense)));
+    af::print("min  csr", af::min(af::flat(csr_to_dense)));
 
     af::array csr_max_val;
     af::array csr_max_idx;
@@ -105,9 +105,9 @@ int main(int argc, char** argv)
     af::print("csr_max_val", csr_max_val);
     af::print("csr_max_idx", csr_max_idx);
 
-    af::print("max  coo", af::max (af::flat(coo_to_dense)));
+    af::print("max  coo", af::max(af::flat(coo_to_dense)));
     af::print("mean coo", af::mean(af::flat(coo_to_dense)));
-    af::print("min  coo", af::min (af::flat(coo_to_dense)));
+    af::print("min  coo", af::min(af::flat(coo_to_dense)));
 
     af::array coo_max_val;
     af::array coo_max_idx;
@@ -115,21 +115,27 @@ int main(int argc, char** argv)
     af::print("coo_max_val", coo_max_val);
     af::print("coo_max_idx", coo_max_idx);
 
-    af::print("max  diff", af::max (af::flat(csr_to_dense - coo_to_dense)));
+    af::print("max  diff", af::max(af::flat(csr_to_dense - coo_to_dense)));
     af::print("mean diff", af::mean(af::flat(csr_to_dense - coo_to_dense)));
-    af::print("min  diff", af::min (af::flat(csr_to_dense - coo_to_dense)));
+    af::print("min  diff", af::min(af::flat(csr_to_dense - coo_to_dense)));
     //if ( csr == coo ) std::cout << "csr == coo" << std::endl;
     //if ( csr != coo ) std::cout << "csr != coo" << std::endl;
-    if (afvalue(csr_max_val) == afvalue(coo_max_val)) std::cout << " maxvals equal" << std::endl; else std::cout << " maxvals not equal" << std::endl;
-    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense)))) std::cout << " mean equal" << std::endl; else std::cout << " mean not equal" << std::endl;
+    if (afvalue(csr_max_val) == afvalue(coo_max_val))
+        std::cout << " maxvals equal" << std::endl;
+    else
+        std::cout << " maxvals not equal" << std::endl;
+    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense))))
+        std::cout << " mean equal" << std::endl;
+    else
+        std::cout << " mean not equal" << std::endl;
 
     af::array m = af::randu(nx, ny, nz, 3, f64);
-    State state (mesh, 1e6, m);
+    State state(mesh, 1e6, m);
     af::array hcsr = csr.h(state);
     af::array hcoo = coo.h(state);
-    af::print("max  diff", 1e20 * af::max (af::flat(hcsr - hcoo)));
+    af::print("max  diff", 1e20 * af::max(af::flat(hcsr - hcoo)));
     af::print("mean diff", 1e20 * af::mean(af::flat(hcsr - hcoo)));
-    af::print("min  diff", 1e20 * af::min (af::flat(hcsr - hcoo)));
+    af::print("min  diff", 1e20 * af::min(af::flat(hcsr - hcoo)));
 
     return 0;
 }
