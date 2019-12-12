@@ -29,17 +29,14 @@ int main(int argc, char **argv)
     //Generating Objects
     Mesh mesh(nxy, nxy, nz, dx, dx, dx);
     const double alpha = 1;
+    // Micromagnetic parameters
     const double Ms = 1.1e6;
     const double A = 1.6e-11;
     const double D = 2 * 5.76e-3;
     const double Ku1 = 6.4e6;
     const double ext = 10e-3/constants::mu0;
 
-    //Material material = Material();
-    //material.J_atom = 2. * A * dx;
-    //material.D_atom = D * pow(dx, 2);
-    //material.K_atom = Ku1 * pow(dx, 3);
-    //material.p = Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
+    // Atomistic parameters
     const double J_atom = 2. * A * dx;
     const double D_atom = D * pow(dx, 2);
     const double K_atom = Ku1 * pow(dx, 3);
@@ -61,9 +58,6 @@ int main(int argc, char **argv)
     }
 
     State state(mesh, p, m);
-    //TODO Consider Energy calculation without dx^3
-    //TODO//State state(mesh, Ms * std::pow(dx, 3), m);
-    std::cout << "Ms=" << state.Ms << std::endl;
     vti_writer_atom(state.m, mesh, filepath + "minit");
 
     std::vector<llgt_ptr> llgterm;
@@ -78,7 +72,7 @@ int main(int argc, char **argv)
     LLGIntegrator Llg(alpha, llgterm);
 
     af::timer t = af::timer::start();
-    Llg.relax(state, 1e-8, 100, 100);
+    Llg.relax(state, 1e-12, 100, 100);
 
     af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
     af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
@@ -101,14 +95,15 @@ int main(int argc, char **argv)
 
     double n_interp = 60;
     double string_dt = 5e-14;
-    const int string_steps = 10;
+    const int string_steps = 10000;
     double string_abort_rel_diff = 1e-12;
     double string_abort_abs_diff = 1e-27;
 
     String string(state, inputimages, n_interp, string_dt, Llg);
     double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
-    double expected_barrier = 4.420526609492e-20;
+    //without dmi and zee//double expected_barrier = 4.420526609492e-20;
+    double expected_barrier = 4.420526609492e-20;//TODO
     double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier)/(barrier + expected_barrier);
     if(rel_diff_barrier < 1e-3)
     {
