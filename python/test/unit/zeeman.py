@@ -7,7 +7,6 @@ class ZeemanTest(unittest.TestCase):
   dx = 1.e-10
   def test_zeeman_field(self):
     mesh=magnumaf.Mesh(3, 1, 1, self.dx, self.dx, self.dx)
-    material=magnumaf.Material()
     m_np = zeros(3)
     m_np[0] = 1.0
     pystate=magnumaf.State(mesh, Ms = 0, m = af.reorder(af.from_ndarray(m_np), 1, 2, 3, 0))

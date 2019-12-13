@@ -18,7 +18,6 @@ class StateTest(unittest.TestCase):
   m_af = af.reorder(af.from_ndarray(m_np), 1, 2, 3, 0)
 
   mesh=magnumaf.Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
-  material=magnumaf.Material()
   state=magnumaf.State(mesh, Ms = 0, m = m_af)
 
   def test_state_initialization(self):
