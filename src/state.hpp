@@ -1,6 +1,5 @@
 #pragma once
 #include "mesh.hpp"
-#include "material.hpp" //remove
 #include "nonequispaced_mesh.hpp"
 #include "arrayfire.h"
 #include <iostream>

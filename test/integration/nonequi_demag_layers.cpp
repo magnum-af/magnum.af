@@ -1,7 +1,6 @@
 #include "../../src/mesh.hpp"
 #include "../../src/nonequispaced_mesh.hpp"
 #include "../../src/constants.hpp"
-#include "../../src/material.hpp"
 #include "../../src/state.hpp"
 #include "../../src/vtk_IO.hpp"
 #include "../../src/func.hpp"

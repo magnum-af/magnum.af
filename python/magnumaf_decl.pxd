@@ -78,21 +78,6 @@ cdef extern from "../../src/state.hpp" namespace "magnumafcpp":
         void _vtr_reader(string inputname);
         double meani(const int i);
 
-cdef extern from "../../src/material.hpp" namespace "magnumafcpp":
-    cdef cppclass Material:
-        Material();
-        Material(double p, double J_atom, double D_atom, double K_atom, double D_atom_axis_x , double D_atom_axis_y, double D_atom_axis_z, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z, bool hexagonal_close_packed);
-        double D;
-        double D_axis[3];
-
-        double p;
-        double J_atom;
-        double D_atom;
-        double K_atom;
-        double D_atom_axis[3];
-        double K_atom_axis[3];
-        bool    hexagonal_close_packed;
-
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDmiField:
         AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);

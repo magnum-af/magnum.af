@@ -31,7 +31,6 @@ from numpy import zeros as np_zeros
 
 from magnumaf_decl cimport Mesh as cMesh
 from magnumaf_decl cimport NonequispacedMesh as cNonequispacedMesh
-from magnumaf_decl cimport Material as cParam
 from magnumaf_decl cimport State as cState
 from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
@@ -1001,95 +1000,6 @@ cdef class LBFGS_Minimizer:
     def pyGetTimeCalcHeff(self):
         return self._thisptr.GetTimeCalcHeff()
 
-cdef class Material:
-    cdef cParam* _thisptr
-    cdef object owner # None if this is our own # From [1]
-    def __cinit__(self, p = 0., J_atom = 0., D_atom = 0., K_atom = 0., D_atom_axis = [0., 0., 1.], Ku1_atom_axis = [0., 0., 1.], bool hexagonal_close_packed = False):
-        # now on cpp side# Ku1_axis_renormed = [x/(sqrt(Ku1_axis[0]**2 + Ku1_axis[1]**2 + Ku1_axis[2]**2)) for x in Ku1_axis]
-        Ku1_atom_axis_renormed = [x/(sqrt(Ku1_atom_axis[0]**2 + Ku1_atom_axis[1]**2 + Ku1_atom_axis[2]**2)) for x in Ku1_atom_axis]
-        D_atom_axis_renormed = [x/(sqrt(D_atom_axis[0]**2 + D_atom_axis[1]**2 + D_atom_axis[2]**2)) for x in D_atom_axis]
-        self._thisptr = new cParam (p, J_atom, D_atom, K_atom, D_atom_axis_renormed[0] , D_atom_axis_renormed[1], D_atom_axis_renormed[2], Ku1_atom_axis_renormed[0], Ku1_atom_axis_renormed[1], Ku1_atom_axis_renormed[2], hexagonal_close_packed)
-        owner = None # see [1]
-    cdef set_ptr(self, cParam* ptr, owner):
-        if self.owner is None:
-            del self._thisptr
-        self._thisptr = ptr
-        self.owner = owner
-    def __dealloc__(self):
-        if self.owner is None: # only free if we own it: see [1]
-            del self._thisptr
-            self._thisptr = NULL
-
-    #inlcude in stochllg# @property
-    #inlcude in stochllg# def T(self):
-    #inlcude in stochllg#       return self._thisptr.T
-    #inlcude in stochllg# @T.setter
-    #inlcude in stochllg# def T(self, value):
-    #inlcude in stochllg#       self._thisptr.T=value
-
-    # Micromagnetic
-    #@property
-    #def D(self):
-    #    return self._thisptr.D
-    #@D.setter
-    #def D(self, value):
-    #    self._thisptr.D=value
-
-    #@property
-    #def D_axis(self):
-    #    return self._thisptr.D_axis[0], self._thisptr.D_axis[1], self._thisptr.D_axis[2]
-    #@D_axis.setter
-    #def D_axis(self, values):
-    #    self._thisptr.D_axis[0] = values[0]
-    #    self._thisptr.D_axis[1] = values[1]
-    #    self._thisptr.D_axis[2] = values[2]
-
-    # Atomistic
-    @property
-    def p(self):
-        return self._thisptr.p
-    @p.setter
-    def p(self, value):
-        self._thisptr.p=value
-
-    @property
-    def J_atom(self):
-        return self._thisptr.J_atom
-    @J_atom.setter
-    def J_atom(self, value):
-        self._thisptr.J_atom=value
-
-    @property
-    def D_atom(self):
-        return self._thisptr.D_atom
-    @D_atom.setter
-    def D_atom(self, value):
-        self._thisptr.D_atom=value
-
-    @property
-    def Ku1_atom(self):
-        return self._thisptr.K_atom
-    @Ku1_atom.setter
-    def Ku1_atom(self, value):
-        self._thisptr.K_atom=value
-
-    @property
-    def D_atom_axis(self):
-        return self._thisptr.D_atom_axis[0], self._thisptr.D_atom_axis[1], self._thisptr.D_atom_axis[2]
-    @D_atom_axis.setter
-    def D_atom_axis(self, values):
-        self._thisptr.D_atom_axis[0] = values[0]
-        self._thisptr.D_atom_axis[1] = values[1]
-        self._thisptr.D_atom_axis[2] = values[2]
-
-    @property
-    def Ku1_atom_axis(self):
-        return self._thisptr.K_atom_axis[0], self._thisptr.K_atom_axis[1], self._thisptr.K_atom_axis[2]
-    @Ku1_atom_axis.setter
-    def Ku1_atom_axis(self, values):
-        self._thisptr.K_atom_axis[0] = values[0]
-        self._thisptr.K_atom_axis[1] = values[1]
-        self._thisptr.K_atom_axis[2] = values[2]
 
 class Constants:
     """

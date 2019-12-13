@@ -1,6 +1,5 @@
 #include "../../src/mesh.hpp"
 #include "../../src/nonequispaced_mesh.hpp" //TODO needed for vtk_IO, include headers instead?
-#include "../../src/material.hpp"
 #include "../../src/state.hpp"
 #include "../../src/func.hpp"
 #include "../../src/vtk_IO.hpp"
