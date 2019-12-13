@@ -1,7 +1,5 @@
-#include "../../src/mesh.hpp"
-#include "../../src/nonequispaced_mesh.hpp"
-#include "../../src/func.hpp"
 #include "../../src/vtk_IO.hpp"
+#include "../../src/func.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>
 

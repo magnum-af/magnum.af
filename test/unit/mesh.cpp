@@ -1,6 +1,5 @@
-#include <gtest/gtest.h>
 #include "../../src/mesh.hpp"
-#include "../../src/func.hpp"
+#include <gtest/gtest.h>
 
 // Exemplary unit test
 TEST(Mesh, InitTest)

@@ -1,10 +1,4 @@
-#include "../../src/mesh.hpp"
-#include "../../src/nonequispaced_mesh.hpp"
-#include "../../src/constants.hpp"
-#include "../../src/state.hpp"
-#include "../../src/vtk_IO.hpp"
 #include "../../src/func.hpp"
-#include "../../src/misc.hpp"
 #include "../../src/llg_terms/micro_demag_nonequi.hpp"
 #include "../../src/llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>

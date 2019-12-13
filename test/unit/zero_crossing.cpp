@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include "../../src/util/zero_crossing.hpp"
+#include <gtest/gtest.h>
 
 using namespace magnumafcpp;
 

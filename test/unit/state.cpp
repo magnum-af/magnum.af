@@ -1,9 +1,5 @@
-#include "../../src/mesh.hpp"
-#include "../../src/nonequispaced_mesh.hpp"
-#include "../../src/func.hpp"
 #include "../../src/state.hpp"
-#include "../../src/vtk_IO.hpp"
-//#include "arrayfire.h"
+#include "../../src/func.hpp"
 #include <gtest/gtest.h>
 #include <vector>
 

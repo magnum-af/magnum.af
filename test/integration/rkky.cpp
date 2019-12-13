@@ -1,15 +1,7 @@
 // RKKY example from https://mumax.github.io/examples.html
-#include "../../src/integrators/adaptive_runge_kutta.hpp"
-#include "../../src/integrators/controller.hpp"
 #include "../../src/integrators/new_llg.hpp"
 #include "../../src/llg_terms/micro_exch_rkky.hpp"
 #include "../../src/llg_terms/micro_demag.hpp"
-#include "../../src/nonequispaced_mesh.hpp" //TODO needed for vtk_IO, include headers instead?
-#include "../../src/state.hpp"
-#include "../../src/mesh.hpp"
-#include "../../src/func.hpp"
-#include "../../src/misc.hpp"
-#include "../../src/vtk_IO.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 

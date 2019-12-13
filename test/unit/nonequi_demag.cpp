@@ -1,9 +1,3 @@
-#include "../../src/mesh.hpp"
-#include "../../src/nonequispaced_mesh.hpp" //TODO needed for vtk_IO, include headers instead?
-#include "../../src/func.hpp"
-#include "../../src/state.hpp"
-#include "../../src/misc.hpp"
-#include "../../src/vtk_IO.hpp"
 #include "../../src/llg_terms/micro_demag_nonequi.hpp"
 #include "../../src/llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
