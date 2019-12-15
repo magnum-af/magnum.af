@@ -208,47 +208,57 @@ int main(int argc, char **argv)
         state_1.write_vti(filepath + "m_relaxed_from_read_in");
     }
 
+    State state_2;
+    if (!exists(filepath + "m_state_2_relaxed.vti"))
+    {
+        af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        m2(af::span, af::span, af::span, 2) = 1.;
+        set_air_to_zero(m2);
+        state_2 = State(mesh, Ms, m2);
+        //state_2.m(af::span, af::span, 19, af::span) = 0;
+        //state_2.m(af::span, af::span, 22, af::span) = 0;
+        //state_2.m(af::span, af::span, 25, af::span) = 0;
+        //state_2.m(af::span, af::span, 28, af::span) = 0;
+        //state_2.m(af::span, af::span, 31, af::span) = 0;
+
+        //state_2.m(af::span, af::span, 19, 2) = 1;
+        //state_2.m(af::span, af::span, 22, 2) = 1;
+        //state_2.m(af::span, af::span, 25, 2) = 1;
+        //state_2.m(af::span, af::span, 28, 2) = 1;
+        //state_2.m(af::span, af::span, 31, 2) = 1;
+
+        //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
+        state_2.write_vti(filepath + "m_state_2_init");
+
+        //std::cout.precision(16);
+        if (int_over_relax)
+        {
+            while (state_2.t < 10e-9)
+            { // 3ns not sufficient
+                if (state_2.steps % 100 == 0)
+                    state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
+                llg.step(state_2);
+                std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
+            }
+        }
+        else
+        {
+            llg.relax(state_2, 1e-12);
+        }
+        vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
+        timer.print_stage("state2 relaxed");
+    }
+    else
+    {
+        std::cout << "Found m_state_2_relaxed" << std::endl;
+        state_2._vti_reader(filepath + "m_state_2_relaxed.vti");
+        state_2.write_vti(filepath + "m_state_2_relaxed_from_read_in");
+    }
+
     // preparing string method
     double n_interp = 60;
     double string_dt = 1e-13;
     //const int string_steps = 1000;
-
-    af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m2(af::span, af::span, af::span, 2) = 1.;
-    set_air_to_zero(m2);
-    State state_2(mesh, Ms, m2);
-    //state_2.m(af::span, af::span, 19, af::span) = 0;
-    //state_2.m(af::span, af::span, 22, af::span) = 0;
-    //state_2.m(af::span, af::span, 25, af::span) = 0;
-    //state_2.m(af::span, af::span, 28, af::span) = 0;
-    //state_2.m(af::span, af::span, 31, af::span) = 0;
-
-    //state_2.m(af::span, af::span, 19, 2) = 1;
-    //state_2.m(af::span, af::span, 22, 2) = 1;
-    //state_2.m(af::span, af::span, 25, 2) = 1;
-    //state_2.m(af::span, af::span, 28, 2) = 1;
-    //state_2.m(af::span, af::span, 31, 2) = 1;
-
-    //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
-    state_2.write_vti(filepath + "m_state_2_init");
-
-    //std::cout.precision(16);
-    if (int_over_relax)
-    {
-        while (state_2.t < 10e-9)
-        { // 3ns not sufficient
-            if (state_2.steps % 100 == 0)
-                state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
-            llg.step(state_2);
-            std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
-        }
-    }
-    else
-    {
-        llg.relax(state_2, 1e-12);
-    }
-    vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
-    timer.print_stage("state2 relaxed");
 
     std::vector<State> inputimages;
     inputimages.push_back(state_1);

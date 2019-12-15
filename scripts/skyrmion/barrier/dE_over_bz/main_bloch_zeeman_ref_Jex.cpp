@@ -71,7 +71,12 @@ int main(int argc, char **argv)
     LLGIntegrator Llg(alpha);
     if (demag)
     {
+        std::cout << "Enabling demag field" << std::endl;
         Llg.llgterms.push_back(LlgTerm(new AtomisticDipoleDipoleField(mesh)));
+    }
+    else
+    {
+        std::cout << "Not enabling demag field" << std::endl;
     }
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(J_atom)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
