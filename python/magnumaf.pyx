@@ -592,12 +592,12 @@ cdef class LLGIntegrator:
     def add_terms(self, *args):
         for arg in args:
             self._thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-    def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000):
+    def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000, verbose = True):
         """
         relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
             Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
         """
-        self._thisptr.relax(deref(state._thisptr), precision, ncalcE, nprint)
+        self._thisptr.relax(deref(state._thisptr), precision, ncalcE, nprint, verbose)
     @property
     def alpha(self):
         return self._thisptr.alpha

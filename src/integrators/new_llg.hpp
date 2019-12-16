@@ -27,7 +27,7 @@ public:
     double E(const State &);
 
     double get_time_heff() { return time_heff; }
-    void relax(State &state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
+    void relax(State &state, double precision = 1e-10, const unsigned iloop = 100, const unsigned iwritecout = 1000, const bool verbose = true);
     long int h_addr(const State &state);
 
 private:

@@ -16,7 +16,7 @@ dx, dy, dz = 1e-9, 1e-9, 1e-9
 # Material parameters
 Ms = 1e6
 A = 10e-12
-RKKY = -1e-3 * dx
+RKKY = -1e-3 * dz # TODO move to source
 
 # Initial magnetization configuration
 m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)

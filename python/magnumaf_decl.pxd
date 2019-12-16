@@ -95,7 +95,7 @@ cdef extern from "../../src/integrators/new_llg.hpp" namespace "magnumafcpp":
         vector[shared_ptr[LLGTerm]] llgterms;
         void step(State& state);
         double E(const State& state);
-        void relax(State& state, double precision, const int iloop, const int iwritecout);
+        void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
         long int h_addr(const State& state);
         double alpha;
 

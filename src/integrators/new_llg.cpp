@@ -55,23 +55,30 @@ double LLGIntegrator::E(const State &state)
     return solution;
 }
 
-void LLGIntegrator::relax(State &state, const double precision, const int iloop, const int iwritecout)
+void LLGIntegrator::relax(State &state, const double precision, const unsigned eval_E, const unsigned iwritecout, const bool verbose)
 {
+    double start_time = state.t;
     af::timer t = af::timer::start();
     double E_prev = 1e20;
     while (std::fabs((E_prev - E(state)) / E_prev) > precision)
     {
         E_prev = E(state);
-        for (int i = 0; i < iloop; i++)
+        for (unsigned i = 0; i < eval_E; i++)
         {
             step(state);
         }
         if (iwritecout > 0 and state.steps % iwritecout == 0)
         {
-            printf("relaxing: step=%llu, rel_diff= %e, <mx>=%f, <my>=%f, <mz>=%f\n", state.steps, std::fabs((E_prev - E(state)) / E_prev), state.meani(0), state.meani(1), state.meani(2));
+            if (verbose)
+            {
+                printf("relaxing: step=%llu, rel_diff= %e, <mx>=%f, <my>=%f, <mz>=%f\n", state.steps, std::fabs((E_prev - E(state)) / E_prev), state.meani(0), state.meani(1), state.meani(2));
+            }
         }
     }
-    printf("timerelax [af-s]: %e . Current state.steps= %llu and state.t = %e\n", state.t, state.steps, af::timer::stop(t));
+    if (verbose)
+    {
+        printf("relaxed %e [s] with computation time of %e [af-s]. Current state.t= %e\n", state.t - start_time, af::timer::stop(t), state.t);
+    }
 }
 
 long int LLGIntegrator::h_addr(const State &state)
