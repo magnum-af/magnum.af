@@ -10,7 +10,7 @@ import time
 af.set_device(int(sys.argv[2]) if len(sys.argv) > 2 else 0)
 af.info()
 
-minimize = True
+minimize = False # True uses minimizer, False uses llg integration
 hys_steps = 100 # hysteresis steps
 ext_max_field = 100e-3/Constants.mu0
 # Discretization
@@ -24,6 +24,32 @@ Ms = 1.7/Constants.mu0
 A = 13e-12
 RKKY = -0.1e-3 * dz
 
+def m_random_sphere(nx, ny, nz):
+    m = np.zeros((nx, ny, nz, 3))
+    for ix in range (0, nx):
+        for iy in range(0, ny):
+            a= nx/2
+            b= ny/2
+            rx=ix-nx/2.
+            ry=iy-ny/2.
+            r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
+            if(r<=1):
+                for iz in range(0, nz):
+                    randx = np.random.normal()
+                    randy = np.random.normal()
+                    randz = np.random.normal()
+                    #print(randx, randy, randz)
+                    norm = sqrt(randx**2+randy**2+randz**2)
+                    randx = randx/norm
+                    randy = randy/norm
+                    randz = randz/norm
+                    m[ix, iy, iz, 0] = randx
+                    m[ix, iy, iz, 1] = randy
+                    m[ix, iy, iz, 2] = randz
+    #print(np.mean(np.mean(np.mean( m, axis=0) , axis=1) , axis=2))
+    #print(np.mean(np.mean(np.mean(np.mean( m, axis=0) , axis=1) , axis=2) , axis=3))
+    return af.from_ndarray(m)
+
 def m_initi(nx, ny, nz):
     m = np.zeros((nx, ny, nz, 3))
     for ix in range (0, nx):
@@ -36,11 +62,10 @@ def m_initi(nx, ny, nz):
             if(r<=1):
                 m[ix, iy, 0, 1] =  1.
                 m[ix, iy, 1, 1] = -1.
+                # tiling m[ix, iy, 0, 0] = 0.001
+                # tiling m[ix, iy, 1, 0] = 0.001
     return af.from_ndarray(m)
 
-## Initial magnetization configuration
-#m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#m0[:, :, 0, 1] = -1.
 def disk(nx, ny, nz):
     m = np.zeros((nx, ny, nz, 3))
     for ix in range (0, nx):
@@ -57,38 +82,13 @@ def disk(nx, ny, nz):
 geom = disk(nx, ny, nz)
 RKKYarr = (geom == 1) * RKKY
 excharr = (geom == 1) * A
-#print(geom.type())
-#print(RKKYarr.type())
-#print(excharr.type())
-#print(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64).type())
-#print(af.mean(RKKYarr))
-#print(af.max(RKKYarr))
-#print(af.min(RKKYarr))
-#print(af.max(excharr))
-#print(af.min(excharr))
-#print(af.min(excharr))
 
 # Creating objects
 mesh = Mesh(nx, ny, nz, dx, dy, dz)
-state = State(mesh, Ms, m = m_initi(nx, ny, nz))
+state = State(mesh, Ms, m = m_random_sphere(nx, ny, nz))
+#state = State(mesh, Ms, m = m_initi(nx, ny, nz))
 state.write_vti(sys.argv[1] + "m_init")
 
-# when looping over state.m use .scalar() for if
-#state = State(mesh, Ms, m = Util.disk(nx, ny, nz, axis=[0, 1, 0]))
-#ntrue = 0
-#for i in range(0, nx):
-#    for j in range(0, ny):
-#        print(i, j, state.m[i, j, 1, 1].scalar())
-#        if state.m[i, j, 1, 1].scalar() == 1.:
-#            ntrue = ntrue + 1
-#            state.m_partial[i, j, 1, 1] = af.constant(-1, 1, dtype=af.Dtype.f64)
-#
-#print('ntrue', ntrue)
-
-
-#rkky_values = af.constant(RKKY, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#exch_values = af.constant(A, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32)
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
 rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32))
@@ -102,12 +102,6 @@ if minimize:
     minimizer = LBFGS_Minimizer(terms, tol=1e-15, maxiter=1000)
 else:
     llg = LLGIntegrator(alpha = 1, terms = terms)
-
-## relax
-#if minimize:
-#    minimizer.minimize(state)
-#else:
-#    llg.relax(state)
 
 def hysteresis_factor(i, steps):
     if i < steps/4.:
@@ -135,6 +129,41 @@ for i in range(0, hys_steps + 1):
 
 stream.close()
 
+## Initial magnetization configuration
+#m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+#m0[:, :, 0, 1] = -1.
+#print(geom.type())
+#print(RKKYarr.type())
+#print(excharr.type())
+#print(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64).type())
+#print(af.mean(RKKYarr))
+#print(af.max(RKKYarr))
+#print(af.min(RKKYarr))
+#print(af.max(excharr))
+#print(af.min(excharr))
+#print(af.min(excharr))
+# when looping over state.m use .scalar() for if
+#state = State(mesh, Ms, m = Util.disk(nx, ny, nz, axis=[0, 1, 0]))
+#ntrue = 0
+#for i in range(0, nx):
+#    for j in range(0, ny):
+#        print(i, j, state.m[i, j, 1, 1].scalar())
+#        if state.m[i, j, 1, 1].scalar() == 1.:
+#            ntrue = ntrue + 1
+#            state.m_partial[i, j, 1, 1] = af.constant(-1, 1, dtype=af.Dtype.f64)
+#
+#print('ntrue', ntrue)
+
+
+#rkky_values = af.constant(RKKY, nx, ny, nz, 3, dtype=af.Dtype.f64)
+#exch_values = af.constant(A, nx, ny, nz, 3, dtype=af.Dtype.f64)
+#rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32)
+
+## relax
+#if minimize:
+#    minimizer.minimize(state)
+#else:
+#    llg.relax(state)
 
 #E = []
 #print("Start rotating")
