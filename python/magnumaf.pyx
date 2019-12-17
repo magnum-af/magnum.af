@@ -53,6 +53,7 @@ from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnumaf_decl cimport LLGTerm as cLLGTerm
 
 from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
+from magnumaf_decl cimport String as cString
 
 def array_from_addr(array_addr):
     array=af.Array()
@@ -616,6 +617,36 @@ cdef class LLGIntegrator:
     #  return self._thisptr.cpu_time()
     #def set_state0_alpha(self, value):
     #  self._thisptr.state0.material.alpha=value
+
+cdef class String:
+    """
+    String method.
+    """
+    cdef cString* _thisptr
+    #def __cinit__(self, State state, terms = [], n_interp=60, dt = 1e-13, LLGIntegrator llg):
+    def __cinit__(self, State state, inputimages, n_interp, dt, LLGIntegrator llg):
+        cdef vector[cState] vector_in
+        if not inputimages:
+            print("String: no States provided, please add at least two states for interpolation of initial path.")
+        else:
+            for arg in inputimages:
+                if not arg.Ms_field.is_empty():
+                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                else:
+                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <double> arg.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                #vector_in.push_back(cState (<cState*><size_t>arg._get_thisptr()))# NOTE: seems like copy constructor is not defined
+                #vector_in.push_back(cState (deref(arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                #vector_in.push_back(cState (<cMesh><size_t>arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                #vector_in.push_back(cState (deref(arg.mesh._thisptr), <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                #vector_in.push_back(deref(arg._thisptr))
+                #vector_in.push_back(cState (arg._get_thisptr()))
+            self._thisptr = new cString (deref(state._thisptr), vector_in, n_interp, dt, deref(llg._thisptr))
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+
+    def run(self, filepath, string_abort_rel_diff = 1e-12, string_abort_abs_diff = 1e-27, string_steps = 10000, verbose = True):
+        return self._thisptr.run(filepath.encode('utf-8'), string_abort_rel_diff, string_abort_abs_diff, string_steps, <bool> verbose)
 
 # base class for clearification (especially for heritage diagramms in docu)
 cdef class HeffTerm:
