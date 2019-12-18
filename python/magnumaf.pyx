@@ -633,43 +633,16 @@ cdef class String:
             print(inputimages)
             for arg in inputimages:
                 # swtich between state and array
-                if hasattr(arg, 'arr'):
-                    mtemp = arg # arg is array
+                if hasattr(arg, 'arr'): # arg is expected to be array
+                    mtemp = arg
                     vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
-                else:
-                    mtemp = arg.m # arg is state
+                else: # arg is expected to be State
+                    mtemp = arg.m
                     if not arg.Ms_field.is_empty():
                         vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(mtemp.arr), <bool> True, <bool> True))
                     else:
                         vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
 
-                #else:
-                #    #NOTE: arg.m.arr leads to error when used directly, use temp = arg.m and then temp.arr
-                #    mtemp = arg.m
-                #    vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
-                    #vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-
-                    #vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(arg.arr), <bool> True, <bool> True))
-#            for arg in inputimages:
-#                print("test3")
-#                if not arg.Ms_field.is_empty():
-#                    print("test3a")
-#                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-#                    print("test3a")
-#                else:
-#                    print("test3b", addressof(arg.m.arr))
-#                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <double> arg.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-#                    #try:
-#                    #    vector_in.push_back(cState (cMesh(30, 30, 1, 1e-9, 1e-9, 1e-9), <double> 1, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-#                    #except:# exception not working on segfault
-#                    #    print("cState constructor: exception occured.")
-#                    print("test3b")
-                #vector_in.push_back(cState (<cState*><size_t>arg._get_thisptr()))# NOTE: seems like copy constructor is not defined
-                #vector_in.push_back(cState (deref(arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-                #vector_in.push_back(cState (<cMesh><size_t>arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-                #vector_in.push_back(cState (deref(arg.mesh._thisptr), <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
-                #vector_in.push_back(deref(arg._thisptr))
-                #vector_in.push_back(cState (arg._get_thisptr()))
             self._thisptr = new cString (deref(state._thisptr), vector_in, n_interp, dt, deref(llg._thisptr))
     def __dealloc__(self):
         del self._thisptr

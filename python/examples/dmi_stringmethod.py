@@ -95,23 +95,7 @@ string = String(state1, [state1.m, state2.m], n_interp, string_dt, llg)
 # also works #string = String(state1, [state1, state2], n_interp, string_dt, llg)
 print("initialized string")
 dE = string.run(sys.argv[1], verbose = False)
-expected_result = 1.045368e-19
-print("dE=", dE, "expected", expected_result)
+expected_result = 1.0453675101013472e-19
+print("dE[J]=", dE, "expected", expected_result)
 
 print("total time =", time.time() - start, "[s]")
-
-
-# plotting data with gnuplot
-from os import system
-system('gnuplot -e "\
-    set terminal pdf;\
-    set output \'' + sys.argv[1] + 'm.pdf\';\
-    set xlabel \'t [ns]\';\
-    set ylabel \'<m>\';\
-    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'<m_x>\',\
-    \'\' u 1:3 w l t \'<m_y>\',\
-    \'\' u 1:4 w l t \'<m_z>\';\
-"')
-
-# show pdf with evince
-system('evince ' + sys.argv[1] +'m.pdf')
