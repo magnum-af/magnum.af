@@ -1,5 +1,4 @@
-# Example demonstrating the MuMAG Standard Problem 4
-# Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
+# Example calculating the energy barrier of an atomistic skyrmion annihilaton process
 
 import numpy as np
 import arrayfire as af
