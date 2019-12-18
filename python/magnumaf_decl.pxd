@@ -163,6 +163,16 @@ cdef extern from "../../src/llg_terms/zee.hpp" namespace "magnumafcpp":
         double get_cpu_time();
         void set_homogeneous_field(const double x, const double y, const double z);
 
+cdef extern from "../../src/llg_terms/atomistic_external_field.hpp" namespace "magnumafcpp":
+    cdef cppclass AtomisticExternalField:
+        AtomisticExternalField (long int m_in);
+        long int get_m_addr();
+        long int h_ptr(const State& state);
+        double E(const State& state);
+        double get_cpu_time();
+        void set_homogeneous_field(const double x, const double y, const double z);
+
+
 cdef extern from "../../src/solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
     cdef cppclass LBFGS_Minimizer:
         LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose );

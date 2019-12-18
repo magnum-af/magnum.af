@@ -49,6 +49,7 @@ from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
 from magnumaf_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
 from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
 from magnumaf_decl cimport ExternalField as cExternalField
+from magnumaf_decl cimport AtomisticExternalField as cAtomisticExternalField
 from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnumaf_decl cimport LLGTerm as cLLGTerm
 
@@ -475,7 +476,7 @@ cdef class State:
 
     def set_m_partial(self, key, value):
         if value.dims() == self.m[key].dims():
-            temp = self.m
+            temp = self.m # this copy is necessary, inline would lead to segfault
             temp[key] = value
             self._thisptr.set_m(addressof(temp.arr))
         else:
@@ -629,11 +630,40 @@ cdef class String:
         if not inputimages:
             print("String: no States provided, please add at least two states for interpolation of initial path.")
         else:
+            print(inputimages)
             for arg in inputimages:
-                if not arg.Ms_field.is_empty():
-                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                # swtich between state and array
+                if hasattr(arg, 'arr'):
+                    mtemp = arg # arg is array
+                    vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
                 else:
-                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <double> arg.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+                    mtemp = arg.m # arg is state
+                    if not arg.Ms_field.is_empty():
+                        vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(mtemp.arr), <bool> True, <bool> True))
+                    else:
+                        vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
+
+                #else:
+                #    #NOTE: arg.m.arr leads to error when used directly, use temp = arg.m and then temp.arr
+                #    mtemp = arg.m
+                #    vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
+                    #vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+
+                    #vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(arg.arr), <bool> True, <bool> True))
+#            for arg in inputimages:
+#                print("test3")
+#                if not arg.Ms_field.is_empty():
+#                    print("test3a")
+#                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <long int> addressof(arg.Ms_field.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+#                    print("test3a")
+#                else:
+#                    print("test3b", addressof(arg.m.arr))
+#                    vector_in.push_back(cState (cMesh(arg.mesh.nx, arg.mesh.ny, arg.mesh.nz, arg.mesh.dx, arg.mesh.dy, arg.mesh.dz), <double> arg.Ms, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+#                    #try:
+#                    #    vector_in.push_back(cState (cMesh(30, 30, 1, 1e-9, 1e-9, 1e-9), <double> 1, <long int> addressof(arg.m.arr), <bool> True, <bool> True))
+#                    #except:# exception not working on segfault
+#                    #    print("cState constructor: exception occured.")
+#                    print("test3b")
                 #vector_in.push_back(cState (<cState*><size_t>arg._get_thisptr()))# NOTE: seems like copy constructor is not defined
                 #vector_in.push_back(cState (deref(arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
                 #vector_in.push_back(cState (<cMesh><size_t>arg.mesh, <long int> addressof(arg.Ms.arr), <long int> addressof(arg.m.arr), <bool> True, <bool> True))
@@ -926,6 +956,25 @@ cdef class ExternalField(HeffTerm):
     cdef cExternalField* _thisptr
     def __cinit__(self, array_in):
         self._thisptr = new cExternalField (addressof(array_in.arr))
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.get_cpu_time()
+    def set_homogeneous_field(self, x, y, z):
+            self._thisptr.set_homogeneous_field(x, y, z)
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
+
+cdef class AtomisticExternalField(HeffTerm):
+    cdef cAtomisticExternalField* _thisptr
+    def __cinit__(self, array_in):
+        self._thisptr = new cAtomisticExternalField (addressof(array_in.arr))
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
