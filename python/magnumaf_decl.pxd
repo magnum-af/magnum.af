@@ -51,7 +51,7 @@ cdef extern from "../../src/nonequispaced_mesh.hpp" namespace "magnumafcpp":
 
 cdef extern from "../../src/state.hpp" namespace "magnumafcpp":
     cdef cppclass State:
-        State ()
+        State ();
         State (Mesh mesh_in, double Ms, long int m_in, bool verbose, bool mute_warning);
         State (Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose, bool mute_warning);
         void Normalize();
@@ -194,3 +194,8 @@ cdef extern from "../../src/llg_terms/micro_exch_rkky.hpp" namespace "magnumafcp
 
 cdef extern from "../../src/vtk_IO.hpp" namespace "magnumafcpp":
     void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);
+
+cdef extern from "../../src/string.hpp" namespace "magnumafcpp":
+    cdef cppclass String:
+        String(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);
+        double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff , const int string_steps, const bool verbose);
