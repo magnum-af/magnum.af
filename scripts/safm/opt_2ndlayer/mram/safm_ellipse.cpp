@@ -32,6 +32,7 @@ int main(int argc, char **argv)
         //mesh.print(std::cout);
 
         // Initial magnetic field
+        af::array m_free_geom_for_meandemag = af::constant(0, nx, ny, 1, 1, f64);
         af::array m = af::constant(0, mesh.dims, f64);
 
         for (int ix = 0; ix < nx; ix++)
@@ -45,14 +46,12 @@ int main(int argc, char **argv)
                 const double r = pow(rx, 2) / pow(a, 2) + pow(ry, 2) / pow(b, 2);
                 if (r < 1)
                 {
-                    for (int iz = 0; iz < mesh.nz; iz++)
-                    {
-                    }
                     //if(positive_direction) m(ix, iy, af::span, xyz)=1;
                     //else m(ix, iy, af::span, xyz)=-1;
                     m(ix, iy, 0, 2) = 1;  //SAFM Layer 0 in z
                     m(ix, iy, 2, 2) = -1; //SAFM Layer 1 in -z
                     //not here//m(ix, iy, 4, 0) = 1;// Free Layer in x
+                    m_free_geom_for_meandemag(ix, iy, 0, 0) = 1;
                 }
             }
         }
@@ -72,8 +71,8 @@ int main(int argc, char **argv)
         //mesh.print(stream);
         const int index_free_layer = 4;
         Mesh mesh_fl(nx, ny, 1, x / nx, y / ny, dz_fl);
-        vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer");
-        vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer_it_" + std::to_string(i_callback));
+        vti_writer_micro(h(af::span, af::span, index_free_layer, af::span) * af::tile(m_free_geom_for_meandemag, 1, 1, 1, 3), mesh_fl, filepath + "h_free_layer");
+        vti_writer_micro(h(af::span, af::span, index_free_layer, af::span) * af::tile(m_free_geom_for_meandemag, 1, 1, 1, 3), mesh_fl, filepath + "h_free_layer_it_" + std::to_string(i_callback));
 
         std::ofstream stream;
         stream.precision(12);
@@ -85,14 +84,14 @@ int main(int argc, char **argv)
         //std::cout << "test dims: " << af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0).dims() << std::endl;
         stream.close();
         i_callback++;
-        return afvalue(af::mean(af::mean(h(af::span, af::span, index_free_layer, 2), 1), 0));
+        return afvalue(af::mean(af::mean(h(af::span, af::span, index_free_layer, 2) * m_free_geom_for_meandemag, 1), 0));
     };
 
     std::cout.precision(18);
     //magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
     //auto result = zc.calc_x_and_f();
     NewtonIteration ni(calc_hz);
-    auto result = ni.run(X0(5e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
+    auto result = ni.run(X0(3.4e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
     std::cout << "result: x = " << result.first << ", f(x) = " << result.second << std::endl;
 
     std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
