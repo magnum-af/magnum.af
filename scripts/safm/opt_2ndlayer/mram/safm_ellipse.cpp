@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     //magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
     //auto result = zc.calc_x_and_f();
     NewtonIteration ni(calc_hz);
-    auto result = ni.run(X0(3.4e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
+    auto result = ni.run(X0(5.001e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
     std::cout << "result: x = " << result.first << ", f(x) = " << result.second << std::endl;
 
     std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
