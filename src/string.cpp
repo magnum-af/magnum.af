@@ -321,7 +321,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
     }
     else
     {
-        printf("Warning: String::step(): Non-zero returnvalue %d obtained while executing 'gnuplot plot_string_method.gpi'", syscall);
+        printf("Warning: String::step(): Non-zero returnvalue '%d' obtained while executing 'gnuplot plot_string_method.gpi'\n", syscall);
     }
     return max_lowest;
 }
