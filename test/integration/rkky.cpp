@@ -4,6 +4,7 @@
 #include "../../src/llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
+#include <algorithm>
 
 using namespace magnumafcpp;
 

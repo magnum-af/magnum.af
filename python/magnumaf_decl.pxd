@@ -78,6 +78,14 @@ cdef extern from "../../src/state.hpp" namespace "magnumafcpp":
         void _vtr_reader(string inputname);
         double meani(const int i);
 
+cdef extern from "../../src/llg_terms/micro_dmi.hpp" namespace "magnumafcpp":
+    cdef cppclass DmiField:
+        DmiField(double D, double D_axis_x, double D_axis_y, double D_axis_z);
+        DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, double D_axis_z);
+        long int h_ptr(const State& state);
+        double E(const State& state);
+        double get_cpu_time();
+
 cdef extern from "../../src/llg_terms/atomistic_dmi.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDmiField:
         AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);

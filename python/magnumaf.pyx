@@ -42,7 +42,7 @@ from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
-#TODO#from magnum_af_decl cimport DmiField as cDMI
+from magnumaf_decl cimport DmiField as cDmiField
 
 from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
 from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
@@ -745,6 +745,27 @@ cdef class SparseExchangeField(HeffTerm):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+
+
+cdef class DmiField(HeffTerm):
+    cdef cDmiField* _thisptr
+    def __cinit__(self, D, D_axis = [0., 0., 1.]):
+        if hasattr(D, 'arr'):
+            self._thisptr = new cDmiField (<long int> addressof(D.arr), <double> D_axis[0], <double> D_axis[1], <double> D_axis[2])
+        else:
+            self._thisptr = new cDmiField (<double> D, <double> D_axis[0], <double> D_axis[1], <double> D_axis[2])
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
 
 cdef class NonequiExchangeField(HeffTerm):
     cdef cNonequiExchangeField* _thisptr

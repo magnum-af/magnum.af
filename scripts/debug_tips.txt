@@ -119,3 +119,12 @@ Cause:
 Fix:
     Remove cpp default values
     CppClass(bool verbose)
+
+-----------------------------------------------------
+-----------------------------------------------------
+Error:
+docker: Error response from daemon: OCI runtime create failed: container_linux.go:348: starting container process caused "process_linux.go:402: container init caused \"process_linux.go:385: running prestart hook 1 caused \\\"error running hook: exit status 1, stdout: , stderr: exec command: [/usr/bin/nvidia-container-cli --load-kmods configure --ldconfig=@/sbin/ldconfig.real --device=all --compute --utility --require=cuda>=9.2 --pid=10412 /var/lib/docker/aufs/mnt/ec6d64d33cf6eade76f4d0eeb8f25498370a4cc358d09813488c4ed3575abb50]\\\\nnvidia-container-cli: ldcache error: open failed: /sbin/ldconfig.real: no such file or directory\\\\n\\\"\"": unknown.
+
+Cause:
+
+Fix:TODO

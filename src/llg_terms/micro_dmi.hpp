@@ -11,6 +11,8 @@ class DmiField : public LLGTerm
 public:
     DmiField(double D, std::array<double, 3> D_axis = {0, 0, 1});
     DmiField(af::array D_constants, std::array<double, 3> D_axis = {0, 0, 1});
+    DmiField(const double D, double D_axis_x, double D_axis_y, double D_axis_z); //! wrapping only
+    DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, double D_axis_z); //! wrapping only
 
     af::array h(const State &state);
     double get_cpu_time() { return cpu_time; }
