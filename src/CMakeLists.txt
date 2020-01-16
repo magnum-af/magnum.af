@@ -44,5 +44,35 @@ FILE(GLOB SOURCE "*.cpp" "*/*.cpp")
 # files into a CMake object library and then link this library against the
 # different ArrayFire backends.
 
-#ADD_LIBRARY(magnum.af_CORE_SHARED SHARED ${SOURCE})
+ADD_LIBRARY(magnumafcpp SHARED ${SOURCE})
 ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
+
+# following: https://rix0r.nl/blog/2015/08/13/cmake-guide/
+
+## Define headers for this library. PUBLIC headers are used for
+## compiling the library, and will be added to consumers' build
+## paths.
+#target_include_directories(lib PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
+
+
+# Must use GNUInstallDirs to install libraries into correct
+# locations on all platforms.
+include(GNUInstallDirs)
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS magnumafcpp EXPORT magnumafcppConfig
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
+#TODO with correct headers # install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# This makes the project importable from the install directory
+# Put config file in per-project dir (name MUST match), can also
+# just go into 'cmake'.
+install(EXPORT magnumafcppConfig DESTINATION share/magnumaf/cmake)
+
+# This makes the project importable from the build directory
+export(TARGETS magnumafcpp FILE magnumafcppConfig.cmake)
