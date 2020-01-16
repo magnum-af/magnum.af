@@ -29,9 +29,17 @@ set_source_files_properties(
   #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE )
 
-FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
+#FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
 #cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
 cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+
+# 'make install' to the correct locations (provided by GNUInstallDirs).
+install(TARGETS magnumaf EXPORT magnumafConfig
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
+
+
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 ## Linking with magnum.af_CORE_SHARED would be useful for avoiding second source build, but cython is currently now working with shared library
