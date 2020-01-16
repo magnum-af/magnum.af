@@ -109,7 +109,7 @@ COPY --chown=magnum.af.user . /home/magnum.af/
 
 # building magnum.af and docu
 WORKDIR /home/magnum.af/
-RUN (mkdir build && cd build && cmake .. && make -j) && \
+RUN (mkdir build && cd build && cmake .. && make -j && make install) && \
     doxygen .doxygen-config && \
     chmod -R 777 /home/magnum.af/
 
