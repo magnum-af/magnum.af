@@ -151,6 +151,14 @@ class Util:
     def write_vti(afarray, dx, dy, dz, filename):
         cpywrap_vti_writer_micro(addressof(afarray.arr), dx, dy, dz, filename.encode('utf-8'))
 
+    @staticmethod
+    def gto_gpu_renumeration(gpu_number):
+        """Re-interprets gpu enumeration to be consistent with output of 'nvidia-smi' command. Returns abs(gpu_number -3) when active backend is 'cuda', else returns 0 for compatibility with cpu and opencl."""
+        if af.library.get_active_backend() == 'cuda':
+            return abs(gpu_number - 3)
+        else:
+            return 0
+
 # For adding methods as properties (e.g. the State class method m_partial as attribute)
 # From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/
 class dictproperty(object):

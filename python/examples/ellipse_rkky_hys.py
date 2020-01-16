@@ -7,7 +7,7 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(int(sys.argv[2]) if len(sys.argv) > 2 else 0)
+af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
 af.info()
 
 minimize = False # True uses minimizer, False uses llg integration

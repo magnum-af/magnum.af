@@ -5,11 +5,11 @@ import sys
 import time
 
 
-af.set_device(int(sys.argv[2]) if len(sys.argv) > 2 else 0) # setting gpu device:
+af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
 af.info()
 
 # Physical dimensions in [m]
-x, y, z =  3e-7, 3e-7, 62e-9
+x, y, z =  3e-6, 3e-6, 62e-9
 # Discretization
 nx, ny, nz = 100, 100, 4
 
@@ -49,7 +49,7 @@ for iD in range(0, dn + 1):
         llg = LLGIntegrator(alpha = 1, terms = [demag, exch, dmi, zee])
         
         # Relaxing
-        llg.relax(state, precision = 5e-1, ncalcE = 100, nprint = 1000, verbose = True)
+        llg.relax(state, precision = 5e-8, ncalcE = 100, nprint = 1000, verbose = True)
         state.write_vti(sys.argv[1] + 'm_relaxed_iD' + str(iD) + '_iH' + str(iH))
         print('step', (iD * (dn + 1) + iH), '/', (dn + 1)**2 - 1 , " took ", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
