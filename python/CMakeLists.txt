@@ -37,7 +37,11 @@ cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_COR
 install(TARGETS magnumaf EXPORT magnumafConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
+)
+
+set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
+# from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
 
 
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
