@@ -54,11 +54,11 @@ include_directories( ../include ../include/llg_terms ../include/solvers ../inclu
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
-#target_include_directories(magnumafcpp PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # TODO remove /..
-#    $<INSTALL_INTERFACE:../include>
-#    PRIVATE ../src) # TODO remove /..
-#
+target_include_directories(magnumafcpp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # TODO remove /..
+    $<INSTALL_INTERFACE:include>
+    PRIVATE ../src) # TODO remove /..
+
 
 
 # Must use GNUInstallDirs to install libraries into correct
@@ -69,8 +69,11 @@ include(GNUInstallDirs)
 install(TARGETS magnumafcpp EXPORT magnumafcppConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
-#TODO with correct headers # install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
+)
+
+install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/magnumafcpp)
+#install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}) # TODO with correct headers
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
