@@ -1,5 +1,5 @@
-#include "../../src/integrators/adaptive_runge_kutta.hpp"
-#include "../../src/func.hpp"
+#include "integrators/adaptive_runge_kutta.hpp"
+#include "func.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

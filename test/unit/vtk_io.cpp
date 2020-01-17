@@ -1,5 +1,5 @@
-#include "../../src/vtk_IO.hpp"
-#include "../../src/func.hpp"
+#include "vtk_IO.hpp"
+#include "func.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>
 

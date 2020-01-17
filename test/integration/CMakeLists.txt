@@ -25,6 +25,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 # Link runTests with what we want to test and the GTest and pthread library
 file( GLOB APP_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
 MESSAGE(STATUS "Source files found are: ${APP_SOURCES}")
+include_directories( ../../include ../../include/llg_terms ../../include/solvers ../../include/util ../../include/integrators )
 
 foreach( testsourcefile ${APP_SOURCES} )
     # String replace, to cut off .cpp.

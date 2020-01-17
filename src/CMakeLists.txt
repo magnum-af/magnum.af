@@ -49,13 +49,16 @@ ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
 
 # following: https://rix0r.nl/blog/2015/08/13/cmake-guide/
 
-## Define headers for this library. PUBLIC headers are used for
-## compiling the library, and will be added to consumers' build
-## paths.
-#target_include_directories(lib PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#    $<INSTALL_INTERFACE:include>
-#    PRIVATE src)
+include_directories( ../include ../include/llg_terms ../include/solvers ../include/util ../include/integrators )
+
+# Define headers for this library. PUBLIC headers are used for
+# compiling the library, and will be added to consumers' build
+# paths.
+#target_include_directories(magnumafcpp PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # TODO remove /..
+#    $<INSTALL_INTERFACE:../include>
+#    PRIVATE ../src) # TODO remove /..
+#
 
 
 # Must use GNUInstallDirs to install libraries into correct

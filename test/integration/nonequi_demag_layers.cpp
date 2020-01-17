@@ -1,6 +1,6 @@
-#include "../../src/func.hpp"
-#include "../../src/llg_terms/micro_demag_nonequi.hpp"
-#include "../../src/llg_terms/micro_demag.hpp"
+#include "func.hpp"
+#include "llg_terms/micro_demag_nonequi.hpp"
+#include "llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

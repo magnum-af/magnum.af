@@ -1,5 +1,5 @@
-#include "../../src/llg_terms/micro_demag_nonequi.hpp"
-#include "../../src/llg_terms/micro_demag.hpp"
+#include "llg_terms/micro_demag_nonequi.hpp"
+#include "llg_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
 #include <vector>
 

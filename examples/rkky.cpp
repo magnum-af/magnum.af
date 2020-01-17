@@ -1,5 +1,5 @@
 // RKKY example from https://mumax.github.io/examples.html
-#include "../src/magnum_af.hpp"
+#include "magnum_af.hpp"
 #include "arrayfire.h"
 #include <cmath>
 

@@ -41,6 +41,7 @@ install(TARGETS magnumaf EXPORT magnumafConfig
 )
 
 set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
+include_directories( ../include ../include/llg_terms ../include/solvers ../include/util ../include/integrators )
 # from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
 
 

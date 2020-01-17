@@ -1,4 +1,4 @@
-#include "../../src/mesh.hpp"
+#include "mesh.hpp"
 #include <gtest/gtest.h>
 
 // Exemplary unit test

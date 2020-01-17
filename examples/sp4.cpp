@@ -1,4 +1,4 @@
-#include "../src/magnum_af.hpp"
+#include "magnum_af.hpp"
 #include "arrayfire.h"
 
 using namespace magnumafcpp;

@@ -1,4 +1,4 @@
-#include "../../src/func.hpp"
+#include "func.hpp"
 #include "arrayfire.h"
 #include <gtest/gtest.h>
 

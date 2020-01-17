@@ -1,4 +1,4 @@
-#include "../../src/func.hpp"
+#include "func.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

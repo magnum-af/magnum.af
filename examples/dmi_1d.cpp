@@ -1,5 +1,5 @@
 //ref(section 4., Fig 1.): D. Corts-Ortuo et al. , “Proposal for a micromagnetic standard problem for materials with Dzyaloshinskii-Moriya interaction,” New Journal of Physics, vol. 20, p. 113015, Nov. 2018.
-#include "../src/magnum_af.hpp"
+#include "magnum_af.hpp"
 #include "arrayfire.h"
 
 using namespace magnumafcpp;

@@ -1,5 +1,5 @@
-#include "../../src/state.hpp"
-#include "../../src/func.hpp"
+#include "state.hpp"
+#include "func.hpp"
 #include <gtest/gtest.h>
 #include <vector>
 

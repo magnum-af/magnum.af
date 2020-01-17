@@ -6,6 +6,7 @@ FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 FILE(GLOB EXECUTABLE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
+include_directories( ../../include ../../include/llg_terms ../../include/solvers ../../include/util ../../include/integrators )
 
 # Build the program, linking specifically with designated backends
 # ArrayFire CPU backend

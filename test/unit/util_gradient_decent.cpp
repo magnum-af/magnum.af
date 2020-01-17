@@ -1,4 +1,4 @@
-#include "../../src/util/gradient_decent.hpp"
+#include "util/gradient_decent.hpp"
 #include <gtest/gtest.h>
 #include <cmath>
 
