@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af)# this adapts compiler flags from parent
+project(magnum.af) # this adapts compiler flags from parent but kills version numbering
+#MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
 
 # building with python3 only
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0") # disables warning caused by cython compiled file
@@ -41,7 +42,7 @@ install(TARGETS magnumaf EXPORT magnumafConfig
 )
 
 set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
-include_directories( ../include ../include/llg_terms ../include/solvers ../include/util ../include/integrators )
+include_directories( ../include/magnumafcpp ../include/magnumafcpp/llg_terms ../include/magnumafcpp/solvers ../include/magnumafcpp/util ../include/magnumafcpp/integrators )
 # from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
 
 

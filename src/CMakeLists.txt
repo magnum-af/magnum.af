@@ -1,6 +1,3 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuseless-cast")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
 
@@ -49,7 +46,33 @@ ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
 
 # following: https://rix0r.nl/blog/2015/08/13/cmake-guide/
 
-include_directories( ../include ../include/llg_terms ../include/solvers ../include/util ../include/integrators )
+include_directories( ${PROJECT_SOURCE_DIR}/include/magnumafcpp ${PROJECT_SOURCE_DIR}/include/magnumafcpp/llg_terms ${PROJECT_SOURCE_DIR}/include/magnumafcpp/solvers ${PROJECT_SOURCE_DIR}/include/magnumafcpp/util ${PROJECT_SOURCE_DIR}/include/magnumafcpp/integrators )
+
+
+#MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MAJOR}" )
+#MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MINOR}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MAJOR}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MINOR}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp" )
+#configure_file(../include/magnumafcpp/magnumafConfig.hpp.in ../include/magnumafcpp/magnumafConfig.hpp)
+configure_file(${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in ${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp)
+
+#MESSAGE( STATUS "!!!!!!!!!!---->>>> ${CMAKE_CURRENT_BINARY_DIR}" )
+#MESSAGE( STATUS "!!!!!!!!!!---->>>> ${CMAKE_CURRENT_BINARY_DIR}/../include/magnumafcpp/" )
+#include_directories("${CMAKE_CURRENT_BINARY_DIR}/../include/magnumafcpp/")
+#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+#target_include_directories( PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+#include_directories(${PROJECT_BINARY_BIN})
+#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+#target_include_directories(magnumafcpp PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> ) # https://stackoverflow.com/a/25681179
+
+#target_include_directories(magnumaf.af_CORE_OBJECT PUBLIC "${PROJECT_BINARY_DIR}" )
+#target_include_directories(magnumafcpp PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+
+#target_include_directories(magnumafcpp PUBLIC "${PROJECT_BINARY_DIR}" )
+#configure_file(../../include/magnumafcpp/magnumafConfig.hpp.in ../../include/magnumafcpp/magnumafConfig.hpp)
+#target_include_directories(magnumafcpp PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
@@ -58,6 +81,8 @@ target_include_directories(magnumafcpp PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # TODO remove /..
     $<INSTALL_INTERFACE:include>
     PRIVATE ../src) # TODO remove /..
+
+#target_include_directories(magnumafcpp PUBLIC "${PROJECT_BINARY_DIR}" )
 
 
 
@@ -72,13 +97,25 @@ install(TARGETS magnumafcpp EXPORT magnumafcppConfig
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
 )
 
-install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/magnumafcpp)
+install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/magnumafcpp)
+# TODO: reorganize CMakeFiles s.t. out of source build works properly
+# TODO: consider creating not only include/ but include/mangumafcpp/, then it can be skipped above
 #install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}) # TODO with correct headers
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT magnumafcppConfig DESTINATION share/magnumaf/cmake)
+#install(EXPORT magnumafcppConfig DESTINATION share/magnumaf/cmake)
+install(EXPORT magnumafcppConfig DESTINATION cmake/)
 
 # This makes the project importable from the build directory
 export(TARGETS magnumafcpp FILE magnumafcppConfig.cmake)
+
+# Building Installer
+# from: https://cmake.org/cmake/help/latest/guide/tutorial/index.html#building-an-installer-step-7
+include(InstallRequiredSystemLibraries)
+#TODO#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+include(CPack)

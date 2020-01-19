@@ -1,5 +1,9 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+project(magnum.af VERSION 0.1)
+MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MAJOR}" )
+MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MINOR}" )
+MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MAJOR}" )
+MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MINOR}" )
 
 option(EXAMPLES "Build examples." ON)
 option(TESTING "Build unit and integration tests." ON)

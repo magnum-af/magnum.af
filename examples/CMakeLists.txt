@@ -6,7 +6,7 @@ FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 FILE(GLOB EXAMPLES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
-include_directories( ../include ../include/llg_terms ../include/solvers ../include/util ../include/integrators )
+include_directories( ../include/magnumafcpp ../include/magnumafcpp/llg_terms ../include/magnumafcpp/solvers ../include/magnumafcpp/util ../include/magnumafcpp/integrators )
 
 # Build the program, linking specifically with designated backends
 

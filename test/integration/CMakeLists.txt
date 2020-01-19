@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+project(magnum.af)
 
 #LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 # Compile with C++11 support.
@@ -25,7 +26,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 # Link runTests with what we want to test and the GTest and pthread library
 file( GLOB APP_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
 MESSAGE(STATUS "Source files found are: ${APP_SOURCES}")
-include_directories( ../../include ../../include/llg_terms ../../include/solvers ../../include/util ../../include/integrators )
+include_directories( ../../include/magnumafcpp ../../include/magnumafcpp/llg_terms ../../include/magnumafcpp/solvers ../../include/magnumafcpp/util ../../include/magnumafcpp/integrators )
 
 foreach( testsourcefile ${APP_SOURCES} )
     # String replace, to cut off .cpp.

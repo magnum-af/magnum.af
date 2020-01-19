@@ -1,0 +1,8 @@
+#pragma once
+// header for integrating cmake configurations
+
+#define magnumafcpp_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@"
+#define magnumafcpp_VERSION_MINOR "@PROJECT_VERSION_MINOR@"
+#define magnumafcpp_VERSION_PATCH "@PROJECT_VERSION_PATCH@"
+#define magnumafcpp_VERSION_TWEAK "@PROJECT_VERSION_TWEAK@"
+#define magnumafcpp_VERSION "@PROJECT_VERSION@"
