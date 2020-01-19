@@ -1,5 +1,5 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af) # this adapts compiler flags from parent but kills version numbering
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+project(magnum.af VERSION 0.1) # setting project prevents 'operation only allowed in c++ file error, but this kills version numbering
 #MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
 
 # building with python3 only
@@ -34,18 +34,20 @@ set_source_files_properties(
 #cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
 cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
 
-# 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS magnumaf EXPORT magnumafConfig
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
-)
-
-set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
-include_directories( ../include/magnumafcpp ../include/magnumafcpp/llg_terms ../include/magnumafcpp/solvers ../include/magnumafcpp/util ../include/magnumafcpp/integrators )
-# from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
-
-
+IF(SETINSTALL)
+    # 'make install' to the correct locations (provided by GNUInstallDirs).
+    install(TARGETS magnumaf EXPORT magnumafConfig
+        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
+    )
+    
+    set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
+    # from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
+ENDIF()
+    
+#MESSAGE( STATUS "------> CMAKE_CXX_FLAGS= ${CMAKE_CXX_FLAGS}" )
+    
 # Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
 
 ## Linking with magnum.af_CORE_SHARED would be useful for avoiding second source build, but cython is currently now working with shared library

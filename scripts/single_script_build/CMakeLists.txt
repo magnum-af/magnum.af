@@ -1,22 +1,8 @@
-MESSAGE( STATUS "-ooooo-->>>> ${magnum.af_VERSION_MAJOR}" )
-MESSAGE( STATUS "-ooooo-->>>> ${magnum.af_VERSION_MINOR}" )
-MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
-MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MINOR}" )
-
 FIND_PACKAGE(ArrayFire REQUIRED)
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 FILE(GLOB EXECUTABLE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
-include_directories( ../../include/magnumafcpp ../../include/magnumafcpp/llg_terms ../../include/magnumafcpp/solvers ../../include/magnumafcpp/util ../../include/magnumafcpp/integrators )
-#target_include_directories(magnumafcpp PUBLIC "${PROJECT_BINARY_DIR}" )
-#configure_file(../../include/magnumafcpp/magnumafConfig.hpp.in ../../include/magnumafcpp/magnumafConfig.hpp)
-#target_include_directories(magnumafcpp PUBLIC  $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
-#MESSAGE( STATUS "-------->>>> ${CMAKE_CURRENT_BINARY_DIR}" )
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
-MESSAGE( STATUS "!!!!!!!!!!---->>>> ${CMAKE_CURRENT_BINARY_DIR}" )
-MESSAGE( STATUS "!!!!!!!!!!---->>>> ${CMAKE_CURRENT_BINARY_DIR}/../../include/magnumafcpp/" )
-#include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../include/magnumafcpp/")
 
 # Build the program, linking specifically with designated backends
 # ArrayFire CPU backend
@@ -24,7 +10,9 @@ if(${ArrayFire_CPU_FOUND})
     MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
     ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE} $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
     TARGET_LINK_LIBRARIES(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
-    target_include_directories(magnum.af-cpu PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/../../include/magnumafcpp/" )
+    # when linking agsinst lib use (linking here is slow, however):
+    #ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE})
+    #TARGET_LINK_LIBRARIES(magnum.af-cpu magnumafcpp ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
 ENDIF()
 
 # ArrayFire OpenCL backend

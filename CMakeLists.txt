@@ -1,14 +1,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 project(magnum.af VERSION 0.1)
-MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MAJOR}" )
-MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MINOR}" )
-MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MAJOR}" )
-MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MINOR}" )
+#MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MAJOR}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MINOR}" )
 
 option(EXAMPLES "Build examples." ON)
-option(TESTING "Build unit and integration tests." ON)
-option(PYTHON_BINDINGS "Build python bindings" ON)
+option(TESTS "Build unit and integration tests." ON)
+option(PYTHON "Build python bindings" ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
+option(SETINSTALL "Building shared library, configuring install directories." ON)
 
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
@@ -63,6 +62,17 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 
 # build library
+
+configure_file(${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in ${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp)
+
+include_directories( ${PROJECT_SOURCE_DIR}/include/magnumafcpp
+                     ${PROJECT_SOURCE_DIR}/include/magnumafcpp/llg_terms
+                     ${PROJECT_SOURCE_DIR}/include/magnumafcpp/solvers
+                     ${PROJECT_SOURCE_DIR}/include/magnumafcpp/util
+                     ${PROJECT_SOURCE_DIR}/include/magnumafcpp/integrators
+                     ${PROJECT_BINARY_DIR}/include/magnumafcpp/ )
+
+
 add_subdirectory(src)
 
 # build examples
@@ -72,7 +82,7 @@ if(EXAMPLES)
 endif()
 
 # build tests
-if(TESTING)
+if(TESTS)
     message(STATUS "Enable unit and integration testing (option 'TESTING').")
     enable_testing() # enables CTest with 'make test' and 'ctest' commands
     add_subdirectory(test/unit) # adding unit tests
@@ -83,7 +93,7 @@ endif()
 add_subdirectory(scripts/single_script_build)
 
 # build python bindings
-if(PYTHON_BINDINGS)
+if(PYTHON)
     message(STATUS "Building python bindings (option 'PYTHON_BINDINGS').")
     add_subdirectory(python)
 endif()

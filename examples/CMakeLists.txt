@@ -1,12 +1,8 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-project(magnum.af)
-
 FIND_PACKAGE(ArrayFire REQUIRED)
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 FILE(GLOB EXAMPLES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
-include_directories( ../include/magnumafcpp ../include/magnumafcpp/llg_terms ../include/magnumafcpp/solvers ../include/magnumafcpp/util ../include/magnumafcpp/integrators )
 
 # Build the program, linking specifically with designated backends
 
