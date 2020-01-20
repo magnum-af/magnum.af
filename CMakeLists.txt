@@ -107,3 +107,17 @@ if(PYTHON)
     message(STATUS "Building python bindings (option 'PYTHON_BINDINGS').")
     add_subdirectory(python)
 endif()
+
+# uninstall target
+# alternatively, use shell for
+# removing installed files:      $ cat install_manifest.txt | sudo xargs rm
+# removing remaining empty dirs: $ cat install_manifest.txt | xargs -L1 dirname | sudo xargs rmdir -p --ignore-fail-on-non-empty 2>/dev/null
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake  COMMAND ${CMAKE_COMMAND} -E echo "Note: to remove remaining empty folders run: \\'cat install_manifest.txt \\| xargs -L1 dirname \\| sudo xargs rmdir -p --ignore-fail-on-non-empty 2\\>\\/dev\\/null\\'")
+endif()
