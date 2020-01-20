@@ -83,6 +83,7 @@ void AdaptiveRungeKutta::step(State &state)
     }
     time_allsteps_ += af::timer::stop(timer_allsteps);
     state.steps++;
+    this->accumulated_steps++;
     af::eval(state.m);
 }
 

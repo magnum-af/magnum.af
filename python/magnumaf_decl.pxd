@@ -106,6 +106,7 @@ cdef extern from "integrators/new_llg.hpp" namespace "magnumafcpp":
         void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
         long int h_addr(const State& state);
         double alpha;
+        unsigned long long accumulated_steps;
 
 cdef extern from "llg_terms/micro_demag.hpp" namespace "magnumafcpp":
     cdef cppclass DemagField:

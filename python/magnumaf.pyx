@@ -615,6 +615,10 @@ cdef class LLGIntegrator:
     def alpha(self, value):
         self._thisptr.alpha=value
 
+    @property
+    def accumulated_steps(self):
+        return self._thisptr.accumulated_steps
+
         #cdef vector[shared_ptr[cLLGTerm]] vector_in
         #for term in terms:
         #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))

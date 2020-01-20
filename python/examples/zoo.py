@@ -47,9 +47,32 @@ for iD in range(0, dn + 1):
         zee = ExternalField(zeeswitch)
         
         llg = LLGIntegrator(alpha = 1, terms = [demag, exch, dmi, zee])
+
+        #llg.relax(state, precision = 5e-8, ncalcE = 100, nprint = 1000, verbose = True)
+
+        E_prev = 1e20;
+        precision = 1e-8
+        integration_time = 5e-9
+        steps_per_iteration = 100
+        print_steps_every = 10
+        write_vti_every = 100
+        while state.t < integration_time:
+            E_curr = llg.E(state)
+            Ediff = abs((E_prev - E_curr) / E_prev)
+            print('Ediff', Ediff)
+            if Ediff < precision:
+                break
+            E_prev = E_curr
         
+            for i in range(steps_per_iteration):
+                llg.step(state)
+                mx, my, mz = state.m_mean()
+                if llg.accumulated_steps % print_steps_every == 0:
+                    print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
+                if llg.accumulated_steps % write_vti_every == 0:
+                    state.write_vti(sys.argv[1] + "m_iD" + str(iD) + '_iH' + str(iH) + "step_" + str(llg.accumulated_steps) )
+
         # Relaxing
-        llg.relax(state, precision = 5e-8, ncalcE = 100, nprint = 1000, verbose = True)
         state.write_vti(sys.argv[1] + 'm_relaxed_iD' + str(iD) + '_iH' + str(iH))
         print('step', (iD * (dn + 1) + iH), '/', (dn + 1)**2 - 1 , " took ", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
