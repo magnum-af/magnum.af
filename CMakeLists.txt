@@ -70,6 +70,11 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 # Generate Version Config Header
 configure_file(${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in ${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp)
 
+# Generate Git Config header
+set(PRE_CONFIGURE_FILE  "${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig_git.hpp.in" )
+set(POST_CONFIGURE_FILE "${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig_git.hpp" )
+include(${PROJECT_SOURCE_DIR}/CMakeModules/git_watcher.cmake)
+
 include_directories( ${PROJECT_SOURCE_DIR}/include/magnumafcpp
                      ${PROJECT_SOURCE_DIR}/include/magnumafcpp/llg_terms
                      ${PROJECT_SOURCE_DIR}/include/magnumafcpp/solvers

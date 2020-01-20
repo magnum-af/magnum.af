@@ -1,0 +1,20 @@
+// Header file for integrating cmake configurations.
+// This file was created automatically by CMake.
+
+#pragma once
+
+#define GIT_RETRIEVED_STATE @GIT_RETRIEVED_STATE@ //!< Whether or not we retrieved the state of the repo.
+
+#define GIT_HEAD_SHA1 "@GIT_HEAD_SHA1@" //!< The SHA1 for the HEAD of the repo.
+
+#define GIT_IS_DIRTY @GIT_IS_DIRTY@ //!< Whether or not there were uncommited changes present.
+
+#define GIT_AUTHOR_NAME "@GIT_AUTHOR_NAME@" //!< The name of person who committed HEAD.
+
+#define GIT_AUTHOR_EMAIL "@GIT_AUTHOR_EMAIL@" //!< The email addess of the person who committed HEAD.
+
+#define GIT_COMMIT_DATE_ISO8601 "@GIT_COMMIT_DATE_ISO8601@" //!< When HEAD was committed.
+
+#define GIT_COMMIT_SUBJECT "@GIT_COMMIT_SUBJECT@" //!< The subject line for the HEAD commit.
+
+#define GIT_COMMIT_BODY "@GIT_COMMIT_BODY@" //!< The notes attached to the HEAD commit.

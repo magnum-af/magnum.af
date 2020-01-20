@@ -1,5 +1,7 @@
+// Header file for integrating cmake configurations.
+// This file was created automatically by CMake.
+
 #pragma once
-// header for integrating cmake configurations
 
 #define magnumafcpp_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@"
 #define magnumafcpp_VERSION_MINOR "@PROJECT_VERSION_MINOR@"
