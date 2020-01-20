@@ -27,7 +27,7 @@ public:
     NonequispacedMesh nonequimesh{0, 0, 0, 0, {0}};
     double t{0.};                            //time
     double Ms{0};                            //!< Saturation magnetization in [J/T/m^3]
-    af::array Ms_field;                      //<! Non-homugenuous, mesh dependent saturation magnetization defined at every node in units of [J/T/m^3]. Is impicitly set and used when magnetization has values of norm 0.
+    af::array Ms_field;                      //!< Non-homugenuous, mesh dependent saturation magnetization defined at every node in units of [J/T/m^3]. Is impicitly set and used when magnetization has values of norm 0.
     af::array m;                             //!< magnetic field configuration
     void set_Ms_field(long int afarray_ptr); //for wrapping only
     long int get_Ms_field();

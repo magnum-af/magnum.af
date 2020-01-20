@@ -46,7 +46,7 @@ ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
 IF(SETINSTALL)
     # installing magnumafcpp lib, adapted from: https://rix0r.nl/blog/2015/08/13/cmake-guide/
     ADD_LIBRARY(magnumafcpp SHARED ${SOURCE})
-    
+
     # Define headers for this library. PUBLIC headers are used for
     # compiling the library, and will be added to consumers' build
     # paths.
@@ -54,39 +54,44 @@ IF(SETINSTALL)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # TODO remove /..
         $<INSTALL_INTERFACE:include>
         PRIVATE ../src) # TODO remove /..
-    
+
     #target_include_directories(magnumafcpp PUBLIC "${PROJECT_BINARY_DIR}" )
-    
-    
-    
+
+
+
     # Must use GNUInstallDirs to install libraries into correct
     # locations on all platforms.
     include(GNUInstallDirs)
-    
+
     # 'make install' to the correct locations (provided by GNUInstallDirs).
     install(TARGETS magnumafcpp EXPORT magnumafcppConfig
         ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
     )
-    
+
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.hpp")
     install(DIRECTORY ${PROJECT_BINARY_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}) # this includes cmake generated headers e.g. the version header.
-    
+
     # This makes the project importable from the install directory
     # Put config file in per-project dir (name MUST match), can also
     # just go into 'cmake'.
     #install(EXPORT magnumafcppConfig DESTINATION share/magnumaf/cmake)
     install(EXPORT magnumafcppConfig DESTINATION cmake/)
-    
+
     # This makes the project importable from the build directory
     export(TARGETS magnumafcpp FILE magnumafcppConfig.cmake)
-    
+
     # Building Installer
     # from: https://cmake.org/cmake/help/latest/guide/tutorial/index.html#building-an-installer-step-7
     include(InstallRequiredSystemLibraries)
     #TODO#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
     set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+    set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+    IF(PACK_AS_DEB) # pack as .deb file, instead of package script and .tar files.
+        SET(CPACK_GENERATOR "DEB")
+        SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Paul Heistracher")
+    ENDIF()
     include(CPack)
 ENDIF()

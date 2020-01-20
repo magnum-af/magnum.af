@@ -1,13 +1,18 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-project(magnum.af VERSION 0.1)
-#MESSAGE( STATUS "-------->>>> ${magnum.af_VERSION_MAJOR}" )
+CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
+
+project(magnum.af VERSION 0.1.0) # sets magnum.af_VERSION_XXX and PROJECT_VERSION_XXX
+MESSAGE( STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}." )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MAJOR}" )
 #MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_MINOR}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_PATCH}" )
+#MESSAGE( STATUS "-------->>>> ${PROJECT_VERSION_TWEAK}" )
 
 option(EXAMPLES "Build examples." ON)
 option(TESTS "Build unit and integration tests." ON)
 option(PYTHON "Build python bindings" ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
 option(SETINSTALL "Building shared library, configuring install directories." ON)
+option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." OFF)
 
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
@@ -61,8 +66,8 @@ SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 # we have custom CMake configuration files, tell CMake to use them:
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 
-# build library
-
+## build library
+# Generate Version Config Header
 configure_file(${PROJECT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in ${PROJECT_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp)
 
 include_directories( ${PROJECT_SOURCE_DIR}/include/magnumafcpp
@@ -70,8 +75,8 @@ include_directories( ${PROJECT_SOURCE_DIR}/include/magnumafcpp
                      ${PROJECT_SOURCE_DIR}/include/magnumafcpp/solvers
                      ${PROJECT_SOURCE_DIR}/include/magnumafcpp/util
                      ${PROJECT_SOURCE_DIR}/include/magnumafcpp/integrators
-                     ${PROJECT_BINARY_DIR}/include/magnumafcpp/ )
-
+                     ${PROJECT_BINARY_DIR}/include/magnumafcpp/ # for configured headers
+)
 
 add_subdirectory(src)
 
