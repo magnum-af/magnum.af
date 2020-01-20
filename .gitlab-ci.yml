@@ -45,6 +45,7 @@ test_gpu:
     - ./scripts/bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
   tags:
     - gpu
+    - gto2 # temporary
 
 deploy_GTO:
   stage: deploy
