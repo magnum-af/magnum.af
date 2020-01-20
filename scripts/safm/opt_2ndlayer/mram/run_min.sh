@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-GPU="2"
+GPU="3"
 
 # geometry
 x="60e-9"
@@ -14,7 +14,7 @@ hzee_max="1.0" # maximum H_external for hysteresis loop
 steps="2000"
 
 # write dirs
-rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/mram/"$x"x_"$y"y_"$nx"nx_"$ny"ny/
+rootdir="$HOME"/data_magnum.af/safm/opt_2ndlayer/mram/eval_demag_only_in_material_init5.001_hfl_only_in_mat/"$x"x_"$y"y_"$nx"nx_"$ny"ny/
 writedir_hf="$rootdir"h_free_layer/
 writedir_hys="$rootdir"min_"$hzee_max"T_"$steps"steps/
 

@@ -11,5 +11,7 @@ gnuplot -e "
     set output 'm_over_hx.pdf';
     set xlabel 'mu0 Hx';
     set ylabel 'm_x';
-    p 'm.dat' u (\$5*4*3.14*1e-7):2 w l
+    set arrow from 1.5682830526720248, graph 0 to 1.5682830526720248, graph 1 nohead;
+    p 'm.dat' u (\$6*4*3.1415926535897*1e-7):2 w l
 " --persist
+    #p 'm.dat' u (\$5*4*3.14*1e-7):2 w l

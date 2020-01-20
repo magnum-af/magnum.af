@@ -84,7 +84,7 @@ Llg = LLGIntegrator(alpha=1.0, terms=fields)
 maxField = 2./Constants.mu0 # 2 [T]
 #maxField = 0. # Note: for zero field, the domainwall does not pin to the interface for current implementation
 #simtime = 30e-9 # [s]
-simtime = 10e-9 # [s]
+simtime = 100e-9 # [s]
 #simtime = 3.1e-10 # [s] # yields correct result by coincidence
 
 print("Start 100 [ns] hysteresis")

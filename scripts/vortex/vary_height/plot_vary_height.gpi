@@ -1,0 +1,13 @@
+set terminal pdf enhanced;
+set output "m.pdf";
+set xlabel "nz";
+set ylabel "demag field [T]";
+p "m.dat" u 1:5 w l t "demag center","m.dat" u 1:6 w l t "demag average"
+
+set xlabel "z [nm]";
+set output "demag_over_z.pdf";
+p "m.dat" u ($1 * 10 - 10):5 w l t "demag in center of freelayer","m.dat" u ($1 * 10 - 10):6 w l t "average demag if freelayer"
+
+set terminal pop
+set output
+replot
