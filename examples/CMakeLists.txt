@@ -18,7 +18,7 @@ endforeach( EXAMPLE_SOURCE_FILE ${EXAMPLES} )
 
 # ArrayFire OpenCL backend
 FIND_PACKAGE(OpenCL)
-IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+IF(${OPENCL} AND ${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # We need to find OpenCL as transitive linking is disabled on some OSes
     MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
     foreach( EXAMPLE_SOURCE_FILE ${EXAMPLES} )
@@ -33,7 +33,7 @@ ENDIF()
 
 # ArrayFire CUDA backend
 FIND_PACKAGE(CUDA)
-IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
+IF(${CUDA} AND ${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     # We need to find CUDA and NVVM as transitive linking is disabled on some OSes
     FIND_PACKAGE(CUDA REQUIRED)
     FIND_PACKAGE(NVVM REQUIRED)
@@ -48,3 +48,12 @@ IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
         TARGET_LINK_LIBRARIES(${EXAMPLE} ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB})
     endforeach( EXAMPLE_SOURCE_FILE ${EXAMPLES} )
 ENDIF()
+
+# Adding magnumafcpp_info binary to installation
+install(TARGETS magnumafcpp_info_cpu RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+if( ${OPENCL} )
+install(TARGETS magnumafcpp_info_opencl RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+endif()
+if( ${CUDA} )
+install(TARGETS magnumafcpp_info_cuda RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+endif()

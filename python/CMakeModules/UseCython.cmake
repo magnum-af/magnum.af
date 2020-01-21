@@ -312,10 +312,10 @@ function( cython_add_module_w_AF_VTK _name )
   INCLUDE(${VTK_USE_FILE})
   FIND_PACKAGE(OpenCL)
   FIND_PACKAGE(CUDA)
-  IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
+  IF(${CUDA} AND ${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
       target_link_libraries( ${_name} ${PYTHON_LIBRARIES} ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES})
       MESSAGE(STATUS "CYTHON LINKING CUDA BACKEND")
-  ELSEIF(${ArrayFire_OpenCL_FOUND})
+  ELSEIF(${OPENCL} AND ${ArrayFire_OpenCL_FOUND})
   #ELSEIF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})#TODO OpenCL_FOUND is somehow false
   #Adding OPenCL_FOUND won't build and may lead to Error: undefined symbol
   # Maybe conflict with pth-mag cmake file
