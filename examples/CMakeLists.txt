@@ -51,9 +51,9 @@ ENDIF()
 
 # Adding magnumafcpp_info binary to installation
 install(TARGETS magnumafcpp_info_cpu RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
-if( ${OPENCL} )
+IF(${OPENCL} AND ${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
 install(TARGETS magnumafcpp_info_opencl RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 endif()
-if( ${CUDA} )
+IF(${CUDA} AND ${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
 install(TARGETS magnumafcpp_info_cuda RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 endif()
