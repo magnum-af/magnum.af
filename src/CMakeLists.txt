@@ -85,10 +85,10 @@ IF(SETINSTALL)
     # Building Installer
     # from: https://cmake.org/cmake/help/latest/guide/tutorial/index.html#building-an-installer-step-7
     include(InstallRequiredSystemLibraries)
-    #TODO#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
     set(CPACK_PACKAGE_VENDOR "Paul Heistracher")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software")
-    set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
+    set(CPACK_RESOURCE_FILE_README  "${PROJECT_SOURCE_DIR}/README.md")
+    set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/License.txt")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
     set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
     set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")

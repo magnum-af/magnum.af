@@ -12,7 +12,7 @@ option(TESTS "Build unit and integration tests." ON)
 option(PYTHON "Build python bindings" ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
 option(SETINSTALL "Building shared library, configuring install directories." ON)
-option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." OFF)
+option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." ON)
 
 # Writing compile_commands.json for youcompleteme (YCM) vim-plugin
 # Note: fully worked only after removing all global and local .ycm_extra_conf.py files with .json comile file only in project dir
