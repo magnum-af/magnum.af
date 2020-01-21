@@ -86,12 +86,17 @@ IF(SETINSTALL)
     # from: https://cmake.org/cmake/help/latest/guide/tutorial/index.html#building-an-installer-step-7
     include(InstallRequiredSystemLibraries)
     #TODO#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+    set(CPACK_PACKAGE_VENDOR "Paul Heistracher")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software")
+    set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
     set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
     set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
     IF(PACK_AS_DEB) # pack as .deb file, instead of package script and .tar files.
         SET(CPACK_GENERATOR "DEB")
         SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Paul Heistracher")
+        SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # resolve dependencies automatically
+        #WORKS#SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libvtk7.1 (>= 7.1.1), libvtk7.1 (< 7.2)")
     ENDIF()
     include(CPack)
 ENDIF()
