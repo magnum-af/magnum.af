@@ -8,7 +8,6 @@ namespace magnumafcpp
 
 struct NonequispacedMesh
 {
-    NonequispacedMesh(){};
     NonequispacedMesh(int nx, int ny, double dx, double dy, std::vector<double> z_spacing);
 
     //TODO should be const, conficts with string method

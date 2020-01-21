@@ -10,7 +10,7 @@ namespace magnumafcpp
 /// Overloaded '+' operator adds an af::array to af::array this->m
 State State::operator+(const af::array &a) const
 {
-    State result = *this;
+    State result = *this; // TODO: This line calls assignment operator of State Members which causes: warning: implicitly-declared ‘af::dim4& af::dim4::operator=(const af::dim4&)’ is deprecated [-Wdeprecated-copy], as arrayfire does not explicitly define default operators.
     result.m += a;
     return result;
 }
