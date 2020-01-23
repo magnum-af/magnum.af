@@ -42,10 +42,38 @@ FILE(GLOB SOURCE "*.cpp" "*/*.cpp")
 # different ArrayFire backends.
 
 ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
+ADD_LIBRARY(magnumafcpp SHARED ${SOURCE}) # NOTE: move again into SETINSTALL
+
+find_package(PythonLibs 3.6 REQUIRED)
+#find_package(PythonLibs 3.6 REQUIRED)
+#find_package(PythonLibs ${PY_VERSION} REQUIRED)
+message(STATUS "{PY_VERSION} = ${PY_VERSION}")
+find_package(Boost 1.65.1 REQUIRED COMPONENTS system python)
+include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
+message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
+#link_libraries(${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+# create the lib
+add_library(pyMyLib SHARED ${CMAKE_SOURCE_DIR}/src/bindings.cpp)
+
+# link
+#target_link_libraries(pyMyLib ${Boost_LIBRARIES} ${PROJECT_NAME})# TODO better?
+target_link_libraries(pyMyLib ${Boost_LIBRARIES} magnumafcpp)
+#from:https://stackoverflow.com/questions/25188861/libboost-python3-so-1-56-0-undefined-symbol-pyclass-type
+#target_link_libraries(pyMyLib /usr/lib/x86_64-linux-gnu/libboost_python3.so magnumafcpp)
+#target_link_libraries(pyMyLib /usr/lib/x86_64-linux-gnu/libboost_python-py36.so magnumafcpp)
+
+# Copy the __init__.py file
+configure_file(${CMAKE_SOURCE_DIR}/src/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/src/__init__.py COPYONLY)
+
+# Suppress prefix "lib" because Python does not allow this prefix
+set_target_properties(pyMyLib PROPERTIES PREFIX "")
+
+#TODO#install(TARGETS pyMyLib ${CMAKE_SOURCE_DIR}/src/__init__.py DESTINATION "${PYTHON_INSTALL_PATH}")
 
 IF(SETINSTALL)
     # installing magnumafcpp lib, adapted from: https://rix0r.nl/blog/2015/08/13/cmake-guide/
-    ADD_LIBRARY(magnumafcpp SHARED ${SOURCE})
 
     # Define headers for this library. PUBLIC headers are used for
     # compiling the library, and will be added to consumers' build

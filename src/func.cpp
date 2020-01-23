@@ -1,4 +1,9 @@
 #include "func.hpp"
+char const* greet()
+{
+   return "hello, world";
+}
+
 
 namespace magnumafcpp
 {

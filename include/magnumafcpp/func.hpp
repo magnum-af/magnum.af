@@ -3,6 +3,8 @@
 #include <chrono> //for af::randomEngine
 #include "arrayfire.h"
 
+char const* greet();
+
 namespace magnumafcpp
 {
 
