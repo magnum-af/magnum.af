@@ -108,6 +108,7 @@ add_subdirectory(scripts/single_script_build)
 # build python bindings
 if(PYTHON)
     message(STATUS "Building python bindings (option 'PYTHON_BINDINGS').")
+    add_subdirectory(boostpython)
     add_subdirectory(python)
 endif()
 
