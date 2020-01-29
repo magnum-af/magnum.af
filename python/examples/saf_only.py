@@ -15,9 +15,9 @@ filepath_const=sys.argv[1]
 filepath=filepath_const
 
 # Physical dimensions in [m]
-x, y, z =  1000e-9, 1000e-9, 84e-9
+x, y, z =  1000e-9, 1000e-9, 4e-9
 # Discretization
-nx, ny, nz = 250, 250, 42
+nx, ny, nz = 250, 250, 2
 dx, dy, dz =x/nx, y/ny, z/nz
 
 Ms = 1.393e6 # //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
@@ -29,48 +29,14 @@ RKKY_val = -0.4e-3 * dz
 mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 print(mesh.nx, mesh.ny, mesh.nz, mesh.dx, mesh.dy, mesh.dz, dx, dy, dz)
 
-# Initial magnetization configuration
-nvort = 39 # number of layer in vortex
-diffnz = nz - nvort
-
-vortex = Util.vortex(Mesh(nx, ny, nz-diffnz, dx=x/nx, dy=y/ny, dz=z/nz))
-#print(vortex.dims())
-
-Util.write_vti(vortex, dx, dy, dz, filepath + "vortex_init")
 m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m0[:, :, 0, 0] = 1.
 m0[:, :, 1, 0] = -1.
-m0[:, :, diffnz:, :] = vortex
-
-#Util.write_vti(m0, dx, dy, dz, filepath + "m0")
-
-m0 = Util.normalize(m0)
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 16)
 
-def disk(nx, ny, nz):
-    m = np.zeros((nx, ny, nz, 3))
-    for ix in range (0, nx):
-        for iy in range(0, ny):
-            a= nx/2
-            b= ny/2
-            rx=ix-nx/2.
-            ry=iy-ny/2.
-            r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-            if(r<=1):
-                m[ix, iy, :, :] = 1.
-    return af.from_ndarray(m)
-
-geom = disk(nx, ny, nz)
-geom[:, :, 0, :] = 1.
-geom[:, :, 1, :] = 1.
-geom[:, :, 2, :] = 0.
-Util.write_vti(geom, dx, dy, dz, filepath + "geom")
-excharr = (geom == 1) * A
-
-RKKYarr = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-RKKYarr[:, :, 0, :] = RKKY_val
-RKKYarr[:, :, 1, :] = RKKY_val
+excharr = af.constant(A, nx, ny, nz, 3, dtype=af.Dtype.f64)
+RKKYarr = af.constant(RKKY_val, nx, ny, nz, 3, dtype=af.Dtype.f64)
 Util.write_vti(excharr, dx, dy, dz, filepath + "excharr")
 Util.write_vti(RKKYarr, dx, dy, dz, filepath + "RKKYarr")
 rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32))
@@ -106,10 +72,10 @@ for iext_y in range(0,6):
     stream.write('#step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}\n')
     timer = time.time()
     write_vti_every = 100
-    while state.t < 5e-9:
+    while state.t < 1e-9:
         llg.step(state)
         mx, my, mz = state.m_mean()
-        print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
+        #print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         stream.write('{:d}\t{:1.6e}\t{:1.6f}\t{:1.6f}\t{:1.6f}\n'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         if llg.accumulated_steps % write_vti_every == 0:
             state.write_vti(filepath + "m_relaxing_step_" + str(llg.accumulated_steps))
@@ -119,13 +85,8 @@ for iext_y in range(0,6):
 
     af_m_layer0 = state.m[:, :, 0, :]
     af_m_layer1 = state.m[:, :, 1, :]
-    af_m_layer3 = state.m[:, :, 3, :]
     np_m_layer0 = af_m_layer0.to_ndarray()
     np_m_layer1 = af_m_layer1.to_ndarray()
-    np_m_layer3 = af_m_layer3.to_ndarray()
-    print(np_m_layer0.shape)
-    print(np_m_layer1.shape)
-    print(np_m_layer3.shape)
     np.savetxt(filepath + 'layer0_0.txt', np_m_layer0[:, :, 0, 0])
     np.savetxt(filepath + 'layer0_1.txt', np_m_layer0[:, :, 0, 1])
     np.savetxt(filepath + 'layer0_2.txt', np_m_layer0[:, :, 0, 2])
@@ -134,12 +95,12 @@ for iext_y in range(0,6):
     np.savetxt(filepath + 'layer1_1.txt', np_m_layer1[:, :, 0, 1])
     np.savetxt(filepath + 'layer1_2.txt', np_m_layer1[:, :, 0, 2])
 
-    np.savetxt(filepath + 'layer3_0.txt', np_m_layer3[:, :, 0, 0])
-    np.savetxt(filepath + 'layer3_1.txt', np_m_layer3[:, :, 0, 1])
-    np.savetxt(filepath + 'layer3_2.txt', np_m_layer3[:, :, 0, 2])
-
     pinned_layer = state.m[:, :, 0:2, :]
     Util.write_vti(pinned_layer, dx, dy, dz, filepath + "pinned_layer")
-    print(af.mean(af.mean(pinned_layer, dim=0), dim=1).to_ndarray())
-    #mean_pinned_layer = af.mean(af.mean(pinned_layer, dim=0), dim=1).to_ndarray()
-    #print(mean_pinned_layer)
+    meanlist=af.mean(af.mean(pinned_layer, dim=0), dim=1).to_ndarray()
+    print(meanlist)
+    saf_l1_x = meanlist[0, 0, 1, 0]
+    saf_l1_y = meanlist[0, 0, 1, 1]
+    print("H [mT]=", ext_y, ", Angle saf layer 1 [rad]=", np.arctan(saf_l1_y/saf_l1_x))
+    print("H [mT]=", ext_y, ", Angle saf layer 1 [deg]=", - (360/(2 *np.pi)) * np.arctan(saf_l1_y/saf_l1_x))
+    print("")
