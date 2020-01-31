@@ -57,7 +57,7 @@ terms = [rkkyexch, ext]
 if minimize:
     minimizer = LBFGS_Minimizer(terms, tol=1e-15, maxiter=1000)
 else:
-    llg = LLGIntegrator(alpha = 1, terms = terms, hmax = 3.5e-10)
+    llg = LLGIntegrator(alpha = 1, terms = terms, hmax = 1e-9) # Note: for this example hysteresis 'ears' are smaller for hmax = 1e-9 is smaller than for 3.5e-10, interestingly
 
 def hysteresis_factor(i, steps):
     if i < steps/4.:

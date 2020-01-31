@@ -580,14 +580,14 @@ cdef class LLGIntegrator:
     print(llg.E(state))
     """
     cdef cLLGIntegrator* _thisptr
-    def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6):
+    def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
         cdef vector[shared_ptr[cLLGTerm]] vector_in
         if not terms:
             print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
         else:
             for arg in terms:
                 vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol))
+            self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
     #def __dealloc__(self):
     #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
     #    # NOTE is also problematic in minimizer class
