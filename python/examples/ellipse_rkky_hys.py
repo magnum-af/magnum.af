@@ -1,5 +1,4 @@
-# Example demonstrating the MuMAG Standard Problem 4
-# Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
+# Elliptical RKKY-coupled layers
 
 import numpy as np
 import arrayfire as af
