@@ -33,7 +33,9 @@ print(mesh.nx, mesh.ny, mesh.nz, mesh.dx, mesh.dy, mesh.dz, dx, dy, dz)
 nvort = 39 # number of layer in vortex
 diffnz = nz - nvort
 
+timer = time.time()
 vortex = Util.vortex(Mesh(nx, ny, nz-diffnz, dx=x/nx, dy=y/ny, dz=z/nz))
+print("Init vortex in", time.time() - timer, "[s]")# TODO use cython to speedup
 #print(vortex.dims())
 
 Util.write_vti(vortex, dx, dy, dz, filepath + "vortex_init")

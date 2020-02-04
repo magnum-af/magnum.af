@@ -67,10 +67,13 @@ int main(int argc, char **argv)
     const double y = 400e-9;
     const double z = 32e-9;
 
-    const uint32_t nx = 100, ny = 100, nz = 32;
+    const uint32_t ixy(argc > 6 ? std::stoi(argv[6]) : 100);
+    const uint32_t nx = ixy, ny = ixy, nz = 32;
+    std::cout << "nx = " << ixy << std::endl;
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
+    std::cout << "nx = " << ixy << " " << dx << " " <<  dy << " " << dz << std::endl;
 
     const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9; //TODO
