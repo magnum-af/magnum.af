@@ -27,6 +27,8 @@ private:
 ///     region      [nx, ny, nz, 1]
 ///
 std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region);
+std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region); // Wrapping only
+
 af::array cross4(const af::array &a, const af::array &b);
 af::array cross4shift(const af::array &a, const af::array &b);
 af::array dotproduct(const af::array &a, const af::array &b);

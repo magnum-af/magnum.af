@@ -56,12 +56,21 @@ from magnumaf_decl cimport LLGTerm as cLLGTerm
 from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
 from magnumaf_decl cimport String as cString
 
+from magnumaf_decl cimport double_array3
+from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
+
 def array_from_addr(array_addr):
     array=af.Array()
     array.arr=c_void_p(array_addr)
     return array
 
+
 class Util:
+    @staticmethod
+    def spacial_mean_in_region(vectorfield, region):
+        a = cspacial_mean_in_region(addressof(vectorfield.arr), addressof(region.arr))
+        return a[0], a[1], a[2]
+
     @staticmethod
     def normalize(a):
         """Expects an vector array and returns the array normalized to 1."""

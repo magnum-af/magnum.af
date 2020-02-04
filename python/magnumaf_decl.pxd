@@ -218,3 +218,13 @@ cdef extern from "string.hpp" namespace "magnumafcpp":
     cdef cppclass String:
         String(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);
         double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff , const int string_steps, const bool verbose);
+
+
+cdef extern from "<array>" namespace "std" nogil:
+  cdef cppclass double_array3 "std::array<double, 3>":
+    double_array3() except+
+    double& operator[](size_t)
+
+cdef extern from "func.hpp" namespace "magnumafcpp":
+    double_array3 spacial_mean_in_region(long int vectorfield, long int region)
+

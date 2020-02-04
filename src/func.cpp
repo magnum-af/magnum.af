@@ -23,6 +23,10 @@ std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const
     }
 }
 
+std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region){
+    return spacial_mean_in_region(*(new af::array(*((void **)vectorfield))), *(new af::array(*((void **)region))));
+}
+
 WrappedArray::WrappedArray(af::array array) : array(array)
 {
 }
