@@ -1,7 +1,8 @@
 #pragma once
-#include <iostream>
-#include <chrono> //for af::randomEngine
 #include "arrayfire.h"
+#include <array>
+#include <chrono> //for af::randomEngine
+#include <iostream>
 
 namespace magnumafcpp
 {
@@ -19,6 +20,13 @@ public:
 private:
 };
 
+///
+/// Function calculating the spacial mean (i.e. mean along first three dimensions) in a specified region only of a given vectorfield with size [nx, ny, nz, 3]. The region is specified by an array of size [nx, ny, nz, 1], only cells with non-zero values are considered for the mean.
+/// expects sizes to be:
+///     vectorfield [nx, ny, nz, 3]
+///     region      [nx, ny, nz, 1]
+///
+std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region);
 af::array cross4(const af::array &a, const af::array &b);
 af::array cross4shift(const af::array &a, const af::array &b);
 af::array dotproduct(const af::array &a, const af::array &b);

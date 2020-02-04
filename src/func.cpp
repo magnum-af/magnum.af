@@ -3,6 +3,26 @@
 namespace magnumafcpp
 {
 
+
+std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region){
+    if( vectorfield.dims(3) != 3 or region.dims(3) != 1)
+    {
+        printf("\33[1;31mWarning:\33[0m spacial_mean_in_region: dimensions do not match, returning [-1, -1, -1]\n");
+        return {-1, -1, -1};
+    }
+    else{
+        af::array zero_if_input_is_zero_else_one = ! af::iszero(region);
+        const unsigned number_of_nonzero_elements = af::sum(af::sum(af::sum(zero_if_input_is_zero_else_one, 0), 1), 2).scalar<unsigned>();
+        af::array considered_values = vectorfield * af::tile(zero_if_input_is_zero_else_one, 1, 1, 1, 3);
+        af::array sum_considered_values = af::sum(af::sum(af::sum(considered_values, 0), 1), 2);
+        af::array mean_considered_values = sum_considered_values/number_of_nonzero_elements;
+        double xmean = mean_considered_values(0, 0, 0, 0).scalar<double>();
+        double ymean = mean_considered_values(0, 0, 0, 1).scalar<double>();
+        double zmean = mean_considered_values(0, 0, 0, 2).scalar<double>();
+        return {xmean, ymean, zmean};
+    }
+}
+
 WrappedArray::WrappedArray(af::array array) : array(array)
 {
 }
