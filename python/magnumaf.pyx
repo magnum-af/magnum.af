@@ -59,6 +59,59 @@ from magnumaf_decl cimport String as cString
 from magnumaf_decl cimport double_array3
 from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
+# argparse
+import argparse
+import os
+def parse():
+    """
+    Invokes argument parser.
+    """
+    parser = argparse.ArgumentParser(description='Magnum.af simulation script.')
+    parser.add_argument(
+            '-d',
+            '--dir',
+            type=str,
+            default='magnum.af_output/',
+            help='Output directory',
+            )
+    parser.add_argument(
+            '-f',
+            '--force',
+            help='If dir exists, writing into output directory is forced.',
+            action='store_true'
+            )
+
+    parser.add_argument(
+            '-v',
+            '--verbose',
+            help='Print more information.',
+            action='store_true'
+            )
+
+    args = parser.parse_args()
+    if args.verbose:
+        print('args=', args)
+
+    if os.path.exists(args.dir):
+        if args.verbose:
+            print("Output path '", args.dir, "' exists")
+        if args.force:
+            if args.verbose:
+                print("Forcing write into existing directory '", args.dir, "'")
+        else:
+            raise RuntimeError("Output directory exists! Use -f to overwrite!")
+    else:
+        if args.verbose:
+            print("Dir does not exist, creating directory '", args.dir, "'")
+        os.mkdir(args.dir)
+    return args
+
+def parse_filepath():
+    """
+    Parses input and retruns the parsed filepath using parser.pars_args().dir
+    """
+    return parse().dir
+
 def array_from_addr(array_addr):
     array=af.Array()
     array.arr=c_void_p(array_addr)
