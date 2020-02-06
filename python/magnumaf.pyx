@@ -62,22 +62,43 @@ from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 # argparse
 import argparse
 import os
+import sys
+from shutil import copy
+
 def parse():
     """
     Invokes argument parser.
     """
     parser = argparse.ArgumentParser(description='Magnum.af simulation script.')
     parser.add_argument(
-            '-d',
-            '--dir',
+            'dir',
             type=str,
+            nargs='?',
             default='magnum.af_output/',
             help='Output directory',
             )
     parser.add_argument(
+            'gpu',
+            type=int,
+            nargs='?',
+            default=0,
+            help='GPU number to be used by arrayfire.'
+            )
+    parser.add_argument(
+            'oargs',
+            nargs=argparse.REMAINDER,
+            help='Optional arguments to be used in the simulation script.',
+            )
+    parser.add_argument(
             '-f',
             '--force',
-            help='If dir exists, writing into output directory is forced.',
+            help='Forces output do be written into dir, even if it alreay exists. This might overwrite files.',
+            action='store_true'
+            )
+
+    parser.add_argument(
+            '--nocopy',
+            help='Skip copying this script into dir/ as backup.',
             action='store_true'
             )
 
@@ -89,6 +110,10 @@ def parse():
             )
 
     args = parser.parse_args()
+
+    if not args.dir.endswith('/'):
+        args.dir = args.dir + '/'
+
     if args.verbose:
         print('args=', args)
 
@@ -104,6 +129,14 @@ def parse():
         if args.verbose:
             print("Dir does not exist, creating directory '", args.dir, "'")
         os.mkdir(args.dir)
+
+    af.set_device(args.gpu)
+
+    if not args.nocopy:
+        if args.verbose:
+            print('copy script "', os.path.basename(sys.argv[0]), '" into "', args.dir + 'copy_of_' + os.path.basename(sys.argv[0]), '"')
+        copy(sys.argv[0], args.dir + 'copy_of_' + os.path.basename(sys.argv[0]))
+
     return args
 
 def parse_filepath():

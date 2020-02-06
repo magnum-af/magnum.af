@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Example demonstrating the MuMAG Standard Problem 4
 # Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
@@ -6,6 +7,7 @@ from magnumaf import *
 import sys
 import time
 
+args = parse()
 af.info()
 start = time.time()
 
@@ -30,7 +32,7 @@ llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")
-stream = open(sys.argv[1]+"m.dat", "w")
+stream = open(args.dir +"m.dat", "w")
 timer = time.time()
 while state.t < 1e-9:
     llg.step(state)
@@ -62,13 +64,13 @@ print("total time =", time.time() - start, "[s]")
 from os import system
 system('gnuplot -e "\
     set terminal pdf;\
-    set output \'' + sys.argv[1] + 'm.pdf\';\
+    set output \'' + args.dir + 'm.pdf\';\
     set xlabel \'t [ns]\';\
     set ylabel \'<m>\';\
-    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'<m_x>\',\
+    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'<m_x>\',\
     \'\' u 1:3 w l t \'<m_y>\',\
     \'\' u 1:4 w l t \'<m_z>\';\
 "')
 
 # show pdf with evince
-system('evince ' + sys.argv[1] +'m.pdf')
+system('evince ' + args.dir +'m.pdf')
