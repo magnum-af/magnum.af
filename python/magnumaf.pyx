@@ -153,6 +153,41 @@ def array_from_addr(array_addr):
 
 class Util:
     @staticmethod
+    def plot(plotfile = 'plot.gpi',
+            outputfile = 'm.pdf',
+            datafile = 'm.dat',
+            xlabel = "t [s]",
+            ylabel = '<m>',
+            lines = ['u 1:2 w l t "m"'],
+            gnuplot = True,
+            evince = True,
+            outputdir = None
+            ):
+        if outputdir is not None:
+            plotfile = outputdir + plotfile
+            outputfile = outputdir + outputfile
+            datafile = outputdir + datafile
+        f = open(plotfile, 'w')
+        f.write('set terminal pdf\n')
+        f.write('set output "' + outputfile + '"\n')
+        f.write('set xlabel "' + xlabel + '"\n')
+        f.write('set ylabel "' + ylabel + '"\n')
+        f.write('plot ')
+        for i, line in enumerate(lines):
+            print(i, line)
+            if i > 0:
+                f.write(', ')
+            f.write('"' + datafile + '" ' + line)
+        f.write('\n')
+        f.close()
+
+        from os import system
+        if gnuplot:
+            system('gnuplot ' + plotfile)
+        if evince:
+            system('evince ' + outputfile)
+
+    @staticmethod
     def spacial_mean_in_region(vectorfield, region):
         a = cspacial_mean_in_region(addressof(vectorfield.arr), addressof(region.arr))
         return a[0], a[1], a[2]

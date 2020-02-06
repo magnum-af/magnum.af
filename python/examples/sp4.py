@@ -15,6 +15,7 @@ start = time.time()
 x, y, z =  5.e-7, 1.25e-7, 3.e-9
 # Discretization
 nx, ny, nz = 100, 25, 1
+inttime = 1e-9
 
 # Creating objects
 mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
@@ -34,7 +35,7 @@ llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
 print("relaxing 1ns")
 stream = open(args.dir +"m.dat", "w")
 timer = time.time()
-while state.t < 1e-9:
+while state.t < inttime:
     llg.step(state)
     mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
     stream.write("%e, %e, %e, %e\n" %(state.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
@@ -52,7 +53,7 @@ llg.add_terms(zee)
 # Switching
 print("switching 1ns")
 timer = time.time()
-while state.t < 2e-9:
+while state.t < 2 * inttime:
     llg.step(state)
     mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
     stream.write("%e, %e, %e, %e\n" %(state.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
@@ -60,17 +61,4 @@ stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
 
-# plotting data with gnuplot
-from os import system
-system('gnuplot -e "\
-    set terminal pdf;\
-    set output \'' + args.dir + 'm.pdf\';\
-    set xlabel \'t [ns]\';\
-    set ylabel \'<m>\';\
-    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'<m_x>\',\
-    \'\' u 1:3 w l t \'<m_y>\',\
-    \'\' u 1:4 w l t \'<m_z>\';\
-"')
-
-# show pdf with evince
-system('evince ' + args.dir +'m.pdf')
+Util.plot(outputdir = args.dir, lines = ['u ($1 * 1e9):2 w l t "<mx>"', 'u ($1 * 1e9):3 w l t "<my>"', 'u ($1 * 1e9):4 w l t "<mz>"'])
