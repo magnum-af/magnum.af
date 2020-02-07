@@ -174,7 +174,6 @@ class Util:
         f.write('set ylabel "' + ylabel + '"\n')
         f.write('plot ')
         for i, line in enumerate(lines):
-            print(i, line)
             if i > 0:
                 f.write(', ')
             f.write('"' + datafile + '" ' + line)
