@@ -5,6 +5,28 @@
 
 using namespace magnumafcpp;
 
+TEST(vtkIO, vtiWriteReadTest)
+{
+    af::array a = af::randu(6, 5, 4, 3, f64);
+    Mesh mesh(6, 5, 4, 0.1, 0.2, 0.3);
+
+    vti_writer_micro(a, mesh, "vti_unittest");
+
+    af::array read_a;
+    Mesh read_mesh(0, 0, 0, 0, 0, 0);
+
+    vti_reader(read_a, read_mesh, "vti_unittest.vti");
+    ASSERT_EQ(remove("vti_unittest.vti"), 0);
+
+    ASSERT_EQ(read_mesh.n0, 6);
+    ASSERT_EQ(read_mesh.n1, 5);
+    ASSERT_EQ(read_mesh.n2, 4);
+    ASSERT_EQ(read_mesh.dx, 0.1);
+    ASSERT_EQ(read_mesh.dy, 0.2);
+    ASSERT_EQ(read_mesh.dz, 0.3);
+    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+}
+
 TEST(vtkIO, vtrWriteReadTest)
 {
     af::array a = af::randu(6, 5, 4, 10, f64);
