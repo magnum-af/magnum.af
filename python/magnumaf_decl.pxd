@@ -217,7 +217,7 @@ cdef extern from "vtk_IO.hpp" namespace "magnumafcpp":
 cdef extern from "string.hpp" namespace "magnumafcpp":
     cdef cppclass String:
         String(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);
-        double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff , const int string_steps, const bool verbose);
+        double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti, const bool verbose);
 
 
 cdef extern from "<array>" namespace "std" nogil:

@@ -191,9 +191,8 @@ void write_plotfile(const std::string filepath)
     stream.close();
 }
 
-double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const bool verbose)
+double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti, const bool verbose)
 {
-    const int every_string_to_vti = 50;
     write_plotfile(filepath);
 
     this->write_vti(filepath + "init_string");

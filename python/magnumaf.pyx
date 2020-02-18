@@ -789,8 +789,8 @@ cdef class String:
         del self._thisptr
         self._thisptr = NULL
 
-    def run(self, filepath, string_abort_rel_diff = 1e-12, string_abort_abs_diff = 1e-27, string_steps = 10000, verbose = True):
-        return self._thisptr.run(filepath.encode('utf-8'), string_abort_rel_diff, string_abort_abs_diff, string_steps, <bool> verbose)
+    def run(self, filepath, string_abort_rel_diff = 1e-12, string_abort_abs_diff = 1e-27, string_steps = 10000, every_string_to_vti = 50, verbose = True):
+        return self._thisptr.run(filepath.encode('utf-8'), string_abort_rel_diff, string_abort_abs_diff, string_steps, every_string_to_vti, <bool> verbose)
 
 # base class for clearification (especially for heritage diagramms in docu)
 cdef class HeffTerm:
