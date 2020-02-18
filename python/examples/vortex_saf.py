@@ -23,6 +23,9 @@ dx, dy, dz =x/nx, y/ny, z/nz
 Ms = 1.393e6 # //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
 A = 1.5e-11 #  //[J/m]
 ext_in_bottom_ref = 275e-3/Constants.mu0 #
+
+# when defining E = - 2 RKKY \int_{A} m_a m_b dA
+# other definitions skip the 2 s.t. RKKY_alternative = 2 * RKKY
 RKKY_val = -0.4e-3 * dz # [J/m^2] * [m]
 
 # Creating objects
