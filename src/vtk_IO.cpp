@@ -94,11 +94,6 @@ void implementation_vti_writer_micro(const af::array field, const Mesh &mesh, st
         writer->SetInputData(imageDataCellCentered);
 #endif
         writer->Write();
-
-        imageDataPointCentered->Delete();
-        imageDataCellCentered->Delete();
-        writer->Delete();
-        af::freeHost(host_a);
     }
     catch (const std::exception &e)
     {
@@ -159,9 +154,6 @@ void vti_writer_atom(const af::array field, const Mesh &mesh, std::string output
     writer->SetInputData(imageData);
 #endif
     writer->Write();
-
-    writer->Delete();
-    af::freeHost(host_a);
 }
 
 void vti_reader(af::array &field, Mesh &mesh, std::string filepath)
@@ -207,7 +199,6 @@ void vti_reader(af::array &field, Mesh &mesh, std::string filepath)
         }
         af::array A(dim4th * imageData->GetNumberOfCells(), 1, 1, 1, A_host);
         delete[] A_host;
-        temp->Delete();
         A = af::moddims(A, af::dim4(dim4th, dims[0], dims[1], dims[2]));
         A = af::reorder(A, 1, 2, 3, 0);
         field = A;
@@ -252,9 +243,6 @@ void vti_reader(af::array &field, Mesh &mesh, std::string filepath)
         field = A;
     }
     mesh = Mesh(dims[0], dims[1], dims[2], spacing[0], spacing[1], spacing[2]);
-
-    imageData->Delete();
-    reader->Delete();
 }
 
 void vtr_writer(const af::array &field, const double dx, const double dy, const std::vector<double> z_spacing, std::string outputname, const bool verbose)
@@ -346,7 +334,6 @@ void vtr_writer(const af::array &field, const double dx, const double dy, const 
 
     writer->Delete();
     data->Delete();
-    grid->Delete();
     delete[] host_a;
 }
 
@@ -424,8 +411,6 @@ void vtr_reader(af::array &field, NonequispacedMesh &mesh, std::string filepath,
     // Setting output variables
     field = A;
     mesh = NonequispacedMesh(grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing);
-    reader->Delete();
-    output_data->Delete();
 }
 } // namespace magnumafcpp
 #pragma GCC diagnostic pop
