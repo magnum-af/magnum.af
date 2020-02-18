@@ -94,6 +94,8 @@ void implementation_vti_writer_micro(const af::array field, const Mesh &mesh, st
         writer->SetInputData(imageDataCellCentered);
 #endif
         writer->Write();
+
+        af::freeHost(host_a); // free allocated memory
     }
     catch (const std::exception &e)
     {
@@ -154,6 +156,8 @@ void vti_writer_atom(const af::array field, const Mesh &mesh, std::string output
     writer->SetInputData(imageData);
 #endif
     writer->Write();
+
+    af::freeHost(host_a);
 }
 
 void vti_reader(af::array &field, Mesh &mesh, std::string filepath)
@@ -334,7 +338,7 @@ void vtr_writer(const af::array &field, const double dx, const double dy, const 
 
     writer->Delete();
     data->Delete();
-    delete[] host_a;
+    af::freeHost(host_a);
 }
 
 // wrapped function
