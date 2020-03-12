@@ -9,12 +9,6 @@ TEST(ascii_io, ascii_io_test)
     af::array a = af::randu(6, 5, 4, 3, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0.3);
 
-    //af::array a = af::randu(4, 4, 4, 3, f64);
-    //a(af::span, af::span, af::span, 0) = 1;
-    //a(af::span, af::span, af::span, 1) = 1;
-    //a(af::span, af::span, af::span, 2) = 1;
-    //Mesh mesh(4, 4, 4, 2, 2, 2);
-
     std::string filename = ("ascii_unittest.txt");
     write_ascii(a, mesh, filename, false);
 
