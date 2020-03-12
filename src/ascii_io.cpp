@@ -14,7 +14,6 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
     {
         stream.precision(precision);
         int val_setw = precision + 4; // formatted at least for 0.*** values
-        //stream << std::setw(precision + 10);
         if (verbose) {printf("writing to ascii file %s with precision of %d", filename.c_str(), precision);}
         stream << "# " << mesh.n0 << " " << mesh.n1 << " " << mesh.n2 << " " << mesh.dx << " " << mesh.dy << " " << mesh.dz << std::endl;
         stream << "# ascii encoded vector field" << std::endl;
@@ -53,7 +52,7 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
     if( infile.is_open())
     {
         if (verbose){
-            printf("reading from ascii\n");
+            printf("reading from ascii file %s\n", filename.c_str());
         }
 
         std::string line;
@@ -62,12 +61,9 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
         uint32_t nx, ny, nz;
         double dx, dy, dz;
         std::getline(infile, line);
-        //std::cout << line << std::endl;
         line.erase(0, 2);
-        //std::cout << line << std::endl;
         std::istringstream iss1(line);
         if (!(iss1 >> nx >> ny >> nz >> dx >> dy >> dz)){printf("Error while reading line!\n");}
-        //if (verbose){std::cout << "read in:" <<  nx << " " <<  ny << " " <<  nz << " " <<  dx << " " <<  dy << " " <<  dz << std::endl;}
         Mesh read_mesh(nx, ny, nz, dx, dy, dz);
         mesh = read_mesh;
         af::array read_a = af::constant(0, nx, ny, nz, 3, f64);
@@ -86,11 +82,9 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
                 {
                     for(uint32_t iz = 0; iz < nz; iz++)
                     {
-                        //std::cout << line << std::endl;
                         std::istringstream iss(line);
                         double ddx, ddy, ddz, mx, my, mz;
                         if (!(iss >> ddx >> ddy >> ddz >> mx >> my >> mz)){printf("Error while reading line!\n"); break;}
-                        //std::cout << ddx << " " <<  ddy << " " <<  ddz << " " <<  mx << " " <<  my << " " <<  mz << std::endl;
                         read_a(ix, iy, iz, 0) = mx;
                         read_a(ix, iy, iz, 1) = my;
                         read_a(ix, iy, iz, 2) = mz;
@@ -100,33 +94,11 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
             }
             a = read_a;
         }
-
-        //while (std::getline(infile, line))
-        //{
-        //    //std::cout << line << std::endl;
-        //    //std::cout << line[0] << std::endl;
-        //    //std::cout << &line[0] << std::endl;
-        //    if ( line.at(0) == '#' ) {
-        //        continue;
-        //    }
-        //    std::istringstream iss(line);
-        //    double dx, dy, dz, mx, my, mz;
-        //    if (!(iss >> dx >> dy >> dz >> mx >> my >> mz)){std::cout << "Error while reading file." << std::endl; break;}
-        //    std::cout << dx << dy << dz << mx << my << mz << std::endl;
-        //}
-
-        //double dx, dy, dz, mx, my, mz;
-        //while(infile >> dx >> dy >> dz >> mx >> my >> mz)
-        //{
-        //    std::cout << dx << dy << dz << mx << my << mz << std::endl;
-        //}
     }
     else
     {
-        std::cout << "Could not read file!" << std::endl;
+        printf("Could not read file!");
     }
-
-
 }
 
 
