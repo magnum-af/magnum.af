@@ -62,13 +62,6 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
                         }
                     }
                     stream << "\n";
-                    //stream << std::setw(val_setw) << std::left << host_a[colum_major_stride(ix, iy, iz, 0, nx, ny, nz)] << "\t";
-                    //stream << std::setw(val_setw) << std::left << host_a[colum_major_stride(ix, iy, iz, 1, nx, ny, nz)] << "\t";
-                    //stream << std::setw(val_setw) << std::left << host_a[colum_major_stride(ix, iy, iz, 2, nx, ny, nz)] << "\n";
-
-                    //stream << std::setw(val_setw) << std::left << a(ix, iy, iz, 0).scalar<double>() << "\t";
-                    //stream << std::setw(val_setw) << std::left << a(ix, iy, iz, 1).scalar<double>() << "\t";
-                    //stream << std::setw(val_setw) << std::left << a(ix, iy, iz, 2).scalar<double>() << "\n";
                 }
             }
         }
@@ -99,7 +92,6 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
         Mesh read_mesh(nx, ny, nz, dx, dy, dz);
         mesh = read_mesh;
         double* raw_read_a = new double[nx * ny * nz * n_scalar];
-        //af::array read_a = af::constant(0, nx, ny, nz, 3, f64);
 
         // skipping all further lines starting with '#'
         while (std::getline(infile, line))
@@ -123,15 +115,7 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
                             double value;
                             if (!(iss >> value)){printf("Error while reading line!\n"); break;}
                             raw_read_a[colum_major_stride(ix, iy, iz, i_scalar, nx, ny, nz)] = value;
-                            //if (!(iss >> ddx >> ddy >> ddz >> mx >> my >> mz)){printf("Error while reading line!\n"); break;}
-                            //raw_read_a[colum_major_stride(ix, iy, iz, 0, nx, ny, nz)] = mx;
-                            //raw_read_a[colum_major_stride(ix, iy, iz, 1, nx, ny, nz)] = my;
-                            //raw_read_a[colum_major_stride(ix, iy, iz, 2, nx, ny, nz)] = mz;
                         }
-
-                        //read_a(ix, iy, iz, 0) = mx;
-                        //read_a(ix, iy, iz, 1) = my;
-                        //read_a(ix, iy, iz, 2) = mz;
                         std::getline(infile, line);
                     }
                 }
@@ -140,7 +124,6 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose)
             delete[] raw_read_a;
             raw_read_a = NULL;
             a = read_a;
-            //a = read_a;
         }
         if (verbose){ printf("Wrote ascii file in %f [s]\n", timer.stop()); }
     }
