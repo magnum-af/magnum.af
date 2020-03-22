@@ -27,18 +27,33 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
         int val_setw = precision + 4; // formatted at least for 0.*** values
         if (verbose) {printf("writing to ascii file %s with precision of %d\n", filename.c_str(), precision);}
         stream << "# " << a.dims(0) << " " <<  a.dims(1) << " " << a.dims(2) << " " << a.dims(3) << " " << mesh.dx << " " << mesh.dy << " " << mesh.dz << std::endl;
-        stream << "# ascii encoded vector field" << std::endl;
-        stream << "# plot e.g. with gnuplot: set view equal xyz; splot '" << filename << "' using 1:2:3:4:5:6 with vectors" << std::endl;
-        stream << "#                       : set view equal xyz; splot '" << filename << "' using ($1*1e9):($2*1e9):($3*1e9):4:5:6 with vectors" << std::endl;
-        stream << "#                       : set view equal xyz; splot '" << filename << "' using 1:2:3:4:5:6:(sqrt($4**2+$5**2+$6**2)) with vectors linecolor palette z" << std::endl;
-        stream << "#                       : set view equal xyz; splot '" << filename << "' using ($1*1e9):($2*1e9):($3*1e9):4:5:6:4 with vectors linecolor palette" << std::endl;
-        stream << "#\n# ";
-        stream << std::setw(val_setw) << std::left << "x[m]" << "\t";
-        stream << std::setw(val_setw) << std::left << "y[m]" << "\t";
-        stream << std::setw(val_setw) << std::left << "z[m]" << "\t";
-        stream << std::setw(val_setw) << std::left << "mx[a.u.]" << "\t";
-        stream << std::setw(val_setw) << std::left << "my[a.u.]" << "\t";
-        stream << std::setw(val_setw) << std::left << "mz[a.u.]" << "\n";
+        stream << "# magnum.af ascii-encoded " << a.dims(3) << "d spacial field" << std::endl;
+        stream << "# plot with gnuplot using: set view equal xyz; splot '" << filename << "' using 1:2:3:4:5:6 with vectors" << std::endl;
+        stream << "# color code mx component: set view equal xyz; splot '" << filename << "' using ($1*1e9):($2*1e9):($3*1e9):4:5:6:4 with vectors linecolor palette" << std::endl;
+        //stream << "#                        : set view equal xyz; splot '" << filename << "' using ($1*1e9):($2*1e9):($3*1e9):4:5:6 with vectors" << std::endl;
+        //stream << "#                        : set view equal xyz; splot '" << filename << "' using 1:2:3:4:5:6:(sqrt($4**2+$5**2+$6**2)) with vectors linecolor palette z" << std::endl;
+        stream << "#\n";
+        stream << std::setw(val_setw) << std::left << "# x-position[m]" << "\t";
+        stream << std::setw(val_setw) << std::left <<   "y-position[m]" << "\t";
+        stream << std::setw(val_setw) << std::left <<   "z-position[m]" << "\t";
+        if (n_scalar == 3)
+        {
+            stream << std::setw(val_setw) << std::left << "mx[a.u.]" << "\t";
+            stream << std::setw(val_setw) << std::left << "my[a.u.]" << "\t";
+            stream << std::setw(val_setw) << std::left << "mz[a.u.]" << "\n";
+        }
+        else
+        {
+            for(uint32_t i_scalar = 0; i_scalar < n_scalar; i_scalar++)
+            {
+                stream << std::setw(val_setw) << std::left << std::to_string(i_scalar) + "-component";
+                if (i_scalar != (n_scalar - 1))
+                {
+                    stream << "\t";
+                }
+            }
+            stream << "\n";
+        }
 
         // copying raw data to host is factor ~10 faster than accessing af::array with indices
         double *host_a = a.host<double>();
