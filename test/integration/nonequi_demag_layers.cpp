@@ -5,11 +5,11 @@
 
 using namespace magnumafcpp;
 
-TEST(NonEquiDemag, energy_homogenuous_cube)
+TEST(NonEquiDemagField, energy_homogenuous_cube)
 {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double dx = 1e-9, dy = 1e-9, dz = 1e-9;
-    const int nx = 10, ny = 10, nz = 10;
+    const int nx = 4, ny = 4, nz = 4;
     const double Ms = 8e5;
 
     std::vector<double> z_spacing;
@@ -41,8 +41,8 @@ TEST(NonEquiDemag, energy_homogenuous_cube)
     // testing state.Ms_field switch
     state.Ms_field = af::constant(8e5, mesh_ne.dims, f64);
     h_demag = demag.h(state);
-    EXPECT_NEAR(demag.E(state), E_analytic, 3.7e-19);
-    EXPECT_NEAR(demag.E(state, h_demag), E_analytic, 3.7e-19);
+    EXPECT_NEAR(demag.E(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
+    EXPECT_NEAR(demag.E(state, h_demag), E_analytic, 3.7e-20);
 }
 
 TEST(NonEquiDemagField, EnergyTest)
@@ -171,7 +171,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest)
 {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
-    const int nx = 100, ny = 25, nz = 3;
+    const int nx = 10, ny = 8, nz = 3;
 
     af::randomEngine rand_engine = util::rand_engine_current_time();
     af::array random = af::randu(af::dim4(nx, ny, 1, 3), f64, rand_engine);
@@ -201,15 +201,16 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest)
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.01);
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.003);
+    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.001); // 100x25x3: 0.01
+    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0003); // 100x25x3:  0.003
+
 }
 
 TEST(NonEquiDemagField, UMagnetizationHeffTest)
 {
     // Compare SP4 layer (with ↑ → → → → ↑ magnetization) once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
-    const int nx = 100, ny = 25, nz = 3;
+    const int nx = 10, ny = 8, nz = 3;
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
@@ -238,15 +239,15 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest)
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.01);    // Note: this is for opencl, cpu and cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0008); // Note: this is for opencl, cpu and cuda achieve 0.0006
+    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0001);    // 100x25x3: 0.01, Note: this is for opencl, cpu and cuda achieve 0.007
+    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.000008); // 100x25x3: 0.0008, Note: this is for opencl, cpu and cuda achieve 0.0006
 }
 
-TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest)
+TEST(NonEquiDemagField, HomogenuousMagnetizationHeffTest)
 {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3 equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
-    const int nx = 100, ny = 25, nz = 3;
+    const int nx = 10, ny = 8, nz = 3;
 
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
@@ -269,8 +270,8 @@ TEST(NonEquiDemag, HomogenuousMagnetizationHeffTest)
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0, 0.04);  // Note: this is for opencl, cpu and cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.01); // Note: this is for opencl, cpu and cuda achieve 0.0003
+    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,  0.0004); // 100x25x3: 0.04 Note: this is for opencl, cpu and cuda achieve 0.007
+    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0, 0.0001); // 100x25x3: 0.01 Note: this is for opencl, cpu and cuda achieve 0.0003
 }
 
 int main(int argc, char **argv)
