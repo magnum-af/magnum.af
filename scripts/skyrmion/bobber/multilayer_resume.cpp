@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     const double SK_Ms = 1371e3;  // A/m
     const double SK_A = 15e-12;   // J/m
     const double SK_Ku = 1.411e6; // J/m^3
-    const double SK_D = -2.5e-3;   // J/m^2
+    const double SK_D = 2.5e-3;   // J/m^2
 
     // Ferrimagnetic interface layer params
     const double IL_Ms = 488.2e3;                   // A/m
@@ -176,98 +176,20 @@ int main(int argc, char **argv)
     LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     timer.print_stage("init ");
 
-    State state_1(mesh, Ms, m);
-
-    if (!exists(filepath + "m_relaxed.vti"))
-    {
-        std::cout << "Relaxing minit" << std::endl;
-        state_1.write_vti(filepath + "minit");
-        if (int_over_relax)
-        {
-            while (state_1.t < t_relax_state1_sec)
-            {
-                if (state_1.steps % 100 == 0)
-                    state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
-                llg.step(state_1);
-                std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
-            }
-        }
-        else
-        {
-            llg.relax(state_1, 1e-12);
-        }
-        timer.print_stage("relax");
-        state_1.write_vti(filepath + "m_relaxed");
-        vti_writer_micro(state_1.m(af::span, af::span, 0, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer5");
-        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed__ferri_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_top_ferro_layer5");
-    }
-    else
-    {
-        std::cout << "Found m_relaxed, reading in state_1." << std::endl;
-        state_1._vti_reader(filepath + "m_relaxed.vti");
-        state_1.write_vti(filepath + "m_relaxed_from_read_in");
-    }
-
-    State state_2;
-    if (!exists(filepath + "m_state_2_relaxed.vti"))
-    {
-        af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-        m2(af::span, af::span, af::span, 2) = 1.;
-        set_air_to_zero(m2);
-        state_2 = State(mesh, Ms, m2);
-        //state_2.m(af::span, af::span, 19, af::span) = 0;
-        //state_2.m(af::span, af::span, 22, af::span) = 0;
-        //state_2.m(af::span, af::span, 25, af::span) = 0;
-        //state_2.m(af::span, af::span, 28, af::span) = 0;
-        //state_2.m(af::span, af::span, 31, af::span) = 0;
-
-        //state_2.m(af::span, af::span, 19, 2) = 1;
-        //state_2.m(af::span, af::span, 22, 2) = 1;
-        //state_2.m(af::span, af::span, 25, 2) = 1;
-        //state_2.m(af::span, af::span, 28, 2) = 1;
-        //state_2.m(af::span, af::span, 31, 2) = 1;
-
-        //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
-        state_2.write_vti(filepath + "m_state_2_init");
-
-        //std::cout.precision(16);
-        if (int_over_relax)
-        {
-            while (state_2.t < 10e-9)
-            { // 3ns not sufficient
-                if (state_2.steps % 100 == 0)
-                    state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
-                llg.step(state_2);
-                std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
-            }
-        }
-        else
-        {
-            llg.relax(state_2, 1e-12);
-        }
-        vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
-        timer.print_stage("state2 relaxed");
-    }
-    else
-    {
-        std::cout << "Found m_state_2_relaxed" << std::endl;
-        state_2._vti_reader(filepath + "m_state_2_relaxed.vti");
-        state_2.write_vti(filepath + "m_state_2_relaxed_from_read_in");
-    }
-
     // preparing string method
     double n_interp = 60;
-    double string_dt = 1e-13;
+    double string_dt = 1e-14;
+    //double string_dt = 1e-13;
     //const int string_steps = 1000;
 
     std::vector<State> inputimages;
-    inputimages.push_back(state_1);
-    inputimages.push_back(state_2);
+    for (int i = 0; i < n_interp; i++){
+        State state(mesh, Ms, m);
+        state._vti_reader(filepath + "current_skyrm_image" + std::to_string(i) +".vti");
+        inputimages.push_back(state);
+    }
 
-    String string(state_1, inputimages, n_interp, string_dt, llg);
+    String string(inputimages[0], inputimages, n_interp, string_dt, llg);
     string.run(filepath, 1e-12, 1e-27, 1e6, 50, true);
     timer.print_stage("string relaxed");
     return 0;

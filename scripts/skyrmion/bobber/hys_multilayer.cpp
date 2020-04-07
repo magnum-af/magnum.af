@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     const double dz = z / nz;
     std::cout << "nx = " << ixy << " " << dx << " " <<  dy << " " << dz << std::endl;
 
-    const double Hz = 130e-3 / constants::mu0;
+    //const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9; //TODO
     //Note: maybe 0.5 factor (see mumax3):
     //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
@@ -166,14 +166,10 @@ int main(int argc, char **argv)
     //NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
 
-    array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    zee(af::span, af::span, af::span, 2) = Hz;
-    auto external = LlgTerm(new ExternalField(zee));
-
     //af::print("dmi", dmi->h(state_1));
     //af::print("exch", exch->h(state_1));
 
-    LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
+    LLGIntegrator llg(1, {demag, exch, aniso, dmi});
     timer.print_stage("init ");
 
     State state_1(mesh, Ms, m);
@@ -211,64 +207,33 @@ int main(int argc, char **argv)
         state_1.write_vti(filepath + "m_relaxed_from_read_in");
     }
 
-    State state_2;
-    if (!exists(filepath + "m_state_2_relaxed.vti"))
-    {
-        af::array m2 = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-        m2(af::span, af::span, af::span, 2) = 1.;
-        set_air_to_zero(m2);
-        state_2 = State(mesh, Ms, m2);
-        //state_2.m(af::span, af::span, 19, af::span) = 0;
-        //state_2.m(af::span, af::span, 22, af::span) = 0;
-        //state_2.m(af::span, af::span, 25, af::span) = 0;
-        //state_2.m(af::span, af::span, 28, af::span) = 0;
-        //state_2.m(af::span, af::span, 31, af::span) = 0;
-
-        //state_2.m(af::span, af::span, 19, 2) = 1;
-        //state_2.m(af::span, af::span, 22, 2) = 1;
-        //state_2.m(af::span, af::span, 25, 2) = 1;
-        //state_2.m(af::span, af::span, 28, 2) = 1;
-        //state_2.m(af::span, af::span, 31, 2) = 1;
-
-        //vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_init");
-        state_2.write_vti(filepath + "m_state_2_init");
-
-        //std::cout.precision(16);
-        if (int_over_relax)
-        {
-            while (state_2.t < 10e-9)
-            { // 3ns not sufficient
-                if (state_2.steps % 100 == 0)
-                    state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
-                llg.step(state_2);
-                std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t" << llg.E(state_2) << std::endl;
-            }
-        }
-        else
-        {
-            llg.relax(state_2, 1e-12);
-        }
-        vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
-        timer.print_stage("state2 relaxed");
+    state_1.t = 0;
+    const int iHz_max = 250; //e-3 / constants::mu0;
+    //const int iHz_max = 1000; //e-3 / constants::mu0;
+    //const int iHz_max = 250; //e-3 / constants::mu0;
+    //const double Hz_max = 250e-3 / constants::mu0;
+    //const int nsteps = 100;
+    std::ofstream stream(filepath + "hys.dat");
+    std::cout << "Hz\t<mz> " << std::endl;
+    af::array eval_mean_region = af::constant(1, nx, ny, nz, 1, f64);
+    set_air_to_zero(eval_mean_region);
+    for (int iHz_current = 120; iHz_current < iHz_max; iHz_current ++){
+        double Hz_current = iHz_current * 1e-3 / constants::mu0;
+        af::array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        zee(af::span, af::span, af::span, 2) = Hz_current;
+        llg.llgterms.push_back(LlgTerm(new ExternalField(zee)));
+        llg.relax(state_1, 1e-8);
+        // TODO mean must account for empty layers
+        auto mean = spacial_mean_in_region(state_1.m, eval_mean_region);
+        std::cout << Hz_current * constants::mu0 << "\t" << mean[2] << "\t" << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2).scalar<double>() << "\t" << Hz_current << "\t" << meani(state_1.m, 0) << "\t" << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2) << std::endl;
+        stream    << Hz_current * constants::mu0 << "\t" << mean[2] << "\t" << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2).scalar<double>() << "\t" << Hz_current << "\t" << meani(state_1.m, 0) << "\t" << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2) << std::endl;
+        llg.llgterms.pop_back();
+        state_1.write_vti(filepath + "m_hys" + std::to_string(iHz_current));
+        //llg.llgterms[llg.llgterms.size() - 1] ->
+        //external->set_homogeneous_field(0, 0, Hz_current);
+        //llg.llgterms[llg.llgterms.size() - 1] ->
     }
-    else
-    {
-        std::cout << "Found m_state_2_relaxed" << std::endl;
-        state_2._vti_reader(filepath + "m_state_2_relaxed.vti");
-        state_2.write_vti(filepath + "m_state_2_relaxed_from_read_in");
-    }
-
-    // preparing string method
-    double n_interp = 60;
-    double string_dt = 1e-13;
-    //const int string_steps = 1000;
-
-    std::vector<State> inputimages;
-    inputimages.push_back(state_1);
-    inputimages.push_back(state_2);
-
-    String string(state_1, inputimages, n_interp, string_dt, llg);
-    string.run(filepath, 1e-12, 1e-27, 1e6, 50, true);
+    stream.close();
     timer.print_stage("string relaxed");
     return 0;
 }
