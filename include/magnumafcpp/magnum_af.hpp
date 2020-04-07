@@ -27,6 +27,7 @@
 #include "solvers/cg_minimizer.hpp"
 #include "solvers/lbfgs_minimizer.hpp"
 #include "vtk_IO.hpp"
+#include "ascii_io.hpp"
 #include "pgfplot.hpp"
 #include "misc.hpp"
 #include "util/zero_crossing.hpp"
