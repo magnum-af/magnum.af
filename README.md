@@ -34,11 +34,6 @@ For running simulations, use the provided script in 'scripts/magnum.af.docker', 
 
 ## Local installation:
 
-### Prerequisites:
-* A C++11 compiler like gcc or clang
-* [CMake](http://www.cmake.org) 2.8 or newer
-* pip3
-
 ### GPU Driver Installation
 
 Make sure your user is part of the video group using `$groups | grep video`. 
@@ -91,10 +86,31 @@ for cmake to find OpenCl run:
 
 `$ sudo ./ArrayFire-v3.6.2_Linux_x86_64.sh  --include-subdir --prefix=/opt`
 
-`$ sudo pip3 install arrayfire`
+For the loader to find the arrayfire lib use either:
+
+`$ echo /opt/arrayfire/lib > /etc/ld.so.conf.d/arrayfire.conf`
+
+`$ sudo ldconfig`
+
+Or add the following line to your .bashrc file:
+
+`echo 'export LD_LIBRARY_PATH=/opt/arrayfire/lib:$LD_LIBRARY_PATH' >> .bashrc`
 
 ### Install VTK
 `$ sudo apt install libvtk7-dev`
 
-### Install Cython
+### Install Python Packages
 `$ sudo pip3 install cython`
+
+`$ sudo pip3 install arrayfire`
+
+### Build magnum.af
+Prerequisites:
+* A C++11 compiler like gcc or clang
+* [CMake](http://www.cmake.org) 2.8 or newer
+
+`$ mkdir build && cd build && cmake .. && make -j`
+
+Optionally, install to system directories using:
+
+`$ make install`
