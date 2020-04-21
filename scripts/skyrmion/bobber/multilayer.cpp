@@ -164,7 +164,7 @@ int main(int argc, char **argv)
     auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     //NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
-    auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
+    auto dmi = LlgTerm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
