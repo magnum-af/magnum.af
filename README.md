@@ -111,6 +111,10 @@ Prerequisites:
 
 `$ mkdir build && cd build && cmake .. && make -j`
 
-Optionally, install to system directories using:
+Install to system directories using:
 
 `$ make install`
+
+For python to find the shared library, add the install directory to the PYTHONPATH:
+
+`echo 'export PYTHONPATH=/usr/local/lib/:$PYTHONPATH' >> .bashrc`
