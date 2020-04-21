@@ -94,7 +94,7 @@ For the loader to find the arrayfire lib use either:
 
 Or add the following line to your .bashrc file:
 
-`echo 'export LD_LIBRARY_PATH=/opt/arrayfire/lib:$LD_LIBRARY_PATH' >> .bashrc`
+`$ echo 'export LD_LIBRARY_PATH=/opt/arrayfire/lib:$LD_LIBRARY_PATH' >> .bashrc`
 
 ### Install VTK
 `$ sudo apt install libvtk7-dev`
@@ -117,4 +117,4 @@ Install to system directories using:
 
 For python to find the shared library, add the install directory to the PYTHONPATH:
 
-`echo 'export PYTHONPATH=/usr/local/lib/:$PYTHONPATH' >> .bashrc`
+`$ echo 'export PYTHONPATH=/usr/local/lib/:$PYTHONPATH' >> .bashrc`
