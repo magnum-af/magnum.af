@@ -889,8 +889,22 @@ cdef class SparseExchangeField(HeffTerm):
 
 
 cdef class DmiField(HeffTerm):
+    """
+    Dzyaloshinskii–Moriya interaction (DMI) field.
+    """
     cdef cDmiField* _thisptr
     def __cinit__(self, D, D_axis = [0., 0., 1.]):
+        """
+        Parameters
+        ----------
+        D : float
+            DMI constant in units of [J/m^2]
+        D : af.array (unsafe)
+            cell-wise af.array of size [nx, ny, nz]. Caution: does not yet support jump conditions
+        D_axis : [float, float, float]
+            DMI orientation axis
+            defaults to [0., 0., 1.]
+        """
         if hasattr(D, 'arr'):
             self._thisptr = new cDmiField (<long int> addressof(D.arr), <double> D_axis[0], <double> D_axis[1], <double> D_axis[2])
         else:
