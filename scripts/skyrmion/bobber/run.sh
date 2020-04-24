@@ -128,3 +128,15 @@ magnum.af -f -g 3 -b opencl multilayer_demag_above_top_layer.cpp runs/demag_abov
 
 magnum.af -f -g 0 -b opencl hys_multilayer.cpp runs/hys_v2/case2/ 2 16 5e-9 100
 magnum.af -f -g 1 -b opencl hys_multilayer.cpp runs/hys_v2/case3/ 3 16 5e-9 100
+
+magnum.af -f -g 0 -b opencl multilayer_relax_only.cpp runs/relax_only/run1_dmi04/case2/ 2 16 5e-9 100
+magnum.af -f -g 0 -b opencl multilayer_relax_only.cpp runs/relax_only/run1_dmi04/case3/ 3 16 5e-9 100
+
+magnum.af -f -g 2 -b opencl multilayer_demag_above_top_layer.cpp runs/demag_above_top_layer/run5/case2/ 2 16 5e-9 100
+magnum.af -f -g 3 -b opencl multilayer_demag_above_top_layer.cpp runs/demag_above_top_layer/run5/case3/ 3 16 5e-9 100
+
+magnum.af -f -g 0 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run6/case2/ 2 16 1e-9 100
+magnum.af -f -g 1 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run6/case3/ 3 16 1e-9 100
+
+magnum.af -f -g 0 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run7/case2/ 2 16 1e-9 100
+magnum.af -f -g 1 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run7/case3/ 3 16 1e-9 100
