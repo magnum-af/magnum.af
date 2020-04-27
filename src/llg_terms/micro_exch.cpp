@@ -26,13 +26,16 @@ ExchangeField::ExchangeField(double A) : A(A)
 }
 
 /// Constructor taking spacially varying exchange constant af af::array
-ExchangeField::ExchangeField(af::array A_field) : A_field(A_field)
+ExchangeField::ExchangeField(af::array A_field) : A_field(A_field.dims(3) == 1 ? af::tile(A_field, 1, 1, 1, 3) : A_field)
 {
+    printf("\33[1;31mWarning:\33[0m ExchangeField: This is legacy code, to use spacially varying A values with correct jump conditions, use SparseExchangeField or RKKYExchangeField!\n");
 }
 
 // For wrapping only
-ExchangeField::ExchangeField(long int A_field_ptr) : A_field(*(new af::array(*((void **)A_field_ptr))))
+ExchangeField::ExchangeField(long int A_field_ptr) :
+    A_field((*(new af::array(*((void **)A_field_ptr)))).dims(3) == 1 ? af::tile(*(new af::array(*((void **)A_field_ptr))), 1, 1, 1, 3) : *(new af::array(*((void **)A_field_ptr))))
 {
+    printf("\33[1;31mWarning:\33[0m ExchangeField: This is legacy code, to use spacially varying A values with correct jump conditions, use SparseExchangeField or RKKYExchangeField!\n");
 }
 
 af::array ExchangeField::h_withedges(const State &state)
