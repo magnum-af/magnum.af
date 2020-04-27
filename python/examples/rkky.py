@@ -27,9 +27,9 @@ state = State(mesh, Ms, m = m0)
 
 demag = DemagField(mesh, verbose = True, caching = False, nthreads = 6)
 
-rkky_values = af.constant(RKKY/2., nx, ny, nz, 3, dtype=af.Dtype.f64)
-exch_values = af.constant(A, nx, ny, nz, 3, dtype=af.Dtype.f64)
-rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32)
+rkky_values = af.constant(RKKY/2., nx, ny, nz, 1, dtype=af.Dtype.f64)
+exch_values = af.constant(A, nx, ny, nz, 1, dtype=af.Dtype.f64)
+rkky_indices = af.constant(0, nx, ny, nz, 1, dtype=af.Dtype.u32)
 rkkyexch = RKKYExchangeField(rkky_values, exch_values, mesh, rkky_indices)
 
 llg = LLGIntegrator(alpha = 1, terms = [demag, rkkyexch])

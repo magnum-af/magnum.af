@@ -68,7 +68,7 @@ def m_initi(nx, ny, nz):
     return af.from_ndarray(m)
 
 def Ms_initi(nx, ny, nz):
-    Ms = np.zeros((nx, ny, nz, 3))
+    Ms = np.zeros((nx, ny, nz))
     for ix in range (0, nx):
         for iy in range(0, ny):
             a= nx/2
@@ -77,12 +77,12 @@ def Ms_initi(nx, ny, nz):
             ry=iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
             if(r<=1):
-                Ms[ix, iy, 0, :] = Ms_bottom
-                Ms[ix, iy, 1, :] = Ms_top
+                Ms[ix, iy, 0] = Ms_bottom
+                Ms[ix, iy, 1] = Ms_top
     return af.from_ndarray(Ms)
 
 def disk(nx, ny, nz):
-    m = np.zeros((nx, ny, nz, 3))
+    m = np.zeros((nx, ny, nz))
     for ix in range (0, nx):
         for iy in range(0, ny):
             a= nx/2
@@ -91,7 +91,7 @@ def disk(nx, ny, nz):
             ry=iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
             if(r<=1):
-                m[ix, iy, :, :] = 1.
+                m[ix, iy, :] = 1.
     return af.from_ndarray(m)
 
 geom = disk(nx, ny, nz)

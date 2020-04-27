@@ -46,9 +46,9 @@ state = State(mesh, Ms, m = m0)
 state.write_vti(sys.argv[1] + "m_init")
 
 
-RKKYarr = af.constant(RKKY, nx, ny, nz, 3, dtype=af.Dtype.f64)
-excharr = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32))
+RKKYarr = af.constant(RKKY, nx, ny, nz, 1, dtype=af.Dtype.f64)
+excharr = af.constant(0, nx, ny, nz, 1, dtype=af.Dtype.f64)
+rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices = af.constant(0, nx, ny, nz, 1, dtype=af.Dtype.u32))
 
 Karr = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 Karr[:, :, 1, :] = K_pinned
