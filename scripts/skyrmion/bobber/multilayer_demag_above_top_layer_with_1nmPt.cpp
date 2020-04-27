@@ -61,7 +61,6 @@ using namespace af;
 // 51 vacuum
 // 52 vacuum
 // 53 vacuum
-// 54 vacuum
 void set_air_to_zero(af::array &m)
 {
     m(af::span, af::span, 1, af::span) = 0;
@@ -281,10 +280,10 @@ int main(int argc, char **argv)
     std::cout << "Prestart:" << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
     //auto demag_init = demag->h(state_1) * 1e3 * constants::mu0; // in mT
     //vti_writer_micro(demag_init, mesh, filepath + "demag_init");
-    //vti_writer_micro(demag_init(af::span, af::span, 52, af::span), mesh, filepath + "demag_init_21nm_above_top");
+    //vti_writer_micro(demag_init(af::span, af::span, 53, af::span), mesh, filepath + "demag_init_21nm_above_top");
 
     //write_ascii(demag_init, mesh, filepath + "demag_init.txt");
-    //write_ascii(demag_init(af::span, af::span, 52, af::span), mesh, filepath + "demag_init_21nm_above_top.txt");
+    //write_ascii(demag_init(af::span, af::span, 53, af::span), mesh, filepath + "demag_init_21nm_above_top.txt");
 
     while (state_1.t < t_relax_state1_sec)
     {
@@ -294,13 +293,14 @@ int main(int argc, char **argv)
             af::array m_current_cleanPtLayer = state_1.m;
             m_current_cleanPtLayer(af::span, af::span, 13, af::span) = 0;
             vti_writer_micro(m_current_cleanPtLayer, mesh, filepath + "m_current_step_cleanPtlayer");
+            vti_writer_micro(m_current_cleanPtLayer(af::span, af::span, af::seq(nz+1), af::span), Mesh(nx, ny, nz+1, dx, dy, dz), filepath + "m_current_step_cleanPtlayer_no_airbox");
 
             auto demag_current = demag->h(state_1) * 1e3 * constants::mu0; // in mT
-            vti_writer_micro(demag_current(af::span, af::span, 52, af::span), mesh, filepath + "demag_current_21nm_above_top");
+            vti_writer_micro(demag_current(af::span, af::span, 53, af::span), mesh, filepath + "demag_current_21nm_above_top");
             //vti_writer_micro(demag_current, mesh, filepath + "demag_current");
 
             //write_ascii(demag_current, mesh, filepath + "demag_current.txt");
-            //write_ascii(demag_current(af::span, af::span, 52, af::span), mesh, filepath + "demag_current_21nm_above_top.txt");
+            //write_ascii(demag_current(af::span, af::span, 53, af::span), mesh, filepath + "demag_current_21nm_above_top.txt");
         }
         llg.step(state_1);
         std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1) << std::endl;
@@ -309,16 +309,17 @@ int main(int argc, char **argv)
     timer.print_stage("relax");
     auto demag_relaxed = demag->h(state_1) * 1e3 * constants::mu0; // in mT
     vti_writer_micro(demag_relaxed, mesh, filepath + "demag_relaxed");
-    vti_writer_micro(demag_relaxed(af::span, af::span, 52, af::span), mesh, filepath + "demag_relaxed_21nm_above_top");
+    vti_writer_micro(demag_relaxed(af::span, af::span, 53, af::span), mesh, filepath + "demag_relaxed_21nm_above_top");
 
     write_ascii(demag_relaxed, mesh, filepath + "demag_relaxed.txt");
-    write_ascii(demag_relaxed(af::span, af::span, 52, af::span), mesh, filepath + "demag_relaxed_21nm_above_top.txt");
+    write_ascii(demag_relaxed(af::span, af::span, 53, af::span), mesh, filepath + "demag_relaxed_21nm_above_top.txt");
 
     state_1.write_vti(filepath + "m_relaxed");
 
     af::array m_relaxed_cleanPtLayer = state_1.m;
     m_relaxed_cleanPtLayer(af::span, af::span, 13, af::span) = 0;
     vti_writer_micro(m_relaxed_cleanPtLayer, mesh, filepath + "m_relaxed_cleanPtlayer"); // For plotting
+    vti_writer_micro(m_relaxed_cleanPtLayer(af::span, af::span, af::seq(nz+1), af::span), Mesh(nx, ny, nz+1, dx, dy, dz), filepath + "m_relaxed_step_cleanPtlayer_no_airbox");
 
     vti_writer_micro(state_1.m(af::span, af::span, 0, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer1");
     vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz), filepath + "m_relaxed_bottom_ferro_layer5");
