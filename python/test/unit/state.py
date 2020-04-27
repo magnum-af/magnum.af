@@ -63,5 +63,31 @@ class StateTest(unittest.TestCase):
     self.assertEqual(5, state.mesh.dy)
     self.assertEqual(6, state.mesh.dz)
 
+
+class StateMsDimTest(unittest.TestCase):
+  m = af.constant(0, 1, 1, 1, 3, af.Dtype.f64)
+  m[:, :, :, 0] = 1.
+
+  Ms = af.constant(1, 1, 1, 1, 1, af.Dtype.f64)
+  state=magnumaf.State(magnumaf.Mesh(1, 1, 1, 1, 1, 1), Ms, m)
+
+  def test_Ms_dim(self):
+      Ms_field = self.state.Ms_field
+      dims = Ms_field.dims()
+      self.assertEqual(dims[3], 3)
+
+
+class StateMsLegacyDimTest(unittest.TestCase):
+  m = af.constant(0, 1, 1, 1, 3, af.Dtype.f64)
+  m[:, :, :, 0] = 1.
+
+  Ms_legacy = af.constant(1, 1, 1, 1, 3, af.Dtype.f64)
+  state_legacy=magnumaf.State(magnumaf.Mesh(1, 1, 1, 1, 1, 1), Ms_legacy, m)
+
+  def test_legacy_Ms_dim(self):
+      Ms_field = self.state_legacy.Ms_field
+      dims = Ms_field.dims()
+      self.assertEqual(dims[3], 3)
+
 if __name__ == '__main__':
   unittest.main()
