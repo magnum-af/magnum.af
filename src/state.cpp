@@ -82,13 +82,23 @@ State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning) 
     //check_discretization();
 }
 
-State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning) : mesh(mesh), Ms_field(Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
+State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning) : mesh(mesh), Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3) : Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
 {
+    if(Ms_field.dims(3) == 3){printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
+
     check_m_norm();
 }
 
-State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning) : mesh(mesh), Ms_field(*(new af::array(*((void **)Ms_field_ptr)))), m(*(new af::array(*((void **)m)))), verbose(verbose), mute_warning(mute_warning)
+// Wrapping only, memory management to be done by python:
+State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning) :
+    mesh(mesh),
+    Ms_field((*(new af::array(*((void **)Ms_field_ptr)))).dims(3) == 1 ? af::tile(*(new af::array(*((void **)Ms_field_ptr))), 1, 1, 1, 3) : *(new af::array(*((void **)Ms_field_ptr)))),
+    m(*(new af::array(*((void **)m)))), verbose(verbose), mute_warning(mute_warning)
 {
+    if((*(new af::array(*((void **)Ms_field_ptr)))).dims(3) == 3)
+    {
+        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
+    }
     check_m_norm();
 }
 
@@ -98,8 +108,10 @@ State::State(NonequispacedMesh nonequimesh, double Ms, af::array m, bool verbose
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
 }
 
-State::State(NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning) : nonequimesh(nonequimesh), Ms_field(Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
+State::State(NonequispacedMesh nonequimesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning) : nonequimesh(nonequimesh), Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3) : Ms_field), m(m), verbose(verbose), mute_warning(mute_warning)
 {
+    if(Ms_field.dims(3) == 3){printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
+
     check_m_norm();
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
 }

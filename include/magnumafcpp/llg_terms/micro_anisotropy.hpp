@@ -22,7 +22,7 @@ public:
 
     const double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
-    const af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node
+    const af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined at each node. Expects size of [nx, ny, nz, 1], stores as [nx, ny, nz, 3];
     long int get_Ku1_field();
 
     const std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
