@@ -14,12 +14,12 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, std::array<double, 
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array<double, 3> Ku1_axis) : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis))
 {
-    if(Ku1_field.dims(3) == 3){printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
+    if(Ku1_field.dims(3) == 3){printf("%s UniaxialAnisotropyField: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
 }
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array Ku1_axis_field) : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field), Ku1_axis_field(Ku1_axis_field)
 {
-    if(Ku1_field.dims(3) == 3){printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
+    if(Ku1_field.dims(3) == 3){printf("%s UniaxialAnisotropyField: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());}
 }
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr) : Ku1(Ku1), Ku1_axis_field(*(new af::array(*((void **)Ku1_axis_field_ptr))))
@@ -33,7 +33,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long in
 {
     if((*(new af::array(*((void **)Ku1_field_ptr)))).dims(3) == 3)
     {
-        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
+        printf("%s UniaxialAnisotropyField You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
     }
 }
 
@@ -49,7 +49,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double 
 {
     if((*(new af::array(*((void **)Ku1_field_ptr)))).dims(3) == 3)
     {
-        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
+        printf("%s UniaxialAnisotropyField: You are using legacy dimension [nx, ny, nz, 3] for Ku1, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
     }
 }
 
