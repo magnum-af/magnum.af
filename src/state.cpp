@@ -89,15 +89,15 @@ State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute
     check_m_norm();
 }
 
-State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning) : mesh(mesh), Ms_field(*(new af::array(*((void **)Ms_field_ptr)))), m(*(new af::array(*((void **)m)))), verbose(verbose), mute_warning(mute_warning)
+// Wrapping only, memory management to be done by python:
+State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning) :
+    mesh(mesh),
+    Ms_field((*(new af::array(*((void **)Ms_field_ptr)))).dims(3) == 1 ? af::tile(*(new af::array(*((void **)Ms_field_ptr))), 1, 1, 1, 3) : *(new af::array(*((void **)Ms_field_ptr)))),
+    m(*(new af::array(*((void **)m)))), verbose(verbose), mute_warning(mute_warning)
 {
-    if(this->Ms_field.dims(3) == 3)
+    if((*(new af::array(*((void **)Ms_field_ptr)))).dims(3) == 3)
     {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n", Warning());
-    }
-    else if(this->Ms_field.dims(3) == 1)
-    {
-        this->Ms_field = af::tile(this->Ms_field, 1, 1, 1, 3); // setting to internal size [nx, ny, nz, 3]
     }
     check_m_norm();
 }
