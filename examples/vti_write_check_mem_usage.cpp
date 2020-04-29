@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
-    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
+    std::string filepath(argc > 1 ? argv[1] : "./");
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
