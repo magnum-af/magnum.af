@@ -6,17 +6,19 @@ using namespace magnumafcpp;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
-void calc_mean_m(const State &state, std::ostream &myfile, double hzee)
-{
+void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) << "\t" << afvalue(sum_dim3(span, span, span, 1)) << "\t" << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee << std::endl;
+    myfile << std::setw(12) << state.t << "\t"
+           << afvalue(sum_dim3(span, span, span, 0)) << "\t"
+           << afvalue(sum_dim3(span, span, span, 1)) << "\t"
+           << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee
+           << std::endl;
 }
 
 double hzee_max = 2.;   //[T]
 int quater_steps = 100; // One 4th of total steps
 
-af::array zee_func(State state)
-{
+af::array zee_func(State state) {
     double field_Tesla = 0;
     double rate = hzee_max / quater_steps; //[T/s]
     if (state.t < hzee_max / rate)
@@ -25,18 +27,19 @@ af::array zee_func(State state)
         field_Tesla = -rate * state.t + 2 * hzee_max;
     else if (state.t < 4 * hzee_max / rate)
         field_Tesla = rate * state.t - 4 * hzee_max;
-    else
-    {
+    else {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-    zee(span, span, span, 0) = constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+    array zee =
+        constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    zee(span, span, span, 0) =
+        constant(field_Tesla / state.constants::mu0, state.mesh.n0,
+                 state.mesh.n1, state.mesh.n2, 1, f64);
     return zee;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -55,7 +58,7 @@ int main(int argc, char **argv)
     const double dx = 1.0e-9;
     const double dz = 0.6e-9;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, nx, nz, dx, dx, dz);
     Material material = Material();
     state.Ms = 580000;
@@ -67,10 +70,8 @@ int main(int argc, char **argv)
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(span, span, span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++)
-    {
-        for (int iy = 0; iy < mesh.n1; iy++)
-        {
+    for (int ix = 0; ix < mesh.n0; ix++) {
+        for (int iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -85,13 +86,15 @@ int main(int argc, char **argv)
     // Relax
     af::timer timer_llgterms = af::timer::start();
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
-    //minimizer.llgterms.push_back( LlgTerm (new DemagField(mesh, material)));
+    // minimizer.llgterms.push_back( LlgTerm (new DemagField(mesh, material)));
     minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
     minimizer.llgterms.push_back(LlgTerm(new DmiField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new UniaxialAnisotropyField(mesh, material)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+    minimizer.llgterms.push_back(
+        LlgTerm(new UniaxialAnisotropyField(mesh, material)));
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
+              << std::endl;
 
-    //obtaining relaxed magnetization
+    // obtaining relaxed magnetization
     timer t = af::timer::start();
     minimizer.minimize(state);
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << std::endl;
@@ -107,17 +110,20 @@ int main(int argc, char **argv)
     timer t_hys = af::timer::start();
     double rate = hzee_max / quater_steps; //[T/s]
     minimizer.llgterms.push_back(LlgTerm(new ExternalField(&zee_func)));
-    while (state.t < 4 * hzee_max / rate)
-    {
+    while (state.t < 4 * hzee_max / rate) {
         minimizer.minimize(state);
-        calc_mean_m(state, stream, afvalue(minimizer.llgterms[3]->h(state)(0, 0, 0, 0)));
+        calc_mean_m(state, stream,
+                    afvalue(minimizer.llgterms[3]->h(state)(0, 0, 0, 0)));
         state.t += 1.;
         state.steps++;
-        if (state.steps % 1 == 0)
-        {
-            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
+        if (state.steps % 1 == 0) {
+            vti_writer_micro(
+                state.m, mesh,
+                (filepath + "m_hysteresis_" + std::to_string(state.steps))
+                    .c_str());
         }
     }
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
+              << std::endl;
     return 0;
 }

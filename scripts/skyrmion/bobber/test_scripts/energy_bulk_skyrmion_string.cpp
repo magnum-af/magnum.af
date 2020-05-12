@@ -19,16 +19,15 @@ namespace fs = std::experimental::filesystem;
 #else
 namespace fs = std::filesystem;
 #endif
-//https://en.cppreference.com/w/cpp/preprocessor/include
-//https://stackoverflow.com/questions/20358455/cross-platform-way-to-make-a-directory
+// https://en.cppreference.com/w/cpp/preprocessor/include
+// https://stackoverflow.com/questions/20358455/cross-platform-way-to-make-a-directory
 //#include <experimental/filesystem>
 
 using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -44,12 +43,12 @@ int main(int argc, char **argv)
 
     std::ofstream stream(filepath + "m_and_E.dat");
     stream << "#skrym: steps, time, mz, E, demag , exch , aniso , dmi , ext";
-    stream << "#ferro: steps, time, mz, E, demag , exch , aniso , dmi , ext" << std::endl;
-    for (int nz = 1; nz < 20; nz++)
-    {
+    stream << "#ferro: steps, time, mz, E, demag , exch , aniso , dmi , ext"
+           << std::endl;
+    for (int nz = 1; nz < 20; nz++) {
         // Parameter initialization
         const int nx = 100, ny = 100;
-        //const int nz(argc>3? std::stoi(argv[3]):2);
+        // const int nz(argc>3? std::stoi(argv[3]):2);
         std::cout << "Running for nz=" << nz << std::endl;
         const double x = 400e-9;
         const double y = 400e-9;
@@ -60,7 +59,7 @@ int main(int argc, char **argv)
         const double dz = z / nz;
 
         const double Hz = 130e-3 / constants::mu0;
-        //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;
+        // const double RKKY_val = 0.8e-3 * 1e-9* 0.5;
 
         // SK layer params
         const double Ms = 1371e3;  // A/m
@@ -68,24 +67,19 @@ int main(int argc, char **argv)
         const double Ku = 1.411e6; // J/m^3
         const double D = 2.5e-3;   // J/m^2
 
-        //Generating Objects
+        // Generating Objects
         Mesh mesh(nx, ny, nz, dx, dy, dz);
 
         // Initial magnetic field
         array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-        for (int ix = 0; ix < mesh.n0; ix++)
-        {
-            for (int iy = 0; iy < mesh.n1; iy++)
-            {
+        for (int ix = 0; ix < mesh.n0; ix++) {
+            for (int iy = 0; iy < mesh.n1; iy++) {
                 const double rx = double(ix) - mesh.n0 / 2.;
                 const double ry = double(iy) - mesh.n1 / 2.;
                 const double r = sqrt(pow(rx, 2) + pow(ry, 2));
-                if (r > nx / 4.)
-                {
+                if (r > nx / 4.) {
                     m(ix, iy, af::span, 2) = 1.;
-                }
-                else
-                {
+                } else {
                     m(ix, iy, af::span, 2) = -1.;
                 }
             }
@@ -94,23 +88,23 @@ int main(int argc, char **argv)
         // defining interactions
         auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
         auto exch = LlgTerm(new ExchangeField(A));
-        auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+        auto aniso = LlgTerm(
+            new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
         af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
         auto external = LlgTerm(new ExternalField(zee));
 
-        //af::print("dmi", dmi->h(state_1));
-        //af::print("exch", exch->h(state_1));
+        // af::print("dmi", dmi->h(state_1));
+        // af::print("exch", exch->h(state_1));
 
         LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
         timer.print_stage("init ");
 
         State state_1(mesh, Ms, m);
 
-        //llg.relax(state_1);
-        while (state_1.t < 3e-9)
-        {
+        // llg.relax(state_1);
+        while (state_1.t < 3e-9) {
             llg.step(state_1);
         }
         timer.print_stage("relax");
@@ -123,48 +117,51 @@ int main(int argc, char **argv)
         State state_2(mesh, Ms, m2);
 
         state_2.write_vti(filepath + "m_state_2_init_nz_" + std::to_string(nz));
-        //llg.relax(state_2);
-        while (state_2.t < 3e-9)
-        {
+        // llg.relax(state_2);
+        while (state_2.t < 3e-9) {
             llg.step(state_2);
         }
         timer.print_stage("relax state2");
 
-        state_2.write_vti(filepath + "m_state_2_relaxed_nz_" + std::to_string(nz));
+        state_2.write_vti(filepath + "m_state_2_relaxed_nz_" +
+                          std::to_string(nz));
         timer.print_stage("state2 relaxed");
         std::cout << "ferro relaxed after [s]" << state_2.t << std::endl;
 
-        std::array<std::string, 5> llgnames = {"demag", "exch ", "aniso", "dmi  ", "ext  "};
+        std::array<std::string, 5> llgnames = {"demag", "exch ", "aniso",
+                                               "dmi  ", "ext  "};
 
-        std::cout << std::scientific << "Skrym, " << nz << ", t=" << state_1.t << ", mz=" << state_1.meani(2) << ", E=" << llg.E(state_1);
-        for (unsigned i = 0; i < llg.llgterms.size(); i++)
-        {
-            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_1);
+        std::cout << std::scientific << "Skrym, " << nz << ", t=" << state_1.t
+                  << ", mz=" << state_1.meani(2) << ", E=" << llg.E(state_1);
+        for (unsigned i = 0; i < llg.llgterms.size(); i++) {
+            std::cout << ", " << llgnames[i] << "="
+                      << llg.llgterms[i]->E(state_1);
         }
         std::cout << std::endl;
 
-        std::cout << std::scientific << "Ferro, " << nz << ", t=" << state_2.t << ", mz=" << state_2.meani(2) << ", E=" << llg.E(state_2);
-        for (unsigned i = 0; i < llg.llgterms.size(); i++)
-        {
-            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_2);
+        std::cout << std::scientific << "Ferro, " << nz << ", t=" << state_2.t
+                  << ", mz=" << state_2.meani(2) << ", E=" << llg.E(state_2);
+        for (unsigned i = 0; i < llg.llgterms.size(); i++) {
+            std::cout << ", " << llgnames[i] << "="
+                      << llg.llgterms[i]->E(state_2);
         }
         std::cout << std::endl;
 
-        stream << std::scientific << nz << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1);
-        for (unsigned i = 0; i < llg.llgterms.size(); i++)
-        {
+        stream << std::scientific << nz << "\t" << state_1.t << "\t"
+               << state_1.meani(2) << "\t" << llg.E(state_1);
+        for (unsigned i = 0; i < llg.llgterms.size(); i++) {
             stream << "\t" << llg.llgterms[i]->E(state_1);
         }
 
-        stream << std::scientific << "\t" << nz << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t" << llg.E(state_2);
-        for (unsigned i = 0; i < llg.llgterms.size(); i++)
-        {
+        stream << std::scientific << "\t" << nz << "\t" << state_2.t << "\t"
+               << state_2.meani(2) << "\t" << llg.E(state_2);
+        for (unsigned i = 0; i < llg.llgterms.size(); i++) {
             stream << "\t" << llg.llgterms[i]->E(state_2);
         }
         stream << std::endl;
         timer.print_stage(std::to_string(nz) + " stateenergy");
 
-        //String method
+        // String method
         double n_interp = 60;
         double string_dt = 1e-13;
         std::vector<State> inputimages;

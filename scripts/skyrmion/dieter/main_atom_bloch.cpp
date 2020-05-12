@@ -5,15 +5,12 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     std::string filepath(argc >= 1 ? argv[1] : "data");
-    if (argc >= 1)
-    {
+    if (argc >= 1) {
         filepath.append("/");
     }
-    if (argc >= 2)
-    {
+    if (argc >= 2) {
         setDevice(std::stoi(argv[2]));
     }
     std::cout << "Writing into path " << filepath.c_str() << std::endl;
@@ -29,7 +26,7 @@ int main(int argc, char **argv)
     double n_interp = 60;
     double string_dt = 1e-13;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, nx, 1, dx, dx, dx);
     Material material = Material();
     state.Ms = 580000;
@@ -47,17 +44,15 @@ int main(int argc, char **argv)
     Llg.llgterms.push_back(LlgTerm(new AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(
+        LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    if (!exists(path_mrelax))
-    {
+    if (!exists(path_mrelax)) {
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
         Llg.relax(state);
         vti_writer_micro(state.m, mesh, filepath + "relax");
         state.t = 0;
-    }
-    else
-    {
+    } else {
         std::cout << "found mrelax. loading magnetization" << std::endl;
         vti_reader(state.m, state.mesh, path_mrelax);
     }

@@ -1,29 +1,21 @@
-#include <stdio.h>
 #include "cpp_test.h"
+#include <stdio.h>
 
 using namespace magnumafcpp;
 
 Test::Test() {}
 
-Test::~Test()
-{
-    printf("Cleanup!\n");
-}
+Test::~Test() { printf("Cleanup!\n"); }
 
-void Test::initialize_m(long int aptr)
-{
-    void **a = (void **)aptr;
-    af::array *A = new af::array(*a);
+void Test::initialize_m(long int aptr) {
+    void** a = (void**)aptr;
+    af::array* A = new af::array(*a);
     this->m = *A;
 }
 
-void Test::manipulate_m()
-{
-    this->m *= 2.;
-}
+void Test::manipulate_m() { this->m *= 2.; }
 
-long int Test::get_m()
-{
-    af::array *a = new af::array(this->m);
+long int Test::get_m() {
+    af::array* a = new af::array(this->m);
     return (long int)a->get();
 }

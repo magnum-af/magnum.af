@@ -1,21 +1,21 @@
 #pragma once
-#include "LLGTerm.hpp"
 #include "../state.hpp"
+#include "LLGTerm.hpp"
 #include "arrayfire.h"
 
-namespace magnumafcpp
-{
+namespace magnumafcpp {
 
-class AtomisticExchangeField : public LLGTerm
-{
-public:
+class AtomisticExchangeField : public LLGTerm {
+  public:
     AtomisticExchangeField(double J_atom);
-    //Field contribution
-    af::array h(const State &state);
-    //Energy contribution
-    double E(const State &state);
-    double E(const State &state, const af::array &h); ///< Calculating the micromagnetic energy for a already calculated h field
-    //CPU time
+    // Field contribution
+    af::array h(const State& state);
+    // Energy contribution
+    double E(const State& state);
+    double E(const State& state,
+             const af::array& h); ///< Calculating the micromagnetic energy for
+                                  ///< a already calculated h field
+    // CPU time
     double get_cpu_time() { return cpu_time; }
 
     const double J_atom; //!< Atomistic exchange energy [J]

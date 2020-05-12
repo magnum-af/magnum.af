@@ -5,8 +5,7 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -24,19 +23,22 @@ int main(int argc, char **argv)
     const double x = 400e-9;
     const double y = 400e-9;
     const double z = 4e-9;
-    //TODO fix RKKY adjacent layers problem and move from 5 4 layers
+    // TODO fix RKKY adjacent layers problem and move from 5 4 layers
 
-    const int nx = 400, ny = 400, nz = 4; //TODO this discretiyation stabiliyes skym with scaled RKKYval=0.8e-3 * 1e-9
-    //const int nx = 128, ny=128 , nz=4;
+    const int nx = 400, ny = 400,
+              nz = 4; // TODO this discretiyation stabiliyes skym with scaled
+                      // RKKYval=0.8e-3 * 1e-9
+    // const int nx = 128, ny=128 , nz=4;
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
 
     const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9;
-    //TODO maybe 0.5 factor (see mumax3):
-    //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
-    //NOTE//const double RKKY_val = 0.8e-3;//NOTE: causes NaNs during integration
+    // TODO maybe 0.5 factor (see mumax3):
+    // const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
+    // NOTE//const double RKKY_val = 0.8e-3;//NOTE: causes NaNs during
+    // integration
     // SK layer params
     const double SK_Ms = 1371e3;  // A/m
     const double SK_A = 15e-12;   // J/m
@@ -66,9 +68,9 @@ int main(int argc, char **argv)
     Ku(af::span, af::span, 2, af::span) = IL_Ku;
     Ku(af::span, af::span, 3, af::span) = SK_Ku;
 
-    //array D = af::constant(0.0, nx, ny, nz, 3, f64);
-    //D(af::span, af::span, 0, af::span) = SK_D;
-    //D(af::span, af::span, 3, af::span) = SK_D;
+    // array D = af::constant(0.0, nx, ny, nz, 3, f64);
+    // D(af::span, af::span, 0, af::span) = SK_D;
+    // D(af::span, af::span, 3, af::span) = SK_D;
 
     array RKKY = af::constant(0.0, nx, ny, nz, 3, f64);
     RKKY(af::span, af::span, 0, af::span) = RKKY_val;
@@ -81,16 +83,14 @@ int main(int argc, char **argv)
     RKKYindices(af::span, af::span, 1, af::span) = 1;
     RKKYindices(af::span, af::span, 2, af::span) = 2;
     RKKYindices(af::span, af::span, 3, af::span) = 2;
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++)
-    {
-        for (int iy = 0; iy < mesh.n1; iy++)
-        {
+    for (int ix = 0; ix < mesh.n0; ix++) {
+        for (int iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -104,29 +104,32 @@ int main(int argc, char **argv)
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    //auto exch = LlgTerm (new ExchangeField(A));
-    //TODO causes Nans//auto exch = LlgTerm (new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
-    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    // auto exch = LlgTerm (new ExchangeField(A));
+    // TODO causes Nans//auto exch = LlgTerm (new
+    // RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto exch = LlgTerm(new RKKYExchangeField(
+        RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
+    auto aniso = LlgTerm(
+        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     auto dmi = LlgTerm(new DmiField(SK_D, {0, 0, -1}));
-    //auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
+    // auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = LlgTerm(new ExternalField(zee));
 
-    //af::print("dmi", dmi->h(state));
-    //af::print("exch", exch->h(state));
+    // af::print("dmi", dmi->h(state));
+    // af::print("exch", exch->h(state));
 
     LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-    //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-    while (state.t < 3e-9)
-    {
+    // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
+    while (state.t < 3e-9) {
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
         Llg.step(state);
-        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << Llg.E(state) << std::endl;
+        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2)
+                  << "\t" << Llg.E(state) << std::endl;
     }
     //    Llg.relax(state);
     state.write_vti(filepath + "m_relaxed");

@@ -2,9 +2,8 @@
 #define SOURCE_H
 #include "arrayfire.h"
 
-class Wrap
-{
-public:
+class Wrap {
+  public:
     Wrap();
     ~Wrap();
 

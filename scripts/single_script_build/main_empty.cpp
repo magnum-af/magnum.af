@@ -2,7 +2,4 @@
 
 using namespace magnumafcpp;
 
-int main()
-{
-    return 0;
-}
+int main() { return 0; }

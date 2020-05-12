@@ -4,8 +4,7 @@
 
 using namespace magnumafcpp;
 
-TEST(ascii_io, ascii_io_test_vector_field)
-{
+TEST(ascii_io, ascii_io_test_vector_field) {
     af::array a = af::randu(6, 5, 4, 3, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0.3);
 
@@ -27,9 +26,7 @@ TEST(ascii_io, ascii_io_test_vector_field)
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-
-TEST(ascii_io, ascii_io_test_scalar_field)
-{
+TEST(ascii_io, ascii_io_test_scalar_field) {
     af::array a = af::randu(6, 5, 4, 1, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0.3);
 
@@ -51,9 +48,7 @@ TEST(ascii_io, ascii_io_test_scalar_field)
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-
-TEST(ascii_io, ascii_io_test_10d_field)
-{
+TEST(ascii_io, ascii_io_test_10d_field) {
     af::array a = af::randu(6, 5, 4, 10, f64);
     Mesh mesh(6, 5, 4, 0.2, 0.3, 0.4);
 
@@ -75,9 +70,7 @@ TEST(ascii_io, ascii_io_test_10d_field)
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

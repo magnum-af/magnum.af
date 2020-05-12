@@ -1,83 +1,61 @@
 #include "adaptive_runge_kutta.hpp"
-#include "../misc.hpp"
 #include "../func.hpp"
+#include "../misc.hpp"
 
-namespace magnumafcpp
-{
+namespace magnumafcpp {
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_, const bool verbose) : scheme_(scheme_), controller_(controller_), renormalize_(renormalize_)
-{
-    if (scheme_ == "RKF45")
-    {
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_,
+                                       Controller controller_,
+                                       const bool renormalize_,
+                                       const bool verbose)
+    : scheme_(scheme_), controller_(controller_), renormalize_(renormalize_) {
+    if (scheme_ == "RKF45") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
-    }
-    else if (scheme_ == "DP45")
-    {
+    } else if (scheme_ == "DP45") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing DP45 method.\n");
-    }
-    else if (scheme_ == "BS45")
-    {
+    } else if (scheme_ == "BS45") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing BS45 method.\n");
-    }
-    else if (scheme_ == "DP78")
-    {
+    } else if (scheme_ == "DP78") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing DP78 method.\n");
-    }
-    else if (scheme_ == "BS23")
-    {
+    } else if (scheme_ == "BS23") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
-    }
-    else
-    {
-        printf("%s Integration method not found. Valid arguments are 'RKF45' (default) , 'DP45', 'BS45', 'DP78', 'BS23'\n", bold_red("Error:").c_str());
+    } else {
+        printf("%s Integration method not found. Valid arguments are 'RKF45' "
+               "(default) , 'DP45', 'BS45', 'DP78', 'BS23'\n",
+               bold_red("Error:").c_str());
         exit(EXIT_FAILURE);
     }
 }
 
-void AdaptiveRungeKutta::step(State &state)
-{
+void AdaptiveRungeKutta::step(State& state) {
     af::timer timer_allsteps = af::timer::start();
     af::array mtemp;
-    do
-    {
-        if (scheme_ == "RKF45")
-        {
+    do {
+        if (scheme_ == "RKF45") {
             mtemp = RKF45(state, h_, err_);
-        }
-        else if (scheme_ == "DP45")
-        {
+        } else if (scheme_ == "DP45") {
             mtemp = DP45(state, h_, err_);
-        }
-        else if (scheme_ == "BS45")
-        {
+        } else if (scheme_ == "BS45") {
             mtemp = BS45(state, h_, err_);
-        }
-        else if (scheme_ == "DP78")
-        {
+        } else if (scheme_ == "DP78") {
             mtemp = DP78(state, h_, err_);
-        }
-        else
-        {
+        } else {
             mtemp = BS23(state, h_, err_);
         }
     } while (!controller_.success(err_, h_));
 
-    state.t += h_; //h is the actual timestep taken by the controller_
+    state.t += h_; // h is the actual timestep taken by the controller_
     h_ = controller_.get_hnext();
     state.m += mtemp;
-    if (renormalize_)
-    {
-        if (state.Ms_field.isempty())
-        {
+    if (renormalize_) {
+        if (state.Ms_field.isempty()) {
             state.m = renormalize(state.m);
-        }
-        else
-        {
+        } else {
             state.m = renormalize_handle_zero_values(state.m);
         }
     }
@@ -88,47 +66,53 @@ void AdaptiveRungeKutta::step(State &state)
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(const State &state, const double dt, double &err_)
-{
+af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt,
+                                    double& err_) {
     State tempstate = state;
-    //stage1
+    // stage1
     af::array k1 = dt * f(state);
 
-    //stage2
+    // stage2
     tempstate.t = state.t + 1. / 4. * dt;
     tempstate.m = state.m + 1. / 4. * k1;
     af::array k2 = dt * f(tempstate);
 
-    //stage3
+    // stage3
     tempstate.t = state.t + 3. / 8. * dt;
     tempstate.m = state.m + 3. / 32. * k1 + 9 / 32. * k2;
     af::array k3 = dt * f(tempstate);
 
-    //stage4
+    // stage4
     tempstate.t = state.t + 12. / 13. * dt;
-    tempstate.m = state.m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3;
+    tempstate.m =
+        state.m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3;
     af::array k4 = dt * f(tempstate);
 
-    //stage5
+    // stage5
     tempstate.t = state.t + dt;
-    tempstate.m = state.m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 - 845. / 4104. * k4;
+    tempstate.m = state.m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 -
+                  845. / 4104. * k4;
     af::array k5 = dt * f(tempstate);
 
-    //stage6
+    // stage6
     tempstate.t = state.t + 1. / 2. * dt;
-    tempstate.m = state.m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 + 1859. / 4104. * k4 - 11. / 40. * k5;
+    tempstate.m = state.m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 +
+                  1859. / 4104. * k4 - 11. / 40. * k5;
     af::array k6 = dt * f(tempstate);
 
-    af::array sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
-    af::array rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 + 2197. / 4104. * k4 - 1. / 5. * k5);
+    af::array sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 +
+                      28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
+    af::array rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 +
+                                  2197. / 4104. * k4 - 1. / 5. * k5);
 
-    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = maxnorm(rk_error /
+                   controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
 // Dormand-Prince 4/5 method
-af::array AdaptiveRungeKutta::DP45(const State &state, const double dt, double &err_)
-{
+af::array AdaptiveRungeKutta::DP45(const State& state, const double dt,
+                                   double& err_) {
     State tempstate = state;
 
     double a[8][7] = {{0}};
@@ -136,22 +120,23 @@ af::array AdaptiveRungeKutta::DP45(const State &state, const double dt, double &
     double c[8] = {0};
 
     c[2] = 0.2, c[3] = 0.3, c[4] = 0.8, c[5] = 8.0 / 9.0, c[6] = 1, c[7] = 1;
-    e[1] = 71.0 / 57600.0, e[3] = -71.0 / 16695.0, e[4] = 71.0 / 1920.0, e[5] = -17253.0 / 339200.0, e[6] = 22.0 / 525.0, e[7] = -1.0 / 40.0,
-    a[2][1] = 0.2,
-    a[3][1] = 3.0 / 40.0, a[3][2] = 9.0 / 40.0,
+    e[1] = 71.0 / 57600.0, e[3] = -71.0 / 16695.0, e[4] = 71.0 / 1920.0,
+    e[5] = -17253.0 / 339200.0, e[6] = 22.0 / 525.0, e[7] = -1.0 / 40.0,
+    a[2][1] = 0.2, a[3][1] = 3.0 / 40.0, a[3][2] = 9.0 / 40.0,
     a[4][1] = 44.0 / 45.0, a[4][2] = -56.0 / 15.0, a[4][3] = 32.0 / 9.0,
-    a[5][1] = 19372.0 / 6561.0, a[5][2] = -25360.0 / 2187.0, a[5][3] = 64448.0 / 6561.0, a[5][4] = -212.0 / 729.0,
-    a[6][1] = 9017.0 / 3168.0, a[6][2] = -355.0 / 33.0, a[6][3] = 46732.0 / 5247.0, a[6][4] = 49.0 / 176.0, a[6][5] = -5103.0 / 18656.0,
-    a[7][1] = 35.0 / 384.0, a[7][3] = 500.0 / 1113.0, a[7][4] = 125.0 / 192.0, a[7][5] = -2187.0 / 6784.0, a[7][6] = 11.0 / 84.0;
+    a[5][1] = 19372.0 / 6561.0, a[5][2] = -25360.0 / 2187.0,
+    a[5][3] = 64448.0 / 6561.0, a[5][4] = -212.0 / 729.0,
+    a[6][1] = 9017.0 / 3168.0, a[6][2] = -355.0 / 33.0,
+    a[6][3] = 46732.0 / 5247.0, a[6][4] = 49.0 / 176.0,
+    a[6][5] = -5103.0 / 18656.0, a[7][1] = 35.0 / 384.0,
+    a[7][3] = 500.0 / 1113.0, a[7][4] = 125.0 / 192.0,
+    a[7][5] = -2187.0 / 6784.0, a[7][6] = 11.0 / 84.0;
 
     // Stage 1
     af::array k1;
-    if (controller_.get_reject() || renormalize_ || state.steps == 0)
-    {
+    if (controller_.get_reject() || renormalize_ || state.steps == 0) {
         k1 = dt * f(tempstate);
-    }
-    else
-    {
+    } else {
         k1 = k_FSAL;
     }
 
@@ -172,29 +157,35 @@ af::array AdaptiveRungeKutta::DP45(const State &state, const double dt, double &
 
     // Stage 5
     tempstate.t = state.t + c[5] * dt;
-    tempstate.m = state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
+    tempstate.m =
+        state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
     af::array k5 = dt * f(tempstate);
 
     // Stage 6
     tempstate.t = state.t + c[6] * dt;
-    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 + a[6][4] * k4 + a[6][5] * k5;
+    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 +
+                  a[6][4] * k4 + a[6][5] * k5;
     af::array k6 = dt * f(tempstate);
 
     // Stage 7
     tempstate.t = state.t + c[7] * dt;
-    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
+    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 +
+                  a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
     k_FSAL = dt * f(tempstate);
 
-    af::array sumbk = a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
-    af::array rk_error = e[1] * k1 + e[2] * k2 + e[3] * k3 + e[4] * k4 + e[5] * k5 + e[6] * k6 + e[7] * k_FSAL;
+    af::array sumbk = a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 +
+                      a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
+    af::array rk_error = e[1] * k1 + e[2] * k2 + e[3] * k3 + e[4] * k4 +
+                         e[5] * k5 + e[6] * k6 + e[7] * k_FSAL;
 
-    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = maxnorm(rk_error /
+                   controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
 // Bogacki 4, 5 method with sigle error andstepsize control
-af::array AdaptiveRungeKutta::BS45(const State &state, const double dt, double &err_)
-{
+af::array AdaptiveRungeKutta::BS45(const State& state, const double dt,
+                                   double& err_) {
     State tempstate = state;
 
     double a[9][8] = {{0.}};
@@ -250,12 +241,9 @@ af::array AdaptiveRungeKutta::BS45(const State &state, const double dt, double &
 
     // Stage 1
     af::array k1;
-    if (controller_.get_reject() || renormalize_ || step_calls_ == 0)
-    {
+    if (controller_.get_reject() || renormalize_ || step_calls_ == 0) {
         k1 = dt * f(tempstate);
-    }
-    else
-    {
+    } else {
         k1 = k_FSAL;
     }
 
@@ -276,33 +264,41 @@ af::array AdaptiveRungeKutta::BS45(const State &state, const double dt, double &
 
     // Stage 5
     tempstate.t = state.t + c[5] * dt;
-    tempstate.m = state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
+    tempstate.m =
+        state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
     af::array k5 = dt * f(tempstate);
 
     // Stage 6
     tempstate.t = state.t + c[6] * dt;
-    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 + a[6][4] * k4 + a[6][5] * k5;
+    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 +
+                  a[6][4] * k4 + a[6][5] * k5;
     af::array k6 = dt * f(tempstate);
 
     // Stage 7
     tempstate.t = state.t + c[7] * dt;
-    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
+    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 +
+                  a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
     af::array k7 = dt * f(tempstate);
 
     // Stage 8
     tempstate.t = state.t + c[8] * dt;
-    tempstate.m = state.m + a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 + a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
+    tempstate.m = state.m + a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 +
+                  a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
     k_FSAL = dt * f(tempstate);
 
-    af::array sumbk = a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 + a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
-    af::array rk_error = sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 + b[6] * k6 + b[7] * k7 + b[8] * k_FSAL);
-    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    af::array sumbk = a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 +
+                      a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
+    af::array rk_error =
+        sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 +
+                 b[6] * k6 + b[7] * k7 + b[8] * k_FSAL);
+    err_ = maxnorm(rk_error /
+                   controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
 // Dormand Prince 7, 8  method
-af::array AdaptiveRungeKutta::DP78(const State &state, const double dt, double &err_)
-{
+af::array AdaptiveRungeKutta::DP78(const State& state, const double dt,
+                                   double& err_) {
     State tempstate = state;
 
     double a[14][13] = {{0.}};
@@ -388,11 +384,11 @@ af::array AdaptiveRungeKutta::DP78(const State &state, const double dt, double &
     a[13][10] = -2.34286471544040292660294691857e-1;
     a[13][11] = 1.7589857770794226507310510589e-1;
     a[13][12] = 0.e0;
-    //C
-    //C  The coefficients BHAT(*) refer to the formula used to advance the
-    //C  integration, here the one of order 8.  The coefficients B(*) refer
-    //C  to the other formula, here the one of order 7.
-    //C
+    // C
+    // C  The coefficients BHAT(*) refer to the formula used to advance the
+    // C  integration, here the one of order 8.  The coefficients B(*) refer
+    // C  to the other formula, here the one of order 7.
+    // C
     bhat[1] = 4.17474911415302462220859284685e-2;
     bhat[2] = 0.e0;
     bhat[3] = 0.e0;
@@ -406,7 +402,7 @@ af::array AdaptiveRungeKutta::DP78(const State &state, const double dt, double &
     bhat[11] = 1.58187482510123335529614838601e-1;
     bhat[12] = -2.38109538752862804471863555306e-1;
     bhat[13] = 2.5e-1;
-    //C
+    // C
     b[1] = 2.9553213676353496981964883112e-2;
     b[2] = 0.e0;
     b[3] = 0.e0;
@@ -420,7 +416,7 @@ af::array AdaptiveRungeKutta::DP78(const State &state, const double dt, double &
     b[11] = 7.94155958811272872713019541622e-2;
     b[12] = 4.44444444444444444444444444445e-2;
     b[13] = 0.e0;
-    //C
+    // C
     c[1] = 0.e0;
     c[2] = 5.55555555555555555555555555556e-2;
     c[3] = 8.33333333333333333333333333334e-2;
@@ -455,67 +451,89 @@ af::array AdaptiveRungeKutta::DP78(const State &state, const double dt, double &
 
     // Stage 5
     tempstate.t = state.t + c[5] * dt;
-    tempstate.m = state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
+    tempstate.m =
+        state.m + a[5][1] * k1 + a[5][2] * k2 + a[5][3] * k3 + a[5][4] * k4;
     af::array k5 = dt * f(tempstate);
 
     // Stage 6
     tempstate.t = state.t + c[6] * dt;
-    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 + a[6][4] * k4 + a[6][5] * k5;
+    tempstate.m = state.m + a[6][1] * k1 + a[6][2] * k2 + a[6][3] * k3 +
+                  a[6][4] * k4 + a[6][5] * k5;
     af::array k6 = dt * f(tempstate);
 
     // Stage 7
     tempstate.t = state.t + c[7] * dt;
-    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
+    tempstate.m = state.m + a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 +
+                  a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
     af::array k7 = dt * f(tempstate);
 
     // Stage 8
     tempstate.t = state.t + c[8] * dt;
-    tempstate.m = state.m + a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 + a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
+    tempstate.m = state.m + a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 +
+                  a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
     af::array k8 = dt * f(tempstate);
 
     // Stage 9
     tempstate.t = state.t + c[9] * dt;
-    tempstate.m = state.m + a[9][1] * k1 + a[9][2] * k2 + a[9][3] * k3 + a[9][4] * k4 + a[9][5] * k5 + a[9][6] * k6 + a[9][7] * k7 + a[9][8] * k8;
+    tempstate.m = state.m + a[9][1] * k1 + a[9][2] * k2 + a[9][3] * k3 +
+                  a[9][4] * k4 + a[9][5] * k5 + a[9][6] * k6 + a[9][7] * k7 +
+                  a[9][8] * k8;
     af::array k9 = dt * f(tempstate);
 
     // Stage 10
     tempstate.t = state.t + c[10] * dt;
-    tempstate.m = state.m + a[10][1] * k1 + a[10][2] * k2 + a[10][3] * k3 + a[10][4] * k4 + a[10][5] * k5 + a[10][6] * k6 + a[10][7] * k7 + a[10][8] * k8 + a[10][9] * k9;
+    tempstate.m = state.m + a[10][1] * k1 + a[10][2] * k2 + a[10][3] * k3 +
+                  a[10][4] * k4 + a[10][5] * k5 + a[10][6] * k6 +
+                  a[10][7] * k7 + a[10][8] * k8 + a[10][9] * k9;
     af::array k10 = dt * f(tempstate);
 
     // Stage 11
     tempstate.t = state.t + c[11] * dt;
-    tempstate.m = state.m + a[11][1] * k1 + a[11][2] * k2 + a[11][3] * k3 + a[11][4] * k4 + a[11][5] * k5 + a[11][6] * k6 + a[11][7] * k7 + a[11][8] * k8 + a[11][9] * k9 + a[11][10] * k10;
+    tempstate.m = state.m + a[11][1] * k1 + a[11][2] * k2 + a[11][3] * k3 +
+                  a[11][4] * k4 + a[11][5] * k5 + a[11][6] * k6 +
+                  a[11][7] * k7 + a[11][8] * k8 + a[11][9] * k9 +
+                  a[11][10] * k10;
     af::array k11 = dt * f(tempstate);
 
     // Stage 12
     tempstate.t = state.t + c[12] * dt;
-    tempstate.m = state.m + a[12][1] * k1 + a[12][2] * k2 + a[12][3] * k3 + a[12][4] * k4 + a[12][5] * k5 + a[12][6] * k6 + a[12][7] * k7 + a[12][8] * k8 + a[12][9] * k9 + a[12][10] * k10 + a[12][11] * k11;
+    tempstate.m = state.m + a[12][1] * k1 + a[12][2] * k2 + a[12][3] * k3 +
+                  a[12][4] * k4 + a[12][5] * k5 + a[12][6] * k6 +
+                  a[12][7] * k7 + a[12][8] * k8 + a[12][9] * k9 +
+                  a[12][10] * k10 + a[12][11] * k11;
     af::array k12 = dt * f(tempstate);
 
     // Stage 13
     tempstate.t = state.t + c[13] * dt;
-    tempstate.m = state.m + a[13][1] * k1 + a[13][2] * k2 + a[13][3] * k3 + a[13][4] * k4 + a[13][5] * k5 + a[13][6] * k6 + a[13][7] * k7 + a[13][8] * k8 + a[13][9] * k9 + a[13][10] * k10 + a[13][11] * k11 + a[13][12] * k12;
+    tempstate.m = state.m + a[13][1] * k1 + a[13][2] * k2 + a[13][3] * k3 +
+                  a[13][4] * k4 + a[13][5] * k5 + a[13][6] * k6 +
+                  a[13][7] * k7 + a[13][8] * k8 + a[13][9] * k9 +
+                  a[13][10] * k10 + a[13][11] * k11 + a[13][12] * k12;
     af::array k13 = dt * f(tempstate);
 
-    af::array sumbk = bhat[1] * k1 + bhat[2] * k2 + bhat[3] * k3 + bhat[4] * k4 + bhat[5] * k5 + bhat[6] * k6 + bhat[7] * k7 + bhat[8] * k8 + bhat[9] * k9 + bhat[10] * k10 + bhat[11] * k11 + bhat[12] * k12 + bhat[13] * k13;
-    af::array rk_error = sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 + b[6] * k6 + b[7] * k7 + b[8] * k8 + b[9] * k9 + b[10] * k10 + b[11] * k11 + b[12] * k12 + b[13] * k13);
-    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    af::array sumbk = bhat[1] * k1 + bhat[2] * k2 + bhat[3] * k3 +
+                      bhat[4] * k4 + bhat[5] * k5 + bhat[6] * k6 +
+                      bhat[7] * k7 + bhat[8] * k8 + bhat[9] * k9 +
+                      bhat[10] * k10 + bhat[11] * k11 + bhat[12] * k12 +
+                      bhat[13] * k13;
+    af::array rk_error =
+        sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 +
+                 b[6] * k6 + b[7] * k7 + b[8] * k8 + b[9] * k9 + b[10] * k10 +
+                 b[11] * k11 + b[12] * k12 + b[13] * k13);
+    err_ = maxnorm(rk_error /
+                   controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
 // Bogacki-Shampine 2/3rd order  with stepsize control
-af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &err)
-{
+af::array AdaptiveRungeKutta::BS23(const State& state, const double dt,
+                                   double& err) {
     State tempstate = state;
     af::array k1;
 
-    if (controller_.get_reject() || renormalize_ || step_calls_ == 0)
-    {
+    if (controller_.get_reject() || renormalize_ || step_calls_ == 0) {
         k1 = f(tempstate);
-    }
-    else
-    {
+    } else {
         k1 = k_FSAL;
     }
 
@@ -539,16 +557,21 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
     ;
     k_FSAL = f(tempstate);
 
-    af::array rk_error = sumbk - dt * (7. / 24. * k1 + 1. / 4. * k2 + 1. / 3. * k3 + 1. / 8. * k_FSAL);
-    err = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    af::array rk_error = sumbk - dt * (7. / 24. * k1 + 1. / 4. * k2 +
+                                       1. / 3. * k3 + 1. / 8. * k_FSAL);
+    err = maxnorm(rk_error /
+                  controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
-//// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
+//// FOR DP and BS, check why error is rising at the beginning of analytical
+/// example and then decreases again, maybe use different starting values
 //////TODO far too high error in integration test
 //// Dormand-Prince 4/5 method
-//// FOR DP and BS, check why error is rising at the beginning of analytical example and then decreases again, maybe use different starting values
-//af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_)
+//// FOR DP and BS, check why error is rising at the beginning of analytical
+/// example and then decreases again, maybe use different starting values
+// af::array AdaptiveRungeKutta::DP45(const State& state, const double dt,
+// double& err_)
 //{
 //    State tempstate=state;
 //    // Iterating over a-matrix and calculating k[i]s
@@ -560,13 +583,15 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
 //    double c[8]={0};
 //
 //    c[2]=0.2, c[3]=0.3, c[4]=0.8, c[5]=8.0/9.0, c[6]=1, c[7]=1;
-//    e[1]=71.0/57600.0, e[3]=-71.0/16695.0, e[4]=71.0/1920.0, e[5]=-17253.0/339200.0, e[6]=22.0/525.0, e[7]=-1.0/40.0,
-//    a[2][1]=0.2,
+//    e[1]=71.0/57600.0, e[3]=-71.0/16695.0, e[4]=71.0/1920.0,
+//    e[5]=-17253.0/339200.0, e[6]=22.0/525.0, e[7]=-1.0/40.0, a[2][1]=0.2,
 //    a[3][1]=3.0/40.0, a[3][2]=9.0/40.0,
 //    a[4][1]=44.0/45.0, a[4][2]=-56.0/15.0, a[4][3]=32.0/9.0,
-//    a[5][1]=19372.0/6561.0, a[5][2]=-25360.0/2187.0, a[5][3]=64448.0/6561.0, a[5][4]=-212.0/729.0,
-//    a[6][1]=9017.0/3168.0, a[6][2]=-355.0/33.0, a[6][3]=46732.0/5247.0, a[6][4]=49.0/176.0, a[6][5]=-5103.0/18656.0,
-//    a[7][1]=35.0/384.0, a[7][3]=500.0/1113.0, a[7][4]=125.0/192.0, a[7][5]=-2187.0/6784.0, a[7][6]=11.0/84.0;
+//    a[5][1]=19372.0/6561.0, a[5][2]=-25360.0/2187.0, a[5][3]=64448.0/6561.0,
+//    a[5][4]=-212.0/729.0, a[6][1]=9017.0/3168.0, a[6][2]=-355.0/33.0,
+//    a[6][3]=46732.0/5247.0, a[6][4]=49.0/176.0, a[6][5]=-5103.0/18656.0,
+//    a[7][1]=35.0/384.0, a[7][3]=500.0/1113.0, a[7][4]=125.0/192.0,
+//    a[7][5]=-2187.0/6784.0, a[7][6]=11.0/84.0;
 //
 //    // Stage 1
 //    if( controller_.get_reject() || renormalize_ || step_calls_ == 0)
@@ -579,8 +604,8 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
 //    }
 //    // Stages 2-7
 //    for(int i=2;i<=s;i++){
-//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
-//        for(int j=1;j<i;j++){
+//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//        state.m.dims(2), state.m.dims(3), f64); for(int j=1;j<i;j++){
 //            rktemp+=a[i][j] * k[j];
 //        }
 //        tempstate.t = state.t + c[i];
@@ -588,24 +613,26 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
 //        k[i]= dt * f(tempstate);
 //    }
 //    //Local extrapolation using 5th order approx
-//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
-//    for(int i=1;i<s;i++){
+//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//    state.m.dims(2), state.m.dims(3), f64); for(int i=1;i<s;i++){
 //        sumbk+=a[s][i]*k[i];
 //    }
 //    //Error estimation using 4th order approx
-//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
-//    for(int i=1;i<=s;i++){
+//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//    state.m.dims(2), state.m.dims(3), f64); for(int i=1;i<=s;i++){
 //        rk_error+=e[i]*k[i];
 //    }
 //    k_FSAL=k[7];
-//    //!!!Note: here e is already the difference between the ususal b and bhat!!!! (no rk_error=sumbk-rk_error)
+//    //!!!Note: here e is already the difference between the ususal b and
+//    bhat!!!! (no rk_error=sumbk-rk_error)
 //    err_=maxnorm(rk_error/controller_.givescale(max(state.m, state.m+sumbk)));
 //    return sumbk;
 //}
 
 //// Bogacki 4, 5 method with sigle error andstepsize control
 ////TODO far too high error in integration test
-//af::array AdaptiveRungeKutta::BS45(const State& state, const double dt , double& err_)
+// af::array AdaptiveRungeKutta::BS45(const State& state, const double dt ,
+// double& err_)
 //{
 //    State tempstate=state;
 //
@@ -663,16 +690,19 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
 //    b[7] = 79937.e0/1113912.e0;
 //    b[8] = 3293.e0/556956.e0;
 //    const bool llg_wasnormalized=true;//TODO
-//    if(controller_.get_reject() || (( controller_.get_counter_reject() + controller_.get_counter_accepted()) <=0) || llg_wasnormalized){
+//    if(controller_.get_reject() || (( controller_.get_counter_reject() +
+//    controller_.get_counter_accepted()) <=0) || llg_wasnormalized){
 //    //if(reject || calls==0 || llg_wasnormalized){
-//    //Note: in generalized rkcall use: if(FSAL==false || reject || calls==0 || llg_wasnormalized){
+//    //Note: in generalized rkcall use: if(FSAL==false || reject || calls==0 ||
+//    llg_wasnormalized){
 //      k[1]   =  f(state);
 //      //k[1]   =  f(t, m);
 //      }
 //    else
 //      k[1]=k[s];
 //    for(int i=2;i<=s;i++){
-//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
+//        af::array rktemp=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//        state.m.dims(2), state.m.dims(3), f64);
 //      for(int j=1;j<i;j++){
 //        rktemp+=a[i][j] * k[j];
 //      }
@@ -683,15 +713,15 @@ af::array AdaptiveRungeKutta::BS23(const State &state, const double dt, double &
 //      //k[i]= f(t + c[i], m + rktemp);
 //    }
 //
-//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
-//    for(int i=1;i<s;i++){
+//    af::array sumbk=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//    state.m.dims(2), state.m.dims(3), f64); for(int i=1;i<s;i++){
 //      sumbk+=a[s][i]*k[i];
 //    }
 //    sumbk*=dt;
 //
 //
-//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1), state.m.dims(2), state.m.dims(3), f64);
-//    for(int i=1;i<=s;i++){
+//    af::array rk_error=af::constant(0.0, state.m.dims(0), state.m.dims(1),
+//    state.m.dims(2), state.m.dims(3), f64); for(int i=1;i<=s;i++){
 //      rk_error+=b[i]*k[i];
 //    }
 //    rk_error*=dt;

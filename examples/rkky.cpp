@@ -1,15 +1,13 @@
 // RKKY example from https://mumax.github.io/examples.html
-#include "magnum_af.hpp"
 #include "arrayfire.h"
+#include "magnum_af.hpp"
 #include <cmath>
 
 using namespace magnumafcpp;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
@@ -24,7 +22,7 @@ int main(int argc, char **argv)
     const double A = 10e-12;
     const double RKKY = -1e-3 * dx;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
 
     // Initial magnetic field
@@ -34,7 +32,8 @@ int main(int argc, char **argv)
     state.write_vti(filepath + "minit");
     af::array rkkyvals = af::constant(RKKY / 2., mesh.dims, f64);
     af::array exchvals = af::constant(A, mesh.dims, f64);
-    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
+    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals),
+                                              Exchange_values(exchvals), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
     LLGIntegrator Llg(1, {demag, rkky});
@@ -47,8 +46,7 @@ int main(int argc, char **argv)
 
     std::vector<double> vecE;
 
-    for (int i = 0; i < 360; i++)
-    {
+    for (int i = 0; i < 360; i++) {
         const double mix = std::cos(i * M_PI / 180.);
         const double miy = std::sin(i * M_PI / 180.);
         state.m(af::span, af::span, 1, 0) = mix;

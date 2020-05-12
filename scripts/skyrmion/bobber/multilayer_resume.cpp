@@ -6,8 +6,7 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-void set_air_to_zero(af::array &m)
-{
+void set_air_to_zero(af::array& m) {
     m(af::span, af::span, 1, af::span) = 0;
     m(af::span, af::span, 2, af::span) = 0;
 
@@ -36,8 +35,7 @@ void set_air_to_zero(af::array &m)
     m(af::span, af::span, 30, af::span) = 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -52,14 +50,18 @@ int main(int argc, char **argv)
     info();
     StageTimer timer;
 
-    //icase 1: DMI in IL = 0, minit skyrm in all layers
-    //icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers
-    //icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
+    // icase 1: DMI in IL = 0, minit skyrm in all layers
+    // icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers
+    // icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
     const int icase(argc > 3 ? std::stoi(argv[3]) : 1);
     std::cout << "case=" << icase << std::endl;
-    const double r_ratio_to_sample(argc > 4 ? std::stod(argv[4]) : 16.); // r=4 means radius of init skryrm is 1/4 x
+    const double r_ratio_to_sample(
+        argc > 4 ? std::stod(argv[4])
+                 : 16.); // r=4 means radius of init skryrm is 1/4 x
     std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
-    const double t_relax_state1_sec(argc > 5 ? std::stod(argv[5]) : 3e-9); // relaxtime for state1 in seconds
+    const double t_relax_state1_sec(
+        argc > 5 ? std::stod(argv[5])
+                 : 3e-9); // relaxtime for state1 in seconds
     std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
     const bool int_over_relax = true; // true== interate, false relax
     // Parameter initialization
@@ -73,12 +75,13 @@ int main(int argc, char **argv)
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
-    std::cout << "nx = " << ixy << " " << dx << " " <<  dy << " " << dz << std::endl;
+    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz
+              << std::endl;
 
     const double Hz = 130e-3 / constants::mu0;
-    const double RKKY_val = 0.8e-3 * 1e-9; //TODO
-    //Note: maybe 0.5 factor (see mumax3):
-    //const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
+    const double RKKY_val = 0.8e-3 * 1e-9; // TODO
+    // Note: maybe 0.5 factor (see mumax3):
+    // const double RKKY_val = 0.8e-3 * 1e-9* 0.5;//
 
     // SK layer params
     const double SK_Ms = 1371e3;  // A/m
@@ -110,36 +113,35 @@ int main(int argc, char **argv)
     geom(af::span, af::span, 28, af::span) = 1;
     geom(af::span, af::span, 31, af::span) = 1;
 
-    //af::print("geom", geom);
-    //af::print("geom == 1", geom == 1);
-    //af::print("geom == 2", geom == 2);
+    // af::print("geom", geom);
+    // af::print("geom == 1", geom == 1);
+    // af::print("geom == 2", geom == 2);
 
     af::array todouble = af::constant(1., nx, ny, nz, 3, f64);
     af::array Ms = (SK_Ms * (geom == 1) + IL_Ms * (geom == 2)) * todouble;
     af::array A = (SK_A * (geom == 1) + IL_A * (geom == 2)) * todouble;
     af::array Ku = (SK_Ku * (geom == 1) + IL_Ku * (geom == 2)) * todouble;
-    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) * todouble; // + IL_D * (geom == 2);
-    //std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
+    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) *
+                  todouble; // + IL_D * (geom == 2);
+    // std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
-    //af::print("Ms", Ms);
-    //af::print("1e12 * A", 1e12 * A);
-    //af::print("Ku", Ku);
-    //af::print("D", D);
+    // af::print("Ms", Ms);
+    // af::print("1e12 * A", 1e12 * A);
+    // af::print("Ku", Ku);
+    // af::print("D", D);
 
     array RKKY = af::constant(0.0, nx, ny, nz, 3, f64);
     RKKY(af::span, af::span, 12, af::span) = RKKY_val;
     RKKY(af::span, af::span, 13, af::span) = RKKY_val;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (uint32_t ix = 0; ix < mesh.n0; ix++)
-    {
-        for (uint32_t iy = 0; iy < mesh.n1; iy++)
-        {
+    for (uint32_t ix = 0; ix < mesh.n0; ix++) {
+        for (uint32_t iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -149,8 +151,7 @@ int main(int argc, char **argv)
     }
     set_air_to_zero(m);
 
-    if (icase == 3)
-    {
+    if (icase == 3) {
         // Setting IL layer ferromagnetic
         m(af::span, af::span, 13, 2) = 1.;
         m(af::span, af::span, 14, 2) = 1.;
@@ -160,18 +161,20 @@ int main(int argc, char **argv)
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(
+        new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = LlgTerm(
+        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
-    //NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
+    // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = LlgTerm(new ExternalField(zee));
 
-    //af::print("dmi", dmi->h(state_1));
-    //af::print("exch", exch->h(state_1));
+    // af::print("dmi", dmi->h(state_1));
+    // af::print("exch", exch->h(state_1));
 
     LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     timer.print_stage("init ");
@@ -179,13 +182,14 @@ int main(int argc, char **argv)
     // preparing string method
     double n_interp = 60;
     double string_dt = 1e-14;
-    //double string_dt = 1e-13;
-    //const int string_steps = 1000;
+    // double string_dt = 1e-13;
+    // const int string_steps = 1000;
 
     std::vector<State> inputimages;
-    for (int i = 0; i < n_interp; i++){
+    for (int i = 0; i < n_interp; i++) {
         State state(mesh, Ms, m);
-        state._vti_reader(filepath + "current_skyrm_image" + std::to_string(i) +".vti");
+        state._vti_reader(filepath + "current_skyrm_image" + std::to_string(i) +
+                          ".vti");
         inputimages.push_back(state);
     }
 

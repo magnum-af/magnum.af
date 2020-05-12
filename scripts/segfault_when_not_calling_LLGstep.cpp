@@ -1,18 +1,17 @@
 #include "arrayfire.h"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <algorithm>
-#include <string>
-#include <memory>
 #include "magnum_af.hpp"
+#include <algorithm>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <string>
 
 using namespace magnumafcpp;
 
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     std::cout << "argc" << argc << std::endl;
     for (int i = 0; i < argc; i++)
         cout << "Parameter " << i << " was " << argv[i] << "\n";
@@ -27,10 +26,10 @@ int main(int argc, char **argv)
 
     // Parameter initialization
     const double x = 1, y = 1, z = 1;
-    //const double x=5.e-7, y=1.25e-7, z=3.e-9;
+    // const double x=5.e-7, y=1.25e-7, z=3.e-9;
     const int nx = 10, ny = 10, nz = 1;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
     Material material = Material();
     material.p = 1;
@@ -47,8 +46,8 @@ int main(int argc, char **argv)
     std::cout << "test " << std::endl;
     LLG Llg(state, llgterm);
     std::cout << "test " << std::endl;
-    //TODO: not calling step or llgterm->h causes segfault in cleanup
-    //af::print("h", llgterm[0]->h(state));
-    //state.m=Llg.step(state);
+    // TODO: not calling step or llgterm->h causes segfault in cleanup
+    // af::print("h", llgterm[0]->h(state));
+    // state.m=Llg.step(state);
     return 0;
 }

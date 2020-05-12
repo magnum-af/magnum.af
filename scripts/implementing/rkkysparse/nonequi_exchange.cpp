@@ -1,12 +1,11 @@
-#include "magnum_af.hpp"
 #include "arrayfire.h"
+#include "magnum_af.hpp"
 #include <iostream>
 
 using namespace magnumafcpp;
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -22,11 +21,11 @@ int main(int argc, char **argv)
 
     const int nx = 30, ny = 40, nz = 4;
     const double dx = 1e-9, dy = 2e-9;
-    //array A = af::constant(1e-5, nx, ny, nz, 3, f64);
+    // array A = af::constant(1e-5, nx, ny, nz, 3, f64);
     array A = af::randu(nx, ny, nz, 3, f64);
     A = A + 1;
     A = A * 1e-12;
-    //double A = 1e-12;
+    // double A = 1e-12;
     std::vector<double> zvec = {1e-9, 2e-9, 3e-9, 4e-9};
     NonequispacedMesh mesh(nx, ny, dx, dy, zvec);
     auto coo = NonequiExchangeField(A, mesh, true, true);
@@ -34,10 +33,10 @@ int main(int argc, char **argv)
     auto csr = NonequiExchangeField(A, mesh, true, false);
     af::array csr_to_dense = af::sparseConvertTo(csr.matr, AF_STORAGE_DENSE);
 
-    //af::print("", exch.matr);
-    //af::print("", csr_to_dense);
-    //af::print("", coo_to_dense);
-    //af::print("", csr_to_dense == coo_to_dense);
+    // af::print("", exch.matr);
+    // af::print("", csr_to_dense);
+    // af::print("", coo_to_dense);
+    // af::print("", csr_to_dense == coo_to_dense);
 
     af::print("logic max", af::max(af::flat(csr_to_dense == coo_to_dense)));
     af::print("logic min", af::min(af::flat(csr_to_dense == coo_to_dense)));
@@ -63,15 +62,17 @@ int main(int argc, char **argv)
     af::print("coo_max_idx", coo_max_idx);
 
     af::print("max  matr diff", af::max(af::flat(csr_to_dense - coo_to_dense)));
-    af::print("mean matr diff", af::mean(af::flat(csr_to_dense - coo_to_dense)));
+    af::print("mean matr diff",
+              af::mean(af::flat(csr_to_dense - coo_to_dense)));
     af::print("min  matr diff", af::min(af::flat(csr_to_dense - coo_to_dense)));
-    //if ( csr == coo ) std::cout << "csr == coo" << std::endl;
-    //if ( csr != coo ) std::cout << "csr != coo" << std::endl;
+    // if ( csr == coo ) std::cout << "csr == coo" << std::endl;
+    // if ( csr != coo ) std::cout << "csr != coo" << std::endl;
     if (afvalue(csr_max_val) == afvalue(coo_max_val))
         std::cout << " maxvals equal" << std::endl;
     else
         std::cout << " maxvals not equal" << std::endl;
-    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense))))
+    if (afvalue(af::mean(af::flat(coo_to_dense))) ==
+        afvalue(af::mean(af::flat(csr_to_dense))))
         std::cout << " mean equal" << std::endl;
     else
         std::cout << " mean not equal" << std::endl;

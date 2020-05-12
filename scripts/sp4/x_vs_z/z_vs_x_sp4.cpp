@@ -3,12 +3,10 @@
 
 using namespace magnumafcpp;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     bool conv = false;
 
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
@@ -25,10 +23,9 @@ int main(int argc, char **argv)
         const int nx = 1, ny = 25, nz = 100;
         const double A = 1.3e-11;
 
-        //Generating Objects
+        // Generating Objects
         std::vector<double> dz_spacing;
-        for (int i = 0; i < nz; i++)
-        {
+        for (int i = 0; i < nz; i++) {
             dz_spacing.push_back(z / nz);
         }
         Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
@@ -41,7 +38,7 @@ int main(int argc, char **argv)
         m(af::span, af::span, -1, 1) = 1;
 
         State state(mesh, 8e5, m);
-        state.nonequimesh = ne_mesh; //TODO avoid
+        state.nonequimesh = ne_mesh; // TODO avoid
         vti_writer_micro(state.m, mesh, (filepath + "z_minit").c_str());
 
         LlgTerms llgterm;
@@ -49,7 +46,8 @@ int main(int argc, char **argv)
         if (conv)
             llgterm.push_back(LlgTerm(new ExchangeField(A)));
         else
-            llgterm.push_back(LlgTerm(new NonequiExchangeField(af::constant(A, mesh.dims, f64), ne_mesh)));
+            llgterm.push_back(LlgTerm(new NonequiExchangeField(
+                af::constant(A, mesh.dims, f64), ne_mesh)));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;
@@ -58,8 +56,7 @@ int main(int argc, char **argv)
 
         // Relax
         af::timer t = af::timer::start();
-        while (state.t < 1e-9)
-        {
+        while (state.t < 1e-9) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
@@ -76,19 +73,19 @@ int main(int argc, char **argv)
 
         // Switch
         t = af::timer::start();
-        while (state.t < 2e-9)
-        {
+        while (state.t < 2e-9) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;
+        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t)
+                  << std::endl;
         vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
         stream.close();
-        std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
+        std::cout << "total [af-s]: " << af::timer::stop(total_time)
+                  << std::endl;
     }
-    //x_y plane
-    if (!exists(filepath + "x_m.dat"))
-    {
+    // x_y plane
+    if (!exists(filepath + "x_m.dat")) {
         // Checking input variables and setting GPU Device
         af::timer total_time = af::timer::start();
 
@@ -97,7 +94,7 @@ int main(int argc, char **argv)
         const int nx = 100, ny = 25, nz = 1;
         const double A = 1.3e-11;
 
-        //Generating Objects
+        // Generating Objects
         Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
         // Initial magnetic field
@@ -118,8 +115,7 @@ int main(int argc, char **argv)
 
         // Relax
         af::timer t = af::timer::start();
-        while (state.t < 1e-9)
-        {
+        while (state.t < 1e-9) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
@@ -136,15 +132,16 @@ int main(int argc, char **argv)
 
         // Switch
         t = af::timer::start();
-        while (state.t < 2e-9)
-        {
+        while (state.t < 2e-9) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;
+        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t)
+                  << std::endl;
         vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
         stream.close();
-        std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
+        std::cout << "total [af-s]: " << af::timer::stop(total_time)
+                  << std::endl;
     }
     return 0;
 }

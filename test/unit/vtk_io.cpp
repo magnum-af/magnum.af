@@ -5,8 +5,7 @@
 
 using namespace magnumafcpp;
 
-TEST(vtkIO, vtiWriteReadTest)
-{
+TEST(vtkIO, vtiWriteReadTest) {
     af::array a = af::randu(6, 5, 4, 3, f64);
     Mesh mesh(6, 5, 4, 0.1, 0.2, 0.3);
 
@@ -27,8 +26,7 @@ TEST(vtkIO, vtiWriteReadTest)
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-TEST(vtkIO, vtrWriteReadTest)
-{
+TEST(vtkIO, vtrWriteReadTest) {
     af::array a = af::randu(6, 5, 4, 10, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
@@ -47,16 +45,14 @@ TEST(vtkIO, vtrWriteReadTest)
     ASSERT_EQ(read_mesh.dx, 0.1);
     ASSERT_EQ(read_mesh.dy, 0.2);
 
-    for (unsigned i = 0; i < z_spacing.size(); i++)
-    {
+    for (unsigned i = 0; i < z_spacing.size(); i++) {
         ASSERT_NEAR(z_spacing.at(i), read_mesh.z_spacing.at(i), 2e-16);
     }
 
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-TEST(vtkIO, vtrWriteReadScalarFieldTest)
-{
+TEST(vtkIO, vtrWriteReadScalarFieldTest) {
     af::array a = af::randu(6, 5, 4, 1, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
@@ -71,8 +67,7 @@ TEST(vtkIO, vtrWriteReadScalarFieldTest)
     ASSERT_EQ(max_abs_diff(read_a, a), 0);
 }
 
-TEST(vtkIO, vtrWriteReadAddFileExtensionTest)
-{
+TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
     af::array a = af::randu(6, 5, 4, 1, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
     NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
@@ -94,8 +89,7 @@ TEST(vtkIO, vtrWriteReadAddFileExtensionTest)
     ASSERT_EQ(remove("unittesting_b.vtr"), 0);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

@@ -3,12 +3,10 @@
 
 using namespace magnumafcpp;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device
-    //timer total_time = af::timer::start();
-    for (int i = 0; i < argc; i++)
-    {
+    // timer total_time = af::timer::start();
+    for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
@@ -18,9 +16,9 @@ int main(int argc, char **argv)
     // Parameter initialization
     const double x = 1.e-9, y = 1e-9, z = 0.6e-9;
     const int nx = 2, ny = 2, nz = 2;
-    //const int nx = 1, ny=1 , nz=1;
+    // const int nx = 1, ny=1 , nz=1;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
     Material material = Material();
     state.Ms = 1.4e6;
@@ -55,12 +53,12 @@ int main(int argc, char **argv)
 
     // Relax
     timer t = af::timer::start();
-    while (state.t < 1e-7)
-    {
+    while (state.t < 1e-7) {
         Llg.step(state);
         state.calc_mean_m(stream);
-        //state.calc_mean_m(std::cout);
-        //std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1)) << " " << afvalue(m(0, 0, 0, 2)) << " " << std::endl;
+        // state.calc_mean_m(std::cout);
+        // std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1))
+        // << " " << afvalue(m(0, 0, 0, 2)) << " " << std::endl;
     }
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << std::endl;
     vti_writer_micro(state.m, mesh, (filepath + "relax").c_str());

@@ -5,8 +5,7 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -18,7 +17,7 @@ int main(int argc, char **argv)
     std::cout << "Writing into path " << filepath.c_str() << std::endl;
 
     setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    //if(argc>1) setDevice(std::stoi(argv[2]));
+    // if(argc>1) setDevice(std::stoi(argv[2]));
     info();
 
     // Parameter initialization
@@ -28,7 +27,7 @@ int main(int argc, char **argv)
     double n_interp = 60;
     double string_dt = 1e-13;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
     const double Ms = 1.1e6;
     const double A = 1.6e-11;
@@ -39,7 +38,7 @@ int main(int argc, char **argv)
     const double J_atom = 2. * A * dx;
     const double D_atom = D * pow(dx, 2);
     const double K_atom = Ku1 * pow(dx, 3);
-    const double p = Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
+    const double p = Ms * pow(dx, 3); // Compensate nz=1 instead of nz=4
 
     double bz_in_dims_of_J_atom(argc > 3 ? std::stod(argv[3]) : 0.);
     std::cout << "bz_in_dims_of_J_atom = " << bz_in_dims_of_J_atom << std::endl;
@@ -48,10 +47,8 @@ int main(int argc, char **argv)
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(span, span, span, 2) = -1;
-    for (uint32_t ix = 0; ix < mesh.n0; ix++)
-    {
-        for (uint32_t iy = 0; iy < mesh.n1; iy++)
-        {
+    for (uint32_t ix = 0; ix < mesh.n0; ix++) {
+        for (uint32_t iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -69,18 +66,16 @@ int main(int argc, char **argv)
     zee = tile(zee, mesh.n0, mesh.n1, mesh.n2);
 
     LLGIntegrator Llg(alpha);
-    if (demag)
-    {
+    if (demag) {
         std::cout << "Enabling demag field" << std::endl;
         Llg.llgterms.push_back(LlgTerm(new AtomisticDipoleDipoleField(mesh)));
-    }
-    else
-    {
+    } else {
         std::cout << "Not enabling demag field" << std::endl;
     }
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(J_atom)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
+    Llg.llgterms.push_back(
+        LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExternalField(zee)));
 
     Llg.relax(state);

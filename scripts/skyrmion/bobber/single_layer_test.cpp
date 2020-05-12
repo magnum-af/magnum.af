@@ -5,8 +5,7 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -37,16 +36,14 @@ int main(int argc, char **argv)
     const double D = 2.5e-3;   // J/m^2
     const double Hz = 130e-3 / constants::mu0;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++)
-    {
-        for (int iy = 0; iy < mesh.n1; iy++)
-        {
+    for (int ix = 0; ix < mesh.n0; ix++) {
+        for (int iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -75,13 +72,13 @@ int main(int argc, char **argv)
     af::print("dmi", dmi->h(state));
 
     LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-    //LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-    while (state.t < 3e-9)
-    {
+    // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
+    while (state.t < 3e-9) {
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
         Llg.step(state);
-        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << Llg.E(state) << std::endl;
+        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2)
+                  << "\t" << Llg.E(state) << std::endl;
     }
     //    Llg.relax(state);
     state.write_vti(filepath + "m_relaxed");

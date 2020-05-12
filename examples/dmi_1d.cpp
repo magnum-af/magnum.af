@@ -1,14 +1,14 @@
-//ref(section 4., Fig 1.): D. Corts-Ortuo et al. , “Proposal for a micromagnetic standard problem for materials with Dzyaloshinskii-Moriya interaction,” New Journal of Physics, vol. 20, p. 113015, Nov. 2018.
-#include "magnum_af.hpp"
+// ref(section 4., Fig 1.): D. Corts-Ortuo et al. , “Proposal for a
+// micromagnetic standard problem for materials with Dzyaloshinskii-Moriya
+// interaction,” New Journal of Physics, vol. 20, p. 113015, Nov. 2018.
 #include "arrayfire.h"
+#include "magnum_af.hpp"
 
 using namespace magnumafcpp;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     const double Ms = 0.86e6;
     const double Ku = 0.4e6;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     // Initial magnetic field
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
-    //auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
+    // auto demag = LlgTerm (new DemagField(mesh, true, true, 0));
     auto exch = LlgTerm(new ExchangeField(A));
     auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
@@ -44,25 +44,27 @@ int main(int argc, char **argv)
 
     // Relax
     StageTimer timer;
-    while (state.t < 2e-10)
-    {
+    while (state.t < 2e-10) {
         Llg.step(state);
         state.calc_mean_m(stream);
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
     }
-    //Llg.relax(state, 1e-10, 100, 1);
+    // Llg.relax(state, 1e-10, 100, 1);
     stream.close();
     timer.print_stage("relax ");
     state.write_vti(filepath + "relax");
 
-    //write m to file
-    // plot with; gnuplot -e 'set terminal pdf; set output "m.pdf"; set xlabel "x [nm]"; set ylabel "m_i"; p "mrelaxed.dat" u 1:2 w lp t "mx", "" u 1:4 w lp t "mz"'
+    // write m to file
+    // plot with; gnuplot -e 'set terminal pdf; set output "m.pdf"; set xlabel
+    // "x [nm]"; set ylabel "m_i"; p "mrelaxed.dat" u 1:2 w lp t "mx", "" u 1:4
+    // w lp t "mz"'
     std::ofstream mstream(filepath + "mrelaxed.dat");
     mstream << "# idx, mx, my, mz" << std::endl;
-    for (int i = 0; i < nx; i++)
-    {
-        mstream << i << "\t" << state.m(i, 0, 0, 0).scalar<double>() << "\t" << state.m(i, 0, 0, 1).scalar<double>() << "\t" << state.m(i, 0, 0, 2).scalar<double>() << std::endl;
+    for (int i = 0; i < nx; i++) {
+        mstream << i << "\t" << state.m(i, 0, 0, 0).scalar<double>() << "\t"
+                << state.m(i, 0, 0, 1).scalar<double>() << "\t"
+                << state.m(i, 0, 0, 2).scalar<double>() << std::endl;
     }
     mstream.close();
 

@@ -1,13 +1,11 @@
-#include "magnum_af.hpp"
 #include "arrayfire.h"
+#include "magnum_af.hpp"
 
 using namespace magnumafcpp;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++)
-    {
+    for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
@@ -19,7 +17,7 @@ int main(int argc, char **argv)
     const int nx = 100, ny = 25, nz = 1;
     const double A = 1.3e-11;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     // Initial magnetic field
@@ -36,8 +34,7 @@ int main(int argc, char **argv)
 
     // Relax
     StageTimer timer;
-    while (state.t < 1e-9)
-    {
+    while (state.t < 1e-9) {
         Llg.step(state);
         state.calc_mean_m(stream);
     }
@@ -52,8 +49,7 @@ int main(int argc, char **argv)
     Llg.alpha = 0.02;
 
     // Switch
-    while (state.t < 2e-9)
-    {
+    while (state.t < 2e-9) {
         Llg.step(state);
         state.calc_mean_m(stream);
     }

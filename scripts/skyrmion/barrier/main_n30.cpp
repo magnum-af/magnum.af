@@ -5,8 +5,7 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -18,7 +17,7 @@ int main(int argc, char **argv)
     std::cout << "Writing into path " << filepath.c_str() << std::endl;
 
     setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    //if(argc>1) setDevice(std::stoi(argv[2]));
+    // if(argc>1) setDevice(std::stoi(argv[2]));
     info();
 
     // Parameter initialization
@@ -29,7 +28,7 @@ int main(int argc, char **argv)
     double string_dt = 1e-13;
     const int string_steps = 10000;
 
-    //Generating Objects
+    // Generating Objects
     Mesh mesh(nx, ny, nz, dx, dx, dx);
     Material material = Material();
     state.Ms = 1.1e6;
@@ -41,15 +40,13 @@ int main(int argc, char **argv)
     material.J_atom = 2. * material.A * dx;
     material.D_atom = material.D * pow(dx, 2);
     material.K_atom = material.Ku1 * pow(dx, 3);
-    material.p = state.Ms * pow(dx, 3); //Compensate nz=1 instead of nz=4
+    material.p = state.Ms * pow(dx, 3); // Compensate nz=1 instead of nz=4
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(span, span, span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++)
-    {
-        for (int iy = 0; iy < mesh.n1; iy++)
-        {
+    for (int ix = 0; ix < mesh.n0; ix++) {
+        for (int iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -62,10 +59,12 @@ int main(int argc, char **argv)
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
-    //Demag?//Llg.llgterms.push_back( LlgTerm (new AtomisticDipoleDipoleField(mesh)));
+    // Demag?//Llg.llgterms.push_back( LlgTerm (new
+    // AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(
+        LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

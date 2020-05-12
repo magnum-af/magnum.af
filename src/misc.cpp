@@ -1,97 +1,92 @@
 #include "misc.hpp"
-#include <iostream>
-#include <unistd.h>
 #include <cstring>
+#include <dirent.h>
+#include <iostream>
 #include <pwd.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 
-namespace magnumafcpp
-{
+namespace magnumafcpp {
 
 unsigned long long GetDirSize(std::string filepath)
 // Retuns size of directory in bytes
-// filepath is expected to be an absolute file path as the first word is detected by the first occurance of "/"
+// filepath is expected to be an absolute file path as the first word is
+// detected by the first occurance of "/"
 // http://5eonline.com/en/4-easy-ways-to-run-external-programs-in-cc/
 {
-    FILE *stream;
+    FILE* stream;
     char string[256] = {0};
     stream = popen(("du --max-depth=0 " + filepath).c_str(), "r");
-    while (NULL != fgets(string, sizeof(string) - 1, stream))
-    {
-        //printf( "(%s)\n", string );
+    while (NULL != fgets(string, sizeof(string) - 1, stream)) {
+        // printf( "(%s)\n", string );
     }
     std::string charstring(string);
-    std::string dir_size_string = charstring.substr(0, charstring.find("/") - 1);
+    std::string dir_size_string =
+        charstring.substr(0, charstring.find("/") - 1);
     return std::stoull(dir_size_string, 0, 0);
 }
 
-inline bool createdir(const std::string &absolute_filepath)
-{
+inline bool createdir(const std::string& absolute_filepath) {
     // Creating a directory
-    if (mkdir(absolute_filepath.c_str(), 0777) == -1)
-    {
-        //std::cerr << "Error in createdir for " << absolute_filepath<< " : " << std::strerror(errno) << std::endl;
-        printf("Error in createdir for %s : %s \n<< ", absolute_filepath.c_str(), std::strerror(errno));
+    if (mkdir(absolute_filepath.c_str(), 0777) == -1) {
+        // std::cerr << "Error in createdir for " << absolute_filepath<< " : "
+        // << std::strerror(errno) << std::endl;
+        printf("Error in createdir for %s : %s \n<< ",
+               absolute_filepath.c_str(), std::strerror(errno));
         return false;
     }
 
-    else
-    {
-        //printf("Directory ~/.magnum.af.cache/ created.");
-        //std::cout << "Directory"+absolute_filepath+"created" << std::endl;
+    else {
+        // printf("Directory ~/.magnum.af.cache/ created.");
+        // std::cout << "Directory"+absolute_filepath+"created" << std::endl;
         printf("Directory '%s' created \n", absolute_filepath.c_str());
         return true;
     }
 }
 
-std::string setup_magafdir()
-{
-    const char *homedir;
-    if ((homedir = getenv("HOME")) == NULL)
-    {
+std::string setup_magafdir() {
+    const char* homedir;
+    if ((homedir = getenv("HOME")) == NULL) {
         homedir = getpwuid(getuid())->pw_dir;
     }
     std::string magafdir(homedir);
     magafdir = magafdir + "/.magnum.af.cache/";
-    if (exists(magafdir) == false)
-    {
+    if (exists(magafdir) == false) {
         createdir(magafdir);
     }
     return magafdir;
 }
 
-//adapted from https://stackoverflow.com/questions/9642145/is-there-a-way-to-find-the-oldest-file-using-just-the-c
-void remove_oldest_files_until_size(const char *dir, unsigned long long maxNumberOfBytes, bool verbose)
-{
+// adapted from
+// https://stackoverflow.com/questions/9642145/is-there-a-way-to-find-the-oldest-file-using-just-the-c
+void remove_oldest_files_until_size(const char* dir,
+                                    unsigned long long maxNumberOfBytes,
+                                    bool verbose) {
     int maxiter = 0;
-    while (GetDirSize(std::string(dir)) >= maxNumberOfBytes && maxiter < 10)
-    {
+    while (GetDirSize(std::string(dir)) >= maxNumberOfBytes && maxiter < 10) {
 
-        DIR *dp;
+        DIR* dp;
         struct dirent *entry, *oldestFile = NULL;
         struct stat statbuf;
         int numberOfEntries = 0;
         time_t t_oldest;
 
         time(&t_oldest);
-        if ((dp = opendir(dir)) != NULL)
-        {
-            if (chdir(dir) == 0)
-            {
-                while ((entry = readdir(dp)) != NULL)
-                {
+        if ((dp = opendir(dir)) != NULL) {
+            if (chdir(dir) == 0) {
+                while ((entry = readdir(dp)) != NULL) {
                     lstat(entry->d_name, &statbuf);
-                    if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
+                    if (strcmp(".", entry->d_name) == 0 ||
+                        strcmp("..", entry->d_name) == 0)
                         continue;
                     if (maxiter == 0 && verbose)
-                        printf("Entry: ~/.magnum.af.cache/%s\t%s", entry->d_name, ctime(&statbuf.st_mtime));
+                        printf("Entry: ~/.magnum.af.cache/%s\t%s",
+                               entry->d_name, ctime(&statbuf.st_mtime));
                     numberOfEntries++;
-                    if (difftime(statbuf.st_mtime, t_oldest) < 0)
-                    {
+                    if (difftime(statbuf.st_mtime, t_oldest) < 0) {
                         t_oldest = statbuf.st_mtime;
                         oldestFile = entry;
                     }
@@ -99,7 +94,8 @@ void remove_oldest_files_until_size(const char *dir, unsigned long long maxNumbe
             }
         }
         if (verbose)
-            printf("Removing oldest file '~/.magnum.af.cache/%s'  %s'\n", oldestFile->d_name, ctime(&t_oldest));
+            printf("Removing oldest file '~/.magnum.af.cache/%s'  %s'\n",
+                   oldestFile->d_name, ctime(&t_oldest));
         remove(oldestFile->d_name);
         closedir(dp);
         maxiter++;
