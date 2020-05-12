@@ -1,57 +1,78 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-project(magnum.af VERSION 0.1) # setting project prevents 'operation only allowed in c++ file error, but this kills version numbering
-#MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
+cmake_minimum_required(VERSION 3.0)
+project(magnum.af VERSION 0.1) # setting project prevents 'operation only
+                               # allowed in c++ file error, but this kills
+                               # version numbering
+# MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
 
 # building with python3 only
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0") # disables warning caused by cython compiled file
-set(PYTHON_EXECUTABLE "/usr/bin/python3") # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from https://github.com/pytorch/ELF/issues/98
-#Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing") # in response to "dereferencing type-punned pointer will break strict-aliasing rules" warning # hint: https://github.com/cython/cython/issues/958
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0") # disables
+                                                                   # warning
+                                                                   # caused by
+                                                                   # cython
+                                                                   # compiled
+                                                                   # file
+set(PYTHON_EXECUTABLE "/usr/bin/python3"
+)# equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from
+ # https://github.com/pytorch/ELF/issues/98
+# Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+# -fno-strict-aliasing") # in response to "dereferencing type-punned pointer
+# will break strict-aliasing rules" warning # hint:
+# https://github.com/cython/cython/issues/958
 
-LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
 # Instruction for use can be found at the top of CMakeModules/UseCython.cmake.
-include( UseCython )
-##Currently not needed, but maybe interesting at some point:
-# With CMake, a clean separation can be made between the source tree and the
-# build tree.  When all source is compiled, as with pure C/C++, the source is
-# no-longer needed in the build tree.  However, with pure *.py source, the
-# source is processed directly.  To handle this, we reproduce the availability
-# of the source files in the build tree.
+include(UseCython)
+# Currently not needed, but maybe interesting at some point: With CMake, a clean
+# separation can be made between the source tree and the build tree.  When all
+# source is compiled, as with pure C/C++, the source is no-longer needed in the
+# build tree.  However, with pure *.py source, the source is processed directly.
+# To handle this, we reproduce the availability of the source files in the build
+# tree.
 
-#add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
-#  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
-#  ${CMAKE_CURRENT_BINARY_DIR}
-#  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
-#include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning: commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file or directory compilation terminated."
-# If the pyx file is a C++ file, we should specify that here.
+# add_custom_target( ReplicatePythonSourceTree ALL ${CMAKE_COMMAND} -P
+# ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
+# ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+# include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning:
+# commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file
+# or directory compilation terminated." If the pyx file is a C++ file, we should
+# specify that here.
 set_source_files_properties(
   ${magnum.af_SOURCE_DIR}/magnumaf.pyx
-  #Additional files would come here as follows:
-  #${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
-  PROPERTIES CYTHON_IS_CXX TRUE )
+  # Additional files would come here as follows:
+  # ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
+  PROPERTIES CYTHON_IS_CXX TRUE)
 
-#FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
-#cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
-cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+# FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
+# cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
+cython_add_module_w_af_vtk(magnumaf magnumaf.pyx
+                           $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
 
-IF(SETINSTALL)
-    # 'make install' to the correct locations (provided by GNUInstallDirs).
-    install(TARGETS magnumaf EXPORT magnumafConfig
-        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}  # This is for Windows
-    )
-    
-    set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE) # prevent seting runtime path RPATH to ""
-    # from: https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
-ENDIF()
-    
-#MESSAGE( STATUS "------> CMAKE_CXX_FLAGS= ${CMAKE_CXX_FLAGS}" )
-    
-# Further modules would come with cython_add_module_w_AF_VTK(target target.pyx [sources])
+if(SETINSTALL)
+  # 'make install' to the correct locations (provided by GNUInstallDirs).
+  install(
+    TARGETS magnumaf
+    EXPORT magnumafConfig
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} # This is for Windows
+  )
 
-## Linking with magnum.af_CORE_SHARED would be useful for avoiding second source build, but cython is currently now working with shared library
-#FIND_PACKAGE(ArrayFire REQUIRED)
-#INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})# Include the ArrayFire hreaders
-#ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE_FOR_PYBINDING}) # TODO error with python when not OBJECT
-#cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+  set_target_properties(magnumaf PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE
+  )# prevent seting runtime path RPATH to ""
+  # from:
+  # https://stackoverflow.com/questions/32469953/why-is-cmake-designed-so-that-it-removes-runtime-path-when-installing
+endif()
+
+# MESSAGE( STATUS "------> CMAKE_CXX_FLAGS= ${CMAKE_CXX_FLAGS}" )
+
+# Further modules would come with cython_add_module_w_AF_VTK(target target.pyx
+# [sources])
+
+# Linking with magnum.af_CORE_SHARED would be useful for avoiding second source
+# build, but cython is currently now working with shared library
+# FIND_PACKAGE(ArrayFire REQUIRED)
+# INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})# Include the ArrayFire hreaders
+# ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE_FOR_PYBINDING}) # TODO error
+# with python when not OBJECT cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx
+# $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)

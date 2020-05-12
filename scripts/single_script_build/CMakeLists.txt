@@ -1,37 +1,54 @@
-FIND_PACKAGE(ArrayFire REQUIRED)
-FIND_PACKAGE(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+find_package(ArrayFire REQUIRED)
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
-FILE(GLOB EXECUTABLE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp )
+file(
+  GLOB EXECUTABLE
+  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  *.cpp)
 
-# Build the program, linking specifically with designated backends
-# ArrayFire CPU backend
+# Build the program, linking specifically with designated backends ArrayFire CPU
+# backend
 if(${ArrayFire_CPU_FOUND})
-    MESSAGE(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
-    ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE} $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
-    TARGET_LINK_LIBRARIES(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
-    # when linking agsinst lib use (linking here is slow, however):
-    #ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE})
-    #TARGET_LINK_LIBRARIES(magnum.af-cpu magnumafcpp ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
-ENDIF()
+  message(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
+  add_executable(magnum.af-cpu ${EXECUTABLE}
+                               $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+  target_link_libraries(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES}
+                        ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
+  # when linking agsinst lib use (linking here is slow, however):
+  # ADD_EXECUTABLE(magnum.af-cpu ${EXECUTABLE})
+  # TARGET_LINK_LIBRARIES(magnum.af-cpu magnumafcpp ${ArrayFire_CPU_LIBRARIES}
+  # ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
+endif()
 
 # ArrayFire OpenCL backend
-FIND_PACKAGE(OpenCL)
-IF(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
-    # We need to find OpenCL as transitive linking is disabled on some OSes
-    MESSAGE(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
-    ADD_EXECUTABLE(magnum.af-opencl  ${EXECUTABLE} $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
-    TARGET_LINK_LIBRARIES(magnum.af-opencl ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
-ENDIF()
+find_package(OpenCL)
+if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
+  # We need to find OpenCL as transitive linking is disabled on some OSes
+  message(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
+  add_executable(magnum.af-opencl ${EXECUTABLE}
+                                  $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+  target_link_libraries(
+    magnum.af-opencl ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES}
+    ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
+endif()
 
 # ArrayFire CUDA backend
-FIND_PACKAGE(CUDA)
-IF(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
-    # We need to find CUDA and NVVM as transitive linking is disabled on some OSes
-    FIND_PACKAGE(CUDA REQUIRED)
-    FIND_PACKAGE(NVVM REQUIRED)
-    MESSAGE(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
-    MESSAGE(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
-    ADD_EXECUTABLE(magnum.af-cuda  ${EXECUTABLE} $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
-    TARGET_LINK_LIBRARIES(magnum.af-cuda ${ArrayFire_CUDA_LIBRARIES} ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CUDA_LIBRARIES} ${NVVM_LIB} stdc++fs)
-ENDIF()
+find_package(CUDA)
+if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
+  # We need to find CUDA and NVVM as transitive linking is disabled on some OSes
+  find_package(CUDA REQUIRED)
+  find_package(NVVM REQUIRED)
+  message(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
+  message(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
+  add_executable(magnum.af-cuda ${EXECUTABLE}
+                                $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+  target_link_libraries(
+    magnum.af-cuda
+    ${ArrayFire_CUDA_LIBRARIES}
+    ${VTK_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${CUDA_LIBRARIES}
+    ${NVVM_LIB}
+    stdc++fs)
+endif()
