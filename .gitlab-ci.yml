@@ -18,7 +18,7 @@ build_cpu:
     - docker build -t $CPU_TEST_IMAGE -f Dockerfile.cpu .
     - docker push $CPU_TEST_IMAGE
   tags:
-    - packer
+    - gto2 # temporary
 
 build_gpu:
   stage: build
@@ -35,7 +35,7 @@ test_cpu:
     - docker pull $CPU_TEST_IMAGE
     - docker run --rm $CPU_TEST_IMAGE ./scripts/runalltests.sh
   tags:
-    - packer
+    - gto2 # temporary
 
 test_gpu:
   stage: test
@@ -46,7 +46,6 @@ test_gpu:
     - ./scripts/bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
   tags:
     - gpu
-    - gto2 # temporary
 
 deploy_GTO:
   stage: deploy
@@ -57,7 +56,7 @@ deploy_GTO:
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - scripts/bash/get_docu_from_image.sh magnum.af-docu
   tags:
-    - packer
+    - gto2 # temporary
   artifacts:
     paths:
       - html/
