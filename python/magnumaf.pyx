@@ -34,6 +34,7 @@ from magnumaf_decl cimport NonequispacedMesh as cNonequispacedMesh
 from magnumaf_decl cimport State as cState
 from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
+from magnumaf_decl cimport Stochastic_LLG as cStochastic_LLG
 from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
 from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
@@ -658,6 +659,37 @@ cdef class State:
         else:
             return self._thisptr.meani(i)
 
+
+cdef class Stochastic_LLG:
+    """
+    Stochastic LLG Integrator.
+
+    Parameters
+    ----------
+    alpha : float
+        The unitless damping constant in the LLG equation
+    T : float
+        Temperature in Kelvin [K]
+    dt : float
+        Fixed time step in [s]
+    terms : [HeffTerm]
+        A python list constisting of HeffTerm objects s.a. ExchangeField or DemagField
+    smode : str ("Heun")
+        Integration scheme. Either "Heun" or "SemiHeun".
+    """
+    cdef cStochastic_LLG* _thisptr
+    def __cinit__(self, alpha, T, dt, State state, terms=[], smode="Heun"):
+        cdef vector[shared_ptr[cLLGTerm]] vector_in
+        if not terms:
+            print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
+        else:
+            for arg in terms:
+                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+            self._thisptr = new cStochastic_LLG (alpha, T, dt, deref(state._thisptr), vector_in, smode.encode('utf-8'))
+    def step(self, State state):
+        self._thisptr.step(deref(state._thisptr))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
 
 cdef class LLGIntegrator:
     """

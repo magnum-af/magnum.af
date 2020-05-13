@@ -108,6 +108,12 @@ cdef extern from "integrators/new_llg.hpp" namespace "magnumafcpp":
         double alpha;
         unsigned long long accumulated_steps;
 
+cdef extern from "integrators/stochastic_llg.hpp" namespace "magnumafcpp":
+    cdef cppclass Stochastic_LLG:
+        Stochastic_LLG(double alpha, double T, double dt, State state, vector[shared_ptr[LLGTerm]] terms, string smode);
+        void step(State& state);
+        double E(const State& state);
+
 cdef extern from "llg_terms/micro_demag.hpp" namespace "magnumafcpp":
     cdef cppclass DemagField:
         DemagField (Mesh mesh_in, bool verbose, bool caching, unsigned nthreads);
