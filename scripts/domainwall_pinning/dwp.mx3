@@ -28,9 +28,10 @@ alpha = 1.00
 EnableDemag = false
 
 maxField := 2 //[Tesla]
-maxtime := 10e-9
+maxtime := 100e-9
 B_ext = vector(t * maxField / maxtime, 0, 0)
 
+TableAdd(B_ext)
 autosave(m, 200e-12)
 tableautosave(10e-12)
 run(maxtime)
