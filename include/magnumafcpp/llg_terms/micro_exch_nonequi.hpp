@@ -48,7 +48,7 @@ class NonequiExchangeField : public LLGTerm {
                               const bool verbose);
     af::array calc_COO_matrix(const af::array& A_exchange_field,
                               const NonequispacedMesh&, const bool verbose);
-    int findex(int i0, int i1, int i2, int im, NonequispacedMesh mesh);
+    int findex(int i0, int i1, int i2, int im, const NonequispacedMesh& mesh);
     double af_time{0};
 };
 

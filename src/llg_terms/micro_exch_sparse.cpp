@@ -37,8 +37,9 @@ af::array SparseExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int SparseExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh) {
-    return i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im));
+int SparseExchangeField::findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im,
+           const Mesh& mesh) {
+    return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
 
 af::array SparseExchangeField::calc_COO_matrix(const double A_exchange,

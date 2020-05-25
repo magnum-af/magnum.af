@@ -57,6 +57,8 @@ class RKKYExchangeField : public LLGTerm {
                               const af::array& A_exchange_field, const Mesh&,
                               const af::array& rkky_indices,
                               const bool verbose);
+    int findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im,
+               const Mesh& mesh);
     double af_time{0};
 };
 } // namespace magnumafcpp

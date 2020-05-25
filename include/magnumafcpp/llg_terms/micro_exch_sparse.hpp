@@ -29,7 +29,9 @@ class SparseExchangeField : public LLGTerm {
                               const bool verbose);
     af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh&,
                               const bool verbose);
-    int findex(int i0, int i1, int i2, int im, Mesh mesh);
+    //int findex(int i0, int i1, int i2, int im, Mesh mesh);
+    int findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im,
+               const Mesh& mesh);
     double af_time{0};
 };
 } // namespace magnumafcpp

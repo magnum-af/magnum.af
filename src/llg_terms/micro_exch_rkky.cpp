@@ -38,7 +38,8 @@ af::array RKKYExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im, Mesh mesh) {
+int RKKYExchangeField::findex(uint32_t i0, uint32_t i1, uint32_t i2,
+                              uint32_t im, const Mesh& mesh) {
     return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
 

@@ -50,7 +50,7 @@ double NonequiExchangeField::E(const State& state, const af::array& h) {
 }
 // Get inner index (index per matrix column)
 int NonequiExchangeField::findex(int i0, int i1, int i2, int im,
-                                 NonequispacedMesh mesh) {
+                                 const NonequispacedMesh& mesh) {
     return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
