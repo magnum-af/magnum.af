@@ -38,8 +38,8 @@ af::array RKKYExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int RKKYExchangeField::findex(int i0, int i1, int i2, int im, Mesh mesh) {
-    return i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im));
+int findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im, Mesh mesh) {
+    return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
@@ -56,9 +56,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
     if (verbose)
         af::timer::start();
     const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
-
-    std::vector<double>
-        CSR_values; // matrix values,  of length "number of elements"
+    // matrix values,  of length "number of elements"
+    std::vector<double> CSR_values;
     std::vector<int> CSR_IA(
         dimension + 1); // recursive row indices of length (n_rows + 1): IA[0] =
                         // 0; IA[i] = IA[i-1] + (number of nonzero elements on
@@ -81,6 +80,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
             for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
                 for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
                     for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
+                        //const auto ind = findex(i0, i1, i2, im, mesh);
                         const uint32_t ind =
                             static_cast<uint32_t>(findex(i0, i1, i2, im, mesh));
                         if (ind == id) {
@@ -293,8 +293,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     printf("%s Starting RKKYExchangeField sparse matrix setup\n", Info());
     fflush(stdout);
     af::timer t;
-    if (verbose)
+    if (verbose){
         af::timer::start();
+    }
     const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
     std::vector<double>
         COO_values; // matrix values,  of length "number of elements"
@@ -306,15 +307,16 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     rkky_raw = RKKY_field.host<double>();
     unsigned int* rkky_indices_raw = NULL;
     // af::print("", rkky_indices);
-    if (!rkky_indices.isempty())
+    if (!rkky_indices.isempty()){
         rkky_indices_raw = rkky_indices.host<unsigned int>();
+    }
     // NOTE aborts program//#pragma omp parallel for
+    // consider removing im loop, but tiling with sparse is not supported.
     for (uint32_t im = 0; im < 3; im++) {
         for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
             for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
                 for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
-                    // TODO check if COL and ROW are correct ordered
                     // x
                     if ((i0 == 0 && mesh.n0 > 1) ||
                         (i0 > 0 && i0 < mesh.n0 - 1)) {
@@ -402,11 +404,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                         // << RKKY_index_i_p << std::endl;
                         if ((RKKY_index_i == RKKY_index_i_p) && (RKKY_i != 0) &&
                             (RKKY_i_p != 0)) {
-                            // assuming rkky jump condition equal to exch jump
                             COO_values.push_back(
                                 (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
-                                RKKY_i_p / (RKKY_i_p + RKKY_i));
+                                (constants::mu0 * pow(mesh.dz, 2)));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         } else {
@@ -445,11 +445,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) &&
                             (RKKY_i_m != 0)) {
-                            // assuming rkky jump condition equal to exch jump
-                            COO_values.push_back(
-                                (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
-                                RKKY_i_m / (RKKY_i_m + RKKY_i));
+                            COO_values.push_back((2. * RKKY_i) /
+                                (constants::mu0 * pow(mesh.dz, 2)));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         } else {
@@ -475,12 +472,15 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
 
     af::freeHost(a_raw);
     af::freeHost(rkky_raw);
-    af::freeHost(rkky_indices_raw);
-    af::array matr_COO =
-        af::sparse((dim_t)dimension, (dim_t)dimension,
-                   af::array(COO_values.size(), COO_values.data()),
-                   af::array(COO_ROW.size(), COO_ROW.data()),
-                   af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    if (!rkky_indices.isempty()){
+        af::freeHost(rkky_indices_raw);
+    }
+    af::array matr_COO = af::sparse(
+        (dim_t)dimension, (dim_t)dimension,
+        af::array(static_cast<dim_t>(COO_values.size()), COO_values.data()),
+        af::array(static_cast<dim_t>(COO_ROW.size()), COO_ROW.data()),
+        af::array(static_cast<dim_t>(COO_COL.size()), COO_COL.data()),
+        AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
