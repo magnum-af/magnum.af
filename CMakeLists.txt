@@ -62,13 +62,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-align")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstrict-aliasing")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy"
-)# silence implicitly-declared ‘af::dim4& af::dim4::operator=(const af::dim4&)’
- # is deprecated
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") TODO#set(CMAKE_CXX_FLAGS
-# "${CMAKE_CXX_FLAGS} -Wsign-conversion") TODO#set(CMAKE_CXX_FLAGS
-# "${CMAKE_CXX_FLAGS} -Wconversion") TODO mainly initializer
-# list#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
 
 if(DEBUG)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

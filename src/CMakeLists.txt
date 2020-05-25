@@ -27,8 +27,8 @@ find_package(ArrayFire REQUIRED)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
-# Include the ArrayFire hreaders
-include_directories(${ArrayFire_INCLUDE_DIRS})
+# Include the ArrayFire headers (SYSTEM option disables warnings from afheaders)
+include_directories(SYSTEM ${ArrayFire_INCLUDE_DIRS})
 
 # Get a list of all of the source files in the directory:
 file(GLOB SOURCE "*.cpp" "*/*.cpp")
