@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     const double y = 400e-9;
     const double z = 32e-9;
 
-    const uint32_t nx = 100, ny = 100, nz = 32;
+    const unsigned nx = 100, ny = 100, nz = 32;
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
@@ -92,8 +92,8 @@ int main(int argc, char** argv) {
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (uint32_t ix = 0; ix < mesh.n0; ix++) {
-        for (uint32_t iy = 0; iy < mesh.n1; iy++) {
+    for (unsigned ix = 0; ix < mesh.n0; ix++) {
+        for (unsigned iy = 0; iy < mesh.n1; iy++) {
             const double rx = double(ix) - mesh.n0 / 2.;
             const double ry = double(iy) - mesh.n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));

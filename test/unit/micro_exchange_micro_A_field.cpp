@@ -17,10 +17,10 @@ TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
     ExchangeField exch_local(A_field);
     af::array localA = exch_local.h(state);
 
-    for (uint32_t n0 = 0; n0 < mesh.n0; n0++) {
-        for (uint32_t n1 = 0; n1 < mesh.n1; n1++) {
-            for (uint32_t n2 = 0; n2 < mesh.n2; n2++) {
-                for (uint32_t n3 = 0; n3 < 3; n3++) {
+    for (unsigned n0 = 0; n0 < mesh.n0; n0++) {
+        for (unsigned n1 = 0; n1 < mesh.n1; n1++) {
+            for (unsigned n2 = 0; n2 < mesh.n2; n2++) {
+                for (unsigned n3 = 0; n3 < 3; n3++) {
                     // std::cout << afvalue(constantA(n0, n1, n2, n3)) << "\t"
                     // <<  afvalue(variableA(n0, n1, n2, n3)) << std::endl;
                     ASSERT_EQ(globalA(n0, n1, n2, n3).scalar<double>(),

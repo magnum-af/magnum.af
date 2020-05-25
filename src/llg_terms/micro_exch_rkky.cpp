@@ -38,8 +38,8 @@ af::array RKKYExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int RKKYExchangeField::findex(uint32_t i0, uint32_t i1, uint32_t i2,
-                              uint32_t im, const Mesh& mesh) {
+int RKKYExchangeField::findex(unsigned i0, unsigned i1, unsigned i2,
+                              unsigned im, const Mesh& mesh) {
     return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
 
@@ -56,7 +56,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
     af::timer t;
     if (verbose)
         af::timer::start();
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
     // matrix values,  of length "number of elements"
     std::vector<double> CSR_values;
     std::vector<int> CSR_IA(
@@ -73,17 +73,17 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
     // af::print("", rkky_indices);
     if (!rkky_indices.isempty())
         rkky_indices_raw = rkky_indices.host<unsigned int>();
-    for (uint32_t id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
+    for (unsigned id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
         int csr_ia = 0;                           // counter for SCR_IA
         // Would run but only marginal speedup. COO approach way faster//#pragma
         // omp parallel for
-        for (uint32_t im = 0; im < 3; im++) {
-            for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-                for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                    for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned im = 0; im < 3; im++) {
+            for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+                for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                    for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
                         //const auto ind = findex(i0, i1, i2, im, mesh);
-                        const uint32_t ind =
-                            static_cast<uint32_t>(findex(i0, i1, i2, im, mesh));
+                        const unsigned ind =
+                            static_cast<unsigned>(findex(i0, i1, i2, im, mesh));
                         if (ind == id) {
                             // Note: skippable due to cross product
                             // property://vmatr[findex(i0, i1, i2, im,
@@ -297,7 +297,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     if (verbose){
         af::timer::start();
     }
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
     std::vector<double>
         COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
@@ -313,10 +313,10 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     }
     // NOTE aborts program//#pragma omp parallel for
     // consider removing im loop, but tiling with sparse is not supported.
-    for (uint32_t im = 0; im < 3; im++) {
-        for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-            for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // x
                     if ((i0 == 0 && mesh.n0 > 1) ||

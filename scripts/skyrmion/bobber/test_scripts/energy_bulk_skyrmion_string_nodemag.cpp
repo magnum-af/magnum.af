@@ -45,9 +45,9 @@ int main(int argc, char** argv) {
     stream << "#skrym: steps, time, mz, E, exch , aniso , dmi , ext";
     stream << "#ferro: steps, time, mz, E, exch , aniso , dmi , ext"
            << std::endl;
-    for (uint32_t nz = 1; nz < 20; nz++) {
+    for (unsigned nz = 1; nz < 20; nz++) {
         // Parameter initialization
-        const uint32_t nx = 100, ny = 100;
+        const unsigned nx = 100, ny = 100;
         // const int nz(argc>3? std::stoi(argv[3]):2);
         std::cout << "Running for nz=" << nz << std::endl;
         const double x = 400e-9;
@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
 
         // Initial magnetic field
         array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-        for (uint32_t ix = 0; ix < mesh.n0; ix++) {
-            for (uint32_t iy = 0; iy < mesh.n1; iy++) {
+        for (unsigned ix = 0; ix < mesh.n0; ix++) {
+            for (unsigned iy = 0; iy < mesh.n1; iy++) {
                 const double rx = double(ix) - mesh.n0 / 2.;
                 const double ry = double(iy) - mesh.n1 / 2.;
                 const double r = sqrt(pow(rx, 2) + pow(ry, 2));

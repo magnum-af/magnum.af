@@ -4,7 +4,7 @@
 
 namespace magnumafcpp {
 
-Mesh::Mesh(uint32_t inn0, uint32_t inn1, uint32_t inn2, double indx,
+Mesh::Mesh(unsigned inn0, unsigned inn1, unsigned inn2, double indx,
            double indy, double indz)
     : n0(inn0), n1(inn1), n2(inn2), dx(indx), dy(indy), dz(indz),
       V(dx * dy * dz), n0_exp(2 * n0), n1_exp(2 * n1),
@@ -26,8 +26,8 @@ af::array Mesh::skyrmconf(const bool point_up) {
     } else {
         m(af::span, af::span, af::span, 2) = -1.;
     }
-    for (uint32_t ix = 0; ix < this->n0; ix++) {
-        for (uint32_t iy = 0; iy < this->n1; iy++) {
+    for (unsigned ix = 0; ix < this->n0; ix++) {
+        for (unsigned iy = 0; iy < this->n1; iy++) {
             const double rx = double(ix) - this->n0 / 2.;
             const double ry = double(iy) - this->n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
@@ -61,8 +61,8 @@ af::array Mesh::ellipse(std::array<double, 3> vector, const bool verbose) {
 
     long unsigned cells_within = 0;
     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
-    for (uint32_t ix = 0; ix < this->n0; ix++) {
-        for (uint32_t iy = 0; iy < this->n1; iy++) {
+    for (unsigned ix = 0; ix < this->n0; ix++) {
+        for (unsigned iy = 0; iy < this->n1; iy++) {
             const double a = (double)(this->n0 / 2);
             const double b = (double)(this->n1 / 2);
             const double rx = double(ix) - this->n0 / 2.;
@@ -83,21 +83,21 @@ af::array Mesh::ellipse(std::array<double, 3> vector, const bool verbose) {
     return m;
 }
 
-af::array Mesh::ellipse(const uint32_t xyz, const bool positive_direction) {
+af::array Mesh::ellipse(const unsigned xyz, const bool positive_direction) {
     // Returns an initial elliptical magnetization
     // n_cells gives number of cells with non-zero Ms
     // xyz gives direction of initial magnetization direction,
     // positive_direction true points +, false in - direction
     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
-    for (uint32_t ix = 0; ix < this->n0; ix++) {
-        for (uint32_t iy = 0; iy < this->n1; iy++) {
+    for (unsigned ix = 0; ix < this->n0; ix++) {
+        for (unsigned iy = 0; iy < this->n1; iy++) {
             const double a = (double)(this->n0 / 2);
             const double b = (double)(this->n1 / 2);
             const double rx = double(ix) - this->n0 / 2.;
             const double ry = double(iy) - this->n1 / 2.;
             const double r = pow(rx, 2) / pow(a, 2) + pow(ry, 2) / pow(b, 2);
             if (r < 1) {
-                for (uint32_t iz = 0; iz < this->n2; iz++) {
+                for (unsigned iz = 0; iz < this->n2; iz++) {
                 }
                 if (positive_direction)
                     m(ix, iy, af::span, xyz) = 1;
@@ -117,13 +117,13 @@ af::array Mesh::init_vortex(const bool positive_direction) {
     // n_cells gives number of cells with non-zero Ms
     // positive_direction true, core points in +, false in - direction
     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
-    for (uint32_t ix = 0; ix < this->n0; ix++) {
-        for (uint32_t iy = 0; iy < this->n1; iy++) {
+    for (unsigned ix = 0; ix < this->n0; ix++) {
+        for (unsigned iy = 0; iy < this->n1; iy++) {
             const double rx = double(ix) - this->n0 / 2.;
             const double ry = double(iy) - this->n1 / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r < this->n0 / 2.) {
-                for (uint32_t iz = 0; iz < this->n2; iz++) {
+                for (unsigned iz = 0; iz < this->n2; iz++) {
                 }
                 if (r == 0.) {
                     if (positive_direction)

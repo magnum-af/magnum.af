@@ -7,19 +7,19 @@
 namespace magnumafcpp {
 
 struct Mesh {
-    Mesh(uint32_t, uint32_t, uint32_t, double, double, double);
+    Mesh(unsigned, unsigned, unsigned, double, double, double);
     Mesh(){};
 
-    uint32_t n0, n1, n2;             // Number of cells in x, y, z
+    unsigned n0, n1, n2;             // Number of cells in x, y, z
     double dx, dy, dz;               // Distance between cells
     double V;                        // Volume of one cell
-    uint32_t n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
+    unsigned n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
     af::dim4 dims;
     af::dim4 dims_expanded;
     void print(std::ostream& stream);
     af::array skyrmconf(const bool point_up = false);
     af::array ellipse(std::array<double, 3> vector, const bool verbose = true);
-    af::array ellipse(const uint32_t xyz = 0,
+    af::array ellipse(const unsigned xyz = 0,
                       const bool positive_direction = true);
     af::array init_vortex(const bool positive_direction = true);
     af::array init_sp4();

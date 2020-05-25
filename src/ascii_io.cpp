@@ -5,19 +5,19 @@
 
 namespace magnumafcpp {
 
-uint32_t colum_major_stride(const uint32_t i, const uint32_t j,
-                            const uint32_t k, const uint32_t l,
-                            const uint32_t ni, const uint32_t nj,
-                            const uint32_t nk) {
+unsigned colum_major_stride(const unsigned i, const unsigned j,
+                            const unsigned k, const unsigned l,
+                            const unsigned ni, const unsigned nj,
+                            const unsigned nk) {
     return i + ni * (j + nj * (k + nk * l));
 }
 
 void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
                  bool verbose, int precision) {
-    const uint32_t nx = a.dims(0);
-    const uint32_t ny = a.dims(1);
-    const uint32_t nz = a.dims(2);
-    const uint32_t n_scalar = a.dims(3);
+    const unsigned nx = a.dims(0);
+    const unsigned ny = a.dims(1);
+    const unsigned nz = a.dims(2);
+    const unsigned n_scalar = a.dims(3);
 
     std::ofstream stream(filename);
     if (stream.is_open()) {
@@ -61,7 +61,7 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
             stream << std::setw(val_setw) << std::left << "mz[a.u.]"
                    << "\n";
         } else {
-            for (uint32_t i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
+            for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
                 stream << std::setw(val_setw) << std::left
                        << std::to_string(i_scalar) + "-component";
                 if (i_scalar != (n_scalar - 1)) {
@@ -75,9 +75,9 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
         // af::array with indices
         double* host_a = a.host<double>();
 
-        for (uint32_t ix = 0; ix < nx; ix++) {
-            for (uint32_t iy = 0; iy < ny; iy++) {
-                for (uint32_t iz = 0; iz < nz; iz++) {
+        for (unsigned ix = 0; ix < nx; ix++) {
+            for (unsigned iy = 0; iy < ny; iy++) {
+                for (unsigned iz = 0; iz < nz; iz++) {
                     stream << std::setw(val_setw) << std::left << ix * mesh.dx
                            << "\t";
                     stream << std::setw(val_setw) << std::left << iy * mesh.dy
@@ -85,7 +85,7 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
                     stream << std::setw(val_setw) << std::left << iz * mesh.dz
                            << "\t";
 
-                    for (uint32_t i_scalar = 0; i_scalar < n_scalar;
+                    for (unsigned i_scalar = 0; i_scalar < n_scalar;
                          i_scalar++) {
                         stream << std::setw(val_setw) << std::left
                                << host_a[colum_major_stride(
@@ -115,7 +115,7 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose) {
         std::string line;
 
         // Getting mesh size and discretization
-        uint32_t nx, ny, nz, n_scalar;
+        unsigned nx, ny, nz, n_scalar;
         double dx, dy, dz;
         std::getline(infile, line);
         line.erase(0, 2);
@@ -134,16 +134,16 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose) {
             }
 
             // reading in with loop
-            for (uint32_t ix = 0; ix < nx; ix++) {
-                for (uint32_t iy = 0; iy < ny; iy++) {
-                    for (uint32_t iz = 0; iz < nz; iz++) {
+            for (unsigned ix = 0; ix < nx; ix++) {
+                for (unsigned iy = 0; iy < ny; iy++) {
+                    for (unsigned iz = 0; iz < nz; iz++) {
                         std::istringstream iss(line);
                         double ddx, ddy, ddz;
                         if (!(iss >> ddx >> ddy >> ddz)) {
                             printf("Error while reading line!\n");
                             break;
                         }
-                        for (uint32_t i_scalar = 0; i_scalar < n_scalar;
+                        for (unsigned i_scalar = 0; i_scalar < n_scalar;
                              i_scalar++) {
                             double value;
                             if (!(iss >> value)) {

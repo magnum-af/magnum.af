@@ -3,9 +3,9 @@
 
 namespace magnumafcpp {
 
-NonequispacedMesh::NonequispacedMesh(int nx, int ny, double dx, double dy,
+NonequispacedMesh::NonequispacedMesh(unsigned nx, unsigned ny, double dx, double dy,
                                      std::vector<double> z_spacing)
-    : nx(nx), ny(ny), nz((int)z_spacing.size()), dx(dx), dy(dy),
+    : nx(nx), ny(ny), nz(z_spacing.size()), dx(dx), dy(dy),
       z_spacing(z_spacing), nx_expanded(2 * nx), ny_expanded(2 * ny),
       dims(af::dim4(nx, ny, nz, 3)) {}
 

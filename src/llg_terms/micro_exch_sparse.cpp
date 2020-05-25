@@ -37,7 +37,7 @@ af::array SparseExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int SparseExchangeField::findex(uint32_t i0, uint32_t i1, uint32_t i2, uint32_t im,
+int SparseExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im,
            const Mesh& mesh) {
     return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
@@ -48,17 +48,17 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange,
     af::timer t;
     if (verbose)
         af::timer::start();
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double>
         COO_values;           // matrix values,  of length "number of elements"
     std::vector<int> COO_ROW; //
     std::vector<int> COO_COL; //
-    for (uint32_t im = 0; im < 3; im++) {
-        for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-            for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
-                    const uint32_t ind = findex(i0, i1, i2, im, mesh);
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+                    const unsigned ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im << ", " <<
                     // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
                     // skippable due to cross product
@@ -149,7 +149,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange,
     af::timer t;
     if (verbose)
         af::timer::start();
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double>
         CSR_values; // matrix values,  of length "number of elements"
@@ -159,13 +159,13 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange,
                         // the i-1-th row in the original matrix)
     std::vector<int> CSR_JA; // comumn index of each element, hence of length
                              // "number of elements"
-    for (uint32_t id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
+    for (unsigned id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
         int csr_ia = 0;                           // counter for SCR_IA
-        for (uint32_t im = 0; im < 3; im++) {
-            for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-                for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                    for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
-                        const uint32_t ind = findex(i0, i1, i2, im, mesh);
+        for (unsigned im = 0; im < 3; im++) {
+            for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+                for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                    for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+                        const unsigned ind = findex(i0, i1, i2, im, mesh);
                         if (ind == id) {
                             // std::cout << ind << ", " << id << ", " << im <<
                             // ", " << i2 << ", " << i1 << ", " << i0 <<
@@ -266,7 +266,7 @@ SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field,
     af::timer t;
     if (verbose)
         af::timer::start();
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double>
         CSR_values; // matrix values,  of length "number of elements"
@@ -278,13 +278,13 @@ SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field,
                              // "number of elements"
     double* a_host = NULL;
     a_host = A_exchange_field.host<double>();
-    for (uint32_t id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
+    for (unsigned id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
         int csr_ia = 0;                           // counter for SCR_IA
-        for (uint32_t im = 0; im < 3; im++) {
-            for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-                for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                    for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
-                        const uint32_t ind = findex(i0, i1, i2, im, mesh);
+        for (unsigned im = 0; im < 3; im++) {
+            for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+                for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                    for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+                        const unsigned ind = findex(i0, i1, i2, im, mesh);
                         if (ind == id) {
                             // std::cout << ind << ", " << id << ", " << im <<
                             // ", " << i2 << ", " << i1 << ", " << i0 <<
@@ -427,7 +427,7 @@ SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field,
     af::timer t;
     if (verbose)
         af::timer::start();
-    const uint32_t dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
 
     std::vector<double>
         COO_values;           // matrix values,  of length "number of elements"
@@ -435,10 +435,10 @@ SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field,
     std::vector<int> COO_ROW; // row indices
     double* a_raw = NULL;
     a_raw = A_exchange_field.host<double>();
-    for (uint32_t im = 0; im < 3; im++) {
-        for (uint32_t i2 = 0; i2 < mesh.n2; i2++) {
-            for (uint32_t i1 = 0; i1 < mesh.n1; i1++) {
-                for (uint32_t i0 = 0; i0 < mesh.n0; i0++) {
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im << ", " <<
                     // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
