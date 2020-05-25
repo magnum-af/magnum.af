@@ -154,16 +154,16 @@ def array_from_addr(array_addr):
 
 class Util:
     @staticmethod
-    """
-    Convert a numpy array to an arrayfire array.
-    """
     def np_to_af(a):
+        """
+        Convert a numpy array to an arrayfire array.
+        """
         return af.from_ndarray(a)
     @staticmethod
-    """
-    Convert an arrayfire array to a numpy array.
-    """
     def af_to_np(a):
+        """
+        Convert an arrayfire array to a numpy array.
+        """
         return a.to_ndarray()
     @staticmethod
     def plot(plotfile = 'plot.gpi',
