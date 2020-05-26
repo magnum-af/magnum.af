@@ -37,10 +37,9 @@ af::array SparseExchangeField::h(const State& state) {
 }
 
 // Get inner index (index per matrix column)
-int SparseExchangeField::findex(unsigned i0, unsigned i1, unsigned i2,
+unsigned SparseExchangeField::findex(unsigned i0, unsigned i1, unsigned i2,
                                 unsigned im, const Mesh& mesh) {
-    return static_cast<int>(i0 +
-                            mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
+    return i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im));
 }
 
 af::array SparseExchangeField::calc_COO_matrix(const double A_exchange,
@@ -279,127 +278,123 @@ SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field,
                              // "number of elements"
     double* a_host = NULL;
     a_host = A_exchange_field.host<double>();
-    for (unsigned id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
-        int csr_ia = 0;                           // counter for SCR_IA
-        for (unsigned im = 0; im < 3; im++) {
-            for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-                for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                    for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
-                        const unsigned ind = findex(i0, i1, i2, im, mesh);
-                        if (ind == id) {
-                            // std::cout << ind << ", " << id << ", " << im <<
-                            // ", " << i2 << ", " << i1 << ", " << i0 <<
-                            // std::endl; Note: skippable due to cross product
-                            // property://vmatr[findex(i0, i1, i2, im,
-                            // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
-                            // 2)+pow(mesh.dz, 2));
-                            // x
-                            if ((i0 == 0 && mesh.n0 > 1) ||
-                                (i0 > 0 && i0 < mesh.n0 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_p = a_host[util::stride(
-                                    i0 + 1, i1, i2, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dx, 2)) *
-                                        2. * A_i_p / (A_i_p + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0 + 1, i1, i2, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
-                            if ((i0 == mesh.n0 - 1 && mesh.n0 > 1) ||
-                                (i0 > 0 && i0 < mesh.n0 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_m = a_host[util::stride(
-                                    i0 - 1, i1, i2, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dx, 2)) *
-                                        2. * A_i_m / (A_i_m + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0 - 1, i1, i2, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
-
-                            // y
-                            if ((i1 == 0 && mesh.n1 > 1) ||
-                                (i1 > 0 && i1 < mesh.n1 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_p = a_host[util::stride(
-                                    i0, i1 + 1, i2, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dx, 2)) *
-                                        2. * A_i_p / (A_i_p + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0, i1 + 1, i2, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
-                            if ((i1 == mesh.n1 - 1 && mesh.n1 > 1) ||
-                                (i1 > 0 && i1 < mesh.n1 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_m = a_host[util::stride(
-                                    i0, i1 - 1, i2, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dx, 2)) *
-                                        2. * A_i_m / (A_i_m + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0, i1 - 1, i2, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
-
-                            // z
-                            if ((i2 == 0 && mesh.n2 > 1) ||
-                                (i2 > 0 && i2 < mesh.n2 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_p = a_host[util::stride(
-                                    i0, i1, i2 + 1, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dz, 2)) *
-                                        2. * A_i_p / (A_i_p + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0, i1, i2 + 1, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
-                            if ((i2 == mesh.n2 - 1 && mesh.n2 > 1) ||
-                                (i2 > 0 && i2 < mesh.n2 - 1)) {
-                                double A_i = a_host[util::stride(
-                                    i0, i1, i2, mesh.n0, mesh.n1)];
-                                double A_i_m = a_host[util::stride(
-                                    i0, i1, i2 - 1, mesh.n0, mesh.n1)];
-                                if (A_i != 0) {
-                                    CSR_values.push_back(
-                                        (2. * A_i) /
-                                        (constants::mu0 * pow(mesh.dz, 2)) *
-                                        2. * A_i_m / (A_i_m + A_i));
-                                    CSR_JA.push_back(
-                                        findex(i0, i1, i2 - 1, im, mesh));
-                                    csr_ia++;
-                                }
-                            }
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+                    int csr_ia = 0; // counter for SCR_IA
+                    const unsigned ind = findex(i0, i1, i2, im, mesh);
+                    // std::cout << ind << ", " << id << ", " << im <<
+                    // ", " << i2 << ", " << i1 << ", " << i0 <<
+                    // std::endl; Note: skippable due to cross product
+                    // property://vmatr[findex(i0, i1, i2, im,
+                    // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
+                    // 2)+pow(mesh.dz, 2));
+                    // x
+                    if ((i0 == 0 && mesh.n0 > 1) ||
+                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_p = a_host[util::stride(
+                            i0 + 1, i1, i2, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dx, 2)) *
+                                2. * A_i_p / (A_i_p + A_i));
+                            CSR_JA.push_back(
+                                findex(i0 + 1, i1, i2, im, mesh));
+                            csr_ia++;
                         }
                     }
+                    if ((i0 == mesh.n0 - 1 && mesh.n0 > 1) ||
+                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_m = a_host[util::stride(
+                            i0 - 1, i1, i2, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dx, 2)) *
+                                2. * A_i_m / (A_i_m + A_i));
+                            CSR_JA.push_back(
+                                findex(i0 - 1, i1, i2, im, mesh));
+                            csr_ia++;
+                        }
+                    }
+
+                    // y
+                    if ((i1 == 0 && mesh.n1 > 1) ||
+                        (i1 > 0 && i1 < mesh.n1 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_p = a_host[util::stride(
+                            i0, i1 + 1, i2, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dx, 2)) *
+                                2. * A_i_p / (A_i_p + A_i));
+                            CSR_JA.push_back(
+                                findex(i0, i1 + 1, i2, im, mesh));
+                            csr_ia++;
+                        }
+                    }
+                    if ((i1 == mesh.n1 - 1 && mesh.n1 > 1) ||
+                        (i1 > 0 && i1 < mesh.n1 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_m = a_host[util::stride(
+                            i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dx, 2)) *
+                                2. * A_i_m / (A_i_m + A_i));
+                            CSR_JA.push_back(
+                                findex(i0, i1 - 1, i2, im, mesh));
+                            csr_ia++;
+                        }
+                    }
+
+                    // z
+                    if ((i2 == 0 && mesh.n2 > 1) ||
+                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_p = a_host[util::stride(
+                            i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dz, 2)) *
+                                2. * A_i_p / (A_i_p + A_i));
+                            CSR_JA.push_back(
+                                findex(i0, i1, i2 + 1, im, mesh));
+                            csr_ia++;
+                        }
+                    }
+                    if ((i2 == mesh.n2 - 1 && mesh.n2 > 1) ||
+                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                        double A_i = a_host[util::stride(
+                            i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_m = a_host[util::stride(
+                            i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                        if (A_i != 0) {
+                            CSR_values.push_back(
+                                (2. * A_i) /
+                                (constants::mu0 * pow(mesh.dz, 2)) *
+                                2. * A_i_m / (A_i_m + A_i));
+                            CSR_JA.push_back(
+                                findex(i0, i1, i2 - 1, im, mesh));
+                            csr_ia++;
+                        }
+                    }
+                    CSR_IA[ind + 1] = CSR_IA[ind] + csr_ia;
                 }
             }
         }
-        CSR_IA[id + 1] = CSR_IA[id] + csr_ia;
     }
     af::freeHost(a_host);
     af::array result =

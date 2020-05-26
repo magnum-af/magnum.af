@@ -27,7 +27,7 @@ class NonequiExchangeField : public LLGTerm {
     NonequiExchangeField(const af::array& A_exchange_field, NonequispacedMesh,
                          bool verbose = true, bool COO = true);
     NonequiExchangeField(long int A_exchange_field_ptr, NonequispacedMesh mesh,
-                         bool verbose = true);
+                         bool verbose = true, bool COO = true);
 
     af::array h(const State& state); // Field contribution
     double E(const State& state);    // Energy contribution
@@ -48,7 +48,7 @@ class NonequiExchangeField : public LLGTerm {
                               const bool verbose);
     af::array calc_COO_matrix(const af::array& A_exchange_field,
                               const NonequispacedMesh&, const bool verbose);
-    int findex(int i0, int i1, int i2, int im, const NonequispacedMesh& mesh);
+    unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequispacedMesh& mesh);
     double af_time{0};
 };
 

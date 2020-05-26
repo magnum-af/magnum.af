@@ -5,7 +5,7 @@
 using namespace magnumafcpp;
 
 // Testing whether material.A and state.micro_A_field yield same result
-TEST(StateMicroAField, MicroASingleValueVsArrayHeffTest) {
+TEST(ExchangeField, A_scalar_vs_array_value) {
     double A = 1.3e-11;
     double Ms = 8e5;
     Mesh mesh(3, 3, 3, 0.1, 0.2, 0.3);
