@@ -10,10 +10,10 @@ struct NonequispacedMesh {
                       std::vector<double> z_spacing);
 
     // TODO should be const, conficts with string method
-    unsigned nx, ny, nz;                //!< Number of cells in x, y, z
+    unsigned nx, ny, nz;           //!< Number of cells in x, y, z
     double dx, dy;                 //!< Distance between equidistant x, y cells
     std::vector<double> z_spacing; //
-    unsigned nx_expanded, ny_expanded;  // Expanded cell sizes for demag FFT
+    unsigned nx_expanded, ny_expanded; // Expanded cell sizes for demag FFT
     af::dim4 dims;
 
     void print(std::ostream& stream = std::cout);

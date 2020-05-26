@@ -40,7 +40,8 @@ af::array RKKYExchangeField::h(const State& state) {
 // Get inner index (index per matrix column)
 int RKKYExchangeField::findex(unsigned i0, unsigned i1, unsigned i2,
                               unsigned im, const Mesh& mesh) {
-    return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
+    return static_cast<int>(i0 +
+                            mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
@@ -81,7 +82,6 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
             for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
                 for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
                     for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
-                        //const auto ind = findex(i0, i1, i2, im, mesh);
                         const unsigned ind =
                             static_cast<unsigned>(findex(i0, i1, i2, im, mesh));
                         if (ind == id) {
@@ -294,7 +294,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     printf("%s Starting RKKYExchangeField sparse matrix setup\n", Info());
     fflush(stdout);
     af::timer t;
-    if (verbose){
+    if (verbose) {
         af::timer::start();
     }
     const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
@@ -308,7 +308,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
     rkky_raw = RKKY_field.host<double>();
     unsigned int* rkky_indices_raw = NULL;
     // af::print("", rkky_indices);
-    if (!rkky_indices.isempty()){
+    if (!rkky_indices.isempty()) {
         rkky_indices_raw = rkky_indices.host<unsigned int>();
     }
     // NOTE aborts program//#pragma omp parallel for
@@ -446,7 +446,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) &&
                             (RKKY_i_m != 0)) {
-                            COO_values.push_back((2. * RKKY_i) /
+                            COO_values.push_back(
+                                (2. * RKKY_i) /
                                 (constants::mu0 * pow(mesh.dz, 2)));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
@@ -473,7 +474,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
 
     af::freeHost(a_raw);
     af::freeHost(rkky_raw);
-    if (!rkky_indices.isempty()){
+    if (!rkky_indices.isempty()) {
         af::freeHost(rkky_indices_raw);
     }
     af::array matr_COO = af::sparse(
