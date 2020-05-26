@@ -379,7 +379,7 @@ cdef class Mesh:
 
     cdef cMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
-    def __cinit__(self, int nx, int ny, int nz, double dx, double dy, double dz):
+    def __cinit__(self, unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double dz):
         self._thisptr = new cMesh(nx, ny, nz, dx, dy, dz)
         owner = None # see [1]
     cdef set_ptr(self, cMesh* ptr, owner):
@@ -448,7 +448,7 @@ cdef class NonequispacedMesh:
     cdef cNonequispacedMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
     #def __cinit__(self, int nx, int ny, double dx, double dy, vector[double] z_spacing):
-    def __cinit__(self, int nx, int ny, double dx, double dy, z_spacing):
+    def __cinit__(self, unsigned nx, unsigned ny, double dx, double dy, z_spacing):
         cdef vector[double] z_spacing_cvec
         for val in z_spacing:
             z_spacing_cvec.push_back(val)

@@ -77,10 +77,10 @@ af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange,
         COO_values;           // matrix values,  of length "number of elements"
     std::vector<int> COO_ROW; //
     std::vector<int> COO_COL; //
-    for (int im = 0; im < 3; im++) {
-        for (int i2 = 0; i2 < mesh.nz; i2++) {
-            for (int i1 = 0; i1 < mesh.ny; i1++) {
-                for (int i0 = 0; i0 < mesh.nx; i0++) {
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im << ", " <<
                     // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
@@ -234,10 +234,10 @@ NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_field,
     std::vector<int> COO_COL; //
     double* a_host = NULL;
     a_host = A_exchange_field.host<double>();
-    for (int im = 0; im < 3; im++) {
-        for (int i2 = 0; i2 < mesh.nz; i2++) {
-            for (int i1 = 0; i1 < mesh.ny; i1++) {
-                for (int i0 = 0; i0 < mesh.nx; i0++) {
+    for (unsigned im = 0; im < 3; im++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // Note: skippable due to cross product
                     // property://vmatr[findex(i0, i1, i2, im,
@@ -472,10 +472,10 @@ af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange,
                              // "number of elements"
     for (int id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
         int csr_ia = 0;                      // counter for SCR_IA
-        for (int im = 0; im < 3; im++) {
-            for (int i2 = 0; i2 < mesh.nz; i2++) {
-                for (int i1 = 0; i1 < mesh.ny; i1++) {
-                    for (int i0 = 0; i0 < mesh.nx; i0++) {
+        for (unsigned im = 0; im < 3; im++) {
+            for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+                for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                    for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                         const int ind = findex(i0, i1, i2, im, mesh);
                         if (ind == id) {
                             // std::cout << ind << ", " << id << ", " << im <<
@@ -644,10 +644,10 @@ NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_field,
     a_host = A_exchange_field.host<double>();
     for (int id = 0; id < dimension; id++) { // loop over rows (or cols?^^)
         int csr_ia = 0;                      // counter for SCR_IA
-        for (int im = 0; im < 3; im++) {
-            for (int i2 = 0; i2 < mesh.nz; i2++) {
-                for (int i1 = 0; i1 < mesh.ny; i1++) {
-                    for (int i0 = 0; i0 < mesh.nx; i0++) {
+        for (unsigned im = 0; im < 3; im++) {
+            for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+                for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                    for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                         const int ind = findex(i0, i1, i2, im, mesh);
                         if (ind == id) {
                             // std::cout << ind << ", " << id << ", " << im <<

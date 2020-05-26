@@ -4,16 +4,14 @@ project(magnum.af VERSION 0.1) # setting project prevents 'operation only
                                # version numbering
 # MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
 
+# disables warning caused by cython compiled file
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0")
+
 # building with python3 only
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0") # disables
-                                                                   # warning
-                                                                   # caused by
-                                                                   # cython
-                                                                   # compiled
-                                                                   # file
-set(PYTHON_EXECUTABLE "/usr/bin/python3"
-)# equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from
- # https://github.com/pytorch/ELF/issues/98
+set(PYTHON_EXECUTABLE "/usr/bin/python3")
+# equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from
+# https://github.com/pytorch/ELF/issues/98
 # Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
 # -fno-strict-aliasing") # in response to "dereferencing type-punned pointer
 # will break strict-aliasing rules" warning # hint:

@@ -44,10 +44,10 @@ cdef extern from "mesh.hpp" namespace "magnumafcpp":
 
 cdef extern from "nonequispaced_mesh.hpp" namespace "magnumafcpp":
     cdef cppclass NonequispacedMesh:
-        int nx, ny, nz;
+        unsigned nx, ny, nz;
         double dx, dy;
         vector[double] z_spacing;
-        NonequispacedMesh (int, int, double, double, vector[double] z_spacing);
+        NonequispacedMesh (unsigned, unsigned, double, double, vector[double] z_spacing);
 
 cdef extern from "state.hpp" namespace "magnumafcpp":
     cdef cppclass State:

@@ -124,8 +124,8 @@ af::array NonEquiDemagField::h(const State& state) {
     af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded / 2 + 1,
                                   state.nonequimesh.ny_expanded,
                                   state.nonequimesh.nz, 3, c64);
-    for (int i_source = 0; i_source < state.nonequimesh.nz; i_source++) {
-        for (int i_target = 0; i_target < state.nonequimesh.nz; i_target++) {
+    for (unsigned i_source = 0; i_source < state.nonequimesh.nz; i_source++) {
+        for (unsigned i_target = 0; i_target < state.nonequimesh.nz; i_target++) {
 
             int zindex = util::ij2k(i_source, i_target, state.nonequimesh.nz);
             af::array nfft;
@@ -168,7 +168,7 @@ af::array NonEquiDemagField::h(const State& state) {
     }
 
     af::array one_over_tau_vec = af::array(1, 1, state.nonequimesh.nz, 1, f64);
-    for (int i = 0; i < state.nonequimesh.nz; i++) {
+    for (unsigned i = 0; i < state.nonequimesh.nz; i++) {
         one_over_tau_vec(0, 0, i, 0) =
             1. / (state.nonequimesh.dx * state.nonequimesh.dy *
                   state.nonequimesh.z_spacing[i]);
