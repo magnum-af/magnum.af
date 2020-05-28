@@ -10,27 +10,22 @@
 namespace magnumafcpp {
 using namespace af;
 
-String::String(State state, std::vector<State> inputimages, int n_interp_in,
-               double dt_in, LLGIntegrator llg)
-    : Llg(llg), n_interp(n_interp_in), dt(dt_in) {
+String::String(State state, std::vector<State> inputimages, int n_interp,
+               double dt, LLGIntegrator llg)
+    : Llg(llg), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
 
     for (int i = 0; i < n_interp; i++) {
+        // Note: this is set to m=|1| to // avoid tate.Ms_field creation
         if (state.Ms_field.isempty()) {
-            images.push_back(State(
-                state.mesh, state.Ms,
-                af::constant(
-                    2., state.mesh.dims,
-                    f64))); // Note: this is set to 2. to notice error if norm
-                            // != 1 and not to trigger state.Ms_field creation
+            images.push_back(
+                State(state.mesh, state.Ms,
+                      af::constant(std::sqrt(1 / 3), state.mesh.dims, f64)));
         } else {
-            images.push_back(State(
-                state.mesh, state.Ms_field,
-                af::constant(
-                    2., state.mesh.dims,
-                    f64))); // Note: this is set to 2. to notice error if norm
-                            // != 1 and not to trigger state.Ms_field creation
+            images.push_back(
+                State(state.mesh, state.Ms_field,
+                      af::constant(std::sqrt(1 / 3), state.mesh.dims, f64)));
         }
     }
     for (int i = 0; i < n_interp; i++) {

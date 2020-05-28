@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
-    Mesh mesh;
+    Mesh mesh(0, 0, 0, 0, 0, 0);
     af::array m;
 
     vti_reader(m, mesh, filepath + argv[3]);

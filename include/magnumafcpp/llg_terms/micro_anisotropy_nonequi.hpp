@@ -35,12 +35,12 @@ class NonequiUniaxialAnisotropyField : public LLGTerm {
 
     const double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
-    const af::array Ku1_field; //!< Spacially varying anisotropy energy in
-                               //!< [J/m^3] defined at each node
+    const af::array Ku1_field{}; //!< Spacially varying anisotropy energy in
+                                 //!< [J/m^3] defined at each node
     long int get_Ku1_field();
 
     const std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
-    const af::array Ku1_axis_field; //!< Spacially varying anisotropy axis
+    const af::array Ku1_axis_field{}; //!< Spacially varying anisotropy axis
     double get_ku1_axis(int i);     // For wrapping only
 
   private:

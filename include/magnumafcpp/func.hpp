@@ -11,7 +11,7 @@ class WrappedArray {
     WrappedArray(af::array array);
     WrappedArray(long int array_ptr);
     ~WrappedArray(){};
-    af::array array;
+    af::array array{};
     void set_array(long int array_ptr);
     long int get_array_addr();
 

@@ -23,8 +23,6 @@ class State {
           bool verbose = true, bool mute_warning = false);
 
     State operator+(const af::array&) const;
-    State(){};
-    ~State(){};
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array
                                ///< m to values obtained from wrapped af.array
     long int get_m_addr();

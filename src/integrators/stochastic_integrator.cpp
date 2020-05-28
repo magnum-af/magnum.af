@@ -46,7 +46,7 @@ af::array Stochastic_Integrator::detRK4(const State& state) {
 void Stochastic_Integrator::step(
     State& state) { // TODO remove dt as parameter here, inconsistency between
                     // Heun/SemiHeun
-    timer_stoch = af::timer::start();
+    af::timer timer_stoch = af::timer::start();
     if (mode == 0) {
         state.m += Heun(state);
     } else if (mode == 1) {
@@ -61,10 +61,27 @@ void Stochastic_Integrator::step(
     // std::cout<<" TIME  = "<<timer<<std::endl;
 }
 
+int get_mode(std::string smode) {
+    // Setting int mode for usage in void step(...)
+    if (smode == "Heun" || smode == "0") {
+        return 0;
+    } else if (smode == "SemiHeun" || smode == "1") {
+        return 1;
+    } else if (smode == "detRK4" || smode == "2") {
+        return 2;
+    } else {
+        std::cout << "ERROR: Constructor Stochastic_Ingetrator: Integrator "
+                     "Mode not recognized, using Heun (0)"
+                  << std::endl;
+        return 0;
+    }
+}
+
 Stochastic_Integrator::Stochastic_Integrator(
     double alpha, double T, double dt, State state,
     std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in, std::string smode)
-    : alpha(alpha), T(T), dt(dt), Fieldterms(Fieldterms_in), m_prev(state.m) {
+    : alpha(alpha), T(T), dt(dt), Fieldterms(Fieldterms_in), m_prev(state.m),
+      mode(get_mode(smode)) {
     const double D =
         (this->alpha * constants::kb * this->T) /
         (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
@@ -76,19 +93,6 @@ Stochastic_Integrator::Stochastic_Integrator(
     h_th_prev = sqrt((2. * D) / dt) *
                 randn(state.mesh.dims, f64,
                       rand_engine); // Initial random thermal field at t=0
-
-    // Setting int mode for usage in void step(...)
-    if (smode == "Heun" || smode == "0") {
-        mode = 0;
-    } else if (smode == "SemiHeun" || smode == "1") {
-        mode = 1;
-    } else if (smode == "detRK4" || smode == "2") {
-        mode = 2;
-    } else {
-        std::cout << "ERROR: Constructor Stochastic_Ingetrator: Integrator "
-                     "Mode not recognized"
-                  << std::endl;
-    }
 }
 
 double Stochastic_Integrator::cpu_time() {

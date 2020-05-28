@@ -7,8 +7,8 @@
 namespace magnumafcpp {
 
 struct Mesh {
-    Mesh(unsigned, unsigned, unsigned, double, double, double);
-    Mesh(){};
+    Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy,
+         double dz);
 
     unsigned n0, n1, n2;             // Number of cells in x, y, z
     double dx, dy, dz;               // Distance between cells

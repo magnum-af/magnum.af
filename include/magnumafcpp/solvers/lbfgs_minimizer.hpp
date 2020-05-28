@@ -19,12 +19,12 @@ class LBFGS_Minimizer {
 
     double Minimize(State&);
 
-    LlgTerms llgterms_;
+    LlgTerms llgterms_{}; // default init, as not constructed in init list
 
     double GetTimeCalcHeff() const {
         return time_calc_heff_;
     }; ///< Accumulated time for calculation of Heff.
-    std::ofstream of_convergence;
+    std::ofstream of_convergence{}; // optional output stream
 
   private:
     af::array Gradient(const State&); ///< Calculate gradient as

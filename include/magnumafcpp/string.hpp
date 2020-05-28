@@ -24,11 +24,11 @@ class String {
     const int n_interp;
     const double dt;
     double time{0};
-    std::vector<double> x; // Current x values
+    std::vector<double> x{}; // Current x values
     std::vector<double>
-        x_interp; // x-values where to interpolate at (will be regular grid)
-    std::vector<double> E;     // Energy values
-    std::vector<State> images; // Current images
+        x_interp{}; // x-values where to interpolate at (will be regular grid)
+    std::vector<double> E{};   // Energy values
+    std::vector<State> images{}; // Current images
     void calc_E();
     void calc_x();
     void calc_x(std::vector<State>);

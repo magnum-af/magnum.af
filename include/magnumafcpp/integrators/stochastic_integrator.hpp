@@ -40,10 +40,9 @@ class Stochastic_Integrator {
     virtual af::array stochfdmdt(const State&, const af::array& h_th) = 0;
 
     af::array m_prev;
-    af::array h_th_prev;
-    af::timer timer_stoch;
+    af::array h_th_prev{};
 
-    int mode; // Integration mode
+    const int mode; // Integration mode
 
     af::randomEngine rand_engine;
 };

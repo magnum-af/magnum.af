@@ -14,6 +14,9 @@ class Controller {
 
     const double hmin;
     const double hmax;
+    // Scale function return= atol + abs(y) * rtol
+    const double atol;                          // Tolerated absolute error
+    const double rtol;                          // Tolerated relative error
     double get_hnext() const { return hnext; }; // # of rejections
     af::array givescale(const af::array& a) {
         return atol + rtol * af::abs(a);
@@ -40,10 +43,6 @@ class Controller {
 
     bool get_reject() const { return reject; };
 
-    // TODO better solution?
-    // Scale function return= atol + abs(y) * rtol
-    const double atol; // Tolerated absolute error
-    const double rtol; // Tolerated relative error
   private:
     // Numerical Recipies 3rd Edition suggests these values:
     const double beta = 0.4 / 5.0;
@@ -54,7 +53,7 @@ class Controller {
 
     bool reject{false};
     double errold{1.0e-4}; // This value is max(err, 1.0e-4)
-    double hnext;
+    double hnext{};
 
     // Counters to check performance
     unsigned long long int counter_reject{0};   // # of rejections
