@@ -307,9 +307,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
             for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
                 for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
-                    // x
-                    if ((i0 == 0 && mesh.n0 > 1) ||
-                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                    // +x: ix, ix+1
+                    if (i0 < mesh.n0 - 1) {
                         double A_i =
                             a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_p = a_raw[util::stride(i0 + 1, i1, i2,
@@ -323,8 +322,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                             COO_COL.push_back(findex(i0 + 1, i1, i2, im, mesh));
                         }
                     }
-                    if ((i0 == mesh.n0 - 1 && mesh.n0 > 1) ||
-                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                    // -x: ix, ix-1
+                    if (i0 > 0) {
                         double A_i =
                             a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_m = a_raw[util::stride(i0 - 1, i1, i2,
@@ -339,9 +338,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                         }
                     }
 
-                    // y
-                    if ((i1 == 0 && mesh.n1 > 1) ||
-                        (i1 > 0 && i1 < mesh.n1 - 1)) {
+                    // +y: iy, iy+1
+                    if (i1 < mesh.n1 - 1) {
                         double A_i =
                             a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_p = a_raw[util::stride(i0, i1 + 1, i2,
@@ -355,8 +353,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                             COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
                         }
                     }
-                    if ((i1 == mesh.n1 - 1 && mesh.n1 > 1) ||
-                        (i1 > 0 && i1 < mesh.n1 - 1)) {
+                    // -y: iy, iy-1
+                    if (i1 > 0) {
                         double A_i =
                             a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_m = a_raw[util::stride(i0, i1 - 1, i2,
@@ -372,9 +370,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                     }
 
                     // z
-                    // Preferring RKKY over exch vals
-                    if ((i2 == 0 && mesh.n2 > 1) ||
-                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                    // +z: iz, iz+1
+                    if (i2 < mesh.n2 - 1) {
                         double RKKY_i = rkky_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double RKKY_i_p = rkky_raw[util::stride(
@@ -392,6 +389,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                                       i0, i1, i2 + 1, mesh.n0, mesh.n1)];
                         // std::cout << "rkkyindex = " << RKKY_index_i << "and"
                         // << RKKY_index_i_p << std::endl;
+                        // Preferring RKKY over exch vals:
                         if ((RKKY_index_i == RKKY_index_i_p) && (RKKY_i != 0) &&
                             (RKKY_i_p != 0)) {
                             COO_values.push_back(
@@ -415,8 +413,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field,
                             }
                         }
                     }
-                    if ((i2 == mesh.n2 - 1 && mesh.n2 > 1) ||
-                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                    // -z: iz, iz-1
+                    if (i2 > 0) {
                         double RKKY_i = rkky_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double RKKY_i_m = rkky_raw[util::stride(
