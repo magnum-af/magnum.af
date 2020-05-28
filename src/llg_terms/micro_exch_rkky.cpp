@@ -75,22 +75,18 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
     if (!rkky_indices.isempty()){
         rkky_indices_raw = rkky_indices.host<unsigned int>();
     }
-    // Would run but only marginal speedup. COO approach way faster//#pragma
-    // omp parallel for
     for (unsigned im = 0; im < 3; im++) {
         for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
             for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
                 for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
                     unsigned csr_ia = 0; // counter for SCR_IA
-                    const unsigned ind =
-                        static_cast<unsigned>(findex(i0, i1, i2, im, mesh));
+                    const int ind = findex(i0, i1, i2, im, mesh);
                     // Note: skippable due to cross product
                     // property://vmatr[findex(i0, i1, i2, im,
                     // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
                     // 2)+pow(mesh.dz, 2));
-                    // x
-                    if ((i0 == 0 && mesh.n0 > 1) ||
-                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                    // +x: ix, ix+1
+                    if (i0 < mesh.n0 - 1) {
                         double A_i = a_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_p = a_raw[util::stride(
@@ -105,8 +101,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             csr_ia++;
                         }
                     }
-                    if ((i0 == mesh.n0 - 1 && mesh.n0 > 1) ||
-                        (i0 > 0 && i0 < mesh.n0 - 1)) {
+                    // -x: ix, ix-1
+                    if (i0 > 0) {
                         double A_i = a_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_m = a_raw[util::stride(
@@ -122,9 +118,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                         }
                     }
 
-                    // y
-                    if ((i1 == 0 && mesh.n1 > 1) ||
-                        (i1 > 0 && i1 < mesh.n1 - 1)) {
+                    // +y: iy, iy+1
+                    if (i1 < mesh.n1 - 1) {
                         double A_i = a_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double A_i_p = a_raw[util::stride(
@@ -139,27 +134,24 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             csr_ia++;
                         }
                     }
-                    if ((i1 == mesh.n1 - 1 && mesh.n1 > 1) ||
-                        (i1 > 0 && i1 < mesh.n1 - 1)) {
-                        double A_i = a_raw[util::stride(
-                            i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(
-                            i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                    // -y: iy, iy-1
+                    if (i1 > 0) {
+                        double A_i =
+                            a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2,
+                                                          mesh.n0, mesh.n1)];
                         if (A_i != 0) {
                             CSR_values.push_back(
                                 (2. * A_i) /
-                                (constants::mu0 * pow(mesh.dx, 2)) *
-                                2. * A_i_m / (A_i_m + A_i));
-                            CSR_JA.push_back(
-                                findex(i0, i1 - 1, i2, im, mesh));
+                                (constants::mu0 * pow(mesh.dx, 2)) * 2. *
+                                A_i_m / (A_i_m + A_i));
+                            CSR_JA.push_back(findex(i0, i1 - 1, i2, im, mesh));
                             csr_ia++;
                         }
                     }
 
-                    // z
-                    // Preferring RKKY over exch vals
-                    if ((i2 == 0 && mesh.n2 > 1) ||
-                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                    // +z: iz, iz+1
+                    if (i2 < mesh.n2 - 1) {
                         double RKKY_i = rkky_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double RKKY_i_p = rkky_raw[util::stride(
@@ -174,39 +166,38 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             rkky_indices.isempty()
                                 ? 0
                                 : rkky_indices_raw[util::stride(
-                                      i0, i1, i2 + 1, mesh.n0,
-                                      mesh.n1)];
+                                      i0, i1, i2 + 1, mesh.n0, mesh.n1)];
                         // std::cout << "rkkyindex = " << RKKY_index_i
                         // << "and" << RKKY_index_i_p << std::endl;
-                        if ((RKKY_index_i == RKKY_index_i_p) &&
-                            (RKKY_i != 0) && (RKKY_i_p != 0)) {
+                        // Preferring RKKY over exch vals
+                        if ((RKKY_index_i == RKKY_index_i_p) && (RKKY_i != 0) &&
+                            (RKKY_i_p != 0)) {
                             // assuming rkky jump condition equal to
                             // exch jump
                             CSR_values.push_back(
                                 (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) *
-                                2. * RKKY_i_p / (RKKY_i_p + RKKY_i));
-                            CSR_JA.push_back(
-                                findex(i0, i1, i2 + 1, im, mesh));
+                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
+                                RKKY_i_p / (RKKY_i_p + RKKY_i));
+                            CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                             csr_ia++;
                         } else {
-                            double A_i = a_raw[util::stride(
-                                i0, i1, i2, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0,
+                                                            mesh.n1)];
                             double A_i_p = a_raw[util::stride(
                                 i0, i1, i2 + 1, mesh.n0, mesh.n1)];
                             if (A_i != 0) {
                                 CSR_values.push_back(
                                     (2. * A_i) /
-                                    (constants::mu0 * pow(mesh.dz, 2)) *
-                                    2. * A_i_p / (A_i_p + A_i));
+                                    (constants::mu0 * pow(mesh.dz, 2)) * 2. *
+                                    A_i_p / (A_i_p + A_i));
                                 CSR_JA.push_back(
                                     findex(i0, i1, i2 + 1, im, mesh));
                                 csr_ia++;
                             }
                         }
                     }
-                    if ((i2 == mesh.n2 - 1 && mesh.n2 > 1) ||
-                        (i2 > 0 && i2 < mesh.n2 - 1)) {
+                    // -z: iz, iz-1
+                    if (i2 > 0) {
                         double RKKY_i = rkky_raw[util::stride(
                             i0, i1, i2, mesh.n0, mesh.n1)];
                         double RKKY_i_m = rkky_raw[util::stride(
@@ -221,30 +212,28 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             rkky_indices.isempty()
                                 ? 0
                                 : rkky_indices_raw[util::stride(
-                                      i0, i1, i2 - 1, mesh.n0,
-                                      mesh.n1)];
+                                      i0, i1, i2 - 1, mesh.n0, mesh.n1)];
 
-                        if ((RKKY_index_i == RKKY_index_i_m) &&
-                            (RKKY_i != 0) && (RKKY_i_m != 0)) {
+                        if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) &&
+                            (RKKY_i_m != 0)) {
                             // assuming rkky jump condition equal to
                             // exch jump
                             CSR_values.push_back(
                                 (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) *
-                                2. * RKKY_i_m / (RKKY_i_m + RKKY_i));
-                            CSR_JA.push_back(
-                                findex(i0, i1, i2 - 1, im, mesh));
+                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
+                                RKKY_i_m / (RKKY_i_m + RKKY_i));
+                            CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
                         } else {
-                            double A_i = a_raw[util::stride(
-                                i0, i1, i2, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0,
+                                                            mesh.n1)];
                             double A_i_m = a_raw[util::stride(
                                 i0, i1, i2 - 1, mesh.n0, mesh.n1)];
                             if (A_i != 0) {
                                 CSR_values.push_back(
                                     (2. * A_i) /
-                                    (constants::mu0 * pow(mesh.dz, 2)) *
-                                    2. * A_i_m / (A_i_m + A_i));
+                                    (constants::mu0 * pow(mesh.dz, 2)) * 2. *
+                                    A_i_m / (A_i_m + A_i));
                                 CSR_JA.push_back(
                                     findex(i0, i1, i2 - 1, im, mesh));
                                 csr_ia++;
