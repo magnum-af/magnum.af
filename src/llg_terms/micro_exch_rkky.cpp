@@ -176,8 +176,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             // exch jump
                             CSR_values.push_back(
                                 (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
-                                RKKY_i_p / (RKKY_i_p + RKKY_i));
+                                (constants::mu0 * pow(mesh.dz, 2)));
                             CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                             csr_ia++;
                         } else {
@@ -220,8 +219,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field,
                             // exch jump
                             CSR_values.push_back(
                                 (2. * RKKY_i) /
-                                (constants::mu0 * pow(mesh.dz, 2)) * 2. *
-                                RKKY_i_m / (RKKY_i_m + RKKY_i));
+                                (constants::mu0 * pow(mesh.dz, 2)));
                             CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
                         } else {
