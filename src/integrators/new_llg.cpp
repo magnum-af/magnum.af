@@ -27,9 +27,13 @@ af::array LLGIntegrator::fheff(const State& state) {
     return solution;
 }
 
-af::array LLGIntegrator::f(const State& state) {
+af::array LLGIntegrator::f(const af::array& m, const double t) {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
+    State state(Mesh(0, 0, 0, 0, 0, 0), 0, m); // TODO handle no state!
+    // TODO currently each LLGTerms needs to keep ms or llg integrator
+    // TODO handle with template param
+    state.t = t;
     if (dissipation_term_only) {
         af::array heff = fheff(state);
         return -alpha * constants::gamma / (1. + std::pow(alpha, 2)) *
@@ -51,6 +55,11 @@ double LLGIntegrator::E(const State& state) {
         solution += llgterms[i]->E(state);
     }
     return solution;
+}
+
+void LLGIntegrator::step(State& state) {
+    AdaptiveRungeKutta::step(state.m, state.t);
+    state.steps++;
 }
 
 void LLGIntegrator::relax(State& state, const double precision,

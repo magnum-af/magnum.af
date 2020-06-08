@@ -36,8 +36,10 @@ class LLGIntegrator : public AdaptiveRungeKutta {
                const bool verbose = true);
     long int h_addr(const State& state);
 
+    void step(State& state);
+
   private:
-    af::array f(const State& state);
+    af::array f(const af::array& m, const double t);
     af::array fheff(const State& state);
     double time_heff{0};
 };
