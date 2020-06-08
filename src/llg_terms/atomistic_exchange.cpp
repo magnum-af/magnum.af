@@ -3,8 +3,6 @@
 
 namespace magnumafcpp {
 
-using namespace af;
-
 // Energy calculation
 // Eex=-mu0/2 integral(M . Hex) dx
 
@@ -21,15 +19,15 @@ double AtomisticExchangeField::E(const State& state, const af::array& h) {
 AtomisticExchangeField::AtomisticExchangeField(double J_atom)
     : J_atom(J_atom) {}
 
-array AtomisticExchangeField::h(const State& state) {
+af::array AtomisticExchangeField::h(const State& state) {
 
-    array filtr = constant(0.0, 3, 3, 3, 3, f64);
-    filtr(0, 1, 1, span) = 1.;
-    filtr(2, 1, 1, span) = 1.;
-    filtr(1, 0, 1, span) = 1.;
-    filtr(1, 2, 1, span) = 1.;
-    filtr(1, 1, 0, span) = 1.;
-    filtr(1, 1, 2, span) = 1.;
+    af::array filtr = af::constant(0.0, 3, 3, 3, 3, f64);
+    filtr(0, 1, 1, af::span) = 1.;
+    filtr(2, 1, 1, af::span) = 1.;
+    filtr(1, 0, 1, af::span) = 1.;
+    filtr(1, 2, 1, af::span) = 1.;
+    filtr(1, 1, 0, af::span) = 1.;
+    filtr(1, 1, 2, af::span) = 1.;
     // if(state.material.hexagonal_close_packed == true){
     //    std::cout << "WARNING: Experimental hcp exchange" << std::endl;
     //    filtr(0, 1, 1, span)= 1.;
@@ -51,13 +49,13 @@ array AtomisticExchangeField::h(const State& state) {
     // else{
     //}
 
-    timer_solve = timer::start();
+    timer_solve = af::timer::start();
     // convolution
-    array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    af::array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
     if (state.afsync)
         af::sync();
-    cpu_time += timer::stop(timer_solve);
+    cpu_time += af::timer::stop(timer_solve);
     return J_atom / (constants::mu0 * state.Ms) * mj;
 }
 // return state.material.J/(state.mesh.dx*constants::mu0) * mj;

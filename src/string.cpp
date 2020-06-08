@@ -8,7 +8,6 @@
 #include <stdio.h>
 
 namespace magnumafcpp {
-using namespace af;
 
 String::String(State state, std::vector<State> inputimages, int n_interp,
                double dt, LLGIntegrator llg)
