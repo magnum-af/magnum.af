@@ -3,20 +3,20 @@
 
 using namespace magnumafcpp;
 
-template <typename T> class AdaptiveRK {
+template <typename Input, typename Return> class AdaptiveRK {
   public:
-    void step(double& t, T&);
-    virtual T f(const double t, const T&) = 0;
+    void step(double& t, Input&);
+    virtual Return f(const double t, const Input&) = 0;
     virtual ~AdaptiveRK(){};
 };
 
-template <typename T> class TempSquareFormula : public AdaptiveRK<T> {
+template <typename T> class TempSquareFormula : public AdaptiveRK<T, T> {
   public:
     T f(const double t, const T& m) { return t * sqrt(m); }
     TempSquareFormula(){};
 };
 
-class SquareFormula : public AdaptiveRK<af::array> {
+class SquareFormula : public AdaptiveRK<af::array, af::array> {
   public:
     af::array f(const double t, const af::array& m) { return t * af::sqrt(m); }
 };
@@ -28,13 +28,22 @@ class TestState {
     TestState(af::array m) : m(m) {}
 };
 
-class EquationState : public AdaptiveRK<TestState> {
+class EquationState : public AdaptiveRK<TestState, TestState> {
   public:
-    TestState heff(TestState state) { return state; }
+    // TestState heff(TestState state) { return state; }
+    af::array heff(TestState state) { return state.m; }
     TestState f(const double t, const TestState& m) {
         auto temp = m;
-        temp.m = t * af::sqrt(m.m) + heff(m).m;
+        temp.m = t * af::sqrt(m.m) + heff(m);
         return temp;
+    }
+};
+
+class EquationStateArray : public AdaptiveRK<TestState, af::array> {
+  public:
+    af::array heff(TestState state) { return state.m; }
+    af::array f(const double t, const TestState& m) {
+        return t * af::sqrt(m.m) + heff(m);
     }
 };
 
@@ -55,5 +64,7 @@ int main(int argc, char** argv) {
     TestState teststate(m);
     EquationState equationstate{};
     af::print("", equationstate.f(t, m).m);
+    EquationStateArray equationstatearray{};
+    af::print("", equationstatearray.f(t, m));
     return 0;
 }
