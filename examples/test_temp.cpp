@@ -3,6 +3,19 @@
 
 using namespace magnumafcpp;
 
+class StateInterface {
+  public:
+    af::array m;
+    af::array Ms_field;
+    double Ms;
+    double t;
+};
+
+class MyState : public StateInterface {
+  public:
+    int nz;
+};
+
 template <typename Input, typename Return> class AdaptiveRK {
   public:
     void step(double& t, Input&);
@@ -47,6 +60,14 @@ class EquationStateArray : public AdaptiveRK<TestState, af::array> {
     }
 };
 
+class EquationMyState : public AdaptiveRK<StateInterface, af::array> {
+  public:
+    af::array heff(StateInterface state) { return state.m; }
+    af::array f(const double t, const StateInterface& m) {
+        return t * af::sqrt(m.m) + heff(m);
+    }
+};
+
 int main(int argc, char** argv) {
     for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
@@ -55,7 +76,7 @@ int main(int argc, char** argv) {
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
     // auto squaref = SquareFormula();
-    double t = 0;
+    double t = 1;
     SquareFormula squaref{};
     af::array m = af::constant(1, 1, f64);
     af::print("", squaref.f(t, m));
@@ -66,5 +87,9 @@ int main(int argc, char** argv) {
     af::print("", equationstate.f(t, m).m);
     EquationStateArray equationstatearray{};
     af::print("", equationstatearray.f(t, m));
+    MyState mystate{};
+    mystate.m = af::constant(1, 1, f64);
+    EquationMyState equationmystate{};
+    af::print("", equationmystate.f(t, mystate));
     return 0;
 }
