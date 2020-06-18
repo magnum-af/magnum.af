@@ -9,16 +9,47 @@ class StateInterface {
     af::array Ms_field;
     double Ms;
     double t;
+    // virtual int specific_type() = 0; // makes base class abstract
+    virtual ~StateInterface() {} // Makes Interface Class abstract
 };
 
 class MyState : public StateInterface {
   public:
     int nz;
+    // int specific_type() { return 2; }
 };
 
 template <typename Input, typename Return> class AdaptiveRK {
   public:
-    void step(double& t, Input&);
+    // note: input is treated as const by a workaround
+    Return FakeRKF(const double t, Input& input, const double dt) {
+        // Input& should be const, we have to manipulate input.m, however
+        // following is not working as abstract class cant be instantiated
+        // Se we have to work on Input& and reset m aferwards to immitate const
+        // Input& behaviour:
+        // Input temp = input; auto temp = input; workaround:
+        // save input.m and at the end reapply it
+        const Return minit = input.m;
+        // stage1
+        Return k1 = dt * f(t, input);
+
+        // stage2
+        double t_current_step = t + 1. / 4. * dt;
+        input.m = input.m + 1. / 4. * k1;
+        Return k2 = dt * f(t_current_step, input);
+        // stage3
+        // TODO
+
+        auto result = k1 + k2;
+        input.m = minit; // Note: workaround to achive Input& as const
+        // Preserving input.m is important if step is not accepted by
+        // controller.
+        return result;
+    }
+    void step(double& t, Input& input) {
+        input.m = FakeRKF(t, input, 1);
+        t += 1;
+    }
     virtual Return f(const double t, const Input&) = 0;
     virtual ~AdaptiveRK(){};
 };
@@ -62,7 +93,9 @@ class EquationStateArray : public AdaptiveRK<TestState, af::array> {
 
 class EquationMyState : public AdaptiveRK<StateInterface, af::array> {
   public:
-    af::array heff(StateInterface state) { return state.m; }
+    // TODO nz not accessible
+    // af::array heff(const StateInterface& state) { return state.nz * state.m;}
+    af::array heff(const StateInterface& state) { return state.m; }
     af::array f(const double t, const StateInterface& m) {
         return t * af::sqrt(m.m) + heff(m);
     }
@@ -90,6 +123,8 @@ int main(int argc, char** argv) {
     MyState mystate{};
     mystate.m = af::constant(1, 1, f64);
     EquationMyState equationmystate{};
+    af::print("", equationmystate.f(t, mystate));
+    equationmystate.step(t, mystate);
     af::print("", equationmystate.f(t, mystate));
     return 0;
 }
