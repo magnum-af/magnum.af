@@ -91,12 +91,30 @@ class EquationStateArray : public AdaptiveRK<TestState, af::array> {
     }
 };
 
-class EquationMyState : public AdaptiveRK<StateInterface, af::array> {
+class EquationStateInterface : public AdaptiveRK<StateInterface, af::array> {
   public:
     // TODO nz not accessible
     // af::array heff(const StateInterface& state) { return state.nz * state.m;}
     af::array heff(const StateInterface& state) { return state.m; }
     af::array f(const double t, const StateInterface& m) {
+        return t * af::sqrt(m.m) + heff(m);
+    }
+};
+
+class EquationHybridState : public AdaptiveRK<StateInterface, af::array> {
+  public:
+    // TODO nz not accessible
+    af::array heff(const MyState& state) { return state.nz * state.m; }
+    // TODO no const possible:
+    af::array f(const double t, const StateInterface& m) {
+        return t * af::sqrt(m.m) + heff(dynamic_cast<const MyState&>(m));
+    }
+};
+
+class EquationMyState : public AdaptiveRK<MyState, af::array> {
+  public:
+    af::array heff(const MyState& state) { return state.nz * state.m; }
+    af::array f(const double t, const MyState& m) {
         return t * af::sqrt(m.m) + heff(m);
     }
 };
@@ -120,8 +138,21 @@ int main(int argc, char** argv) {
     af::print("", equationstate.f(t, m).m);
     EquationStateArray equationstatearray{};
     af::print("", equationstatearray.f(t, m));
+
     MyState mystate{};
     mystate.m = af::constant(1, 1, f64);
+
+    // Passing MyState as StateInterface&
+    EquationStateInterface equationstateinterface{};
+    af::print("", equationstateinterface.f(t, mystate));
+    equationstateinterface.step(t, mystate);
+    af::print("", equationstateinterface.f(t, mystate));
+
+    EquationHybridState hybridstate{};
+    af::print("", hybridstate.f(t, mystate));
+    hybridstate.step(t, mystate);
+    af::print("", hybridstate.f(t, mystate));
+
     EquationMyState equationmystate{};
     af::print("", equationmystate.f(t, mystate));
     equationmystate.step(t, mystate);
