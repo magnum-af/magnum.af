@@ -30,4 +30,5 @@
 #include "util/timer.hpp"
 #include "util/util.hpp"
 #include "util/zero_crossing.hpp"
+#include "util/newton_iteration.hpp"
 #include "vtk_IO.hpp"
