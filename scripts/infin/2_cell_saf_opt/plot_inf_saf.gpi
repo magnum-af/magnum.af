@@ -1,0 +1,5 @@
+set terminal pdf;
+set xlabel "Hx component"
+set ylabel "my"
+set output "inf_saf.pdf";
+p "m.dat" u 2:3 w l title "bottom", "" u 2:4 w l title "top"
