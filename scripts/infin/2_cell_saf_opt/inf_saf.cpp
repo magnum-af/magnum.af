@@ -11,19 +11,23 @@ int main(int argc, char** argv) {
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
+    const double hzee_max = argc > 3 ? std::stod(argv[3]) : 0.100; //[Tesla]
+
     af::info();
 
     // Parameter initialization
     // z1: Pinned Layer
     // z2: Reference Layer
     const int nx = 1, ny = 1, nz = 2;
-    const double dx = 1.5e-9;
+    const double dx = 2e-9;
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
     const double Ms1 = 1.4e6;
     const double Ms2 = 1e6;
-    const double RKKY = -0.8e-3 * dx;
+    const double RKKY =
+        argc > 4 ? std::stod(argv[4]) * 1e-3 * dx : -0.8e-3 * dx;
+    std::cout << "RKKY" << RKKY << std::endl;
     const double A = 15e-12; // Note: A is replaced by RKKY here
     // antoferomagnetic coupling simulated by external field
     // Jaf u1 . u2 A == Js H A dz
@@ -66,8 +70,6 @@ int main(int argc, char** argv) {
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
 
-    const double hzee_max = (argc > 3 ? std::stod(argv[3]) : 0.100); //[Tesla]
-
     unsigned current_step = 0;
     // Defining H_zee via lamdas
     auto zee_func = [H_af, &current_step, hzee_max](State state) -> af::array {
@@ -109,13 +111,18 @@ int main(int argc, char** argv) {
     }
     stream.close();
 
-    for (auto it : abs_my_rl) {
-        std::cout << it << std::endl;
-    }
+    // for (auto it : abs_my_rl) {
+    //    std::cout << it << std::endl;
+    //}
     double sum = std::accumulate(abs_my_rl.begin(), abs_my_rl.end(), 0.0);
     double mean = sum / abs_my_rl.size();
-    std::cout << "sum=" << sum << std::endl;
+    // std::cout << "sum=" << sum << std::endl;
+
     std::cout << "mean=" << mean << std::endl;
+    std::ofstream tablestream(filepath + "m.dat");
+    tablestream << "\t" << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean
+                << "\t" << mean << std::endl;
+    tablestream.close();
 
     return 0;
 }
