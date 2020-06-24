@@ -119,9 +119,10 @@ int main(int argc, char** argv) {
     // std::cout << "sum=" << sum << std::endl;
 
     std::cout << "mean=" << mean << std::endl;
-    std::ofstream tablestream(filepath + "m.dat");
-    tablestream << "\t" << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean
-                << "\t" << mean << std::endl;
+    std::ofstream tablestream(filepath + "table.dat");
+    tablestream << "# dx <<  Ms1 << RKKY << mean" << std::endl;
+    tablestream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean
+                << std::endl;
     tablestream.close();
 
     return 0;
