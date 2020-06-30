@@ -1,0 +1,11 @@
+set terminal pdf;
+set xlabel "H_x"
+set ylabel "m_y"
+set output "fig_ref_layer_over_files.pdf";
+
+filelist = system('ls RKKYmT*/m.dat')
+
+set title "Reference Layer"
+plot for [file in filelist] file u 2:4 w l title file
+set title "Pinned Layer"
+plot for [file in filelist] file u 2:3 w l title file

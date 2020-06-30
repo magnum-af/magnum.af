@@ -1,0 +1,10 @@
+set terminal pdf
+set xlabel "Ms1 [1e6 J/T/m^3]"
+set ylabel "RKKY [mJ/m^2]"
+set cblabel "mean(abs(m_y))"
+set output "heatmap.pdf"
+#set format x "%12.1e"
+p "table_combined.dat" u ($2*1e-6):($3/2e-12):4 w image notitle
+set terminal jpeg
+set output "heatmap.jpg"
+replot

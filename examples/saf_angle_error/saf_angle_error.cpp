@@ -35,7 +35,8 @@ int main(int argc, char** argv) {
     // Jaf u1 . u2 A == Js H A dz
     // H = Jaf/(Js dz)
     // double Jaf = 0.72e-3;
-    double Jaf = 0.36e-3;
+    double Jaf = argc > 6 ? std::stod(argv[6]) : 0.36e-3;
+    std::cout << "Jaf=" << Jaf << std::endl;
     const double H_af = Jaf / (Ms1 * constants::mu0 * dx);
     std::cout << "H_af[Oe]=" << H_af << std::endl;
     std::cout << "H_af [T]=" << H_af * constants::mu0 << std::endl;
@@ -122,8 +123,10 @@ int main(int argc, char** argv) {
 
     std::cout << "mean=" << mean << std::endl;
     stream.open(filepath + "table.dat");
-    stream << "# dx <<  Ms1 << RKKY << mean" << std::endl;
-    stream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean << std::endl;
+    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << mean(abs(my)) << Haf[T]"
+           << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean << "\t"
+           << H_af * constants::mu0 << std::endl;
     stream.close();
 
     stream.open(filepath + "plotfile.gpi");
