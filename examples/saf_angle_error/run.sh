@@ -1,6 +1,7 @@
 #!/bin/bash
 
 (cd ../../build/ && make -j)
+GPU="0"
 Hmax_mT="0.100"
 Jaf="0.36e-3"
 #Jaf="0.49e-3"
@@ -20,15 +21,20 @@ for Ms1 in $(LC_ALL=C seq "$Ms1_start" "$Ms1_step" "$Ms1_stop" ); do
         echo "$Ms1, $RKKY, $Jaf"
         outpath="$parent_outpath"RKKYmT"$RKKY"Ms1"$Ms1"/
         echo "$outpath"
-        mkdir -p "$outpath"
-        GPU="0"
-        ../../bin/saf_angle_error "$outpath" "$GPU" "$Hmax_mT" "$RKKY" "$Ms1" "$Jaf" | tee "$outpath"log.txt
+        if [ ! -d "$outpath" ]; then
+            mkdir -p "$outpath"
+            ../../bin/saf_angle_error "$outpath" "$GPU" "$Hmax_mT" "$RKKY" "$Ms1" "$Jaf" | tee "$outpath"log.txt
+        fi
     done
 done
 
 # postprocessing:
-cp plot_ref_layer_over_files.gpi "$parent_outpath"
-cp plot_table_heatmap.gpi "$parent_outpath"
-cp get_table_and_plot.sh "$parent_outpath"
+cp plot.gpi "$parent_outpath"
 cd "$parent_outpath"
-./get_table_and_plot.sh
+# write numerically sorted folders' table.dat values to table_combined.dat
+ls -v RKKY*/table.dat | xargs cat | tee table_combined.dat
+gnuplot plot.gpi
+
+# getting min of mean(abs(my)) values
+min=$(sed '/^#/d' < table_combined.dat | awk '{print $4}' | sort -g | head -1)
+cat table_combined.dat | grep "$min" | tee min_mean_abs_value.dat

@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     // double Jaf = 0.72e-3;
     double Jaf = argc > 6 ? std::stod(argv[6]) : 0.36e-3;
     std::cout << "Jaf=" << Jaf << std::endl;
-    const double H_af = Jaf / (Ms1 * constants::mu0 * dx);
+    const double H_af = Jaf / (Ms2 * constants::mu0 * dx);
     std::cout << "H_af[Oe]=" << H_af << std::endl;
     std::cout << "H_af [T]=" << H_af * constants::mu0 << std::endl;
 
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     stream << "p 'm.dat' u 2:3 w l title 'Pinned'";
     stream << ", '' u 2:4 w l title 'Reference'" << std::endl << std::endl;
     stream << "set terminal jpeg" << std::endl;
-    stream << "set output 'heatmap.jpg'" << std::endl;
+    stream << "set output 'saf_angle_error.jpg'" << std::endl;
     stream << "replot" << std::endl;
     stream.close();
 
