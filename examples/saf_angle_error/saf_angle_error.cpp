@@ -135,13 +135,16 @@ int main(int argc, char** argv) {
     stream << "set ylabel 'm_y'" << std::endl;
     stream << "set output 'saf_angle_error.pdf'" << std::endl;
     stream << "p 'm.dat' u 2:3 w l title 'Pinned'";
-    stream << ", '' u 2:4 w l title 'Reference'" << std::endl;
+    stream << ", '' u 2:4 w l title 'Reference'" << std::endl << std::endl;
+    stream << "set terminal jpeg" << std::endl;
+    stream << "set output 'heatmap.jpg'" << std::endl;
+    stream << "replot" << std::endl;
     stream.close();
 
     int syscall =
         std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
     if (syscall != 0) {
-        std::cout << "syscall platting failed" << std::endl;
+        std::cout << "syscall plotting with gnuplot failed" << std::endl;
     }
 
     return 0;
