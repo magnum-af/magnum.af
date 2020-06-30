@@ -5,7 +5,9 @@
 
 using namespace magnumafcpp;
 
-int main() {
+int main(int argc, char** argv) {
+    af::setBackend(argc > 1 ? static_cast<af_backend>(std::stoi(argv[1]))
+                            : AF_BACKEND_DEFAULT);
     af::info();
 
     std::cout << "magnumafcpp_VERSION_MAJOR = " << magnumafcpp_VERSION_MAJOR

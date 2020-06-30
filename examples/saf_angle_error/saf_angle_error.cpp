@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
     }
     std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
+    af::setBackend(AF_BACKEND_CPU);
     const double hzee_max = argc > 3 ? std::stod(argv[3]) : 0.100; //[Tesla]
 
     af::info();
@@ -23,11 +24,12 @@ int main(int argc, char** argv) {
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
-    const double Ms1 = 1.4e6;
-    const double Ms2 = 1e6;
     const double RKKY =
         argc > 4 ? std::stod(argv[4]) * 1e-3 * dx : -0.8e-3 * dx;
-    std::cout << "RKKY" << RKKY << std::endl;
+    std::cout << "RKKY=" << RKKY << std::endl;
+    const double Ms1 = argc > 5 ? std::stod(argv[5]) : 1.4e6;
+    std::cout << "Ms1=" << Ms1 << std::endl;
+    const double Ms2 = 1e6;
     const double A = 15e-12; // Note: A is replaced by RKKY here
     // antoferomagnetic coupling simulated by external field
     // Jaf u1 . u2 A == Js H A dz
@@ -119,11 +121,25 @@ int main(int argc, char** argv) {
     // std::cout << "sum=" << sum << std::endl;
 
     std::cout << "mean=" << mean << std::endl;
-    std::ofstream tablestream(filepath + "table.dat");
-    tablestream << "# dx <<  Ms1 << RKKY << mean" << std::endl;
-    tablestream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean
-                << std::endl;
-    tablestream.close();
+    stream.open(filepath + "table.dat");
+    stream << "# dx <<  Ms1 << RKKY << mean" << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean << std::endl;
+    stream.close();
+
+    stream.open(filepath + "plotfile.gpi");
+    stream << "set terminal pdf;" << std::endl;
+    stream << "set xlabel 'H_x [T]'" << std::endl;
+    stream << "set ylabel 'm_y'" << std::endl;
+    stream << "set output 'saf_angle_error.pdf'" << std::endl;
+    stream << "p 'm.dat' u 2:3 w l title 'Pinned'";
+    stream << ", '' u 2:4 w l title 'Reference'" << std::endl;
+    stream.close();
+
+    int syscall =
+        std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
+    if (syscall != 0) {
+        std::cout << "syscall platting failed" << std::endl;
+    }
 
     return 0;
 }
