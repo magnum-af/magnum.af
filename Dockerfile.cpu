@@ -45,7 +45,7 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.6.4 &
              -DBUILD_CPU=ON \
              -DBUILD_CUDA=OFF \
              -DBUILD_OPENCL=OFF \
-             -DBUILD_UNIFIED=OFF \
+             -DBUILD_UNIFIED=ON \
              -DBUILD_GRAPHICS=${COMPILE_GRAPHICS} \
              -DBUILD_NONFREE=OFF \
              -DBUILD_EXAMPLES=OFF \
