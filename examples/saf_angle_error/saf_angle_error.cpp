@@ -21,19 +21,19 @@ int main(int argc, char** argv) {
     // z2: Reference Layer
     const int nx = 1, ny = 1, nz = 2;
     const double dx = 2e-9;
+
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
     const double RKKY_mJ_per_m2 = argc > 4 ? std::stod(argv[4]) : -0.8;
     const double RKKY = RKKY_mJ_per_m2 * 1e-3 * dx;
-
-    // const double RKKY =
-    // argc > 4 ? std::stod(argv[4]) * 1e-3 * dx : -0.8e-3 * dx;
     std::cout << "RKKY=" << RKKY << std::endl;
+
     const double Ms1 = argc > 5 ? std::stod(argv[5]) : 1.4e6;
     std::cout << "Ms1=" << Ms1 << std::endl;
     const double Ms2 = 1e6;
     const double A = 15e-12; // Note: A is replaced by RKKY here
+
     // antoferomagnetic coupling simulated by external field
     // Jaf u1 . u2 A == Js H A dz
     // H = Jaf/(Js dz)
