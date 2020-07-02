@@ -24,8 +24,11 @@ int main(int argc, char** argv) {
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
-    const double RKKY =
-        argc > 4 ? std::stod(argv[4]) * 1e-3 * dx : -0.8e-3 * dx;
+    const double RKKY_mJ_per_m2 = argc > 4 ? std::stod(argv[4]) : -0.8;
+    const double RKKY = RKKY_mJ_per_m2 * 1e-3 * dx;
+
+    // const double RKKY =
+    // argc > 4 ? std::stod(argv[4]) * 1e-3 * dx : -0.8e-3 * dx;
     std::cout << "RKKY=" << RKKY << std::endl;
     const double Ms1 = argc > 5 ? std::stod(argv[5]) : 1.4e6;
     std::cout << "Ms1=" << Ms1 << std::endl;
@@ -37,7 +40,7 @@ int main(int argc, char** argv) {
     // double Jaf = 0.72e-3;
     double Jaf = argc > 6 ? std::stod(argv[6]) : 0.36e-3;
     std::cout << "Jaf=" << Jaf << std::endl;
-    const double H_af = Jaf / (Ms2 * constants::mu0 * dx);
+    const double H_af = Jaf / (Ms1 * constants::mu0 * dx);
     std::cout << "H_af[Oe]=" << H_af << std::endl;
     std::cout << "H_af [T]=" << H_af * constants::mu0 << std::endl;
 
@@ -123,10 +126,11 @@ int main(int argc, char** argv) {
 
     std::cout << "mean=" << mean << std::endl;
     stream.open(filepath + "table.dat");
-    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << mean(abs(my)) << Haf[T]"
+    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << mean(abs(my)) << J_af "
+              "[J/m2]  << Haf[T]"
            << std::endl;
-    stream << dx << "\t" << Ms1 << "\t" << RKKY << "\t" << mean << "\t"
-           << H_af * constants::mu0 << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << mean
+           << "\t" << Jaf << "\t" << H_af * constants::mu0 << std::endl;
     stream.close();
 
     stream.open(filepath + "plotfile.gpi");
