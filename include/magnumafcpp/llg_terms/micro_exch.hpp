@@ -1,11 +1,11 @@
 #pragma once
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "llg_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class ExchangeField : public LLGTerm {
+class ExchangeField : public LLGTermMeshBase {
   public:
     using LLGTerm::E;
     ExchangeField(double A);

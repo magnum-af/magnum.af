@@ -1,11 +1,11 @@
 #pragma once
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "llg_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class DmiField : public LLGTerm {
+class DmiField : public LLGTermMeshBase {
   public:
     DmiField(double D, std::array<double, 3> D_axis = {0, 0, 1});
     DmiField(af::array D_constants, std::array<double, 3> D_axis = {0, 0, 1});

@@ -71,13 +71,14 @@ double ExternalField::E(const State& state, const af::array& h) {
     } else {
         if (state.Ms_field.isempty()) {
             return -constants::mu0 * state.Ms *
-                   afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)) *
+                   sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)
+                       .scalar<double>() *
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         } else {
             return -constants::mu0 *
-                   afvalue(
-                       sum(sum(sum(sum(state.Ms_field * h * state.m, 0), 1), 2),
-                           3)) *
+
+                   sum(sum(sum(sum(state.Ms_field * h * state.m, 0), 1), 2), 3)
+                       .scalar<double>() *
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
     }

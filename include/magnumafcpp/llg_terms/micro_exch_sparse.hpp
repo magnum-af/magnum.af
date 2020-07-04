@@ -1,11 +1,11 @@
 #pragma once
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "llg_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class SparseExchangeField : public LLGTerm {
+class SparseExchangeField : public LLGTermMeshBase {
   public:
     SparseExchangeField(double A_exchange, Mesh, bool verbose = true,
                         bool COO = true);
