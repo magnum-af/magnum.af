@@ -32,8 +32,7 @@ AtomisticDmiField::AtomisticDmiField(const double D_atom, double D_atom_axis_x,
 af::array AtomisticDmiField::h(const State& state) {
     af::timer timer_dmi = af::timer::start();
 
-    af::array n =
-        af::array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    af::array n = af::array(state.m.dims(), f64);
     n(af::span, af::span, af::span, 0) = D_atom_axis[0];
     n(af::span, af::span, af::span, 1) = D_atom_axis[1];
     n(af::span, af::span, af::span, 2) = D_atom_axis[2];

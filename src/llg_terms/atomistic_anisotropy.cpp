@@ -47,7 +47,7 @@ AtomisticUniaxialAnisotropyField::AtomisticUniaxialAnisotropyField(
 af::array AtomisticUniaxialAnisotropyField::h(const State& state) {
     af::timer timer_anisotropy = af::timer::start();
     // Normal vector
-    eu = af::array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    eu = af::array(state.m.dims(), f64);
     eu(af::span, af::span, af::span, 0) = K_atom_axis[0];
     eu(af::span, af::span, af::span, 1) = K_atom_axis[1];
     eu(af::span, af::span, af::span, 2) = K_atom_axis[2];
