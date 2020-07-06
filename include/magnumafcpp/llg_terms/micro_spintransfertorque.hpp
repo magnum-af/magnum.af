@@ -1,18 +1,14 @@
 #pragma once
 #include "../func.hpp"
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "llg_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class SpinTransferTorqueField : public LLGTerm {
+class SpinTransferTorqueField : public LLGTermMeshBase {
   public:
     af::array h(const State& state); ///< Effective field term contribution
-    double E(const State& state);    ///< Energy contribution
-    double
-    E(const State& state,
-      const af::array& h); ///< Micromagnetic energy for a given effective field
 
     double evaluation_timing{0.}; ///< Accumulated time used for evaluating all
                                   ///< calls to h(const State&)
