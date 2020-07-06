@@ -1,11 +1,11 @@
 #pragma once
 #include "../state.hpp"
 #include "arrayfire.h"
-#include "llg_term_mesh_base.hpp"
+#include "integrator_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class UniaxialAnisotropyField : public LLGTermMeshBase {
+class UniaxialAnisotropyField : public IntegratorTermMeshBase {
   public:
     UniaxialAnisotropyField(double Ku1,
                             std::array<double, 3> Ku1_axis = {0, 0, 1});

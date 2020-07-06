@@ -2,11 +2,11 @@
 #include "../func.hpp"
 #include "../state.hpp"
 #include "arrayfire.h"
-#include "llg_term_mesh_base.hpp"
+#include "integrator_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
-class SpinTransferTorqueField : public LLGTermMeshBase {
+class SpinTransferTorqueField : public IntegratorTermMeshBase {
   public:
     af::array h(const State& state); ///< Effective field term contribution
 

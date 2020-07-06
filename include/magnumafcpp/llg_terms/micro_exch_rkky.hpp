@@ -2,7 +2,7 @@
 #include "../state.hpp"
 #include "../util/named_type.hpp"
 #include "arrayfire.h"
-#include "llg_term_mesh_base.hpp"
+#include "integrator_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
@@ -35,7 +35,7 @@ using Exchange_values =
 /// All cells are exchange coupled along the xy plane.
 /// @param COO Switch between COO and CSR sparse matrix format, true is COO.
 
-class RKKYExchangeField : public LLGTermMeshBase {
+class RKKYExchangeField : public IntegratorTermMeshBase {
   public:
     RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values,
                       Mesh mesh, const af::array& rkky_indices = af::array(),

@@ -1,7 +1,7 @@
 #pragma once
 #include "../state.hpp"
 #include "arrayfire.h"
-#include "llg_term_mesh_base.hpp"
+#include "integrator_term_mesh_base.hpp"
 
 namespace magnumafcpp {
 
@@ -12,7 +12,7 @@ double Nxy(const int ix, const int iy, const int iz, const double dx,
            const double dy, const double dz);
 } // namespace newell
 
-class DemagField : public LLGTermMeshBase {
+class DemagField : public IntegratorTermMeshBase {
   public:
     // Field contribution
     af::array h(const State& state);

@@ -8,7 +8,7 @@
 
 namespace magnumafcpp {
 
-class LLGTermMeshBase : public LLGTerm {
+class IntegratorTermMeshBase : public LLGTerm {
   public:
     /// Calculating the micromagnetic energy \f$E\f$.
     /// This is a prototype for all llgterms with are linear in m and must be
@@ -53,7 +53,7 @@ class LLGTermMeshBase : public LLGTerm {
         }
     }
 
-    virtual ~LLGTermMeshBase(){};
+    virtual ~IntegratorTermMeshBase(){};
 };
 
 } // namespace magnumafcpp
