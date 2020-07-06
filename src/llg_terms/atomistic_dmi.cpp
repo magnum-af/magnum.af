@@ -3,16 +3,6 @@
 
 namespace magnumafcpp {
 
-double AtomisticDmiField::E(const State& state) {
-    return -constants::mu0 / 2. * state.Ms *
-           afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3));
-}
-
-double AtomisticDmiField::E(const State& state, const af::array& h) {
-    return -constants::mu0 / 2. * state.Ms *
-           afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
-}
-
 std::array<double, 3> get_normalized_vector(std::array<double, 3> vector) {
     double norm =
         sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));

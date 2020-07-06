@@ -1,9 +1,11 @@
 #pragma once
 #include "arrayfire.h"
+#include "atomistic_term_base.hpp"
 #include "zee.hpp"
 
 namespace magnumafcpp {
 
+// TODO class AtomisticExternalField : public AtomisticTermBase {
 class AtomisticExternalField : public ExternalField {
   public:
     using ExternalField::ExternalField;

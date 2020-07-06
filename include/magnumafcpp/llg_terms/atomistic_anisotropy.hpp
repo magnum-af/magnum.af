@@ -1,21 +1,16 @@
 #pragma once
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "atomistic_term_base.hpp"
 #include <array>
 
 namespace magnumafcpp {
 
-class AtomisticUniaxialAnisotropyField : public LLGTerm {
+class AtomisticUniaxialAnisotropyField : public AtomisticTermBase {
   public:
     // Field contribution
     af::array h(const State& state);
     // CPU time
-    // Energy contribution
-    double E(const State& state);
-    double E(const State& state,
-             const af::array& h); ///< Calculating the micromagnetic energy for
-                                  ///< a already calculated h field
     double get_cpu_time() { return cpu_time; }
 
     AtomisticUniaxialAnisotropyField(const double K_atom,

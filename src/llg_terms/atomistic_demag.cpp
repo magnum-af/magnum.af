@@ -3,20 +3,6 @@
 
 namespace magnumafcpp {
 
-// Energy calculation
-// Edemag=-mu0/2 integral(M . Hdemag) dx
-double AtomisticDipoleDipoleField::E(const State& state) {
-    return -constants::mu0 / 2 * state.Ms *
-           afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3));
-    // return -state.Ms/2 * afvalue(sum(sum(sum(sum(h(state)*state.m, 0), 1),
-    // 2), 3));
-}
-
-double AtomisticDipoleDipoleField::E(const State& state, const af::array& h) {
-    return -constants::mu0 / 2 * state.Ms *
-           afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
-}
-
 af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy,
                       double dz);
 

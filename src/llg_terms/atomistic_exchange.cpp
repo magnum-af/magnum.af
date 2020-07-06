@@ -3,19 +3,6 @@
 
 namespace magnumafcpp {
 
-// Energy calculation
-// Eex=-mu0/2 integral(M . Hex) dx
-
-double AtomisticExchangeField::E(const State& state) {
-    return -constants::mu0 / 2. * state.Ms *
-           afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3));
-}
-
-double AtomisticExchangeField::E(const State& state, const af::array& h) {
-    return -constants::mu0 / 2. * state.Ms *
-           afvalue(sum(sum(sum(sum(h * state.m, 0), 1), 2), 3));
-}
-
 AtomisticExchangeField::AtomisticExchangeField(double J_atom)
     : J_atom(J_atom) {}
 
