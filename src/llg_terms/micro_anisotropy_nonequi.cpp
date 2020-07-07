@@ -3,16 +3,6 @@
 
 namespace magnumafcpp {
 
-double NonequiUniaxialAnisotropyField::E(const State& state) {
-    return -constants::mu0 / 2. *
-           state.integral_nonequimesh(h(state) * state.m);
-}
-
-double NonequiUniaxialAnisotropyField::E(const State& state,
-                                         const af::array& h) {
-    return -constants::mu0 / 2. * state.integral_nonequimesh(h * state.m);
-}
-
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(
     double Ku1, std::array<double, 3> Ku1_axis)
     : Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)) {}

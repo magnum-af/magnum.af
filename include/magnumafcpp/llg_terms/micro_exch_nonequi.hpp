@@ -1,8 +1,8 @@
 #pragma once
 #include "../nonequispaced_mesh.hpp"
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "nonequi_term_base.hpp"
 
 namespace magnumafcpp {
 
@@ -20,7 +20,7 @@ namespace magnumafcpp {
 ///
 /// [1] "A simple finite-difference grid with non-constant intervals" by Hilding
 /// Sundqvist & George Veronis
-class NonequiExchangeField : public LLGTerm {
+class NonequiExchangeField : public NonequiTermBase {
   public:
     NonequiExchangeField(double A_exchange, NonequispacedMesh,
                          bool verbose = true, bool COO = true);
@@ -30,10 +30,6 @@ class NonequiExchangeField : public LLGTerm {
                          bool verbose = true, bool COO = true);
 
     af::array h(const State& state); // Field contribution
-    double E(const State& state);    // Energy contribution
-    double E(const State& state,
-             const af::array& h); ///< Calculating the micromagnetic energy for
-                                  ///< a already calculated h field
 
     double get_cpu_time() { return af_time; } // af time
 

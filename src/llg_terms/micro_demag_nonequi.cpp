@@ -7,16 +7,6 @@
 
 namespace magnumafcpp {
 
-// Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
-double NonEquiDemagField::E(const State& state) {
-    return -constants::mu0 / 2. *
-           state.integral_nonequimesh(h(state) * state.m);
-}
-
-double NonEquiDemagField::E(const State& state, const af::array& h) {
-    return -constants::mu0 / 2. * state.integral_nonequimesh(h * state.m);
-}
-
 NonEquiDemagField::NonEquiDemagField(NonequispacedMesh mesh, bool verbose,
                                      bool caching, unsigned nthreads)
     : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {

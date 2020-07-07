@@ -1,11 +1,11 @@
 #pragma once
 #include "../state.hpp"
-#include "LLGTerm.hpp"
 #include "arrayfire.h"
+#include "nonequi_term_base.hpp"
 
 namespace magnumafcpp {
 
-class NonequiUniaxialAnisotropyField : public LLGTerm {
+class NonequiUniaxialAnisotropyField : public NonequiTermBase {
   public:
     NonequiUniaxialAnisotropyField(double Ku1,
                                    std::array<double, 3> Ku1_axis = {0, 0, 1});
@@ -25,10 +25,6 @@ class NonequiUniaxialAnisotropyField : public LLGTerm {
 
     af::array h(const State& state);    // Field contribution
     long int h_ptr(const State& state); // For wrapping only: pointer to heff
-    double E(const State& state);       // Energy contribution
-    double E(const State& state,
-             const af::array& h); ///< Calculating the micromagnetic energy for
-                                  ///< a already calculated h field
     double get_cpu_time() {
         return computation_time_heff;
     } //!< accumulated heff computation time in [s]

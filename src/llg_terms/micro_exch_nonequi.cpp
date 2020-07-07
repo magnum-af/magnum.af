@@ -44,15 +44,6 @@ af::array NonequiExchangeField::h(const State& state) {
     }
 }
 
-// Energy calculation: E_ex = -mu0/2 * integral(M * Hex) dx
-double NonequiExchangeField::E(const State& state) {
-    return -constants::mu0 / 2. *
-           state.integral_nonequimesh(h(state) * state.m);
-}
-
-double NonequiExchangeField::E(const State& state, const af::array& h) {
-    return -constants::mu0 / 2. * state.integral_nonequimesh(h * state.m);
-}
 // Get inner index (index per matrix column)
 unsigned NonequiExchangeField::findex(unsigned i0, unsigned i1, unsigned i2,
                                       unsigned im,
