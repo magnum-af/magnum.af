@@ -1,5 +1,6 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
+#include <algorithm>
 #include <numeric>
 
 using namespace magnumafcpp;
@@ -104,8 +105,7 @@ int main(int argc, char** argv) {
         current_step = i;
         llg.relax(state);
         const double Hx_component =
-            llg.llgterms[2]->h(state)(0, 0, 1, 0).scalar<double>() *
-            constants::mu0;
+            external->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
         const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
         const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
         abs_my_rl.push_back(std::abs(my_z1));
@@ -122,15 +122,17 @@ int main(int argc, char** argv) {
     //}
     double sum = std::accumulate(abs_my_rl.begin(), abs_my_rl.end(), 0.0);
     double mean = sum / abs_my_rl.size();
-    // std::cout << "sum=" << sum << std::endl;
+    double max = *std::max_element(abs_my_rl.begin(), abs_my_rl.end());
+    std::cout << "sum=" << sum << std::endl;
+    std::cout << "max=" << max << std::endl;
 
     std::cout << "mean=" << mean << std::endl;
     stream.open(filepath + "table.dat");
-    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << mean(abs(my)) << J_af "
-              "[J/m2]  << Haf[T]"
+    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max(abs(my)) << J_af "
+              "[J/m2]  << Haf[T] << mean"
            << std::endl;
-    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << mean
-           << "\t" << Jaf << "\t" << H_af * constants::mu0 << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max << "\t"
+           << Jaf << "\t" << H_af * constants::mu0 << "\t" << mean << std::endl;
     stream.close();
 
     stream.open(filepath + "plotfile.gpi");
