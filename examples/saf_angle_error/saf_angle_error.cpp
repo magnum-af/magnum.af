@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
     std::cout << "mean=" << mean << std::endl;
     stream.open(filepath + "table.dat");
     stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max(abs(my)) << J_af "
-              "[J/m2]  << Haf[T] << mean"
+              "[J/m2]  << Haf[T] << mean(abs(my))"
            << std::endl;
     stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max << "\t"
            << Jaf << "\t" << H_af * constants::mu0 << "\t" << mean << std::endl;

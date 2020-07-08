@@ -3,7 +3,7 @@
 (cd ../../build/ && make -j)
 GPU="0"
 Hmax_mT="0.100"
-#Jaf="0.36e-3"
+Jaf="0.36e-3"
 #Jaf="0.54e-3"
 #Jaf="0.72e-3"
 #Jaf="0.90e-3"
