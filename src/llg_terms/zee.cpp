@@ -25,13 +25,7 @@ void ExternalField::set_homogeneous_field(const double x, const double y,
     zee_field(af::span, af::span, af::span, 2) = af::constant(z, dim, f64);
 }
 
-af::array ExternalField::h(const State& state) { return calc_heff(state); }
-
-long int ExternalField::h_ptr(const State& state) {
-    return (long int)(new af::array(calc_heff(state)))->get();
-}
-
-af::array ExternalField::calc_heff(const State& state) {
+af::array ExternalField::h(const State& state) {
     // af::timer timer = af::timer::start();
     // if(state.afsync) sync();
     // af_time += af::timer::stop(timer);

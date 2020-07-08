@@ -16,14 +16,12 @@ class ExternalField : public LLGTerm {
     ExternalField(long int zee_in_addr); ///< For wrapping only
 
     af::array h(const State& state);    // Field contribution
-    long int h_ptr(const State& state); // For wrapping
 
     double E(const State& state); // Energy contribution
     double E(const State& state,
              const af::array& h); ///< Calculating the micromagnetic energy for
                                   ///< a already calculated h field
 
-    long int get_m_addr(); // For wrapping only
     void set_homogeneous_field(
         const double x, const double y,
         const double z); ///< Setting homogeneous zeeman field with x, y, z
@@ -32,7 +30,6 @@ class ExternalField : public LLGTerm {
     double get_cpu_time() { return 0; } // use or remove
 
   private:
-    af::array calc_heff(const State& state);
     af::array zee_field;
     af::array (*callback_func)(State state);
     const bool callback{false};
