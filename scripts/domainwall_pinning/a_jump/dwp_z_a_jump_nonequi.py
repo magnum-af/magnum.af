@@ -86,10 +86,10 @@ state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
-    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    NonequiExchangeField(A_field, ne_mesh, verbose = True),
+    NonequiExternalField(ne_mesh, af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    NonequiExchangeField(ne_mesh, A_field, verbose = True),
     #SparseExchangeField(A_field, mesh),
-    UniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
+    NonequiUniaxialAnisotropyField(ne_mesh, Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
 Llg = LLGIntegrator(alpha=1.0, terms=fields)
 

@@ -50,11 +50,11 @@ mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 z_spacing = []
 for i in range(nz):
     z_spacing.append(z/nz)
-ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
-print(ne_mesh.nz)
-print(ne_mesh.z_spacing)
-#ne_mesh.z_spacing = [2e-9, 2e-9, 2e-9, 2e-9]
-#print(ne_mesh.z_spacing)
+nemesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
+print(nemesh.nz)
+print(nemesh.z_spacing)
+#nemesh.z_spacing = [2e-9, 2e-9, 2e-9, 2e-9]
+#print(nemesh.z_spacing)
 
 # Setting A values as field
 A_field = af.constant(0.0, nx, ny, nz, 1, dtype=af.Dtype.f64)
@@ -79,15 +79,15 @@ Ku1_field[:, :, nz/2:, :] = af.constant(hard_K_uni, nx, ny, int(nz/2), 3, dtype=
 
 
 state = State(mesh = mesh, Ms = 1e5, m = m)
-state.nonequimesh = ne_mesh #TODO should be handley in more object oriented way
+state.nonequimesh = nemesh #TODO should be handley in more object oriented way
 print("test post")
 state.normalize()
 state.write_vti(sys.argv[1] + "minit")
 
 fields = [
-    ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    NonequiExchangeField(A_field, ne_mesh, verbose = True),
-    NonequiUniaxialAnisotropyField(Ku1_field, Ku1_axis=[0, 0, 1]),
+    NonequiExternalField(nemesh, af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
+    NonequiExchangeField(nemesh, A_field, verbose = True),
+    NonequiUniaxialAnisotropyField(nemesh, Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
 print ("test")
 Llg = LLGIntegrator(alpha=1.0, terms=fields)
