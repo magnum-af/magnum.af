@@ -22,12 +22,14 @@ namespace magnumafcpp {
 /// Sundqvist & George Veronis
 class NonequiExchangeField : public NonequiTermBase {
   public:
-    NonequiExchangeField(double A_exchange, NonequispacedMesh,
+    NonequiExchangeField(NonequispacedMesh nemesh, double A_exchange,
                          bool verbose = true, bool COO = true);
-    NonequiExchangeField(const af::array& A_exchange_field, NonequispacedMesh,
-                         bool verbose = true, bool COO = true);
-    NonequiExchangeField(long int A_exchange_field_ptr, NonequispacedMesh mesh,
-                         bool verbose = true, bool COO = true);
+    NonequiExchangeField(NonequispacedMesh nemesh,
+                         const af::array& A_exchange_field, bool verbose = true,
+                         bool COO = true);
+    NonequiExchangeField(NonequispacedMesh nemesh,
+                         long int A_exchange_field_ptr, bool verbose = true,
+                         bool COO = true);
 
     af::array h(const State& state); // Field contribution
 

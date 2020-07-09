@@ -9,7 +9,8 @@ namespace magnumafcpp {
 
 NonEquiDemagField::NonEquiDemagField(NonequispacedMesh mesh, bool verbose,
                                      bool caching, unsigned nthreads)
-    : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
+    : NonequiTermBase(mesh),
+      nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
     af::timer demagtimer = af::timer::start();
     if (caching == false) {
         Nfft = calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx,

@@ -29,8 +29,8 @@ cdef extern from "llg_terms/micro_exch_sparse.hpp" namespace "magnumafcpp":
 
 cdef extern from "llg_terms/micro_exch_nonequi.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiExchangeField:
-        NonequiExchangeField (long int A_exchange_field_ptr, NonequispacedMesh mesh, bool verbose);
-        NonequiExchangeField (double A_exchange, NonequispacedMesh mesh, bool verbose);
+        NonequiExchangeField (NonequispacedMesh mesh, long int A_exchange_field_ptr, bool verbose);
+        NonequiExchangeField (NonequispacedMesh mesh, double A_exchange, bool verbose);
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
@@ -137,10 +137,10 @@ cdef extern from "llg_terms/micro_anisotropy.hpp" namespace "magnumafcpp":
 
 cdef extern from "llg_terms/micro_anisotropy_nonequi.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiUniaxialAnisotropyField:
-        NonequiUniaxialAnisotropyField (long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
-        NonequiUniaxialAnisotropyField (double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
-        NonequiUniaxialAnisotropyField (long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
-        NonequiUniaxialAnisotropyField (double Ku1, long int Ku1_axis_field_ptr);
+        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
+        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, double Ku1, long int Ku1_axis_field_ptr);
         double E(const State& state);
         long int h_ptr(const State& state);
         double Ku1;

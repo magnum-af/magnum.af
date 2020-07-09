@@ -4,27 +4,30 @@
 
 namespace magnumafcpp {
 
-NonequiExchangeField::NonequiExchangeField(double A_exchange,
-                                           NonequispacedMesh mesh, bool verbose,
+NonequiExchangeField::NonequiExchangeField(NonequispacedMesh nemesh,
+                                           double A_exchange, bool verbose,
                                            bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose)
-               : calc_CSR_matrix(A_exchange, mesh, verbose)) {}
+    : NonequiTermBase(nemesh),
+      matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose)
+               : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
 
-NonequiExchangeField::NonequiExchangeField(const af::array& A_exchange_field,
-                                           NonequispacedMesh mesh, bool verbose,
-                                           bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose)
-               : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
+NonequiExchangeField::NonequiExchangeField(NonequispacedMesh nemesh,
+                                           const af::array& A_exchange_field,
+                                           bool verbose, bool COO)
+    : NonequiTermBase(nemesh),
+      matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
+               : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
-NonequiExchangeField::NonequiExchangeField(long int A_exchange_field_ptr,
-                                           NonequispacedMesh mesh, bool verbose,
-                                           bool COO)
-    : matr(COO ? calc_COO_matrix(
-                     *(new af::array(*((void**)A_exchange_field_ptr))), mesh,
+NonequiExchangeField::NonequiExchangeField(NonequispacedMesh nemesh,
+                                           long int A_exchange_field_ptr,
+                                           bool verbose, bool COO)
+    : NonequiTermBase(nemesh),
+      matr(COO ? calc_COO_matrix(
+                     *(new af::array(*((void**)A_exchange_field_ptr))), nemesh,
                      verbose)
                : calc_CSR_matrix(
-                     *(new af::array(*((void**)A_exchange_field_ptr))), mesh,
+                     *(new af::array(*((void**)A_exchange_field_ptr))), nemesh,
                      verbose)) {}
 
 af::array NonequiExchangeField::h(const State& state) {

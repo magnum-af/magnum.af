@@ -968,11 +968,11 @@ cdef class DmiField(HeffTerm):
 
 cdef class NonequiExchangeField(HeffTerm):
     cdef cNonequiExchangeField* _thisptr
-    def __cinit__(self, A, NonequispacedMesh mesh, verbose = True):
+    def __cinit__(self, NonequispacedMesh mesh, A, verbose = True):
         if hasattr(A, 'arr'):
-            self._thisptr = new cNonequiExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
+            self._thisptr = new cNonequiExchangeField (deref(mesh._thisptr), <long int> addressof(A.arr), <bool> verbose)
         else:
-            self._thisptr = new cNonequiExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            self._thisptr = new cNonequiExchangeField (deref(mesh._thisptr), <double> A, <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
         del self._thisptr
@@ -1033,15 +1033,15 @@ cdef class UniaxialAnisotropyField(HeffTerm):
 
 cdef class NonequiUniaxialAnisotropyField(HeffTerm):
     cdef cNonequiUniaxialAnisotropyField* _thisptr
-    def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
+    def __cinit__(self, NonequispacedMesh mesh, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
+            self._thisptr = new cNonequiUniaxialAnisotropyField (deref(mesh._thisptr), <long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
         elif hasattr(Ku1, 'arr') :
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cNonequiUniaxialAnisotropyField (deref(mesh._thisptr), <long int> addressof(Ku1.arr), <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
         elif hasattr(Ku1_axis, 'arr'):
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <long int> addressof(Ku1_axis.arr))
+            self._thisptr = new cNonequiUniaxialAnisotropyField (deref(mesh._thisptr), <double> Ku1, <long int> addressof(Ku1_axis.arr))
         else:
-            self._thisptr = new cNonequiUniaxialAnisotropyField (<double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
+            self._thisptr = new cNonequiUniaxialAnisotropyField (deref(mesh._thisptr), <double> Ku1, <double> Ku1_axis[0], <double> Ku1_axis[1], <double> Ku1_axis[2])
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL

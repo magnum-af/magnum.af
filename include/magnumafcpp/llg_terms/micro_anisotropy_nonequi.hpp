@@ -7,21 +7,26 @@ namespace magnumafcpp {
 
 class NonequiUniaxialAnisotropyField : public NonequiTermBase {
   public:
-    NonequiUniaxialAnisotropyField(double Ku1,
+    NonequiUniaxialAnisotropyField(NonequispacedMesh nemesh, double Ku1,
                                    std::array<double, 3> Ku1_axis = {0, 0, 1});
-    NonequiUniaxialAnisotropyField(af::array Ku1_field,
+    NonequiUniaxialAnisotropyField(NonequispacedMesh nemesh,
+                                   af::array Ku1_field,
                                    std::array<double, 3> Ku1_axis = {0, 0, 1});
-    NonequiUniaxialAnisotropyField(af::array Ku1_field,
+    NonequiUniaxialAnisotropyField(NonequispacedMesh nemesh,
+                                   af::array Ku1_field,
                                    af::array Ku1_axis_field);
-    NonequiUniaxialAnisotropyField(double Ku1, double Ku1_axis_0,
-                                   double Ku1_axis_1, double Ku1_axis_2);
-    NonequiUniaxialAnisotropyField(long int Ku1, double Ku1_axis_0,
-                                   double Ku1_axis_1,
+    NonequiUniaxialAnisotropyField(NonequispacedMesh nemesh, double Ku1,
+                                   double Ku1_axis_0, double Ku1_axis_1,
+                                   double Ku1_axis_2);
+    NonequiUniaxialAnisotropyField(NonequispacedMesh nemesh, long int Ku1,
+                                   double Ku1_axis_0, double Ku1_axis_1,
                                    double Ku1_axis_2); //!< wrapping only
     NonequiUniaxialAnisotropyField(
-        long int Ku1_field_ptr, long int Ku1_axis_field_ptr); //!< wrapping only
+        NonequispacedMesh nemesh, long int Ku1_field_ptr,
+        long int Ku1_axis_field_ptr); //!< wrapping only
     NonequiUniaxialAnisotropyField(
-        double Ku1, long int Ku1_axis_field_ptr); //!< wrapping only
+        NonequispacedMesh nemesh, double Ku1,
+        long int Ku1_axis_field_ptr); //!< wrapping only
 
     af::array h(const State& state);    // Field contribution
     long int h_ptr(const State& state); // For wrapping only: pointer to heff

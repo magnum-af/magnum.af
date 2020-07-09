@@ -10,16 +10,16 @@ namespace magnumafcpp {
 class NonequiExternalField : public NonequiTermBase {
   public:
     NonequiExternalField(NonequispacedMesh nemesh, const af::array& field)
-        : nemesh(nemesh), external_field(field) {}
+        : NonequiTermBase(nemesh), external_field(field) {}
 
     NonequiExternalField(NonequispacedMesh nemesh,
                          std::function<af::array(State)> function)
-        : nemesh(nemesh), callback_function(function),
+        : NonequiTermBase(nemesh), callback_function(function),
           callback_is_defined(true) {}
 
     ///< For wrapping only
     NonequiExternalField(NonequispacedMesh nemesh, long int fieldptr)
-        : nemesh(nemesh),
+        : NonequiTermBase(nemesh),
           external_field(*(new af::array(*((void**)fieldptr)))) {}
 
     af::array h(const State& state) {
@@ -39,7 +39,6 @@ class NonequiExternalField : public NonequiTermBase {
     double get_cpu_time() { return 0; } // use or remove
 
   private:
-    NonequispacedMesh nemesh;
     af::array external_field;
     std::function<af::array(State)> callback_function;
     const bool callback_is_defined{false};
