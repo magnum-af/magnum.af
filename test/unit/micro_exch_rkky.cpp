@@ -19,7 +19,7 @@ TEST(micro_exch_sparse, COO_CSR_comparison) {
 
     af::array m = af::mean(af::matmul(
         COO.matr - CSR.matr, af::flat(af::constant(1., nx, ny, nz, 3, f64))));
-    ASSERT_EQ(m.scalar<double>(), 0);
+    EXPECT_EQ(m.scalar<double>(), 0);
 }
 } // namespace magnumafcpp
 

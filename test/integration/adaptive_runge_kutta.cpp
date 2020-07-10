@@ -23,7 +23,7 @@ TEST(AdaptiveRungeKutta, BS23IntegrationTest) {
     State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i = 0; i < 200; i++) {
         rk.step(state);
-        ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-12);
+        EXPECT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-12);
     }
 }
 
@@ -33,7 +33,7 @@ TEST(AdaptiveRungeKutta, BS45IntegrationTest) {
     State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i = 0; i < 100; i++) {
         callback.step(state);
-        ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
+        EXPECT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
     }
 }
 
@@ -43,7 +43,7 @@ TEST(AdaptiveRungeKutta, DP45IntegrationTest) {
     State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i = 0; i < 100; i++) {
         callback.step(state);
-        ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
+        EXPECT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
     }
 }
 
@@ -53,7 +53,7 @@ TEST(AdaptiveRungeKutta, RKF45IntegrationTest) {
     State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i = 0; i < 100; i++) {
         callback.step(state);
-        ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
+        EXPECT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
     }
 }
 
@@ -63,7 +63,7 @@ TEST(AdaptiveRungeKutta, DP78IntegrationTest) {
     State state(Mesh(0, 0, 0, 0, 0, 0), 1, m);
     for (int i = 0; i < 100; i++) {
         callback.step(state);
-        ASSERT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
+        EXPECT_NEAR(afvalue(state.m), analytic_result(state.t), 1e-8);
         // std::cout << "i=" << i << ", state.m= " << afvalue(state.m) << "; ";
     }
 }

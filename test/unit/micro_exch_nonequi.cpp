@@ -17,7 +17,7 @@ TEST(micro_exch_sparse, COO_CSR_array_A) {
         af::mean(af::matmul(exch_COO.matr - exch_CSR.matr,
                             af::flat(af::constant(1., nx, ny, nz, 3, f64))));
     // af::print("", m);
-    ASSERT_EQ(m.scalar<double>(), 0);
+    EXPECT_EQ(m.scalar<double>(), 0);
 }
 
 TEST(micro_exch_sparse, COO_CSR_const_A) {
@@ -31,7 +31,7 @@ TEST(micro_exch_sparse, COO_CSR_const_A) {
         af::mean(af::matmul(exch_COO.matr - exch_CSR.matr,
                             af::flat(af::constant(1., nx, ny, nz, 3, f64))));
     // af::print("", m);
-    ASSERT_EQ(m.scalar<double>(), 0);
+    EXPECT_EQ(m.scalar<double>(), 0);
 }
 } // namespace magnumafcpp
 

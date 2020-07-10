@@ -15,15 +15,15 @@ TEST(ascii_io, ascii_io_test_vector_field) {
     Mesh read_mesh(0, 0, 0, 0, 0, 0);
 
     read_ascii(read_a, read_mesh, filename, false);
-    ASSERT_EQ(remove(filename.c_str()), 0);
+    EXPECT_EQ(remove(filename.c_str()), 0);
 
-    ASSERT_EQ(read_mesh.n0, 6);
-    ASSERT_EQ(read_mesh.n1, 5);
-    ASSERT_EQ(read_mesh.n2, 4);
-    ASSERT_EQ(read_mesh.dx, 0.1);
-    ASSERT_EQ(read_mesh.dy, 0.2);
-    ASSERT_EQ(read_mesh.dz, 0.3);
-    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(read_mesh.n0, 6);
+    EXPECT_EQ(read_mesh.n1, 5);
+    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.dx, 0.1);
+    EXPECT_EQ(read_mesh.dy, 0.2);
+    EXPECT_EQ(read_mesh.dz, 0.3);
+    EXPECT_EQ(max_abs_diff(read_a, a), 0);
 }
 
 TEST(ascii_io, ascii_io_test_scalar_field) {
@@ -37,15 +37,15 @@ TEST(ascii_io, ascii_io_test_scalar_field) {
     Mesh read_mesh(0, 0, 0, 0, 0, 0);
 
     read_ascii(read_a, read_mesh, filename, false);
-    ASSERT_EQ(remove(filename.c_str()), 0);
+    EXPECT_EQ(remove(filename.c_str()), 0);
 
-    ASSERT_EQ(read_mesh.n0, 6);
-    ASSERT_EQ(read_mesh.n1, 5);
-    ASSERT_EQ(read_mesh.n2, 4);
-    ASSERT_EQ(read_mesh.dx, 0.1);
-    ASSERT_EQ(read_mesh.dy, 0.2);
-    ASSERT_EQ(read_mesh.dz, 0.3);
-    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(read_mesh.n0, 6);
+    EXPECT_EQ(read_mesh.n1, 5);
+    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.dx, 0.1);
+    EXPECT_EQ(read_mesh.dy, 0.2);
+    EXPECT_EQ(read_mesh.dz, 0.3);
+    EXPECT_EQ(max_abs_diff(read_a, a), 0);
 }
 
 TEST(ascii_io, ascii_io_test_10d_field) {
@@ -59,15 +59,15 @@ TEST(ascii_io, ascii_io_test_10d_field) {
     Mesh read_mesh(0, 0, 0, 0, 0, 0);
 
     read_ascii(read_a, read_mesh, filename, false);
-    ASSERT_EQ(remove(filename.c_str()), 0);
+    EXPECT_EQ(remove(filename.c_str()), 0);
 
-    ASSERT_EQ(read_mesh.n0, 6);
-    ASSERT_EQ(read_mesh.n1, 5);
-    ASSERT_EQ(read_mesh.n2, 4);
-    ASSERT_EQ(read_mesh.dx, 0.2);
-    ASSERT_EQ(read_mesh.dy, 0.3);
-    ASSERT_EQ(read_mesh.dz, 0.4);
-    ASSERT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(read_mesh.n0, 6);
+    EXPECT_EQ(read_mesh.n1, 5);
+    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.dx, 0.2);
+    EXPECT_EQ(read_mesh.dy, 0.3);
+    EXPECT_EQ(read_mesh.dz, 0.4);
+    EXPECT_EQ(max_abs_diff(read_a, a), 0);
 }
 
 int main(int argc, char** argv) {

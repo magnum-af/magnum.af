@@ -23,7 +23,7 @@ TEST(ExchangeField, A_scalar_vs_array_value) {
                 for (unsigned n3 = 0; n3 < 3; n3++) {
                     // std::cout << afvalue(constantA(n0, n1, n2, n3)) << "\t"
                     // <<  afvalue(variableA(n0, n1, n2, n3)) << std::endl;
-                    ASSERT_EQ(globalA(n0, n1, n2, n3).scalar<double>(),
+                    EXPECT_EQ(globalA(n0, n1, n2, n3).scalar<double>(),
                               localA(n0, n1, n2, n3).scalar<double>());
                 }
             }

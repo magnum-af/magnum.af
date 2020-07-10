@@ -52,7 +52,7 @@ TEST(RKKY, mumax3test) {
     // std::cout << "maxval = " << maxval << std::endl;
     // std::cout << "minval = " << minval << std::endl;
     // std::cout << "Diff maxval minval  = " << maxval - minval << std::endl;
-    ASSERT_NEAR(maxval - minval, 2.13934e-19, 5e-26);
+    EXPECT_NEAR(maxval - minval, 2.13934e-19, 5e-26);
 }
 
 int main(int argc, char** argv) {
