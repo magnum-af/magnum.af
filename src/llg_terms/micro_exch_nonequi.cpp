@@ -33,8 +33,7 @@ NonequiExchangeField::NonequiExchangeField(NonequispacedMesh nemesh,
 af::array NonequiExchangeField::h(const State& state) {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
-    exch = af::moddims(exch, state.nonequimesh.nx, state.nonequimesh.ny,
-                       state.nonequimesh.nz, 3);
+    exch = af::moddims(exch, nemesh.nx, nemesh.ny, nemesh.nz, 3);
     if (state.afsync)
         af::sync();
     af_time += af::timer::stop(aftimer);

@@ -66,7 +66,6 @@ cdef extern from "state.hpp" namespace "magnumafcpp":
         double t;
         unsigned long long steps;
         Mesh mesh;
-        NonequispacedMesh nonequimesh;
         double Ms;
 
         void write_vti(string outputname);

@@ -1,25 +1,26 @@
 #pragma once
 #include "arrayfire.h"
 #include "mesh.hpp"
-#include "nonequispaced_mesh.hpp"
 #include <iostream>
 
 namespace magnumafcpp {
 
 class State {
   public:
+    // Micromagnetic:
     State(Mesh mesh_in, double Ms, af::array m_in, bool verbose = true,
-          bool mute_warning = false);
-    State(Mesh mesh_in, double Ms, long int m_in, bool verbose = true,
           bool mute_warning = false);
     State(Mesh mesh_in, af::array Ms_field, af::array m_in, bool verbose = true,
           bool mute_warning = false);
+    // No Mesh:
+    State(af::array m, double Ms, bool verbose = true,
+          bool mute_warning = false);
+    State(af::array m, af::array Ms_field, bool verbose = true,
+          bool mute_warning = false);
+    // Wrapping:
+    State(Mesh mesh_in, double Ms, long int m_in, bool verbose = true,
+          bool mute_warning = false);
     State(Mesh mesh_in, long int Ms_field_ptr, long int m_in,
-          bool verbose = true, bool mute_warning = false);
-
-    State(NonequispacedMesh nonequimesh, double Ms_field, af::array m,
-          bool verbose = true, bool mute_warning = false);
-    State(NonequispacedMesh nonequimesh, af::array Ms_field, af::array m,
           bool verbose = true, bool mute_warning = false);
 
     State operator+(const af::array&) const;
@@ -27,14 +28,13 @@ class State {
                                ///< m to values obtained from wrapped af.array
     long int get_m_addr();
     Mesh mesh{0, 0, 0, 0, 0, 0};
-    NonequispacedMesh nonequimesh{0, 0, 0, 0, {0}};
     double t{0.}; // time
+    af::array m;  //!< magnetic field configuration
     double Ms{0}; //!< Saturation magnetization in [J/T/m^3]
     af::array
         Ms_field; //!< Non-homugenuous, mesh dependent saturation magnetization
                   //!< defined at every node in units of [J/T/m^3]. Is impicitly
                   //!< set and used when magnetization has values of norm 0.
-    af::array m;  //!< magnetic field configuration
     void set_Ms_field(long int afarray_ptr); // for wrapping only
     long int get_Ms_field();
 
@@ -51,8 +51,6 @@ class State {
     void _vti_writer_atom(std::string outputname);
     void _vti_reader(std::string inputname);
 
-    void vtr_writer(std::string outputname);
-    void vtr_reader(std::string inputname);
     double meani(const int i);
     void calc_mean_m(std::ostream& myfile);
     void calc_mean_m(std::ostream& myfile, double hzee);
@@ -64,7 +62,6 @@ class State {
     bool verbose{true};
     bool mute_warning{false};
     bool afsync{false};
-    double integral_nonequimesh(const af::array& h_times_m) const;
 
   private:
     ///< Number of cells with Ms != 0

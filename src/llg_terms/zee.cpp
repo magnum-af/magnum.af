@@ -39,42 +39,30 @@ af::array ExternalField::h(const State& state) {
 
 // Zeeman energy term
 double ExternalField::E(const State& state) {
-    if (state.nonequimesh.nx != 0) {
-        std::cout << "nonequmesh is set" << std::endl;
-        return -constants::mu0 * state.integral_nonequimesh(h(state) * state.m);
+    if (state.Ms_field.isempty()) {
+        return -constants::mu0 * state.Ms *
+               afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3)) *
+               state.mesh.dx * state.mesh.dy * state.mesh.dz;
     } else {
-        if (state.Ms_field.isempty()) {
-            return -constants::mu0 * state.Ms *
-                   afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3)) *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
-        } else {
-            return -constants::mu0 *
-                   afvalue(sum(
-                       sum(sum(sum(state.Ms_field * h(state) * state.m, 0), 1),
-                           2),
-                       3)) *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
-        }
+        return -constants::mu0 *
+               afvalue(sum(
+                   sum(sum(sum(state.Ms_field * h(state) * state.m, 0), 1), 2),
+                   3)) *
+               state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
 }
 
 double ExternalField::E(const State& state, const af::array& h) {
-    if (state.nonequimesh.nx != 0) {
-        std::cout << "nonequmesh is set" << std::endl;
-        return -constants::mu0 * state.integral_nonequimesh(h * state.m);
+    if (state.Ms_field.isempty()) {
+        return -constants::mu0 * state.Ms *
+               sum(sum(sum(sum(h * state.m, 0), 1), 2), 3).scalar<double>() *
+               state.mesh.dx * state.mesh.dy * state.mesh.dz;
     } else {
-        if (state.Ms_field.isempty()) {
-            return -constants::mu0 * state.Ms *
-                   sum(sum(sum(sum(h * state.m, 0), 1), 2), 3)
-                       .scalar<double>() *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
-        } else {
-            return -constants::mu0 *
+        return -constants::mu0 *
 
-                   sum(sum(sum(sum(state.Ms_field * h * state.m, 0), 1), 2), 3)
-                       .scalar<double>() *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
-        }
+               sum(sum(sum(sum(state.Ms_field * h * state.m, 0), 1), 2), 3)
+                   .scalar<double>() *
+               state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
 }
 } // namespace magnumafcpp

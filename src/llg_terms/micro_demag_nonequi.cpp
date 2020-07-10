@@ -103,22 +103,19 @@ af::array NonEquiDemagField::h(const State& state) {
     af::array mfft;
     if (state.Ms_field.isempty()) {
         mfft = af::fftR2C<2>(state.Ms * state.m,
-                             af::dim4(state.nonequimesh.nx_expanded,
-                                      state.nonequimesh.ny_expanded));
+                             af::dim4(nemesh.nx_expanded, nemesh.ny_expanded));
     } else {
         mfft = af::fftR2C<2>(state.Ms_field * state.m,
-                             af::dim4(state.nonequimesh.nx_expanded,
-                                      state.nonequimesh.ny_expanded));
+                             af::dim4(nemesh.nx_expanded, nemesh.ny_expanded));
     }
 
     // Pointwise product
-    af::array hfft = af::constant(0.0, state.nonequimesh.nx_expanded / 2 + 1,
-                                  state.nonequimesh.ny_expanded,
-                                  state.nonequimesh.nz, 3, c64);
-    for (unsigned i_source = 0; i_source < state.nonequimesh.nz; i_source++) {
-        for (unsigned i_target = 0; i_target < state.nonequimesh.nz; i_target++) {
+    af::array hfft = af::constant(0.0, nemesh.nx_expanded / 2 + 1,
+                                  nemesh.ny_expanded, nemesh.nz, 3, c64);
+    for (unsigned i_source = 0; i_source < nemesh.nz; i_source++) {
+        for (unsigned i_target = 0; i_target < nemesh.nz; i_target++) {
 
-            int zindex = util::ij2k(i_source, i_target, state.nonequimesh.nz);
+            int zindex = util::ij2k(i_source, i_target, nemesh.nz);
             af::array nfft;
             if (i_source <= i_target) { // This reflects the data structure of
                                         // newell_nonequi::N_ptr. "<=" choosen
@@ -158,16 +155,14 @@ af::array NonEquiDemagField::h(const State& state) {
         }
     }
 
-    af::array one_over_tau_vec = af::array(1, 1, state.nonequimesh.nz, 1, f64);
-    for (unsigned i = 0; i < state.nonequimesh.nz; i++) {
+    af::array one_over_tau_vec = af::array(1, 1, nemesh.nz, 1, f64);
+    for (unsigned i = 0; i < nemesh.nz; i++) {
         one_over_tau_vec(0, 0, i, 0) =
-            1. / (state.nonequimesh.dx * state.nonequimesh.dy *
-                  state.nonequimesh.z_spacing[i]);
+            1. / (nemesh.dx * nemesh.dy * nemesh.z_spacing[i]);
         // std::cout << afvalue(one_over_tau_vec(0, 0, i, 0)) << "\n";
     }
     // af::print("tau", one_over_tau_vec);
-    one_over_tau_vec = af::tile(one_over_tau_vec, state.nonequimesh.nx,
-                                state.nonequimesh.ny, 1, 3);
+    one_over_tau_vec = af::tile(one_over_tau_vec, nemesh.nx, nemesh.ny, 1, 3);
     // af::print("tau", one_over_tau_vec);
 
     // IFFT reversing padding
@@ -176,11 +171,10 @@ af::array NonEquiDemagField::h(const State& state) {
     if (state.afsync)
         af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    // return h_field(af::seq(0, state.nonequimesh.nx_expanded/2-1), af::seq(0,
-    // state.nonequimesh.ny_expanded/2-1));
-    return one_over_tau_vec *
-           h_field(af::seq(0, state.nonequimesh.nx_expanded / 2 - 1),
-                   af::seq(0, state.nonequimesh.ny_expanded / 2 - 1));
+    // return h_field(af::seq(0, nemesh.nx_expanded/2-1), af::seq(0,
+    // nemesh.ny_expanded/2-1));
+    return one_over_tau_vec * h_field(af::seq(0, nemesh.nx_expanded / 2 - 1),
+                                      af::seq(0, nemesh.ny_expanded / 2 - 1));
 }
 
 namespace newell_nonequi {

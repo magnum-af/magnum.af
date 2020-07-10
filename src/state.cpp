@@ -40,19 +40,6 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m,
     }
 }
 
-// void State::check_discretization(){
-//    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement
-//    better way of checking
-//        double max_allowed_cellsize =
-//        sqrt(this->material.A/this->material.Ku1); if (verbose &&
-//        (this->mesh.dx > max_allowed_cellsize || this->mesh.dy >
-//        max_allowed_cellsize || this->mesh.dz > max_allowed_cellsize )){
-//            if( ! mute_warning) printf("%s State::check_discretization: cell
-//            size is too large (greater than sqrt(A/Ku1)\n", Warning());
-//        }
-//    }
-//}
-
 // void State::check_nonequispaced_discretization(){
 //    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement
 //    better way of checking
@@ -89,16 +76,9 @@ void State::check_m_norm(
 //}
 //
 
+// Micromagnetic:
 State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
-    : mesh(mesh), Ms(Ms), m(m), verbose(verbose), mute_warning(mute_warning) {
-    check_m_norm();
-    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
-    // check_discretization();
-}
-
-State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
-    : mesh(mesh), Ms(Ms), m(*(new af::array(*((void**)m)))), verbose(verbose),
-      mute_warning(mute_warning) {
+    : mesh(mesh), m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
     check_m_norm();
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
     // check_discretization();
@@ -106,10 +86,10 @@ State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
 
 State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose,
              bool mute_warning)
-    : mesh(mesh),
+    : mesh(mesh), m(m),
       Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3)
                                      : Ms_field),
-      m(m), verbose(verbose), mute_warning(mute_warning) {
+      verbose(verbose), mute_warning(mute_warning) {
     if (Ms_field.dims(3) == 3) {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
                "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
@@ -119,15 +99,45 @@ State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose,
     check_m_norm();
 }
 
+// No Mesh:
+State::State(af::array m, double Ms, bool verbose, bool mute_warning)
+    : m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
+    check_m_norm();
+    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
+}
+
+State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
+    : m(m), Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3)
+                                           : Ms_field),
+      verbose(verbose), mute_warning(mute_warning) {
+    if (Ms_field.dims(3) == 3) {
+        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
+               "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
+               Warning());
+    }
+
+    check_m_norm();
+}
+
+// Wrapping:
+State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
+    : mesh(mesh), m(*(new af::array(*((void**)m)))), Ms(Ms), verbose(verbose),
+      mute_warning(mute_warning) {
+    check_m_norm();
+    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
+    // check_discretization();
+}
+
 // Wrapping only, memory management to be done by python:
 State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose,
              bool mute_warning)
-    : mesh(mesh),
+    : mesh(mesh), m(*(new af::array(*((void**)m)))),
       Ms_field(
           (*(new af::array(*((void**)Ms_field_ptr)))).dims(3) == 1
               ? af::tile(*(new af::array(*((void**)Ms_field_ptr))), 1, 1, 1, 3)
               : *(new af::array(*((void**)Ms_field_ptr)))),
-      m(*(new af::array(*((void**)m)))), verbose(verbose),
+      verbose(verbose),
+
       mute_warning(mute_warning) {
     if ((*(new af::array(*((void**)Ms_field_ptr)))).dims(3) == 3) {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
@@ -135,30 +145,6 @@ State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose,
                Warning());
     }
     check_m_norm();
-}
-
-State::State(NonequispacedMesh nonequimesh, double Ms, af::array m,
-             bool verbose, bool mute_warning)
-    : nonequimesh(nonequimesh), Ms(Ms), m(m), verbose(verbose),
-      mute_warning(mute_warning) {
-    check_m_norm();
-    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
-}
-
-State::State(NonequispacedMesh nonequimesh, af::array Ms_field, af::array m,
-             bool verbose, bool mute_warning)
-    : nonequimesh(nonequimesh),
-      Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3)
-                                     : Ms_field),
-      m(m), verbose(verbose), mute_warning(mute_warning) {
-    if (Ms_field.dims(3) == 3) {
-        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
-               "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               Warning());
-    }
-
-    check_m_norm();
-    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
 }
 
 void State::Normalize() { this->m = renormalize(this->m); }
@@ -197,13 +183,6 @@ void State::_vti_writer_atom(std::string outputname) {
 }
 void State::_vti_reader(std::string inputname) {
     vti_reader(m, mesh, inputname);
-}
-
-void State::vtr_writer(std::string outputname) {
-    ::magnumafcpp::vtr_writer(this->m, this->nonequimesh, outputname, false);
-}
-void State::vtr_reader(std::string inputname) {
-    ::magnumafcpp::vtr_reader(this->m, this->nonequimesh, inputname, false);
 }
 
 double State::meani(const int i) {
@@ -357,24 +336,4 @@ void State::calc_mean_m_steps(std::ostream& myfile, const af::array& hzee) {
     }
 }
 
-// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where M =
-// Ms * m
-double State::integral_nonequimesh(const af::array& h_times_m) const {
-    af::array z_spacing_afarray = af::array(1, 1, this->nonequimesh.nz, 1,
-                                            this->nonequimesh.z_spacing.data());
-    af::array ms_h_times_m;
-
-    // Global or local Ms switch
-    if (this->Ms_field.isempty() == true) {
-        ms_h_times_m = this->Ms * h_times_m;
-        ;
-    } else {
-        ms_h_times_m = this->Ms_field * h_times_m;
-    }
-
-    af::array xy_integral = af::sum(af::sum(af::sum(ms_h_times_m, 0), 1), 3) *
-                            this->nonequimesh.dx * this->nonequimesh.dy;
-    af::array xyz_integral = af::sum(xy_integral * z_spacing_afarray, 2);
-    return afvalue(xyz_integral);
-}
 } // namespace magnumafcpp

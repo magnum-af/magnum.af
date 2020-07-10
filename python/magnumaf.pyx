@@ -610,10 +610,6 @@ cdef class State:
         def __set__(self, Mesh mesh):
             self._thisptr.mesh = deref(mesh._thisptr)
 
-    property nonequimesh:
-        def __set__(self, NonequispacedMesh ne_mesh):
-            self._thisptr.nonequimesh = deref(ne_mesh._thisptr)
-
     @property
     def m(self):
         return array_from_addr(self._thisptr.get_m_addr())

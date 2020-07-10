@@ -21,8 +21,10 @@ class NonequiTermBase : public LLGTerm {
         return integral_nonequimesh(h * state.m, state);
     }
 
-  private:
+  protected:
     const NonequispacedMesh nemesh;
+
+  private:
     double integral_nonequimesh(const af::array& h_times_m,
 
                                 const State& state) const {
