@@ -7,38 +7,30 @@ namespace magnumafcpp {
 
 void DemagField::print_Nfft() { af::print("Nfft=", Nfft); }
 
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy,
-                      double dz);
+af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
 DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
     : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
     af::timer demagtimer = af::timer::start();
     if (caching == false) {
         if (verbose)
-            printf(
-                "%s Starting Demag Tensor Assembly on %u out of %u threads.\n",
-                Info(), this->nthreads, std::thread::hardware_concurrency());
-        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx,
-                           mesh.dy, mesh.dz);
+            printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads,
+                   std::thread::hardware_concurrency());
+        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
         if (verbose)
-            printf("%s Initialized demag tensor in %f [af-s]\n", Info(),
-                   af::timer::stop(demagtimer));
+            printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     } else {
         std::string magafdir = setup_magafdir();
         const unsigned long long maxsize_bytes = 2000000;
         const unsigned long long reducedsize_bytes = 1000000;
-        std::string nfft_id = "n0exp_" + std::to_string(mesh.n0_exp) +
-                              "_n1exp_" + std::to_string(mesh.n1_exp) +
-                              "_n2exp_" + std::to_string(mesh.n2_exp) + "_dx_" +
-                              std::to_string(1e9 * mesh.dx) + "_dy_" +
-                              std::to_string(1e9 * mesh.dy) + "_dz_" +
-                              std::to_string(1e9 * mesh.dz);
+        std::string nfft_id = "n0exp_" + std::to_string(mesh.n0_exp) + "_n1exp_" + std::to_string(mesh.n1_exp) +
+                              "_n2exp_" + std::to_string(mesh.n2_exp) + "_dx_" + std::to_string(1e9 * mesh.dx) +
+                              "_dy_" + std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
         std::string path_to_nfft_cached = magafdir + nfft_id;
         int checkarray = -1;
         if (exists(path_to_nfft_cached)) {
             try {
-                checkarray =
-                    af::readArrayCheck(path_to_nfft_cached.c_str(), "");
+                checkarray = af::readArrayCheck(path_to_nfft_cached.c_str(), "");
             } catch (const af::exception& e) {
                 printf("%s af::readArrayCheck failed. Omit reading demag "
                        "tensor, calculating it instead.\n%s\n",
@@ -47,41 +39,32 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
         }
         if (checkarray > -1) {
             if (verbose)
-                printf("%s Reading demag tensor from '%s'\n", Info(),
-                       path_to_nfft_cached.c_str());
+                printf("%s Reading demag tensor from '%s'\n", Info(), path_to_nfft_cached.c_str());
             Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
         } else {
             if (verbose)
                 printf("%s Starting Demag Tensor Assembly on %u out of %u "
                        "threads.\n",
-                       Info(), this->nthreads,
-                       std::thread::hardware_concurrency());
-            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx,
-                               mesh.dy, mesh.dz);
+                       Info(), this->nthreads, std::thread::hardware_concurrency());
+            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
             if (verbose)
-                printf("%s Initialized demag tensor in %f [af-s]\n", Info(),
-                       af::timer::stop(demagtimer));
+                printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
             if (magafdir_size_in_bytes > maxsize_bytes) {
                 if (verbose)
                     printf("%s Maintainance: size of '%s' is %f GB > %f GB, "
                            "removing oldest files until size < %f GB\n",
-                           Info(), magafdir.c_str(),
-                           (double)magafdir_size_in_bytes / 1e6,
-                           (double)maxsize_bytes / 1e6,
+                           Info(), magafdir.c_str(), (double)magafdir_size_in_bytes / 1e6, (double)maxsize_bytes / 1e6,
                            (double)reducedsize_bytes / 1e6);
-                remove_oldest_files_until_size(magafdir.c_str(),
-                                               reducedsize_bytes, verbose);
+                remove_oldest_files_until_size(magafdir.c_str(), reducedsize_bytes, verbose);
                 if (verbose)
-                    printf("%s Maintainance finished: '%s' has now %f GB\n",
-                           Info(), magafdir.c_str(),
+                    printf("%s Maintainance finished: '%s' has now %f GB\n", Info(), magafdir.c_str(),
                            (double)GetDirSize(magafdir) / 1e6);
             }
             if (GetDirSize(magafdir) < maxsize_bytes) {
                 try {
                     if (verbose)
-                        printf("%s Saving calculated demag tensor to'%s'\n",
-                               Info(), path_to_nfft_cached.c_str());
+                        printf("%s Saving calculated demag tensor to'%s'\n", Info(), path_to_nfft_cached.c_str());
                     af::saveArray("", Nfft, path_to_nfft_cached.c_str());
                 } catch (const af::exception& e) {
                     printf("%s af::saveArray failed, omit saving demag "
@@ -99,48 +82,31 @@ af::array DemagField::h(const State& state) {
     af::array mfft;
     if (state.mesh.n2_exp == 1) {
         if (state.Ms_field.isempty())
-            mfft =
-                af::fftR2C<2>(state.Ms * state.m,
-                              af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
         else
-            mfft =
-                af::fftR2C<2>(state.Ms_field * state.m,
-                              af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
     } else {
         if (state.Ms_field.isempty())
-            mfft = af::fftR2C<3>(state.Ms * state.m,
-                                 af::dim4(state.mesh.n0_exp, state.mesh.n1_exp,
-                                          state.mesh.n2_exp));
+            mfft = af::fftR2C<3>(state.Ms * state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp, state.mesh.n2_exp));
         else
             mfft = af::fftR2C<3>(state.Ms_field * state.m,
-                                 af::dim4(state.mesh.n0_exp, state.mesh.n1_exp,
-                                          state.mesh.n2_exp));
+                                 af::dim4(state.mesh.n0_exp, state.mesh.n1_exp, state.mesh.n2_exp));
     }
 
     // Pointwise product
-    af::array hfft = af::array(state.mesh.n0_exp / 2 + 1, state.mesh.n1_exp,
-                               state.mesh.n2_exp, 3, c64);
+    af::array hfft = af::array(state.mesh.n0_exp / 2 + 1, state.mesh.n1_exp, state.mesh.n2_exp, 3, c64);
     hfft(af::span, af::span, af::span, 0) =
-        Nfft(af::span, af::span, af::span, 0) *
-            mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 1) *
-            mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 2) *
-            mfft(af::span, af::span, af::span, 2);
+        Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 2);
     hfft(af::span, af::span, af::span, 1) =
-        Nfft(af::span, af::span, af::span, 1) *
-            mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 3) *
-            mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 4) *
-            mfft(af::span, af::span, af::span, 2);
+        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 2);
     hfft(af::span, af::span, af::span, 2) =
-        Nfft(af::span, af::span, af::span, 2) *
-            mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 4) *
-            mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 5) *
-            mfft(af::span, af::span, af::span, 2);
+        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
 
     // IFFT reversing padding
     af::array h_field;
@@ -149,15 +115,13 @@ af::array DemagField::h(const State& state) {
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return h_field(af::seq(0, state.mesh.n0_exp / 2 - 1),
-                       af::seq(0, state.mesh.n1_exp / 2 - 1));
+        return h_field(af::seq(0, state.mesh.n0_exp / 2 - 1), af::seq(0, state.mesh.n1_exp / 2 - 1));
     } else {
         h_field = af::fftC2R<3>(hfft);
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return h_field(af::seq(0, state.mesh.n0_exp / 2 - 1),
-                       af::seq(0, state.mesh.n1_exp / 2 - 1),
+        return h_field(af::seq(0, state.mesh.n0_exp / 2 - 1), af::seq(0, state.mesh.n1_exp / 2 - 1),
                        af::seq(0, state.mesh.n2_exp / 2 - 1), af::span);
     }
 }
@@ -205,47 +169,35 @@ double g(const double x, const double y, double z) {
     return result;
 }
 
-double Nxx(const int ix, const int iy, const int iz, const double dx,
-           const double dy, const double dz) {
+double Nxx(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz) {
     const double x = dx * ix;
     const double y = dy * iy;
     const double z = dz * iz;
-    double result =
-        8.0 * f(x, y, z) - 4.0 * f(x + dx, y, z) - 4.0 * f(x - dx, y, z) -
-        4.0 * f(x, y + dy, z) - 4.0 * f(x, y - dy, z) - 4.0 * f(x, y, z + dz) -
-        4.0 * f(x, y, z - dz) + 2.0 * f(x + dx, y + dy, z) +
-        2.0 * f(x + dx, y - dy, z) + 2.0 * f(x - dx, y + dy, z) +
-        2.0 * f(x - dx, y - dy, z) + 2.0 * f(x + dx, y, z + dz) +
-        2.0 * f(x + dx, y, z - dz) + 2.0 * f(x - dx, y, z + dz) +
-        2.0 * f(x - dx, y, z - dz) + 2.0 * f(x, y + dy, z + dz) +
-        2.0 * f(x, y + dy, z - dz) + 2.0 * f(x, y - dy, z + dz) +
-        2.0 * f(x, y - dy, z - dz) - 1.0 * f(x + dx, y + dy, z + dz) -
-        1.0 * f(x + dx, y + dy, z - dz) - 1.0 * f(x + dx, y - dy, z + dz) -
-        1.0 * f(x + dx, y - dy, z - dz) - 1.0 * f(x - dx, y + dy, z + dz) -
-        1.0 * f(x - dx, y + dy, z - dz) - 1.0 * f(x - dx, y - dy, z + dz) -
-        1.0 * f(x - dx, y - dy, z - dz);
+    double result = 8.0 * f(x, y, z) - 4.0 * f(x + dx, y, z) - 4.0 * f(x - dx, y, z) - 4.0 * f(x, y + dy, z) -
+                    4.0 * f(x, y - dy, z) - 4.0 * f(x, y, z + dz) - 4.0 * f(x, y, z - dz) + 2.0 * f(x + dx, y + dy, z) +
+                    2.0 * f(x + dx, y - dy, z) + 2.0 * f(x - dx, y + dy, z) + 2.0 * f(x - dx, y - dy, z) +
+                    2.0 * f(x + dx, y, z + dz) + 2.0 * f(x + dx, y, z - dz) + 2.0 * f(x - dx, y, z + dz) +
+                    2.0 * f(x - dx, y, z - dz) + 2.0 * f(x, y + dy, z + dz) + 2.0 * f(x, y + dy, z - dz) +
+                    2.0 * f(x, y - dy, z + dz) + 2.0 * f(x, y - dy, z - dz) - 1.0 * f(x + dx, y + dy, z + dz) -
+                    1.0 * f(x + dx, y + dy, z - dz) - 1.0 * f(x + dx, y - dy, z + dz) -
+                    1.0 * f(x + dx, y - dy, z - dz) - 1.0 * f(x - dx, y + dy, z + dz) -
+                    1.0 * f(x - dx, y + dy, z - dz) - 1.0 * f(x - dx, y - dy, z + dz) - 1.0 * f(x - dx, y - dy, z - dz);
     return -result / (4.0 * M_PI * dx * dy * dz);
 }
 
-double Nxy(const int ix, const int iy, const int iz, const double dx,
-           const double dy, const double dz) {
+double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz) {
     const double x = dx * ix;
     const double y = dy * iy;
     const double z = dz * iz;
-    double result =
-        8.0 * g(x, y, z) - 4.0 * g(x + dx, y, z) - 4.0 * g(x - dx, y, z) -
-        4.0 * g(x, y + dy, z) - 4.0 * g(x, y - dy, z) - 4.0 * g(x, y, z + dz) -
-        4.0 * g(x, y, z - dz) + 2.0 * g(x + dx, y + dy, z) +
-        2.0 * g(x + dx, y - dy, z) + 2.0 * g(x - dx, y + dy, z) +
-        2.0 * g(x - dx, y - dy, z) + 2.0 * g(x + dx, y, z + dz) +
-        2.0 * g(x + dx, y, z - dz) + 2.0 * g(x - dx, y, z + dz) +
-        2.0 * g(x - dx, y, z - dz) + 2.0 * g(x, y + dy, z + dz) +
-        2.0 * g(x, y + dy, z - dz) + 2.0 * g(x, y - dy, z + dz) +
-        2.0 * g(x, y - dy, z - dz) - 1.0 * g(x + dx, y + dy, z + dz) -
-        1.0 * g(x + dx, y + dy, z - dz) - 1.0 * g(x + dx, y - dy, z + dz) -
-        1.0 * g(x + dx, y - dy, z - dz) - 1.0 * g(x - dx, y + dy, z + dz) -
-        1.0 * g(x - dx, y + dy, z - dz) - 1.0 * g(x - dx, y - dy, z + dz) -
-        1.0 * g(x - dx, y - dy, z - dz);
+    double result = 8.0 * g(x, y, z) - 4.0 * g(x + dx, y, z) - 4.0 * g(x - dx, y, z) - 4.0 * g(x, y + dy, z) -
+                    4.0 * g(x, y - dy, z) - 4.0 * g(x, y, z + dz) - 4.0 * g(x, y, z - dz) + 2.0 * g(x + dx, y + dy, z) +
+                    2.0 * g(x + dx, y - dy, z) + 2.0 * g(x - dx, y + dy, z) + 2.0 * g(x - dx, y - dy, z) +
+                    2.0 * g(x + dx, y, z + dz) + 2.0 * g(x + dx, y, z - dz) + 2.0 * g(x - dx, y, z + dz) +
+                    2.0 * g(x - dx, y, z - dz) + 2.0 * g(x, y + dy, z + dz) + 2.0 * g(x, y + dy, z - dz) +
+                    2.0 * g(x, y - dy, z + dz) + 2.0 * g(x, y - dy, z - dz) - 1.0 * g(x + dx, y + dy, z + dz) -
+                    1.0 * g(x + dx, y + dy, z - dz) - 1.0 * g(x + dx, y - dy, z + dz) -
+                    1.0 * g(x + dx, y - dy, z - dz) - 1.0 * g(x - dx, y + dy, z + dz) -
+                    1.0 * g(x - dx, y + dy, z - dz) - 1.0 * g(x - dx, y - dy, z + dz) - 1.0 * g(x - dx, y - dy, z - dz);
     result = -result / (4.0 * M_PI * dx * dy * dz);
     return result;
 }
@@ -254,10 +206,8 @@ double* N_setup = NULL;
 
 struct LoopInfo {
     LoopInfo() {}
-    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp,
-             double dx, double dy, double dz)
-        : i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp),
-          n2_exp(n2_exp), dx(dx), dy(dy), dz(dz) {}
+    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz)
+        : i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz) {}
     int i0_start;
     int i0_end;
     int n0_exp;
@@ -271,28 +221,18 @@ struct LoopInfo {
 void* setup_N(void* arg) {
     LoopInfo* loopinfo = static_cast<LoopInfo*>(arg);
     for (int i0 = loopinfo->i0_start; i0 < loopinfo->i0_end; i0++) {
-        const int j0 = (i0 + loopinfo->n0_exp / 2) % loopinfo->n0_exp -
-                       loopinfo->n0_exp / 2;
+        const int j0 = (i0 + loopinfo->n0_exp / 2) % loopinfo->n0_exp - loopinfo->n0_exp / 2;
         for (int i1 = 0; i1 < loopinfo->n1_exp; i1++) {
-            const int j1 = (i1 + loopinfo->n1_exp / 2) % loopinfo->n1_exp -
-                           loopinfo->n1_exp / 2;
+            const int j1 = (i1 + loopinfo->n1_exp / 2) % loopinfo->n1_exp - loopinfo->n1_exp / 2;
             for (int i2 = 0; i2 < loopinfo->n2_exp; i2++) {
-                const int j2 = (i2 + loopinfo->n2_exp / 2) % loopinfo->n2_exp -
-                               loopinfo->n2_exp / 2;
-                const int idx =
-                    6 * (i2 + loopinfo->n2_exp * (i1 + loopinfo->n1_exp * i0));
-                newell::N_setup[idx + 0] = newell::Nxx(
-                    j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                newell::N_setup[idx + 1] = newell::Nxy(
-                    j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
-                newell::N_setup[idx + 2] = newell::Nxy(
-                    j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
-                newell::N_setup[idx + 3] = newell::Nxx(
-                    j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                newell::N_setup[idx + 4] = newell::Nxy(
-                    j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
-                newell::N_setup[idx + 5] = newell::Nxx(
-                    j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
+                const int j2 = (i2 + loopinfo->n2_exp / 2) % loopinfo->n2_exp - loopinfo->n2_exp / 2;
+                const int idx = 6 * (i2 + loopinfo->n2_exp * (i1 + loopinfo->n1_exp * i0));
+                newell::N_setup[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                newell::N_setup[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo->dx, loopinfo->dy, loopinfo->dz);
+                newell::N_setup[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo->dx, loopinfo->dz, loopinfo->dy);
+                newell::N_setup[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                newell::N_setup[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo->dy, loopinfo->dz, loopinfo->dx);
+                newell::N_setup[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo->dz, loopinfo->dx, loopinfo->dy);
             }
         }
     }
@@ -300,15 +240,13 @@ void* setup_N(void* arg) {
 }
 } // namespace newell
 
-af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
-                                  double dy, double dz) {
+af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz) {
     std::vector<std::thread> t;
     std::vector<newell::LoopInfo> loopinfo;
     for (unsigned i = 0; i < nthreads; i++) {
         unsigned start = i * (double)n0_exp / nthreads;
         unsigned end = (i + 1) * (double)n0_exp / nthreads;
-        loopinfo.push_back(
-            newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
+        loopinfo.push_back(newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
     }
 
     newell::N_setup = new double[n0_exp * n1_exp * n2_exp * 6];

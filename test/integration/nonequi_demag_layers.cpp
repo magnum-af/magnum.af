@@ -27,8 +27,7 @@ TEST(NonEquiDemagField, energy_homogenuous_cube) {
     State state(m2, Ms, false, true);
     NonEquiDemagField demag = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    double E_analytic =
-        1. / 6. * nx * pow(dx, 3) * pow(state.Ms, 2) * constants::mu0;
+    double E_analytic = 1. / 6. * nx * pow(dx, 3) * pow(state.Ms, 2) * constants::mu0;
 
     af::array h_demag = demag.h(state);
     // testing state.Ms
@@ -120,10 +119,8 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
     State state_ne(m2, af::constant(8e5, mesh_ne.dims, f64), false, true);
     NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h =
-        demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h =
-        demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -164,10 +161,8 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     State state_ne(m2, af::constant(8e5, mesh_ne.dims, f64), false, true);
     NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h =
-        demag_ed.h(state_ed)(af::span, af::span, 2, af::span);
-    af::array demag_ne_h =
-        demag_ne.h(state_ne)(af::span, af::span, 1, af::span);
+    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 2, af::span);
+    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 1, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -209,10 +204,8 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     State state_ne(m2, 8e5, false, true);
     NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h =
-        demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h =
-        demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.001); // 100x25x3: 0.01
     EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -231,10 +224,8 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
     m(af::seq(1, af::end - 1), af::span, af::span, 0) =
         af::constant(1.0, mesh_ed.n0 - 2, mesh_ed.n1, mesh_ed.n2, 1, f64);
-    m(0, af::span, af::span, 1) =
-        af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
-    m(-1, af::span, af::span, 1) =
-        af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
+    m(0, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
+    m(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
     m(af::span, af::span, 0, af::span) = 0;
 
     State state_ed(mesh_ed, 8e5, m, false, true);
@@ -246,20 +237,16 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
     af::array m2 = af::constant(0.0, mesh_ne.dims, f64);
     m2(af::seq(1, af::end - 1), af::span, af::span, 0) =
         af::constant(1.0, mesh_ne.nx - 2, mesh_ne.ny, mesh_ne.nz, 1, f64);
-    m2(0, af::span, af::span, 1) =
-        af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
-    m2(-1, af::span, af::span, 1) =
-        af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
+    m2(0, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
+    m2(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
     m2(af::span, af::span, 0, af::span) = 0;
 
     State state_ne(m2, 8e5, false, true);
     state_ne.Ms_field = af::constant(8e5, mesh_ne.dims, f64);
     NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h =
-        demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h =
-        demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.0001); // 100x25x3: 0.01, Note: this is for opencl, cpu and
                          // cuda achieve 0.007
@@ -293,10 +280,8 @@ TEST(NonEquiDemagField, HomogenuousMagnetizationHeffTest) {
     state_ne.Ms_field = af::constant(8e5, mesh_ne.dims, f64);
     NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h =
-        demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h =
-        demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.0004); // 100x25x3: 0.04 Note: this is for opencl, cpu and
                          // cuda achieve 0.007

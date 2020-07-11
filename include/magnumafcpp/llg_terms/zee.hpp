@@ -8,24 +8,22 @@ namespace magnumafcpp {
 
 class ExternalField : public LLGTerm {
   public:
-    ExternalField(af::array zee_in); ///< Constant Zeeman field.
-    ExternalField(af::array (*callback_func_in)(
-        State state)); ///< Callback function for e.g. time dependent external
-                       ///< field
+    ExternalField(af::array zee_in);                           ///< Constant Zeeman field.
+    ExternalField(af::array (*callback_func_in)(State state)); ///< Callback function for e.g. time dependent external
+                                                               ///< field
     ExternalField(std::function<af::array(State)>);
     ExternalField(long int zee_in_addr); ///< For wrapping only
 
-    af::array h(const State& state);    // Field contribution
+    af::array h(const State& state); // Field contribution
 
     double E(const State& state); // Energy contribution
     double E(const State& state,
              const af::array& h); ///< Calculating the micromagnetic energy for
                                   ///< a already calculated h field
 
-    void set_homogeneous_field(
-        const double x, const double y,
-        const double z); ///< Setting homogeneous zeeman field with x, y, z
-                         ///< components of static Zeeman field.
+    void set_homogeneous_field(const double x, const double y,
+                               const double z); ///< Setting homogeneous zeeman field with x, y, z
+                                                ///< components of static Zeeman field.
 
     double get_cpu_time() { return 0; } // use or remove
 

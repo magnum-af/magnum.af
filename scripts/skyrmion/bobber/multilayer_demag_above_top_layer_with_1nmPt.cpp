@@ -114,13 +114,9 @@ int main(int argc, char** argv) {
     // icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
     const int icase(argc > 3 ? std::stoi(argv[3]) : 1);
     std::cout << "case=" << icase << std::endl;
-    const double r_ratio_to_sample(
-        argc > 4 ? std::stod(argv[4])
-                 : 16.); // r=4 means radius of init skryrm is 1/4 x
+    const double r_ratio_to_sample(argc > 4 ? std::stod(argv[4]) : 16.); // r=4 means radius of init skryrm is 1/4 x
     std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
-    const double t_relax_state1_sec(
-        argc > 5 ? std::stod(argv[5])
-                 : 3e-9); // relaxtime for state1 in seconds
+    const double t_relax_state1_sec(argc > 5 ? std::stod(argv[5]) : 3e-9); // relaxtime for state1 in seconds
     std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
     const bool int_over_relax = true; // true== interate, false relax
     // Parameter initialization
@@ -130,16 +126,14 @@ int main(int argc, char** argv) {
 
     const unsigned ixy(argc > 6 ? std::stoi(argv[6]) : 100);
     const unsigned nx = ixy, ny = ixy, nz = 32;
-    const unsigned layers_above_top =
-        22; // adds 22 nm vacuum above top layer to evaluate demag. We evaluate
-            // at 21 nm, but need 22 layers to prevent prime number of layers
-            // conflicting with opencl fft.
+    const unsigned layers_above_top = 22; // adds 22 nm vacuum above top layer to evaluate demag. We evaluate
+                                          // at 21 nm, but need 22 layers to prevent prime number of layers
+                                          // conflicting with opencl fft.
     std::cout << "nx = " << ixy << std::endl;
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
-    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz
-              << std::endl;
+    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz << std::endl;
 
     const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9; // TODO
@@ -166,9 +160,8 @@ int main(int argc, char** argv) {
     //    const double Pt_Ku = 1.411e6; // J/m^3
     //    const double Pt_D = 1e-3 * -2.5e-3;   // J/m^2
     //    //const double Pt_D = 0;   // J/m^2
-    const double Pt_Ms =
-        5e3; // A/m //NOTE: Small Ms highly decreases integration speed!!! Ms
-             // 1e3 or below causes smaller than 1e-15 s steps.
+    const double Pt_Ms = 5e3;       // A/m //NOTE: Small Ms highly decreases integration speed!!! Ms
+                                    // 1e3 or below causes smaller than 1e-15 s steps.
     const double Pt_A = 2 * 15e-12; // J/m
     const double Pt_Ku = 0;         // J/m^3
     // const double Pt_Ku = 1.411e6; // J/m^3
@@ -204,20 +197,11 @@ int main(int argc, char** argv) {
     // af::print("geom == 1", geom == 1);
     // af::print("geom == 2", geom == 2);
 
-    af::array todouble =
-        af::constant(1., nx, ny, nz + layers_above_top, 3, f64);
-    af::array Ms =
-        (SK_Ms * (geom == 1) + IL_Ms * (geom == 2) + Pt_Ms * (geom == 3)) *
-        todouble;
-    af::array A =
-        (SK_A * (geom == 1) + IL_A * (geom == 2) + Pt_A * (geom == 3)) *
-        todouble;
-    af::array Ku =
-        (SK_Ku * (geom == 1) + IL_Ku * (geom == 2) + Pt_Ku * (geom == 3)) *
-        todouble;
-    af::array D =
-        (SK_D * (geom == 1) + IL_D * (geom == 2) + Pt_D * (geom == 3)) *
-        todouble; // + IL_D * (geom == 2);
+    af::array todouble = af::constant(1., nx, ny, nz + layers_above_top, 3, f64);
+    af::array Ms = (SK_Ms * (geom == 1) + IL_Ms * (geom == 2) + Pt_Ms * (geom == 3)) * todouble;
+    af::array A = (SK_A * (geom == 1) + IL_A * (geom == 2) + Pt_A * (geom == 3)) * todouble;
+    af::array Ku = (SK_Ku * (geom == 1) + IL_Ku * (geom == 2) + Pt_Ku * (geom == 3)) * todouble;
+    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2) + Pt_D * (geom == 3)) * todouble; // + IL_D * (geom == 2);
     // std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
     // af::print("Ms", Ms);
@@ -263,15 +247,11 @@ int main(int argc, char** argv) {
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(
-        new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(
-        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
-    auto dmi = LlgTerm(new DmiField(
-        D,
-        {0, 0, -1})); // TODO current definition, will change sign with update
+    auto dmi = LlgTerm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
 
     array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
@@ -284,20 +264,17 @@ int main(int argc, char** argv) {
 
     af::print("m", af::mean(af::mean(af::mean(state_1.m, 0), 1), 2));
     af::print("Ms", af::mean(af::mean(af::mean(state_1.Ms_field, 0), 1), 2));
-    af::print("demag",
-              af::mean(af::mean(af::mean(demag->h(state_1), 0), 1), 2));
+    af::print("demag", af::mean(af::mean(af::mean(demag->h(state_1), 0), 1), 2));
     af::print("exch", af::mean(af::mean(af::mean(exch->h(state_1), 0), 1), 2));
-    af::print("aniso",
-              af::mean(af::mean(af::mean(aniso->h(state_1), 0), 1), 2));
+    af::print("aniso", af::mean(af::mean(af::mean(aniso->h(state_1), 0), 1), 2));
     af::print("dmi", af::mean(af::mean(af::mean(dmi->h(state_1), 0), 1), 2));
     // af::print("dmi", dmi->h(state_1));
     // af::print("exch", exch->h(state_1));
 
     std::cout << "Relaxing minit" << std::endl;
     state_1.write_vti(filepath + "minit");
-    std::cout << "Prestart:" << std::scientific << state_1.steps << "\t"
-              << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1)
-              << std::endl;
+    std::cout << "Prestart:" << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2)
+              << "\t" << llg.E(state_1) << std::endl;
     // auto demag_init = demag->h(state_1) * 1e3 * constants::mu0; // in mT
     // vti_writer_micro(demag_init, mesh, filepath + "demag_init");
     // vti_writer_micro(demag_init(af::span, af::span, 53, af::span), mesh,
@@ -314,18 +291,13 @@ int main(int argc, char** argv) {
             state_1.write_vti(filepath + "m_current_step");
             af::array m_current_cleanPtLayer = state_1.m;
             m_current_cleanPtLayer(af::span, af::span, 13, af::span) = 0;
-            vti_writer_micro(m_current_cleanPtLayer, mesh,
-                             filepath + "m_current_step_cleanPtlayer");
-            vti_writer_micro(m_current_cleanPtLayer(af::span, af::span,
-                                                    af::seq(nz + 1), af::span),
-                             Mesh(nx, ny, nz + 1, dx, dy, dz),
-                             filepath +
-                                 "m_current_step_cleanPtlayer_no_airbox");
+            vti_writer_micro(m_current_cleanPtLayer, mesh, filepath + "m_current_step_cleanPtlayer");
+            vti_writer_micro(m_current_cleanPtLayer(af::span, af::span, af::seq(nz + 1), af::span),
+                             Mesh(nx, ny, nz + 1, dx, dy, dz), filepath + "m_current_step_cleanPtlayer_no_airbox");
 
-            auto demag_current =
-                demag->h(state_1) * 1e3 * constants::mu0; // in mT
-            vti_writer_micro(demag_current(af::span, af::span, 53, af::span),
-                             mesh, filepath + "demag_current_21nm_above_top");
+            auto demag_current = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+            vti_writer_micro(demag_current(af::span, af::span, 53, af::span), mesh,
+                             filepath + "demag_current_21nm_above_top");
             // vti_writer_micro(demag_current, mesh, filepath +
             // "demag_current");
 
@@ -334,20 +306,17 @@ int main(int argc, char** argv) {
             // mesh, filepath + "demag_current_21nm_above_top.txt");
         }
         llg.step(state_1);
-        std::cout << std::scientific << state_1.steps << "\t" << state_1.t
-                  << "\t" << state_1.meani(2) << "\t" << llg.E(state_1)
-                  << std::endl;
+        std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t"
+                  << llg.E(state_1) << std::endl;
     }
 
     timer.print_stage("relax");
     auto demag_relaxed = demag->h(state_1) * 1e3 * constants::mu0; // in mT
     vti_writer_micro(demag_relaxed, mesh, filepath + "demag_relaxed");
-    vti_writer_micro(demag_relaxed(af::span, af::span, 53, af::span), mesh,
-                     filepath + "demag_relaxed_21nm_above_top");
+    vti_writer_micro(demag_relaxed(af::span, af::span, 53, af::span), mesh, filepath + "demag_relaxed_21nm_above_top");
 
     write_ascii(demag_relaxed, mesh, filepath + "demag_relaxed.txt");
-    write_ascii(demag_relaxed(af::span, af::span, 53, af::span), mesh,
-                filepath + "demag_relaxed_21nm_above_top.txt");
+    write_ascii(demag_relaxed(af::span, af::span, 53, af::span), mesh, filepath + "demag_relaxed_21nm_above_top.txt");
 
     state_1.write_vti(filepath + "m_relaxed");
 
@@ -355,25 +324,18 @@ int main(int argc, char** argv) {
     m_relaxed_cleanPtLayer(af::span, af::span, 13, af::span) = 0;
     vti_writer_micro(m_relaxed_cleanPtLayer, mesh,
                      filepath + "m_relaxed_cleanPtlayer"); // For plotting
-    vti_writer_micro(
-        m_relaxed_cleanPtLayer(af::span, af::span, af::seq(nz + 1), af::span),
-        Mesh(nx, ny, nz + 1, dx, dy, dz),
-        filepath + "m_relaxed_step_cleanPtlayer_no_airbox");
+    vti_writer_micro(m_relaxed_cleanPtLayer(af::span, af::span, af::seq(nz + 1), af::span),
+                     Mesh(nx, ny, nz + 1, dx, dy, dz), filepath + "m_relaxed_step_cleanPtlayer_no_airbox");
 
-    vti_writer_micro(state_1.m(af::span, af::span, 0, af::span),
-                     Mesh(nx, ny, 1, dx, dy, dz),
+    vti_writer_micro(state_1.m(af::span, af::span, 0, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                      filepath + "m_relaxed_bottom_ferro_layer1");
-    vti_writer_micro(state_1.m(af::span, af::span, 12, af::span),
-                     Mesh(nx, ny, 1, dx, dy, dz),
+    vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                      filepath + "m_relaxed_bottom_ferro_layer5");
-    vti_writer_micro(state_1.m(af::span, af::span, 13, af::span),
-                     Mesh(nx, ny, 1, dx, dy, dz),
+    vti_writer_micro(state_1.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                      filepath + "m_relaxed__ferri_layer1");
-    vti_writer_micro(state_1.m(af::span, af::span, 19, af::span),
-                     Mesh(nx, ny, 1, dx, dy, dz),
+    vti_writer_micro(state_1.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                      filepath + "m_relaxed_top_ferro_layer1");
-    vti_writer_micro(state_1.m(af::span, af::span, 31, af::span),
-                     Mesh(nx, ny, 1, dx, dy, dz),
+    vti_writer_micro(state_1.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                      filepath + "m_relaxed_top_ferro_layer5");
 
     return 0;

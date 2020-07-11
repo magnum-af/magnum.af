@@ -18,16 +18,14 @@ int main(int argc, char** argv) {
 
     std::ofstream stream(filepath + "m.dat");
     stream.precision(24);
-    stream << "# nz	<mx>    <my>    <mz>    hzee    demagx  demagy demagz"
-           << std::endl;
+    stream << "# nz	<mx>    <my>    <mz>    hzee    demagx  demagy demagz" << std::endl;
     const bool min_over_llg = false;
 
     const int nx = 250, ny = 250; //, nz = 1;
     const double x = 1000e-9,
-                 y = 1000e-9; //, z = 65e-9; //[m] // Physical dimensions
-    const double Ms =
-        1.393e6;              //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    const double A = 1.5e-11; //[J/m]
+                 y = 1000e-9;  //, z = 65e-9; //[m] // Physical dimensions
+    const double Ms = 1.393e6; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    const double A = 1.5e-11;  //[J/m]
     const double zee = 40e-3 / constants::mu0;
     const double dz = 10e-9; // TODO set
 
@@ -52,12 +50,9 @@ int main(int argc, char** argv) {
         // auto exch = LlgTerm(new SparseExchangeField(A, mesh));
         auto exch = LlgTerm(new ExchangeField(A)); // only use with opencl !!!
         auto ext = LlgTerm(new ExternalField(zee_field));
-        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-                  << std::endl;
-        LBFGS_Minimizer minimizer =
-            LBFGS_Minimizer({demag, exch, ext}, 1e-6, 1000, 0);
-        minimizer.of_convergence.open(filepath + "minimizer_convergence.dat" +
-                                      std::to_string(nz));
+        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+        LBFGS_Minimizer minimizer = LBFGS_Minimizer({demag, exch, ext}, 1e-6, 1000, 0);
+        minimizer.of_convergence.open(filepath + "minimizer_convergence.dat" + std::to_string(nz));
         LLGIntegrator llg(1, {demag, exch, ext});
 
         af::timer t_hys = af::timer::start();
@@ -66,24 +61,16 @@ int main(int argc, char** argv) {
         } else {
             llg.relax(state, 1e-10);
         }
-        std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys)
-                  << std::endl;
+        std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys) << std::endl;
         state.write_vti((filepath + "m_relaxed" + std::to_string(nz)).c_str());
         af::array demagfield = demag->h(state);
-        vti_writer_micro(demagfield, mesh,
-                         filepath + "relaxed_demag_nz" + std::to_string(nz));
-        double demag_in_center =
-            afvalue(demagfield(nx / 2, ny / 2, 0, 0)) * constants::mu0;
-        double mean_demag =
-            afvalue(af::mean(af::mean(demagfield(af::span, af::span, 0, 0), 0),
-                             1)) *
-            constants::mu0;
-        std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1)
-                  << "\t" << state.meani(2) << "\t" << demag_in_center << "\t"
-                  << mean_demag << "\t" << std::endl;
-        stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t"
-               << state.meani(2) << "\t" << demag_in_center << "\t"
-               << mean_demag << "\t" << std::endl;
+        vti_writer_micro(demagfield, mesh, filepath + "relaxed_demag_nz" + std::to_string(nz));
+        double demag_in_center = afvalue(demagfield(nx / 2, ny / 2, 0, 0)) * constants::mu0;
+        double mean_demag = afvalue(af::mean(af::mean(demagfield(af::span, af::span, 0, 0), 0), 1)) * constants::mu0;
+        std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
+                  << demag_in_center << "\t" << mean_demag << "\t" << std::endl;
+        stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
+               << demag_in_center << "\t" << mean_demag << "\t" << std::endl;
     }
     stream.close();
     return 0;

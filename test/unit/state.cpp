@@ -22,7 +22,6 @@ TEST(State, Init_Ms_field) {
     // int) m.get()); EXPECT_EQ(state_wrapping.Ms_field.dims(3), 3);
 }
 
-
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

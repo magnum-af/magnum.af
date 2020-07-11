@@ -4,17 +4,14 @@
 
 namespace magnumafcpp {
 
-Mesh::Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy,
-           double dz)
-    : n0(nx), n1(ny), n2(nz), dx(dx), dy(dy), dz(dz), V(dx * dy * dz),
-      n0_exp(2 * n0), n1_exp(2 * n1), n2_exp((n2 == 1) ? 1 : 2 * n2),
-      dims(af::dim4(n0, n1, n2, 3)),
+Mesh::Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double dz)
+    : n0(nx), n1(ny), n2(nz), dx(dx), dy(dy), dz(dz), V(dx * dy * dz), n0_exp(2 * n0), n1_exp(2 * n1),
+      n2_exp((n2 == 1) ? 1 : 2 * n2), dims(af::dim4(n0, n1, n2, 3)),
       dims_expanded(af::dim4(n0_exp, n1_exp, n2_exp, 3)) {}
 
 void Mesh::print(std::ostream& stream) {
-    stream << "n0=" << n0 << " n1=" << n1 << " n2=" << n2 << " dx=" << dx
-           << " dy=" << dy << " dz=" << dz << " V=" << V << " n0_exp=" << n0_exp
-           << " n1_exp=" << n1_exp << " n2_exp=" << n2_exp << std::endl;
+    stream << "n0=" << n0 << " n1=" << n1 << " n2=" << n2 << " dx=" << dx << " dy=" << dy << " dz=" << dz << " V=" << V
+           << " n0_exp=" << n0_exp << " n1_exp=" << n1_exp << " n2_exp=" << n2_exp << std::endl;
 }
 
 af::array Mesh::skyrmconf(const bool point_up) {
@@ -47,17 +44,15 @@ af::array Mesh::skyrmconf(const bool point_up) {
 /// vector within the largest cylinder which fits into the mesh.
 // TODO should be rename to cylinder
 af::array Mesh::ellipse(std::array<double, 3> vector, const bool verbose) {
-    const double norm =
-        std::sqrt(std::pow(vector[0], 2) + std::pow(vector[1], 2) +
-                  std::pow(vector[2], 2));
+    const double norm = std::sqrt(std::pow(vector[0], 2) + std::pow(vector[1], 2) + std::pow(vector[2], 2));
     vector[0] = vector[0] / norm;
     vector[1] = vector[1] / norm;
     vector[2] = vector[2] / norm;
     if (verbose)
         std::cout << "Mesh::ellipse: norm=" << norm << std::endl;
     if (verbose)
-        std::cout << "Mesh::ellipse: normalized vector={" << vector[0] << ", "
-                  << vector[1] << ", " << vector[2] << "}" << std::endl;
+        std::cout << "Mesh::ellipse: normalized vector={" << vector[0] << ", " << vector[1] << ", " << vector[2] << "}"
+                  << std::endl;
 
     long unsigned cells_within = 0;
     af::array m = af::constant(0.0, this->n0, this->n1, this->n2, 3, f64);
@@ -77,9 +72,9 @@ af::array Mesh::ellipse(std::array<double, 3> vector, const bool verbose) {
         }
     }
     if (verbose)
-        std::cout << "Info: Mesh::ellipse(): cells within cylinder = "
-                  << cells_within << ", which should be approx a*b*M_PI*n2 = "
-                  << this->n0 / 2 * this->n1 / 2 * M_PI * this->n2 << std::endl;
+        std::cout << "Info: Mesh::ellipse(): cells within cylinder = " << cells_within
+                  << ", which should be approx a*b*M_PI*n2 = " << this->n0 / 2 * this->n1 / 2 * M_PI * this->n2
+                  << std::endl;
     return m;
 }
 
@@ -106,9 +101,8 @@ af::array Mesh::ellipse(const unsigned xyz, const bool positive_direction) {
             }
         }
     }
-    std::cout
-        << "Info: Mesh::ellipse(): n_cells should be approx a*b*M_PI*this->n2= "
-        << this->n0 / 2 * this->n1 / 2 * M_PI * this->n2 << std::endl;
+    std::cout << "Info: Mesh::ellipse(): n_cells should be approx a*b*M_PI*this->n2= "
+              << this->n0 / 2 * this->n1 / 2 * M_PI * this->n2 << std::endl;
     return m;
 }
 
@@ -142,8 +136,7 @@ af::array Mesh::init_vortex(const bool positive_direction) {
         }
     }
 
-    std::cout << "n_cells should be approx nx^2*M_PI/4.= "
-              << pow(this->n0, 2) * M_PI / 4. << std::endl;
+    std::cout << "n_cells should be approx nx^2*M_PI/4.= " << pow(this->n0, 2) * M_PI / 4. << std::endl;
     m = renormalize_handle_zero_values(m);
     return m;
 }

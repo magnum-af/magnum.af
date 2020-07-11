@@ -32,8 +32,7 @@ int main(int argc, char** argv) {
     state.write_vti(filepath + "minit");
     af::array rkkyvals = af::constant(RKKY / 2., mesh.dims, f64);
     af::array exchvals = af::constant(A, mesh.dims, f64);
-    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals),
-                                              Exchange_values(exchvals), mesh));
+    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
     LLGIntegrator Llg(1, {demag, rkky});

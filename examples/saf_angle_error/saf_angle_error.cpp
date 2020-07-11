@@ -71,19 +71,16 @@ int main(int argc, char** argv) {
     State state(mesh, Ms_field, m);
     state.write_vti(filepath + "minit");
 
-    auto rkky = LlgTerm(new RKKYExchangeField(
-        RKKY_values(af::constant(RKKY, mesh.dims, f64)),
-        Exchange_values(af::constant(A, mesh.dims, f64)), mesh));
+    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, mesh.dims, f64)),
+                                              Exchange_values(af::constant(A, mesh.dims, f64)), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
 
     unsigned current_step = 0;
     // Defining H_zee via lamdas
     auto zee_func = [H_af, &current_step, hzee_max](State state) -> af::array {
-        const double hx =
-            hzee_max / constants::mu0 * std::cos(current_step * M_PI / 180.);
-        const double hy =
-            hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
+        const double hx = hzee_max / constants::mu0 * std::cos(current_step * M_PI / 180.);
+        const double hy = hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
 
         af::array zee = af::constant(0.0, state.mesh.dims, f64);
         zee(af::span, af::span, af::span, 0) = hx;
@@ -104,16 +101,13 @@ int main(int argc, char** argv) {
     for (unsigned i = 0; i <= 360; i += 20) {
         current_step = i;
         llg.relax(state);
-        const double Hx_component =
-            external->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
+        const double Hx_component = external->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
         const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
         const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
         abs_my_rl.push_back(std::abs(my_z1));
 
-        std::cout << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1
-                  << std::endl;
-        stream << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1
-               << std::endl;
+        std::cout << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1 << std::endl;
+        stream << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1 << std::endl;
     }
     stream.close();
 
@@ -131,8 +125,8 @@ int main(int argc, char** argv) {
     stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max(abs(my)) << J_af "
               "[J/m2]  << Haf[T] << mean(abs(my))"
            << std::endl;
-    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max << "\t"
-           << Jaf << "\t" << H_af * constants::mu0 << "\t" << mean << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max << "\t" << Jaf << "\t" << H_af * constants::mu0
+           << "\t" << mean << std::endl;
     stream.close();
 
     stream.open(filepath + "plotfile.gpi");
@@ -147,8 +141,7 @@ int main(int argc, char** argv) {
     stream << "replot" << std::endl;
     stream.close();
 
-    int syscall =
-        std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
+    int syscall = std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
     if (syscall != 0) {
         std::cout << "syscall plotting with gnuplot failed" << std::endl;
     }

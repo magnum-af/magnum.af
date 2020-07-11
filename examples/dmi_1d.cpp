@@ -62,9 +62,8 @@ int main(int argc, char** argv) {
     std::ofstream mstream(filepath + "mrelaxed.dat");
     mstream << "# idx, mx, my, mz" << std::endl;
     for (int i = 0; i < nx; i++) {
-        mstream << i << "\t" << state.m(i, 0, 0, 0).scalar<double>() << "\t"
-                << state.m(i, 0, 0, 1).scalar<double>() << "\t"
-                << state.m(i, 0, 0, 2).scalar<double>() << std::endl;
+        mstream << i << "\t" << state.m(i, 0, 0, 0).scalar<double>() << "\t" << state.m(i, 0, 0, 1).scalar<double>()
+                << "\t" << state.m(i, 0, 0, 2).scalar<double>() << std::endl;
     }
     mstream.close();
 

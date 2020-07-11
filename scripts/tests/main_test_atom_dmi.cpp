@@ -50,15 +50,13 @@ int main(int argc, char** argv) {
     LLG Llg(state, llgterm);
     if (compare(Llg.E(state), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 0)),
-                -material.D_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 0)), -material.D_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 H1x FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 H1y FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), 0))
         std::cout << "!!! TEST 1 H1z FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)),
-                material.D_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), material.D_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 H2x FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 H2y FAILED !!!" << std::endl;
@@ -89,11 +87,9 @@ int main(int argc, char** argv) {
         std::cout << "!!! TEST 2 H1x FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 2 H1y FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)),
-                material.D_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), material.D_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 2 H1z FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)),
-                material.D_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), material.D_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;

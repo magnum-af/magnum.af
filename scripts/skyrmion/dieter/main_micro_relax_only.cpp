@@ -66,9 +66,8 @@ int main(int argc, char** argv) {
     double timerelax = af::timer::stop(t);
     vti_writer_micro(state.m, mesh, filepath + "relax");
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for "
-              << Llg.counter_accepted + Llg.counter_reject << " steps, thereof "
-              << Llg.counter_accepted << " Steps accepted, "
-              << Llg.counter_reject << " Steps rejected" << std::endl;
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
+              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+              << " Steps rejected" << std::endl;
     return 0;
 }

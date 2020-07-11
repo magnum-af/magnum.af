@@ -26,13 +26,11 @@ class LLG {
     // vtk fieldterm writer
     void write_fieldterms_atom(const State& state, const std::string filepath);
     void write_fieldterms_micro(const State& state, const std::string filepath);
-    void relax(State& state, double precision = 1e-10, const int iloop = 100,
-               const int iwritecout = 1000);
+    void relax(State& state, double precision = 1e-10, const int iloop = 100, const int iwritecout = 1000);
 
     // rhs of the LLG equation
-    bool fdmdt_dissipation_term_only{
-        false}; // If ture, only use the energy dissipation term (i.e. Mx(MxH))
-                // in the LLG
+    bool fdmdt_dissipation_term_only{false}; // If ture, only use the energy dissipation term (i.e. Mx(MxH))
+                                             // in the LLG
     array fdmdt(const array& m, const array& heff);
     int calls_fdmdt{0};
     array fdmdtminimal(array m, array heff);
@@ -40,21 +38,19 @@ class LLG {
     // Calculation of effective field with optional zeeman field
     array fheff(const array& m);
     array fheffminimal(array m);
-    long int h_addr(
-        const State& state); // Getter function for effective field for wrapping
+    long int h_addr(const State& state); // Getter function for effective field for wrapping
 
     std::vector<array> h_addr_temp_array;
     // Alternative:
     // array h_addr_temp_array;
 
     array step(State& state);
-    bool llg_wasnormalized{
-        true}; // set true after normalization in step, false if not normalized
-               // DP45 uses this to decide wether k1 and heff has to be
-               // calculated
-               // -> leave the value true if normalization is on default
-    double llg_normtol{1e-5}; // If maxnorm(vecnorm(mtemp)) exceedes this value,
-                              // renormalize is called
+    bool llg_wasnormalized{true}; // set true after normalization in step, false if not normalized
+                                  // DP45 uses this to decide wether k1 and heff has to be
+                                  // calculated
+                                  // -> leave the value true if normalization is on default
+    double llg_normtol{1e-5};     // If maxnorm(vecnorm(mtemp)) exceedes this value,
+                                  // renormalize is called
     int llg_normalize_counter{0}; // number of normalizations performed
 
     // Counting step calls
@@ -89,8 +85,8 @@ class LLG {
     // double h_abs{0.};
     // double h_rel{0.};
 
-    double h; // working variable in Controller, actual stepsize and next
-              // stepsize, min of h_abs and h_rel
+    double h;         // working variable in Controller, actual stepsize and next
+                      // stepsize, min of h_abs and h_rel
     double h_stepped; // step size set after step is called
     // int counter_abs{0};
     // int counter_rel{0};
@@ -127,13 +123,12 @@ class LLG {
     // const double rtol{1e-8};//Tolerated relative error
     // const double hmin{1e-15};
     // const double hmax{3.5e-10};
-    array
-    givescale(const array& a); // Scale function return= atol + abs(y) * rtol
-    double err{.0};            // Estimated error
-    int counter_reject{0};     // # of rejections
-    int counter_accepted{0};   // # of accepced steps
-    int counter_hmax{0};       // # of rejections
-    int counter_hmin{0};       // # of rejections
+    array givescale(const array& a); // Scale function return= atol + abs(y) * rtol
+    double err{.0};                  // Estimated error
+    int counter_reject{0};           // # of rejections
+    int counter_accepted{0};         // # of accepced steps
+    int counter_hmax{0};             // # of rejections
+    int counter_hmin{0};             // # of rejections
     // For Controller
     // bool controller(const double err, double& h);
     Controller controller = Controller();

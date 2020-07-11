@@ -21,11 +21,9 @@ af::array zee_func(State state) {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee =
-        constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0,
-                 state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return zee;
 }
 
@@ -81,26 +79,19 @@ int main(int argc, char** argv) {
     stream.precision(12);
     stream.open((filepath + "m.dat").c_str());
     stream << "# t	<mx>" << std::endl;
-    state.calc_mean_m(
-        stream, n_cells,
-        Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
+    state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
 
     timer t_hys = af::timer::start();
     Llg.llgterms.push_back(LlgTerm(new ExternalField(&zee_func))); // Rate in
                                                                    // T/s
     while (state.t < 4 * hzee_max / rate) {
         Llg.step(state);
-        state.calc_mean_m(
-            stream, n_cells,
-            Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
+        state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
         if (state.steps % 2000 == 0) {
-            vti_writer_micro(state.m, mesh,
-                             filepath + "m_hysteresis_" +
-                                 std::to_string(state.steps));
+            vti_writer_micro(state.m, mesh, filepath + "m_hysteresis_" + std::to_string(state.steps));
         }
     }
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

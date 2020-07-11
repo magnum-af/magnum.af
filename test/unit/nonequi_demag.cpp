@@ -20,13 +20,10 @@ TEST(NonEquiDemag, NxxNxyNearTest) {
     double y = (double)iy * dy;
     double z = (double)iz * dz;
 
-    double Nxx_non =
-        newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) /
-        (dX * dY *
-         dZ); // multiply by 1/tau as tau is now added in Heff calculation
+    double Nxx_non = newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) /
+                     (dX * dY * dZ); // multiply by 1/tau as tau is now added in Heff calculation
     double Nxx_f = newell::Nxx(ix, iy, iz, dx, dy, dz);
-    double Nxy_non =
-        newell_nonequi::Nxy(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
+    double Nxy_non = newell_nonequi::Nxy(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
     double Nxyg = newell::Nxy(ix, iy, iz, dx, dy, dz);
 
     EXPECT_NEAR(Nxx_non, Nxx_f, 1e-14);
@@ -52,11 +49,9 @@ TEST(NonEquiDemag, NxxNxyFarTest) {
     double y = (double)iy * dy;
     double z = (double)iz * dz;
 
-    double Nxx_non =
-        newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
+    double Nxx_non = newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
     double Nxx_f = newell::Nxx(ix, iy, iz, dx, dy, dz);
-    double Nxy_non =
-        newell_nonequi::Nxy(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
+    double Nxy_non = newell_nonequi::Nxy(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
     double Nxyg = newell::Nxy(ix, iy, iz, dx, dy, dz);
 
     double Nxx_rel_diff = fabs(2 * (Nxx_non - Nxx_f) / (Nxx_non + Nxx_f));
@@ -88,13 +83,11 @@ TEST(NonEquiDemag, UnitCubeTest) {
     const double a = 2;
     const int ix = 2;
     double Nxx = newell::Nxx(ix, 0, 0, a, a, a);
-    double Nxx_ne =
-        newell_nonequi::Nxx(ix * a, 0, 0, a, a, a, a, a, a) / (a * a * a);
+    double Nxx_ne = newell_nonequi::Nxx(ix * a, 0, 0, a, a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-16);
 
     double Nxy = newell::Nxy(ix, 0, 0, a, a, a);
-    double Nxy_ne =
-        newell_nonequi::Nxy(ix * a, 0, 0, a, a, a, a, a, a) / (a * a * a);
+    double Nxy_ne = newell_nonequi::Nxy(ix * a, 0, 0, a, a, a, a, a, a) / (a * a * a);
     EXPECT_EQ(Nxy, 0);
     EXPECT_EQ(Nxy_ne, 0);
 }
@@ -117,22 +110,18 @@ TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_x) {
     const double Nxx_1 = newell::Nxx(ix, 0, 0, a, a, a);
     const double Nxx_2 = newell::Nxx(2 * ix, 0, 0, a, a, a);
     const double Nxx = Nxx_1 + Nxx_2;
-    const double Nxx_ne =
-        newell_nonequi::Nxx(-ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a);
+    const double Nxx_ne = newell_nonequi::Nxx(-ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a);
     const double Nxx_ne2 =
-        newell_nonequi::Nxx(2 * ix * a, 0, 0, 2 * a, a, a, a, a, a) /
-        (a * a * a); // x-symmetric case
+        newell_nonequi::Nxx(2 * ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a); // x-symmetric case
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-16);
     EXPECT_NEAR(Nxx, Nxx_ne2, 1e-16);
 
     const double Nxy_1 = newell::Nxy(ix, 0, 0, a, a, a);
     const double Nxy_2 = newell::Nxy(2 * ix, 0, 0, a, a, a);
     const double Nxy = Nxy_1 + Nxy_2;
-    const double Nxy_ne =
-        newell_nonequi::Nxy(-ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a);
+    const double Nxy_ne = newell_nonequi::Nxy(-ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a);
     const double Nxy_ne2 =
-        newell_nonequi::Nxy(2 * ix * a, 0, 0, 2 * a, a, a, a, a, a) /
-        (a * a * a); // x-symmetric case
+        newell_nonequi::Nxy(2 * ix * a, 0, 0, 2 * a, a, a, a, a, a) / (a * a * a); // x-symmetric case
     EXPECT_NEAR(Nxy, Nxy_ne, 1e-16);
     EXPECT_NEAR(Nxy, Nxy_ne2, 1e-16);
 }
@@ -145,15 +134,13 @@ TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_y) {
     const double Nxx_1 = newell::Nxx(0, iy, 0, a, a, a);
     const double Nxx_2 = newell::Nxx(0, 2 * iy, 0, a, a, a);
     const double Nxx = Nxx_1 + Nxx_2;
-    const double Nxx_ne =
-        newell_nonequi::Nxx(0, -iy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
+    const double Nxx_ne = newell_nonequi::Nxx(0, -iy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-15);
 
     const double Nxy_1 = newell::Nxy(0, iy, 0, a, a, a);
     const double Nxy_2 = newell::Nxy(0, 2 * iy, 0, a, a, a);
     const double Nxy = Nxy_1 + Nxy_2;
-    const double Nxy_ne =
-        newell_nonequi::Nxy(0, -iy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
+    const double Nxy_ne = newell_nonequi::Nxy(0, -iy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxy, Nxy_ne, 1e-15);
 }
 
@@ -165,8 +152,7 @@ TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_z) {
     const double Nxx_1 = newell::Nxx(0, 0, iz, a, a, a);
     const double Nxx_2 = newell::Nxx(0, 0, 2 * iz, a, a, a);
     const double Nxx = Nxx_1 + Nxx_2;
-    const double Nxx_ne =
-        newell_nonequi::Nxx(0, 0, -iz * a, a, a, 2 * a, a, a, a) / (a * a * a);
+    const double Nxx_ne = newell_nonequi::Nxx(0, 0, -iz * a, a, a, 2 * a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-15);
 }
 
@@ -179,17 +165,13 @@ TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_xy) {
     const double Nxx_1 = newell::Nxx(ixy, ixy, 0, a, a, a);
     const double Nxx_2 = newell::Nxx(ixy, 2 * ixy, 0, a, a, a);
     const double Nxx = Nxx_1 + Nxx_2;
-    const double Nxx_ne =
-        newell_nonequi::Nxx(-ixy * a, -ixy * a, 0, a, 2 * a, a, a, a, a) /
-        (a * a * a);
+    const double Nxx_ne = newell_nonequi::Nxx(-ixy * a, -ixy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-15);
 
     const double Nxy_1 = newell::Nxy(ixy, ixy, 0, a, a, a);
     const double Nxy_2 = newell::Nxy(ixy, 2 * ixy, 0, a, a, a);
     const double Nxy = Nxy_1 + Nxy_2;
-    const double Nxy_ne =
-        newell_nonequi::Nxy(-ixy * a, -ixy * a, 0, a, 2 * a, a, a, a, a) /
-        (a * a * a);
+    const double Nxy_ne = newell_nonequi::Nxy(-ixy * a, -ixy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxy, Nxy_ne, 1e-15);
 }
 
@@ -202,17 +184,13 @@ TEST(NonEquiDemag, TwoCubesVersusOneCubeTest_x_minus_y) {
     const double Nxx_1 = newell::Nxx(ixy, -ixy, 0, a, a, a);
     const double Nxx_2 = newell::Nxx(ixy, -2 * ixy, 0, a, a, a);
     const double Nxx = Nxx_1 + Nxx_2;
-    const double Nxx_ne =
-        newell_nonequi::Nxx(-ixy * a, 2 * ixy * a, 0, a, 2 * a, a, a, a, a) /
-        (a * a * a);
+    const double Nxx_ne = newell_nonequi::Nxx(-ixy * a, 2 * ixy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxx, Nxx_ne, 1e-15);
 
     const double Nxy_1 = newell::Nxy(ixy, -ixy, 0, a, a, a);
     const double Nxy_2 = newell::Nxy(ixy, -2 * ixy, 0, a, a, a);
     const double Nxy = Nxy_1 + Nxy_2;
-    const double Nxy_ne =
-        newell_nonequi::Nxy(-ixy * a, 2 * ixy * a, 0, a, 2 * a, a, a, a, a) /
-        (a * a * a);
+    const double Nxy_ne = newell_nonequi::Nxy(-ixy * a, 2 * ixy * a, 0, a, 2 * a, a, a, a, a) / (a * a * a);
     EXPECT_NEAR(Nxy, Nxy_ne, 1e-15);
 }
 

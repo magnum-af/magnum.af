@@ -73,8 +73,7 @@ int main(int argc, char** argv) {
     af::array Ms = (SK_Ms * (geom == 1) + IL_Ms * (geom == 2)) * todouble;
     af::array A = (SK_A * (geom == 1) + IL_A * (geom == 2)) * todouble;
     af::array Ku = (SK_Ku * (geom == 1) + IL_Ku * (geom == 2)) * todouble;
-    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) *
-                  todouble; // + IL_D * (geom == 2);
+    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) * todouble; // + IL_D * (geom == 2);
     // std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
     // af::print("Ms", Ms);
@@ -130,10 +129,8 @@ int main(int argc, char** argv) {
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(
-        new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(
-        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
@@ -156,30 +153,23 @@ int main(int argc, char** argv) {
         // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
         while (state_1.t < 3e-9) {
             if (state_1.steps % 100 == 0)
-                state_1.write_vti(filepath + "m_step" +
-                                  std::to_string(state_1.steps));
+                state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
             llg.step(state_1);
-            std::cout << std::scientific << state_1.steps << "\t" << state_1.t
-                      << "\t" << state_1.meani(2) << "\t" << llg.E(state_1)
-                      << std::endl;
+            std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t"
+                      << llg.E(state_1) << std::endl;
         }
         // Llg.relax(state_1);
         timer.print_stage("relax");
         state_1.write_vti(filepath + "m_relaxed");
-        vti_writer_micro(state_1.m(af::span, af::span, 0, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 0, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_bottom_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_bottom_ferro_layer5");
-        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed__ferri_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_top_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_top_ferro_layer5");
     } else {
         std::cout << "Found m_relaxed, reading in state_1." << std::endl;
@@ -209,12 +199,10 @@ int main(int argc, char** argv) {
 
     while (state_2.t < 3e-9) {
         if (state_2.steps % 100 == 0)
-            state_2.write_vti(filepath + "m_state2_relaxing" +
-                              std::to_string(state_2.steps));
+            state_2.write_vti(filepath + "m_state2_relaxing" + std::to_string(state_2.steps));
         llg.step(state_2);
-        std::cout << std::scientific << state_2.steps << "\t" << state_2.t
-                  << "\t" << state_2.meani(2) << "\t" << llg.E(state_2)
-                  << std::endl;
+        std::cout << std::scientific << state_2.steps << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t"
+                  << llg.E(state_2) << std::endl;
     }
     vti_writer_micro(state_2.m, state_2.mesh, filepath + "m_state_2_relaxed");
     timer.print_stage("state2 relaxed");

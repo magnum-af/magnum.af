@@ -9,8 +9,7 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t"
-           << get_avg << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t" << get_avg << std::endl;
     // myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t"
     // <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg <<
     // std::endl; myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m,
@@ -20,8 +19,7 @@ void calcm(State state, std::ostream& myfile, double get_avg) {
 void set_boundary_mz(array& m);
 class Detector {
   public:
-    Detector(unsigned int length_in, double threshold_in)
-        : length(length_in), threshold(threshold_in) {}
+    Detector(unsigned int length_in, double threshold_in) : length(length_in), threshold(threshold_in) {}
     bool gt{true};       // avg greater than (gt) threshold:  if true, avg >
                          // threshold, else avg < threshold
     unsigned int length; // = 3000;
@@ -78,9 +76,7 @@ int main(int argc, char** argv) {
     filepath.append("/");
     std::cout << "Writing into path " << filepath << std::endl;
 
-    std::string indatapath(
-        argc > 2 ? argv[2]
-                 : "/home/pth/git/magnum.af/Data/skyrmion_stoch/E_barrier");
+    std::string indatapath(argc > 2 ? argv[2] : "/home/pth/git/magnum.af/Data/skyrmion_stoch/E_barrier");
     indatapath.append("/");
 
     // Timestep
@@ -161,8 +157,7 @@ int main(int argc, char** argv) {
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
 
     // ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse "
@@ -177,9 +172,7 @@ int main(int argc, char** argv) {
     unsigned long int i = 0;
     while (detector.event == false) {
         if (state.t > maxtime) {
-            std::cout
-                << "WARNING: no event detected within maxtime seconds, aborting"
-                << std::endl;
+            std::cout << "WARNING: no event detected within maxtime seconds, aborting" << std::endl;
             break;
         }
         Stoch.step(state, dt);
@@ -226,8 +219,7 @@ int main(int argc, char** argv) {
     }
 
     vti_writer_atom(state.m, state.mesh,
-                    filepath + "skyrm" +
-                        std::to_string(ID)); // state.t*pow(10, 9)
+                    filepath + "skyrm" + std::to_string(ID)); // state.t*pow(10, 9)
 
     // last images:
     int count1 = 0;
@@ -244,22 +236,18 @@ int main(int argc, char** argv) {
     Detector detector2 = Detector((int)(5e-12 / dt), threshold);
     detector2.gt = false;
     int reverse = 0;
-    for (std::list<double>::reverse_iterator rit = detector.data.rbegin();
-         rit != detector.data.rend(); ++rit) {
+    for (std::list<double>::reverse_iterator rit = detector.data.rbegin(); rit != detector.data.rend(); ++rit) {
         detector2.add_data(*rit);
         reverse++;
         if (detector2.event == true)
             break;
     }
     detect_time -= reverse * dt;
-    std::cout << "Preliminiary annihilation time at " << detect_time << "[s]"
-              << std::endl;
+    std::cout << "Preliminiary annihilation time at " << detect_time << "[s]" << std::endl;
 
-    std::ofstream ofs_antime(filepath + "anihilationtime.dat",
-                             std::ios_base::app);
+    std::ofstream ofs_antime(filepath + "anihilationtime.dat", std::ios_base::app);
     ofs_antime.precision(12);
-    ofs_antime << detect_time << "\t" << state.t << "\t" << i << "\t" << reverse
-               << "\t" << ID << std::endl;
+    ofs_antime << detect_time << "\t" << state.t << "\t" << i << "\t" << reverse << "\t" << ID << std::endl;
     ofs_antime.close();
 
     std::cout << "state.t = " << state.t << std::endl;

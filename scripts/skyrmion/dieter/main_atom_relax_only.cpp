@@ -60,8 +60,7 @@ int main(int argc, char** argv) {
     //    llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 
@@ -73,9 +72,8 @@ int main(int argc, char** argv) {
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, filepath + "relax");
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for "
-              << Llg.counter_accepted + Llg.counter_reject << " steps, thereof "
-              << Llg.counter_accepted << " Steps accepted, "
-              << Llg.counter_reject << " Steps rejected" << std::endl;
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
+              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+              << " Steps rejected" << std::endl;
     return 0;
 }

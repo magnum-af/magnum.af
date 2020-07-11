@@ -50,17 +50,11 @@ int main(int argc, char** argv) {
         for (int y = 0; y < ny; y++) {
             for (int z = 0; z < nz; z++) {
                 for (int m = 0; m < 3; m++) {
-                    if (compare(
-                            afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m)),
-                            afvalue(
-                                Llg2.Fieldterms[0]->h(state)(x, y, z, m)))) {
-                        std::cout << "!!! TEST  FAILED at " << x << " " << y
-                                  << " " << z << " " << m << std::endl;
-                        std::cout
-                            << afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m))
-                            << " , "
-                            << afvalue(Llg2.Fieldterms[0]->h(state)(x, y, z, m))
-                            << std::endl;
+                    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m)),
+                                afvalue(Llg2.Fieldterms[0]->h(state)(x, y, z, m)))) {
+                        std::cout << "!!! TEST  FAILED at " << x << " " << y << " " << z << " " << m << std::endl;
+                        std::cout << afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m)) << " , "
+                                  << afvalue(Llg2.Fieldterms[0]->h(state)(x, y, z, m)) << std::endl;
                     }
                 }
             }

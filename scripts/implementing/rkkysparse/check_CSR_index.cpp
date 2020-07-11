@@ -80,11 +80,9 @@ int main(int argc, char** argv) {
     A = A * 1e-12; //(nx*nz*ny);
     array RKKY = af::constant(0, nx, ny, nz, 3, f64);
     Mesh mesh(nx, ny, nz, dx, dy, dz);
-    auto coo = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh,
-                                 af::array(), true, true);
+    auto coo = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, af::array(), true, true);
     af::array coo_to_dense = af::sparseConvertTo(coo.matr, AF_STORAGE_DENSE);
-    auto csr = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh,
-                                 af::array(), true, false);
+    auto csr = RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, af::array(), true, false);
     af::array csr_to_dense = af::sparseConvertTo(csr.matr, AF_STORAGE_DENSE);
     // af::print("", exch.matr);
     // af::print("", csr_to_dense);
@@ -123,8 +121,7 @@ int main(int argc, char** argv) {
         std::cout << " maxvals equal" << std::endl;
     else
         std::cout << " maxvals not equal" << std::endl;
-    if (afvalue(af::mean(af::flat(coo_to_dense))) ==
-        afvalue(af::mean(af::flat(csr_to_dense))))
+    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense))))
         std::cout << " mean equal" << std::endl;
     else
         std::cout << " mean not equal" << std::endl;

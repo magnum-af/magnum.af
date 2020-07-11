@@ -13,24 +13,20 @@ int main(int argc, char** argv) {
     std::cout << "Writing into path " << filepath << std::endl;
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     const double hzee_max = (argc > 3 ? std::stod(argv[3]) : 0.12); //[Tesla]
-    const unsigned int steps_full_hysteresis =
-        (argc > 4 ? std::stoi(argv[4]) : 200);
+    const unsigned int steps_full_hysteresis = (argc > 4 ? std::stoi(argv[4]) : 200);
 
     af::info();
     std::cout.precision(24);
 
     // Defining H_zee via lamdas
-    auto zee_func = [hzee_max,
-                     steps_full_hysteresis](State state) -> af::array {
+    auto zee_func = [hzee_max, steps_full_hysteresis](State state) -> af::array {
         double field_Tesla;
         if (state.steps < steps_full_hysteresis / 4) {
             field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis;
         } else if (state.steps < 3 * steps_full_hysteresis / 4) {
-            field_Tesla = -hzee_max * 4. * state.steps / steps_full_hysteresis +
-                          2 * hzee_max;
+            field_Tesla = -hzee_max * 4. * state.steps / steps_full_hysteresis + 2 * hzee_max;
         } else if (state.steps < steps_full_hysteresis) {
-            field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis -
-                          4 * hzee_max;
+            field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis - 4 * hzee_max;
         } else {
             field_Tesla = 0;
             std::cout << "WARNING ZEE time out of range, setting external "
@@ -38,11 +34,9 @@ int main(int argc, char** argv) {
                       << std::endl;
         }
         // std::cout << "fild= "<< field_Tesla << std::endl;
-        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1,
-                                     state.mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 0) =
-            af::constant(field_Tesla / constants::mu0, state.mesh.n0,
-                         state.mesh.n1, state.mesh.n2, 1, f64);
+            af::constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return zee;
     };
 
@@ -70,8 +64,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms_.push_back(LlgTerm(new DemagField(mesh)));
     minimizer.llgterms_.push_back(LlgTerm(new ExchangeField(A)));
     minimizer.llgterms_.push_back(LlgTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     std::ofstream stream;
     stream.precision(24);
@@ -80,20 +73,14 @@ int main(int argc, char** argv) {
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++) {
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(
-            stream,
-            afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(
-                state)(0, 0, 0, 0)));
+        state.calc_mean_m_steps(stream,
+                                afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state)(0, 0, 0, 0)));
         if (state.steps % 10 == 0) {
-            vti_writer_micro(
-                state.m, mesh,
-                (filepath + "m_hysteresis_" + std::to_string(state.steps))
-                    .c_str());
+            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
         state.steps++;
     }
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

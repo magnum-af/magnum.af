@@ -19,23 +19,18 @@ double LLG::E(const State& state) {
 // array LLG::givescale(const array& a){
 //  return atol+rtol*abs(a);
 //}
-void LLG::write_fieldterms_atom(const State& state,
-                                const std::string filepath) {
+void LLG::write_fieldterms_atom(const State& state, const std::string filepath) {
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        vti_writer_atom(Fieldterms[i]->h(state), state.mesh,
-                        filepath + std::to_string(i));
+        vti_writer_atom(Fieldterms[i]->h(state), state.mesh, filepath + std::to_string(i));
     }
 }
-void LLG::write_fieldterms_micro(const State& state,
-                                 const std::string filepath) {
+void LLG::write_fieldterms_micro(const State& state, const std::string filepath) {
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        vti_writer_micro(Fieldterms[i]->h(state), state.mesh,
-                         filepath + std::to_string(i));
+        vti_writer_micro(Fieldterms[i]->h(state), state.mesh, filepath + std::to_string(i));
     }
 }
 
-void LLG::relax(State& state, const double precision, const int iloop,
-                const int iwritecout) {
+void LLG::relax(State& state, const double precision, const int iloop, const int iwritecout) {
     timer t = af::timer::start();
     double E_prev = 1e20;
     while (fabs((E_prev - E(state)) / E_prev) > precision) {
@@ -44,39 +39,30 @@ void LLG::relax(State& state, const double precision, const int iloop,
             state.m = step(state);
         }
         if (state.steps % iwritecout == 0)
-            std::cout << "step " << state.steps
-                      << " rdiff= " << fabs((E_prev - E(state)) / E_prev)
-                      << std::endl;
+            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - E(state)) / E_prev) << std::endl;
     }
-    std::cout << "timerelax [af-s]: " << af::timer::stop(t)
-              << ", current llg steps = " << state.steps << std::endl;
+    std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", current llg steps = " << state.steps << std::endl;
 }
 
 array LLG::fdmdt(const array& m, const array& heff) {
     calls_fdmdt++;
     timer_fdmdt = timer::start();
     if (fdmdt_dissipation_term_only) {
-        dmdt = -state0.material.alpha * state0.material.gamma /
-               (1. + pow(state0.material.alpha, 2)) *
+        dmdt = -state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
                cross4(m, cross4(m, heff));
     } else {
-        dmdt = -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
-                   cross4(m, heff) -
-               state0.material.alpha * state0.material.gamma /
-                   (1. + pow(state0.material.alpha, 2)) *
+        dmdt = -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, heff) -
+               state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
                    cross4(m, cross4(m, heff));
     }
     time_fdmdt += af::timer::stop(timer_fdmdt);
     return dmdt;
 }
 
-array LLG::fdmdtminimal(
-    array m, array heff) { // array LLG::fdmdt(array& m, array& heff){
+array LLG::fdmdtminimal(array m, array heff) { // array LLG::fdmdt(array& m, array& heff){
     dmdt = cross4(m, heff);
-    return -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
-               cross4(m, heff) -
-           state0.material.alpha * state0.material.gamma /
-               (1. + pow(state0.material.alpha, 2)) * cross4(m, dmdt);
+    return -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, heff) -
+           state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, dmdt);
 }
 
 // Calculation of effective field
@@ -101,9 +87,7 @@ double LLG::cpu_time() {
     }
     return cpu_time;
 }
-void LLG::print_cpu_time(std::ostream& stream) {
-    stream << "cpu_time = " << LLG::cpu_time() << " [s]" << std::endl;
-}
+void LLG::print_cpu_time(std::ostream& stream) { stream << "cpu_time = " << LLG::cpu_time() << " [s]" << std::endl; }
 
 long int LLG::h_addr(const State& state) {
     // array fheff_pass_to_python = fheff(state.m);
@@ -228,8 +212,7 @@ array LLG::step(State& state) {
         do {
             while_break++;
             if (while_break > 100)
-                std::cout << "Warning: While_break > 100, break called"
-                          << std::endl;
+                std::cout << "Warning: While_break > 100, break called" << std::endl;
             // BS3
             if (state.material.mode == 4) {
                 mtemp = BS23(state.m, h, err);
@@ -286,9 +269,8 @@ array LLG::step(State& state) {
     if (state.Ms.isempty())
         return renormalize(mtemp);
     else
-        return (renormalize_handle_zero_values(
-            mtemp)); // Normalized array where all initial values == 0 are set
-                     // to 0
+        return (renormalize_handle_zero_values(mtemp)); // Normalized array where all initial values == 0 are set
+                                                        // to 0
     // return mtemp;
 
     // TODO
@@ -327,8 +309,7 @@ array LLG::BS23(const array& m, const double dt, double& err) {
     heff = fheff(m + sumbk);
     k[4] = fdmdt(m + sumbk, heff);
 
-    rk_error = sumbk - dt * (7. / 24. * k[1] + 1. / 4. * k[2] + 1. / 3. * k[3] +
-                             1. / 8. * k[4]);
+    rk_error = sumbk - dt * (7. / 24. * k[1] + 1. / 4. * k[2] + 1. / 3. * k[3] + 1. / 8. * k[4]);
     err = maxnorm(rk_error / controller.givescale(max(m, m + sumbk)));
     return sumbk;
 }
@@ -389,24 +370,14 @@ array LLG::RKF5(const array& m, const double dt) {
     k2 = dt * fdmdt(m + 1. / 4. * k1, heff);
     heff = fheff(m + 3. / 32. * k1 + 9 / 32. * k2);
     k3 = dt * fdmdt(m + 3. / 32. * k1 + 9 / 32. * k2, heff);
-    heff =
-        fheff(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3);
-    k4 = dt *
-         fdmdt(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3,
-               heff);
-    heff = fheff(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 -
-                 845. / 4104. * k4);
-    k5 = dt * fdmdt(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 -
-                        845. / 4104. * k4,
-                    heff);
-    heff = fheff(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 +
-                 1859. / 4104. * k4 - 11. / 40. * k5);
-    k6 = dt * fdmdt(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 +
-                        1859. / 4104. * k4 - 11. / 40. * k5,
-                    heff);
+    heff = fheff(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3);
+    k4 = dt * fdmdt(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3, heff);
+    heff = fheff(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 - 845. / 4104. * k4);
+    k5 = dt * fdmdt(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 - 845. / 4104. * k4, heff);
+    heff = fheff(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 + 1859. / 4104. * k4 - 11. / 40. * k5);
+    k6 = dt * fdmdt(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 + 1859. / 4104. * k4 - 11. / 40. * k5, heff);
 
-    sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 -
-            9. / 50. * k5 + 2. / 55. * k6;
+    sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
     return sumbk;
 }
 
@@ -420,26 +391,15 @@ array LLG::RKF45(const array& m, const double dt, double& err) {
     k2 = dt * fdmdt(m + 1. / 4. * k1, heff);
     heff = fheff(m + 3. / 32. * k1 + 9 / 32. * k2);
     k3 = dt * fdmdt(m + 3. / 32. * k1 + 9 / 32. * k2, heff);
-    heff =
-        fheff(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3);
-    k4 = dt *
-         fdmdt(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3,
-               heff);
-    heff = fheff(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 -
-                 845. / 4104. * k4);
-    k5 = dt * fdmdt(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 -
-                        845. / 4104. * k4,
-                    heff);
-    heff = fheff(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 +
-                 1859. / 4104. * k4 - 11. / 40. * k5);
-    k6 = dt * fdmdt(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 +
-                        1859. / 4104. * k4 - 11. / 40. * k5,
-                    heff);
+    heff = fheff(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3);
+    k4 = dt * fdmdt(m + 1932. / 2197. * k1 - 7200. / 2197. * k2 + 7296. / 2197. * k3, heff);
+    heff = fheff(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 - 845. / 4104. * k4);
+    k5 = dt * fdmdt(m + 439. / 216. * k1 - 8. * k2 + 3680. / 513. * k3 - 845. / 4104. * k4, heff);
+    heff = fheff(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 + 1859. / 4104. * k4 - 11. / 40. * k5);
+    k6 = dt * fdmdt(m - 8. / 27. * k1 + 2. * k2 - 3544. / 2565. * k3 + 1859. / 4104. * k4 - 11. / 40. * k5, heff);
 
-    sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 -
-            9. / 50. * k5 + 2. / 55. * k6;
-    rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 +
-                        2197. / 4104. * k4 - 1. / 5. * k5);
+    sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
+    rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 + 2197. / 4104. * k4 - 1. / 5. * k5);
 
     // rk_abs_error = maxnorm(rk_error);
     err = maxnorm(rk_error / controller.givescale(max(m, m + sumbk)));
@@ -465,21 +425,18 @@ array LLG::CK45(const array& m, const double dt, double& err) {
     heff = fheff(rktemp);
     k4 = dt * fdmdt(rktemp, heff);
 
-    rktemp =
-        m - 11. / 54. * k1 + 5. / 2. * k2 - 70. / 27. * k3 + 35. / 27. * k4;
+    rktemp = m - 11. / 54. * k1 + 5. / 2. * k2 - 70. / 27. * k3 + 35. / 27. * k4;
     heff = fheff(rktemp);
     k5 = dt * fdmdt(rktemp, heff);
 
-    rktemp = m + 1631. / 55296. * k1 + 175. / 512. * k2 + 575. / 13824. * k3 +
-             44275. / 110592. * k4 + 253. / 4096. * k5;
+    rktemp =
+        m + 1631. / 55296. * k1 + 175. / 512. * k2 + 575. / 13824. * k3 + 44275. / 110592. * k4 + 253. / 4096. * k5;
     heff = fheff(rktemp);
     k6 = dt * fdmdt(rktemp, heff);
 
-    sumbk = 37. / 378. * k1 + 250. / 621. * k3 + 125. / 594. * k4 +
-            512. / 1771. * k6;
+    sumbk = 37. / 378. * k1 + 250. / 621. * k3 + 125. / 594. * k4 + 512. / 1771. * k6;
     rk_error =
-        sumbk - (2825. / 27648. * k1 + 18575. / 48384. * k3 +
-                 13525. / 55296. * k4 + 277. / 14336. * k5 + 1. / 4. * k6);
+        sumbk - (2825. / 27648. * k1 + 18575. / 48384. * k3 + 13525. / 55296. * k4 + 277. / 14336. * k5 + 1. / 4. * k6);
 
     err = maxnorm(rk_error / controller.givescale(max(m, m + sumbk)));
     // err = maxnorm(rk_error);
@@ -494,8 +451,7 @@ array LLG::tsit45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -504,15 +460,13 @@ array LLG::tsit45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Local extrapolation using 5th order approx
-    sumbk =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Error estimation using 4th order approx
-    rk_error =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += bhat[i] * k[i];
     }
@@ -532,8 +486,7 @@ array LLG::DP45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -542,15 +495,13 @@ array LLG::DP45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Local extrapolation using 5th order approx
-    sumbk =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Error estimation using 4th order approx
-    rk_error =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += e[i] * k[i];
     }
@@ -571,8 +522,7 @@ array LLG::BS45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -581,15 +531,13 @@ array LLG::BS45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
 
-    sumbk =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
 
-    rk_error =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -628,8 +576,7 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     // calc sumbk and check second error sumbk-bi*ki
     for (int i = 2; i <= 6; i++) { // i=2, ..., 6
         // for(int i=2;i<=s;i++){
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -645,9 +592,8 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
         rk_error += e[i] * k[i];
     }
     rk_error *= dt;
-    err = maxnorm(rk_error / controller.givescale(
-                                 m)); // TODO we only use m, not max(m, m+sumbk)
-                                      // for error estimate! Is this convenient?
+    err = maxnorm(rk_error / controller.givescale(m)); // TODO we only use m, not max(m, m+sumbk)
+                                                       // for error estimate! Is this convenient?
     // std::cout<<"Test"<<afvalue(rk_error(0, 0, 0,
     // 0))<<"\t"<<maxnorm(rk_error)<<"\t"<<err<<std::endl;
     if (err > 1.)
@@ -660,14 +606,12 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     // large error, we save comp cost of 2 stages
     if (controller.success(err, h) == false) {
         std::cout << "CONTROOOL" << std::endl;
-        return constant(10000000.0, state0.mesh.n0, state0.mesh.n1,
-                        state0.mesh.n2, 3, f64);
+        return constant(10000000.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     }
 
     // 7th and 8th stage
     for (int i = 7; i <= 8; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -677,15 +621,13 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     }
 
     // Calc sumbk
-    sumbk =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Calc second and more precise 4th order error estimate
-    rk_error =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -702,8 +644,7 @@ array LLG::DP78(const array& m, const double dt, double& err) {
     k[1] = fdmdt(m, heff);
     // Iterating over a-matrix, calculating k[i]s
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2,
-                          3, f64);
+        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -712,16 +653,14 @@ array LLG::DP78(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Calculating 8th order approx (local extrapolation)
-    sumbk =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         sumbk += bhat[i] * k[i];
     }
     sumbk *= dt;
 
     // Calculating 7th order approx for error approx
-    rk_error =
-        constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -738,9 +677,8 @@ LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
     // Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in),
     // atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){
 
-    if ((state0.material.mode == 0) || (state0.material.mode == 1) ||
-        (state0.material.mode == 2) || (state0.material.mode == 3) ||
-        (state0.material.mode == 5)) {
+    if ((state0.material.mode == 0) || (state0.material.mode == 1) || (state0.material.mode == 2) ||
+        (state0.material.mode == 3) || (state0.material.mode == 5)) {
         h = controller.hmax;
         hnext = controller.hmax;
     } else
@@ -813,17 +751,13 @@ LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
         //}
 
         // c[2]=0.2, c[3]=0.3, c[4]=0.8, c[5]=8.0/9.0;
-        a[2][1] = 0.2, a[3][1] = 3.0 / 40.0, a[3][2] = 9.0 / 40.0,
-        a[4][1] = 44.0 / 45.0, a[4][2] = -56.0 / 15.0, a[4][3] = 32.0 / 9.0,
-        a[5][1] = 19372.0 / 6561.0, a[5][2] = -25360.0 / 2187.0,
-        a[5][3] = 64448.0 / 6561.0, a[5][4] = -212.0 / 729.0,
-        a[6][1] = 9017.0 / 3168.0, a[6][2] = -355.0 / 33.0,
-        a[6][3] = 46732.0 / 5247.0, a[6][4] = 49.0 / 176.0,
-        a[6][5] = -5103.0 / 18656.0, a[7][1] = 35.0 / 384.0,
-        a[7][3] = 500.0 / 1113.0, a[7][4] = 125.0 / 192.0,
-        a[7][5] = -2187.0 / 6784.0, a[7][6] = 11.0 / 84.0,
-        e[1] = 71.0 / 57600.0, e[3] = -71.0 / 16695.0, e[4] = 71.0 / 1920.0,
-        e[5] = -17253.0 / 339200.0, e[6] = 22.0 / 525.0, e[7] = -1.0 / 40.0;
+        a[2][1] = 0.2, a[3][1] = 3.0 / 40.0, a[3][2] = 9.0 / 40.0, a[4][1] = 44.0 / 45.0, a[4][2] = -56.0 / 15.0,
+        a[4][3] = 32.0 / 9.0, a[5][1] = 19372.0 / 6561.0, a[5][2] = -25360.0 / 2187.0, a[5][3] = 64448.0 / 6561.0,
+        a[5][4] = -212.0 / 729.0, a[6][1] = 9017.0 / 3168.0, a[6][2] = -355.0 / 33.0, a[6][3] = 46732.0 / 5247.0,
+        a[6][4] = 49.0 / 176.0, a[6][5] = -5103.0 / 18656.0, a[7][1] = 35.0 / 384.0, a[7][3] = 500.0 / 1113.0,
+        a[7][4] = 125.0 / 192.0, a[7][5] = -2187.0 / 6784.0, a[7][6] = 11.0 / 84.0, e[1] = 71.0 / 57600.0,
+        e[3] = -71.0 / 16695.0, e[4] = 71.0 / 1920.0, e[5] = -17253.0 / 339200.0, e[6] = 22.0 / 525.0,
+        e[7] = -1.0 / 40.0;
     }
     // BS5 and BS5de
     if (state0.material.mode == 10 || state0.material.mode == 11) {

@@ -8,16 +8,14 @@ int main(int argc, char** argv) {
     for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
-    std::string filepath =
-        std::string(argc > 1 ? argv[1] : "output_magnum.af/");
+    std::string filepath = std::string(argc > 1 ? argv[1] : "output_magnum.af/");
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
     const int nx(argc > 3 ? std::stoi(argv[3]) : 128);
     const int ny(argc > 4 ? std::stoi(argv[4]) : 32);
     const double x(argc > 5 ? std::stod(argv[5]) : 100e-9);
     const double y(argc > 6 ? std::stod(argv[6]) : 25e-9);
-    std::cout << "read in values: " << nx << "\t" << ny << "\t" << x << "\t"
-              << y << "\t" << std::endl;
+    std::cout << "read in values: " << nx << "\t" << ny << "\t" << x << "\t" << y << "\t" << std::endl;
 
     int i_callback = 0;
     auto calc_hz = [nx, ny, x, y, filepath, &i_callback](double dz) -> double {
@@ -33,8 +31,7 @@ int main(int argc, char** argv) {
         // mesh.print(std::cout);
 
         // Initial magnetic field
-        af::array m_free_geom_for_meandemag =
-            af::constant(0, nx, ny, 1, 1, f64);
+        af::array m_free_geom_for_meandemag = af::constant(0, nx, ny, 1, 1, f64);
         af::array m = af::constant(0, mesh.dims, f64);
 
         for (int ix = 0; ix < nx; ix++) {
@@ -43,8 +40,7 @@ int main(int argc, char** argv) {
                 const double b = (double)(ny / 2);
                 const double rx = double(ix) - nx / 2.;
                 const double ry = double(iy) - ny / 2.;
-                const double r =
-                    pow(rx, 2) / pow(a, 2) + pow(ry, 2) / pow(b, 2);
+                const double r = pow(rx, 2) / pow(a, 2) + pow(ry, 2) / pow(b, 2);
                 if (r < 1) {
                     // if(positive_direction) m(ix, iy, af::span, xyz)=1;
                     // else m(ix, iy, af::span, xyz)=-1;
@@ -76,16 +72,13 @@ int main(int argc, char** argv) {
                          mesh_fl, filepath + "h_free_layer");
         vti_writer_micro(h(af::span, af::span, index_free_layer, af::span) *
                              af::tile(m_free_geom_for_meandemag, 1, 1, 1, 3),
-                         mesh_fl,
-                         filepath + "h_free_layer_it_" +
-                             std::to_string(i_callback));
+                         mesh_fl, filepath + "h_free_layer_it_" + std::to_string(i_callback));
 
         std::ofstream stream;
         stream.precision(12);
         stream.open(filepath + "m.dat");
 
-        stream << z_spacing[1] << ", "
-               << afvalue(h(nx / 2, ny / 2, index_free_layer, 0)) << ", "
+        stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, index_free_layer, 0)) << ", "
                << afvalue(h(nx / 2, ny / 2, index_free_layer, 1)) << ", "
                << afvalue(h(nx / 2, ny / 2, index_free_layer, 2)) << std::endl;
         // std::cout << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, 3, 0)) <<
@@ -97,20 +90,15 @@ int main(int argc, char** argv) {
         stream.close();
         i_callback++;
         return afvalue(
-            af::mean(af::mean(h(af::span, af::span, index_free_layer, 2) *
-                                  m_free_geom_for_meandemag,
-                              1),
-                     0));
+            af::mean(af::mean(h(af::span, af::span, index_free_layer, 2) * m_free_geom_for_meandemag, 1), 0));
     };
 
     std::cout.precision(18);
     // magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 9.9e-9, 10e-9, 10, 3);
     // auto result = zc.calc_x_and_f();
     NewtonIteration ni(calc_hz);
-    auto result =
-        ni.run(X0(5.001e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
-    std::cout << "result: x = " << result.first << ", f(x) = " << result.second
-              << std::endl;
+    auto result = ni.run(X0(5.001e-9), Precision(1e-8), EpsilonFactor(1e-10), Imax(100));
+    std::cout << "result: x = " << result.first << ", f(x) = " << result.second << std::endl;
 
     std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
     return 0;

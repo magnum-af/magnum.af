@@ -8,38 +8,30 @@ namespace magnumafcpp {
 class State {
   public:
     // Micromagnetic:
-    State(Mesh mesh_in, double Ms, af::array m_in, bool verbose = true,
-          bool mute_warning = false);
-    State(Mesh mesh_in, af::array Ms_field, af::array m_in, bool verbose = true,
-          bool mute_warning = false);
+    State(Mesh mesh_in, double Ms, af::array m_in, bool verbose = true, bool mute_warning = false);
+    State(Mesh mesh_in, af::array Ms_field, af::array m_in, bool verbose = true, bool mute_warning = false);
     // No Mesh:
-    State(af::array m, double Ms, bool verbose = true,
-          bool mute_warning = false);
-    State(af::array m, af::array Ms_field, bool verbose = true,
-          bool mute_warning = false);
+    State(af::array m, double Ms, bool verbose = true, bool mute_warning = false);
+    State(af::array m, af::array Ms_field, bool verbose = true, bool mute_warning = false);
     // Wrapping:
-    State(Mesh mesh_in, double Ms, long int m_in, bool verbose = true,
-          bool mute_warning = false);
-    State(Mesh mesh_in, long int Ms_field_ptr, long int m_in,
-          bool verbose = true, bool mute_warning = false);
+    State(Mesh mesh_in, double Ms, long int m_in, bool verbose = true, bool mute_warning = false);
+    State(Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose = true, bool mute_warning = false);
 
     State operator+(const af::array&) const;
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array
                                ///< m to values obtained from wrapped af.array
     long int get_m_addr();
     Mesh mesh{0, 0, 0, 0, 0, 0};
-    double t{0.}; // time
-    af::array m;  //!< magnetic field configuration
-    double Ms{0}; //!< Saturation magnetization in [J/T/m^3]
-    af::array
-        Ms_field; //!< Non-homugenuous, mesh dependent saturation magnetization
-                  //!< defined at every node in units of [J/T/m^3]. Is impicitly
-                  //!< set and used when magnetization has values of norm 0.
+    double t{0.};                            // time
+    af::array m;                             //!< magnetic field configuration
+    double Ms{0};                            //!< Saturation magnetization in [J/T/m^3]
+    af::array Ms_field;                      //!< Non-homugenuous, mesh dependent saturation magnetization
+                                             //!< defined at every node in units of [J/T/m^3]. Is impicitly
+                                             //!< set and used when magnetization has values of norm 0.
     void set_Ms_field(long int afarray_ptr); // for wrapping only
     long int get_Ms_field();
 
-    void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m,
-                                              af::array& Ms_field);
+    void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);
     void check_m_norm(double tol = 1e-6);
     unsigned long long steps{0};
     void Normalize(); ///< normalize the magnetization to 1

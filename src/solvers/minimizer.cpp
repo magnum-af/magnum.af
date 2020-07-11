@@ -16,10 +16,8 @@ double Minimizer::E(const State& state) {
     return solution;
 }
 
-Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max,
-                     double dm_max, int samples, bool info)
-    : scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max),
-      samples(samples), info(info) {}
+Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples, bool info)
+    : scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info) {}
 
 // Calculation of effective field
 af::array Minimizer::h(const State& state) {
@@ -38,9 +36,7 @@ af::array Minimizer::h(const State& state) {
     return solution;
 }
 
-af::array Minimizer::dm(const State& state) {
-    return cross4(state.m, cross4(state.m, h(state)));
-}
+af::array Minimizer::dm(const State& state) { return cross4(state.m, cross4(state.m, h(state))); }
 
 af::array Minimizer::m_next(const State& state, const double tau) {
 
@@ -54,33 +50,27 @@ af::array Minimizer::m_next(const State& state, const double tau) {
     const af::array Hz = H(af::span, af::span, af::span, 2);
 
     const af::array MxH = cross4(state.m, h(state));
-    const af::array N =
-        4 +
-        tau * tau *
-            dotproduct(MxH, MxH); // TODO check whether tau and N are scalars or
-                                  // scalar fields: N_i or N is sum((mhx, mxh)0,
-                                  // 1, 2, 3), i.e. constant for all indices
+    const af::array N = 4 + tau * tau * dotproduct(MxH, MxH); // TODO check whether tau and N are scalars or
+                                                              // scalar fields: N_i or N is sum((mhx, mxh)0,
+                                                              // 1, 2, 3), i.e. constant for all indices
     const af::array MxH_x = MxH(af::span, af::span, af::span, 0);
     const af::array MxH_y = MxH(af::span, af::span, af::span, 1);
     const af::array MxH_z = MxH(af::span, af::span, af::span, 2);
 
     af::array result = af::constant(0., state.mesh.dims, f64);
 
-    result(af::span, af::span, af::span, 0) =
-        (4 * Mx + 4 * tau * (MxH_y * Mz - MxH_z * My) +
-         tau * tau * Mx * (MxH_x * MxH_x - MxH_y * MxH_y - MxH_z * MxH_z) +
-         2 * tau * tau * MxH_x * (MxH_y * My + MxH_z * Mz)) /
-        N;
-    result(af::span, af::span, af::span, 1) =
-        (4 * My + 4 * tau * (MxH_z * Mx - MxH_x * Mz) +
-         tau * tau * My * (-MxH_x * MxH_x + MxH_y * MxH_y - MxH_z * MxH_z) +
-         2 * tau * tau * MxH_y * (MxH_z * Mz + MxH_x * Mx)) /
-        N;
-    result(af::span, af::span, af::span, 2) =
-        (4 * Mz + 4 * tau * (MxH_x * My - MxH_y * Mx) +
-         tau * tau * Mz * (-MxH_x * MxH_x - MxH_y * MxH_y + MxH_z * MxH_z) +
-         2 * tau * tau * MxH_z * (MxH_x * Mx + MxH_y * My)) /
-        N;
+    result(af::span, af::span, af::span, 0) = (4 * Mx + 4 * tau * (MxH_y * Mz - MxH_z * My) +
+                                               tau * tau * Mx * (MxH_x * MxH_x - MxH_y * MxH_y - MxH_z * MxH_z) +
+                                               2 * tau * tau * MxH_x * (MxH_y * My + MxH_z * Mz)) /
+                                              N;
+    result(af::span, af::span, af::span, 1) = (4 * My + 4 * tau * (MxH_z * Mx - MxH_x * Mz) +
+                                               tau * tau * My * (-MxH_x * MxH_x + MxH_y * MxH_y - MxH_z * MxH_z) +
+                                               2 * tau * tau * MxH_y * (MxH_z * Mz + MxH_x * Mx)) /
+                                              N;
+    result(af::span, af::span, af::span, 2) = (4 * Mz + 4 * tau * (MxH_x * My - MxH_y * Mx) +
+                                               tau * tau * Mz * (-MxH_x * MxH_x - MxH_y * MxH_y + MxH_z * MxH_z) +
+                                               2 * tau * tau * MxH_z * (MxH_x * Mx + MxH_y * My)) /
+                                              N;
 
     return result;
 }
@@ -92,9 +82,7 @@ void Minimizer::minimize(State& state) {
     std::list<double> last_dm_max;
     af::timer timer = af::timer::start();
 
-    while (last_dm_max.size() < samples ||
-           *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) >
-               dm_max) {
+    while (last_dm_max.size() < samples || *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) > dm_max) {
         af::timer t;
         if (info)
             t = af::timer::start();
@@ -121,11 +109,9 @@ void Minimizer::minimize(State& state) {
         // Next stepsize alternating tau1 and tau2
 
         if (step % 2 == 0) {
-            tau = full_inner_product(m_diff, m_diff) /
-                  full_inner_product(m_diff, dm_diff);
+            tau = full_inner_product(m_diff, m_diff) / full_inner_product(m_diff, dm_diff);
         } else {
-            tau = full_inner_product(m_diff, dm_diff) /
-                  full_inner_product(dm_diff, dm_diff);
+            tau = full_inner_product(m_diff, dm_diff) / full_inner_product(dm_diff, dm_diff);
         }
         // TODO handly zero division
 
@@ -136,12 +122,9 @@ void Minimizer::minimize(State& state) {
         // Increase step count
         step++;
         if (info)
-            std::cout << "step=" << step << " rate=" << 1. / af::timer::stop(t)
-                      << " tau=" << tau
-                      << " last_dm_max.size()=" << last_dm_max.size()
-                      << " dm_max=" << dm_max << " *std::max_element()="
-                      << *std::max_element(std::begin(last_dm_max),
-                                           std::end(last_dm_max))
+            std::cout << "step=" << step << " rate=" << 1. / af::timer::stop(t) << " tau=" << tau
+                      << " last_dm_max.size()=" << last_dm_max.size() << " dm_max=" << dm_max
+                      << " *std::max_element()=" << *std::max_element(std::begin(last_dm_max), std::end(last_dm_max))
                       << std::endl;
         // std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<<
         // tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " <<
@@ -150,7 +133,6 @@ void Minimizer::minimize(State& state) {
         // std::endl;
     }
     if (info)
-        std::cout << "Minimizer: time = " << af::timer::stop(timer)
-                  << std::endl;
+        std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
 }
 } // namespace magnumafcpp

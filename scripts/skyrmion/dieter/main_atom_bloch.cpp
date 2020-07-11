@@ -44,8 +44,7 @@ int main(int argc, char** argv) {
     Llg.llgterms.push_back(LlgTerm(new AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(
-        LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     if (!exists(path_mrelax)) {
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;

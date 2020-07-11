@@ -2,19 +2,15 @@
 
 using namespace magnumafcpp;
 
-void print_m(const af::array& m, std::string name,
-             std::ostream& stream = std::cout) {
+void print_m(const af::array& m, std::string name, std::ostream& stream = std::cout) {
     af::array m_mean = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << name << ": " << afvalue(m_mean(0, 0, 0, 0)) << ", "
-           << afvalue(m_mean(0, 0, 0, 1)) << ", " << afvalue(m_mean(0, 0, 0, 2))
-           << std::endl;
+    stream << name << ": " << afvalue(m_mean(0, 0, 0, 0)) << ", " << afvalue(m_mean(0, 0, 0, 1)) << ", "
+           << afvalue(m_mean(0, 0, 0, 2)) << std::endl;
 }
-void print_m(const af::array& m, std::ostream& stream = std::cout,
-             double factor = 1) {
+void print_m(const af::array& m, std::ostream& stream = std::cout, double factor = 1) {
     af::array m_mean = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << std::fixed << factor * afvalue(m_mean(0, 0, 0, 0)) << "\t"
-           << std::fixed << factor * afvalue(m_mean(0, 0, 0, 1)) << "\t"
-           << std::fixed << factor * afvalue(m_mean(0, 0, 0, 2));
+    stream << std::fixed << factor * afvalue(m_mean(0, 0, 0, 0)) << "\t" << std::fixed
+           << factor * afvalue(m_mean(0, 0, 0, 1)) << "\t" << std::fixed << factor * afvalue(m_mean(0, 0, 0, 2));
 }
 
 void print_layers(const af::array& m) {
@@ -32,8 +28,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < argc; i++) {
         std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
     }
-    std::string filepath =
-        std::string(argc > 1 ? argv[1] : "output_magnum.af/");
+    std::string filepath = std::string(argc > 1 ? argv[1] : "output_magnum.af/");
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
@@ -53,13 +48,11 @@ int main(int argc, char** argv) {
 
     const int zee_dir = (argc > 3 ? std::stoi(argv[3]) : 2); // 0 == x, 2 == z
     const std::string int_over_min =
-        (argc > 4 ? std::string(argv[4])
-                  : "int"); // true: use integrate, false: use minimizer
+        (argc > 4 ? std::string(argv[4]) : "int"); // true: use integrate, false: use minimizer
     // const bool int_over_min = (argc > 4 ? std::stob(argv[4]) : true);// true:
     // use integrate, false: use minimizer
-    const double hzee_max = (argc > 5 ? std::stod(argv[5]) : 0.12); //[Tesla]
-    const double integr_time =
-        (argc > 6 ? std::stod(argv[6]) : 4 * 10e-11); //[s]
+    const double hzee_max = (argc > 5 ? std::stod(argv[5]) : 0.12);          //[Tesla]
+    const double integr_time = (argc > 6 ? std::stod(argv[6]) : 4 * 10e-11); //[s]
     const int quater_steps = (argc > 7 ? std::stoi(argv[7]) : 10);
     // af::timer timer = af::timer::start();
     // Generating Objects
@@ -93,17 +86,15 @@ int main(int argc, char** argv) {
                 m(ix, iy, 0, 2) = 1;  // SAFM Layer 0 in z
                 m(ix, iy, 2, 2) = -1; // SAFM Layer 1 in -z
                 // TD//m(ix, iy, 4, 2) = 1;// Free Layer in z
-                m(ix, iy, 4, 0) = 1;                       // Free Layer in x
-                Ku1_field(ix, iy, 0, af::span) = Ku1_safm; // SAFM Layer 0 in z
-                Ku1_field(ix, iy, 2, af::span) = Ku1_safm; // SAFM Layer 1 in -z
-                Ku1_field(ix, iy, 4, af::span) =
-                    Ku1_freelayer; // Free Layer in x
+                m(ix, iy, 4, 0) = 1;                            // Free Layer in x
+                Ku1_field(ix, iy, 0, af::span) = Ku1_safm;      // SAFM Layer 0 in z
+                Ku1_field(ix, iy, 2, af::span) = Ku1_safm;      // SAFM Layer 1 in -z
+                Ku1_field(ix, iy, 4, af::span) = Ku1_freelayer; // Free Layer in x
             }
         }
     }
-    std::cout
-        << "Info: Mesh::ellipse(): n_cells should be approx a*b*M_PI*this->n2= "
-        << nx / 2 * ny / 2 * M_PI * nz << std::endl;
+    std::cout << "Info: Mesh::ellipse(): n_cells should be approx a*b*M_PI*this->n2= " << nx / 2 * ny / 2 * M_PI * nz
+              << std::endl;
     // af::array m = af::constant(0, mesh.dims, f64);
 
     State state(mesh, Ms, m, false);
@@ -131,9 +122,8 @@ int main(int argc, char** argv) {
     std::ofstream stream;
     stream.precision(12);
     stream.open(filepath + "h.dat");
-    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", "
-           << afvalue(h(nx / 2, ny / 2, 3, 1)) << ", "
-           << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
+    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", " << afvalue(h(nx / 2, ny / 2, 3, 1))
+           << ", " << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
     stream.close();
     timer.print_stage("calc h");
 
@@ -154,8 +144,7 @@ int main(int argc, char** argv) {
                 print_m(state.m(af::span, af::span, -1, af::span), std::cout);
                 std::cout << std::endl;
             }
-            timer.print_stage("relax " + std::to_string(time_relax * 1e9) +
-                              " [ns]");
+            timer.print_stage("relax " + std::to_string(time_relax * 1e9) + " [ns]");
             // vtr_writer(state.m, Mesh(nx, ny, nz, x/nx, y/ny, 0) , z_spacing,
             // filepath + "m_relax");
             state.vtr_writer(filepath + "m_relax");
@@ -167,11 +156,9 @@ int main(int argc, char** argv) {
             double integr_time_per_quater = integr_time / 4.;
             double rate = hzee_max / integr_time_per_quater; //[T/s]
             std::cout << "hzee_max= " << hzee_max << ", rate=" << rate
-                      << ", integr_time_per_quater=" << integr_time_per_quater
-                      << std::endl;
+                      << ", integr_time_per_quater=" << integr_time_per_quater << std::endl;
             // double rate = 0.34e6 ; //[T/s]
-            auto zee_func_llg = [hzee_max, rate,
-                                 zee_dir](State state) -> af::array {
+            auto zee_func_llg = [hzee_max, rate, zee_dir](State state) -> af::array {
                 double field_Tesla = 0;
                 if (state.t < hzee_max / rate)
                     field_Tesla = rate * state.t;
@@ -185,51 +172,37 @@ int main(int argc, char** argv) {
                     field_Tesla = rate * state.t - 4 * hzee_max;
                     std::cout << "NOTE: zee time out of range" << std::endl;
                 }
-                af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1,
-                                             state.mesh.n2, 3, f64);
+                af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
                 zee(af::span, af::span, af::span, zee_dir) =
-                    af::constant(field_Tesla / constants::mu0, state.mesh.n0,
-                                 state.mesh.n1, state.mesh.n2, 1, f64);
+                    af::constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
                 return zee;
             };
 
-            llg.llgterms.push_back(
-                LlgTerm(new NonequiExternalField(mesh, zee_func_llg)));
+            llg.llgterms.push_back(LlgTerm(new NonequiExternalField(mesh, zee_func_llg)));
             // llg.llgterms.push_back( LlgTerm (new
             // NonequiExternalField(zee_func_llg)));
             stream.open(filepath + "m.dat");
-            stream << "# step	<mx>    <my>    <mz>    hx      hy      hz"
-                   << std::endl;
+            stream << "# step	<mx>    <my>    <mz>    hx      hy      hz" << std::endl;
             while (state.t < 5 * hzee_max / rate) {
                 // while (state.t < 4* hzee_max/rate){
                 llg.step(state);
                 if (state.steps % 1 == 0) {
-                    af::array h_zee =
-                        llg.llgterms.back()->h(state) *
-                        constants::mu0; // in Tesla only for output
-                    std::cout << "t[ns]= " << std::fixed << state.t * 1e9
-                              << ", mx= " << std::fixed;
-                    print_m(state.m(af::span, af::span, -1, af::span),
-                            std::cout, 1 / (0.25 * M_PI));
+                    af::array h_zee = llg.llgterms.back()->h(state) * constants::mu0; // in Tesla only for output
+                    std::cout << "t[ns]= " << std::fixed << state.t * 1e9 << ", mx= " << std::fixed;
+                    print_m(state.m(af::span, af::span, -1, af::span), std::cout, 1 / (0.25 * M_PI));
                     std::cout << ", safm_l2=";
-                    print_m(state.m(af::span, af::span, 2, af::span), std::cout,
-                            1 / (0.25 * M_PI));
-                    std::cout
-                        << ", zee=" << std::fixed << afvalue(h_zee(0, 0, 0, 0))
-                        << "\t" << std::fixed << afvalue(h_zee(0, 0, 0, 1))
-                        << "\t" << std::fixed << afvalue(h_zee(0, 0, 0, 2));
+                    print_m(state.m(af::span, af::span, 2, af::span), std::cout, 1 / (0.25 * M_PI));
+                    std::cout << ", zee=" << std::fixed << afvalue(h_zee(0, 0, 0, 0)) << "\t" << std::fixed
+                              << afvalue(h_zee(0, 0, 0, 1)) << "\t" << std::fixed << afvalue(h_zee(0, 0, 0, 2));
                     std::cout << std::endl;
                     // stream << state.steps << "\t";
                     stream << state.t << "\t";
-                    print_m(state.m(af::span, af::span, -1, af::span), stream,
-                            1 / (0.25 * M_PI));
-                    stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", "
-                           << afvalue(h_zee(0, 0, 0, 1)) << ", "
+                    print_m(state.m(af::span, af::span, -1, af::span), stream, 1 / (0.25 * M_PI));
+                    stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
                            << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
                 }
                 if (state.steps % 100 == 0) {
-                    state.vtr_writer(filepath + "m_int" +
-                                     std::to_string(state.steps));
+                    state.vtr_writer(filepath + "m_int" + std::to_string(state.steps));
                 }
                 // if(state.steps % 1 == 0){vtr_writer(state.m, Mesh(nx, ny, nz,
                 // x/nx, y/ny, 0) , z_spacing, filepath + "m_int" +
@@ -250,8 +223,7 @@ int main(int argc, char** argv) {
         // filepath + "m_minimzed");
         state.vtr_writer(filepath + "m_minimized");
 
-        auto zee_func = [hzee_max, quater_steps,
-                         zee_dir](State state) -> af::array {
+        auto zee_func = [hzee_max, quater_steps, zee_dir](State state) -> af::array {
             double field_Tesla = 0;
             double rate = hzee_max / quater_steps; //[T/s]
             if (state.t < hzee_max / rate)
@@ -264,45 +236,36 @@ int main(int argc, char** argv) {
                 field_Tesla = 0;
                 std::cout << "WARNING ZEE time out of range" << std::endl;
             }
-            af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1,
-                                         state.mesh.n2, 3, f64);
+            af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
             zee(af::span, af::span, af::span, zee_dir) =
-                af::constant(field_Tesla / constants::mu0, state.mesh.n0,
-                             state.mesh.n1, state.mesh.n2, 1, f64);
+                af::constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
             return zee;
         };
 
         // hys loop
         state.t = 0;
         state.steps = 0;
-        minimizer.llgterms_.push_back(
-            LlgTerm(new NonequiExternalField(mesh, zee_func)));
+        minimizer.llgterms_.push_back(LlgTerm(new NonequiExternalField(mesh, zee_func)));
         stream.precision(12);
         stream.open(filepath + "m.dat");
-        stream << "# step	<mx>    <my>    <mz>    hx      hy      hz"
-               << std::endl;
+        stream << "# step	<mx>    <my>    <mz>    hx      hy      hz" << std::endl;
         double rate = hzee_max / quater_steps; //[T/s]
         while (state.t < 4 * hzee_max / rate) {
             minimizer.Minimize(state);
             // state.calc_mean_m(stream,
             // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,
             // 0, 0, 2)));
-            af::array h_zee =
-                minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state) *
-                constants::mu0;
+            af::array h_zee = minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state) * constants::mu0;
             std::cout << state.steps << "\t";
             print_m(state.m(af::span, af::span, -1, af::span), std::cout);
-            std::cout << ", zee=" << afvalue(h_zee(0, 0, 0, 0)) << ", "
-                      << afvalue(h_zee(0, 0, 0, 1)) << ", "
+            std::cout << ", zee=" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
                       << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
             stream << state.steps << "\t";
             print_m(state.m, stream);
-            stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", "
-                   << afvalue(h_zee(0, 0, 0, 1)) << ", "
+            stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
                    << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
             if (state.steps % 1 == 0) {
-                state.vtr_writer(filepath + "m_minimzed" +
-                                 std::to_string(state.steps));
+                state.vtr_writer(filepath + "m_minimzed" + std::to_string(state.steps));
                 // vtr_writer(state.m, Mesh(nx, ny, nz, x/nx, y/ny, 0) ,
                 // z_spacing, filepath + "m_minimzed" +
                 // std::to_string(state.steps));

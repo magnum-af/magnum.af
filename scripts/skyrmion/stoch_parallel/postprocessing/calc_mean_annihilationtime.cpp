@@ -36,8 +36,7 @@ int main(int argc, char** argv) {
         }
         mean_detect_time /= (double)vec_detect_time.size();
 
-        double unbiased_sample_variance =
-            0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
+        double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
         for (double n : vec_detect_time) {
             unbiased_sample_variance += pow(n - mean_detect_time, 2);
         }
@@ -47,17 +46,13 @@ int main(int argc, char** argv) {
         std::cout << "#mean_detect_time <<<< unbiased_sample_sigma <<<< "
                      "unbiased_sample_variance <<<< .size()"
                   << std::endl;
-        std::cout << mean_detect_time << "\t" << unbiased_sample_sigma << "\t"
-                  << unbiased_sample_variance << "\t" << vec_detect_time.size()
-                  << "\n"
+        std::cout << mean_detect_time << "\t" << unbiased_sample_sigma << "\t" << unbiased_sample_variance << "\t"
+                  << vec_detect_time.size() << "\n"
                   << std::endl;
 
-        ofstream stream_out(
-            (string(argv[2]) + "/mean_annihilationtime.dat").c_str(),
-            std::ios_base::trunc);
-        stream_out << mean_detect_time << "\t" << unbiased_sample_sigma << "\t"
-                   << unbiased_sample_variance << "\t" << vec_detect_time.size()
-                   << std::endl;
+        ofstream stream_out((string(argv[2]) + "/mean_annihilationtime.dat").c_str(), std::ios_base::trunc);
+        stream_out << mean_detect_time << "\t" << unbiased_sample_sigma << "\t" << unbiased_sample_variance << "\t"
+                   << vec_detect_time.size() << std::endl;
         stream_out << "#mean_detect_time <<<< unbiased_sample_sigma <<<< "
                       "unbiased_sample_variance <<<< vec_detect_time.size() "
                    << std::endl;

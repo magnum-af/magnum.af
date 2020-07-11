@@ -26,9 +26,8 @@ namespace magnumafcpp {
 
 class ZeroCrossing {
   public:
-    ZeroCrossing(std::function<double(double)> f, double precision = 1e-6,
-                 int max_runs = 5, double ix_min = 0, double ix_max = 1,
-                 int ix_n = 100, int verbose = true);
+    ZeroCrossing(std::function<double(double)> f, double precision = 1e-6, int max_runs = 5, double ix_min = 0,
+                 double ix_max = 1, int ix_n = 100, int verbose = true);
     std::pair<double, double> calc_x_and_f(); ///< Calculates x and f(x)
   private:
     std::function<double(double)> f;

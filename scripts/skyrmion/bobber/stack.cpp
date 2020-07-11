@@ -107,10 +107,8 @@ int main(int argc, char** argv) {
     // auto exch = LlgTerm (new ExchangeField(A));
     // TODO causes Nans//auto exch = LlgTerm (new
     // RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto exch = LlgTerm(new RKKYExchangeField(
-        RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
-    auto aniso = LlgTerm(
-        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh, RKKYindices));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     auto dmi = LlgTerm(new DmiField(SK_D, {0, 0, -1}));
     // auto dmi = LlgTerm (new DmiField(D, {0, 0, -1}));
@@ -128,8 +126,7 @@ int main(int argc, char** argv) {
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
         Llg.step(state);
-        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2)
-                  << "\t" << Llg.E(state) << std::endl;
+        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << Llg.E(state) << std::endl;
     }
     //    Llg.relax(state);
     state.write_vti(filepath + "m_relaxed");

@@ -77,8 +77,7 @@ int main(int argc, char** argv) {
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
         Llg.step(state);
-        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2)
-                  << "\t" << Llg.E(state) << std::endl;
+        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << Llg.E(state) << std::endl;
     }
     //    Llg.relax(state);
     state.write_vti(filepath + "m_relaxed");

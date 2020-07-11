@@ -24,8 +24,7 @@ int main(int argc, char** argv) {
     LBFGS_Minimizer minimizer = LBFGS_Minimizer();
     minimizer.llgterms_.push_back(LlgTerm(new DemagField(mesh, material)));
     minimizer.llgterms_.push_back(LlgTerm(new ExchangeField(mesh, material)));
-    std::cout << "Llgterms assembled in [s]: "
-              << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "Llgterms assembled in [s]: " << af::timer::stop(timer_llgterms) << std::endl;
 
     double f = minimizer.Minimize(state);
     std::cout << "main: f= " << f << std::endl;
@@ -35,7 +34,6 @@ int main(int argc, char** argv) {
     af::print("minimizer", af::mean(state.m, 0));
     vti_writer_micro(state.m, state.mesh, filepath + "m_minimized");
     LLGIntegrator llg = LLGIntegrator(minimizer.llgterms_);
-    std::cout << red("E= ") << llg.E(state) << green(" (as reference)")
-              << std::endl;
+    std::cout << red("E= ") << llg.E(state) << green(" (as reference)") << std::endl;
     return 0;
 }

@@ -9,8 +9,7 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t"
-           << get_avg << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t" << get_avg << std::endl;
     // myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t"
     // <<meani(state.m, 1)<< "\t" <<meani(state.m, 2) << "\t" << get_avg <<
     // std::endl; myfile <<fabs(meani(state.m, 0))<< "\t" <<fabs(meani(state.m,
@@ -36,8 +35,7 @@ void calcm(State state, std::ostream& myfile, double get_avg) {
 
 class Detector {
   public:
-    Detector(unsigned int length_in, double threshold_in)
-        : length(length_in), threshold(threshold_in) {}
+    Detector(unsigned int length_in, double threshold_in) : length(length_in), threshold(threshold_in) {}
     bool gt{true};       // avg greater than (gt) threshold:  if true, avg >
                          // threshold, else avg < threshold
     unsigned int length; // = 3000;
@@ -162,8 +160,7 @@ int main(int argc, char** argv) {
         llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
         llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
         llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-        llgterm.push_back(
-            llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+        llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
         LLG Llg(state, llgterm);
 
@@ -197,14 +194,12 @@ int main(int argc, char** argv) {
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
 
     std::ofstream ofs_antime((filepath + "antime.dat").c_str());
     ofs_antime.precision(12);
-    ofs_antime << "#detect_time << \t << state.t << \t << i <<\t << reverse "
-               << std::endl;
+    ofs_antime << "#detect_time << \t << state.t << \t << i <<\t << reverse " << std::endl;
     std::vector<double> antimes; // appends annihilation time for each iteration
                                  // to calculate mean
     // Iterations to obtain mean annihilaiton time
@@ -230,46 +225,38 @@ int main(int argc, char** argv) {
                 calcm(state, stream_m, detector.get_avg());
             if (i < 100)
                 vti_writer_atom(state.m, state.mesh,
-                                filepath + "/skyrm/dense_skyrm" +
-                                    std::to_string(j) + "_" +
+                                filepath + "/skyrm/dense_skyrm" + std::to_string(j) + "_" +
                                     std::to_string(i)); // state.t*pow(10, 9)
             if (i % (int)(1e-10 / dt) == 0) {
                 vti_writer_atom(state.m, state.mesh,
-                                filepath + "/skyrm/skyrm" + std::to_string(j) +
-                                    "_" +
+                                filepath + "/skyrm/skyrm" + std::to_string(j) + "_" +
                                     std::to_string(i)); // state.t*pow(10, 9)
-                std::cout << state.t << " , i= " << i
-                          << ", mz    = " << meani(state.m, 2)
+                std::cout << state.t << " , i= " << i << ", mz    = " << meani(state.m, 2)
                           << ", avg_mz= " << detector.get_avg() << std::endl;
                 if (GetDirSize(filepath) > dir_size_max) {
-                    std::cout << "WARNING: Output Directory is larger than "
-                              << GetDirSize(filepath) << " Bytes, ABORTING!"
-                              << std::endl;
+                    std::cout << "WARNING: Output Directory is larger than " << GetDirSize(filepath)
+                              << " Bytes, ABORTING!" << std::endl;
                     return 1;
                 }
             }
             i++;
         }
         vti_writer_atom(state.m, state.mesh,
-                        filepath + "skyrm" +
-                            std::to_string(j)); // state.t*pow(10, 9)
+                        filepath + "skyrm" + std::to_string(j)); // state.t*pow(10, 9)
 
         double detect_time = state.t;
         Detector detector2 = Detector((int)(5e-12 / dt), threshold);
         detector2.gt = false;
         int reverse = 0;
-        for (std::list<double>::reverse_iterator rit = detector.data.rbegin();
-             rit != detector.data.rend(); ++rit) {
+        for (std::list<double>::reverse_iterator rit = detector.data.rbegin(); rit != detector.data.rend(); ++rit) {
             detector2.add_data(*rit);
             reverse++;
             if (detector2.event == true)
                 break;
         }
         detect_time -= reverse * dt;
-        std::cout << "Preliminiary annihilation time at " << detect_time
-                  << "[s]" << std::endl;
-        ofs_antime << detect_time << "\t" << state.t << "\t" << i << "\t"
-                   << reverse << std::endl;
+        std::cout << "Preliminiary annihilation time at " << detect_time << "[s]" << std::endl;
+        ofs_antime << detect_time << "\t" << state.t << "\t" << i << "\t" << reverse << std::endl;
         antimes.push_back(detect_time);
 
         stream_m.close();
@@ -283,8 +270,7 @@ int main(int argc, char** argv) {
     }
     mean_antime /= (double)antimes.size();
 
-    double unbiased_sample_variance =
-        0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
+    double unbiased_sample_variance = 0; // s^2= 1/(n-1) sum(y_i - y_mean)^2 from i = 1 to n
     for (double n : antimes) {
         unbiased_sample_variance += pow(n - mean_antime, 2);
     }
@@ -293,17 +279,15 @@ int main(int argc, char** argv) {
 
     std::cout << "antimes.size() = " << antimes.size() << std::endl;
     std::cout << "mean_antime = " << mean_antime << std::endl;
-    std::cout << "unbiased_sample_variance = " << unbiased_sample_variance
-              << std::endl;
-    std::cout << "unbiased_sample_sigma = " << unbiased_sample_sigma
-              << std::endl;
+    std::cout << "unbiased_sample_variance = " << unbiased_sample_variance << std::endl;
+    std::cout << "unbiased_sample_sigma = " << unbiased_sample_sigma << std::endl;
     ofs_antime.open((filepath + "mean_antime.dat").c_str());
     ofs_antime.precision(12);
     ofs_antime << "#mean_antime << unbiased_sample_variance << "
                   "unbiased_sample_sigma<< antimes.size() "
                << std::endl;
-    ofs_antime << mean_antime << "\t" << unbiased_sample_variance << "\t"
-               << unbiased_sample_sigma << "\t" << antimes.size() << std::endl;
+    ofs_antime << mean_antime << "\t" << unbiased_sample_variance << "\t" << unbiased_sample_sigma << "\t"
+               << antimes.size() << std::endl;
     ofs_antime.close();
 
     return 0;

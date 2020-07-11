@@ -36,9 +36,8 @@ TEST(MicroDemag, EnergyOfHomogeneousCubeWithAirbox) {
     double Ms = 1e5;
 
     af::array m = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(af::seq(nx / 2, 2 * nx - nx / 2 - 1),
-      af::seq(ny / 2, 2 * ny - ny / 2 - 1),
-      af::seq(nz / 2, 2 * nz - nz / 2 - 1), 0) = 1;
+    m(af::seq(nx / 2, 2 * nx - nx / 2 - 1), af::seq(ny / 2, 2 * ny - ny / 2 - 1), af::seq(nz / 2, 2 * nz - nz / 2 - 1),
+      0) = 1;
     State state(mesh, Ms, m, false);
     DemagField demag(mesh);
 

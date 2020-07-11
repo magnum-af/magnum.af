@@ -66,19 +66,15 @@ int main(int argc, char** argv) {
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 
     std::vector<State> inputimages;
     for (int i = 0; i < n_interp; i++) {
-        vti_reader(
-            m, testmesh,
-            std::string(
-                "/home/paul/git/magnum.af/Data/phasespace/1n/hotfix_sign/d") +
-                argv[3] + "/k" + argv[4] + "/skyrm_image" + std::to_string(i) +
-                ".vti");
+        vti_reader(m, testmesh,
+                   std::string("/home/paul/git/magnum.af/Data/phasespace/1n/hotfix_sign/d") + argv[3] + "/k" + argv[4] +
+                       "/skyrm_image" + std::to_string(i) + ".vti");
         inputimages.push_back(State(mesh, material, m));
     }
 
@@ -96,8 +92,7 @@ int main(int argc, char** argv) {
             idx_max_element = i;
     }
     std::cout << idx_max_element << "   " << std::endl;
-    af::array tau_s =
-        string.images[idx_max_element].m - string.images[idx_max_element - 1].m;
+    af::array tau_s = string.images[idx_max_element].m - string.images[idx_max_element - 1].m;
     tau_s = renormalize(tau_s);
     // TODO add detRK4 of stoch_integrator with fdmdt= -gradV + 2 (-gradV,
     // tau_s) tau_s, -gradV is  detfdmdt

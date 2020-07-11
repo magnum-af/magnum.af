@@ -63,8 +63,7 @@ int main(int argc, char** argv) {
     // AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(
-        LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

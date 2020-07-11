@@ -45,8 +45,7 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, (filepath + "/minit").c_str());
 
     std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
     LLG Llg(state, llgterm);
     if (compare(Llg.E(state), -2 * material.K_atom))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
@@ -54,15 +53,13 @@ int main(int argc, char** argv) {
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)),
-                2 * material.K_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 2)),
-                2 * material.K_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     // std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
     // std::cout << "Analytical= " << analytical <<std::endl;
@@ -89,8 +86,7 @@ int main(int argc, char** argv) {
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)),
-                2 * material.K_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
@@ -154,8 +150,7 @@ int main(int argc, char** argv) {
     state = State(mesh, material, m);
 
     llgterm.pop_back();
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
     // TODO this leads to compiler error
     // Llg=LLG(state, llgterm);
     LLG Llg2(state, llgterm);
@@ -165,15 +160,13 @@ int main(int argc, char** argv) {
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 0, 0, 2)),
-                2 * material.K_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 0, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 0)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 1)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 2)),
-                2 * material.K_atom / constants::mu0 / material.p))
+    if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     ////    //-------------------------------------------------------
     ////    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);

@@ -3,8 +3,7 @@
 
 namespace magnumafcpp {
 
-AtomisticExchangeField::AtomisticExchangeField(double J_atom)
-    : J_atom(J_atom) {}
+AtomisticExchangeField::AtomisticExchangeField(double J_atom) : J_atom(J_atom) {}
 
 af::array AtomisticExchangeField::h(const State& state) {
 

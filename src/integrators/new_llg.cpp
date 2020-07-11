@@ -5,13 +5,10 @@
 
 namespace magnumafcpp {
 
-LLGIntegrator::LLGIntegrator(double alpha, std::string scheme,
-                             Controller controller, bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha),
-      dissipation_term_only(dissipation_term_only) {}
+LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only)
+    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms,
-                             std::string scheme, Controller controller,
+LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme, Controller controller,
                              bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(llgterms),
       dissipation_term_only(dissipation_term_only) {}
@@ -32,14 +29,11 @@ af::array LLGIntegrator::f(const State& state) {
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
         af::array heff = fheff(state);
-        return -alpha * constants::gamma / (1. + std::pow(alpha, 2)) *
-               cross4(state.m, cross4(state.m, heff));
+        return -alpha * constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
     } else {
         af::array heff = fheff(state);
-        return -constants::gamma / (1. + std::pow(alpha, 2)) *
-                   cross4(state.m, heff) -
-               alpha * constants::gamma / (1. + std::pow(alpha, 2)) *
-                   cross4(state.m, cross4(state.m, heff));
+        return -constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, heff) -
+               alpha * constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
     }
     // time_fdmdt+=af::timer::stop(timer_fdmdt);
 }
@@ -53,8 +47,7 @@ double LLGIntegrator::E(const State& state) {
     return solution;
 }
 
-void LLGIntegrator::relax(State& state, const double precision,
-                          const unsigned eval_E, const unsigned iwritecout,
+void LLGIntegrator::relax(State& state, const double precision, const unsigned eval_E, const unsigned iwritecout,
                           const bool verbose) {
     double start_time = state.t;
     af::timer t = af::timer::start();
@@ -68,8 +61,8 @@ void LLGIntegrator::relax(State& state, const double precision,
             if (verbose) {
                 printf("relaxing: step=%llu, rel_diff= %e, <mx>=%f, <my>=%f, "
                        "<mz>=%f\n",
-                       state.steps, std::fabs((E_prev - E(state)) / E_prev),
-                       state.meani(0), state.meani(1), state.meani(2));
+                       state.steps, std::fabs((E_prev - E(state)) / E_prev), state.meani(0), state.meani(1),
+                       state.meani(2));
             }
         }
     }

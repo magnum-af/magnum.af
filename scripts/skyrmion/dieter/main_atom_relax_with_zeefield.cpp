@@ -60,8 +60,7 @@ int main(int argc, char** argv) {
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
     zeeswitch(0, 0, 0, 2) = -0.07 * pow(state.Ms, 2) * constants::mu0;
@@ -80,9 +79,7 @@ int main(int argc, char** argv) {
             state.m = Llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps
-                      << "reldiff= " << fabs((E_prev - Llg.E(state)) / E_prev)
-                      << std::endl;
+            std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
     }
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, filepath + "relax");
@@ -95,9 +92,8 @@ int main(int argc, char** argv) {
     // vti_writer_atom(Llg.Fieldterms[3]->h(state), mesh , filepath + "aAni");
     // vti_writer_atom(Llg.Fieldterms[4]->h(state), mesh , filepath + "aZee");
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for "
-              << Llg.counter_accepted + Llg.counter_reject << " steps, thereof "
-              << Llg.counter_accepted << " Steps accepted, "
-              << Llg.counter_reject << " Steps rejected" << std::endl;
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
+              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+              << " Steps rejected" << std::endl;
     return 0;
 }

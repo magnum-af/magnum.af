@@ -59,8 +59,7 @@ int main(int argc, char** argv) {
     std::vector<llgt_ptr> llgterm;
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(J_atom)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
     af::array zee = af::constant(0, mesh.dims, f64);
     zee(af::span, af::span, af::span, 2) = ext;
@@ -71,24 +70,14 @@ int main(int argc, char** argv) {
     af::timer t = af::timer::start();
     Llg.relax(state, 1e-12, 100, 100);
 
-    af::print(
-        "exch",
-        af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2),
-                 3));
-    af::print(
-        "dmi ",
-        af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2),
-                 3));
-    af::print(
-        "ani ",
-        af::mean(af::mean(af::mean(af::mean(llgterm[2]->h(state), 0), 1), 2),
-                 3));
+    af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
+    af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
+    af::print("ani ", af::mean(af::mean(af::mean(af::mean(llgterm[2]->h(state), 0), 1), 2), 3));
 
     state.calc_mean_m(std::cout);
     vti_writer_atom(state.m, mesh, filepath + "relax");
 
-    std::cout << "timerelax [af-s]: " << af::timer::stop(t)
-              << ", steps = " << state.steps << std::endl;
+    std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
 
     af::array last = constant(0, mesh.dims, f64);
     last(af::span, af::span, af::span, 2) = 1;
@@ -107,19 +96,15 @@ int main(int argc, char** argv) {
     double string_abort_abs_diff = 1e-27;
 
     String string(state, inputimages, n_interp, string_dt, Llg);
-    double barrier = string.run(filepath, string_abort_rel_diff,
-                                string_abort_abs_diff, string_steps);
+    double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
     // without demag and zee//double expected_barrier = 4.420526609492e-20;
     double expected_barrier = 1.045386540512e-19; // Value with demag and zee
-    double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier) /
-                              (barrier + expected_barrier);
+    double rel_diff_barrier = 2 * std::fabs(barrier - expected_barrier) / (barrier + expected_barrier);
     if (rel_diff_barrier < 1e-3) {
-        std::cout << "Barrier as expected, relative difference to expected is "
-                  << rel_diff_barrier << std::endl;
+        std::cout << "Barrier as expected, relative difference to expected is " << rel_diff_barrier << std::endl;
     } else {
-        std::cout << "Warning, barrier differs from expected with "
-                  << rel_diff_barrier << std::endl;
+        std::cout << "Warning, barrier differs from expected with " << rel_diff_barrier << std::endl;
     }
     return 0;
 }

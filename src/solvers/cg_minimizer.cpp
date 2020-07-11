@@ -24,8 +24,7 @@ af::array CG_Minimizer::Heff(const State& state) {
     return solution;
 }
 
-double CG_Minimizer::EnergyAndGradient(const State& state,
-                                       af::array& gradient) {
+double CG_Minimizer::EnergyAndGradient(const State& state, af::array& gradient) {
     if (llgterms_.size() == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
@@ -42,8 +41,7 @@ double CG_Minimizer::EnergyAndGradient(const State& state,
         h += temp_h;
         energy += llgterms_[i]->E(state, temp_h);
     }
-    gradient =
-        1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
+    gradient = 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }

@@ -18,8 +18,7 @@ int main(int argc, char** argv) {
     setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     info();
     StageTimer timer;
-    std::array<std::string, 5> llgnames = {"demag", "exch ", "aniso", "dmi  ",
-                                           "ext  "};
+    std::array<std::string, 5> llgnames = {"demag", "exch ", "aniso", "dmi  ", "ext  "};
 
     // Calculating m_relaxed.vti
     af::array m_relaxed;
@@ -62,8 +61,7 @@ int main(int argc, char** argv) {
         // defining interactions
         auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
         auto exch = LlgTerm(new ExchangeField(A));
-        auto aniso = LlgTerm(
-            new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+        auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
         af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
@@ -80,11 +78,9 @@ int main(int argc, char** argv) {
             // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
             while (state_1.t < 3e-9) {
                 if (state_1.steps % 100 == 0)
-                    state_1.write_vti(filepath + "m_step" +
-                                      std::to_string(state_1.steps));
+                    state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
                 llg.step(state_1);
-                std::cout << std::scientific << state_1.steps << "\t"
-                          << state_1.t << "\t" << state_1.meani(2) << "\t"
+                std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t"
                           << llg.E(state_1) << std::endl;
             }
             // Llg.relax(state_1);
@@ -100,8 +96,7 @@ int main(int argc, char** argv) {
 
     // Looping over nz
     std::ofstream stream(filepath + "m_and_E.dat");
-    stream << "#steps, time, mz, E, demag , exch , aniso , dmi , ext"
-           << std::endl;
+    stream << "#steps, time, mz, E, demag , exch , aniso , dmi , ext" << std::endl;
     for (int nz = 1; nz < 20; nz++) {
         // Parameter initialization
         const int nx = 100, ny = 100;
@@ -143,8 +138,7 @@ int main(int argc, char** argv) {
         auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
         auto exch = LlgTerm(new ExchangeField(A));
         // auto exch = LlgTerm (new SparseExchangeField(A, mesh));
-        auto aniso = LlgTerm(
-            new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+        auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
         af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
@@ -153,16 +147,14 @@ int main(int argc, char** argv) {
         LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
         timer.print_stage("init ");
 
-        std::cout << std::scientific << nz << ", t=" << state_1.t
-                  << ", mz=" << state_1.meani(2) << ", E=" << llg.E(state_1);
+        std::cout << std::scientific << nz << ", t=" << state_1.t << ", mz=" << state_1.meani(2)
+                  << ", E=" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "="
-                      << llg.llgterms[i]->E(state_1);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_1);
         }
         std::cout << std::endl;
 
-        stream << std::scientific << nz << "\t" << state_1.t << "\t"
-               << state_1.meani(2) << "\t" << llg.E(state_1);
+        stream << std::scientific << nz << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
             stream << "\t" << llg.llgterms[i]->E(state_1);
         }

@@ -8,8 +8,7 @@ double x_sqare(double x) { return pow(x, 2) - 1; }
 
 TEST(Util, NetwonIteration) {
     NewtonIteration ni(x_sqare, Verbose(false));
-    auto res =
-        ni.run(X0(1e10), Precision(1e-20), EpsilonFactor(1e-4), Imax(100));
+    auto res = ni.run(X0(1e10), Precision(1e-20), EpsilonFactor(1e-4), Imax(100));
     EXPECT_NEAR(res.first, 1, 1e-20);
     EXPECT_NEAR(res.second, 0, 1e-20);
 }

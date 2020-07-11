@@ -22,13 +22,11 @@ using namespace magnumafcpp;
 using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 // void calcm(State state, std::ostream& myfile);
-void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx,
-           int spny, int spnz);
+void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz);
 void calcm_autodetect(State state, std::ostream& myfile) {
     // TODOsum(state.m(span, span, span, 0), 0)
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t"
-           << meani(state.m, 1) << "\t" << meani(state.m, 2) << "\t"
-           << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
+           << meani(state.m, 2) << "\t" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -99,16 +97,12 @@ int main(int argc, char** argv) {
 
     // CASE 2
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq((nx - spnx) / 2 + 1, end - (nx - spnx) / 2 - 1),
-      seq((ny - spny) / 2, end - (ny - spny) / 2),
-      seq((nz - spnz) / 2, end - (nz - spnz) / 2), 0) =
-        constant(1.0, spnx - 2, spny, spnz, 1, f64);
-    m((ny - spny) / 2, seq((ny - spny) / 2, end - (ny - spny) / 2),
-      seq((nz - spnz) / 2, end - (nz - spnz) / 2), 1) =
+    m(seq((nx - spnx) / 2 + 1, end - (nx - spnx) / 2 - 1), seq((ny - spny) / 2, end - (ny - spny) / 2),
+      seq((nz - spnz) / 2, end - (nz - spnz) / 2), 0) = constant(1.0, spnx - 2, spny, spnz, 1, f64);
+    m((ny - spny) / 2, seq((ny - spny) / 2, end - (ny - spny) / 2), seq((nz - spnz) / 2, end - (nz - spnz) / 2), 1) =
         constant(1.0, 1, spny, spnz, 1, f64);
-    m(-(ny - spny) / 2 - 1, seq((ny - spny) / 2, end - (ny - spny) / 2),
-      seq((nz - spnz) / 2, end - (nz - spnz) / 2), 1) =
-        constant(1.0, 1, spny, spnz, 1, f64);
+    m(-(ny - spny) / 2 - 1, seq((ny - spny) / 2, end - (ny - spny) / 2), seq((nz - spnz) / 2, end - (nz - spnz) / 2),
+      1) = constant(1.0, 1, spny, spnz, 1, f64);
     // std::cout << m(seq((nx-spnx)/2+1, end-(nx-spnx)/2-1), seq((ny-spny)/2,
     // end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 0).dims() <<
     // std::endl; std::cout << constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1,
@@ -125,10 +119,8 @@ int main(int argc, char** argv) {
 
     // CASE 2
     state.Ms = constant(0.0, state.mesh.dims, f64);
-    state.Ms(seq((nx - spnx) / 2, end - (nx - spnx) / 2),
-             seq((ny - spny) / 2, end - (ny - spny) / 2),
-             seq((nz - spnz) / 2, end - (nz - spnz) / 2), span) =
-        constant(state.Ms, spnx, spny, spnz, 3, f64);
+    state.Ms(seq((nx - spnx) / 2, end - (nx - spnx) / 2), seq((ny - spny) / 2, end - (ny - spny) / 2),
+             seq((nz - spnz) / 2, end - (nz - spnz) / 2), span) = constant(state.Ms, spnx, spny, spnz, 3, f64);
     // CASE 2
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
@@ -201,21 +193,17 @@ int main(int argc, char** argv) {
     stream.close();
     return 0;
 }
-void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx,
-           int spny, int spnz) {
+void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz) {
     myfile << std::setw(12) << state.t << "\t"
-           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2),
-                            seq((ny - spny) / 2, end - (ny - spny) / 2),
+           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2), seq((ny - spny) / 2, end - (ny - spny) / 2),
                             seq((nz - spnz) / 2, end - (nz - spnz) / 2)),
                     0)
            << "\t"
-           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2),
-                            seq((ny - spny) / 2, end - (ny - spny) / 2),
+           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2), seq((ny - spny) / 2, end - (ny - spny) / 2),
                             seq((nz - spnz) / 2, end - (nz - spnz) / 2)),
                     1)
            << "\t"
-           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2),
-                            seq((ny - spny) / 2, end - (ny - spny) / 2),
+           << meani(state.m(seq((nx - spnx) / 2, end - (nx - spnx) / 2), seq((ny - spny) / 2, end - (ny - spny) / 2),
                             seq((nz - spnz) / 2, end - (nz - spnz) / 2)),
                     2)
            << "\t" << std::endl;

@@ -7,8 +7,7 @@
 namespace magnumafcpp {
 
 using RKKY_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
-using Exchange_values =
-    NamedType<const af::array&, struct NamedTypeRKKY_values>;
+using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
 
 /// Combined Field for RKKY interaction between z-neighbour-cells and exchange
 /// interaction between not-RKKY-coupled cells.
@@ -37,11 +36,10 @@ using Exchange_values =
 
 class RKKYExchangeField : public IntegratorTermMeshBase {
   public:
-    RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values,
-                      Mesh mesh, const af::array& rkky_indices = af::array(),
-                      bool verbose = true, bool COO = true);
-    RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh,
-                      long int rkky_indices, bool verbose = true);
+    RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
+                      const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);
+    RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
+                      bool verbose = true);
 
     af::array h(const State& state); // Field contribution
 
@@ -49,16 +47,11 @@ class RKKYExchangeField : public IntegratorTermMeshBase {
 
     const af::array matr; // TODO private
   private:
-    af::array calc_CSR_matrix(const af::array& RKKY_field,
-                              const af::array& A_exchange_field, const Mesh&,
-                              const af::array& rkky_indices,
-                              const bool verbose);
-    af::array calc_COO_matrix(const af::array& RKKY_field,
-                              const af::array& A_exchange_field, const Mesh&,
-                              const af::array& rkky_indices,
-                              const bool verbose);
-    int findex(unsigned i0, unsigned i1, unsigned i2, unsigned im,
-               const Mesh& mesh);
+    af::array calc_CSR_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&,
+                              const af::array& rkky_indices, const bool verbose);
+    af::array calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&,
+                              const af::array& rkky_indices, const bool verbose);
+    int findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh);
     double af_time{0};
 };
 } // namespace magnumafcpp

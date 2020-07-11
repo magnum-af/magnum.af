@@ -4,20 +4,17 @@
 namespace magnumafcpp {
 
 std::array<double, 3> get_normalized_vector(std::array<double, 3> vector) {
-    double norm =
-        sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));
-    return std::array<double, 3>{vector[0] / norm, vector[1] / norm,
-                                 vector[2] / norm};
+    double norm = sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));
+    return std::array<double, 3>{vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
 
-AtomisticDmiField::AtomisticDmiField(const double D_atom,
-                                     std::array<double, 3> D_atom_axis)
+AtomisticDmiField::AtomisticDmiField(const double D_atom, std::array<double, 3> D_atom_axis)
     : D_atom(D_atom), D_atom_axis(get_normalized_vector(D_atom_axis)) {}
 
-AtomisticDmiField::AtomisticDmiField(const double D_atom, double D_atom_axis_x,
-                                     double D_atom_axis_y, double D_atom_axis_z)
-    : D_atom(D_atom), D_atom_axis(get_normalized_vector(std::array<double, 3>{
-                          D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
+AtomisticDmiField::AtomisticDmiField(const double D_atom, double D_atom_axis_x, double D_atom_axis_y,
+                                     double D_atom_axis_z)
+    : D_atom(D_atom),
+      D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
 
 af::array AtomisticDmiField::h(const State& state) {
     af::timer timer_dmi = af::timer::start();
@@ -40,8 +37,7 @@ af::array AtomisticDmiField::h(const State& state) {
     // dmz/dz
     filtr_fd1(1, 1, 0, 2) = 1;
     filtr_fd1(1, 1, 2, 2) = -1;
-    af::array first =
-        convolve(state.m, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    af::array first = convolve(state.m, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
     // Make Divergence
     first = sum(first, 3);
     first = tile(first, 1, 1, 1, 3);

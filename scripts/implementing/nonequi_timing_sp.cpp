@@ -39,11 +39,9 @@ int main(int argc, char** argv) {
             for (int j = 0; j < nz; j++) {
                 z_spacing.push_back(z / nz);
             }
-            llgterm.push_back(LlgTerm(
-                new NonEquiDemagField(mesh, z_spacing, true, false, 1)));
+            llgterm.push_back(LlgTerm(new NonEquiDemagField(mesh, z_spacing, true, false, 1)));
         } else {
-            llgterm.push_back(
-                LlgTerm(new DemagField(mesh, material, true, false, 1)));
+            llgterm.push_back(LlgTerm(new DemagField(mesh, material, true, false, 1)));
         }
         llgterm.push_back(LlgTerm(new ExchangeField(mesh, material)));
         LLGIntegrator Llg(llgterm);
@@ -78,16 +76,14 @@ int main(int argc, char** argv) {
             state.calc_mean_m(stream);
         }
         double timeintegrate = af::timer::stop(t);
-        std::cout << "time integrate 1ns [af-s]: " << timeintegrate
-                  << std::endl;
+        std::cout << "time integrate 1ns [af-s]: " << timeintegrate << std::endl;
         vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
         stream.close();
         double total = af::timer::stop(total_time);
         std::cout << "total [af-s]: " << total << std::endl;
 
         stream.open(filepath + "timing.dat", std::ofstream::app);
-        stream << nz << "\t" << total << "\t" << timerelax << "\t"
-               << timeintegrate << std::endl;
+        stream << nz << "\t" << total << "\t" << timerelax << "\t" << timeintegrate << std::endl;
         stream.close();
     }
     return 0;

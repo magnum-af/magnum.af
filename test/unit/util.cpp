@@ -21,12 +21,8 @@ TEST(Util, SerialTriangularMatrixTest) {
                     EXPECT_EQ(k, kk);
 
                     // lamda wrapping (just for demonstration)
-                    auto k2ij_lambda = [n](const int k) -> std::pair<int, int> {
-                        return util::k2ij(k, n);
-                    };
-                    auto ij2k_lambda = [n](const int i, const int j) -> int {
-                        return util::ij2k(i, j, n);
-                    };
+                    auto k2ij_lambda = [n](const int k) -> std::pair<int, int> { return util::k2ij(k, n); };
+                    auto ij2k_lambda = [n](const int i, const int j) -> int { return util::ij2k(i, j, n); };
 
                     const int kk_l = ij2k_lambda(i, j);
                     std::pair<int, int> ij_l = k2ij_lambda(k);
@@ -87,8 +83,7 @@ TEST(Util, 4DimStrideAccessTest) {
         for (int j = 0; j < nj; j++) {
             for (int k = 0; k < nk; k++) {
                 for (int l = 0; l < nl; l++) {
-                    EXPECT_EQ(afvalue(a(i, j, k, l)),
-                              util::stride(i, j, k, l, ni, nj, nk));
+                    EXPECT_EQ(afvalue(a(i, j, k, l)), util::stride(i, j, k, l, ni, nj, nk));
                 }
             }
         }

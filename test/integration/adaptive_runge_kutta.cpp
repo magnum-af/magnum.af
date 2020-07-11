@@ -6,16 +6,13 @@ using namespace magnumafcpp;
 
 class RK : public AdaptiveRungeKutta {
   public:
-    RK(std::string scheme, Controller controller)
-        : AdaptiveRungeKutta(scheme, controller, false){};
+    RK(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false){};
 
   private:
     af::array f(const State& state) { return state.t * sqrt(state.m); }
 };
 
-double analytic_result(double time) {
-    return 1. / 16. * pow(pow(time, 2) + 4, 2);
-}
+double analytic_result(double time) { return 1. / 16. * pow(pow(time, 2) + 4, 2); }
 
 TEST(AdaptiveRungeKutta, BS23IntegrationTest) {
     RK rk("BS23", Controller(1e-15, 1e15, 1e-10, 1e-10));

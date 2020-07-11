@@ -11,14 +11,11 @@ using Precision = NamedType<double, struct NamedTypePrecision>;
 using Verbose = NamedType<bool, struct NamedTypeVerbose>;
 class GradientDecent {
   public:
-    GradientDecent(std::function<double(double)> f, X_start_val x_start_val,
-                   Precision precision = Precision(1e-6),
-                   Gamma gamma = Gamma(1e-2),
-                   maxIters maxiters = maxIters(1000),
-                   Epsilon epsilon = Epsilon(1e-6),
+    GradientDecent(std::function<double(double)> f, X_start_val x_start_val, Precision precision = Precision(1e-6),
+                   Gamma gamma = Gamma(1e-2), maxIters maxiters = maxIters(1000), Epsilon epsilon = Epsilon(1e-6),
                    Verbose verbose = Verbose(true))
-        : f(f), x_start_val(x_start_val), precision(precision), gamma(gamma),
-          maxiters(maxiters), epsilon(epsilon), verbose(verbose) {
+        : f(f), x_start_val(x_start_val), precision(precision), gamma(gamma), maxiters(maxiters), epsilon(epsilon),
+          verbose(verbose) {
         // std::cout << precision.get() << std::endl;
         // std::cout << epsilon.get() << std::endl;
     }

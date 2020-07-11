@@ -21,11 +21,9 @@ af::array zee_func(State state) {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee =
-        constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0,
-                 state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return zee;
 }
 
@@ -52,15 +50,11 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
     mesh.print(std::cout);
     Material material = Material();
-    state.Ms =
-        1.58 /
-        constants::mu0;  //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    material.A = 15e-12; //[J/m]
-    material.Ku1 =
-        1.3e-3 /
-        z; // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = |
-           // [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) +
-           // (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    state.Ms = 1.58 / constants::mu0; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    material.A = 15e-12;              //[J/m]
+    material.Ku1 = 1.3e-3 / z;        // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = |
+                                      // [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) +
+                                      // (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
     material.alpha = 0.02;
 
     long int n_cells = 0; // Number of cells with Ms!=0
@@ -86,8 +80,8 @@ int main(int argc, char** argv) {
         vti_reader(state.m, mesh, path_mrelax);
     }
 
-    std::cout << "n_cells= " << n_cells << ", should be a*b*M_PI*mesh.n2= "
-              << mesh.n0 / 2 * mesh.n1 / 2 * M_PI * mesh.n2 << std::endl;
+    std::cout << "n_cells= " << n_cells
+              << ", should be a*b*M_PI*mesh.n2= " << mesh.n0 / 2 * mesh.n1 / 2 * M_PI * mesh.n2 << std::endl;
 
     std::ofstream stream;
     stream.precision(12);
@@ -99,18 +93,13 @@ int main(int argc, char** argv) {
                                                                    // T/s
     while (state.t < 4 * hzee_max / rate) {
         Llg.step(state);
-        state.calc_mean_m(
-            stream, n_cells,
-            Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
+        state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
         if (state.steps % 2000 == 0) {
-            vti_writer_micro(
-                state.m, mesh,
-                (filepath + "m_hysteresis_" + std::to_string(state.steps)));
+            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)));
         }
     }
 
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

@@ -55,8 +55,7 @@ int main(int argc, char** argv) {
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq(1, end - 1), span, span, 0) =
-        constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
+    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
     m(0, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
     m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
     m = iota(dim4(nx, ny, nz, 3), dim4(1, 1, 1, 1), f64);
@@ -69,27 +68,24 @@ int main(int argc, char** argv) {
 
     vti_writer_atom(A, newmesh, (filepath + "aminit").c_str());
     print("A", A);
-    std::cout << newmesh.n0 << "  " << newmesh.n1 << "  " << newmesh.n2 << "  "
-              << newmesh.dx << "  " << newmesh.dy << "  " << newmesh.dz << "  "
-              << std::endl;
+    std::cout << newmesh.n0 << "  " << newmesh.n1 << "  " << newmesh.n2 << "  " << newmesh.dx << "  " << newmesh.dy
+              << "  " << newmesh.dz << "  " << std::endl;
     array B = array();
     Mesh bmesh = Mesh(0, 0, 0, 0, 0, 0);
 
     vti_reader(B, bmesh, "/home/pth/git/magnum.af/Data/Testing/aminit.vti");
 
     print("B", B);
-    std::cout << bmesh.n0 << "  " << bmesh.n1 << "  " << bmesh.n2 << "  "
-              << bmesh.dx << "  " << bmesh.dy << "  " << bmesh.dz << "  "
-              << std::endl;
+    std::cout << bmesh.n0 << "  " << bmesh.n1 << "  " << bmesh.n2 << "  " << bmesh.dx << "  " << bmesh.dy << "  "
+              << bmesh.dz << "  " << std::endl;
 
     vtr_writer(B, bmesh, (filepath + "minit").c_str());
     array C = array();
     Mesh cmesh = Mesh(0, 0, 0, 0, 0, 0);
     vtr_reader(C, cmesh, "/home/pth/git/magnum.af/Data/Testing/minit.vtr");
     print("C", C);
-    std::cout << cmesh.n0 << "  " << cmesh.n1 << "  " << cmesh.n2 << "  "
-              << cmesh.dx << "  " << cmesh.dy << "  " << cmesh.dz << "  "
-              << std::endl;
+    std::cout << cmesh.n0 << "  " << cmesh.n1 << "  " << cmesh.n2 << "  " << cmesh.dx << "  " << cmesh.dy << "  "
+              << cmesh.dz << "  " << std::endl;
     //  std::vector<llgt_ptr> llgterm;
     //  llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
     //  llgterm.push_back( llgt_ptr (new ExchangeField(mesh, material)));
@@ -135,7 +131,6 @@ int main(int argc, char** argv) {
     return 0;
 }
 void calcm(State state, std::ostream& myfile) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t"
-           << meani(state.m, 1) << "\t" << meani(state.m, 2) << "\t"
-           << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
+           << meani(state.m, 2) << "\t" << std::endl;
 }

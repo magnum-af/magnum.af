@@ -55,13 +55,9 @@ int main(int argc, char** argv) {
     // icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
     const int icase(argc > 3 ? std::stoi(argv[3]) : 1);
     std::cout << "case=" << icase << std::endl;
-    const double r_ratio_to_sample(
-        argc > 4 ? std::stod(argv[4])
-                 : 16.); // r=4 means radius of init skryrm is 1/4 x
+    const double r_ratio_to_sample(argc > 4 ? std::stod(argv[4]) : 16.); // r=4 means radius of init skryrm is 1/4 x
     std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
-    const double t_relax_state1_sec(
-        argc > 5 ? std::stod(argv[5])
-                 : 3e-9); // relaxtime for state1 in seconds
+    const double t_relax_state1_sec(argc > 5 ? std::stod(argv[5]) : 3e-9); // relaxtime for state1 in seconds
     std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
     const bool int_over_relax = true; // true== interate, false relax
     // Parameter initialization
@@ -75,8 +71,7 @@ int main(int argc, char** argv) {
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
-    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz
-              << std::endl;
+    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz << std::endl;
 
     // const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9; // TODO
@@ -121,8 +116,7 @@ int main(int argc, char** argv) {
     af::array Ms = (SK_Ms * (geom == 1) + IL_Ms * (geom == 2)) * todouble;
     af::array A = (SK_A * (geom == 1) + IL_A * (geom == 2)) * todouble;
     af::array Ku = (SK_Ku * (geom == 1) + IL_Ku * (geom == 2)) * todouble;
-    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) *
-                  todouble; // + IL_D * (geom == 2);
+    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) * todouble; // + IL_D * (geom == 2);
     // std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
     // af::print("Ms", Ms);
@@ -161,15 +155,11 @@ int main(int argc, char** argv) {
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(
-        new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(
-        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
-    auto dmi = LlgTerm(new DmiField(
-        D,
-        {0, 0, -1})); // TODO current definition, will change sign with update
+    auto dmi = LlgTerm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
 
     // af::print("dmi", dmi->h(state_1));
     // af::print("exch", exch->h(state_1));
@@ -189,11 +179,9 @@ int main(int argc, char** argv) {
         if (int_over_relax) {
             while (state_1.t < t_relax_state1_sec) {
                 if (state_1.steps % 100 == 0)
-                    state_1.write_vti(filepath + "m_step" +
-                                      std::to_string(state_1.steps));
+                    state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
                 llg.step(state_1);
-                std::cout << std::scientific << state_1.steps << "\t"
-                          << state_1.t << "\t" << state_1.meani(2) << "\t"
+                std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t"
                           << llg.E(state_1) << std::endl;
             }
         } else {
@@ -201,20 +189,15 @@ int main(int argc, char** argv) {
         }
         timer.print_stage("relax");
         state_1.write_vti(filepath + "m_relaxed");
-        vti_writer_micro(state_1.m(af::span, af::span, 0, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 0, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_bottom_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 12, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_bottom_ferro_layer5");
-        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 13, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed__ferri_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 19, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_top_ferro_layer1");
-        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span),
-                         Mesh(nx, ny, 1, dx, dy, dz),
+        vti_writer_micro(state_1.m(af::span, af::span, 31, af::span), Mesh(nx, ny, 1, dx, dy, dz),
                          filepath + "m_relaxed_top_ferro_layer5");
     } else {
         std::cout << "Found m_relaxed, reading in state_1." << std::endl;
@@ -243,17 +226,12 @@ int main(int argc, char** argv) {
         // TODO mean must account for empty layers
         auto mean = spacial_mean_in_region(state_1.m, eval_mean_region);
         std::cout << Hz_current * constants::mu0 << "\t" << mean[2] << "\t"
-                  << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0,
-                                                                      2)
-                         .scalar<double>()
-                  << "\t" << Hz_current << "\t" << meani(state_1.m, 0) << "\t"
-                  << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2)
+                  << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2).scalar<double>() << "\t" << Hz_current
+                  << "\t" << meani(state_1.m, 0) << "\t" << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2)
                   << std::endl;
         stream << Hz_current * constants::mu0 << "\t" << mean[2] << "\t"
-               << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2)
-                      .scalar<double>()
-               << "\t" << Hz_current << "\t" << meani(state_1.m, 0) << "\t"
-               << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2)
+               << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2).scalar<double>() << "\t" << Hz_current
+               << "\t" << meani(state_1.m, 0) << "\t" << meani(state_1.m, 1) << "\t" << meani(state_1.m, 2)
                << std::endl;
         llg.llgterms.pop_back();
         state_1.write_vti(filepath + "m_hys" + std::to_string(iHz_current));

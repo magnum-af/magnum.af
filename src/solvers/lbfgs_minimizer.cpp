@@ -14,10 +14,8 @@ namespace magnumafcpp {
 LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
     : tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
-LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance,
-                                 size_t maxIter, int verbose)
-    : llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter),
-      verbose(verbose) {}
+LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance, size_t maxIter, int verbose)
+    : llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 // Energy calculation
 double LBFGS_Minimizer::E(const State& state) {
@@ -45,8 +43,7 @@ af::array LBFGS_Minimizer::Heff(const State& state) {
     return solution;
 }
 
-double LBFGS_Minimizer::EnergyAndGradient(const State& state,
-                                          af::array& gradient) {
+double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradient) {
     if (llgterms_.size() == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
@@ -68,8 +65,7 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state,
         h += temp_h;
         energy += llgterms_[i]->E(state, temp_h);
     }
-    gradient =
-        1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
+    gradient = 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
     time_calc_heff_ += af::timer::stop(timer);
     return energy;
 }
@@ -78,8 +74,7 @@ af::array LBFGS_Minimizer::Gradient(const State& state) {
     // TODO//this runs, check correct way//return cross4(state.m,
     // cross4(state.m, Heff(state)));
     return 1. / (constants::mu0 * state.Ms) *
-           cross4(state.m,
-                  cross4(state.m, Heff(state))); // TODO elaborate correct way
+           cross4(state.m, cross4(state.m, Heff(state))); // TODO elaborate correct way
 
     // return cross4(state.m, cross4(state.m, constants::mu0 * state.Ms *
     // state.mesh.V * Heff(state))); return constants::mu0 * state.Ms *
@@ -93,14 +88,10 @@ af::array LBFGS_Minimizer::Gradient(const State& state) {
     // cross4(state.m, Heff(state)));
 }
 
-double mydot(const af::array& a, const af::array& b) {
-    return full_inner_product(a, b);
-}
+double mydot(const af::array& a, const af::array& b) { return full_inner_product(a, b); }
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
-double LBFGS_Minimizer::mxmxhMax(const State& state) {
-    return maxnorm(Gradient(state));
-}
+double LBFGS_Minimizer::mxmxhMax(const State& state) { return maxnorm(Gradient(state)); }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 // TODO Currently Minimize() fails when called second time, i.e. when m already
@@ -136,10 +127,8 @@ double LBFGS_Minimizer::Minimize(State& state) {
 
     // array container
     af::array af_zero = (af::constant(0.0, state.mesh.dims, f64));
-    std::array<af::array, m> sVector{
-        {af_zero, af_zero, af_zero, af_zero, af_zero}};
-    std::array<af::array, m> yVector{
-        {af_zero, af_zero, af_zero, af_zero, af_zero}};
+    std::array<af::array, m> sVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
+    std::array<af::array, m> yVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
 
     // vector container
     // std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims,
@@ -206,8 +195,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
             if (gradNorm < eps * (1. + fabs(f)) and this->verbose > 0) {
                 std::cout << "Minimizer: Convergence reached (due to almost "
                              "zero gradient (|g|="
-                          << gradNorm << " < " << eps * (1. + fabs(f)) << ")!"
-                          << std::endl;
+                          << gradNorm << " < " << eps * (1. + fabs(f)) << ")!" << std::endl;
             }
         }
         // const double rate = MyMoreThuente<T, decltype(objFunc),
@@ -217,11 +205,10 @@ double LBFGS_Minimizer::Minimize(State& state) {
         // grad, -q, tolf);
         if (rate == 0.0) {
             if (this->verbose > 0) {
-                std::cout
-                    << red("Warning: LBFGS_Minimizer: linesearch returned rate "
-                           "== 0.0. This should not happen, elaborate! (maybe "
-                           "m is already relaxed?)")
-                    << std::endl;
+                std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate "
+                                 "== 0.0. This should not happen, elaborate! (maybe "
+                                 "m is already relaxed?)")
+                          << std::endl;
                 // std::cout << bold_red("Error: LBFGS_Minimizer: linesearch
                 // failed, rate == 0.0") << std::endl;
             }
@@ -237,19 +224,15 @@ double LBFGS_Minimizer::Minimize(State& state) {
         if (this->verbose > 1) {
             // std::cout <<
             // std::setprecision(std::numeric_limits<double>::digits10 + 1);
-            std::cout << std::setprecision(
-                std::numeric_limits<double>::digits10 + 12);
+            std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 12);
             std::cout << "bb> " << globIter << " " << f << " "
-                      << " " << gradNorm << " " << cgSteps << " " << rate
-                      << std::endl;
+                      << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
         }
         if (of_convergence.is_open()) {
-            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
-                           << maxnorm(s) / (tolf2 * (1 + maxnorm(state.m)))
+            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t" << maxnorm(s) / (tolf2 * (1 + maxnorm(state.m)))
                            << "\t" << gradNorm / (tolf3 * f1) << std::endl;
         }
-        if (((f_old - f) < (tolerance_ * f1)) &&
-            (maxnorm(s) < (tolf2 * (1 + maxnorm(state.m)))) &&
+        if (((f_old - f) < (tolerance_ * f1)) && (maxnorm(s) < (tolf2 * (1 + maxnorm(state.m)))) &&
             (gradNorm <= (tolf3 * f1))) {
             break;
         }
@@ -257,9 +240,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
         double ys = mydot(y, s);
         if (ys <= eps2 * mynorm(y) * mynorm(s)) { // Dennis, Schnabel 9.4.1
             if (this->verbose > 2) {
-                std::cout << iter
-                          << red("WARNING: LBFGS_Minimizer:: skipping update!")
-                          << std::endl;
+                std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
             }
         } else {
             if (iter < m) {
@@ -268,11 +249,9 @@ double LBFGS_Minimizer::Minimize(State& state) {
                 // af::print("svec", af::mean(sVector[iter], 0));
                 yVector[iter] = y;
             } else {
-                std::rotate(sVector.begin(), sVector.begin() + 1,
-                            sVector.end());
+                std::rotate(sVector.begin(), sVector.begin() + 1, sVector.end());
                 sVector[m - 1] = s;
-                std::rotate(yVector.begin(), yVector.begin() + 1,
-                            yVector.end());
+                std::rotate(yVector.begin(), yVector.begin() + 1, yVector.end());
                 yVector[m - 1] = y;
             }
             H0k = ys / mydot(y, y);
@@ -282,10 +261,8 @@ double LBFGS_Minimizer::Minimize(State& state) {
         globIter++;
 
     } while (globIter < this->maxIter_);
-    if (globIter >= this->maxIter_ && this->maxIter_ > 99 and
-        this->verbose > 0) {
-        std::cout << "WARNING : maximum number of iterations exceeded in LBFGS"
-                  << std::endl;
+    if (globIter >= this->maxIter_ && this->maxIter_ > 99 and this->verbose > 0) {
+        std::cout << "WARNING : maximum number of iterations exceeded in LBFGS" << std::endl;
     }
     if (this->verbose > 0) {
         State temp = state;
@@ -298,15 +275,12 @@ double LBFGS_Minimizer::Minimize(State& state) {
     return f;
 
     if (this->verbose > 0) {
-        std::cout << "LBFGS_Minimizer: minimize in [s]: "
-                  << af::timer::stop(timer) << std::endl;
+        std::cout << "LBFGS_Minimizer: minimize in [s]: " << af::timer::stop(timer) << std::endl;
     }
 }
 
-double LBFGS_Minimizer::linesearch(State& state, double& fval,
-                                   const af::array& x_old, af::array& g,
-                                   const af::array& searchDir,
-                                   const double tolf) {
+double LBFGS_Minimizer::linesearch(State& state, double& fval, const af::array& x_old, af::array& g,
+                                   const af::array& searchDir, const double tolf) {
     double rate = 1.0;
     cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
     return rate;
@@ -318,8 +292,7 @@ double LBFGS_Minimizer::linesearch(State& state, double& fval,
 // TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array
 // &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf)
 // {// ak = 1.0 == double &stp moved into function
-int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
-                            af::array& g, double& stp, const af::array& s,
+int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
                             const double tolf) {
     // we rewrite this from MIN-LAPACK and some MATLAB code
 
@@ -341,8 +314,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
     if (dginit >= 0.0) {
         // no descent direction
         // TODO: handle this case
-        std::cout << red("WARNING: LBFGS_Minimizer:: no descent ") << dginit
-                  << std::endl;
+        std::cout << red("WARNING: LBFGS_Minimizer:: no descent ") << dginit << std::endl;
         return -1;
     }
 
@@ -382,13 +354,11 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
         stp = std::min(stp, stpmax);
 
         // Oops, let us return the last reliable values
-        if ((brackt && ((stp <= stmin) | (stp >= stmax))) |
-            (nfev >= maxfev - 1) | (infoc == 0) |
+        if ((brackt && ((stp <= stmin) | (stp >= stmax))) | (nfev >= maxfev - 1) | (infoc == 0) |
             (brackt & (stmax - stmin <= xtol * stmax))) {
             stp = stx;
             if (this->verbose > 0)
-                std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp
-                          << std::endl;
+                std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
         }
 
         //// test new point
@@ -426,8 +396,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
         if ((f <= ftest1) & (fabs(dg) <= gtol * (-dginit)))
             info = 1;
 
-        if (((f <= ftest2) && (ft * dginit >= dg)) &&
-            (fabs(dg) <= gtol * (-dginit)))
+        if (((f <= ftest2) && (ft * dginit >= dg)) && (fabs(dg) <= gtol * (-dginit)))
             info = 1;
 
         // terminate when convergence reached
@@ -436,14 +405,11 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
         }
 
         // if (stage1 & (f <= ftest1) & (dg >= std::min(ftol, gtol)*dginit))
-        if (stage1 & ((f <= ftest2) && (ft * dginit >= dg)) &
-            (dg >= std::min(ftol, gtol) * dginit)) // approx wolfe 1
+        if (stage1 & ((f <= ftest2) && (ft * dginit >= dg)) & (dg >= std::min(ftol, gtol) * dginit)) // approx wolfe 1
             stage1 = false;
 
         // if (stage1 & (f <= fx) & (f > ftest1)) {
-        if (stage1 & (f <= fx) &
-            (not((f <= ftest2) &&
-                 (ft * dginit >= dg)))) { // not wolfe 1 --> not approx wolfe 1
+        if (stage1 & (f <= fx) & (not((f <= ftest2) && (ft * dginit >= dg)))) { // not wolfe 1 --> not approx wolfe 1
             double fm = f - stp * dgtest;
             double fxm = fx - stx * dgtest;
             double fym = fy - sty * dgtest;
@@ -451,8 +417,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
             double dgxm = dgx - dgtest;
             double dgym = dgy - dgtest;
 
-            int rsl = cstep(stx, fxm, dgxm, sty, fym, dgym, stp, fm, dgm,
-                            brackt, stmin, stmax, infoc);
+            int rsl = cstep(stx, fxm, dgxm, sty, fym, dgym, stp, fm, dgm, brackt, stmin, stmax, infoc);
             (void)rsl;
 
             fx = fxm + stx * dgtest;
@@ -462,8 +427,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
         } else {
             // this is ugly and some variables should be moved to the class
             // scope
-            int rsl = cstep(stx, fx, dgx, sty, fy, dgy, stp, f, dg, brackt,
-                            stmin, stmax, infoc);
+            int rsl = cstep(stx, fx, dgx, sty, fy, dgy, stp, f, dg, brackt, stmin, stmax, infoc);
             (void)rsl;
         }
 
@@ -475,25 +439,21 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f,
         }
     }
 
-    std::cout
-        << bold_red(
-               "ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
-               "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
-        << std::endl;
+    std::cout << bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
+                          "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
+              << std::endl;
     exit(0);
     return 0;
 }
 
-int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty,
-                           double& fy, double& dy, double& stp, double& fp,
-                           double& dp, bool& brackt, double& stpmin,
-                           double& stpmax, int& info) {
+int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp,
+                           double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) {
     info = 0;
     bool bound = false;
 
     // Check the input parameters for errors.
-    if ((brackt & ((stp <= std::min(stx, sty)) | (stp >= std::max(stx, sty)))) |
-        (dx * (stp - stx) >= 0.0) | (stpmax < stpmin)) {
+    if ((brackt & ((stp <= std::min(stx, sty)) | (stp >= std::max(stx, sty)))) | (dx * (stp - stx) >= 0.0) |
+        (stpmax < stpmin)) {
         return -1;
     }
 
@@ -508,8 +468,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty,
         bound = true;
         double theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
-        double gamma =
-            s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
+        double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
         if (stp < stx)
             gamma = -gamma;
         double p = (gamma - dx) + theta;
@@ -527,8 +486,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty,
         bound = false;
         double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
-        double gamma =
-            s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
+        double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
         if (stp > stx)
             gamma = -gamma;
 
@@ -547,9 +505,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty,
         bound = 1;
         double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
-        double gamma =
-            s *
-            sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
+        double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
         if (stp > stx)
             gamma = -gamma;
         double p = (gamma - dp) + theta;
@@ -582,8 +538,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty,
         if (brackt) {
             double theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
             double s = std::max(theta, std::max(dy, dp));
-            double gamma =
-                s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
+            double gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
             if (stp > sty)
                 gamma = -gamma;
 

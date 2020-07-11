@@ -21,13 +21,10 @@ using Verbose = NamedType<bool, struct NamedTypeVerbose>;
 
 class NewtonIteration {
   public:
-    NewtonIteration(std::function<double(double)> f,
-                    Verbose verbose = Verbose(true))
-        : f(f), verbose(verbose) {}
+    NewtonIteration(std::function<double(double)> f, Verbose verbose = Verbose(true)) : f(f), verbose(verbose) {}
 
     std::pair<double, double> run(X0 x, Precision precision = Precision(1e-8),
-                                  EpsilonFactor epsfac = EpsilonFactor(1e-4),
-                                  Imax imax = Imax(100)) {
+                                  EpsilonFactor epsfac = EpsilonFactor(1e-4), Imax imax = Imax(100)) {
         double eps_factor_wrt_xrange = 1e-3;
         double eps = epsfac.get() * x.get();
         for (unsigned i = 0; i < imax.get(); i++) {
@@ -36,23 +33,17 @@ class NewtonIteration {
             x.get() -= f_and_df.first / f_and_df.second;
             eps = eps_factor_wrt_xrange * fabs(x.get() - x_current);
             if (verbose.get())
-                std::cout << "i=" << i << ", x=" << x.get()
-                          << ", xold=" << x_current
-                          << ", f(x)=" << f_and_df.first
-                          << ", df(x)=" << f_and_df.second << ", eps=" << eps
-                          << std::endl;
+                std::cout << "i=" << i << ", x=" << x.get() << ", xold=" << x_current << ", f(x)=" << f_and_df.first
+                          << ", df(x)=" << f_and_df.second << ", eps=" << eps << std::endl;
             // return if f(x) < precision
             if (std::fabs(f_and_df.first) < precision.get()) {
                 if (verbose.get())
-                    printf(
-                        "NewtonIteration.run: precision reached, finished.\n");
+                    printf("NewtonIteration.run: precision reached, finished.\n");
                 return std::pair<double, double>(x_current, f_and_df.first);
             }
             // abort if eps approaches 0 or inf
             if (eps < 1e-100 or eps > 1e100) {
-                printf(
-                    "NewtonIteration: eps=%f is < 1e-100 or > 1e100, abort.\n",
-                    eps);
+                printf("NewtonIteration: eps=%f is < 1e-100 or > 1e100, abort.\n", eps);
                 return std::pair<double, double>(x_current, f_and_df.first);
             }
         }

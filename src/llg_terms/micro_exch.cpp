@@ -10,20 +10,11 @@ namespace magnumafcpp {
 double ExchangeField::E(const State& state) {
     if (state.Ms_field.isempty()) {
         return -constants::mu0 / 2. * state.Ms *
-               af::sum(
-                   af::sum(af::sum(af::sum(h_withedges(state) * state.m, 0), 1),
-                           2),
-                   3)
-                   .scalar<double>() *
+               af::sum(af::sum(af::sum(af::sum(h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() *
                state.mesh.dx * state.mesh.dy * state.mesh.dz;
     } else {
         return -constants::mu0 / 2. *
-               af::sum(af::sum(af::sum(af::sum(state.Ms_field *
-                                                   h_withedges(state) * state.m,
-                                               0),
-                                       1),
-                               2),
-                       3)
+               af::sum(af::sum(af::sum(af::sum(state.Ms_field * h_withedges(state) * state.m, 0), 1), 2), 3)
                    .scalar<double>() *
                state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
@@ -42,10 +33,9 @@ ExchangeField::ExchangeField(af::array A_field)
 
 // For wrapping only
 ExchangeField::ExchangeField(long int A_field_ptr)
-    : A_field(
-          (*(new af::array(*((void**)A_field_ptr)))).dims(3) == 1
-              ? af::tile(*(new af::array(*((void**)A_field_ptr))), 1, 1, 1, 3)
-              : *(new af::array(*((void**)A_field_ptr)))) {
+    : A_field((*(new af::array(*((void**)A_field_ptr)))).dims(3) == 1
+                  ? af::tile(*(new af::array(*((void**)A_field_ptr))), 1, 1, 1, 3)
+                  : *(new af::array(*((void**)A_field_ptr)))) {
     printf("\33[1;31mWarning:\33[0m ExchangeField: This is legacy code, to use "
            "spacially varying A values with correct jump conditions, use "
            "SparseExchangeField or RKKYExchangeField!\n");
@@ -68,20 +58,14 @@ af::array ExchangeField::h_withedges(const State& state) {
     // Accounting for boundary conditions by adding initial m values on the
     // boundaries by adding all 6 boundary surfaces
     timer_edges = af::timer::start();
-    exch(0, af::span, af::span, af::span) +=
-        state.m(0, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
-    exch(-1, af::span, af::span, af::span) +=
-        state.m(-1, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
+    exch(0, af::span, af::span, af::span) += state.m(0, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
+    exch(-1, af::span, af::span, af::span) += state.m(-1, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
 
-    exch(af::span, 0, af::span, af::span) +=
-        state.m(af::span, 0, af::span, af::span) / pow(state.mesh.dy, 2);
-    exch(af::span, -1, af::span, af::span) +=
-        state.m(af::span, -1, af::span, af::span) / pow(state.mesh.dy, 2);
+    exch(af::span, 0, af::span, af::span) += state.m(af::span, 0, af::span, af::span) / pow(state.mesh.dy, 2);
+    exch(af::span, -1, af::span, af::span) += state.m(af::span, -1, af::span, af::span) / pow(state.mesh.dy, 2);
 
-    exch(af::span, af::span, 0, af::span) +=
-        state.m(af::span, af::span, 0, af::span) / pow(state.mesh.dz, 2);
-    exch(af::span, af::span, -1, af::span) +=
-        state.m(af::span, af::span, -1, af::span) / pow(state.mesh.dz, 2);
+    exch(af::span, af::span, 0, af::span) += state.m(af::span, af::span, 0, af::span) / pow(state.mesh.dz, 2);
+    exch(af::span, af::span, -1, af::span) += state.m(af::span, af::span, -1, af::span) / pow(state.mesh.dz, 2);
 
     if (state.afsync)
         af::sync();
@@ -90,15 +74,13 @@ af::array ExchangeField::h_withedges(const State& state) {
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff =
-            (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
+        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
         replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff =
-            (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
         replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
@@ -125,15 +107,13 @@ af::array ExchangeField::h(const State& state) {
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff =
-            (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
+        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
         replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff =
-            (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
         replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }

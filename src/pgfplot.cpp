@@ -16,10 +16,10 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice) {
         for (int x = 0; x < m.dims(0); x++) {
             // if(x % 1 == 0 && y % 1 == 0){//NOTE: needed if file becomes too
             // big for latex
-            stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
-                   << afvalue(m(x, y, mz_slice, 2)) << std::endl;
-            std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
-                      << afvalue(m(x, y, mz_slice, 2)) << std::endl;
+            stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 2))
+                   << std::endl;
+            std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 2))
+                      << std::endl;
             //}
         }
         stream << std::endl;
@@ -28,8 +28,7 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice) {
     stream.close();
 }
 
-void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice,
-                int nmod) {
+void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice, int nmod) {
     std::cout << "pgfplot_mz writing file " << outputfile << std::endl;
 
     std::ofstream stream;
@@ -38,14 +37,11 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice,
 
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
-            if (x % nmod == nmod / 2 &&
-                y % nmod ==
-                    nmod /
-                        2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
-                       << afvalue(m(x, y, mz_slice, 2)) << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y
-                          << " " << afvalue(m(x, y, mz_slice, 2)) << std::endl;
+            if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 2))
+                       << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 2))
+                          << std::endl;
             }
         }
         stream << std::endl;
@@ -54,8 +50,7 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice,
     stream.close();
 }
 
-void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i,
-                int mz_slice, int nmod) {
+void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i, int mz_slice, int nmod) {
     std::cout << "pgfplot_mz writing file " << outputfile << std::endl;
 
     std::ofstream stream;
@@ -64,14 +59,11 @@ void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i,
 
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
-            if (x % nmod == nmod / 2 &&
-                y % nmod ==
-                    nmod /
-                        2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
-                       << afvalue(m(x, y, mz_slice, i)) << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y
-                          << " " << afvalue(m(x, y, mz_slice, i)) << std::endl;
+            if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, i))
+                       << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, i))
+                          << std::endl;
             }
         }
         stream << std::endl;
@@ -80,8 +72,7 @@ void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i,
     stream.close();
 }
 
-void pgfplot_nz_quiver(af::array m, Mesh mesh, std::string outputfile,
-                       int mz_slice, int nmod) {
+void pgfplot_nz_quiver(af::array m, Mesh mesh, std::string outputfile, int mz_slice, int nmod) {
     std::cout << "pgfplot_nz_quiver writing file " << outputfile << std::endl;
     std::ofstream stream;
     stream.precision(6);
@@ -96,16 +87,11 @@ void pgfplot_nz_quiver(af::array m, Mesh mesh, std::string outputfile,
            << "my" << std::endl;
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
-            if (x % nmod == nmod / 2 &&
-                y % nmod ==
-                    nmod /
-                        2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
-                       << afvalue(m(x, y, mz_slice, 0)) << " "
+            if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 0)) << " "
                        << afvalue(m(x, y, mz_slice, 1)) << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y
-                          << " " << afvalue(m(x, y, mz_slice, 0)) << " "
-                          << afvalue(m(x, y, mz_slice, 1)) << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << afvalue(m(x, y, mz_slice, 0))
+                          << " " << afvalue(m(x, y, mz_slice, 1)) << std::endl;
             }
         }
         stream << std::endl;

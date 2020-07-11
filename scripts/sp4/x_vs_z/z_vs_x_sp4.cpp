@@ -46,8 +46,7 @@ int main(int argc, char** argv) {
         if (conv)
             llgterm.push_back(LlgTerm(new ExchangeField(A)));
         else
-            llgterm.push_back(LlgTerm(new NonequiExchangeField(
-                ne_mesh, af::constant(A, mesh.dims, f64))));
+            llgterm.push_back(LlgTerm(new NonequiExchangeField(ne_mesh, af::constant(A, mesh.dims, f64))));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;
@@ -77,12 +76,10 @@ int main(int argc, char** argv) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t)
-                  << std::endl;
+        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;
         vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
         stream.close();
-        std::cout << "total [af-s]: " << af::timer::stop(total_time)
-                  << std::endl;
+        std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
     }
     // x_y plane
     if (!exists(filepath + "x_m.dat")) {
@@ -136,12 +133,10 @@ int main(int argc, char** argv) {
             Llg.step(state);
             state.calc_mean_m(stream);
         }
-        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t)
-                  << std::endl;
+        std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;
         vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
         stream.close();
-        std::cout << "total [af-s]: " << af::timer::stop(total_time)
-                  << std::endl;
+        std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;
     }
     return 0;
 }

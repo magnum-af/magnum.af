@@ -55,13 +55,9 @@ int main(int argc, char** argv) {
     // icase 2: DMI in IL = 0.8e-3, minit skyrm in all layers but IL
     const int icase(argc > 3 ? std::stoi(argv[3]) : 1);
     std::cout << "case=" << icase << std::endl;
-    const double r_ratio_to_sample(
-        argc > 4 ? std::stod(argv[4])
-                 : 16.); // r=4 means radius of init skryrm is 1/4 x
+    const double r_ratio_to_sample(argc > 4 ? std::stod(argv[4]) : 16.); // r=4 means radius of init skryrm is 1/4 x
     std::cout << "r_ratio_to_sample=" << r_ratio_to_sample << std::endl;
-    const double t_relax_state1_sec(
-        argc > 5 ? std::stod(argv[5])
-                 : 3e-9); // relaxtime for state1 in seconds
+    const double t_relax_state1_sec(argc > 5 ? std::stod(argv[5]) : 3e-9); // relaxtime for state1 in seconds
     std::cout << "t_relax_state1_sec=" << t_relax_state1_sec << std::endl;
     const bool int_over_relax = true; // true== interate, false relax
     // Parameter initialization
@@ -75,8 +71,7 @@ int main(int argc, char** argv) {
     const double dx = x / nx;
     const double dy = y / ny;
     const double dz = z / nz;
-    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz
-              << std::endl;
+    std::cout << "nx = " << ixy << " " << dx << " " << dy << " " << dz << std::endl;
 
     const double Hz = 130e-3 / constants::mu0;
     const double RKKY_val = 0.8e-3 * 1e-9; // TODO
@@ -121,8 +116,7 @@ int main(int argc, char** argv) {
     af::array Ms = (SK_Ms * (geom == 1) + IL_Ms * (geom == 2)) * todouble;
     af::array A = (SK_A * (geom == 1) + IL_A * (geom == 2)) * todouble;
     af::array Ku = (SK_Ku * (geom == 1) + IL_Ku * (geom == 2)) * todouble;
-    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) *
-                  todouble; // + IL_D * (geom == 2);
+    af::array D = (SK_D * (geom == 1) + IL_D * (geom == 2)) * todouble; // + IL_D * (geom == 2);
     // std::cout << "type" << geom.type() << " " << Ms.type() << std::endl;
 
     // af::print("Ms", Ms);
@@ -161,10 +155,8 @@ int main(int argc, char** argv) {
 
     // defining interactions
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(
-        new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(
-        new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
 
     // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
@@ -188,8 +180,7 @@ int main(int argc, char** argv) {
     std::vector<State> inputimages;
     for (int i = 0; i < n_interp; i++) {
         State state(mesh, Ms, m);
-        state._vti_reader(filepath + "current_skyrm_image" + std::to_string(i) +
-                          ".vti");
+        state._vti_reader(filepath + "current_skyrm_image" + std::to_string(i) + ".vti");
         inputimages.push_back(state);
     }
 

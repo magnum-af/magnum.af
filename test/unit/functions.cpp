@@ -36,15 +36,9 @@ TEST(Func, Cross4shift_nxzy) {
     a = af::tile(a, x, y, z, 1);
     b = af::tile(b, x, y, z, 1);
     af::array c = cross4shift(a, b);
-    EXPECT_EQ(
-        af::mean(af::mean(af::mean(c(0, 0, 0, 0), 0), 1), 2).scalar<double>(),
-        -3.);
-    EXPECT_EQ(
-        af::mean(af::mean(af::mean(c(0, 0, 0, 1), 0), 1), 2).scalar<double>(),
-        6.);
-    EXPECT_EQ(
-        af::mean(af::mean(af::mean(c(0, 0, 0, 2), 0), 1), 2).scalar<double>(),
-        -3.);
+    EXPECT_EQ(af::mean(af::mean(af::mean(c(0, 0, 0, 0), 0), 1), 2).scalar<double>(), -3.);
+    EXPECT_EQ(af::mean(af::mean(af::mean(c(0, 0, 0, 1), 0), 1), 2).scalar<double>(), 6.);
+    EXPECT_EQ(af::mean(af::mean(af::mean(c(0, 0, 0, 2), 0), 1), 2).scalar<double>(), -3.);
 }
 
 TEST(Func, spacial_mean_in_region) {

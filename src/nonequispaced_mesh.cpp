@@ -3,16 +3,13 @@
 
 namespace magnumafcpp {
 
-NonequispacedMesh::NonequispacedMesh(unsigned nx, unsigned ny, double dx,
-                                     double dy, std::vector<double> z_spacing)
-    : nx(nx), ny(ny), nz(z_spacing.size()), dx(dx), dy(dy),
-      z_spacing(z_spacing), nx_expanded(2 * nx), ny_expanded(2 * ny),
-      dims(af::dim4(nx, ny, nz, 3)) {}
+NonequispacedMesh::NonequispacedMesh(unsigned nx, unsigned ny, double dx, double dy, std::vector<double> z_spacing)
+    : nx(nx), ny(ny), nz(z_spacing.size()), dx(dx), dy(dy), z_spacing(z_spacing), nx_expanded(2 * nx),
+      ny_expanded(2 * ny), dims(af::dim4(nx, ny, nz, 3)) {}
 
 void NonequispacedMesh::print(std::ostream& stream) {
-    stream << "nx=" << nx << " ny=" << ny << " nz=" << nz << " dx=" << dx
-           << " dy=" << dy << " nx_expanded=" << nx_expanded
-           << " ny_expanded=" << ny_expanded << " dims=" << dims << std::endl;
+    stream << "nx=" << nx << " ny=" << ny << " nz=" << nz << " dx=" << dx << " dy=" << dy
+           << " nx_expanded=" << nx_expanded << " ny_expanded=" << ny_expanded << " dims=" << dims << std::endl;
 
     stream << " dz: ";
     for (auto const& dz : z_spacing) {

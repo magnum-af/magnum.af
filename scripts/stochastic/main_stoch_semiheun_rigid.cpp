@@ -19,8 +19,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1
 //)/(int(exp(x * z^2)) dz from 0 to 1)
 double mean_mz_analytical(double chi) {
-    return (exp(chi) - 1.) /
-           (sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); // TODO erfi
+    return (exp(chi) - 1.) / (sqrt(M_PI) * sqrt(chi) * erfi(sqrt(chi))); // TODO erfi
 }
 
 void set_m_to_z(State& state) {
@@ -29,9 +28,8 @@ void set_m_to_z(State& state) {
     state.m(span, span, span, 2) = 1.;
 }
 void calcm(State state, std::ostream& myfile) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t"
-           << meani(state.m, 1) << "\t" << meani(state.m, 2) << "\t"
-           << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
+           << meani(state.m, 2) << "\t" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -60,8 +58,7 @@ int main(int argc, char** argv) {
                "mean_mz_analytical(chi) <<Stoch.material.T<<";
     stream2 << " mean_mz << abs_mean_mz << mean_mz_analytical(chi) "
                "<<Stoch.material.T<<  mean_mz";
-    stream2 << " abs_mean_mz << mean_mz_analytical(chi)<<measure_steps"
-            << std::endl;
+    stream2 << " abs_mean_mz << mean_mz_analytical(chi)<<measure_steps" << std::endl;
     // Parameter initialization
     const double x = 1.e-9, y = 1.e-9, z = 1.e-9;
     const int nx = 1, ny = 1, nz = 1;
@@ -96,8 +93,7 @@ int main(int argc, char** argv) {
         // T=10
         material.T = 10.;
         state = State(mesh, material, m);
-        llgterm.push_back(
-            llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
+        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
         Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz = 0;
@@ -110,22 +106,18 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) /
-              (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;
-        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n"
-                  << std::endl;
-        stream2 << std::setw(6) << dt << "\t" << Stoch.material.T << "\t"
-                << mean_mz << "\t" << abs_mean_mz << "\t"
+        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n" << std::endl;
+        stream2 << std::setw(6) << dt << "\t" << Stoch.material.T << "\t" << mean_mz << "\t" << abs_mean_mz << "\t"
                 << mean_mz_analytical(chi) << "\t";
 
         // T=50
         material.T = 50.;
         state = State(mesh, material, m);
-        llgterm.push_back(
-            llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
+        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
         Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz = 0;
@@ -138,21 +130,18 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) /
-              (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;
-        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n"
-                  << std::endl;
-        stream2 << Stoch.material.T << "\t" << mean_mz << "\t" << abs_mean_mz
-                << "\t" << mean_mz_analytical(chi) << "\t";
+        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n" << std::endl;
+        stream2 << Stoch.material.T << "\t" << mean_mz << "\t" << abs_mean_mz << "\t" << mean_mz_analytical(chi)
+                << "\t";
 
         // T=200
         material.T = 200.;
         state = State(mesh, material, m);
-        llgterm.push_back(
-            llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
+        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
         Stoch = Stochastic_LLG(state, llgterm, dt, "SemiHeun");
         llgterm.clear();
         mean_mz = 0;
@@ -165,16 +154,13 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) /
-              (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;
-        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n"
-                  << std::endl;
-        stream2 << Stoch.material.T << "\t" << mean_mz << "\t" << abs_mean_mz
-                << "\t" << mean_mz_analytical(chi) << "\t" << measure_steps
-                << std::endl;
+        std::cout << "Analytical <mz>/Ms  = " << mean_mz_analytical(chi) << "\n" << std::endl;
+        stream2 << Stoch.material.T << "\t" << mean_mz << "\t" << abs_mean_mz << "\t" << mean_mz_analytical(chi) << "\t"
+                << measure_steps << std::endl;
 
         dt *= 1.35;
     }

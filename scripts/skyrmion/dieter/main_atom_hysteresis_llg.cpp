@@ -8,10 +8,8 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
-    myfile << std::setw(12) << state.t << "\t"
-           << afvalue(sum_dim3(span, span, span, 0)) << "\t"
-           << afvalue(sum_dim3(span, span, span, 1)) << "\t"
-           << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) << "\t"
+           << afvalue(sum_dim3(span, span, span, 1)) << "\t" << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee
            << std::endl;
 }
 
@@ -43,11 +41,9 @@ af::array zee_func(State state) {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee =
-        constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0,
-                 state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return zee;
 }
 
@@ -105,8 +101,7 @@ int main(int argc, char** argv) {
     llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 
@@ -118,14 +113,10 @@ int main(int argc, char** argv) {
             state.m = Llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps
-                      << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev)
-                      << std::endl;
+            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]"
-              << std::endl;
-    std::cout << "timerelax [af-s]: " << af::timer::stop(t)
-              << ", steps = " << state.steps << std::endl;
+    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
+    std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
     // State state(mesh, material, m);
@@ -170,24 +161,18 @@ int main(int argc, char** argv) {
     // std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys)
     // <<std::endl;
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back(
-        llgt_ptr(new ExternalField(&zee_func))); // Rate in T/s
+    Llg.Fieldterms.push_back(llgt_ptr(new ExternalField(&zee_func))); // Rate in T/s
     while (state.t < 4 * hzee_max / rate) {
         state.m = Llg.step(state);
         if (state.steps % 2000 == 0) {
-            calc_mean_m(state, stream,
-                        afvalue(Llg.Fieldterms[4]->h(state)(0, 0, 0, 0)));
-            vti_writer_micro(
-                state.m, mesh,
-                (filepath + "m_hysteresis_" + std::to_string(state.steps))
-                    .c_str());
+            calc_mean_m(state, stream, afvalue(Llg.Fieldterms[4]->h(state)(0, 0, 0, 0)));
+            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
         // std::cout << state.t << "\t" <<
         // afvalue(sum(sum(sum(sum(Llg.Fieldterms[2]->h(state), 3), 2), 1),
         // 0))<< std::endl;
     }
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

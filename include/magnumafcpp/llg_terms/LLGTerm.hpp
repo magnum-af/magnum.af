@@ -18,9 +18,7 @@ class LLGTerm {
     virtual double get_cpu_time() = 0;
 
     /// For wrapping only: pointer to h()
-    virtual long int h_ptr(const State& state) {
-        return (long int)(new af::array(h(state)))->get();
-    }
+    virtual long int h_ptr(const State& state) { return (long int)(new af::array(h(state)))->get(); }
     virtual ~LLGTerm(){};
 };
 

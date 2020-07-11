@@ -58,8 +58,7 @@ int main(int argc, char** argv) {
 
     // Initial magnetic field
     array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq(1, end - 1), span, span, 0) =
-        constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
+    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
     m(0, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
     m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
     State state(mesh, material, m);
@@ -85,8 +84,7 @@ int main(int argc, char** argv) {
         // state.m=Llg.step(state);
         calcm(state, stream);
     }
-    std::cout << "prelim fdmdt_calls  = " << Stoch.get_fdmdt_calls() << "\n"
-              << std::endl;
+    std::cout << "prelim fdmdt_calls  = " << Stoch.get_fdmdt_calls() << "\n" << std::endl;
     std::cout << "prelim CPU TIME  = " << Stoch.cpu_time() << "\n" << std::endl;
     std::cout << "prelim TIME  = " << Stoch.get_time() << "\n" << std::endl;
     //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
@@ -120,14 +118,12 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
     stream.close();
     // Llg.print_cpu_time(std::cout);
-    std::cout << "fdmdt_calls  = " << Stoch.get_fdmdt_calls() << "\n"
-              << std::endl;
+    std::cout << "fdmdt_calls  = " << Stoch.get_fdmdt_calls() << "\n" << std::endl;
     std::cout << " CPU TIME  = " << Stoch.cpu_time() << "\n" << std::endl;
     std::cout << " TIME  = " << Stoch.get_time() << "\n" << std::endl;
     return 0;
 }
 void calcm(State state, std::ostream& myfile) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t"
-           << meani(state.m, 1) << "\t" << meani(state.m, 2) << "\t"
-           << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
+           << meani(state.m, 2) << "\t" << std::endl;
 }

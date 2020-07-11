@@ -14,8 +14,7 @@ class AtomisticDmiField : public AtomisticTermBase {
 
     // AtomisticDmiField ();
     AtomisticDmiField(const double D_atom, std::array<double, 3> D_atom_axis);
-    AtomisticDmiField(const double D_atom, double D_atom_axis_x,
-                      double D_atom_axis_y, double D_atom_axis_z);
+    AtomisticDmiField(const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);
 
     double cpu_time{0.};
     const double D_atom;                     //!< Atomistic DMI energy [J]

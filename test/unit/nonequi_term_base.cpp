@@ -29,9 +29,7 @@ TEST(State, integral_nonequimesh_dz_as_gauss_sum) {
     double negative_sum = -nz / 2 * (2 + nz) / 2;      // 2 + 4 + 6 ... + 10
     double result = dx * nx * dy * ny * dz * (positive_sum + negative_sum);
     NonEquiDemagField nedemag(mesh);
-    EXPECT_NEAR((-2. / constants::mu0) *
-                    nedemag.E(state, af::constant(1.0, mesh.dims, f64)),
-                result, 1e-35);
+    EXPECT_NEAR((-2. / constants::mu0) * nedemag.E(state, af::constant(1.0, mesh.dims, f64)), result, 1e-35);
     // If integral_nonequimesh were public, we could test like this:
     // EXPECT_NEAR((-2. / constants::mu0) * nedemag.integral_nonequimesh(m,
     // state), result, 1e-35);

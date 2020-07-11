@@ -38,8 +38,7 @@ int main(int argc, char** argv) {
     Llg.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
     Llg.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
     Llg.llgterms.push_back(LlgTerm(new DmiField(mesh, material)));
-    Llg.llgterms.push_back(
-        LlgTerm(new UniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(LlgTerm(new UniaxialAnisotropyField(mesh, material)));
 
     if (!exists(path_mrelax)) {
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;

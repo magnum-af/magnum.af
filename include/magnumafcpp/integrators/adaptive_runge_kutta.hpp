@@ -9,15 +9,12 @@ namespace magnumafcpp {
 
 class AdaptiveRungeKutta {
   public:
-    AdaptiveRungeKutta(std::string scheme_ = "RKF45",
-                       Controller controller_ = Controller(),
-                       const bool renormalize_ = true,
-                       const bool verbose = false);
+    AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(),
+                       const bool renormalize_ = true, const bool verbose = false);
     void step(State&);
     double get_time_allsteps() { return time_allsteps_; }
-    unsigned long long accumulated_steps{
-        0}; //! accumulated integration steps, is incremented for each step of
-            //! the integration scheme
+    unsigned long long accumulated_steps{0}; //! accumulated integration steps, is incremented for each step of
+                                             //! the integration scheme
     virtual ~AdaptiveRungeKutta(){};
 
   private:

@@ -9,11 +9,9 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     const int ncells = state.mesh.n0 * state.mesh.n1 * state.mesh.n2;
-    myfile << std::setw(12) << state.t << "\t"
-           << afvalue(sum_dim3(span, span, span, 0)) / ncells << "\t"
-           << afvalue(sum_dim3(span, span, span, 1)) / ncells << "\t"
-           << afvalue(sum_dim3(span, span, span, 2)) / ncells << "\t" << hzee
-           << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) / ncells << "\t"
+           << afvalue(sum_dim3(span, span, span, 1)) / ncells << "\t" << afvalue(sum_dim3(span, span, span, 2)) / ncells
+           << "\t" << hzee << std::endl;
 }
 
 const double hzee_max = 2; //[T]
@@ -23,11 +21,9 @@ const double rate = hzee_max / simtime; //[T/s]
 af::array zee_func(State state) {
     double field_Tesla = 0;
     field_Tesla = rate * state.t;
-    array zee =
-        constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0,
-                 state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
     return zee;
 }
 
@@ -83,14 +79,10 @@ int main(int argc, char** argv) {
             state.m = Llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps
-                      << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev)
-                      << std::endl;
+            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]"
-              << std::endl;
-    std::cout << "timerelax [af-s]: " << af::timer::stop(t)
-              << ", steps = " << state.steps << std::endl;
+    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
+    std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
 
     // Expected: relaxation into a in-plane magnetization
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());

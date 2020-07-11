@@ -12,12 +12,9 @@ int main(int argc, char** argv) {
         filepath.append("/");
     std::cout << "Writing into path " << filepath << std::endl;
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    const double hzee_max = (argc > 3 ? std::stod(argv[3]) : 0.12); //[Tesla]
-    const double integr_time =
-        (argc > 4 ? std::stod(argv[4]) : 4 * 50e-9); //[s]
-    std::string path_h_fl(
-        argc > 5 ? argv[5]
-                 : filepath + "h_free_layer.vti"); // path to freelayer h vti
+    const double hzee_max = (argc > 3 ? std::stod(argv[3]) : 0.12);            //[Tesla]
+    const double integr_time = (argc > 4 ? std::stod(argv[4]) : 4 * 50e-9);    //[s]
+    std::string path_h_fl(argc > 5 ? argv[5] : filepath + "h_free_layer.vti"); // path to freelayer h vti
 
     af::info();
     // std::cout.precision(24);
@@ -28,8 +25,7 @@ int main(int argc, char** argv) {
     // Defining H_zee via lamdas
     double integr_time_per_quater = integr_time / 4.;
     double rate = hzee_max / integr_time_per_quater; //[T/s]
-    std::cout << "hzee_max= " << hzee_max << ", rate=" << rate
-              << ", integr_time_per_quater=" << integr_time_per_quater
+    std::cout << "hzee_max= " << hzee_max << ", rate=" << rate << ", integr_time_per_quater=" << integr_time_per_quater
               << std::endl;
     auto zee_func = [h_demag_safm, hzee_max, rate](State state) -> af::array {
         double field_Tesla = 0;
@@ -60,11 +56,9 @@ int main(int argc, char** argv) {
         //    setting external field to zero" << std::endl;
         //}
         // std::cout << "fild= "<< field_Tesla << std::endl;
-        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1,
-                                     state.mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 0) =
-            af::constant(field_Tesla / constants::mu0, state.mesh.n0,
-                         state.mesh.n1, state.mesh.n2, 1, f64);
+            af::constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         // std::cout << "dims= " << zee.dims() << ", "<< h_demag_safm.dims() <<
         // std::endl;
         return zee + h_demag_safm;
@@ -79,8 +73,7 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
-    vti_writer_micro(state.m, mesh,
-                     (filepath + "2nd_minit_nonnormalized").c_str());
+    vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_nonnormalized").c_str());
     state.m = renormalize_handle_zero_values(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_renorm").c_str());
 
@@ -95,8 +88,7 @@ int main(int argc, char** argv) {
     // minimizer.llgterms_.push_back( LlgTerm (new DemagField(mesh)));
     // minimizer.llgterms_.push_back( LlgTerm (new ExchangeField(A)));
     // minimizer.llgterms_.push_back( LlgTerm (new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     std::ofstream stream;
     stream.precision(24);
@@ -105,21 +97,13 @@ int main(int argc, char** argv) {
     af::timer t_hys = af::timer::start();
     while (state.t < 5 * hzee_max / rate) {
         if (state.steps % 100 == 0)
-            std::cout << "%=" << state.t / integr_time * 4. / 5.
-                      << ", i=" << state.steps << ", t=" << state.t
-                      << ", <m>=" << state.meani(0) << ", hzee="
-                      << constants::mu0 *
-                             afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0))
-                      << std::endl;
+            std::cout << "%=" << state.t / integr_time * 4. / 5. << ", i=" << state.steps << ", t=" << state.t
+                      << ", <m>=" << state.meani(0)
+                      << ", hzee=" << constants::mu0 * afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)) << std::endl;
         llg.step(state);
-        state.calc_mean_m_steps(
-            stream, constants::mu0 *
-                        afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)));
+        state.calc_mean_m_steps(stream, constants::mu0 * afvalue(llg.llgterms.back()->h(state)(0, 0, 0, 0)));
         if (state.steps % 1000 == 0) {
-            vti_writer_micro(
-                state.m, mesh,
-                (filepath + "m_hysteresis_" + std::to_string(state.steps))
-                    .c_str());
+            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
     }
     // for (unsigned i = 0; i < steps_full_hysteresis; i++){
@@ -133,7 +117,6 @@ int main(int argc, char** argv) {
     //    state.steps++;
     //    std::cout << "i=" << i << std::endl;
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

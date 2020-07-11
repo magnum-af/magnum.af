@@ -58,8 +58,7 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
     array zee = constant(0.0, 1, 1, 1, 3, f64);
-    zee(0, 0, 0, 2) =
-        (argc > 3 ? std::stod(argv[3]) / constants::mu0 : 0. / constants::mu0);
+    zee(0, 0, 0, 2) = (argc > 3 ? std::stod(argv[3]) / constants::mu0 : 0. / constants::mu0);
     af::print("zee_pre_tile", zee);
     zee = tile(zee, mesh.n0, mesh.n1, mesh.n2);
 
@@ -68,8 +67,7 @@ int main(int argc, char** argv) {
     // AtomisticDipoleDipoleField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(
-        LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
     Llg.llgterms.push_back(LlgTerm(new ExternalField(zee)));
 
     Llg.relax(state);

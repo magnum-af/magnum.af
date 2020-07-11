@@ -22,12 +22,10 @@ int main(int argc, char** argv) {
     CG_Minimizer minimizer = CG_Minimizer();
     minimizer.llgterms_.push_back(LlgTerm(new DemagField(mesh, material)));
     minimizer.llgterms_.push_back(LlgTerm(new ExchangeField(mesh, material)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     timer_llgterms = af::timer::start();
     minimizer.Minimize(state);
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
     return 0;
 }

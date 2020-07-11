@@ -30,9 +30,8 @@ double calc_hz(double dz) {
     // af::print("h slice", h(nx/2, ny/2, af::span, af::span));
     // af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
     // mesh.print(stream);
-    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", "
-           << afvalue(h(nx / 2, ny / 2, 3, 1)) << ", "
-           << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
+    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", " << afvalue(h(nx / 2, ny / 2, 3, 1))
+           << ", " << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
     // std::cout << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, 3, 0)) << ", "
     // << afvalue(h(nx/2, ny/2, 3, 1)) << ", " << afvalue(h(nx/2, ny/2, 3, 2))
     // << std::endl;
@@ -56,8 +55,7 @@ int main(int argc, char** argv) {
     magnumaf::ZeroCrossing zc(calc_hz, 1e-6, 10, 0, 5.0e-9, 100, 3);
     // for n=16//ZeroCrossing zc(calc_hz, 1e-6, 10, 0.9e-9, 1.0e-9);
     auto result = zc.calc_x_and_f();
-    std::cout << "x = " << result.first << ", f(x) = " << result.second
-              << std::endl;
+    std::cout << "x = " << result.first << ", f(x) = " << result.second << std::endl;
 
     stream.close();
     std::cout << "total [af-s]: " << af::timer::stop(total_time) << std::endl;

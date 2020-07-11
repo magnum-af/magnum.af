@@ -52,15 +52,13 @@ int main(int argc, char** argv) {
     af::print("coo_max_idx", coo_max_idx);
 
     af::print("matr max  diff", af::max(af::flat(csr_to_dense - coo_to_dense)));
-    af::print("matr mean diff",
-              af::mean(af::flat(csr_to_dense - coo_to_dense)));
+    af::print("matr mean diff", af::mean(af::flat(csr_to_dense - coo_to_dense)));
     af::print("matr min  diff", af::min(af::flat(csr_to_dense - coo_to_dense)));
     if (afvalue(csr_max_val) == afvalue(coo_max_val))
         std::cout << " maxvals equal" << std::endl;
     else
         std::cout << " maxvals not equal" << std::endl;
-    if (afvalue(af::mean(af::flat(coo_to_dense))) ==
-        afvalue(af::mean(af::flat(csr_to_dense))))
+    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense))))
         std::cout << " mean equal" << std::endl;
     else
         std::cout << " mean not equal" << std::endl;

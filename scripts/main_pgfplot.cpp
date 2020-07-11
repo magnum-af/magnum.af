@@ -9,8 +9,7 @@ int main(int argc, char** argv) {
         cout << "Parameter " << i << " was " << argv[i] << "\n";
     }
 
-    std::string inputfile(argc > 1 ? argv[1]
-                                   : "../Data/skyrmion_stoch/Testing");
+    std::string inputfile(argc > 1 ? argv[1] : "../Data/skyrmion_stoch/Testing");
     std::string outputfile(argc > 2 ? argv[2] : "");
     std::string outputfile2(argc > 3 ? argv[3] : "");
 

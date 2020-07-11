@@ -43,8 +43,7 @@ int main(int argc, char** argv) {
 
     std::ofstream stream(filepath + "m_and_E.dat");
     stream << "#skrym: steps, time, mz, E, exch , aniso , dmi , ext";
-    stream << "#ferro: steps, time, mz, E, exch , aniso , dmi , ext"
-           << std::endl;
+    stream << "#ferro: steps, time, mz, E, exch , aniso , dmi , ext" << std::endl;
     for (unsigned nz = 1; nz < 20; nz++) {
         // Parameter initialization
         const unsigned nx = 100, ny = 100;
@@ -87,8 +86,7 @@ int main(int argc, char** argv) {
 
         // defining interactions
         auto exch = LlgTerm(new ExchangeField(A));
-        auto aniso = LlgTerm(
-            new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+        auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
         af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
@@ -122,38 +120,33 @@ int main(int argc, char** argv) {
         }
         timer.print_stage("relax state2");
 
-        state_2.write_vti(filepath + "m_state_2_relaxed_nz_" +
-                          std::to_string(nz));
+        state_2.write_vti(filepath + "m_state_2_relaxed_nz_" + std::to_string(nz));
         timer.print_stage("state2 relaxed");
         std::cout << "ferro relaxed after [s]" << state_2.t << std::endl;
 
-        std::array<std::string, 5> llgnames = {"exch ", "aniso", "dmi  ",
-                                               "ext  "};
+        std::array<std::string, 5> llgnames = {"exch ", "aniso", "dmi  ", "ext  "};
 
-        std::cout << std::scientific << "Skrym, " << nz << ", t=" << state_1.t
-                  << ", mz=" << state_1.meani(2) << ", E=" << llg.E(state_1);
+        std::cout << std::scientific << "Skrym, " << nz << ", t=" << state_1.t << ", mz=" << state_1.meani(2)
+                  << ", E=" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "="
-                      << llg.llgterms[i]->E(state_1);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_1);
         }
         std::cout << std::endl;
 
-        std::cout << std::scientific << "Ferro, " << nz << ", t=" << state_2.t
-                  << ", mz=" << state_2.meani(2) << ", E=" << llg.E(state_2);
+        std::cout << std::scientific << "Ferro, " << nz << ", t=" << state_2.t << ", mz=" << state_2.meani(2)
+                  << ", E=" << llg.E(state_2);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "="
-                      << llg.llgterms[i]->E(state_2);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_2);
         }
         std::cout << std::endl;
 
-        stream << std::scientific << nz << "\t" << state_1.t << "\t"
-               << state_1.meani(2) << "\t" << llg.E(state_1);
+        stream << std::scientific << nz << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
             stream << "\t" << llg.llgterms[i]->E(state_1);
         }
 
-        stream << std::scientific << "\t" << nz << "\t" << state_2.t << "\t"
-               << state_2.meani(2) << "\t" << llg.E(state_2);
+        stream << std::scientific << "\t" << nz << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t"
+               << llg.E(state_2);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
             stream << "\t" << llg.llgterms[i]->E(state_2);
         }

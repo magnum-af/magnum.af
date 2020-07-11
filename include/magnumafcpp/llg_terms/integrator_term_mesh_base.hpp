@@ -16,19 +16,11 @@ class IntegratorTermMeshBase : public LLGTerm {
     virtual double E(const State& state) {
         if (state.Ms_field.isempty()) {
             return -constants::mu0 / 2. * state.Ms *
-                   af::sum(
-                       af::sum(af::sum(af::sum(h(state) * state.m, 0), 1), 2),
-                       3)
-                       .scalar<double>() *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
+                   af::sum(af::sum(af::sum(af::sum(h(state) * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx *
+                   state.mesh.dy * state.mesh.dz;
         } else {
             return -constants::mu0 / 2. *
-                   af::sum(af::sum(af::sum(af::sum(state.Ms_field * h(state) *
-                                                       state.m,
-                                                   0),
-                                           1),
-                                   2),
-                           3)
+                   af::sum(af::sum(af::sum(af::sum(state.Ms_field * h(state) * state.m, 0), 1), 2), 3)
                        .scalar<double>() *
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
@@ -38,17 +30,11 @@ class IntegratorTermMeshBase : public LLGTerm {
     virtual double E(const State& state, const af::array& h) {
         if (state.Ms_field.isempty()) {
             return -constants::mu0 / 2. * state.Ms *
-                   af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3)
-                       .scalar<double>() *
-                   state.mesh.dx * state.mesh.dy * state.mesh.dz;
+                   af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx *
+                   state.mesh.dy * state.mesh.dz;
         } else {
             return -constants::mu0 / 2. *
-                   af::sum(
-                       af::sum(
-                           af::sum(af::sum(state.Ms_field * h * state.m, 0), 1),
-                           2),
-                       3)
-                       .scalar<double>() *
+                   af::sum(af::sum(af::sum(af::sum(state.Ms_field * h * state.m, 0), 1), 2), 3).scalar<double>() *
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
     }

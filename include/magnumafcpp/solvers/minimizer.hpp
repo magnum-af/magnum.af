@@ -13,9 +13,8 @@ namespace magnumafcpp {
 
 class Minimizer {
   public:
-    Minimizer(std::string scheme = "BB", double tau_min = 1e-10,
-              double tau_max = 1e-5, double dm_max = 1e4, int samples = 10,
-              bool info = false);
+    Minimizer(std::string scheme = "BB", double tau_min = 1e-10, double tau_max = 1e-5, double dm_max = 1e4,
+              int samples = 10, bool info = false);
 
     af::array h(const State& m); // Effective Field
     void minimize(State&);       // Minimization routine

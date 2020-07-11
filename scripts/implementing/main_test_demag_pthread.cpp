@@ -15,15 +15,12 @@ int main(int argc, char** argv) {
         DemagFieldMultithread PthreadDemag(mesh, material, true, false, 16);
         DemagField Demag(mesh, material, true, false);
 
-        unsigned int zero_if_equal = afvalue_u32(af::sum(
-            af::sum(af::sum(af::sum(Demag.Nfft != PthreadDemag.Nfft, 0), 1), 2),
-            3));
+        unsigned int zero_if_equal =
+            afvalue_u32(af::sum(af::sum(af::sum(af::sum(Demag.Nfft != PthreadDemag.Nfft, 0), 1), 2), 3));
         if (!zero_if_equal)
-            std::cout << "\33[1;32mSucess:\33[0m zero_if_equal = "
-                      << zero_if_equal << std::endl;
+            std::cout << "\33[1;32mSucess:\33[0m zero_if_equal = " << zero_if_equal << std::endl;
         else
-            std::cout << "\33[1;31mError!\33[0m zero_if_equal ="
-                      << zero_if_equal << std::endl;
+            std::cout << "\33[1;31mError!\33[0m zero_if_equal =" << zero_if_equal << std::endl;
     }
     return 0;
 }

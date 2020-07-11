@@ -9,14 +9,10 @@ int main(int argc, char** argv) {
         filepath.append("/");
     }
     setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    const double A = double(
-        argc > 3 ? std::stod(argv[3]) * 1e-3 / (4e-7 * M_PI)
-                 : (double)(0.05 /
-                            (4e-7 *
-                             M_PI))); // Input a in mT, argv[3]=25 mT is
-                                      // converted to 0.025 T and divided by mu0
-    const double B = double(argc > 4 ? std::stod(argv[4]) / 100 : 1.0) *
-                     A; // Input a in percent, B=1.0 == 100%
+    const double A = double(argc > 3 ? std::stod(argv[3]) * 1e-3 / (4e-7 * M_PI)
+                                     : (double)(0.05 / (4e-7 * M_PI)));     // Input a in mT, argv[3]=25 mT is
+                                                                            // converted to 0.025 T and divided by mu0
+    const double B = double(argc > 4 ? std::stod(argv[4]) / 100 : 1.0) * A; // Input a in percent, B=1.0 == 100%
     std::cout << "Writing into path " << filepath.c_str() << std::endl;
     std::cout << "A=" << A << "B= " << B << std::endl;
     std::cout.precision(24);
@@ -51,11 +47,9 @@ int main(int argc, char** argv) {
     state.Ms = 1.58 / constants::mu0; // [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla
                                       // /mu_0 // Js = 1.58 Tesla
     material.A = 15e-12;              // [J/m]
-    material.Ku1 =
-        1.3e-3 /
-        z; // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = |
-           // [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) +
-           // (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
+    material.Ku1 = 1.3e-3 / z;        // [J/m^3] // Ku1 = K_total - K_shape = Hk*Js/2/mu0 + Js^2/2/mu0 = |
+                                      // [Hk and Js in Tesla] | = ((0.1*1.58)/2/(4*pi*1e-7) +
+                                      // (1.58)^2/(2)/(4*pi*1e-7)) = 1.056e6
 
     Material param_stress = material;
     param_stress.Ku1 = 1400; // TODO
@@ -66,8 +60,8 @@ int main(int argc, char** argv) {
 
     State state(mesh, material, mesh.ellipse(2));
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
-    std::cout << "Mean i for check: " << state.meani(0) << "\t"
-              << state.meani(1) << "\t" << state.meani(2) << std::endl;
+    std::cout << "Mean i for check: " << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2)
+              << std::endl;
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
@@ -79,22 +73,16 @@ int main(int argc, char** argv) {
     // to gcc verions < 7.2
     minimizer.llgterms_.push_back(LlgTerm(new DemagField(mesh, material)));
     minimizer.llgterms_.push_back(LlgTerm(new ExchangeField(mesh, material)));
-    minimizer.llgterms_.push_back(
-        LlgTerm(new UniaxialAnisotropyField(mesh, material)));
-    minimizer.llgterms_.push_back(
-        LlgTerm(new UniaxialAnisotropyField(mesh, param_stress)));
+    minimizer.llgterms_.push_back(LlgTerm(new UniaxialAnisotropyField(mesh, material)));
+    minimizer.llgterms_.push_back(LlgTerm(new UniaxialAnisotropyField(mesh, param_stress)));
     minimizer.llgterms_.push_back(LlgTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Checking aniso
-    vti_writer_micro(minimizer.llgterms_.end()[-3]->h(state), mesh,
-                     filepath + "check_h_ani_z");
+    vti_writer_micro(minimizer.llgterms_.end()[-3]->h(state), mesh, filepath + "check_h_ani_z");
     vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh,
-                     filepath +
-                         "check_h_ani_stress"); // TODO this looks strange
-    vti_writer_micro(minimizer.llgterms_.end()[-1]->h(state), mesh,
-                     filepath + "check_h_zee");
+                     filepath + "check_h_ani_stress"); // TODO this looks strange
+    vti_writer_micro(minimizer.llgterms_.end()[-1]->h(state), mesh, filepath + "check_h_zee");
 
     // obtaining relaxed magnetization
     timer t = af::timer::start();
@@ -106,27 +94,21 @@ int main(int argc, char** argv) {
     std::ofstream stream;
     stream.precision(12);
     stream.open((filepath + "m.dat").c_str());
-    stream << "# id-val  	<mx>    <my>    <mz>    H_x    H_y    H_z"
-           << std::endl;
+    stream << "# id-val  	<mx>    <my>    <mz>    H_x    H_y    H_z" << std::endl;
     timer t_hys = af::timer::start();
     const int max_i = 100;
     for (int i = 0; i <= max_i; i++) {
         state.t = (double)i / (double)max_i;
         state.steps++;
         minimizer.Minimize(state);
-        state.calc_mean_m(
-            stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
-        vti_writer_micro(state.m, mesh,
-                         filepath + "m_" + std::to_string(state.steps));
-        vti_writer_micro(
-            minimizer.llgterms_.end()[-2]->h(state), mesh,
-            filepath + "check_h_ani_stress" +
-                std::to_string(
-                    state.steps)); // TODO this looks interesting, value drops
-                                   // at the boundaries of the disc
+        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
+        vti_writer_micro(state.m, mesh, filepath + "m_" + std::to_string(state.steps));
+        vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh,
+                         filepath + "check_h_ani_stress" +
+                             std::to_string(state.steps)); // TODO this looks interesting, value drops
+                                                           // at the boundaries of the disc
     }
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

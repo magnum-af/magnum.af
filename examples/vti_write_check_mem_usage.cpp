@@ -42,15 +42,13 @@ void process_mem_usage(double& vm_usage, double& resident_set) {
     unsigned long vsize;
     long rss;
 
-    stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >>
-        tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt >> utime >>
-        stime >> cutime >> cstime >> priority >> nice >> O >> itrealvalue >>
-        starttime >> vsize >> rss; // don't care about the rest
+    stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags >> minflt >> cminflt >>
+        majflt >> cmajflt >> utime >> stime >> cutime >> cstime >> priority >> nice >> O >> itrealvalue >> starttime >>
+        vsize >> rss; // don't care about the rest
 
     stat_stream.close();
 
-    long page_size_kb = sysconf(_SC_PAGE_SIZE) /
-                        1024; // in case x86-64 is configured to use 2MB pages
+    long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
     vm_usage = vsize / 1024.0;
     resident_set = rss * page_size_kb;
 }
@@ -76,12 +74,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < n_writes; i++) {
         double vm, rss;
         process_mem_usage(vm, rss);
-        std::cout << std::left << "i=" << std::setw(6) << i
-                  << "[%]=" << std::setw(5)
-                  << 100. * ((double)i) / ((double)n_writes)
-                  << "VIRT[GB]=" << std::setw(10) << vm / 1e6
-                  << "RES[GB]=" << std::setw(9) << rss / 1e6
-                  << "VIRT=" << std::setw(8) << vm << "RES=" << std::setw(6)
+        std::cout << std::left << "i=" << std::setw(6) << i << "[%]=" << std::setw(5)
+                  << 100. * ((double)i) / ((double)n_writes) << "VIRT[GB]=" << std::setw(10) << vm / 1e6
+                  << "RES[GB]=" << std::setw(9) << rss / 1e6 << "VIRT=" << std::setw(8) << vm << "RES=" << std::setw(6)
                   << rss << std::endl;
         state.write_vti(filepath + "minit");
     }

@@ -6,11 +6,9 @@ namespace magnumafcpp {
 
 using namespace magnumafcpp;
 
-ZeroCrossing::ZeroCrossing(std::function<double(double)> f, double precision,
-                           int max_runs, double ix_min, double ix_max, int ix_n,
-                           int verbose)
-    : f(f), precision(precision), max_runs(max_runs), ix_min(ix_min),
-      ix_max(ix_max), ix_n(ix_n), verbose(verbose) {}
+ZeroCrossing::ZeroCrossing(std::function<double(double)> f, double precision, int max_runs, double ix_min,
+                           double ix_max, int ix_n, int verbose)
+    : f(f), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose) {}
 
 std::array<double, 4> ZeroCrossing::run_loop() {
     double x_max_minus_sign = -1e300;
@@ -39,8 +37,7 @@ std::array<double, 4> ZeroCrossing::run_loop() {
             break;
         fx_prev = fx;
     }
-    return std::array<double, 4>{x_max_minus_sign, f_max_minus_sign,
-                                 x_min_plus_sign, f_min_plus_sign};
+    return std::array<double, 4>{x_max_minus_sign, f_max_minus_sign, x_min_plus_sign, f_min_plus_sign};
 }
 
 std::pair<double, double> ZeroCrossing::calc_x_and_f() {
@@ -74,20 +71,16 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f() {
         }
         if (ix_min == ix_max) {
             if (verbose)
-                std::cout << "Warning: ZeroCrossing: ix_min == ix_max = "
-                          << ix_min << ", break!" << std::endl;
+                std::cout << "Warning: ZeroCrossing: ix_min == ix_max = " << ix_min << ", break!" << std::endl;
             break;
         }
         if (std::min(fabs(result[1]), fabs(result[3])) < precision) {
             if (verbose)
-                std::cout << "Info: ZeroCrossing: precision reached"
-                          << std::endl;
+                std::cout << "Info: ZeroCrossing: precision reached" << std::endl;
             break;
         }
         if (verbose > 1)
-            std::cout << "i = " << i << ", ix_min = " << ix_min
-                      << ", ix_max = " << ix_max << std::endl
-                      << std::endl;
+            std::cout << "i = " << i << ", ix_min = " << ix_min << ", ix_max = " << ix_max << std::endl << std::endl;
     }
     // only return x and f(x) closer to 0:
     if (fabs(result[1]) < fabs(result[3]))

@@ -32,18 +32,15 @@ int main(int argc, char** argv) {
             field_Tesla = 0;
             std::cout << "WARNING ZEE time out of range" << std::endl;
         }
-        array zee =
-            constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
         zee(span, span, span, 0) =
-            constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1,
-                     state.mesh.n2, 1, f64);
+            constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
         return zee;
     };
 
     // Parameter initialization
-    double Ms =
-        2. / constants::mu0; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
-    double A = 1.5e-11;      //[J/m]
+    double Ms = 2. / constants::mu0; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
+    double A = 1.5e-11;              //[J/m]
     double Ku1 = 1.4e6;
 
     const double x = 1000e-9, y = 6000e-9,
@@ -73,8 +70,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms_.push_back(LlgTerm(new DemagField(mesh)));
     minimizer.llgterms_.push_back(LlgTerm(new ExchangeField(A)));
     minimizer.llgterms_.push_back(LlgTerm(new UniaxialAnisotropyField(Ku1)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-              << std::endl;
+    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Relaxation
     if (!exists(path_mrelax)) {
@@ -99,25 +95,18 @@ int main(int argc, char** argv) {
     while (state.t < 4 * hzee_max / rate) {
         state.t += 1.;
         minimizer.Minimize(state);
-        state.calc_mean_m(
-            stream,
-            afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(
-                state)(0, 0, 0, 2)));
+        state.calc_mean_m(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state)(0, 0, 0, 2)));
         // TODO previously, maybe should be
         // considered//state.calc_mean_m(stream, n_cells,
         // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,
         // 0, 0, 2)));
         state.steps++;
         if (state.steps % 1 == 0) {
-            vti_writer_micro(
-                state.m, mesh,
-                (filepath + "m_hysteresis_" + std::to_string(state.steps))
-                    .c_str());
+            vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
     }
 
     stream.close();
-    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys)
-              << std::endl;
+    std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
     return 0;
 }

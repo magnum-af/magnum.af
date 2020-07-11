@@ -74,8 +74,7 @@ int main(int argc, char** argv) {
     }
     Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(J_atom)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    Llg.llgterms.push_back(
-        LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
+    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
     Llg.llgterms.push_back(LlgTerm(new AtomisticExternalField(zee)));
 
     Llg.relax(state);

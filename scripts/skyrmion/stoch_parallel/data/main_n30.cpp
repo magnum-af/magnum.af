@@ -71,8 +71,7 @@ int main(int argc, char** argv) {
     // llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
     llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(
-        llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 
@@ -83,10 +82,9 @@ int main(int argc, char** argv) {
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for "
-              << Llg.counter_accepted + Llg.counter_reject << " steps, thereof "
-              << Llg.counter_accepted << " Steps accepted, "
-              << Llg.counter_reject << " Steps rejected" << std::endl;
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
+              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+              << " Steps rejected" << std::endl;
 
     array last = constant(0, mesh.dims, f64);
     last(span, span, span, 2) = 1;
@@ -136,8 +134,7 @@ int main(int argc, char** argv) {
         // std::cout<<"Test: fabs=
         // "<<fabs(2*(*max-string.E[0]-max_prev_step)/(*max-string.E[0]+max_prev_step))<<std::endl;
 
-        if (i > 25 && fabs(2 * (*max - string.E[0] - max_prev_step) /
-                           (*max - string.E[0] + max_prev_step)) < 1e-6) {
+        if (i > 25 && fabs(2 * (*max - string.E[0] - max_prev_step) / (*max - string.E[0] + max_prev_step)) < 1e-6) {
             std::cout << "Exiting loop: Energy barrier relative difference "
                          "smaller than 1e-6"
                       << std::endl;
@@ -147,40 +144,29 @@ int main(int argc, char** argv) {
             break;
         }
         if (i > 25 && fabs(*max - string.E[0] - max_prev_step) < 1e-27) {
-            std::cout
-                << "Exiting loop: Energy barrier difference smaller than 1e-27"
-                << std::endl;
-            stream_steps
-                << "#Exiting loop: Energy barrier difference smaller than 1e-27"
-                << std::endl;
+            std::cout << "Exiting loop: Energy barrier difference smaller than 1e-27" << std::endl;
+            stream_steps << "#Exiting loop: Energy barrier difference smaller than 1e-27" << std::endl;
             break;
         }
-        std::cout << i << "\t" << *max - string.E[0] << "\t" << string.E[0]
-                  << "\t" << *max - string.E[-1] << "\t" << *max << "\t"
-                  << fabs(2 * (*max - string.E[0] - max_prev_step) /
-                          (*max - string.E[0] + max_prev_step))
-                  << std::endl;
-        stream_steps << i << "\t" << *max - string.E[0] << "\t" << string.E[0]
-                     << "\t" << *max - string.E[-1] << "\t" << *max << "\t"
-                     << fabs(2 * (*max - string.E[0] - max_prev_step) /
-                             (*max - string.E[0] + max_prev_step))
+        std::cout << i << "\t" << *max - string.E[0] << "\t" << string.E[0] << "\t" << *max - string.E[-1] << "\t"
+                  << *max << "\t"
+                  << fabs(2 * (*max - string.E[0] - max_prev_step) / (*max - string.E[0] + max_prev_step)) << std::endl;
+        stream_steps << i << "\t" << *max - string.E[0] << "\t" << string.E[0] << "\t" << *max - string.E[-1] << "\t"
+                     << *max << "\t"
+                     << fabs(2 * (*max - string.E[0] - max_prev_step) / (*max - string.E[0] + max_prev_step))
                      << std::endl;
         stream_E_barrier.open((filepath + "E_barrier.dat").c_str());
-        stream_E_barrier << max_lowest << "\t" << nx << "\t" << dx << "\t"
-                         << material.D << "\t" << material.Ku1 << "\t"
-                         << material.K_atom << "\t" << material.D_atom
-                         << std::endl;
+        stream_E_barrier << max_lowest << "\t" << nx << "\t" << dx << "\t" << material.D << "\t" << material.Ku1 << "\t"
+                         << material.K_atom << "\t" << material.D_atom << std::endl;
         stream_E_barrier.close();
         for (unsigned j = 0; j < string.E.size(); ++j) {
-            stream_E_curves << i << " " << j << " " << string.E[j] - string.E[0]
-                            << " " << string.E[j] - string.E[-1] << " "
-                            << string.E[j] << std::endl;
+            stream_E_curves << i << " " << j << " " << string.E[j] - string.E[0] << " " << string.E[j] - string.E[-1]
+                            << " " << string.E[j] << std::endl;
         }
         stream_E_curves << i << "\n\n" << std::endl;
         max_prev_step = *max - string.E[0];
         if (i % 20 == 1) {
-            std::cout << "Writing current skyrm images for iteration" << i
-                      << std::endl;
+            std::cout << "Writing current skyrm images for iteration" << i << std::endl;
             for (unsigned j = 0; j < string.images.size(); j++) {
                 std::string name = filepath;
                 name.append("current_skyrm_image");
@@ -189,17 +175,13 @@ int main(int argc, char** argv) {
             }
         }
     }
-    std::cout << "#i , lowest overall:   max-[0], max-[-1] max [J]: "
-              << i_max_lowest << "\t" << max_lowest << "\t"
-              << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t"
-              << max_lowest + E_max_lowest[0] << std::endl;
-    stream_steps << "#i , lowest overall:   max-[0], max-[-1] max [J]: "
-                 << i_max_lowest << "\t" << max_lowest << "\t"
-                 << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t"
-                 << max_lowest + E_max_lowest[0] << std::endl;
+    std::cout << "#i , lowest overall:   max-[0], max-[-1] max [J]: " << i_max_lowest << "\t" << max_lowest << "\t"
+              << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t" << max_lowest + E_max_lowest[0] << std::endl;
+    stream_steps << "#i , lowest overall:   max-[0], max-[-1] max [J]: " << i_max_lowest << "\t" << max_lowest << "\t"
+                 << max_lowest + E_max_lowest[0] - E_max_lowest[-1] << "\t" << max_lowest + E_max_lowest[0]
+                 << std::endl;
     stream_E_barrier.open((filepath + "E_barrier.dat").c_str());
-    stream_E_barrier << max_lowest << "\t" << nx << "\t" << dx << "\t"
-                     << material.D << "\t" << material.Ku1 << "\t"
+    stream_E_barrier << max_lowest << "\t" << nx << "\t" << dx << "\t" << material.D << "\t" << material.Ku1 << "\t"
                      << material.K_atom << "\t" << material.D_atom << std::endl;
     stream_E_barrier.close();
     // OLD:
@@ -213,20 +195,18 @@ int main(int argc, char** argv) {
     stream_max_lowest.precision(12);
     stream_max_lowest.open((filepath + "E_max_lowest.dat").c_str());
 
-    std::cout << string.E.size() << "\t" << string.images.size() << "\t"
-              << std::endl;
+    std::cout << string.E.size() << "\t" << string.images.size() << "\t" << std::endl;
     for (unsigned i = 0; i < string.images.size(); i++) {
         std::cout << "i=" << i << "\t"
                   << "E= " << string.E[i] << std::endl;
-        myfileE << i << "\t" << string.E[i] << "\t" << string.E[i] - string.E[0]
-                << "\t" << string.E[i] - string.E[-1] << std::endl;
+        myfileE << i << "\t" << string.E[i] << "\t" << string.E[i] - string.E[0] << "\t" << string.E[i] - string.E[-1]
+                << std::endl;
         std::string name = filepath;
         name.append("skyrm_image");
         name.append(std::to_string(i));
         vti_writer_atom(string.images[i].m, mesh, name.c_str());
         // af_to_vtk(string.images_interp[i], name.c_str());
-        stream_max_lowest << i << "\t" << E_max_lowest[i] << "\t"
-                          << E_max_lowest[i] - E_max_lowest[0] << "\t"
+        stream_max_lowest << i << "\t" << E_max_lowest[i] << "\t" << E_max_lowest[i] - E_max_lowest[0] << "\t"
                           << E_max_lowest[i] - E_max_lowest[-1] << std::endl;
         name = filepath;
         name.append("skyrm_image_max_lowest");

@@ -9,8 +9,8 @@ using namespace af;
 typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile) {
-    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t"
-           << meani(state.m, 1) << "\t" << meani(state.m, 2) << std::endl;
+    myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
+           << meani(state.m, 2) << std::endl;
 }
 
 int main(int argc, char** argv) {

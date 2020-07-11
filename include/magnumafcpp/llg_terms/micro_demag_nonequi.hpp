@@ -6,14 +6,11 @@
 namespace magnumafcpp {
 
 namespace newell_nonequi {
-double Nxx(const double x, const double y, const double z, const double dx,
-           const double dy, const double dz, const double dX, const double dY,
-           const double dZ);
-double Nxy(const double x, const double y, const double z, const double dx,
-           const double dy, const double dz, const double dX, const double dY,
-           const double dZ);
-double nonequi_index_distance(const std::vector<double> spacings,
-                              const unsigned i, const unsigned j,
+double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz,
+           const double dX, const double dY, const double dZ);
+double Nxy(const double x, const double y, const double z, const double dx, const double dy, const double dz,
+           const double dX, const double dY, const double dZ);
+double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j,
                               const bool verbose = true);
 } // namespace newell_nonequi
 
@@ -24,11 +21,9 @@ class NonEquiDemagField : public NonequiTermBase {
     // CPU time
     double get_cpu_time() { return cpu_time; }
 
-    NonEquiDemagField(NonequispacedMesh nonequimesh, bool verbose = true,
-                      bool caching = false, unsigned nthreads = 0);
+    NonEquiDemagField(NonequispacedMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
 
-    af::array
-        Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
+    af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
 
     double cpu_time{0.};
     af::timer timer_demagsolve;
@@ -39,7 +34,7 @@ class NonEquiDemagField : public NonequiTermBase {
     // std::vector<double> z_spacing;
   private:
     const unsigned nthreads;
-    af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx,
-                          double dy, const std::vector<double> z_spacing);
+    af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy,
+                          const std::vector<double> z_spacing);
 };
 } // namespace magnumafcpp

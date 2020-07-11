@@ -25,30 +25,24 @@ int main(int argc, char** argv) {
 
         af::array m_nonequi = af::constant(0, nx, ny, nz_nonequi, 3, f64);
 
-        m_nonequi(af::seq(1, af::end - 1), af::span, af::span, 0) =
-            af::constant(1.0, nx - 2, ny, nz_nonequi, 1, f64);
-        m_nonequi(0, af::span, af::span, 1) =
-            af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
-        m_nonequi(-1, af::span, af::span, 1) =
-            af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
+        m_nonequi(af::seq(1, af::end - 1), af::span, af::span, 0) = af::constant(1.0, nx - 2, ny, nz_nonequi, 1, f64);
+        m_nonequi(0, af::span, af::span, 1) = af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
+        m_nonequi(-1, af::span, af::span, 1) = af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
 
         State state_nonequi(mesh_nonequi, material, m_nonequi);
 
         af::array m_full = af::constant(0, nx, ny, nz, 3, f64);
-        m_full(af::seq(1, af::end - 1), af::span, 0, 0) =
-            af::constant(1.0, nx - 2, ny, 1, 1, f64);
+        m_full(af::seq(1, af::end - 1), af::span, 0, 0) = af::constant(1.0, nx - 2, ny, 1, 1, f64);
         m_full(0, af::span, 0, 1) = af::constant(1.0, 1, ny, 1, 1, f64);
         m_full(-1, af::span, 0, 1) = af::constant(1.0, 1, ny, 1, 1, f64);
         State state_full(mesh_full, material, m_full);
 
         DemagField demag = DemagField(mesh_full, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag =
-            NonEquiDemagField(mesh_nonequi, material, true, false, 1);
+        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh_nonequi, material, true, false, 1);
 
         // af::print("full h", demag.h(state_full));
-        af::print("full h",
-                  demag.h(state_full)(af::span, af::span, 1, af::span));
+        af::print("full h", demag.h(state_full)(af::span, af::span, 1, af::span));
 
         af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
@@ -57,9 +51,7 @@ int main(int argc, char** argv) {
         // unsigned int zero_if_equal_var = zero_if_equal(demag.Nfft,
         // nonequi_demag.Nfft);
 
-        abs_diff_lt_precision(
-            demag.h(state_full)(af::span, af::span, 1, af::span),
-            nonequi_demag.h(state_nonequi));
+        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi));
         // if (abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1,
         // af::span), 2*nonequi_demag.h(state_nonequi))) std::cout << "test
         // true"
@@ -88,44 +80,34 @@ int main(int argc, char** argv) {
 
         af::array m_nonequi = af::constant(0, nx, ny, nz_nonequi, 3, f64);
 
-        m_nonequi(af::seq(1, af::end - 1), af::span, af::span, 0) =
-            af::constant(1.0, nx - 2, ny, nz_nonequi, 1, f64);
-        m_nonequi(0, af::span, af::span, 1) =
-            af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
-        m_nonequi(-1, af::span, af::span, 1) =
-            af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
+        m_nonequi(af::seq(1, af::end - 1), af::span, af::span, 0) = af::constant(1.0, nx - 2, ny, nz_nonequi, 1, f64);
+        m_nonequi(0, af::span, af::span, 1) = af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
+        m_nonequi(-1, af::span, af::span, 1) = af::constant(1.0, 1, ny, nz_nonequi, 1, f64);
 
         State state_nonequi(mesh_nonequi, material, m_nonequi);
 
         af::array m_full = af::constant(0, nx, ny, nz, 3, f64);
-        m_full(af::seq(1, af::end - 1), af::span, 0, 0) =
-            af::constant(1.0, nx - 2, ny, 1, 1, f64);
+        m_full(af::seq(1, af::end - 1), af::span, 0, 0) = af::constant(1.0, nx - 2, ny, 1, 1, f64);
         m_full(0, af::span, 0, 1) = af::constant(1.0, 1, ny, 1, 1, f64);
         m_full(-1, af::span, 0, 1) = af::constant(1.0, 1, ny, 1, 1, f64);
         State state_full(mesh_full, material, m_full);
 
         DemagField demag = DemagField(mesh_full, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag =
-            NonEquiDemagField(mesh_nonequi, material, true, false, 1);
+        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh_nonequi, material, true, false, 1);
 
-        af::print("full h",
-                  demag.h(state_full)(af::span, af::span, 1, af::span));
+        af::print("full h", demag.h(state_full)(af::span, af::span, 1, af::span));
 
         af::print("nonequi_demag H", nonequi_demag.h(state_nonequi));
 
-        abs_diff_lt_precision(
-            demag.h(state_full)(af::span, af::span, 1, af::span),
-            nonequi_demag.h(state_nonequi), 3.9e-8);
-        abs_diff_lt_precision(
-            demag.h(state_full)(af::span, af::span, 1, af::span),
-            nonequi_demag.h(state_nonequi), 4e-8);
-        rel_diff_lt_precision(
-            demag.h(state_full)(af::span, af::span, 1, af::span),
-            nonequi_demag.h(state_nonequi), 1e-03);
-        rel_diff_lt_precision(
-            demag.h(state_full)(af::span, af::span, 1, af::span),
-            nonequi_demag.h(state_nonequi), 2e-03);
+        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi),
+                              3.9e-8);
+        abs_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi),
+                              4e-8);
+        rel_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi),
+                              1e-03);
+        rel_diff_lt_precision(demag.h(state_full)(af::span, af::span, 1, af::span), nonequi_demag.h(state_nonequi),
+                              2e-03);
 
         // test
         // rel_diff_lt_precision(af::constant(1., 1, f64), af::constant(1.1, 1,
@@ -157,8 +139,7 @@ int main(int argc, char** argv) {
 
         DemagField demag = DemagField(mesh, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag =
-            NonEquiDemagField(mesh, material, true, false, 1);
+        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh, material, true, false, 1);
 
         // af::print("full h", demag.h(state_full));
 
@@ -191,42 +172,21 @@ int main(int argc, char** argv) {
         std::cout.precision(16);
         std::cout << std::endl;
 
-        std::cout << "heff mean abs diff = "
-                  << mean_abs_diff(demag.h(state), nonequi_demag.h(state))
-                  << std::endl;
-        std::cout << "heff mean rel diff = "
-                  << mean_rel_diff(demag.h(state), nonequi_demag.h(state))
-                  << std::endl
+        std::cout << "heff mean abs diff = " << mean_abs_diff(demag.h(state), nonequi_demag.h(state)) << std::endl;
+        std::cout << "heff mean rel diff = " << mean_rel_diff(demag.h(state), nonequi_demag.h(state)) << std::endl
                   << std::endl;
 
-        std::cout << "heff max abs diff = "
-                  << max_abs_diff(demag.h(state), nonequi_demag.h(state))
-                  << std::endl;
-        std::cout << "heff max rel diff = "
-                  << max_rel_diff(demag.h(state), nonequi_demag.h(state))
-                  << std::endl
+        std::cout << "heff max abs diff = " << max_abs_diff(demag.h(state), nonequi_demag.h(state)) << std::endl;
+        std::cout << "heff max rel diff = " << max_rel_diff(demag.h(state), nonequi_demag.h(state)) << std::endl
                   << std::endl;
 
-        std::cout << "N mean abs diff = "
-                  << mean_abs_diff(demag.todel_N, nonequi_demag.todel_N)
-                  << std::endl;
-        std::cout << "N mean rel diff = "
-                  << mean_rel_diff(demag.todel_N, nonequi_demag.todel_N)
-                  << std::endl
+        std::cout << "N mean abs diff = " << mean_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "N mean rel diff = " << mean_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl
                   << std::endl;
 
-        std::cout << "N max abs diff = "
-                  << max_abs_diff(demag.todel_N, nonequi_demag.todel_N)
-                  << std::endl;
-        std::cout << "N max rel diff = "
-                  << max_rel_diff(demag.todel_N, nonequi_demag.todel_N)
-                  << std::endl;
-        af::print(
-            "",
-            af::max(
-                af::max(af::max(af::max(af::abs(nonequi_demag.todel_N), 0), 1),
-                        2),
-                3));
+        std::cout << "N max abs diff = " << max_abs_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        std::cout << "N max rel diff = " << max_rel_diff(demag.todel_N, nonequi_demag.todel_N) << std::endl;
+        af::print("", af::max(af::max(af::max(af::max(af::abs(nonequi_demag.todel_N), 0), 1), 2), 3));
     }
     return 0;
 }

@@ -18,8 +18,7 @@ int main(int argc, char** argv) {
 
     std::ofstream stream(filepath + "m.dat");
     stream.precision(24);
-    stream << "# nz	<mx>    <my>    <mz>    hzee    demagx  demagy demagz"
-           << std::endl;
+    stream << "# nz	<mx>    <my>    <mz>    hzee    demagx  demagy demagz" << std::endl;
     // Parameter initialization
     for (int nz = 2; nz < 22; nz++) {
         std::cout << "starting nz = " << nz << std::endl;
@@ -52,29 +51,21 @@ int main(int argc, char** argv) {
         auto demag = LlgTerm(new DemagField(mesh));
         auto exch = LlgTerm(new ExchangeField(A));
         auto ext = LlgTerm(new ExternalField(zee_field));
-        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms)
-                  << std::endl;
+        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
         LLGIntegrator llg(1, {demag, exch, ext});
         af::timer t_hys = af::timer::start();
         llg.relax(state, 1e-10);
-        std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys)
-                  << std::endl;
+        std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys) << std::endl;
         // state.calc_mean_m_steps(stream,
         // afvalue(minimizer.llgterms_[minimizer.llgterms_.size() -
         // 1]->h(state)(0, 0, 0, 0))); vti_writer_micro(state.m, mesh, filepath
         // + "m_hysteresis_" + std::to_string(nz));
         state.write_vti(filepath + "m_relaxed" + std::to_string(nz));
-        std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1)
-                  << "\t" << state.meani(2) << "\t"
-                  << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) *
-                         constants::mu0
-                  << "\t" << std::endl;
-        stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t"
-               << state.meani(2) << "\t"
-               << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) *
-                      constants::mu0
-               << "\t" << std::endl;
+        std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
+                  << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
+        stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
+               << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
     }
     stream.close();
     return 0;

@@ -5,15 +5,12 @@
 
 namespace magnumafcpp {
 
-unsigned colum_major_stride(const unsigned i, const unsigned j,
-                            const unsigned k, const unsigned l,
-                            const unsigned ni, const unsigned nj,
-                            const unsigned nk) {
+unsigned colum_major_stride(const unsigned i, const unsigned j, const unsigned k, const unsigned l, const unsigned ni,
+                            const unsigned nj, const unsigned nk) {
     return i + ni * (j + nj * (k + nk * l));
 }
 
-void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
-                 bool verbose, int precision) {
+void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, bool verbose, int precision) {
     const unsigned nx = a.dims(0);
     const unsigned ny = a.dims(1);
     const unsigned nz = a.dims(2);
@@ -25,18 +22,14 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
         stream.precision(precision);
         int val_setw = precision + 4; // formatted at least for 0.*** values
         if (verbose) {
-            printf("writing to ascii file %s with precision of %d\n",
-                   filename.c_str(), precision);
+            printf("writing to ascii file %s with precision of %d\n", filename.c_str(), precision);
         }
-        stream << "# " << a.dims(0) << " " << a.dims(1) << " " << a.dims(2)
-               << " " << a.dims(3) << " " << mesh.dx << " " << mesh.dy << " "
-               << mesh.dz << std::endl;
-        stream << "# magnum.af ascii-encoded " << a.dims(3) << "d spacial field"
-               << std::endl;
-        stream << "# plot with gnuplot using: set view equal xyz; splot '"
-               << filename << "' using 1:2:3:4:5:6 with vectors" << std::endl;
-        stream << "# color code mx component: set view equal xyz; splot '"
-               << filename
+        stream << "# " << a.dims(0) << " " << a.dims(1) << " " << a.dims(2) << " " << a.dims(3) << " " << mesh.dx << " "
+               << mesh.dy << " " << mesh.dz << std::endl;
+        stream << "# magnum.af ascii-encoded " << a.dims(3) << "d spacial field" << std::endl;
+        stream << "# plot with gnuplot using: set view equal xyz; splot '" << filename
+               << "' using 1:2:3:4:5:6 with vectors" << std::endl;
+        stream << "# color code mx component: set view equal xyz; splot '" << filename
                << "' using ($1*1e9):($2*1e9):($3*1e9):4:5:6:4 with vectors "
                   "linecolor palette"
                << std::endl;
@@ -62,8 +55,7 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
                    << "\n";
         } else {
             for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
-                stream << std::setw(val_setw) << std::left
-                       << std::to_string(i_scalar) + "-component";
+                stream << std::setw(val_setw) << std::left << std::to_string(i_scalar) + "-component";
                 if (i_scalar != (n_scalar - 1)) {
                     stream << "\t";
                 }
@@ -78,18 +70,13 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename,
         for (unsigned ix = 0; ix < nx; ix++) {
             for (unsigned iy = 0; iy < ny; iy++) {
                 for (unsigned iz = 0; iz < nz; iz++) {
-                    stream << std::setw(val_setw) << std::left << ix * mesh.dx
-                           << "\t";
-                    stream << std::setw(val_setw) << std::left << iy * mesh.dy
-                           << "\t";
-                    stream << std::setw(val_setw) << std::left << iz * mesh.dz
-                           << "\t";
+                    stream << std::setw(val_setw) << std::left << ix * mesh.dx << "\t";
+                    stream << std::setw(val_setw) << std::left << iy * mesh.dy << "\t";
+                    stream << std::setw(val_setw) << std::left << iz * mesh.dz << "\t";
 
-                    for (unsigned i_scalar = 0; i_scalar < n_scalar;
-                         i_scalar++) {
+                    for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
                         stream << std::setw(val_setw) << std::left
-                               << host_a[colum_major_stride(
-                                      ix, iy, iz, i_scalar, nx, ny, nz)];
+                               << host_a[colum_major_stride(ix, iy, iz, i_scalar, nx, ny, nz)];
                         if (i_scalar != (n_scalar - 1)) {
                             stream << "\t";
                         }
@@ -143,15 +130,13 @@ void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose) {
                             printf("Error while reading line!\n");
                             break;
                         }
-                        for (unsigned i_scalar = 0; i_scalar < n_scalar;
-                             i_scalar++) {
+                        for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
                             double value;
                             if (!(iss >> value)) {
                                 printf("Error while reading line!\n");
                                 break;
                             }
-                            raw_read_a[colum_major_stride(ix, iy, iz, i_scalar,
-                                                          nx, ny, nz)] = value;
+                            raw_read_a[colum_major_stride(ix, iy, iz, i_scalar, nx, ny, nz)] = value;
                         }
                         std::getline(infile, line);
                     }

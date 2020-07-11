@@ -55,28 +55,23 @@ int main(int argc, char** argv) {
     // Inplane
     vti_writer_micro(state.m, state.mesh, (filepath + "m_inplane").c_str());
     const double E_inplane = Llg.E(state);
-    Llg.write_fieldterms_micro(state,
-                               (filepath + "demagfield_in_plane").c_str());
+    Llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
 
     // Out-of-plane
     state.m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
     state.m(span, span, span, 2) = 1.;
-    vti_writer_micro(state.m, state.mesh,
-                     (filepath + "m_ouf_of_plane").c_str());
+    vti_writer_micro(state.m, state.mesh, (filepath + "m_ouf_of_plane").c_str());
     const double E_out_of_plane = Llg.E(state);
-    Llg.write_fieldterms_micro(state,
-                               (filepath + "demagfield_out_of_plane").c_str());
+    Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
 
     // Keff
-    const double Keff = -0.5 * pow(state.Ms, 2) * constants::mu0 *
-                        pow(mesh.dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
+    const double Keff = -0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
 
     const double g_electron = 2.002319;
     const double correction = 1.07831;
 
     const double mub = 9.27400999e-24;
-    const double deltaEd =
-        2 * M_PI * correction * pow(g_electron * mub, 2) / pow(dx, 3);
+    const double deltaEd = 2 * M_PI * correction * pow(g_electron * mub, 2) / pow(dx, 3);
     // TODO
     // const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub,
     // 2)/pow(dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
@@ -85,11 +80,9 @@ int main(int argc, char** argv) {
 
     std::cout << "E_inplance= " << E_inplane << "\n"
               << "E_out_of_plane= " << E_out_of_plane << "\n"
-              << "E_inplane - E_out_of_plane= " << E_inplane - E_out_of_plane
-              << "\n"
+              << "E_inplane - E_out_of_plane= " << E_inplane - E_out_of_plane << "\n"
               << "Keff= " << Keff << std::endl;
-    std::cout << "dE/Keff = " << (E_inplane - E_out_of_plane) / Keff
-              << std::endl;
+    std::cout << "dE/Keff = " << (E_inplane - E_out_of_plane) / Keff << std::endl;
 
     return 0;
 }

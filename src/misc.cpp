@@ -24,8 +24,7 @@ unsigned long long GetDirSize(std::string filepath)
         // printf( "(%s)\n", string );
     }
     std::string charstring(string);
-    std::string dir_size_string =
-        charstring.substr(0, charstring.find("/") - 1);
+    std::string dir_size_string = charstring.substr(0, charstring.find("/") - 1);
     return std::stoull(dir_size_string, 0, 0);
 }
 
@@ -34,8 +33,7 @@ inline bool createdir(const std::string& absolute_filepath) {
     if (mkdir(absolute_filepath.c_str(), 0777) == -1) {
         // std::cerr << "Error in createdir for " << absolute_filepath<< " : "
         // << std::strerror(errno) << std::endl;
-        printf("Error in createdir for %s : %s \n<< ",
-               absolute_filepath.c_str(), std::strerror(errno));
+        printf("Error in createdir for %s : %s \n<< ", absolute_filepath.c_str(), std::strerror(errno));
         return false;
     }
 
@@ -62,9 +60,7 @@ std::string setup_magafdir() {
 
 // adapted from
 // https://stackoverflow.com/questions/9642145/is-there-a-way-to-find-the-oldest-file-using-just-the-c
-void remove_oldest_files_until_size(const char* dir,
-                                    unsigned long long maxNumberOfBytes,
-                                    bool verbose) {
+void remove_oldest_files_until_size(const char* dir, unsigned long long maxNumberOfBytes, bool verbose) {
     int maxiter = 0;
     while (GetDirSize(std::string(dir)) >= maxNumberOfBytes && maxiter < 10) {
 
@@ -79,12 +75,10 @@ void remove_oldest_files_until_size(const char* dir,
             if (chdir(dir) == 0) {
                 while ((entry = readdir(dp)) != NULL) {
                     lstat(entry->d_name, &statbuf);
-                    if (strcmp(".", entry->d_name) == 0 ||
-                        strcmp("..", entry->d_name) == 0)
+                    if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
                         continue;
                     if (maxiter == 0 && verbose)
-                        printf("Entry: ~/.magnum.af.cache/%s\t%s",
-                               entry->d_name, ctime(&statbuf.st_mtime));
+                        printf("Entry: ~/.magnum.af.cache/%s\t%s", entry->d_name, ctime(&statbuf.st_mtime));
                     numberOfEntries++;
                     if (difftime(statbuf.st_mtime, t_oldest) < 0) {
                         t_oldest = statbuf.st_mtime;
@@ -94,8 +88,7 @@ void remove_oldest_files_until_size(const char* dir,
             }
         }
         if (verbose)
-            printf("Removing oldest file '~/.magnum.af.cache/%s'  %s'\n",
-                   oldestFile->d_name, ctime(&t_oldest));
+            printf("Removing oldest file '~/.magnum.af.cache/%s'  %s'\n", oldestFile->d_name, ctime(&t_oldest));
         remove(oldestFile->d_name);
         closedir(dp);
         maxiter++;
