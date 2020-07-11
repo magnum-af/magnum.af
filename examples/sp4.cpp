@@ -1,27 +1,36 @@
-#include "arrayfire.h"
 #include "magnum_af.hpp"
+#include <filesystem>
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device
     for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
+        std::cout << "argv[" << i << "]= " << argv[i] << std::endl;
     }
-    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
+    std::string filepath(argc > 1 ? argv[1] + std::string("/") : "output_magnum.af/");
+    std::filesystem::create_directories(filepath);
     af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
     af::info();
 
     // Parameter initialization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 100, ny = 25, nz = 1;
+
     const double A = 1.3e-11;
+    const double Ms = 8e5;
 
     // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     // Initial magnetic field
-    State state(mesh, 8e5, mesh.init_sp4());
+    af::array m = af::constant(0, nx, ny, nz, 3, f64);
+    m(0, af::span, af::span, 1) = 1;
+    m(af::seq(1, af::end - 1), af::span, af::span, 0) = 1;
+    m(-1, af::span, af::span, 1) = 1;
+
+    // State object
+    State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
