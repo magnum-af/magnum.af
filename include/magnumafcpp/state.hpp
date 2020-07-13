@@ -46,7 +46,15 @@ class State {
     void _vti_writer_atom(std::string outputname);
     void _vti_reader(std::string inputname);
 
+    /// Get the i'th component of <m>
     double meani(const int i);
+    /// Returns <mx>, i.e. average magnetisation in x-direction
+    double mx() { return meani(0); }
+    /// Returns <my>, i.e. average magnetisation in y-direction
+    double my() { return meani(1); }
+    /// Returns <mz>, i.e. average magnetisation in z-direction
+    double mz() { return meani(2); }
+
     void calc_mean_m(std::ostream& myfile);
     void calc_mean_m(std::ostream& myfile, double hzee);
     void calc_mean_m(std::ostream& myfile, const af::array& hzee);

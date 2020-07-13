@@ -76,6 +76,9 @@ cdef extern from "state.hpp" namespace "magnumafcpp":
         void _vtr_writer(string outputname);
         void _vtr_reader(string inputname);
         double meani(const int i);
+        double mx();
+        double my();
+        double mz();
 
 cdef extern from "llg_terms/micro_dmi.hpp" namespace "magnumafcpp":
     cdef cppclass DmiField:

@@ -666,6 +666,15 @@ cdef class State:
             return self._thisptr.meani(0), self._thisptr.meani(1), self._thisptr.meani(2)
         else:
             return self._thisptr.meani(i)
+    def mx(self):
+        """Returns <mx>, i.e. average magnetisation in x-direction"""
+        return self._thisptr.mx()
+    def my(self):
+        """Returns <my>, i.e. average magnetisation in y-direction"""
+        return self._thisptr.my()
+    def mz(self):
+        """Returns <mz>, i.e. average magnetisation in z-direction"""
+        return self._thisptr.mz()
 
 
 cdef class Stochastic_LLG:
