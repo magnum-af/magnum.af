@@ -17,6 +17,23 @@ State State::operator+(const af::array& a) const {
     return result;
 }
 
+std::ostream& operator<<(std::ostream& os, const State& state) {
+    if (state.Ms_field.isempty()) {
+        af::array mean_dim3 = af::mean(af::mean(af::mean(state.m, 0), 1), 2);
+        const double mx = mean_dim3(0, 0, 0, 0).scalar<double>();
+        const double my = mean_dim3(0, 0, 0, 1).scalar<double>();
+        const double mz = mean_dim3(0, 0, 0, 2).scalar<double>();
+        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    } else {
+        af::array sum_dim3 = af::sum(af::sum(af::sum(state.m, 0), 1), 2);
+        const double mx = sum_dim3(0, 0, 0, 0).scalar<double>() / state.n_cells_;
+        const double my = sum_dim3(0, 0, 0, 1).scalar<double>() / state.n_cells_;
+        const double mz = sum_dim3(0, 0, 0, 2).scalar<double>() / state.n_cells_;
+        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    }
+    return os;
+}
+
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
     // Initializes Ms_field if any entry of initial m has zero norm
     if (minval(vecnorm(m)) == 0) {
@@ -222,7 +239,6 @@ void State::calc_mean_m(std::ostream& myfile, double hzee) {
 
 ///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>, hzee_x, hzee_y, hzee_z
 void State::calc_mean_m(std::ostream& myfile, const af::array& hzee) {
-    af::array sum_dim3 = sum(sum(sum(this->m, 0), 1), 2);
     if (Ms_field.isempty()) {
         af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
         myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"

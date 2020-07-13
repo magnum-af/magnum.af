@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     StageTimer timer;
     while (state.t < 1e-9) {
         Llg.step(state);
-        state.calc_mean_m(stream);
+        stream << state << std::endl;
     }
     timer.print_stage("relax ");
     state.write_vti(filepath + "relax");
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     // Switch
     while (state.t < 2e-9) {
         Llg.step(state);
-        state.calc_mean_m(stream);
+        stream << state << std::endl;
     }
     state.write_vti(filepath + "2ns");
     stream.close();

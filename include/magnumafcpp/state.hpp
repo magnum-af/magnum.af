@@ -18,6 +18,9 @@ class State {
     State(Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose = true, bool mute_warning = false);
 
     State operator+(const af::array&) const;
+    /// Writes <mx> <my> <mz> to stream, separated by tabs.
+    friend std::ostream& operator<<(std::ostream& os, const State&);
+
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array
                                ///< m to values obtained from wrapped af.array
     long int get_m_addr();
