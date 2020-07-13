@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
     af::print("ani ", af::mean(af::mean(af::mean(af::mean(llgterm[2]->h(state), 0), 1), 2), 3));
 
-    state.calc_mean_m(std::cout);
+    std::cout << state << std::endl;
     vti_writer_atom(state.m, mesh, filepath + "relax");
 
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;

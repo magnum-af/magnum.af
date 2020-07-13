@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     StageTimer timer;
     while (state.t < 2e-10) {
         Llg.step(state);
-        state.calc_mean_m(stream);
+        stream << state << std::endl;
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
     }

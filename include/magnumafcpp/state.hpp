@@ -2,6 +2,7 @@
 #include "arrayfire.h"
 #include "mesh.hpp"
 #include <iostream>
+#include <tuple>
 
 namespace magnumafcpp {
 
@@ -54,12 +55,9 @@ class State {
     double my() { return meani(1); }
     /// Returns <mz>, i.e. average magnetisation in z-direction
     double mz() { return meani(2); }
+    /// Returns {<mx>, <my>, <mz>}
+    std::tuple<double, double, double> mean_m() const;
 
-    void calc_mean_m(std::ostream& myfile);
-    void calc_mean_m(std::ostream& myfile, double hzee);
-    void calc_mean_m(std::ostream& myfile, const af::array& hzee);
-    void calc_mean_m_steps(std::ostream& myfile, double hzee);
-    void calc_mean_m_steps(std::ostream& myfile, const af::array& hzee);
     unsigned int get_n_cells_() { return n_cells_; };
 
     bool verbose{true};

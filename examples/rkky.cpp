@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
         vecE.push_back(E);
         std::cout << "i = " << i << ", E= " << E << std::endl;
         streamE << i << "\t" << E << std::endl;
-        state.calc_mean_m(stream);
+        stream << state << std::endl;
         state.write_vti(filepath + "m_field_" + std::to_string(i));
     }
     stream.close();

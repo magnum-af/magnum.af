@@ -18,20 +18,25 @@ State State::operator+(const af::array& a) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const State& state) {
-    if (state.Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(state.m, 0), 1), 2);
+    auto [mx, my, mz] = state.mean_m();
+    os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    return os;
+}
+
+std::tuple<double, double, double> State::mean_m() const {
+    if (Ms_field.isempty()) {
+        af::array mean_dim3 = af::mean(af::mean(af::mean(m, 0), 1), 2);
         const double mx = mean_dim3(0, 0, 0, 0).scalar<double>();
         const double my = mean_dim3(0, 0, 0, 1).scalar<double>();
         const double mz = mean_dim3(0, 0, 0, 2).scalar<double>();
-        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+        return {mx, my, mz};
     } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(state.m, 0), 1), 2);
-        const double mx = sum_dim3(0, 0, 0, 0).scalar<double>() / state.n_cells_;
-        const double my = sum_dim3(0, 0, 0, 1).scalar<double>() / state.n_cells_;
-        const double mz = sum_dim3(0, 0, 0, 2).scalar<double>() / state.n_cells_;
-        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+        af::array sum_dim3 = af::sum(af::sum(af::sum(m, 0), 1), 2);
+        const double mx = sum_dim3(0, 0, 0, 0).scalar<double>() / n_cells_;
+        const double my = sum_dim3(0, 0, 0, 1).scalar<double>() / n_cells_;
+        const double mz = sum_dim3(0, 0, 0, 2).scalar<double>() / n_cells_;
+        return {mx, my, mz};
     }
-    return os;
 }
 
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
@@ -205,87 +210,6 @@ double State::meani(const int i) {
     // std::cout << "norm_host = "<< norm << std::endl;
     af::freeHost(norm_host);
     return norm;
-}
-
-///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>
-void State::calc_mean_m(std::ostream& myfile) {
-    if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 1)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 2)) << std::endl;
-    } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 0)) / n_cells_
-               << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 1)) / n_cells_ << "\t"
-               << afvalue(sum_dim3(af::span, af::span, af::span, 2)) / n_cells_ << std::endl;
-    }
-}
-
-///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>, hzee
-void State::calc_mean_m(std::ostream& myfile, double hzee) {
-    if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 1)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 2)) << "\t" << hzee << std::endl;
-    } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 0)) / n_cells_
-               << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 1)) / n_cells_ << "\t"
-               << afvalue(sum_dim3(af::span, af::span, af::span, 2)) / n_cells_ << "\t" << hzee << std::endl;
-    }
-}
-
-///< Writing to filestrean: state.t, <mx>,  <my>,  <mz>, hzee_x, hzee_y, hzee_z
-void State::calc_mean_m(std::ostream& myfile, const af::array& hzee) {
-    if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 1)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 2)) << "\t" << afvalue(hzee(0, 0, 0, 0)) << "\t"
-               << afvalue(hzee(0, 0, 0, 1)) << "\t" << afvalue(hzee(0, 0, 0, 2)) << std::endl;
-    } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->t << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 0)) / n_cells_
-               << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 1)) / n_cells_ << "\t"
-               << afvalue(sum_dim3(af::span, af::span, af::span, 2)) / n_cells_ << "\t" << afvalue(hzee(0, 0, 0, 0))
-               << "\t" << afvalue(hzee(0, 0, 0, 1)) << "\t" << afvalue(hzee(0, 0, 0, 2)) << std::endl;
-    }
-}
-
-///< Writing to filestrean: state.steps, <mx>,  <my>,  <mz>, hzee
-void State::calc_mean_m_steps(std::ostream& myfile, double hzee) {
-    if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->steps << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 1)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 2)) << "\t" << hzee << std::endl;
-    } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->steps << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 0)) / n_cells_
-               << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 1)) / n_cells_ << "\t"
-               << afvalue(sum_dim3(af::span, af::span, af::span, 2)) / n_cells_ << "\t" << hzee << std::endl;
-    }
-}
-
-///< Writing to filestrean: state.steps, <mx>,  <my>,  <mz>, hzee_x, hzee_y,
-///< hzee_z
-void State::calc_mean_m_steps(std::ostream& myfile, const af::array& hzee) {
-    af::array sum_dim3 = sum(sum(sum(this->m, 0), 1), 2);
-    if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->steps << "\t" << afvalue(mean_dim3(af::span, af::span, af::span, 0)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 1)) << "\t"
-               << afvalue(mean_dim3(af::span, af::span, af::span, 2)) << "\t" << afvalue(hzee(0, 0, 0, 0)) << "\t"
-               << afvalue(hzee(0, 0, 0, 1)) << "\t" << afvalue(hzee(0, 0, 0, 2)) << std::endl;
-    } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(this->m, 0), 1), 2);
-        myfile << std::setw(12) << this->steps << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 0)) / n_cells_
-               << "\t" << afvalue(sum_dim3(af::span, af::span, af::span, 1)) / n_cells_ << "\t"
-               << afvalue(sum_dim3(af::span, af::span, af::span, 2)) / n_cells_ << "\t" << afvalue(hzee(0, 0, 0, 0))
-               << "\t" << afvalue(hzee(0, 0, 0, 1)) << "\t" << afvalue(hzee(0, 0, 0, 2)) << std::endl;
-    }
 }
 
 } // namespace magnumafcpp
