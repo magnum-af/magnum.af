@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     timer t = af::timer::start();
     while (state.t < 1e-7) {
         Llg.step(state);
-        state.calc_mean_m(stream);
+        stream << state << std::endl;
         // state.calc_mean_m(std::cout);
         // std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1))
         // << " " << afvalue(m(0, 0, 0, 2)) << " " << std::endl;

@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
         timer t = af::timer::start();
         while (state.t < 1e-9) {
             Llg.step(state);
-            state.calc_mean_m(stream);
+            stream << state << std::endl;
         }
         double timerelax = af::timer::stop(t);
         std::cout << "timerelax [af-s]: " << timerelax << std::endl;
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
         t = af::timer::start();
         while (state.t < 2e-9) {
             Llg.step(state);
-            state.calc_mean_m(stream);
+            stream << state << std::endl;
         }
         double timeintegrate = af::timer::stop(t);
         std::cout << "time integrate 1ns [af-s]: " << timeintegrate << std::endl;
