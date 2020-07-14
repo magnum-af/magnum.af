@@ -1,8 +1,8 @@
 #pragma once
 #include "arrayfire.h"
 #include "mesh.hpp"
+#include <array>
 #include <iostream>
-#include <tuple>
 
 namespace magnumafcpp {
 
@@ -43,20 +43,19 @@ class State {
     // long int get_m_addr(){m.lock(); return (long int) m.get();}
 
     void write_vti(std::string outputname);
-    void _vti_writer_micro_boolean(std::string outputname);
     void _vti_writer_atom(std::string outputname);
     void _vti_reader(std::string inputname);
 
-    /// Get the i'th component of <m>
+    /// Get the i'th component of <m>: 0 == mx, 1 == my, 2 == mz
     double meani(const int i);
+    /// Returns {<mx>, <my>, <mz>}, the average magnetization in each spacial direction
+    std::array<double, 3> mean_m() const;
     /// Returns <mx>, i.e. average magnetisation in x-direction
-    double mx() { return meani(0); }
+    double mean_mx() { return mean_m()[0]; }
     /// Returns <my>, i.e. average magnetisation in y-direction
-    double my() { return meani(1); }
+    double mean_my() { return mean_m()[1]; }
     /// Returns <mz>, i.e. average magnetisation in z-direction
-    double mz() { return meani(2); }
-    /// Returns {<mx>, <my>, <mz>}
-    std::tuple<double, double, double> mean_m() const;
+    double mean_mz() { return mean_m()[2]; }
 
     unsigned int get_n_cells_() { return n_cells_; };
 
@@ -67,14 +66,5 @@ class State {
   private:
     ///< Number of cells with Ms != 0
     unsigned int n_cells_{0};
-    ///< Boolean array of type b8 and size [x, y, z, 1] indicating whether the
-    ///< respective cell is considered in mean value calulation (==1) or not
-    ///< (==0)
-    af::array evaluate_mean_;
-    ///< Number of cells with for which evaluate_mean_ is 1
-    unsigned int evaluate_mean_is_1_{0};
-
-    // void check_discretization();
-    // void check_nonequispaced_discretization();
 };
 } // namespace magnumafcpp

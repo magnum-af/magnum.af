@@ -588,8 +588,6 @@ cdef class State:
 
     def write_vti(self, outputname):
         self._thisptr.write_vti( outputname.encode('utf-8'))
-    def write_vti_boolean(self, outputname):
-        self._thisptr._vti_writer_micro_boolean( outputname.encode('utf-8'))
     def write_vti_atomistic(self, outputname):
         self._thisptr._vti_writer_atom( outputname.encode('utf-8'))
     def read_vti(self, outputname):

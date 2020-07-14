@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
     return os;
 }
 
-std::tuple<double, double, double> State::mean_m() const {
+std::array<double, 3> State::mean_m() const {
     if (Ms_field.isempty()) {
         af::array mean_dim3 = af::mean(af::mean(af::mean(m, 0), 1), 2);
         const double mx = mean_dim3(0, 0, 0, 0).scalar<double>();
@@ -179,37 +179,12 @@ long int State::get_Ms_field() {
 }
 
 void State::write_vti(std::string outputname) { vti_writer_micro(m, mesh, outputname); }
-void State::_vti_writer_micro_boolean(std::string outputname) {
-    vti_writer_micro(evaluate_mean_(af::span, af::span, af::span, 0).as(f64), mesh,
-                     outputname); // NOTE: as evaluate_mean_ is tiles to 3
-                                  // dims, taking only first
-}
 void State::_vti_writer_atom(std::string outputname) { vti_writer_atom(m, mesh, outputname); }
 void State::_vti_reader(std::string inputname) { vti_reader(m, mesh, inputname); }
 
 double State::meani(const int i) {
-    double* norm_host = NULL;
-    if (!evaluate_mean_.isempty()) {
-        // af::print ("temp", temp);
-        // std::cout << "tem type = "<< temp.type() << std::endl;
-        ///< Calculates the mean values for the specified values given in
-        ///< evaluate_mean_
-        norm_host = (af::sum(af::sum(af::sum((m * evaluate_mean_)(af::span, af::span, af::span, i), 0), 1), 2) /
-                     evaluate_mean_is_1_)
-                        .host<double>();
-    } else if (!Ms_field.isempty() && n_cells_ != 0) {
-        if (n_cells_ == 0)
-            printf("%s State::meani: n_cells_ is empty and will be divieded by "
-                   "0!\n",
-                   red("Warning:").c_str());
-        norm_host = (af::sum(af::sum(af::sum(m(af::span, af::span, af::span, i), 0), 1), 2) / n_cells_).host<double>();
-    } else {
-        norm_host = af::mean(af::mean(af::mean(m(af::span, af::span, af::span, i), 0), 1), 2).host<double>();
-    }
-    double norm = norm_host[0];
-    // std::cout << "norm_host = "<< norm << std::endl;
-    af::freeHost(norm_host);
-    return norm;
+    auto m = mean_m();
+    return m[i];
 }
 
 } // namespace magnumafcpp

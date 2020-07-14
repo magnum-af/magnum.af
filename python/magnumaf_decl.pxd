@@ -69,7 +69,6 @@ cdef extern from "state.hpp" namespace "magnumafcpp":
         double Ms;
 
         void write_vti(string outputname);
-        void _vti_writer_micro_boolean(string outputname);
         void _vti_writer_atom (string outputname);
         void _vti_reader(string inputname);
 
