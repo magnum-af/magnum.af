@@ -49,7 +49,7 @@ Llg.add_terms(zee)
 with open(path + 'm.dat', 'w') as f:
   while pystate.t() < 2e-9:
     Llg.step(pystate)
-    f.write("%10.12f %10.12f %10.12f %10.12f\n" % (pystate.t(), pystate.m_mean(0), pystate.m_mean(1), pystate.m_mean(2)))
+    f.write("%10.12f %10.12f %10.12f %10.12f\n" % (pystate.t(), pystate.mean_m(0), pystate.mean_m(1), pystate.mean_m(2)))
 
 # pyplot fails:
 #with open(path+'m.dat') as f:

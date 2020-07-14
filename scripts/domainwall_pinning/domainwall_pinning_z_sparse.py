@@ -91,15 +91,15 @@ timer = time.time()
 i = 0
 
 printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
-while (state.t < 1e-7/fastenup and state.m_mean(2) < (1. - 1e-6)):
+while (state.t < 1e-7/fastenup and state.mean_m(2) < (1. - 1e-6)):
   if i%2000 == 0:
     state.write_vti(sys.argv[1] + "m_" + str(i))
   fields[0].set_homogeneous_field(0.0, 0.0, fastenup * state.t/50e-9/Constants.mu0)
   Llg.step(state)
   printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
   if i % 100 == 0:
-    print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()*Constants.mu0)
-  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()))
+    print(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()*Constants.mu0)
+  stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), fastenup * state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 2].scalar()))
   stream.flush()
   i = i + 1
 print("hysteresis for state.t=", state.t, " [s] in ", time.time() - timer, "[s]")

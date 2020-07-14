@@ -3,15 +3,15 @@
 using namespace magnumafcpp;
 
 void print_m(const af::array& m, std::string name, std::ostream& stream = std::cout) {
-    af::array m_mean = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << name << ": " << afvalue(m_mean(0, 0, 0, 0)) << ", " << afvalue(m_mean(0, 0, 0, 1)) << ", "
-           << afvalue(m_mean(0, 0, 0, 2)) << std::endl;
+    af::array mean_m = af::mean(af::mean(af::mean(m, 0), 1), 2);
+    stream << name << ": " << afvalue(mean_m(0, 0, 0, 0)) << ", " << afvalue(mean_m(0, 0, 0, 1)) << ", "
+           << afvalue(mean_m(0, 0, 0, 2)) << std::endl;
 }
 
 void print_m(const af::array& m, std::ostream& stream = std::cout) {
-    af::array m_mean = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << std::fixed << afvalue(m_mean(0, 0, 0, 0)) << "\t" << std::fixed << afvalue(m_mean(0, 0, 0, 1)) << "\t"
-           << std::fixed << afvalue(m_mean(0, 0, 0, 2));
+    af::array mean_m = af::mean(af::mean(af::mean(m, 0), 1), 2);
+    stream << std::fixed << afvalue(mean_m(0, 0, 0, 0)) << "\t" << std::fixed << afvalue(mean_m(0, 0, 0, 1)) << "\t"
+           << std::fixed << afvalue(mean_m(0, 0, 0, 2));
 }
 
 void print_layers(const af::array& m) {

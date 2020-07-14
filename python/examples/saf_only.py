@@ -69,7 +69,7 @@ for iext_y in range(0,6):
         print("mkdir failed")
     print(filepath)
     state = State(mesh, Ms, m = m0)
-    print('state.m_mean()', state.m_mean())
+    print('state.mean_m()', state.mean_m())
     state.write_vti(filepath + "state_m0")
     #Util.write_vti(state.Ms, dx, dy, dz, filepath + "Ms")
 
@@ -93,7 +93,7 @@ for iext_y in range(0,6):
     write_vti_every = 100
     while state.t < 1e-9:
         llg.step(state)
-        mx, my, mz = state.m_mean()
+        mx, my, mz = state.mean_m()
         #print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         stream.write('{:d}\t{:1.6e}\t{:1.6f}\t{:1.6f}\t{:1.6f}\n'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         if llg.accumulated_steps % write_vti_every == 0:

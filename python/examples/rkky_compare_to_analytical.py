@@ -81,7 +81,7 @@ for i in range(1, hys_steps + 1):
     else:
         llg.relax(state, precision = 1e-6, verbose = False)
     state.write_vti(sys.argv[1] + "m_step_"+ str(i))
-    mx, my, mz = state.m_mean()
+    mx, my, mz = state.mean_m()
     m_a = m_analytical(dz, Ms, extfield * Constants.mu0, RKKY_surface)
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}, ma={:1.3f}'.format(ext.h(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz, m_a))
     stream.write("%e, %e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz, m_a))

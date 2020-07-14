@@ -169,7 +169,7 @@ stream = open(sys.argv[1]+"m.dat", "w")
 timer = time.time()
 i = 0
 nvti = 0
-while (state.t < field.simtime and state.m_mean(wire_dir_val) < (1. - 1e-6)):
+while (state.t < field.simtime and state.mean_m(wire_dir_val) < (1. - 1e-6)):
     if i%300 == 0:
         state.write_vti(sys.argv[1] + "m_" + str(nvti))
         nvti = nvti + 1
@@ -183,8 +183,8 @@ while (state.t < field.simtime and state.m_mean(wire_dir_val) < (1. - 1e-6)):
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
 
     if i%20 == 0:
-        print("H[%analytic]", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "time[%]=", "{:6.4f}".format(state.t/field.simtime), "mean_m=", "{:5.4f}".format(state.m_mean(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0))
-    stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), field.from_time(state.t), printzee[0, 0, 0, wire_dir_val].scalar()))
+        print("H[%analytic]", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "time[%]=", "{:6.4f}".format(state.t/field.simtime), "mean_m=", "{:5.4f}".format(state.mean_m(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0))
+    stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), field.from_time(state.t), printzee[0, 0, 0, wire_dir_val].scalar()))
     stream.flush()
     i = i + 1
 

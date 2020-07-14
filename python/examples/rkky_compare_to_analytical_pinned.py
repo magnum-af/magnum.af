@@ -85,7 +85,7 @@ for i in range(1, hys_steps + 1):
     else:
         llg.relax(state, precision, verbose = False)
     state.write_vti(sys.argv[1] + "m_step_"+ str(i))
-    mx, my, mz = state.m_mean()
+    mx, my, mz = state.mean_m()
     mx_top = af.mean(af.mean(state.m[:, :, 1, 0], dim=0), dim=1).scalar()
     mx_bottom = af.mean(af.mean(state.m[:, :, 0, 0], dim=0), dim=1).scalar()
     my_top = af.mean(af.mean(state.m[:, :, 1, 1], dim=0), dim=1).scalar()

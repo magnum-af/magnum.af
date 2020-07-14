@@ -66,7 +66,7 @@ for iD in range(0, dn + 1):
         
             for i in range(steps_per_iteration):
                 llg.step(state)
-                mx, my, mz = state.m_mean()
+                mx, my, mz = state.mean_m()
                 if llg.accumulated_steps % print_steps_every == 0:
                     print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
                 if llg.accumulated_steps % write_vti_every == 0:

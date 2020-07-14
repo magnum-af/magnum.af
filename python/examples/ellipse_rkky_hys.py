@@ -122,7 +122,7 @@ for i in range(0, hys_steps + 1):
     else:
         llg.relax(state, precision = 1e-11, verbose = True)
     state.write_vti(sys.argv[1] + "m_step_"+ str(i))
-    mx, my, mz = state.m_mean()
+    mx, my, mz = state.mean_m()
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.h(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
     stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))
 

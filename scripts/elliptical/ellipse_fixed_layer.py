@@ -86,7 +86,7 @@ while E_diff > 1e-10 and state.t < 3e-8:
     E_prev = E_current
 
   #writing output
-  stream.write("%e, %e, %e, %e\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2)))
+  stream.write("%e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2)))
   if i % 1000 == 0:
     state.write_vti(filepath + "m_step_" + str(i))
   i = i +1

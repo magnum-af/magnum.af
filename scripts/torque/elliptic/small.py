@@ -53,8 +53,8 @@ while state.t < simtime:
     stream.flush()
     if itcount % nstep == 0:
         state.write_vti(sys.argv[1] + "step" + str(itcount))
-        print(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.steps)
-        stream.write("%e, %e, %e, %e, %d\n" %(state.t, state.m_mean(0), state.m_mean(1), state.m_mean(2), state.steps))
+        print(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), state.steps)
+        stream.write("%e, %e, %e, %e, %d\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), state.steps))
     itcount=itcount+1
 print("Simulated ", simtime, " [ns] in ", time.time() - timer, "[s]")
 stream.close()
@@ -69,4 +69,4 @@ stream.close()
 #print("Minimized in ", time.time() - timer, "[s]")
 #state.write_vti(sys.argv[1] + "minimized")
 #mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
-#print("Mean magnetization: ",  state.m_mean(0), state.m_mean(1), state.m_mean(2))
+#print("Mean magnetization: ",  state.mean_m(0), state.mean_m(1), state.mean_m(2))

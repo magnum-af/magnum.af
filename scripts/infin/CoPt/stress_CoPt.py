@@ -101,7 +101,7 @@ for i in range(0, steps):
     start = time.time()
     minimizer.minimize(state)
     a = zee.h(state)
-    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0, 0, 0, 0].scalar()*Constants.mu0, a[0, 0, 0, 1].scalar()*Constants.mu0, a[0, 0, 0, 2].scalar()*Constants.mu0, state.m_mean(0), state.m_mean(1), state.m_mean(2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, phi, a[0, 0, 0, 0].scalar()*Constants.mu0, a[0, 0, 0, 1].scalar()*Constants.mu0, a[0, 0, 0, 2].scalar()*Constants.mu0, state.mean_m(0), state.mean_m(1), state.mean_m(2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.write_vti(filepath + "m_"+ str(i))

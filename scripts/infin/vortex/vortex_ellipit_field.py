@@ -39,7 +39,7 @@ start = time.time()
 state = State(mesh, Ms = Ms, m = Util.vortex(mesh, positive_z = True))
 state.write_vti(filepath + "init_m")
 #print(state.micro_Ms_field)
-print(state.m_mean(0), state.m_mean(1), state.m_mean(2), np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2))
+print(state.mean_m(0), state.mean_m(1), state.mean_m(2), np.sqrt((state.mean_m(0))**2 +(state.mean_m(1))**2 +(state.mean_m(2))**2))
 print ("Initialized disk configuration in ", time.time() - start, "[s]")
 
 # Defining interaction terms
@@ -70,7 +70,7 @@ for i in range(0, steps):
     terms[-1].set_homogeneous_field(A * np.cos(phi), A * np.sin(phi), 0)
     start = time.time()
     minimizer.minimize(state)
-    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.m_mean(0), state.m_mean(1), state.m_mean(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.m_mean(0))**2 +(state.m_mean(1))**2 +(state.m_mean(2))**2)))
+    stream.write("%d, %e, %e, %e, %e, %e, %e, %e\n" %(i, state.mean_m(0), state.mean_m(1), state.mean_m(2), A * np.cos(phi), A * np.sin(phi), 0, np.sqrt((state.mean_m(0))**2 +(state.mean_m(1))**2 +(state.mean_m(2))**2)))
     stream.flush()
     print ("step ", str(i), ", phi= ", phi, ", time [s]= ", time.time() - start)
     state.write_vti(filepath + "m_"+ str(i))

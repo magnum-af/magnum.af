@@ -549,7 +549,7 @@ cdef class State:
         Writes the current magnetization m into the file 'outputname.vti'
     normalize()
         Normalizes m to 1 for every node
-    m_mean(i = None) : int
+    mean_m(i = None) : int
         Calculates the average magnetization along all three dimensions (i = None) or along dimension i = {0, 1, 2}
 
     Examples
