@@ -81,6 +81,14 @@ RUN apt-get update && \
     make && \
     cp *.a /usr/lib
 
+# Pumping g++ version to 9
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt update && \
+    apt install -y g++-9 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 && \
+    update-alternatives --auto g++ && \
+    g++ --version
+
 # Setting user from build-arg with 999 as default
 ARG user=999
 RUN groupadd -g $user magnum.af.user && \
