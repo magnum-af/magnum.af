@@ -5,24 +5,26 @@
 
 ///
 /// Struct for version comparison.
-/// Using: major_.minor.revision.build, e.g: 3.7.2.0
+/// Using: major_.minor_.revision_.build__, e.g: 3.7.2.0
 ///
 struct Version {
-    int major_ = 0, minor = 0, revision = 0, build = 0;
+    int major_ = 0, minor_ = 0, revision_ = 0, build__ = 0;
 
-    Version(std::string version) { std::sscanf(version.c_str(), "%d.%d.%d.%d", &major_, &minor, &revision, &build); }
+    Version(std::string version) {
+        std::sscanf(version.c_str(), "%d.%d.%d.%d", &major_, &minor_, &revision_, &build__);
+    }
 
-    Version(int major_, int minor = 0, int revision = 0, int build = 0)
-        : major_(major_), minor(minor), revision(revision), build(build) {}
+    Version(int major_, int minor_ = 0, int revision_ = 0, int build__ = 0)
+        : major_(major_), minor_(minor_), revision_(revision_), build__(build__) {}
 
     bool operator<(const Version& other) {
         if (major_ < other.major_) {
             return true;
-        } else if (minor < other.minor) {
+        } else if (minor_ < other.minor_) {
             return true;
-        } else if (revision < other.revision) {
+        } else if (revision_ < other.revision_) {
             return true;
-        } else if (build < other.build) {
+        } else if (build__ < other.build__) {
             return true;
         } else {
             return false;
@@ -32,11 +34,11 @@ struct Version {
     bool operator>(const Version& other) {
         if (major_ > other.major_) {
             return true;
-        } else if (minor > other.minor) {
+        } else if (minor_ > other.minor_) {
             return true;
-        } else if (revision > other.revision) {
+        } else if (revision_ > other.revision_) {
             return true;
-        } else if (build > other.build) {
+        } else if (build__ > other.build__) {
             return true;
         } else {
             return false;
@@ -46,40 +48,42 @@ struct Version {
     bool operator>=(const Version& other) {
         if (major_ > other.major_) {
             return true;
-        } else if (minor > other.minor) {
+        } else if (minor_ > other.minor_) {
             return true;
-        } else if (revision > other.revision) {
+        } else if (revision_ > other.revision_) {
             return true;
-        } else if (build > other.build) {
+        } else if (build__ > other.build__) {
             return true;
         } else {
-            return major_ == other.major_ && minor == other.minor && revision == other.revision && build == other.build;
+            return major_ == other.major_ && minor_ == other.minor_ && revision_ == other.revision_ &&
+                   build__ == other.build__;
         }
     }
 
     bool operator==(const Version& other) {
-        return major_ == other.major_ && minor == other.minor && revision == other.revision && build == other.build;
+        return major_ == other.major_ && minor_ == other.minor_ && revision_ == other.revision_ &&
+               build__ == other.build__;
     }
 
     std::ostream& operator<<(std::ostream& stream) {
         stream << this->major_;
         stream << '.';
-        stream << this->minor;
+        stream << this->minor_;
         stream << '.';
-        stream << this->revision;
+        stream << this->revision_;
         stream << '.';
-        stream << this->build;
+        stream << this->build__;
         return stream;
     }
 };
 
-/// Returning arrayfire major_, minor, patch version
+/// Returning arrayfire major_, minor_, patch version
 std::array<int, 3> af_version() {
     const std::string s = af::infoString();
     int major_ = std::stoi(s.substr(11, 1));
-    int minor = std::stoi(s.substr(13, 1));
+    int minor_ = std::stoi(s.substr(13, 1));
     int patch = std::stoi(s.substr(15, 1));
-    return {major_, minor, patch};
+    return {major_, minor_, patch};
 }
 
 /// Returning arrayfire version string
