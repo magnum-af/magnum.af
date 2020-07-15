@@ -65,14 +65,14 @@ struct Version {
                build__ == other.build__;
     }
 
-    std::ostream& operator<<(std::ostream& stream) {
-        stream << this->major_;
+    friend std::ostream& operator<<(std::ostream& stream, const Version& ver) {
+        stream << ver.major_;
         stream << '.';
-        stream << this->minor_;
+        stream << ver.minor_;
         stream << '.';
-        stream << this->revision_;
+        stream << ver.revision_;
         stream << '.';
-        stream << this->build__;
+        stream << ver.build__;
         return stream;
     }
 };

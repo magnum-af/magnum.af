@@ -6,6 +6,7 @@
 namespace magnumafcpp {
 
 TEST(micro_exch_sparse, COO_CSR_array_A) {
+    std::cout << Version(af_version_string()) << std::endl;
     if (Version(af_version_string()) >= Version("3.7.0")) {
         unsigned nx = 10, ny = 10;
         const double A = 1e-12;
