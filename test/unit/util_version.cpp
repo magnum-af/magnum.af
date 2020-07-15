@@ -28,6 +28,10 @@ TEST(Util, Version) {
     EXPECT_EQ(Version("3.7.0") >= Version("3.7.0"), true);
 }
 
+TEST(Util, version_from_string) {
+    EXPECT_EQ(Version(version_from_string("Test 1.2.3 test")) == Version("1.2.3"), true);
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
