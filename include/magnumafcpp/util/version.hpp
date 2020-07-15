@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+namespace magnumafcpp {
 ///
 /// Struct for version comparison.
 /// Using: major_.minor_.revision_.build__, e.g: 3.7.2.0
@@ -16,6 +17,11 @@ struct Version {
 
     Version(int major_, int minor_ = 0, int revision_ = 0, int build__ = 0)
         : major_(major_), minor_(minor_), revision_(revision_), build__(build__) {}
+
+    bool operator==(const Version& other) {
+        return major_ == other.major_ && minor_ == other.minor_ && revision_ == other.revision_ &&
+               build__ == other.build__;
+    }
 
     bool operator<(const Version& other) {
         if (major_ < other.major_) {
@@ -31,38 +37,20 @@ struct Version {
         }
     }
 
-    bool operator>(const Version& other) {
-        if (major_ > other.major_) {
-            return true;
-        } else if (minor_ > other.minor_) {
-            return true;
-        } else if (revision_ > other.revision_) {
-            return true;
-        } else if (build__ > other.build__) {
+    bool operator<=(const Version& other) {
+        if (*this < other) {
             return true;
         } else {
-            return false;
+            return *this == other;
         }
+    }
+
+    bool operator>(const Version& other) {
+        return !(*this <= other);
     }
 
     bool operator>=(const Version& other) {
-        if (major_ > other.major_) {
-            return true;
-        } else if (minor_ > other.minor_) {
-            return true;
-        } else if (revision_ > other.revision_) {
-            return true;
-        } else if (build__ > other.build__) {
-            return true;
-        } else {
-            return major_ == other.major_ && minor_ == other.minor_ && revision_ == other.revision_ &&
-                   build__ == other.build__;
-        }
-    }
-
-    bool operator==(const Version& other) {
-        return major_ == other.major_ && minor_ == other.minor_ && revision_ == other.revision_ &&
-               build__ == other.build__;
+        return !(*this < other);
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Version& ver) {
@@ -92,3 +80,4 @@ std::string af_version_string() {
     return {s.substr(11, 5)};
 }
 
+} // namespace magnumafcpp
