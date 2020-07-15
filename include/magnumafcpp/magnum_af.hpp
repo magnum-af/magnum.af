@@ -28,6 +28,7 @@
 #include "solvers/lbfgs_minimizer.hpp"
 #include "solvers/minimizer.hpp"
 #include "string.hpp"
+#include "util/af_overloads.hpp"
 #include "util/newton_iteration.hpp"
 #include "util/timer.hpp"
 #include "util/util.hpp"
