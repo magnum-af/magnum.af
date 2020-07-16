@@ -91,7 +91,7 @@ af::array LBFGS_Minimizer::Gradient(const State& state) {
 double mydot(const af::array& a, const af::array& b) { return full_inner_product(a, b); }
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
-double LBFGS_Minimizer::mxmxhMax(const State& state) { return maxnorm(Gradient(state)); }
+double LBFGS_Minimizer::mxmxhMax(const State& state) { return max_4d_abs(Gradient(state)); }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 // TODO Currently Minimize() fails when called second time, i.e. when m already
@@ -115,7 +115,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
     // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
     // not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
-    double gradNorm = maxnorm(grad);
+    double gradNorm = max_4d_abs(grad);
     // af::print("grad", grad);
     if (this->verbose > 0) {
         std::cout << "f= " << f << std::endl;
@@ -191,7 +191,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
         // TODO objFunc.updateTol(gradNorm);
         // TODO check version Schrefl vs Flo
         if (-mydot(grad, q) > -1e-15) {
-            gradNorm = maxnorm(grad);
+            gradNorm = max_4d_abs(grad);
             if (gradNorm < eps * (1. + fabs(f)) and this->verbose > 0) {
                 std::cout << "Minimizer: Convergence reached (due to almost "
                              "zero gradient (|g|="
@@ -216,7 +216,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
             // return(0) or, (if necessary)//exit(EXIT_FAILURE);
         }
         double f1 = 1 + fabs(f);
-        double gradNorm = maxnorm(grad);
+        double gradNorm = max_4d_abs(grad);
         if (gradNorm < (epsr * f1)) {
             return f;
         }
@@ -229,10 +229,11 @@ double LBFGS_Minimizer::Minimize(State& state) {
                       << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
         }
         if (of_convergence.is_open()) {
-            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t" << maxnorm(s) / (tolf2 * (1 + maxnorm(state.m)))
-                           << "\t" << gradNorm / (tolf3 * f1) << std::endl;
+            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
+                           << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
+                           << std::endl;
         }
-        if (((f_old - f) < (tolerance_ * f1)) && (maxnorm(s) < (tolf2 * (1 + maxnorm(state.m)))) &&
+        if (((f_old - f) < (tolerance_ * f1)) && (max_4d_abs(s) < (tolf2 * (1 + max_4d_abs(state.m)))) &&
             (gradNorm <= (tolf3 * f1))) {
             break;
         }

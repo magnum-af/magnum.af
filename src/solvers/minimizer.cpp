@@ -101,7 +101,7 @@ void Minimizer::minimize(State& state) {
         af::array dm_diff = dm_next - dm;
 
         // Compute dm_max for convergence estimation
-        dm_max = maxnorm(dm_next);
+        dm_max = max_4d_abs(dm_next);
         last_dm_max.push_back(dm_max);
         if (last_dm_max.size() > samples)
             last_dm_max.pop_front();

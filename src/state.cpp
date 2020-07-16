@@ -41,7 +41,7 @@ std::array<double, 3> State::mean_m() const {
 
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
     // Initializes Ms_field if any entry of initial m has zero norm
-    if (minval(vecnorm(m)) == 0) {
+    if (min_4d(vecnorm(m)) == 0) {
         if (verbose) {
             printf("%s in state.cpp: initial m has values with zero norm, "
                    "building Ms_field array\n",

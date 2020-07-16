@@ -287,22 +287,12 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 //}
 
 // Maximum value norm
-double maxnorm(const af::array& a) {
-    double* maxnorm_host = NULL;
-    maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
-    double maxnorm = maxnorm_host[0];
-    af::freeHost(maxnorm_host);
-    return maxnorm;
+double max_4d_abs(const af::array& a) {
+    return af::max(af::max(af::max(af::max(af::abs(a.as(f64)), 0), 1), 2), 3).scalar<double>();
 }
 
 // Minimum value
-double minval(const af::array& a) {
-    double* minval_host = NULL;
-    minval_host = min(min(min(min(a, 0), 1), 2), 3).host<double>();
-    double minval = minval_host[0];
-    af::freeHost(minval_host);
-    return minval;
-}
+double min_4d(const af::array& a) { return af::min(af::min(af::min(af::min(a.as(f64), 0), 1), 2), 3).scalar<double>(); }
 
 std::pair<int, int> util::k2ij(const int k, const int n) {
     const int i = n - 1 - static_cast<int>(std::floor(std::sqrt(-8 * k + 4 * n * (n + 1) - 7) / 2.0 - 0.5));
