@@ -40,7 +40,7 @@ long int WrappedArray::get_array_addr() {
 }
 
 af::array cross4(const af::array& a, const af::array& b) {
-    af::array c = af::array(a.dims(0), a.dims(1), a.dims(2), 3, f64);
+    af::array c = af::array(a.dims(0), a.dims(1), a.dims(2), 3, a.type());
     c(af::span, af::span, af::span, 0) = a(af::span, af::span, af::span, 1) * b(af::span, af::span, af::span, 2) -
                                          a(af::span, af::span, af::span, 2) * b(af::span, af::span, af::span, 1);
     c(af::span, af::span, af::span, 1) = a(af::span, af::span, af::span, 2) * b(af::span, af::span, af::span, 0) -

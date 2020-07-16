@@ -97,7 +97,7 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
     af::array sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
     af::array rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 + 2197. / 4104. * k4 - 1. / 5. * k5);
 
-    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = maxnorm(rk_error / controller_.givescale(max(state.m, state.m + sumbk.as(f64))));
     return sumbk;
 }
 

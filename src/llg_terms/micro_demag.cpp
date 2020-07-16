@@ -9,14 +9,14 @@ void DemagField::print_Nfft() { af::print("Nfft=", Nfft); }
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
+DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads, af::dtype afdtype)
     : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
     af::timer demagtimer = af::timer::start();
     if (caching == false) {
         if (verbose)
             printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads,
                    std::thread::hardware_concurrency());
-        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, afdtype);
         if (verbose)
             printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     } else {
@@ -46,7 +46,7 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
                 printf("%s Starting Demag Tensor Assembly on %u out of %u "
                        "threads.\n",
                        Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, afdtype);
             if (verbose)
                 printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
@@ -94,7 +94,7 @@ af::array DemagField::h(const State& state) {
     }
 
     // Pointwise product
-    af::array hfft = af::array(state.mesh.n0_exp / 2 + 1, state.mesh.n1_exp, state.mesh.n2_exp, 3, c64);
+    af::array hfft = af::array(state.mesh.n0_exp / 2 + 1, state.mesh.n1_exp, state.mesh.n2_exp, 3, Nfft.type());
     hfft(af::span, af::span, af::span, 0) =
         Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
         Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +
@@ -240,7 +240,8 @@ void* setup_N(void* arg) {
 }
 } // namespace newell
 
-af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz) {
+af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz,
+                                  af::dtype afdtype) {
     std::vector<std::thread> t;
     std::vector<newell::LoopInfo> loopinfo;
     for (unsigned i = 0; i < nthreads; i++) {
@@ -262,6 +263,11 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
     Naf = af::reorder(Naf, 3, 2, 1, 0);
     delete[] newell::N_setup;
     newell::N_setup = NULL;
+
+    if (afdtype != af::dtype::f64) {
+        Naf = Naf.as(afdtype);
+    }
+
     if (n2_exp == 1) {
         Naf = af::fftR2C<2>(Naf);
     } else {

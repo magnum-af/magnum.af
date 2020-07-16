@@ -14,10 +14,10 @@ LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme
       dissipation_term_only(dissipation_term_only) {}
 
 af::array LLGIntegrator::fheff(const State& state) {
-    af::array solution = af::constant(0., state.mesh.dims, f64);
     af::timer timer_heff = af::timer::start();
+    af::array solution = llgterms[0]->h(state);
 
-    for (unsigned i = 0; i < llgterms.size(); ++i) {
+    for (unsigned i = 1; i < llgterms.size(); ++i) {
         solution += llgterms[i]->h(state);
     }
     time_heff += af::timer::stop(timer_heff);

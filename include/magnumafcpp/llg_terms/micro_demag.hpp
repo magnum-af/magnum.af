@@ -17,7 +17,8 @@ class DemagField : public IntegratorTermMeshBase {
     // CPU time
     double get_cpu_time() { return cpu_time; }
 
-    DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
+    DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0,
+               af::dtype afdtype = af::dtype::f64);
     ///< Array storing the Fourier transfrom of the demag tensor.
     af::array Nfft;
 
@@ -29,6 +30,6 @@ class DemagField : public IntegratorTermMeshBase {
 
   private:
     const unsigned nthreads;
-    af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
+    af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, af::dtype afdtype);
 };
 } // namespace magnumafcpp
