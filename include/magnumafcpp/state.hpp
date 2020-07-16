@@ -50,6 +50,7 @@ class State {
     double meani(const int i);
     /// Returns {<mx>, <my>, <mz>}, the average magnetization in each spacial direction
     std::array<double, 3> mean_m() const;
+    af::array mean_m_as_afarray() const;
     /// Returns <mx>, i.e. average magnetisation in x-direction
     double mean_mx() { return mean_m()[0]; }
     /// Returns <my>, i.e. average magnetisation in y-direction

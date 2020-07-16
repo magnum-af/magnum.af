@@ -103,7 +103,7 @@ af::array renormalize_handle_zero_values(const af::array& a) {
     // 1, 1, 3), a!=0., 0.);
 }
 
-af::array vecnorm(const af::array& a) { return sqrt(sum(a * a, 3)); }
+af::array vecnorm(const af::array& a) { return af::sqrt(af::sum(a * a, 3)); }
 
 // Mean value of i = 0, 1, 2 entry entry
 double meani(const af::array& a, const int i) {

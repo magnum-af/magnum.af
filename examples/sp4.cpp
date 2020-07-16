@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
-    auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
+    auto demag = LlgTerm(new DemagField(mesh, true, true, 0, m.type()));
     auto exch = LlgTerm(new ExchangeField(A));
     LLGIntegrator Llg(1, {demag, exch});
 

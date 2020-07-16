@@ -23,20 +23,20 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
     return os;
 }
 
-std::array<double, 3> State::mean_m() const {
+af::array State::mean_m_as_afarray() const {
     if (Ms_field.isempty()) {
-        af::array mean_dim3 = af::mean(af::mean(af::mean(m, 0), 1), 2);
-        const double mx = mean_dim3(0, 0, 0, 0).scalar<double>();
-        const double my = mean_dim3(0, 0, 0, 1).scalar<double>();
-        const double mz = mean_dim3(0, 0, 0, 2).scalar<double>();
-        return {mx, my, mz};
+        return af::mean(af::mean(af::mean(m, 0), 1), 2);
     } else {
-        af::array sum_dim3 = af::sum(af::sum(af::sum(m, 0), 1), 2);
-        const double mx = sum_dim3(0, 0, 0, 0).scalar<double>() / n_cells_;
-        const double my = sum_dim3(0, 0, 0, 1).scalar<double>() / n_cells_;
-        const double mz = sum_dim3(0, 0, 0, 2).scalar<double>() / n_cells_;
-        return {mx, my, mz};
+        return af::sum(af::sum(af::sum(m, 0), 1), 2) / n_cells_;
     }
+}
+
+std::array<double, 3> State::mean_m() const {
+    af::array mean_m_af = mean_m_as_afarray().as(f64);
+    const double mx = mean_m_af(0, 0, 0, 0).scalar<double>();
+    const double my = mean_m_af(0, 0, 0, 1).scalar<double>();
+    const double mz = mean_m_af(0, 0, 0, 2).scalar<double>();
+    return {mx, my, mz};
 }
 
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
@@ -77,9 +77,10 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 
 void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
     af::array one_when_value_is_zero = af::iszero(vecnorm(m));
-    double meannorm =
-        afvalue(af::mean(af::mean(af::mean(af::mean(vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3));
-    if ((fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
+    double meannorm = af::mean(af::mean(af::mean(af::mean(vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
+                          .as(f64)
+                          .scalar<double>();
+    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
         printf("%s State::check_m_norm: non-zero parts of the magnetization are "
                "not normalized to 1! Results won't be physically meaningfull.\n",
                Warning());
@@ -178,8 +179,8 @@ long int State::get_Ms_field() {
     return (long int)a->get();
 }
 
-void State::write_vti(std::string outputname) { vti_writer_micro(m, mesh, outputname); }
-void State::_vti_writer_atom(std::string outputname) { vti_writer_atom(m, mesh, outputname); }
+void State::write_vti(std::string outputname) { vti_writer_micro(m.as(f64), mesh, outputname); }
+void State::_vti_writer_atom(std::string outputname) { vti_writer_atom(m.as(f64), mesh, outputname); }
 void State::_vti_reader(std::string inputname) { vti_reader(m, mesh, inputname); }
 
 double State::meani(const int i) {
