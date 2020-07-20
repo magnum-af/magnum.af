@@ -1,93 +1,54 @@
-# based on https://github.com/arrayfire/arrayfire-docker
-FROM ubuntu:18.04
-MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
-# image:     magnum.af.cpu
-# build:     $ docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest -f Dockerfile.cpu --build-arg user="$UID" .
-# push:      $ docker push git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest
-# run image: $ docker run --rm -ti magnum.af.cpu /bin/bash
-# run tests: $ docker run --rm -t magnum.af.cpu ./test/runall.sh .
+# build: $ docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest -f Dockerfile.cpu --build-arg user="$UID" .
+# push:  $ docker push git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest
+# test:  $ docker run --rm -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev ./scripts/runalltests.sh .
+# run:   $ docker run --rm -ti git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev /bin/bash
 
-RUN apt-get update && apt-get install -y software-properties-common && \
-    apt-get install -y --no-install-recommends \
-        build-essential \
-        clinfo \
-        cmake \
-        git \
-        libboost-all-dev \
-        libfftw3-dev \
-        libfontconfig1-dev \
-        libfreeimage-dev \
-        liblapack-dev \
-        liblapacke-dev \
-        libopenblas-dev \
-        wget \
-        xorg-dev && \
+FROM ubuntu:20.04
+MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
+
+# install apt packages
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    build-essential \
+    vim \
+    htop \
+    git \
+    cmake \
+    # af:
+    #libglfw3-dev \ # graphics only
+    libboost-all-dev \
+    liblapacke-dev \
+    libopenblas-dev \
+    libfftw3-dev \
+    # magaf:
+    libvtk7-dev \
+    ipython3 \
+    python3-pip \
+    libgtest-dev \
+    && \
     rm -rf /var/lib/apt/lists/*
 
-# Build GLFW from source
-RUN git clone https://github.com/glfw/glfw.git && \
-    cd glfw && \
-    mkdir build && \
-    cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && \
-    make -j16 && \
-    make install && \
-    cd ../.. && rm -rf glfw # ~40MB
-
-
-# Build Arrayfire from source
-ENV AF_PATH=/opt/arrayfire AF_DISABLE_GRAPHICS=1
-ARG COMPILE_GRAPHICS=OFF
-RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.6.4 && \
+# build and install arrayfire
+RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.7.2 && \
     cd arrayfire && mkdir build && cd build && \
-    cmake .. -DCMAKE_INSTALL_PREFIX=/opt/arrayfire-3 \
-             -DCMAKE_BUILD_TYPE=Release \
-             -DBUILD_CPU=ON \
-             -DBUILD_CUDA=OFF \
-             -DBUILD_OPENCL=OFF \
-             -DBUILD_UNIFIED=ON \
-             -DBUILD_GRAPHICS=${COMPILE_GRAPHICS} \
-             -DBUILD_NONFREE=OFF \
-             -DBUILD_EXAMPLES=OFF \
-             -DBUILD_TEST=ON \
-             -DBUILD_DOCS=OFF \
-             -DINSTALL_FORGE_DEV=OFF \
-             -DUSE_FREEIMAGE_STATIC=OFF && \
-    make -j16 && make install && \
-    mkdir -p ${AF_PATH} && ln -s /opt/arrayfire-3/* ${AF_PATH}/ && \
-    echo "${AF_PATH}/lib" >> /etc/ld.so.conf.d/arrayfire.conf && \
+    cmake .. \
+        -DCMAKE_INSTALL_PREFIX=/opt/arrayfire/ \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DAF_BUILD_CUDA=OFF \
+        -DAF_BUILD_OPENCL=OFF \
+        && \
+    make -j && \
+    make install && \
+    echo /opt/arrayfire/lib/ > /etc/ld.so.conf.d/arrayfire.conf && \
     ldconfig && \
-    cd ../.. && rm -rf arrayfire # saving ~700MB
+    rm -rf ../../arrayfire
 
-ENV ArrayFire_DIR=$ArrayFire_DIR:/opt/arrayfire/share/ArrayFire/cmake/
-
-# to supress vtk prompt
-ENV DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-RUN apt update && \
-    apt install -y libvtk7-dev \
-        ipython3 \
-        python3-pip \
-        doxygen \
-        python-pydot \
-        python-pydot-ng \
-        graphviz && \
-    pip3 install arrayfire cython numpy
-
-# Instal Google Tests
-RUN apt-get update && \
-    apt-get install -y libgtest-dev && \
+# Install pip packages and Google Test
+RUN pip3 install arrayfire cython numpy && \
     cd /usr/src/gtest && \
     cmake CMakeLists.txt && \
     make && \
-    cp *.a /usr/lib
-
-# Pumping g++ version to 9
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
-    apt update && \
-    apt install -y g++-9 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 && \
-    update-alternatives --auto g++ && \
-    g++ --version
+    ls lib/ && \
+    cp lib/*.a /usr/lib
 
 # Setting user from build-arg with 999 as default
 ARG user=999
@@ -102,10 +63,11 @@ COPY --chown=magnum.af.user . /home/magnum.af/
 # building magnum.af and docu
 WORKDIR /home/magnum.af/
 RUN (mkdir build && cd build && cmake .. && make -j && make install) && \
-    doxygen .doxygen-config && \
     chmod -R 777 /home/magnum.af/
 
 # set non-root user
 USER magnum.af.user
-ENV HOME=/home/magnum.af.user \
-    PYTHONPATH=/home/magnum.af/build/python/
+
+ENV HOME=/home/magnum.af.user/ \
+    PYTHONPATH=/home/magnum.af/build/python/ \
+    LD_LIBRARY_PATH=/opt/arrayfire/lib/
