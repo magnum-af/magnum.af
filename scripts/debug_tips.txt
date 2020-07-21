@@ -128,3 +128,12 @@ docker: Error response from daemon: OCI runtime create failed: container_linux.g
 Cause:
 
 Fix:TODO
+Probably: restart docker deamon, reboot system due to nvidia package upgrade
+
+-----------------------------------------------------
+-----------------------------------------------------
+Error: Python wrapping crashes with array wrapping
+
+Cause: Seems to occur only if arrayfire is installed via binaries
+
+Fix: Install arrayfire via source

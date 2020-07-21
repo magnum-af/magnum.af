@@ -20,7 +20,7 @@ class DmiField : public IntegratorTermMeshBase {
   private:
     double cpu_time{0.};
     const double D{0};
-    const af::array D_constants{af::array()};
+    const af::array D_constants;
     const std::array<double, 3> D_axis;
     void apply_boundary_condition(af::array& hfield, const State& state);
 };

@@ -21,7 +21,7 @@ class ExchangeField : public IntegratorTermMeshBase {
     double get_cpu_time() override { return computation_time_heff; } //!< accumulated heff computation time in [s]
 
     const double A{0}; //!< Exchange energy in [J/m]
-    const af::array A_field{af::array()};
+    const af::array A_field;
 
     double computation_time_heff{0.};
     af::timer timer_exchsolve;
