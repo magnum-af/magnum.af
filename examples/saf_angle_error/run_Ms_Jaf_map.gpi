@@ -1,0 +1,41 @@
+#!/bin/bash
+
+(cd ../../build/ && make -j)
+
+GPU="0"
+Hmax_mT="0.100"
+
+Jaf_min="0.36e-3"
+Jaf_stp="0.18e-3"
+Jaf_max="1.08e-3"
+
+Ms1_start=500000
+Ms1_step=100000
+Ms1_stop=2000000
+RKKY=-0.8 # mJ/m2
+
+parent_outpath=$HOME/data_magnum.af/inf_saf/RKKY-0.8mJm2/
+
+for Ms1 in $(LC_ALL=C seq "$Ms1_start" "$Ms1_step" "$Ms1_stop" ); do
+    for Jaf in $(LC_ALL=C seq "$Jaf_min" "$Jaf_stp" "$Jaf_max"); do
+    #for RKKY in $(LC_ALL=C seq "$RKKY_start" "$RKKY_step" "$RKKY_stop"); do
+        echo "$Ms1, $RKKY, $Jaf"
+        outpath="$parent_outpath"Ms1"$Ms1"Jaf"$Jaf"/
+        echo "$outpath"
+        if [ ! -d "$outpath" ]; then
+            mkdir -p "$outpath"
+            time ../../bin/saf_angle_error "$outpath" "$GPU" "$Hmax_mT" "$RKKY" "$Ms1" "$Jaf" | tee "$outpath"log.txt
+        fi
+    done
+done
+
+# postprocessing:
+cp plot_Ms_Jaf_map.gpi "$parent_outpath"
+cd "$parent_outpath"
+# write numerically sorted folders' table.dat values to table_combined.dat
+ls -v */table.dat | xargs cat | tee table_combined.dat
+gnuplot plot_Ms_Jaf_map.gpi
+
+# getting min of mean(abs(my)) values
+min=$(sed '/^#/d' < table_combined.dat | awk '{print $4}' | sort -g | head -1)
+cat table_combined.dat | grep "$min" | tee min_mean_abs_value.dat
