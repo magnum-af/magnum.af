@@ -1,6 +1,7 @@
-#include "micro_demag.hpp"
-#include "../func.hpp"
-#include "../misc.hpp"
+#include "llg_terms/micro_demag.hpp"
+#include "func.hpp"
+#include "misc.hpp"
+#include "util/af_overloads.hpp"
 #include <thread>
 
 namespace magnumafcpp {
@@ -81,7 +82,8 @@ af::array DemagField::h(const State& state) {
 
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
     if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
-        std::cout << "Converting Nfft to c32" << std::endl;
+        std::cout << "DemagField::h: state.m is of type " << state.m.type() << ", converting Nfft type from "
+                  << Nfft.type() << " to " << af::dtype::c32 << std::endl;
         Nfft = Nfft.as(af::dtype::c32);
     }
 

@@ -3,7 +3,7 @@
 
 namespace magnumafcpp {
 
-std::ostream& operator<<(std::ostream& os, af::dtype c) {
+inline std::ostream& operator<<(std::ostream& os, af::dtype c) {
     switch (c) {
     case f32:
         os << "f32";
@@ -41,11 +41,9 @@ std::ostream& operator<<(std::ostream& os, af::dtype c) {
     case u16:
         os << "u16";
         break;
-    // uncomment for AF version > 3.7.0
-    // Disabled for AF support v < 3.7.0
-    // case f16:
-    //    os << "f16";
-    //    break;
+    case f16:
+        os << "f16";
+        break;
     default:
         os.setstate(std::ios_base::failbit);
     }
