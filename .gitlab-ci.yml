@@ -46,6 +46,7 @@ test_gpu:
     - docker push $CUDA_RELEASE_IMAGE # check if push is necessary or already done implicitly
   tags:
     - gpu
+    - gto2 # temporary
 
 deploy_GTO:
   stage: deploy

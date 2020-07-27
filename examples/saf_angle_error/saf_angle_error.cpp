@@ -1,3 +1,4 @@
+// Calculates pinned layer and reference layer for a full 360 [deg] Hext-rotation
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 #include <algorithm>
