@@ -108,4 +108,4 @@ RUN (mkdir build && cd build && cmake .. && make -j && make install) && \
 USER magnum.af.user
 ENV HOME=/home/magnum.af.user \
     PYTHONPATH=/home/magnum.af/build/python/ \
-    LD_LIBRARY_PATH=usr/local/lib/
+    LD_LIBRARY_PATH=/usr/local/lib/
