@@ -80,13 +80,15 @@ ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
 
 # Install pip packages and Google Test
 RUN apt-get update && \
-    apt-get install -y libgtest-dev \
+    apt-get install -y googletest \
     python3-setuptools && \
     pip3 install arrayfire cython numpy && \
-    cd /usr/src/gtest && \
-    cmake CMakeLists.txt && \
+    cd /usr/src/googletest/googlemock/build-aux && \
+    cmake .. && \
     make && \
-    cp *.a /usr/lib
+    cp *.a /usr/lib && \
+    cp gtest/*.a /usr/lib
+
 
 # Setting user from build-arg with 999 as default
 ARG user=999
