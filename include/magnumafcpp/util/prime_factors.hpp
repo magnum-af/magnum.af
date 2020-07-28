@@ -1,11 +1,11 @@
 #pragma once
 #include <algorithm>
-#include <bits/stdc++.h>
+#include <cmath>
+#include <iostream>
 #include <vector>
 namespace magnumafcpp {
 namespace util {
 
-// adaped from: https://www.geeksforgeeks.org/print-all-prime-factors-of-a-given-number/
 /// Returns all prime factors of a given number n
 /// Special cases: n == 0 returns {0}, n == 1 returns {1}
 std::vector<unsigned> inline prime_factors(unsigned n) {
@@ -21,9 +21,9 @@ std::vector<unsigned> inline prime_factors(unsigned n) {
             n = n / 2;
         }
 
-        // n must be odd at this point. So we can skip
-        // one element (Note i = i +2)
-        for (int i = 3; i <= sqrt(n); i = i + 2) {
+        // n is odd and will only be further dividable by odd numbers
+        // thus we iterate over all odd numbers up to sqrt(n)
+        for (int i = 3; i <= std::sqrt(n); i = i + 2) {
             // While i divides n, print i and divide n
             while (n % i == 0) {
                 primes.push_back(i);
@@ -31,9 +31,8 @@ std::vector<unsigned> inline prime_factors(unsigned n) {
             }
         }
 
-        // This condition is to handle the case when n
-        // is a prime number greater than 2
-        if (n > 2) {
+        // when we got here n is either 1 or the final prime
+        if (n != 1) {
             primes.push_back(n);
         }
         return primes;
