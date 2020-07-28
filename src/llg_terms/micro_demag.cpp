@@ -2,6 +2,8 @@
 #include "func.hpp"
 #include "misc.hpp"
 #include "util/af_overloads.hpp"
+#include "util/prime_factors.hpp"
+#include <string>
 #include <thread>
 
 namespace magnumafcpp {
@@ -10,9 +12,24 @@ void DemagField::print_Nfft() { af::print("Nfft=", Nfft); }
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
+void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
+    if (util::max_of_prime_factors(n) > 13) {
+        std::cout << Warning() << " DemagField::DemagField: maximum prime factor of mesh." << ni << "=" << n << " is "
+                  << util::max_of_prime_factors(n)
+                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
+                     "factor <= 13. Please choose an alternative discretization where max_prime(n) <= 13."
+                  << std::endl;
+    }
+}
+
 DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
     : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
     af::timer demagtimer = af::timer::start();
+    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
+        warn_if_maxprime_lt_13(mesh.n0, "nx");
+        warn_if_maxprime_lt_13(mesh.n1, "ny");
+        warn_if_maxprime_lt_13(mesh.n2, "nz");
+    }
     if (caching == false) {
         if (verbose)
             printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads,

@@ -5,6 +5,8 @@
 using namespace magnumafcpp::util;
 
 TEST(Util, prime_factors) {
+    EXPECT_THAT(prime_factors(0), testing::ElementsAre(0));
+    EXPECT_THAT(prime_factors(1), testing::ElementsAre(1));
     EXPECT_THAT(prime_factors(12), testing::ElementsAre(2, 2, 3));
     EXPECT_THAT(prime_factors(40), testing::ElementsAre(2, 2, 2, 5));
     EXPECT_THAT(prime_factors(120), testing::ElementsAre(2, 2, 2, 3, 5));
@@ -12,6 +14,8 @@ TEST(Util, prime_factors) {
 }
 
 TEST(Util, max_of_prime_factors) {
+    EXPECT_EQ(max_of_prime_factors(0), 0);
+    EXPECT_EQ(max_of_prime_factors(1), 1);
     EXPECT_EQ(max_of_prime_factors(12), 3);
     EXPECT_EQ(max_of_prime_factors(40), 5);
     EXPECT_EQ(max_of_prime_factors(120), 5);
