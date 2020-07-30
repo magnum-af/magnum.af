@@ -6,7 +6,8 @@ project(magnum.af VERSION 0.1) # setting project prevents 'operation only
 
 # disables warning caused by cython compiled file
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-cast-function-type")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0")
 
 # building with python3 only
 set(PYTHON_EXECUTABLE "/usr/bin/python3")
