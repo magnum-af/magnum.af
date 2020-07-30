@@ -50,6 +50,7 @@ test_gpu:
   tags:
     - docker
     - gpu
+    - gto2 # temp
 
 deploy_GTO:
   stage: deploy
