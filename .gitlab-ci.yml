@@ -19,6 +19,7 @@ build_cpu:
     - docker push $CPU_TEST_IMAGE
   tags:
     - docker
+    - gpu # temporary, avoiding PC01 runner
 
 build_gpu:
   stage: build
@@ -37,6 +38,7 @@ test_cpu:
     - docker run --rm $CPU_TEST_IMAGE ./scripts/runalltests.sh
   tags:
     - docker
+    - gpu # temporary, avoiding PC01 runner
 
 test_gpu:
   stage: test
