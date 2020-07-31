@@ -114,6 +114,7 @@ int main(int argc, char** argv) {
                   << std::endl;
         stream << i << "\t" << Hx_component << "\t" << mx_z0 << "\t" << mx_z1 << "\t" << my_z0 << "\t" << my_z1
                << std::endl;
+        state.write_vti(filepath + "m" + std::to_string(i));
     }
 
     stream.close();
@@ -121,7 +122,7 @@ int main(int argc, char** argv) {
     stream << "set terminal pdf;" << std::endl;
     stream << "set xlabel 'H_x [T]'" << std::endl;
     stream << "set ylabel 'm_x'" << std::endl;
-    stream << "set output 'saf_angle_error.pdf'" << std::endl;
+    stream << "set output 'saf_hysteresis.pdf'" << std::endl;
     stream << "p 'm.dat' u 2:3 w l title 'm_x Pinned'";
     stream << ", '' u 2:4 w l title 'm_x Reference'";
     stream << ", '' u 2:6 w l title 'm_y Pinned'";

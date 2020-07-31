@@ -1,0 +1,26 @@
+# plot heatmap
+set terminal pdf
+set xlabel "Ms1 [1e6 J/T/m^3]"
+set ylabel "RKKY [mJ/m^2]"
+set cblabel "max(abs(m_y))"
+set output "heatmap.pdf"
+p "table_combined.dat" u ($2*1e-6):($3):4 w image notitle
+set terminal jpeg
+set output "heatmap.jpg"
+replot
+
+# plot hysteresis for all data points
+set terminal pdf;
+set xlabel "H_x"
+set ylabel "m_y"
+set output "fig_ref_layer_over_files.pdf";
+
+filelist = system('ls RKKYmT*/m.dat')
+
+set title "Reference Layer"
+plot for [file in filelist] file u 2:4 w l title file
+set title "Pinned Layer"
+plot for [file in filelist] file u 2:3 w l title file
+set terminal jpeg
+set output "fig_ref_layer_over_files.jpg";
+replot
