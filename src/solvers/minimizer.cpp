@@ -94,7 +94,7 @@ void Minimizer::minimize(State& state) {
 
         // Update state
         state.m = m_next;
-        // state.m = renormalize(state.m);// TODO check performance /w /wo
+        // state.m = normalize(state.m);// TODO check performance /w /wo
 
         // Calculate y^n-1 for step-size control
         af::array dm_next = this->dm(state);

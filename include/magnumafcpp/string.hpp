@@ -31,7 +31,7 @@ class String {
     void lin_interpolate();
     void integrate(); // Integrate all images for dt
     void step();
-    void vec_renormalize();
+    void vec_normalize();
     void write_vti(std::string file);
 
   private:

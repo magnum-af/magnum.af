@@ -39,7 +39,7 @@ String::String(State state, std::vector<State> inputimages, int n_interp, double
             images[i] = inputimages[j];
         }
     }
-    vec_renormalize();
+    vec_normalize();
 }
 
 void String::calc_E() {
@@ -97,7 +97,7 @@ void String::lin_interpolate() {
         // af::eval(images[i].m);//If memory error occurs, uncomment this, check
         // performance, maybe only evaluate for i%5=0 or so
     }
-    vec_renormalize();
+    vec_normalize();
 }
 
 void String::integrate() {
@@ -122,9 +122,9 @@ void String::step() {
     lin_interpolate();
 }
 
-void String::vec_renormalize() {
+void String::vec_normalize() {
     for (unsigned int i = 0; i < images.size(); i++) {
-        images[i].m = renormalize_handle_zero_values(images[i].m);
+        images[i].m = normalize_handle_zero_vectors(images[i].m);
         // af::eval avoids JIT crash here!
         af::eval(images[i].m);
     }

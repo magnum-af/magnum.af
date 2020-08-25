@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_nonnormalized").c_str());
-    state.m = renormalize_handle_zero_values(state.m);
+    state.m = normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_renorm").c_str());
 
     af::timer timer_llgterms = af::timer::start();

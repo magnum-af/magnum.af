@@ -264,12 +264,12 @@ array LLG::step(State& state) {
     calls++;
 
     // Normalization
-    // return renormalize(mtemp);
+    // return normalize(mtemp);
     ////TODO better handle?
     if (state.Ms.isempty())
-        return renormalize(mtemp);
+        return normalize(mtemp);
     else
-        return (renormalize_handle_zero_values(mtemp)); // Normalized array where all initial values == 0 are set
+        return (normalize_handle_zero_vectors(mtemp)); // Normalized array where all initial values == 0 are set
                                                         // to 0
     // return mtemp;
 
@@ -279,7 +279,7 @@ array LLG::step(State& state) {
     //      llg_wasnormalized=true;
     //      std::cout<<"Normalization: "<<maxnorm(vecnorm(mtemp))<<"
     //      Counter="<<llg_normalize_counter<<std::endl; return
-    //      renormalize(mtemp);
+    //      normalize(mtemp);
     //    }
     //    else{
     //      llg_wasnormalized=false;

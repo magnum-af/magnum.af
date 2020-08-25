@@ -4,9 +4,9 @@
 
 namespace magnumafcpp {
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool renormalize_,
+AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool normalize_,
                                        const bool verbose)
-    : scheme_(scheme_), controller_(controller_), renormalize_(renormalize_) {
+    : scheme_(scheme_), controller_(controller_), normalize_(normalize_) {
     if (scheme_ == "RKF45") {
         if (verbose)
             printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
@@ -50,11 +50,11 @@ void AdaptiveRungeKutta::step(State& state) {
     state.t += h_; // h is the actual timestep taken by the controller_
     h_ = controller_.get_hnext();
     state.m += mtemp;
-    if (renormalize_) {
+    if (normalize_) {
         if (state.Ms_field.isempty()) {
-            state.m = renormalize(state.m);
+            state.m = normalize(state.m);
         } else {
-            state.m = renormalize_handle_zero_values(state.m);
+            state.m = normalize_handle_zero_vectors(state.m);
         }
     }
     time_allsteps_ += af::timer::stop(timer_allsteps);
@@ -120,7 +120,7 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
 
     // Stage 1
     af::array k1;
-    if (controller_.get_reject() || renormalize_ || state.steps == 0) {
+    if (controller_.get_reject() || normalize_ || state.steps == 0) {
         k1 = dt * f(tempstate);
     } else {
         k1 = k_FSAL;
@@ -220,7 +220,7 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt, double& 
 
     // Stage 1
     af::array k1;
-    if (controller_.get_reject() || renormalize_ || step_calls_ == 0) {
+    if (controller_.get_reject() || normalize_ || step_calls_ == 0) {
         k1 = dt * f(tempstate);
     } else {
         k1 = k_FSAL;
@@ -488,7 +488,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
     State tempstate = state;
     af::array k1;
 
-    if (controller_.get_reject() || renormalize_ || step_calls_ == 0) {
+    if (controller_.get_reject() || normalize_ || step_calls_ == 0) {
         k1 = f(tempstate);
     } else {
         k1 = k_FSAL;
@@ -549,7 +549,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    a[7][5]=-2187.0/6784.0, a[7][6]=11.0/84.0;
 //
 //    // Stage 1
-//    if( controller_.get_reject() || renormalize_ || step_calls_ == 0)
+//    if( controller_.get_reject() || normalize_ || step_calls_ == 0)
 //    {
 //        k[1]   = dt * f(tempstate);
 //    }

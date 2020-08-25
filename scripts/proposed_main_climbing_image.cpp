@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     }
     std::cout << idx_max_element << "   " << std::endl;
     af::array tau_s = string.images[idx_max_element].m - string.images[idx_max_element - 1].m;
-    tau_s = renormalize(tau_s);
+    tau_s = normalize(tau_s);
     // TODO add detRK4 of stoch_integrator with fdmdt= -gradV + 2 (-gradV,
     // tau_s) tau_s, -gradV is  detfdmdt
     return 0;

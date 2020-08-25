@@ -10,7 +10,7 @@ namespace magnumafcpp {
 class AdaptiveRungeKutta {
   public:
     AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(),
-                       const bool renormalize_ = true, const bool verbose = false);
+                       const bool normalize_ = true, const bool verbose = false);
     void step(State&);
     double get_time_allsteps() { return time_allsteps_; }
     unsigned long long accumulated_steps{0}; //! accumulated integration steps, is incremented for each step of
@@ -31,7 +31,7 @@ class AdaptiveRungeKutta {
     double err_{0};      // error for stepsize controller
     double time_allsteps_{0};
     unsigned long long int step_calls_{0};
-    const bool renormalize_;
+    const bool normalize_;
 
     af::array k_FSAL; // array which stores the last stage in methods with first
                       // same as last (FSAL) property

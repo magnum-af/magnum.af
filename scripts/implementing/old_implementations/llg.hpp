@@ -50,7 +50,7 @@ class LLG {
                                   // calculated
                                   // -> leave the value true if normalization is on default
     double llg_normtol{1e-5};     // If maxnorm(vecnorm(mtemp)) exceedes this value,
-                                  // renormalize is called
+                                  // normalize is called
     int llg_normalize_counter{0}; // number of normalizations performed
 
     // Counting step calls

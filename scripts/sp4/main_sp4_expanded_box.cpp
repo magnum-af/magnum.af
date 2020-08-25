@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
     //    test_renorm(5, 0, 0, 1)=2;
     //    test_renorm(5, 0, 0, 2)=2;
     //    print ("test_renorm", test_renorm);
-    //    print ("renormalized test_renorm", renormalize(test_renorm));
-    //    print ("renormalized handle zero  test_renorm",
-    //    renormalize_handle_zero_values(test_renorm));
+    //    print ("normalized test_renorm", normalize(test_renorm));
+    //    print ("normalized handle zero  test_renorm",
+    //    normalize_handle_zero_vectors(test_renorm));
     //    //END TEST RENORMALIZE
 
     // Parameter initialization

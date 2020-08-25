@@ -34,8 +34,9 @@ std::array<double, 3> spacial_mean_in_region(long int vectorfield,
 af::array cross4(const af::array& a, const af::array& b);
 af::array cross4shift(const af::array& a, const af::array& b);
 af::array dotproduct(const af::array& a, const af::array& b);
-af::array renormalize(const af::array& a);
-af::array renormalize_handle_zero_values(const af::array& a);
+af::array normalize(const af::array& a);
+af::array normalize_handle_zero_vectors(const af::array& a);
+void normalize_inplace(af::array& a);
 af::array vecnorm(const af::array& a);
 double afvalue(const af::array& a);           // give value of a 1, 1, 1, 1 af af::array
 unsigned int afvalue_u32(const af::array& a); // Returns value an af::array of type u32 == 6

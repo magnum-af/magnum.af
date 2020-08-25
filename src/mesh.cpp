@@ -137,7 +137,7 @@ af::array Mesh::init_vortex(const bool positive_direction) {
     }
 
     std::cout << "n_cells should be approx nx^2*M_PI/4.= " << pow(this->n0, 2) * M_PI / 4. << std::endl;
-    m = renormalize_handle_zero_values(m);
+    m = normalize_handle_zero_vectors(m);
     return m;
 }
 af::array Mesh::init_sp4() {

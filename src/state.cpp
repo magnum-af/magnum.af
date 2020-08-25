@@ -156,7 +156,7 @@ State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mu
     check_m_norm();
 }
 
-void State::Normalize() { this->m = renormalize(this->m); }
+void State::Normalize() { this->m = normalize(this->m); }
 
 void State::set_m(long int aptr) {
     void** a = (void**)aptr;

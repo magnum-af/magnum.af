@@ -368,7 +368,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         // objFunc.update(stp, wa, s, x);
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
-        state.m = renormalize_handle_zero_values(state.m);
+        state.m = normalize_handle_zero_vectors(state.m);
         f = this->EnergyAndGradient(state, g);
         nfev++;
         double dg = mydot(g, s);

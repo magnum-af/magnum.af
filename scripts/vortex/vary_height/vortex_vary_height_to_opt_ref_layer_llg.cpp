@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 
         ////vti_writer_micro(state.m, mesh, filepath + "minit_nonnormalized" +
         /// std::to_string(nz));
-        // state.m = renormalize_handle_zero_values(state.m);
+        // state.m = normalize_handle_zero_vectors(state.m);
         // vti_writer_micro(state.m, mesh, filepath + "minit_renorm" +
         // std::to_string(nz));
 
