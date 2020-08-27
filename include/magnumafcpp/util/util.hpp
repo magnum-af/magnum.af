@@ -30,4 +30,20 @@ template <class T> std::pair<double, double> mean_stdev_no_minus(T vec) {
     return {m, stdev};
 }
 
+inline std::array<double, 3> cross_product(std::array<double, 3> a, std::array<double, 3> b) {
+    return {a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]};
+}
+
+inline double dot_product(std::array<double, 3> a, std::array<double, 3> b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+inline double vector_norm(std::array<double, 3> vector) {
+    return std::sqrt(std::pow(vector[0], 2) + std::pow(vector[1], 2) + std::pow(vector[2], 2));
+}
+
+inline std::array<double, 3> normalize_vector(std::array<double, 3> vector) {
+    double norm = vector_norm(vector);
+    return {vector[0] / norm, vector[1] / norm, vector[2] / norm};
+}
+
 } // namespace magnumafcpp

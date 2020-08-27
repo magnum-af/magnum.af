@@ -34,6 +34,5 @@ class UniaxialAnisotropyField : public IntegratorTermMeshBase {
 
   private:
     double computation_time_heff{0.};
-    std::array<double, 3> get_normalized_vector(std::array<double, 3> vector);
 };
 } // namespace magnumafcpp
