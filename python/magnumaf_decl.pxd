@@ -136,6 +136,18 @@ cdef extern from "llg_terms/micro_anisotropy.hpp" namespace "magnumafcpp":
         long int get_Ku1_field();
         double get_cpu_time();
 
+#cdef extern from "<array>" namespace "std" nogil:
+#  cdef cppclass array_d3 "std::array<double, 3>":
+#    array_d3() except+
+#    int& operator[](size_t)
+
+cdef extern from "llg_terms/cubic_anisotropy_field.hpp" namespace "magnumafcpp":
+    cdef cppclass CubicAnisotropyField:
+        #CubicAnisotropyField(double Kc1, double Kc2, double Kc3, array_d3 c1, array_d3 c2)
+        CubicAnisotropyField(double Kc1, double Kc2, double Kc3, double c1x, double c1y, double c1z, double c2x, double c2y, double c2z)
+        long int h_ptr(const State& state)
+        double E(const State& state);
+
 cdef extern from "llg_terms/micro_anisotropy_nonequi.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiUniaxialAnisotropyField:
         NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);

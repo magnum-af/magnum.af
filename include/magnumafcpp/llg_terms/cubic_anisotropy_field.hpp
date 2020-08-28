@@ -10,6 +10,9 @@ class CubicAnisotropyField : public IntegratorTermMeshBase {
   public:
     CubicAnisotropyField(double Kc1, double Kc2 = 0, double Kc3 = 0, std::array<double, 3> c1 = {1, 0, 0},
                          std::array<double, 3> c2 = {0, 1, 0});
+    // Wrapping only
+    CubicAnisotropyField(double Kc1, double Kc2, double Kc3, double c1x, double c1y, double c1z, double c2x, double c2y,
+                         double c2z);
     const double Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
 
     const std::array<double, 3> c1, c2, c3; // Pairwise orthogonal unit vectors.

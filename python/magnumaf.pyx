@@ -37,6 +37,8 @@ from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
 from magnumaf_decl cimport Stochastic_LLG as cStochastic_LLG
 from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
+#from magnumaf_decl cimport array_d3 as carray_d3
+from magnumaf_decl cimport CubicAnisotropyField as cCubicAnisotropyField
 from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
@@ -988,6 +990,43 @@ cdef class NonequiExchangeField(HeffTerm):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+
+cdef class CubicAnisotropyField(HeffTerm):
+    """
+    Cubic magneto-crystalline anisotropy.
+    """
+    cdef cCubicAnisotropyField* _thisptr
+    def __cinit__(self, Kc1, Kc2 = 0, Kc3 = 0, c1 = [1, 0, 0], c2 = [0, 1, 0]):
+        """
+        Parameters
+        ----------
+        Kc1 : float
+            1st order cubic anisotropy constant in [J/m^3]
+        Kc2 : float
+            2nd order cubic anisotropy constant in [J/m^3]
+        Kc3 : float
+            3rd order cubic anisotropy constant in [J/m^3]
+        c1 : [float, float, float]
+            unit vector indicating anisotropy direction
+            defaults to [1., 0., 0.]
+        c2 : [float, float, float]
+            unit vector indicating anisotropy direction, must be choosen orthogonal to c1.
+            defaults to [0., 1., 0.]
+        """
+        self._thisptr = new cCubicAnisotropyField (Kc1, Kc2, Kc3, c1[0], c1[1], c1[2], c2[0], c2[1], c2[2])
+    # tried this i.o.t. wrap std::array<double, 3>:
+    #def __cinit__(self, Kc1, Kc2, Kc3, double [:] c1, double [:] c2):
+    #    cdef carray_d3 *c1arr = <carray_d3 *>(&c1[0])
+    #    cdef carray_d3 *c2arr = <carray_d3 *>(&c2[0])
+    #    self._thisptr = new cCubicAnisotropyField (Kc1, Kc2, Kc3, c1arr[0], c2arr[0])
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def h(self, State state):
+        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+    def E(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+
 
 cdef class UniaxialAnisotropyField(HeffTerm):
     cdef cUniaxialAnisotropyField* _thisptr

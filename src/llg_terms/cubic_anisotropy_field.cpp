@@ -14,6 +14,10 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
     }
 }
 
+CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, double c1x, double c1y, double c1z,
+                                           double c2x, double c2y, double c2z)
+    : CubicAnisotropyField(Kc1, Kc2, Kc3, {c1x, c1y, c1z}, {c2x, c2y, c2z}) {}
+
 af::array dot_4d(const af::array& a, const af::array& b) { return af::tile(af::sum(a * b, 3), 1, 1, 1, 3); }
 
 std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
