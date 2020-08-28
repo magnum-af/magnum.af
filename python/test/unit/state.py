@@ -36,16 +36,15 @@ class StateTest(unittest.TestCase):
     self.assertEqual(1., self.state.m[0, 0, 0, 1].scalar())
     self.assertEqual(0., self.state.m[0, 0, 0, 2].scalar())
 
-  def test_state_set_wrong_m(self):
+  def test_state_normalize_m(self):
     m_np = ones(3)
     m_af = af.from_ndarray(m_np)
     m_af = af.reorder(m_af, 1, 2, 3, 0)
 
-    print("The following warning is provoked:")
     self.state.m = m_af
-    self.assertEqual(1., self.state.m[0, 0, 0, 0].scalar())
-    self.assertEqual(1., self.state.m[0, 0, 0, 1].scalar())
-    self.assertEqual(1., self.state.m[0, 0, 0, 2].scalar())
+    self.assertEqual(1./sqrt(3), self.state.m[0, 0, 0, 0].scalar())
+    self.assertEqual(1./sqrt(3), self.state.m[0, 0, 0, 1].scalar())
+    self.assertEqual(1./sqrt(3), self.state.m[0, 0, 0, 2].scalar())
 
   def test_material_setter_and_getter_for_ms(self):
     Ms=1000
