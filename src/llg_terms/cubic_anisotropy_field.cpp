@@ -31,24 +31,6 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
     af::array c1m2 = af::pow(c1m, 2);
     af::array c2m2 = af::pow(c2m, 2);
     af::array c3m2 = af::pow(c3m, 2);
-    // af::print("", c1_);
-    // af::print("", c2_);
-    // af::print("", c3_);
-    // std::cout << "types:" << c1_.type() << std::endl;
-    // std::cout << "types:" << c2_.type() << std::endl;
-    // std::cout << "types:" << c3_.type() << std::endl;
-    // af::print("c1m ", c1m);
-    // af::print("c2m ", c2m);
-    // af::print("c3m ", c3m);
-    // af::print("c1m2", c1m2);
-    // af::print("c2m2", c2m2);
-    // af::print("c3m2", c3m2);
-    // std::cout << "c1m = " << c1m.scalar<double>() << std::endl;
-    // std::cout << "c2m = " << c2m.scalar<double>() << std::endl;
-    // std::cout << "c3m = " << c3m.scalar<double>() << std::endl;
-    // std::cout << "c1m2= " << c1m2.scalar<double>() << std::endl;
-    // std::cout << "c2m2= " << c2m2.scalar<double>() << std::endl;
-    // std::cout << "c3m2= " << c3m2.scalar<double>() << std::endl;
 
     af::array h1 = -2 * Kc1 / (constants::mu0 * state.Ms) *
                    ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
