@@ -1,4 +1,5 @@
 #include "cubic_anisotropy_field.hpp"
+#include "func.hpp"
 #include "util.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -10,9 +11,9 @@ TEST(CubicAnisotropyField, Constructor) {
     EXPECT_THAT(caniso.c3, testing::ElementsAre(0, 0, 1));
 }
 
-// single spin rotating 360 degree in xy plane
+// single spin rotating 360 degree in xy plane with offset of z in z-dir (befor normalization)
 // comparing calculated energy vs analytical for Kc1, Kc2 and Kc3 separately
-void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc3) {
+void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc3, const double z) {
     const Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9);
     const double Ms = 1 / constants::mu0;
     af::array m = af::constant(0, 1, 1, 1, 3, f64);
@@ -26,8 +27,10 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
         double y = std::cos(2 * M_PI * i / imax);
         state.m(0, 0, 0, 0) = x;
         state.m(0, 0, 0, 1) = y;
+        state.m(0, 0, 0, 2) = z;
+        normalize_inplace(state.m);
 
-        const std::array<double, 3> m = {x, y, 0};
+        const std::array<double, 3> m = normalize_vector({x, y, z});
         const std::array<double, 3> c1 = {1, 0, 0};
         const std::array<double, 3> c2 = {0, 1, 0};
         const std::array<double, 3> c3 = {0, 0, 1};
@@ -44,21 +47,21 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double Kc1_E_analytic = Kc1_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc1_E_calculated = Kc1_caniso.E(state);
             const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
-            EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 1e-37);
-            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 1e-10);
+            EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 1e-36);
+            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 1.5e-10);
             // std::cout << i << " " << Kc1_E_density_analytic << " " << Kc1_E_density_calculated;
             // std::cout << " " << Kc1_E_analytic << " " << Kc1_E_calculated << std::endl;
         }
 
-        // Kc2, this is always zero
+        // Kc2, this is always zero if z == 0
         {
             CubicAnisotropyField Kc2_caniso(0, Kc2, 0, c1, c2);
             const double Kc2_E_density_analytic = Kc2_caniso.Kc2 * (c1m2 * c2m2 * c3m2);
             const double Kc2_E_analytic = Kc2_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc2_E_calculated = Kc2_caniso.E(state);
             const double Kc2_E_density_calculated = Kc2_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
-            EXPECT_EQ(Kc2_E_calculated, Kc2_E_analytic);
-            EXPECT_EQ(Kc2_E_density_calculated, Kc2_E_density_analytic);
+            EXPECT_NEAR(Kc2_E_calculated, Kc2_E_analytic, 1e-36);
+            EXPECT_NEAR(Kc2_E_density_calculated, Kc2_E_density_analytic, 1e-10);
             // std::cout << i << " " << Kc2_E_density_analytic << " " << Kc2_E_density_calculated;
             // std::cout << " " << Kc2_E_analytic << " " << Kc2_E_calculated << std::endl;
         }
@@ -82,8 +85,10 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
 }
 
 TEST(CubicAnisotropyField, energy_test_xy_rotation) {
-    energy_test_xy_rotation(1e6, 1e6, 1e6);
-    energy_test_xy_rotation(-1e6, -1e6, -1e6);
+    energy_test_xy_rotation(1e6, 1e6, 1e6, 0);
+    energy_test_xy_rotation(-1e6, -1e6, -1e6, 0);
+    energy_test_xy_rotation(1e6, 1e6, 1e6, 0.5);
+    energy_test_xy_rotation(1e6, 1e6, 1e6, 1.0);
 }
 
 int main(int argc, char** argv) {
