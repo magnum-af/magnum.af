@@ -75,17 +75,18 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 //    }
 //}
 
-void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
-    af::array one_when_value_is_zero = af::iszero(vecnorm(m));
-    double meannorm = af::mean(af::mean(af::mean(af::mean(vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
-                          .as(f64)
-                          .scalar<double>();
-    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
-        printf("%s State::check_m_norm: non-zero parts of the magnetization are "
-               "not normalized to 1! Results won't be physically meaningfull.\n",
-               Warning());
-    }
-}
+// void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
+//    af::array one_when_value_is_zero = af::iszero(vecnorm(m));
+//    double meannorm = af::mean(af::mean(af::mean(af::mean(vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
+//                          .as(f64)
+//                          .scalar<double>();
+//    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
+//        printf("%s State::check_m_norm: non-zero parts of the magnetization are "
+//               "not normalized to 1! Results won't be physically meaningfull.\n",
+//               Warning());
+//    }
+//}
+
 // long int State::get_m_addr(){
 //    u_out = this->m.copy();
 //    return (long int) m_out.get();
@@ -95,7 +96,7 @@ void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_fiel
 // Micromagnetic:
 State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
     : mesh(mesh), m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
-    check_m_norm();
+    normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
     // check_discretization();
 }
@@ -109,13 +110,13 @@ State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute
                Warning());
     }
 
-    check_m_norm();
+    normalize_inplace(this->m);
 }
 
 // No Mesh:
 State::State(af::array m, double Ms, bool verbose, bool mute_warning)
     : m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
-    check_m_norm();
+    normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
 }
 
@@ -128,13 +129,13 @@ State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
                Warning());
     }
 
-    check_m_norm();
+    normalize_inplace(this->m);
 }
 
 // Wrapping:
 State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
     : mesh(mesh), m(*(new af::array(*((void**)m)))), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
-    check_m_norm();
+    normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
     // check_discretization();
 }
@@ -153,7 +154,7 @@ State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mu
                "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
                Warning());
     }
-    check_m_norm();
+    normalize_inplace(this->m);
 }
 
 void State::Normalize() { this->m = normalize(this->m); }
@@ -161,7 +162,7 @@ void State::Normalize() { this->m = normalize(this->m); }
 void State::set_m(long int aptr) {
     void** a = (void**)aptr;
     m = *(new af::array(*a));
-    check_m_norm();
+    normalize_inplace(this->m);
 }
 
 long int State::get_m_addr() {

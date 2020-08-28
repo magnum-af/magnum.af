@@ -22,6 +22,16 @@ TEST(State, Init_Ms_field) {
     // int) m.get()); EXPECT_EQ(state_wrapping.Ms_field.dims(3), 3);
 }
 
+TEST(State, normalize_m) {
+    Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9);
+    double Ms = 1;
+    // af::array m = af::constant(std::sqrt(3), 1, 1, 1, 3, f64); // TODO check why this throws warning, numerical?
+    af::array m = af::constant(1, 1, 1, 1, 3, f64);
+    State state(mesh, Ms, m);
+    EXPECT_EQ(state.m(0, 0, 0, 0).scalar<double>(), 1 / std::sqrt(3));
+    EXPECT_EQ(state.m(0, 0, 0, 1).scalar<double>(), 1 / std::sqrt(3));
+    EXPECT_EQ(state.m(0, 0, 0, 2).scalar<double>(), 1 / std::sqrt(3));
+}
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
