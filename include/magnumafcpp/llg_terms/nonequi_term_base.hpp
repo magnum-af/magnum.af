@@ -37,7 +37,7 @@ class NonequiTermBase : public LLGTerm {
 
         af::array xy_integral = af::sum(af::sum(af::sum(ms_h_times_m, 0), 1), 3) * nemesh.dx * nemesh.dy;
         af::array xyz_integral = af::sum(xy_integral * z_spacing_afarray, 2);
-        return -constants::mu0 / 2. * xyz_integral.scalar<double>();
+        return -constants::mu0 / 2. * xyz_integral.as(f64).scalar<double>();
     }
 };
 } // namespace magnumafcpp
