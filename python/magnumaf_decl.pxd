@@ -147,6 +147,7 @@ cdef extern from "llg_terms/cubic_anisotropy_field.hpp" namespace "magnumafcpp":
         CubicAnisotropyField(double Kc1, double Kc2, double Kc3, double c1x, double c1y, double c1z, double c2x, double c2y, double c2z)
         long int h_ptr(const State& state)
         double E(const State& state);
+        double get_cpu_time();
 
 cdef extern from "llg_terms/micro_anisotropy_nonequi.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiUniaxialAnisotropyField:

@@ -989,7 +989,7 @@ cdef class NonequiExchangeField(HeffTerm):
     def cpu_time(self):
         return self._thisptr.get_cpu_time()
     def _get_thisptr(self):
-            return <size_t><void*>self._thisptr
+        return <size_t><void*>self._thisptr
 
 cdef class CubicAnisotropyField(HeffTerm):
     """
@@ -1026,6 +1026,10 @@ cdef class CubicAnisotropyField(HeffTerm):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def E(self, State state):
         return self._thisptr.E(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.get_cpu_time()
+    def _get_thisptr(self):
+        return <size_t><void*>self._thisptr
 
 
 cdef class UniaxialAnisotropyField(HeffTerm):
