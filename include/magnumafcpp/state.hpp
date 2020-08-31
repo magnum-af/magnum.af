@@ -32,8 +32,11 @@ class State {
     af::array Ms_field;                      //!< Non-homugenuous, mesh dependent saturation magnetization
                                              //!< defined at every node in units of [J/T/m^3]. Is impicitly
                                              //!< set and used when magnetization has values of norm 0.
+    //!< return Ms as af::array. If Ms_field is not set, scalar Ms is tiled to dims [nx, ny, nz, 1].
+    af::array get_Ms_field() const;
+    af::array get_Ms_field_in_vector_dims() const; //!< return Ms tiled to dims [nx, ny, nz, 3].
     void set_Ms_field(long int afarray_ptr); // for wrapping only
-    long int get_Ms_field();
+    long int wrapping_get_Ms_field();
 
     void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);
     void check_m_norm(double tol = 1e-6);

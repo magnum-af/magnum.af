@@ -641,7 +641,7 @@ cdef class State:
 
     @property
     def Ms_field(self):
-        return array_from_addr(self._thisptr.get_Ms_field())
+        return array_from_addr(self._thisptr.wrapping_get_Ms_field())
     @Ms_field.setter
     def Ms_field(self, Ms_field):
         self._thisptr.set_Ms_field(addressof(Ms_field.arr))

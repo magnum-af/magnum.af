@@ -89,12 +89,7 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
     af::array c2m3 = af::pow(c2m, 3);
     af::array c3m3 = af::pow(c3m, 3);
 
-    af::array Ms_;
-    if (state.Ms_field.isempty()) {
-        Ms_ = af::constant(state.Ms, state.m.dims(), state.m.type());
-    } else {
-        Ms_ = af::tile(state.Ms_field, 1, 1, 1, 3);
-    }
+    const af::array Ms_ = state.get_Ms_field_in_vector_dims();
 
     af::array h1 = -2 * Kc1_ / (constants::mu0 * Ms_) *
                    ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
@@ -113,16 +108,10 @@ af::array CubicAnisotropyField::h(const State& state) {
 }
 
 double CubicAnisotropyField::E(const State& state) {
-    af::array Ms_;
-    if (state.Ms_field.isempty()) {
-        Ms_ = af::constant(state.Ms, state.m.dims(), state.m.type());
-    } else {
-        Ms_ = af::tile(state.Ms_field, 1, 1, 1, 3);
-    }
-
+    const af::array Ms = state.get_Ms_field_in_vector_dims();
     auto h = h_1to3(state);
     return constants::mu0 *
-           af::sum(af::sum(af::sum(af::sum(Ms_ * (-1 / 4. * h[0] - 1 / 6. * h[1] - 1 / 8. * h[2]) * state.m, 0), 1), 2),
+           af::sum(af::sum(af::sum(af::sum(Ms * (-1 / 4. * h[0] - 1 / 6. * h[1] - 1 / 8. * h[2]) * state.m, 0), 1), 2),
                    3)
                .as(f64)
                .scalar<double>() *

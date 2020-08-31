@@ -39,6 +39,25 @@ std::array<double, 3> State::mean_m() const {
     return {mx, my, mz};
 }
 
+af::array State::get_Ms_field() const {
+    if (Ms_field.isempty()) {
+        return af::constant(Ms, m.dims(0), m.dims(1), m.dims(2), 1, m.type());
+    } else {
+        // TODO enable after changing Ms_field.dims(4) to 1:
+        // TODO return Ms_field;
+        if (Ms_field.dims(3) == 1) {
+            return Ms_field;
+        }
+        // Current workaround:
+        else {
+            return Ms_field(af::span, af::span, af::span, 0);
+        }
+    }
+}
+af::array State::get_Ms_field_in_vector_dims() const {
+    return af::tile(get_Ms_field(), 1, 1, 1, 3);
+} //!< return Ms tiled to dims [nx, ny, nz, 3].
+
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
     // Initializes Ms_field if any entry of initial m has zero norm
     if (min_4d(vecnorm(m)) == 0) {
@@ -175,7 +194,7 @@ void State::set_Ms_field(long int aptr) {
     Ms_field = *(new af::array(*a)); // TODO rename Ms_field -> micro_Ms_field
 }
 
-long int State::get_Ms_field() {
+long int State::wrapping_get_Ms_field() {
     af::array* a = new af::array(Ms_field);
     return (long int)a->get();
 }

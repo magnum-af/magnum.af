@@ -15,9 +15,10 @@ TEST(CubicAnisotropyField, Constructor) {
 // comparing calculated energy vs analytical for Kc1, Kc2 and Kc3 separately
 void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc3, const double z) {
     const Mesh mesh(2, 2, 2, 1e-9, 1e-9, 1e-9);
-    // const Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9); // Alternatively
+    // const Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9); // Alternative
     const unsigned num_of_cells = mesh.n0 * mesh.n1 * mesh.n2;
-    const double Ms = 1 / constants::mu0;
+    // const double Ms = 1 / constants::mu0; // Alternative
+    af::array Ms = af::constant(1 / constants::mu0, mesh.dims_scalar, f64);
     af::array m = af::constant(0, mesh.dims, f64);
     m(af::span, af::span, af::span, 0) = 1;
     State state(mesh, Ms, m);

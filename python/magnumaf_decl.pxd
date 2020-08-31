@@ -61,7 +61,7 @@ cdef extern from "state.hpp" namespace "magnumafcpp":
         long int get_m_addr();
 
         void set_Ms_field(long int aptr);
-        long int get_Ms_field();
+        long int wrapping_get_Ms_field();
 
         double t;
         unsigned long long steps;
