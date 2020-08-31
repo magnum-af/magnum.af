@@ -53,10 +53,50 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             // std::cout << " " << Kc1_E_analytic << " " << Kc1_E_calculated << std::endl;
         }
 
+        // Kc1 array input
+        {
+            auto Kc1_ = af::constant(Kc1, 1, f64);
+            auto Kc2_ = af::constant(0, 1, f64);
+            auto Kc3_ = af::constant(0, 1, f64);
+            auto c1_ = af::constant(0, 1, 1, 1, 3, f64);
+            c1_(0, 0, 0, 0) = 1;
+            auto c2_ = af::constant(0, 1, 1, 1, 3, f64);
+            c2_(0, 0, 0, 1) = 1;
+            CubicAnisotropyField Kc1_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
+            const double Kc1_E_density_analytic = Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
+            const double Kc1_E_analytic = Kc1_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
+            const double Kc1_E_calculated = Kc1_caniso.E(state);
+            const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
+            EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 1e-36);
+            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 1e-9);
+            // std::cout << i << " " << Kc1_E_density_analytic << " " << Kc1_E_density_calculated;
+            // std::cout << " " << Kc1_E_analytic << " " << Kc1_E_calculated << std::endl;
+        }
+
         // Kc2, this is always zero if z == 0
         {
             CubicAnisotropyField Kc2_caniso(0, Kc2, 0, c1, c2);
             const double Kc2_E_density_analytic = Kc2_caniso.Kc2 * (c1m2 * c2m2 * c3m2);
+            const double Kc2_E_analytic = Kc2_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
+            const double Kc2_E_calculated = Kc2_caniso.E(state);
+            const double Kc2_E_density_calculated = Kc2_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
+            EXPECT_NEAR(Kc2_E_calculated, Kc2_E_analytic, 1e-36);
+            EXPECT_NEAR(Kc2_E_density_calculated, Kc2_E_density_analytic, 1e-10);
+            // std::cout << i << " " << Kc2_E_density_analytic << " " << Kc2_E_density_calculated;
+            // std::cout << " " << Kc2_E_analytic << " " << Kc2_E_calculated << std::endl;
+        }
+
+        // Kc2 array input, this is always zero if z == 0
+        {
+            auto Kc1_ = af::constant(0, 1, f64);
+            auto Kc2_ = af::constant(Kc2, 1, f64);
+            auto Kc3_ = af::constant(0, 1, f64);
+            auto c1_ = af::constant(0, 1, 1, 1, 3, f64);
+            c1_(0, 0, 0, 0) = 1;
+            auto c2_ = af::constant(0, 1, 1, 1, 3, f64);
+            c2_(0, 0, 0, 1) = 1;
+            CubicAnisotropyField Kc2_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
+            const double Kc2_E_density_analytic = Kc2 * (c1m2 * c2m2 * c3m2);
             const double Kc2_E_analytic = Kc2_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc2_E_calculated = Kc2_caniso.E(state);
             const double Kc2_E_density_calculated = Kc2_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
@@ -73,6 +113,29 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double c2m4 = std::pow(dot_product(c2, m), 4);
             const double c3m4 = std::pow(dot_product(c3, m), 4);
             const double Kc3_E_density_analytic = Kc3_caniso.Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
+            const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
+            const double Kc3_E_calculated = Kc3_caniso.E(state);
+            const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
+            EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 1e-37);
+            EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 1e-10);
+            // std::cout << i << " " << Kc3_E_density_analytic << " " << Kc3_E_density_calculated;
+            // std::cout << " " << Kc3_E_analytic << " " << Kc3_E_calculated << std::endl;
+        }
+
+        // Kc3 array input
+        {
+            auto Kc1_ = af::constant(0, 1, f64);
+            auto Kc2_ = af::constant(0, 1, f64);
+            auto Kc3_ = af::constant(Kc3, 1, f64);
+            auto c1_ = af::constant(0, 1, 1, 1, 3, f64);
+            c1_(0, 0, 0, 0) = 1;
+            auto c2_ = af::constant(0, 1, 1, 1, 3, f64);
+            c2_(0, 0, 0, 1) = 1;
+            CubicAnisotropyField Kc3_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
+            const double c1m4 = std::pow(dot_product(c1, m), 4);
+            const double c2m4 = std::pow(dot_product(c2, m), 4);
+            const double c3m4 = std::pow(dot_product(c3, m), 4);
+            const double Kc3_E_density_analytic = Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc3_E_calculated = Kc3_caniso.E(state);
             const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
