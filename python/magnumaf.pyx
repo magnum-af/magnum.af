@@ -1013,7 +1013,10 @@ cdef class CubicAnisotropyField(HeffTerm):
             unit vector indicating anisotropy direction, must be choosen orthogonal to c1.
             defaults to [0., 1., 0.]
         """
-        self._thisptr = new cCubicAnisotropyField (Kc1, Kc2, Kc3, c1[0], c1[1], c1[2], c2[0], c2[1], c2[2])
+        if hasattr(Kc1, 'arr') and hasattr(Kc2, 'arr') and hasattr(Kc3, 'arr') and hasattr(c1, 'arr') and hasattr(c2, 'arr'):
+            self._thisptr = new cCubicAnisotropyField (<long int> addressof(Kc1.arr), <long int> addressof(Kc2.arr), <long int> addressof(Kc3.arr), <long int> addressof(c1.arr), <long int> addressof(c2.arr))
+        else:
+            self._thisptr = new cCubicAnisotropyField (<double> Kc1, <double> Kc2, <double> Kc3, <double> c1[0], <double> c1[1], <double> c1[2], <double> c2[0], <double> c2[1], <double> c2[2])
     # tried this i.o.t. wrap std::array<double, 3>:
     #def __cinit__(self, Kc1, Kc2, Kc3, double [:] c1, double [:] c2):
     #    cdef carray_d3 *c1arr = <carray_d3 *>(&c1[0])

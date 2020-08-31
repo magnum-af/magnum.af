@@ -13,8 +13,9 @@ struct Mesh {
     double dx, dy, dz;               // Distance between cells
     double V;                        // Volume of one cell
     unsigned n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
-    af::dim4 dims;
-    af::dim4 dims_expanded;
+    af::dim4 dims;                   // Dimension for vector field on mesh, i.e. [nx, ny, nz, 3]
+    af::dim4 dims_scalar;            // Dimension for scalar field on mesh, i.e. [nx, ny, nz, 1]
+    af::dim4 dims_expanded; // Expanded dimension for demag field, i.e. [2 * nx, 2 * ny, nz == 1 ? 1 : 2 * nz, 3]
     void print(std::ostream& stream);
     af::array skyrmconf(const bool point_up = false);
     af::array ellipse(std::array<double, 3> vector, const bool verbose = true);

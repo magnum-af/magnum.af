@@ -145,6 +145,7 @@ cdef extern from "llg_terms/cubic_anisotropy_field.hpp" namespace "magnumafcpp":
     cdef cppclass CubicAnisotropyField:
         #CubicAnisotropyField(double Kc1, double Kc2, double Kc3, array_d3 c1, array_d3 c2)
         CubicAnisotropyField(double Kc1, double Kc2, double Kc3, double c1x, double c1y, double c1z, double c2x, double c2y, double c2z)
+        CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr, long int c2_array_ptr);
         long int h_ptr(const State& state)
         double E(const State& state);
         double get_cpu_time();
