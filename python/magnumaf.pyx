@@ -1000,16 +1000,16 @@ cdef class CubicAnisotropyField(HeffTerm):
         """
         Parameters
         ----------
-        Kc1 : float
+        Kc1 : float or array [nx, ny, nz, 1]
             1st order cubic anisotropy constant in [J/m^3]
-        Kc2 : float
+        Kc2 : float or array [nx, ny, nz, 1]
             2nd order cubic anisotropy constant in [J/m^3]
-        Kc3 : float
+        Kc3 : float or array [nx, ny, nz, 1]
             3rd order cubic anisotropy constant in [J/m^3]
-        c1 : [float, float, float]
+        c1 : [float, float, float] or array [nx, ny, nz, 3]
             unit vector indicating anisotropy direction
             defaults to [1., 0., 0.]
-        c2 : [float, float, float]
+        c2 : [float, float, float] or array [nx, ny, nz, 3]
             unit vector indicating anisotropy direction, must be choosen orthogonal to c1.
             defaults to [0., 1., 0.]
         """

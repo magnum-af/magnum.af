@@ -22,9 +22,9 @@ class StateTest(unittest.TestCase):
         Kc2 = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 1, dtype = af.Dtype.f64)
         Kc3 = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 1, dtype = af.Dtype.f64)
         c1 = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 3, dtype = af.Dtype.f64)
-        c1[0, 0, 0, 0] = 1
+        c1[:, :, :, 0] = 1
         c2 = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 3, dtype = af.Dtype.f64)
-        c2[0, 0, 0, 1] = 1
+        c2[:, :, :, 1] = 1
         caniso = CubicAnisotropyField(Kc1, Kc2, Kc3, c1, c2)
         m = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 3, dtype = af.Dtype.f64)
         m[:, :, :, 0] = 1.
