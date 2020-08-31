@@ -51,7 +51,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double Kc1_E_calculated = Kc1_caniso.E(state);
             const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 2e-36);
-            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 1e-9);
+            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 2e-9);
             // std::cout << i << " " << Kc1_E_density_analytic << " " << Kc1_E_density_calculated;
             // std::cout << " " << Kc1_E_analytic << " " << Kc1_E_calculated << std::endl;
         }
@@ -71,7 +71,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double Kc1_E_calculated = Kc1_caniso.E(state);
             const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 2e-36);
-            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 1e-9);
+            EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 3e-9);
             // std::cout << i << " " << Kc1_E_density_analytic << " " << Kc1_E_density_calculated;
             // std::cout << " " << Kc1_E_analytic << " " << Kc1_E_calculated << std::endl;
         }
@@ -120,8 +120,8 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc3_E_calculated = Kc3_caniso.E(state);
             const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
-            EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 1e-37);
-            EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 2e-10);
+            EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 5e-37);
+            EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 5e-10);
             // std::cout << i << " " << Kc3_E_density_analytic << " " << Kc3_E_density_calculated;
             // std::cout << " " << Kc3_E_analytic << " " << Kc3_E_calculated << std::endl;
         }
@@ -143,8 +143,8 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc3_E_calculated = Kc3_caniso.E(state);
             const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
-            EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 1e-37);
-            EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 2e-10);
+            EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 5e-37);
+            EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 5e-10);
             // std::cout << i << " " << Kc3_E_density_analytic << " " << Kc3_E_density_calculated;
             // std::cout << " " << Kc3_E_analytic << " " << Kc3_E_calculated << std::endl;
         }

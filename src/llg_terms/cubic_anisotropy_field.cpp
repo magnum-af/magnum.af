@@ -82,19 +82,27 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
     af::array c2m2 = af::pow(c2m, 2);
     af::array c3m2 = af::pow(c3m, 2);
 
-    af::array h1 = -2 * Kc1_ / (constants::mu0 * state.Ms) *
-                   ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
-
-    af::array h2 = -2 * Kc2_ / (constants::mu0 * state.Ms) *
-                   (c2m2 * c3m2 * c1m * c1_ + c1m2 * c3m2 * c2m * c2_ + c1m2 * c2m2 * c3m * c3_);
-
     af::array c1m4 = af::pow(c1m, 4);
     af::array c2m4 = af::pow(c2m, 4);
     af::array c3m4 = af::pow(c3m, 4);
     af::array c1m3 = af::pow(c1m, 3);
     af::array c2m3 = af::pow(c2m, 3);
     af::array c3m3 = af::pow(c3m, 3);
-    af::array h3 = -4 * Kc3_ / (constants::mu0 * state.Ms) *
+
+    af::array Ms_;
+    if (state.Ms_field.isempty()) {
+        Ms_ = af::constant(state.Ms, state.m.dims(), state.m.type());
+    } else {
+        Ms_ = af::tile(state.Ms_field, 1, 1, 1, 3);
+    }
+
+    af::array h1 = -2 * Kc1_ / (constants::mu0 * Ms_) *
+                   ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
+
+    af::array h2 = -2 * Kc2_ / (constants::mu0 * Ms_) *
+                   (c2m2 * c3m2 * c1m * c1_ + c1m2 * c3m2 * c2m * c2_ + c1m2 * c2m2 * c3m * c3_);
+
+    af::array h3 = -4 * Kc3_ / (constants::mu0 * Ms_) *
                    ((c2m4 + c3m4) * c1m3 * c1_ + (c1m4 + c3m4) * c2m3 * c2_ + (c1m4 + c2m4) * c3m3 * c3_);
     return {h1, h2, h3};
 }
@@ -105,9 +113,17 @@ af::array CubicAnisotropyField::h(const State& state) {
 }
 
 double CubicAnisotropyField::E(const State& state) {
+    af::array Ms_;
+    if (state.Ms_field.isempty()) {
+        Ms_ = af::constant(state.Ms, state.m.dims(), state.m.type());
+    } else {
+        Ms_ = af::tile(state.Ms_field, 1, 1, 1, 3);
+    }
+
     auto h = h_1to3(state);
-    return constants::mu0 * state.Ms *
-           af::sum(af::sum(af::sum(af::sum((-1 / 4. * h[0] - 1 / 6. * h[1] - 1 / 8. * h[2]) * state.m, 0), 1), 2), 3)
+    return constants::mu0 *
+           af::sum(af::sum(af::sum(af::sum(Ms_ * (-1 / 4. * h[0] - 1 / 6. * h[1] - 1 / 8. * h[2]) * state.m, 0), 1), 2),
+                   3)
                .as(f64)
                .scalar<double>() *
            state.mesh.dx * state.mesh.dy * state.mesh.dz;
