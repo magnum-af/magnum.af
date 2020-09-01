@@ -25,12 +25,13 @@ CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_ar
       c1_array(normalize_handle_zero_vectors(c1_array)), c2_array(normalize_handle_zero_vectors(c2_array)),
       c3_array(cross4(this->c1_array, this->c2_array)) {
     // check input vectors c1, c2
+    const double precision = 1e-14;
     const double sum_over_cells =
         af::sum(af::sum(af::sum(af::sum(dot_4d(this->c1_array, this->c2_array), 0), 1), 2), 3).scalar<double>();
-    if (sum_over_cells > 0) {
+    if (std::fabs(sum_over_cells) > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. "
-                     "sum_over_cells(c1 . c2) = "
-                  << sum_over_cells << " > 0" << std::endl;
+                     "|sum_over_cells(c1 . c2)| = "
+                  << sum_over_cells << " > " << precision << std::endl;
         std::cout << "Please choose perpendicular input vectors." << std::endl;
         exit(1);
     }
