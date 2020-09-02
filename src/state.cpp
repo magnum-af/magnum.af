@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
 }
 
 af::array State::mean_m_as_afarray() const {
-    if (Ms_field.isempty()) {
+    if (Ms_field.isempty() or n_cells_ == 0) {
         return af::mean(af::mean(af::mean(m, 0), 1), 2);
     } else {
         return af::sum(af::sum(af::sum(m, 0), 1), 2) / n_cells_;
