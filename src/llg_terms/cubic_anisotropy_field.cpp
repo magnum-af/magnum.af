@@ -10,10 +10,11 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
     : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(normalize_vector(c1)), c2(normalize_vector(c2)),
       c3(normalize_vector(cross_product(c1, c2))) {
     // check input vectors c1, c2
-    const double dot_c1c2 = dot_product(this->c1, this->c2);
-    if (dot_c1c2 > 0) {
+    const double precision = 1e-12;
+    const double abs_dot_c1c2 = std::fabs(dot_product(this->c1, this->c2));
+    if (abs_dot_c1c2 > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. (c1 . c2) = "
-                  << dot_c1c2 << " > 0" << std::endl;
+                  << abs_dot_c1c2 << " > 0" << std::endl;
         std::cout << "Please choose perpendicular input vectors." << std::endl;
         exit(1);
     }
@@ -25,13 +26,14 @@ CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_ar
       c1_array(normalize_handle_zero_vectors(c1_array)), c2_array(normalize_handle_zero_vectors(c2_array)),
       c3_array(cross4(this->c1_array, this->c2_array)) {
     // check input vectors c1, c2
-    const double precision = 1e-14;
-    const double sum_over_cells =
-        af::sum(af::sum(af::sum(af::sum(dot_4d(this->c1_array, this->c2_array), 0), 1), 2), 3).scalar<double>();
-    if (std::fabs(sum_over_cells) > precision) {
+    const double precision = 1e-12;
+    const double max_abs_c1_c2_dot =
+        af::max(af::max(af::max(af::max(af::abs(dot_4d(this->c1_array, this->c2_array)), 0), 1), 2), 3)
+            .scalar<double>();
+    if (max_abs_c1_c2_dot > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. "
-                     "|sum_over_cells(c1 . c2)| = "
-                  << sum_over_cells << " > " << precision << std::endl;
+                     "max(abs((c1 . c2)) = "
+                  << max_abs_c1_c2_dot << " > " << precision << std::endl;
         std::cout << "Please choose perpendicular input vectors." << std::endl;
         exit(1);
     }
