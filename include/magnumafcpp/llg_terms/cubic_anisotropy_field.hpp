@@ -1,6 +1,7 @@
 #pragma once
 #include "../state.hpp"
 #include "arrayfire.h"
+#include "double_or_array.hpp"
 #include "integrator_term_mesh_base.hpp"
 #include <array>
 
@@ -18,7 +19,7 @@ class CubicAnisotropyField : public IntegratorTermMeshBase {
     CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr,
                          long int c2_array_ptr);
 
-    const double Kc1{0}, Kc2{0}, Kc3{0}; // First, second and third order cubic anisotropy constants in [J/m^3]
+    const DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
 
     const std::array<double, 3> c1{0, 0, 0}, c2{0, 0, 0}, c3{0, 0, 0}; // Pairwise orthogonal unit vectors.
 
@@ -31,7 +32,6 @@ class CubicAnisotropyField : public IntegratorTermMeshBase {
     std::array<af::array, 3> h_1to3(const State& state);
 
     // For per-cell inputs
-    af::array Kc1_array, Kc2_array, Kc3_array;
     af::array c1_array, c2_array, c3_array;
 };
 } // namespace magnumafcpp

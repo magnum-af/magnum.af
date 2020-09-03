@@ -22,9 +22,8 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
 
 CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array,
                                            af::array c1_array, af::array c2_array)
-    : Kc1_array(Kc1_array), Kc2_array(Kc2_array), Kc3_array(Kc3_array),
-      c1_array(normalize_handle_zero_vectors(c1_array)), c2_array(normalize_handle_zero_vectors(c2_array)),
-      c3_array(cross4(this->c1_array, this->c2_array)) {
+    : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1_array(normalize_handle_zero_vectors(c1_array)),
+      c2_array(normalize_handle_zero_vectors(c2_array)), c3_array(cross4(this->c1_array, this->c2_array)) {
     // check input vectors c1, c2
     const double precision = 1e-12;
     const double max_abs_c1_c2_dot =
@@ -55,18 +54,6 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, d
 
 std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
     // c1,c2,c3 are double so c1_, c2_, c3_ initially are f64 before .as()
-    af::array Kc1_, Kc2_, Kc3_;
-
-    if (Kc1_array.isempty()) { // Assuming Kc*_array are all empty
-
-        Kc1_ = af::constant(Kc1, state.m.dims(), state.m.type());
-        Kc2_ = af::constant(Kc2, state.m.dims(), state.m.type());
-        Kc3_ = af::constant(Kc3, state.m.dims(), state.m.type());
-    } else {
-        Kc1_ = af::tile(Kc1_array, 1, 1, 1, 3);
-        Kc2_ = af::tile(Kc2_array, 1, 1, 1, 3);
-        Kc3_ = af::tile(Kc3_array, 1, 1, 1, 3);
-    }
 
     af::array c1_, c2_, c3_;
     if (c1_array.isempty()) {
@@ -98,13 +85,13 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
 
     const af::array Ms_ = state.get_Ms_field_in_vector_dims();
 
-    af::array h1 = -2 * Kc1_ / (constants::mu0 * Ms_) *
+    af::array h1 = -2 / (constants::mu0 * Ms_) * Kc1 *
                    ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
 
-    af::array h2 = -2 * Kc2_ / (constants::mu0 * Ms_) *
+    af::array h2 = -2 / (constants::mu0 * Ms_) * Kc2 *
                    (c2m2 * c3m2 * c1m * c1_ + c1m2 * c3m2 * c2m * c2_ + c1m2 * c2m2 * c3m * c3_);
 
-    af::array h3 = -4 * Kc3_ / (constants::mu0 * Ms_) *
+    af::array h3 = -4 / (constants::mu0 * Ms_) * Kc3 *
                    ((c2m4 + c3m4) * c1m3 * c1_ + (c1m4 + c3m4) * c2m3 * c2_ + (c1m4 + c2m4) * c3m3 * c3_);
     return {h1, h2, h3};
 }
