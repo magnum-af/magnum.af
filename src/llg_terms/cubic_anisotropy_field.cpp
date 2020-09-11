@@ -7,11 +7,10 @@ af::array dot_4d(const af::array& a, const af::array& b) { return af::tile(af::s
 
 CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, std::array<double, 3> c1,
                                            std::array<double, 3> c2)
-    : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(normalize_vector(c1)), c2(normalize_vector(c2)),
-      c3(normalize_vector(cross_product(c1, c2))) {
+    : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(c1), c2(c2), c3(normalize_vector(cross_product(c1, c2))) {
     // check input vectors c1, c2
     const double precision = 1e-12;
-    const double abs_dot_c1c2 = std::fabs(dot_product(this->c1, this->c2));
+    const double abs_dot_c1c2 = std::fabs(dot_product(this->c1.scalar_vector.value(), this->c2.scalar_vector.value()));
     if (abs_dot_c1c2 > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. (c1 . c2) = "
                   << abs_dot_c1c2 << " > 0" << std::endl;
@@ -20,14 +19,18 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
     }
 }
 
-CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array,
-                                           af::array c1_array, af::array c2_array)
-    : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1_array(normalize_handle_zero_vectors(c1_array)),
-      c2_array(normalize_handle_zero_vectors(c2_array)), c3_array(cross4(this->c1_array, this->c2_array)) {
+CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array, af::array c1,
+                                           af::array c2)
+    : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1(c1), c2(c2),
+      c3(cross4(this->c1.array_vector.value(), this->c2.array_vector.value())) {
     // check input vectors c1, c2
     const double precision = 1e-12;
     const double max_abs_c1_c2_dot =
-        af::max(af::max(af::max(af::max(af::abs(dot_4d(this->c1_array, this->c2_array)), 0), 1), 2), 3)
+        af::max(
+            af::max(
+                af::max(af::max(af::abs(dot_4d(this->c1.array_vector.value(), this->c2.array_vector.value())), 0), 1),
+                2),
+            3)
             .scalar<double>();
     if (max_abs_c1_c2_dot > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. "
@@ -53,21 +56,9 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, d
 
 
 std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
-    // c1,c2,c3 are double so c1_, c2_, c3_ initially are f64 before .as()
-
-    af::array c1_, c2_, c3_;
-    if (c1_array.isempty()) {
-        c1_ = af::tile(af::array(1, 1, 1, 3, c1.data()).as(state.m.type()), state.m.dims(0), state.m.dims(1),
-                       state.m.dims(2), 1);
-        c2_ = af::tile(af::array(1, 1, 1, 3, c2.data()).as(state.m.type()), state.m.dims(0), state.m.dims(1),
-                       state.m.dims(2), 1);
-        c3_ = af::tile(af::array(1, 1, 1, 3, c3.data()).as(state.m.type()), state.m.dims(0), state.m.dims(1),
-                       state.m.dims(2), 1);
-    } else {
-        c1_ = c1_array;
-        c2_ = c2_array;
-        c3_ = c3_array;
-    }
+    af::array c1_ = c1.get_as_array(state.m.dims(), state.m.type());
+    af::array c2_ = c2.get_as_array(state.m.dims(), state.m.type());
+    af::array c3_ = c3.get_as_array(state.m.dims(), state.m.type());
 
     af::array c1m = dot_4d(c1_, state.m);
     af::array c2m = dot_4d(c2_, state.m);
