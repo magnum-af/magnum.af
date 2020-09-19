@@ -45,8 +45,8 @@ class State {
     // af::array m_out;
     // long int get_m_addr(){m.lock(); return (long int) m.get();}
 
-    void write_vti(std::string outputname);
-    void _vti_writer_atom(std::string outputname);
+    void write_vti(std::string outputname) const;
+    void _vti_writer_atom(std::string outputname) const;
     void _vti_reader(std::string inputname);
 
     /// Get the i'th component of <m>: 0 == mx, 1 == my, 2 == mz
