@@ -74,8 +74,6 @@ void set_air_to_zero(af::array& m) {
     m(af::span, af::span, 10, af::span) = 0;
     m(af::span, af::span, 11, af::span) = 0;
 
-    // m(af::span, af::span, 13, af::span) = 0;
-
     m(af::span, af::span, 18, af::span) = 0;
     m(af::span, af::span, 19, af::span) = 0;
 

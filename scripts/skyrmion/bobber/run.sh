@@ -146,3 +146,41 @@ magnum.af -f -g 1 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs
 
 magnum.af -f -g 0 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run9_Ms5e3/case2/ 2 16 2e-10 100
 #TODO#magnum.af -f -g 1 -b opencl multilayer_demag_above_top_layer_with_1nmPt.cpp runs/demag_above_top_layer/run9_Ms5e3/case3/ 3 16 2e-10 100
+
+
+magnum.af -f -g 0 -b opencl multilayer.cpp $HOME/data_magnum.af/bobber/relax_state1/case2/ 2 16 5e-9 100
+magnum.af -f -g 1 -b opencl multilayer.cpp $HOME/data_magnum.af/bobber/relax_state1/case3/ 3 16 5e-9 100
+
+magnum.af -g 2 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.6mJm2/case2/ 2 16 5e-9 100
+magnum.af -g 3 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.6mJm2/case3/ 3 16 5e-9 100
+
+magnum.af -g 2 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.8mJm2_RKKY0.4/case2/ 2 16 5e-9 100
+magnum.af -g 3 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.8mJm2_RKKY0.4/case3/ 3 16 5e-9 100
+
+magnum.af -g 0 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.6mJm2_RKKY0.4/case2/ 2 16 5e-9 100
+magnum.af -g 1 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/DMI_0.6mJm2_RKKY0.4/case3/ 3 16 5e-9 100
+
+magnum.af -g 0 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run1/case2/ 2 16 5e-9 100
+magnum.af -g 1 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run1/case3/ 3 16 5e-9 100
+
+magnum.af -f -g 0 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run2/case2/IL_to_PT_Ms10/ 2 16 5e-9 100 10
+magnum.af -f -g 1 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run2/case2/IL_to_PT_Ms20/ 2 16 5e-9 100 20
+magnum.af -f -g 2 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run2/case2/IL_to_PT_Ms40/ 2 16 5e-9 100 40
+
+magnum.af -f -g 1 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms10/ 2 16 5e-9 100 10
+magnum.af -f -g 2 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms20/ 2 16 5e-9 100 20
+magnum.af -f -g 3 -b opencl hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms40/ 2 16 5e-9 100 40
+
+magnum.af.docker -d -f -g 2 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms10/ 2 16 5e-9 100 10
+
+magnum.af.docker -d -f -g 1 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms10/ 2 16 3e-9 100 10
+magnum.af.docker -d -f -g 2 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms20/ 2 16 3e-9 100 20
+magnum.af.docker -d -f -g 3 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms40/ 2 16 3e-9 100 40
+
+magnum.af.docker -d -f -g 1 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms10/ 2 16 3e-9 100 10
+magnum.af.docker -d -f -g 2 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms20/ 2 16 3e-9 100 20
+magnum.af.docker -d -f -g 3 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run3_contin_field_increase_case2/IL_to_PT_Ms40/ 2 16 3e-9 100 40
+
+magnum.af.docker -d -f -g 3 relax_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/relax_at_155mT/Ms10/run1/ 2 16 3e-9 100 10
+
+magnum.af.docker -d -f -g 3 hys_multilayer.cpp $HOME/data_magnum.af/bobber/hys/1nmPtLayer/run4_hys/IL_to_PT_Ms10/ 2 16 3e-9 100 10
