@@ -1,19 +1,39 @@
-# plot heatmap
+## plot heatmaps
 set terminal pdf
 set xlabel "Ms1 [1e6 J/T/m^3]"
 set ylabel "RKKY [mJ/m^2]"
 set cblabel "max(abs(m_y))"
-set output "heatmap.pdf"
-p "table_combined.dat" u ($2*1e-6):($3):4 w image notitle
-set terminal jpeg
-set output "heatmap.jpg"
-replot
 
-# plot hysteresis for all data points
+set output "heatmap_combined.pdf"
+set title "Reference Layer"
+p "table_combined.dat" u ($2*1e-6):($3):4 w image notitle
+set title "Pinned Layer"
+p "table_combined.dat" u ($2*1e-6):($3):6 w image notitle
+
+set output "heatmap_ref.pdf"
+set title "Reference Layer"
+p "table_combined.dat" u ($2*1e-6):($3):4 w image notitle
+
+set output "heatmap_pin.pdf"
+set title "Pinned Layer"
+p "table_combined.dat" u ($2*1e-6):($3):6 w image notitle
+
+# jpegs
+set terminal jpeg
+
+set output "heatmap_ref.jpg"
+set title "Reference Layer"
+p "table_combined.dat" u ($2*1e-6):($3):4 w image notitle
+
+set output "heatmap_pin.jpg"
+set title "Pinned Layer"
+p "table_combined.dat" u ($2*1e-6):($3):6 w image notitle
+
+## plot hysteresis for all data points combined
 set terminal pdf;
 set xlabel "H_x"
 set ylabel "m_y"
-set output "fig_ref_layer_over_files.pdf";
+set output "fig_my_over_Hx_combined.pdf";
 
 filelist = system('ls RKKYmT*/m.dat')
 
@@ -21,6 +41,23 @@ set title "Reference Layer"
 plot for [file in filelist] file u 2:4 w l title file
 set title "Pinned Layer"
 plot for [file in filelist] file u 2:3 w l title file
+
+# jpg
 set terminal jpeg
-set output "fig_ref_layer_over_files.jpg";
-replot
+set output "fig_my_over_Hx_combined_ref.jpg";
+set title "Reference Layer"
+plot for [file in filelist] file u 2:4 w l title file
+
+set output "fig_my_over_Hx_combined_pin.jpg";
+set title "Pinned Layer"
+plot for [file in filelist] file u 2:3 w l title file
+
+# plot hysteresis for all data points for each file, only works for pdf, not jpg
+set terminal pdf
+set output "fig_my_over_Hx_for_each.pdf";
+do for [file in filelist]{
+    set title "Reference Layer"
+    plot file u 2:4 w l title file
+    set title "Pinned Layer"
+    plot file u 2:3 w l title file
+}

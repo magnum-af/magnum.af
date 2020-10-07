@@ -19,10 +19,11 @@ int main(int argc, char** argv) {
     af::info();
 
     // Parameter initialization
-    // z1: Pinned Layer
-    // z2: Reference Layer
+    // z1 i.e. m(span, span, span, 0): Pinned Layer
+    // z2 i.e. m(span, span, span, 1): Reference Layer
     const int nx = 1, ny = 1, nz = 2;
-    const double dx = 10e-9;
+    // const double dx = 10e-9;
+    const double dx = 2e-9;
 
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
@@ -34,6 +35,8 @@ int main(int argc, char** argv) {
     const double Ms1 = argc > 5 ? std::stod(argv[5]) : 0.37 / constants::mu0;
     std::cout << "Ms1=" << Ms1 << std::endl;
     const double Ms2 = 1e6;
+    // TODO//const double Ms2 = 0.37 / constants::mu0;
+    std::cout << "Ms2=" << Ms2 << std::endl;
     const double A = 15e-12; // Note: A is replaced by RKKY here
 
     // Anisotropy
@@ -89,7 +92,8 @@ int main(int argc, char** argv) {
     std::ofstream stream(filepath + "m.dat");
     stream.precision(12);
 
-    std::vector<double> abs_my_rl; // Ref Layer my list
+    std::vector<double> abs_my_pin; // Pinned Layer m_y list
+    std::vector<double> abs_my_ref; // Ref Layer m_y list
 
     // for (unsigned i = 0; i < 360; i++) {
     for (unsigned i = 0; i <= 360; i += 20) {
@@ -102,7 +106,8 @@ int main(int argc, char** argv) {
             external->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
         const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
         const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
-        abs_my_rl.push_back(std::abs(my_z1));
+        abs_my_pin.push_back(std::abs(my_z0));
+        abs_my_ref.push_back(std::abs(my_z1));
 
         std::cout << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1
                   << std::endl;
@@ -114,19 +119,31 @@ int main(int argc, char** argv) {
     // for (auto it : abs_my_rl) {
     //    std::cout << it << std::endl;
     //}
-    double sum = std::accumulate(abs_my_rl.begin(), abs_my_rl.end(), 0.0);
-    std::cout << "sum=" << sum << std::endl;
-    double mean = sum / abs_my_rl.size();
-    std::cout << "mean=" << mean << std::endl;
-    double max = *std::max_element(abs_my_rl.begin(), abs_my_rl.end());
-    std::cout << "max=" << max << std::endl;
+
+    auto get_sum_mean_max = [](std::vector<double> v) {
+        double sum = std::accumulate(v.begin(), v.end(), 0.0);
+        double mean = sum / v.size();
+        double max = *std::max_element(v.begin(), v.end());
+        return std::array<double, 3>{sum, mean, max};
+    };
+
+    // double sum_ref = std::accumulate(abs_my_rl.begin(), abs_my_rl.end(), 0.0);
+    // double mean_ref = sum_ref / abs_my_rl.size();
+    // double max_ref = *std::max_element(abs_my_rl.begin(), abs_my_rl.end());
+
+    auto [sum_ref, mean_ref, max_ref] = get_sum_mean_max(abs_my_ref);
+    auto [sum_pin, mean_pin, max_pin] = get_sum_mean_max(abs_my_pin);
+
+    std::cout << "sum _ref=" << sum_ref << "sum _pin=" << sum_pin << std::endl;
+    std::cout << "mean_ref=" << mean_ref << "mean_pin=" << mean_pin << std::endl;
+    std::cout << "max _ref=" << max_ref << "max _pin=" << max_pin << std::endl;
 
     stream.open(filepath + "table.dat");
-    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max(abs(my)) << "
-              "mean(abs(my))"
+    stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max_ref(abs(my)) << "
+              "mean_ref(abs(my)) << max_pin(abs(my)) << mean_pin(abs(my))"
            << std::endl;
-    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max << "\t"
-           << mean << "\t" << std::endl;
+    stream << dx << "\t" << Ms1 << "\t" << RKKY_mJ_per_m2 << "\t" << max_ref << "\t" << mean_ref << "\t" << max_pin
+           << "\t" << mean_pin << "\t" << std::endl;
     stream.close();
 
     stream.open(filepath + "plotfile.gpi");

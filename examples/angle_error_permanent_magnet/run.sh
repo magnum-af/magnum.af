@@ -4,20 +4,15 @@
 GPU="0"
 Hmax_mT="0.100"
 
-# NOTE: Ms1=294437
-Ms1_start=200000
-#Ms1_step=100000
-Ms1_step=50000
-Ms1_stop=600000
-#Ms1_stop=400000
-#RKKY_start=-0.6
-#RKKY_step=-0.2
-#RKKY_stop=-1.0
+Ms1_start=500000
+Ms1_step=100000
+Ms1_stop=3000000
+
 RKKY_start=-0.4
-#RKKY_step=-0.2
-RKKY_step=-0.1
+RKKY_step=-0.2
 RKKY_stop=-1.6
-parent_outpath=$HOME/data_magnum.af/angle_error_permanent_magnet/run2/
+
+parent_outpath=$HOME/data_magnum.af/angle_error_permanent_magnet/run7/
 
 for Ms1 in $(LC_ALL=C seq "$Ms1_start" "$Ms1_step" "$Ms1_stop" ); do
     for RKKY in $(LC_ALL=C seq "$RKKY_start" "$RKKY_step" "$RKKY_stop"); do
