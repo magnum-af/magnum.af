@@ -131,14 +131,15 @@ def parse():
     else:
         if args.verbose:
             print("Dir does not exist, creating directory '", args.dir, "'")
-        os.mkdir(args.dir)
+        os.makedirs(args.dir, exist_ok = False)
 
     af.set_device(args.gpu)
 
     if not args.nocopy:
+        targetname = args.dir + os.path.basename(sys.argv[0]) + '.copy'
         if args.verbose:
-            print('copy script "', os.path.basename(sys.argv[0]), '" into "', args.dir + 'copy_of_' + os.path.basename(sys.argv[0]), '"')
-        copy(sys.argv[0], args.dir + 'copy_of_' + os.path.basename(sys.argv[0]))
+            print('copy script "', os.path.basename(sys.argv[0]), '" into "', targetname, '"')
+        copy(sys.argv[0], targetname)
 
     return args
 

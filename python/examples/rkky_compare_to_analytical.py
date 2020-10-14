@@ -6,7 +6,7 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
+args = parse()
 af.info()
 
 minimize = False # True uses minimizer, False uses llg integration
@@ -18,8 +18,17 @@ x, y, z = 1e-8, 1e-8, 2e-9
 dx, dy, dz = x/nx, y/ny, z/nz
 print("dx={}, dy={}, dz={}".format(dx, dy, dz))
 
-def m_analytical(dz, Ms, H, RKKY):
+def m_analytical_nocap(dz, Ms, H, RKKY):
     return (dz * Ms * H)/(4 * abs(RKKY))
+
+def m_analytical(dz, Ms, H, RKKY):
+    result = m_analytical_nocap(dz, Ms, H, RKKY)
+    if result > 1.:
+        return 1
+    elif result < -1.:
+        return -1
+    else:
+        return result
 
 def H_analytical(RKKY_surface, dz, Ms):
     return (4. * abs(RKKY_surface))/(dz * Ms)
@@ -42,7 +51,7 @@ m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m0[:, :, 0, 2] =-1.
 m0[:, :, 1, 2] = 1.
 state = State(mesh, Ms, m = m0)
-state.write_vti(sys.argv[1] + "m_init")
+state.write_vti(args.dir + "m_init")
 
 
 RKKYarr = af.constant(RKKY, nx, ny, nz, 1, dtype=af.Dtype.f64)
@@ -69,7 +78,7 @@ def hysteresis_factor(i, steps):
 
 
 # running hysteresis loop
-stream = open(sys.argv[1] + "m.dat", "w", buffering = 1)
+stream = open(args.dir + "m.dat", "w", buffering = 1)
 stream.write("# Hext [T], mx, my, mz")
 for i in range(1, hys_steps + 1):
     #if i > hys_steps/4:
@@ -80,7 +89,7 @@ for i in range(1, hys_steps + 1):
         minimizer.minimize(state)
     else:
         llg.relax(state, precision = 1e-6, verbose = False)
-    state.write_vti(sys.argv[1] + "m_step_"+ str(i))
+    state.write_vti(args.dir + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
     m_a = m_analytical(dz, Ms, extfield * Constants.mu0, RKKY_surface)
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}, ma={:1.3f}'.format(ext.h(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz, m_a))
@@ -92,12 +101,12 @@ stream.close()
 from os import system
 system('gnuplot -e "\
     set terminal pdf;\
-    set output \'' + sys.argv[1] + 'm.pdf\';\
+    set output \'' + args.dir + 'm.pdf\';\
     set xlabel \'Hx [ns]\';\
     set ylabel \'<m>\';\
-    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'<m_x>\',\
-    \'\' u 1:5 w l t \'<m_analytical>\';\
+    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'<m_x>\',\
+    \'\' u 1:5 w l t \'<m_{analytical}>\';\
 "')
 
 # show pdf with evince
-system('evince ' + sys.argv[1] +'m.pdf')
+system('evince ' + args.dir +'m.pdf')
