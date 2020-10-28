@@ -40,12 +40,17 @@ file(GLOB SOURCE "*.cpp" "*/*.cpp")
 # approach to compilation. We build all of the source files into a CMake object
 # library and then link this library against the different ArrayFire backends.
 
+# adding OBJECT library instead of SHARED such that the python binding doesn't
+# have to recompile all sources:
 add_library(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
+# explicitly turning PIC on (in case the compiler flag is not set):
+set_property(TARGET magnum.af_CORE_OBJECT PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(SETINSTALL)
   # installing magnumafcpp lib, adapted from:
   # https://rix0r.nl/blog/2015/08/13/cmake-guide/
-  add_library(magnumafcpp SHARED ${SOURCE})
+  add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+  #add_library(magnumafcpp SHARED ${SOURCE})
 
   # Define headers for this library. PUBLIC headers are used for compiling the
   # library, and will be added to consumers' build paths.
