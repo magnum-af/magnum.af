@@ -45,7 +45,7 @@ set_source_files_properties(
 # FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
 # cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
 cython_add_module_w_af_vtk(magnumaf magnumaf.pyx
-                           $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+                           $<TARGET_OBJECTS:magnumaf_object_lib>)
 
 if(SETINSTALL)
   # 'make install' to the correct locations (provided by GNUInstallDirs).
@@ -72,6 +72,6 @@ endif()
 # build, but cython is currently now working with shared library
 # FIND_PACKAGE(ArrayFire REQUIRED)
 # INCLUDE_DIRECTORIES(${ArrayFire_INCLUDE_DIRS})# Include the ArrayFire hreaders
-# ADD_LIBRARY(magnum.af_CORE_OBJECT OBJECT ${SOURCE_FOR_PYBINDING}) # TODO error
+# ADD_LIBRARY(magnumaf_object_lib OBJECT ${SOURCE_FOR_PYBINDING}) # TODO error
 # with python when not OBJECT cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx
-# $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+# $<TARGET_OBJECTS:magnumaf_object_lib>)

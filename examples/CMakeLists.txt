@@ -14,7 +14,7 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
   get_filename_component(EXAMPLE ${EXAMPLE} NAME)
   #MESSAGE("${EXAMPLE}")
   add_executable(${EXAMPLE} ${EXAMPLE_SOURCE_FILE}
-                            $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+                            $<TARGET_OBJECTS:magnumaf_object_lib>)
   target_link_libraries(${EXAMPLE} ArrayFire::af ${VTK_LIBRARIES})
 endforeach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
 

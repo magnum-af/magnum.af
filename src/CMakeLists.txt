@@ -42,15 +42,14 @@ file(GLOB SOURCE "*.cpp" "*/*.cpp")
 
 # adding OBJECT library instead of SHARED such that the python binding doesn't
 # have to recompile all sources:
-add_library(magnum.af_CORE_OBJECT OBJECT ${SOURCE})
+add_library(magnumaf_object_lib OBJECT ${SOURCE})
 # explicitly turning PIC on (in case the compiler flag is not set):
-set_property(TARGET magnum.af_CORE_OBJECT PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET magnumaf_object_lib PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(SETINSTALL)
   # installing magnumafcpp lib, adapted from:
   # https://rix0r.nl/blog/2015/08/13/cmake-guide/
-  add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
-  #add_library(magnumafcpp SHARED ${SOURCE})
+  add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnumaf_object_lib>)
 
   # Define headers for this library. PUBLIC headers are used for compiling the
   # library, and will be added to consumers' build paths.

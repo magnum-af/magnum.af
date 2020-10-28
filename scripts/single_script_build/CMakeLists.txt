@@ -12,7 +12,7 @@ file(
 if(${ArrayFire_CPU_FOUND})
   message(STATUS "ArrayFire CPU backend found. Enabling CPU benchmark")
   add_executable(magnum.af-cpu ${EXECUTABLE}
-                               $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+                               $<TARGET_OBJECTS:magnumaf_object_lib>)
   target_link_libraries(magnum.af-cpu ${ArrayFire_CPU_LIBRARIES}
                         ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
   # when linking agsinst lib use (linking here is slow, however):
@@ -27,7 +27,7 @@ if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
   # We need to find OpenCL as transitive linking is disabled on some OSes
   message(STATUS "ArrayFire OpenCL backend found. Enabling OpenCL benchmark")
   add_executable(magnum.af-opencl ${EXECUTABLE}
-                                  $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+                                  $<TARGET_OBJECTS:magnumaf_object_lib>)
   target_link_libraries(
     magnum.af-opencl ${ArrayFire_OpenCL_LIBRARIES} ${OpenCL_LIBRARIES}
     ${VTK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} stdc++fs)
@@ -42,7 +42,7 @@ if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
   message(STATUS ${CUDA_TOOLKIT_ROOT_DIR})
   message(STATUS "ArrayFire CUDA found. Enabling CUDA benchmark")
   add_executable(magnum.af-cuda ${EXECUTABLE}
-                                $<TARGET_OBJECTS:magnum.af_CORE_OBJECT>)
+                                $<TARGET_OBJECTS:magnumaf_object_lib>)
   target_link_libraries(
     magnum.af-cuda
     ${ArrayFire_CUDA_LIBRARIES}
