@@ -8,7 +8,7 @@
 
 namespace magnumafcpp {
 
-void DemagField::print_Nfft() { af::print("Nfft=", Nfft); }
+void DemagField::print_Nfft() const { af::print("Nfft=", Nfft); }
 
 af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
@@ -22,8 +22,8 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
     }
 }
 
-DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
-    : nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
+DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads) {
+    const unsigned nthreads = in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency();
     af::timer demagtimer = af::timer::start();
     if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
         warn_if_maxprime_lt_13(mesh.n0, "nx");
@@ -32,9 +32,9 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
     }
     if (caching == false) {
         if (verbose)
-            printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads,
+            printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
                    std::thread::hardware_concurrency());
-        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
         if (verbose)
             printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     } else {
@@ -63,8 +63,8 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
             if (verbose)
                 printf("%s Starting Demag Tensor Assembly on %u out of %u "
                        "threads.\n",
-                       Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
+                       Info(), nthreads, std::thread::hardware_concurrency());
+            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
             if (verbose)
                 printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
             unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
@@ -95,7 +95,7 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
 }
 
 af::array DemagField::h(const State& state) {
-    timer_demagsolve = af::timer::start();
+    af::timer timer_demagsolve = af::timer::start();
 
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
     if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
@@ -242,7 +242,7 @@ struct LoopInfo {
     double dz;
 };
 
-void setup_N(LoopInfo& loopinfo, std::vector<double>& N_setup) {
+void setup_N(const LoopInfo& loopinfo, std::vector<double>& N) {
     for (int i0 = loopinfo.i0_start; i0 < loopinfo.i0_end; i0++) {
         const int j0 = (i0 + loopinfo.n0_exp / 2) % loopinfo.n0_exp - loopinfo.n0_exp / 2;
         for (int i1 = 0; i1 < loopinfo.n1_exp; i1++) {
@@ -250,20 +250,20 @@ void setup_N(LoopInfo& loopinfo, std::vector<double>& N_setup) {
             for (int i2 = 0; i2 < loopinfo.n2_exp; i2++) {
                 const int j2 = (i2 + loopinfo.n2_exp / 2) % loopinfo.n2_exp - loopinfo.n2_exp / 2;
                 const int idx = 6 * (i2 + loopinfo.n2_exp * (i1 + loopinfo.n1_exp * i0));
-                N_setup[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                N_setup[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                N_setup[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo.dx, loopinfo.dz, loopinfo.dy);
-                N_setup[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                N_setup[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                N_setup[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo.dz, loopinfo.dx, loopinfo.dy);
+                N[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
+                N[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
+                N[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo.dx, loopinfo.dz, loopinfo.dy);
+                N[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
+                N[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
+                N[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo.dz, loopinfo.dx, loopinfo.dy);
             }
         }
     }
 }
 } // namespace newell
 
-af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz) {
-    std::vector<std::thread> t;
+af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz,
+                                  unsigned nthreads) const {
     std::vector<newell::LoopInfo> loopinfo;
     for (unsigned i = 0; i < nthreads; i++) {
         unsigned start = i * (double)n0_exp / nthreads;
@@ -271,16 +271,17 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
         loopinfo.push_back(newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
     }
 
-    std::vector<double> N_setup(n0_exp * n1_exp * n2_exp * 6);
-
+    std::vector<std::thread> t;
+    std::vector<double> N_values(n0_exp * n1_exp * n2_exp * 6);
     for (unsigned i = 0; i < nthreads; i++) {
-        t.push_back(std::thread(newell::setup_N, std::ref(loopinfo[i]), std::ref(N_setup)));
+        t.push_back(std::thread(newell::setup_N, std::ref(loopinfo[i]), std::ref(N_values)));
     }
 
     for (unsigned i = 0; i < nthreads; i++) {
         t[i].join();
     }
-    af::array Naf(6, n2_exp, n1_exp, n0_exp, N_setup.data());
+
+    af::array Naf(6, n2_exp, n1_exp, n0_exp, N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
 
     if (n2_exp == 1) {
