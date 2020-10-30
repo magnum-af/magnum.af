@@ -228,8 +228,6 @@ double Nxy(const int ix, const int iy, const int iz, const double dx, const doub
     return result;
 }
 
-double* N_setup = NULL;
-
 struct LoopInfo {
     LoopInfo() {}
     LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz)
@@ -244,7 +242,7 @@ struct LoopInfo {
     double dz;
 };
 
-void setup_N(LoopInfo& loopinfo) {
+void setup_N(LoopInfo& loopinfo, std::vector<double>& N_setup) {
     for (int i0 = loopinfo.i0_start; i0 < loopinfo.i0_end; i0++) {
         const int j0 = (i0 + loopinfo.n0_exp / 2) % loopinfo.n0_exp - loopinfo.n0_exp / 2;
         for (int i1 = 0; i1 < loopinfo.n1_exp; i1++) {
@@ -252,12 +250,12 @@ void setup_N(LoopInfo& loopinfo) {
             for (int i2 = 0; i2 < loopinfo.n2_exp; i2++) {
                 const int j2 = (i2 + loopinfo.n2_exp / 2) % loopinfo.n2_exp - loopinfo.n2_exp / 2;
                 const int idx = 6 * (i2 + loopinfo.n2_exp * (i1 + loopinfo.n1_exp * i0));
-                newell::N_setup[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                newell::N_setup[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                newell::N_setup[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo.dx, loopinfo.dz, loopinfo.dy);
-                newell::N_setup[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                newell::N_setup[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                newell::N_setup[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo.dz, loopinfo.dx, loopinfo.dy);
+                N_setup[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
+                N_setup[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
+                N_setup[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo.dx, loopinfo.dz, loopinfo.dy);
+                N_setup[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
+                N_setup[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
+                N_setup[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo.dz, loopinfo.dx, loopinfo.dy);
             }
         }
     }
@@ -273,19 +271,17 @@ af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx,
         loopinfo.push_back(newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
     }
 
-    newell::N_setup = new double[n0_exp * n1_exp * n2_exp * 6];
+    std::vector<double> N_setup(n0_exp * n1_exp * n2_exp * 6);
 
     for (unsigned i = 0; i < nthreads; i++) {
-        t.push_back(std::thread(newell::setup_N, std::ref(loopinfo[i])));
+        t.push_back(std::thread(newell::setup_N, std::ref(loopinfo[i]), std::ref(N_setup)));
     }
 
     for (unsigned i = 0; i < nthreads; i++) {
         t[i].join();
     }
-    af::array Naf(6, n2_exp, n1_exp, n0_exp, newell::N_setup);
+    af::array Naf(6, n2_exp, n1_exp, n0_exp, N_setup.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
-    delete[] newell::N_setup;
-    newell::N_setup = NULL;
 
     if (n2_exp == 1) {
         Naf = af::fftR2C<2>(Naf);
