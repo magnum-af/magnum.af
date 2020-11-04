@@ -8,7 +8,7 @@ const auto cm_path = fs::temp_directory_path() / "test_magnumaf_cache";
 
 TEST(util_cache_manager, ctor_dtor) {
     {
-        auto cm = CacheManager{cm_path, 0, 0};
+        auto cm = CacheManager{false, cm_path, 0, 0};
         EXPECT_TRUE(fs::exists(cm_path));
     }
     EXPECT_FALSE(fs::exists(cm_path));
@@ -19,7 +19,7 @@ const af::array b = af::iota(5, f64);
 
 TEST(util_cache_manager, write_array) {
     {
-        auto cm = CacheManager{cm_path};
+        auto cm = CacheManager{false, cm_path};
         cm.write_array(a, "a");
         cm.write_array(b, "b");
         EXPECT_TRUE(fs::exists(cm_path / "a"));
@@ -30,7 +30,7 @@ TEST(util_cache_manager, write_array) {
 
 TEST(util_cache_manager, read_array) {
     {
-        auto cm = CacheManager{cm_path};
+        auto cm = CacheManager{false, cm_path};
         auto a_op = cm.get_array_if_existent("a");
         auto b_op = cm.get_array_if_existent("b");
         af::array a_in = a_op.value();
@@ -49,7 +49,7 @@ TEST(util_cache_manager, dtor_cleanup_if_dir_populated) {
     {
         EXPECT_TRUE(fs::exists(cm_path / "a"));
         EXPECT_TRUE(fs::exists(cm_path / "b"));
-        auto cm = CacheManager{cm_path, 0, 0};
+        auto cm = CacheManager{false, cm_path, 0, 0};
     }
     EXPECT_FALSE(fs::exists(cm_path));
 }

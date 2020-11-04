@@ -44,8 +44,9 @@ void remove_last_file_until_below(std::uintmax_t size_in_byte, std::vector<fs::d
     }
 }
 
-CacheManager::CacheManager(fs::path p, std::uintmax_t max_size_in_byte, std::uintmax_t shrink_size_in_byte)
-    : cache_folder(p), max_size_in_byte(max_size_in_byte), shrink_size_in_byte(shrink_size_in_byte) {
+CacheManager::CacheManager(bool verbose, fs::path p, std::uintmax_t max_size_in_byte,
+                           std::uintmax_t shrink_size_in_byte)
+    : verbose(verbose), cache_folder(p), max_size_in_byte(max_size_in_byte), shrink_size_in_byte(shrink_size_in_byte) {
     // create dir if not existing
     fs::create_directories(cache_folder);
 }
@@ -59,14 +60,20 @@ CacheManager::~CacheManager() {
 }
 
 std::optional<af::array> CacheManager::get_array_if_existent(const std::string& filename) const {
-    auto file_path = cache_folder / filename;
+    const auto file_path = cache_folder / filename;
     if (fs::exists(file_path)) {
+        if (verbose) {
+            std::cout << "\33[0;32mInfo:\33[0m reading array from " << file_path << std::endl;
+        }
         return af::readArray(file_path.c_str(), "");
     } else {
         return {};
     }
 }
 void CacheManager::write_array(const af::array& a, const std::string& filename, const std::string& key) const {
+    if (verbose) {
+        std::cout << "\33[0;32mInfo:\33[0m  saving array to " << cache_folder / filename << std::endl;
+    }
     af::saveArray(key.c_str(), a, (cache_folder / filename).c_str());
 }
 
@@ -74,7 +81,7 @@ void CacheManager::shrink_cache_if_gt_maxsize() {
     auto vec = get_files_in_dir(cache_folder);
     if (accum_size_in_byte(vec) > max_size_in_byte) {
         sort_by_write_time_newest_first(vec);
-        remove_last_file_until_below(shrink_size_in_byte, vec, RunPolicy::verbose);
+        remove_last_file_until_below(shrink_size_in_byte, vec, verbose ? RunPolicy::verbose : RunPolicy::silent);
     }
 }
 
