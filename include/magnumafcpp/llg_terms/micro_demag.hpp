@@ -26,6 +26,5 @@ class DemagField : public IntegratorTermMeshBase {
   private:
     af::array Nfft;
     double cpu_time{0.};
-    af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, unsigned nthreads) const;
 };
 } // namespace magnumafcpp

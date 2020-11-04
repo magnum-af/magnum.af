@@ -2,6 +2,7 @@
 #include "func.hpp"
 #include "misc.hpp"
 #include "util/af_overloads.hpp"
+#include "util/cache_manager.hpp"
 #include "util/prime_factors.hpp"
 #include <string>
 #include <thread>
@@ -10,7 +11,19 @@ namespace magnumafcpp {
 
 void DemagField::print_Nfft() const { af::print("Nfft=", Nfft); }
 
-af::array N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
+af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, unsigned nthreads);
+af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
+    af::timer demagtimer = af::timer::start();
+    if (verbose) {
+        printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
+               std::thread::hardware_concurrency());
+    }
+    auto result = calculate_N(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
+    if (verbose) {
+        printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
+    }
+    return result;
+}
 
 void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
     if (util::max_of_prime_factors(n) > 13) {
@@ -21,78 +34,42 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
                   << std::endl;
     }
 }
+void warn_if_maxprime_lt_13(Mesh mesh) {
+    warn_if_maxprime_lt_13(mesh.n0, "nx");
+    warn_if_maxprime_lt_13(mesh.n1, "ny");
+    warn_if_maxprime_lt_13(mesh.n2, "nz");
+}
 
-DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads) {
-    const unsigned nthreads = in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency();
-    af::timer demagtimer = af::timer::start();
+std::string to_string(const Mesh& mesh) {
+    return "Nfft_n0exp_" + std::to_string(mesh.n0_exp) + "_n1exp_" + std::to_string(mesh.n1_exp) + "_n2exp_" +
+           std::to_string(mesh.n2_exp) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" +
+           std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
+}
+
+af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
     if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
-        warn_if_maxprime_lt_13(mesh.n0, "nx");
-        warn_if_maxprime_lt_13(mesh.n1, "ny");
-        warn_if_maxprime_lt_13(mesh.n2, "nz");
+        warn_if_maxprime_lt_13(mesh);
     }
+
     if (caching == false) {
-        if (verbose)
-            printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
-                   std::thread::hardware_concurrency());
-        Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
-        if (verbose)
-            printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
+        return calculate_N(mesh, verbose, nthreads);
     } else {
-        std::string magafdir = setup_magafdir();
-        const unsigned long long maxsize_bytes = 2000000;
-        const unsigned long long reducedsize_bytes = 1000000;
-        std::string nfft_id = "n0exp_" + std::to_string(mesh.n0_exp) + "_n1exp_" + std::to_string(mesh.n1_exp) +
-                              "_n2exp_" + std::to_string(mesh.n2_exp) + "_dx_" + std::to_string(1e9 * mesh.dx) +
-                              "_dy_" + std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
-        std::string path_to_nfft_cached = magafdir + nfft_id;
-        int checkarray = -1;
-        if (exists(path_to_nfft_cached)) {
-            try {
-                checkarray = af::readArrayCheck(path_to_nfft_cached.c_str(), "");
-            } catch (const af::exception& e) {
-                printf("%s af::readArrayCheck failed. Omit reading demag "
-                       "tensor, calculating it instead.\n%s\n",
-                       Warning(), e.what());
-            }
-        }
-        if (checkarray > -1) {
-            if (verbose)
-                printf("%s Reading demag tensor from '%s'\n", Info(), path_to_nfft_cached.c_str());
-            Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
+        util::CacheManager cm{verbose};
+        const std::string nfft_id = to_string(mesh);
+        auto optional_Nfft = cm.get_array_if_existent(nfft_id);
+        if (optional_Nfft) {
+            return optional_Nfft.value();
         } else {
-            if (verbose)
-                printf("%s Starting Demag Tensor Assembly on %u out of %u "
-                       "threads.\n",
-                       Info(), nthreads, std::thread::hardware_concurrency());
-            Nfft = N_cpp_alloc(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
-            if (verbose)
-                printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
-            unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
-            if (magafdir_size_in_bytes > maxsize_bytes) {
-                if (verbose)
-                    printf("%s Maintainance: size of '%s' is %f GB > %f GB, "
-                           "removing oldest files until size < %f GB\n",
-                           Info(), magafdir.c_str(), (double)magafdir_size_in_bytes / 1e6, (double)maxsize_bytes / 1e6,
-                           (double)reducedsize_bytes / 1e6);
-                remove_oldest_files_until_size(magafdir.c_str(), reducedsize_bytes, verbose);
-                if (verbose)
-                    printf("%s Maintainance finished: '%s' has now %f GB\n", Info(), magafdir.c_str(),
-                           (double)GetDirSize(magafdir) / 1e6);
-            }
-            if (GetDirSize(magafdir) < maxsize_bytes) {
-                try {
-                    if (verbose)
-                        printf("%s Saving calculated demag tensor to'%s'\n", Info(), path_to_nfft_cached.c_str());
-                    af::saveArray("", Nfft, path_to_nfft_cached.c_str());
-                } catch (const af::exception& e) {
-                    printf("%s af::saveArray failed, omit saving demag "
-                           "tensor.\n%s\n",
-                           Warning(), e.what());
-                }
-            }
+            auto result = calculate_N(mesh, verbose, nthreads);
+            cm.write_array(result, nfft_id);
+            return result;
         }
     }
 }
+
+DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
+    : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
+                                   in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
 af::array DemagField::h(const State& state) {
     af::timer timer_demagsolve = af::timer::start();
@@ -262,8 +239,7 @@ void setup_N(const LoopInfo& loopinfo, std::vector<double>& N) {
 }
 } // namespace newell
 
-af::array DemagField::N_cpp_alloc(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz,
-                                  unsigned nthreads) const {
+af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, unsigned nthreads) {
     std::vector<newell::LoopInfo> loopinfo;
     for (unsigned i = 0; i < nthreads; i++) {
         unsigned start = i * (double)n0_exp / nthreads;
