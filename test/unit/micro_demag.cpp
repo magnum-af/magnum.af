@@ -1,4 +1,4 @@
-#include "llg_terms/micro_demag.hpp"
+#include "field_terms/micro_demag.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

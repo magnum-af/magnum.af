@@ -89,7 +89,7 @@ include(${PROJECT_SOURCE_DIR}/CMakeModules/git_watcher.cmake)
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/include/magnumafcpp
-  ${PROJECT_SOURCE_DIR}/include/magnumafcpp/llg_terms
+  ${PROJECT_SOURCE_DIR}/include/magnumafcpp/field_terms
   ${PROJECT_SOURCE_DIR}/include/magnumafcpp/solvers
   ${PROJECT_SOURCE_DIR}/include/magnumafcpp/util
   ${PROJECT_SOURCE_DIR}/include/magnumafcpp/integrators

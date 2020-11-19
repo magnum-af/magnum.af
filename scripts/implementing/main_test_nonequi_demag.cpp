@@ -1,5 +1,5 @@
-#include "llg_terms/micro_demag.hpp"
-#include "llg_terms/micro_demag_nonequi.hpp"
+#include "field_terms/micro_demag.hpp"
+#include "field_terms/micro_demag_nonequi.hpp"
 #include "magnum_af.hpp"
 
 using namespace magnumafcpp;

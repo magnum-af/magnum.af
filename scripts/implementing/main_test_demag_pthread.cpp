@@ -1,5 +1,5 @@
 #include "func.hpp"
-#include "llg_terms/micro_demag_pthread.hpp"
+#include "field_terms/micro_demag_pthread.hpp"
 #include "magnum_af.hpp"
 
 using namespace magnumafcpp;

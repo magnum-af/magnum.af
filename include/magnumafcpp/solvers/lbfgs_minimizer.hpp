@@ -1,5 +1,5 @@
 #pragma once
-#include "llg_terms/LLGTerm.hpp"
+#include "field_terms/LLGTerm.hpp"
 #include <fstream>
 
 namespace magnumafcpp {
