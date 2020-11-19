@@ -1,5 +1,5 @@
 #pragma once
-#include "../llg_terms/LLGTerm.hpp"
+#include "llg_terms/LLGTerm.hpp"
 #include "adaptive_runge_kutta.hpp"
 #include "arrayfire.h"
 

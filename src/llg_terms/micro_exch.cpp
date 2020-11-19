@@ -1,5 +1,5 @@
 #include "micro_exch.hpp"
-#include "../func.hpp"
+#include "util/func.hpp"
 
 namespace magnumafcpp {
 

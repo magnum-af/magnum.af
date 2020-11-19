@@ -1,8 +1,8 @@
 #include "lbfgs_minimizer.hpp"
-#include "../func.hpp"
-#include "../llg_terms/LLGTerm.hpp"
-#include "../misc.hpp"
-#include "../state.hpp"
+#include "util/func.hpp"
+#include "llg_terms/LLGTerm.hpp"
+#include "util/misc.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include <algorithm>
 #include <iomanip>

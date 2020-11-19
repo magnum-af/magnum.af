@@ -1,5 +1,5 @@
 #pragma once
-#include "../state.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include "nonequi_term_base.hpp"
 

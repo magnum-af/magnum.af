@@ -1,8 +1,8 @@
 #pragma once
-#include "../state.hpp"
-#include "../util/named_type.hpp"
 #include "arrayfire.h"
 #include "integrator_term_mesh_base.hpp"
+#include "state.hpp"
+#include "util/named_type.hpp"
 
 namespace magnumafcpp {
 

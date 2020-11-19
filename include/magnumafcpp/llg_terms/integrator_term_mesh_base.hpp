@@ -1,7 +1,7 @@
 #pragma once
-#include "../constants.hpp"
-#include "../state.hpp"
 #include "arrayfire.h"
+#include "constants.hpp"
+#include "state.hpp"
 // TODO #include "llg_term_interface.hpp"
 #include "LLGTerm.hpp"
 #include <memory>

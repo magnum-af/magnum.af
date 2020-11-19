@@ -1,6 +1,6 @@
 #pragma once
-#include "../llg_terms/LLGTerm.hpp"
-#include "../state.hpp"
+#include "llg_terms/LLGTerm.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include <memory>
 

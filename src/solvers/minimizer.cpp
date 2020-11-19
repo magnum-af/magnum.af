@@ -1,5 +1,5 @@
 #include "minimizer.hpp"
-#include "../func.hpp"
+#include "util/func.hpp"
 #include <algorithm>
 #include <list>
 #include <memory>

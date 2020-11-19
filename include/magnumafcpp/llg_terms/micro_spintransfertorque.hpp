@@ -1,6 +1,6 @@
 #pragma once
-#include "../func.hpp"
-#include "../state.hpp"
+#include "util/func.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include "integrator_term_mesh_base.hpp"
 

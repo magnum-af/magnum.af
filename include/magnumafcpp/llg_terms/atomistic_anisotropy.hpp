@@ -1,5 +1,5 @@
 #pragma once
-#include "../state.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include "atomistic_term_base.hpp"
 #include <array>

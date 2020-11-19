@@ -1,7 +1,7 @@
 #pragma once
-#include "../constants.hpp"
-#include "../state.hpp"
 #include "arrayfire.h"
+#include "constants.hpp"
+#include "state.hpp"
 #include <memory>
 
 namespace magnumafcpp {

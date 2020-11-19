@@ -1,5 +1,5 @@
 #include "atomistic_exchange.hpp"
-#include "../func.hpp"
+#include "util/func.hpp"
 
 namespace magnumafcpp {
 

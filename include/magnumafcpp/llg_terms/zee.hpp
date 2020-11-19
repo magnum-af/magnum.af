@@ -1,5 +1,5 @@
 #pragma once
-#include "../state.hpp"
+#include "state.hpp"
 #include "LLGTerm.hpp"
 #include "arrayfire.h"
 #include <functional>

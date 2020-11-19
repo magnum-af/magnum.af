@@ -1,5 +1,5 @@
 #include "stochastic_integrator.hpp"
-#include "../func.hpp"
+#include "util/func.hpp"
 #include <chrono>
 
 namespace magnumafcpp {

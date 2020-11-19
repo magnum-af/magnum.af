@@ -1,6 +1,6 @@
 #include "adaptive_runge_kutta.hpp"
-#include "../func.hpp"
-#include "../misc.hpp"
+#include "util/func.hpp"
+#include "util/misc.hpp"
 
 namespace magnumafcpp {
 

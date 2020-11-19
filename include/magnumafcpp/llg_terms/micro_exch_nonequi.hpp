@@ -1,8 +1,8 @@
 #pragma once
-#include "../nonequispaced_mesh.hpp"
-#include "../state.hpp"
 #include "arrayfire.h"
 #include "nonequi_term_base.hpp"
+#include "nonequispaced_mesh.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 

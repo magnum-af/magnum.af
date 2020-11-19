@@ -1,8 +1,8 @@
 #ifndef LLG_H
 #define LLG_H
-#include "../func.hpp"
-#include "../llg_terms/LLGTerm.hpp"
-#include "../state.hpp"
+#include "util/func.hpp"
+#include "llg_terms/LLGTerm.hpp"
+#include "state.hpp"
 #include "arrayfire.h"
 #include "controller.hpp"
 #include <initializer_list>

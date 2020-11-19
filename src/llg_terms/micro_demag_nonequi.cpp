@@ -1,6 +1,6 @@
 #include "micro_demag_nonequi.hpp"
-#include "../func.hpp"
-#include "../misc.hpp"
+#include "util/func.hpp"
+#include "util/misc.hpp"
 #include <iostream>
 #include <thread>
 #include <vector>

@@ -1,6 +1,6 @@
 #include "new_llg.hpp"
-#include "../func.hpp"
-#include "../state.hpp"
+#include "util/func.hpp"
+#include "state.hpp"
 #include <memory>
 
 namespace magnumafcpp {
