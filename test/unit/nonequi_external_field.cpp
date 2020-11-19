@@ -1,5 +1,5 @@
 #include "llg_terms/nonequi_external_field.hpp"
-#include "llg_terms/zee.hpp"
+#include "llg_terms/external_field.hpp"
 #include "nonequispaced_mesh.hpp"
 #include <gtest/gtest.h>
 #include <vector>

@@ -20,7 +20,7 @@
 #include "llg_terms/micro_exch_sparse.hpp"
 #include "llg_terms/micro_spintransfertorque.hpp"
 #include "llg_terms/nonequi_external_field.hpp"
-#include "llg_terms/zee.hpp"
+#include "llg_terms/external_field.hpp"
 #include "mesh.hpp"
 #include "misc.hpp"
 #include "nonequispaced_mesh.hpp"

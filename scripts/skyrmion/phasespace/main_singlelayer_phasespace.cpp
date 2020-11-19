@@ -1,6 +1,6 @@
 #include "arrayfire.h"
 #include "llg.hpp"
-#include "zee.hpp"
+#include "external_field.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>

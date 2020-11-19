@@ -1,4 +1,4 @@
-#include "zee.hpp"
+#include "external_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

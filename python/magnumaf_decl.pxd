@@ -184,7 +184,7 @@ cdef extern from "llg_terms/atomistic_exchange.hpp" namespace "magnumafcpp":
         double E(const State& state);
         double get_cpu_time();
 
-cdef extern from "llg_terms/zee.hpp" namespace "magnumafcpp":
+cdef extern from "llg_terms/external_field.hpp" namespace "magnumafcpp":
     cdef cppclass ExternalField:
         ExternalField (long int m_in);
         long int get_m_addr();

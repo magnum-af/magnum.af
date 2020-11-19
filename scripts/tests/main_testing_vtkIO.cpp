@@ -8,7 +8,7 @@
 #include "micro_exch.hpp"
 #include "string.hpp"
 #include "vtk_IO.hpp"
-#include "zee.hpp"
+#include "external_field.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
