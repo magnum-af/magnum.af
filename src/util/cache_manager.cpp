@@ -65,7 +65,16 @@ std::optional<af::array> CacheManager::get_array_if_existent(const std::string& 
         if (verbose) {
             std::cout << "\33[0;32mInfo:\33[0m reading array from " << file_path << std::endl;
         }
-        return af::readArray(file_path.c_str(), "");
+        try {
+            return af::readArray(file_path.c_str(), "");
+        } catch (const af::exception& e) {
+            std::cout << e.what()
+                      << "\33[1;31mWarning:\33[0m af::readArrayCheck failed. Omit reading demag tensor, calculating it "
+                         "instead."
+                      << std::endl;
+            return {};
+        }
+
     } else {
         return {};
     }
@@ -74,7 +83,11 @@ void CacheManager::write_array(const af::array& a, const std::string& filename, 
     if (verbose) {
         std::cout << "\33[0;32mInfo:\33[0m  saving array to " << cache_folder / filename << std::endl;
     }
-    af::saveArray(key.c_str(), a, (cache_folder / filename).c_str());
+    try {
+        af::saveArray(key.c_str(), a, (cache_folder / filename).c_str());
+    } catch (const af::exception& e) {
+        std::cout << e.what() << "\33[1;31mWarning:\33[0m af::saveArray failed, omit saving demag tensor." << std::endl;
+    }
 }
 
 void CacheManager::shrink_cache_if_gt_maxsize() {
