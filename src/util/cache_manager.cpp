@@ -63,7 +63,7 @@ std::optional<af::array> CacheManager::get_array_if_existent(const std::string& 
     const auto file_path = cache_folder / filename;
     if (fs::exists(file_path)) {
         if (verbose) {
-            std::cout << "\33[0;32mInfo:\33[0m reading array from " << file_path << std::endl;
+            std::cout << "\33[0;32mInfo:\33[0m Reading array from " << file_path << std::endl;
         }
         try {
             return af::readArray(file_path.c_str(), "");
@@ -81,7 +81,7 @@ std::optional<af::array> CacheManager::get_array_if_existent(const std::string& 
 }
 void CacheManager::write_array(const af::array& a, const std::string& filename, const std::string& key) const {
     if (verbose) {
-        std::cout << "\33[0;32mInfo:\33[0m  saving array to " << cache_folder / filename << std::endl;
+        std::cout << "\33[0;32mInfo:\33[0m Saving array to " << cache_folder / filename << std::endl;
     }
     try {
         af::saveArray(key.c_str(), a, (cache_folder / filename).c_str());
