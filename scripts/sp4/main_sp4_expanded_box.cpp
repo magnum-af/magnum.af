@@ -7,7 +7,7 @@
 #include "micro/demag_field.hpp"
 #include "micro/exchange_field.hpp"
 #include "stochastic_llg.hpp"
-#include "string.hpp"
+#include "solvers/string_method.hpp"
 #include "vtk_IO.hpp"
 #include "micro/external_field.hpp"
 #include <algorithm>

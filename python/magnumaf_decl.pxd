@@ -235,7 +235,7 @@ cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumaf
 cdef extern from "vtk_IO.hpp" namespace "magnumafcpp":
     void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);
 
-cdef extern from "string.hpp" namespace "magnumafcpp":
+cdef extern from "solvers/string_method.hpp" namespace "magnumafcpp":
     cdef cppclass String:
         String(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);
         double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti, const bool verbose);

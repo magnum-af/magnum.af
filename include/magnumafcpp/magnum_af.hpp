@@ -28,7 +28,7 @@
 #include "solvers/cg_minimizer.hpp"
 #include "solvers/lbfgs_minimizer.hpp"
 #include "solvers/minimizer.hpp"
-#include "string.hpp"
+#include "solvers/string_method.hpp"
 #include "util/af_overloads.hpp"
 #include "util/newton_iteration.hpp"
 #include "util/timer.hpp"

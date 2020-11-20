@@ -1,4 +1,4 @@
-#include "string.hpp"
+#include "solvers/string_method.hpp"
 #include "arrayfire.h"
 #include "func.hpp"
 #include "vtk_IO.hpp"

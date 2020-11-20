@@ -13,7 +13,7 @@
 #include "atom/atomistic_dipole_dipole_field.hpp"
 #include "atom/atomistic_dmi_field.hpp"
 #include "atom/atomistic_exchange_field.hpp"
-#include "string.hpp"
+#include "solvers/string_method.hpp"
 #include "vtk_writer.hpp"
 
 using namespace magnumafcpp;
