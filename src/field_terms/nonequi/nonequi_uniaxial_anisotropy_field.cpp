@@ -1,4 +1,4 @@
-#include "micro_anisotropy_nonequi.hpp"
+#include "nonequi/nonequi_uniaxial_anisotropy_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

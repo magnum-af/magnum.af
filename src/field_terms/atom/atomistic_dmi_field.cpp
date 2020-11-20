@@ -1,4 +1,4 @@
-#include "atomistic_dmi.hpp"
+#include "field_terms/atom/atomistic_dmi_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

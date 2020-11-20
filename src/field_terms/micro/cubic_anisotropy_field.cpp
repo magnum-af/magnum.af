@@ -1,4 +1,4 @@
-#include "cubic_anisotropy_field.hpp"
+#include "field_terms/micro/cubic_anisotropy_field.hpp"
 #include "func.hpp"
 #include "util.hpp"
 namespace magnumafcpp {

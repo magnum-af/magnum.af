@@ -1,7 +1,7 @@
 #pragma once
 #include "arrayfire.h"
 #include "atomistic_term_base.hpp"
-#include "external_field.hpp"
+#include "micro/external_field.hpp"
 
 namespace magnumafcpp {
 

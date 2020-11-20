@@ -1,4 +1,4 @@
-#include "atomistic_anisotropy.hpp"
+#include "field_terms/atom/atomistic_uniaxial_anisotropy_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

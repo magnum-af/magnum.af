@@ -1,4 +1,4 @@
-#include "micro_dmi.hpp"
+#include "field_terms/micro/dmi_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

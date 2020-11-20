@@ -2,7 +2,7 @@
 #include "state.hpp"
 #include "arrayfire.h"
 #include "double_or_array.hpp"
-#include "integrator_term_mesh_base.hpp"
+#include "field_terms/integrator_term_mesh_base.hpp"
 #include "unit_vector_or_array.hpp"
 #include <array>
 

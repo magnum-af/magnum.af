@@ -1,6 +1,6 @@
 #pragma once
 #include "arrayfire.h"
-#include "integrator_term_mesh_base.hpp"
+#include "field_terms/integrator_term_mesh_base.hpp"
 #include "state.hpp"
 #include "util/named_type.hpp"
 

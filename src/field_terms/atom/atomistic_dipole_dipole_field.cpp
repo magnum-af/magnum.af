@@ -1,4 +1,4 @@
-#include "atomistic_demag.hpp"
+#include "field_terms/atom/atomistic_dipole_dipole_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

@@ -1,5 +1,5 @@
 #include "arrayfire.h"
-#include "field_terms/micro_demag_nonequi.hpp"
+#include "field_terms/nonequi/nonequi_demag_field.hpp"
 #include "magnum_af.hpp"
 
 using namespace magnumafcpp;

@@ -1,18 +1,18 @@
 #include "arrayfire.h"
 #include "llg.hpp"
-#include "external_field.hpp"
+#include "micro/external_field.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <memory>
 #include <string>
-//#include "micro_demag.hpp"
-//#include "micro_exch.hpp"
-#include "atomistic_anisotropy.hpp"
-#include "atomistic_demag.hpp"
-#include "atomistic_dmi.hpp"
-#include "atomistic_exchange.hpp"
+//#include "micro/demag_field.hpp"
+//#include "micro/exchange_field.hpp"
+#include "atom/atomistic_uniaxial_anisotropy_field.hpp"
+#include "atom/atomistic_dipole_dipole_field.hpp"
+#include "atom/atomistic_dmi_field.hpp"
+#include "atom/atomistic_exchange_field.hpp"
 #include "string.hpp"
 #include "vtk_writer.hpp"
 

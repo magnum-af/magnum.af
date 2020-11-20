@@ -1,5 +1,5 @@
-#include "field_terms/nonequi_external_field.hpp"
-#include "field_terms/external_field.hpp"
+#include "field_terms/nonequi/nonequi_external_field.hpp"
+#include "field_terms/micro/external_field.hpp"
 #include "nonequispaced_mesh.hpp"
 #include <gtest/gtest.h>
 #include <vector>

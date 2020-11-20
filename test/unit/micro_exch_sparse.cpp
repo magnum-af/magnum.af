@@ -1,4 +1,4 @@
-#include "micro_exch_sparse.hpp"
+#include "micro/sparse_exchange_field.hpp"
 #include "mesh.hpp"
 #include "util/version.hpp"
 #include <gtest/gtest.h>

@@ -1,4 +1,4 @@
-#include "micro_spintransfertorque.hpp"
+#include "micro/spin_transfer_torque_field.hpp"
 
 namespace magnumafcpp {
 

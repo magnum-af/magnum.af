@@ -1,4 +1,4 @@
-#include "field_terms/micro_demag.hpp"
+#include "field_terms/micro/demag_field.hpp"
 #include "func.hpp"
 #include "misc.hpp"
 #include "util/af_overloads.hpp"

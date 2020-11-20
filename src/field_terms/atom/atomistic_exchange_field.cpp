@@ -1,4 +1,4 @@
-#include "atomistic_exchange.hpp"
+#include "field_terms/atom/atomistic_exchange_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

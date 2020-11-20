@@ -31,7 +31,7 @@ include(${VTK_USE_FILE})
 include_directories(SYSTEM ${ArrayFire_INCLUDE_DIRS})
 
 # Get a list of all of the source files in the directory:
-file(GLOB SOURCE "*.cpp" "*/*.cpp")
+file(GLOB SOURCE "*.cpp" "*/*.cpp" "*/*/*.cpp")
 
 # There are several ways of compiling source code in CMake. In most cases you
 # specify the source files to an ADD_EXCUTABLE call. Because we intend to link

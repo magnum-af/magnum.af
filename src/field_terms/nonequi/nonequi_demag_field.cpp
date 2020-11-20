@@ -1,4 +1,4 @@
-#include "micro_demag_nonequi.hpp"
+#include "nonequi/nonequi_demag_field.hpp"
 #include "util/func.hpp"
 #include "util/misc.hpp"
 #include <iostream>

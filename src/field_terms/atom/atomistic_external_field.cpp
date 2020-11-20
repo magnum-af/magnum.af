@@ -1,4 +1,4 @@
-#include "atomistic_external_field.hpp"
+#include "field_terms/atom/atomistic_external_field.hpp"
 
 namespace magnumafcpp {
 

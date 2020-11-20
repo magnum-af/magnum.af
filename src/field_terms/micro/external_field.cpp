@@ -1,4 +1,4 @@
-#include "external_field.hpp"
+#include "field_terms/micro/external_field.hpp"
 #include "util/func.hpp"
 
 namespace magnumafcpp {

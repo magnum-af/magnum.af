@@ -1,6 +1,6 @@
 //#include "nonequi_term_base.hpp"
 //#include "nonequispaced_mesh.hpp"
-#include "micro_demag_nonequi.hpp"
+#include "nonequi/nonequi_demag_field.hpp"
 #include "state.hpp"
 #include <gtest/gtest.h>
 
