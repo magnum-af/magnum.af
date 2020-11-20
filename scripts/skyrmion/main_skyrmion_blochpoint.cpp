@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, material, last));
 
-    String string(state, inputimages, n_interp, string_dt, llgterm);
+    StringMethod string(state, inputimages, n_interp, string_dt, llgterm);
     std::cout.precision(12);
 
     std::ofstream stream_E_barrier;

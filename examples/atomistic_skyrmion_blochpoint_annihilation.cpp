@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     double string_abort_rel_diff = 1e-12;
     double string_abort_abs_diff = 1e-27;
 
-    String string(state, inputimages, n_interp, string_dt, Llg);
+    StringMethod string(state, inputimages, n_interp, string_dt, Llg);
     double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
     // without demag and zee//double expected_barrier = 4.420526609492e-20;

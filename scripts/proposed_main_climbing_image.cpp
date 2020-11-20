@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
         inputimages.push_back(State(mesh, material, m));
     }
 
-    String string(state, inputimages, n_interp, string_dt, llgterm);
+    StringMethod string(state, inputimages, n_interp, string_dt, llgterm);
     string.write_vti(filepath + "init_string");
     string.calc_E();
     for (unsigned int i = 0; i < string.images.size(); i++) {

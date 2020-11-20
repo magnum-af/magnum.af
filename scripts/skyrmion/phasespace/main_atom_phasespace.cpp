@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, material, last));
 
-    String string(state, inputimages, n_interp, string_dt, Llg.llgterms);
+    StringMethod string(state, inputimages, n_interp, string_dt, Llg.llgterms);
     string.run(filepath, rel_diff, abs_diff, string_max_steps);
     return 0;
 }

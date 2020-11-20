@@ -90,8 +90,8 @@ state2.write_vti(sys.argv[1] + "m_relaxed")
 n_interp = 60
 string_dt = 5e-14
 
-string = String(state1, [state1.m, state2.m], n_interp, string_dt, llg)
-# also works #string = String(state1, [state1, state2], n_interp, string_dt, llg)
+string = StringMethod(state1, [state1.m, state2.m], n_interp, string_dt, llg)
+# also works #string = StringMethod(state1, [state1, state2], n_interp, string_dt, llg)
 print("initialized string")
 dE = string.run(sys.argv[1], verbose = False)
 expected_result = 1.0453675101013472e-19

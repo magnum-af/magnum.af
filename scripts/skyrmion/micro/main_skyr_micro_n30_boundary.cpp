@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
 
     // inputimages.push_back(State(mesh, material, last));
 
-    String string(state, inputimages, n_interp, string_dt, llgterm);
+    StringMethod string(state, inputimages, n_interp, string_dt, llgterm);
 
     string.write_vti(filepath + "init_string");
     // for(unsigned j = 0; j < string.images.size(); j++){
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
     //    vti_writer_atom(string.images[j].m, mesh , name.c_str());
     //}
 
-    // String* string = new String(state, inputimages, n_interp , llgterm);
+    // StringMethod* string = new StringMethod(state, inputimages, n_interp , llgterm);
     std::cout.precision(12);
 
     std::ofstream stream_E_barrier;

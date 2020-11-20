@@ -57,7 +57,7 @@ from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
 from magnumaf_decl cimport LLGTerm as cLLGTerm
 
 from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
-from magnumaf_decl cimport String as cString
+from magnumaf_decl cimport StringMethod as cString
 
 from magnumaf_decl cimport double_array3
 from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
@@ -810,16 +810,16 @@ cdef class LLGIntegrator:
     #def set_state0_alpha(self, value):
     #  self._thisptr.state0.material.alpha=value
 
-cdef class String:
+cdef class StringMethod:
     """
-    String method.
+    StringMethod method.
     """
     cdef cString* _thisptr
     #def __cinit__(self, State state, terms = [], n_interp=60, dt = 1e-13, LLGIntegrator llg):
     def __cinit__(self, State state, inputimages, n_interp, dt, LLGIntegrator llg):
         cdef vector[cState] vector_in
         if not inputimages:
-            print("String: no States provided, please add at least two states for interpolation of initial path.")
+            print("StringMethod: no States provided, please add at least two states for interpolation of initial path.")
         else:
             print(inputimages)
             for arg in inputimages:

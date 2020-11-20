@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     //    inputimages.push_back(State(mesh, material, mm));
     //}
 
-    String string(state, inputimages, 60, 5e-14, Llg.llgterms);
+    StringMethod string(state, inputimages, 60, 5e-14, Llg.llgterms);
     string.run(filepath, 1e-13, 1e-28, 10000);
 
     return 0;

@@ -6,9 +6,9 @@
 
 namespace magnumafcpp {
 
-class String {
+class StringMethod {
   public:
-    String(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
+    StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
     ///
     /// Runs the string method.
     /// This populates files in \param filepath.

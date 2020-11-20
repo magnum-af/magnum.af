@@ -256,7 +256,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state_1);
     inputimages.push_back(state_2);
 
-    String string(state_1, inputimages, n_interp, string_dt, llg);
+    StringMethod string(state_1, inputimages, n_interp, string_dt, llg);
     string.run(filepath, 1e-12, 1e-27, 1e6, 50, true);
     timer.print_stage("string relaxed");
     return 0;

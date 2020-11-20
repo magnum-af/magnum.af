@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, p, last));
 
-    String string(state, inputimages, n_interp, string_dt, Llg);
+    StringMethod string(state, inputimages, n_interp, string_dt, Llg);
     double barrier = string.run(filepath);
     std::ofstream myfileE;
     myfileE.precision(12);

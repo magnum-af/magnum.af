@@ -154,14 +154,14 @@ int main(int argc, char** argv) {
         stream << std::endl;
         timer.print_stage(std::to_string(nz) + " stateenergy");
 
-        // String method
+        // StringMethod method
         double n_interp = 60;
         double string_dt = 1e-13;
         std::vector<State> inputimages;
         inputimages.push_back(state_1);
         inputimages.push_back(state_2);
 
-        String string(state_1, inputimages, n_interp, string_dt, llg);
+        StringMethod string(state_1, inputimages, n_interp, string_dt, llg);
         fs::create_directory(filepath + std::to_string(nz) + "/");
         string.run(filepath + std::to_string(nz) + "/");
     }

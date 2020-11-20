@@ -9,7 +9,7 @@
 
 namespace magnumafcpp {
 
-String::String(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
+StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
     : Llg(llg), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
@@ -42,7 +42,7 @@ String::String(State state, std::vector<State> inputimages, int n_interp, double
     vec_normalize();
 }
 
-void String::calc_E() {
+void StringMethod::calc_E() {
     if (E.empty() == false) {
         E.clear();
     }
@@ -51,7 +51,7 @@ void String::calc_E() {
     }
 }
 
-void String::calc_x() {
+void StringMethod::calc_x() {
     x.clear();
     x.push_back(0.);
     for (unsigned int i = 1; i < images.size(); i++) {
@@ -63,7 +63,7 @@ void String::calc_x() {
     }
 }
 
-void String::calc_x(std::vector<State> inputimages) {
+void StringMethod::calc_x(std::vector<State> inputimages) {
     x.clear();
     x.push_back(0.);
     for (unsigned int i = 1; i < inputimages.size(); i++) {
@@ -75,7 +75,7 @@ void String::calc_x(std::vector<State> inputimages) {
     }
 }
 
-void String::lin_interpolate() {
+void StringMethod::lin_interpolate() {
     std::vector<State> images_temp = images;
     for (int i = 0; i < n_interp; i++) {
         int j = 0;
@@ -100,7 +100,7 @@ void String::lin_interpolate() {
     vec_normalize();
 }
 
-void String::integrate() {
+void StringMethod::integrate() {
     for (unsigned int i = 0; i < images.size(); i++) {
         double imagtime = images[i].t;
         while (images[i].t < imagtime + dt) {
@@ -116,13 +116,13 @@ void String::integrate() {
     }
 }
 
-void String::step() {
+void StringMethod::step() {
     integrate();
     calc_x();
     lin_interpolate();
 }
 
-void String::vec_normalize() {
+void StringMethod::vec_normalize() {
     for (unsigned int i = 0; i < images.size(); i++) {
         images[i].m = normalize_handle_zero_vectors(images[i].m);
         // af::eval avoids JIT crash here!
@@ -130,7 +130,7 @@ void String::vec_normalize() {
     }
 }
 
-void String::write_vti(std::string file) {
+void StringMethod::write_vti(std::string file) {
     for (unsigned j = 0; j < images.size(); j++) {
         vti_writer_micro(images[j].m, images[j].mesh, file + std::to_string(j));
         // vti_writer_atom(images[j].m, images[j].mesh , file +
@@ -164,7 +164,7 @@ void write_plotfile(const std::string filepath) {
     stream.close();
 }
 
-double String::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff,
+double StringMethod::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff,
                    const int string_steps, const int every_string_to_vti, const bool verbose) {
     write_plotfile(filepath);
 
@@ -201,19 +201,19 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
         const double abs_diff = fabs(*max - this->E[0] - max_prev_step);
         const double rel_diff = fabs((2. * abs_diff) / (*max - this->E[0] + max_prev_step));
         if (i > 25 && rel_diff < string_abort_rel_diff) {
-            printf("String run: relative difference of two consecutive "
+            printf("StringMethod run: relative difference of two consecutive "
                    "E_barriers is: rel_diff=%e. This is smaller than %e\n",
                    rel_diff, string_abort_rel_diff);
-            stream_steps << "#String run: relative difference of two "
+            stream_steps << "#StringMethod run: relative difference of two "
                             "consecutive E_barriers is: rel_diff= "
                          << rel_diff << " This is smaller than " << string_abort_rel_diff << std::endl;
             break;
         }
         if (i > 25 && abs_diff < string_abort_abs_diff) {
-            printf("String run: absolute difference of two consecutive "
+            printf("StringMethod run: absolute difference of two consecutive "
                    "E_barriers is: abs_diff=%e is smaller than %e\n",
                    abs_diff, string_abort_abs_diff);
-            stream_steps << "#String run: absolute difference of two "
+            stream_steps << "#StringMethod run: absolute difference of two "
                             "consecutive E_barriers is: abs_diff= "
                          << abs_diff << " is smaller than " << string_abort_abs_diff << std::endl;
             break;
@@ -302,7 +302,7 @@ double String::run(const std::string filepath, const double string_abort_rel_dif
             // plot_string_method.gpi'" << std::endl;
         }
     } else {
-        printf("Warning: String::step(): Non-zero returnvalue '%d' obtained "
+        printf("Warning: StringMethod::step(): Non-zero returnvalue '%d' obtained "
                "while executing 'gnuplot plot_string_method.gpi'\n",
                syscall);
     }
