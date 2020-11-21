@@ -15,9 +15,8 @@ namespace magnumafcpp {
 //!
 class CG_Minimizer {
   public:
-    CG_Minimizer();
+    LlgTerms llgterms_{};
     void Minimize(State&); // Minimization routine
-    LlgTerms llgterms_;
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
   private:
     af::array Heff(const State& m); ///< Effective Field
