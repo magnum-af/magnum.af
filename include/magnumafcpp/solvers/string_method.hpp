@@ -1,5 +1,5 @@
 #pragma once
-#include "integrators/new_llg.hpp"
+#include "integrators/llg_integrator.hpp"
 #include "state.hpp"
 #include <algorithm>
 #include <vector>

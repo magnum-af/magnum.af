@@ -19,7 +19,7 @@
 #include "field_terms/nonequi/nonequi_external_field.hpp"
 #include "field_terms/nonequi/nonequi_uniaxial_anisotropy_field.hpp"
 #include "integrators/adaptive_runge_kutta.hpp"
-#include "integrators/new_llg.hpp"
+#include "integrators/llg_integrator.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "mesh.hpp"
 #include "misc.hpp"

@@ -98,7 +98,7 @@ cdef extern from "integrators/controller.hpp" namespace "magnumafcpp":
     cdef cppclass Controller:
         Controller(double hmin, double hmax, double atol, double rtol);
 
-cdef extern from "integrators/new_llg.hpp" namespace "magnumafcpp":
+cdef extern from "integrators/llg_integrator.hpp" namespace "magnumafcpp":
     cdef cppclass LLGIntegrator:
         LLGIntegrator (double alpha, vector[shared_ptr[LLGTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
         vector[shared_ptr[LLGTerm]] llgterms;
