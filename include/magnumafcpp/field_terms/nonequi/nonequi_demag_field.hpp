@@ -33,8 +33,5 @@ class NonEquiDemagField : public NonequiTermBase {
 
     // std::vector<double> z_spacing;
   private:
-    const unsigned nthreads;
-    af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy,
-                          const std::vector<double> z_spacing);
 };
 } // namespace magnumafcpp

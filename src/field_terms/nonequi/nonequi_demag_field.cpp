@@ -1,87 +1,13 @@
 #include "nonequi/nonequi_demag_field.hpp"
+#include "util/cache_manager.hpp"
 #include "util/func.hpp"
 #include "util/misc.hpp"
+#include "util/prime_factors.hpp"
 #include <iostream>
 #include <thread>
 #include <vector>
 
 namespace magnumafcpp {
-
-NonEquiDemagField::NonEquiDemagField(NonequispacedMesh mesh, bool verbose, bool caching, unsigned nthreads)
-    : NonequiTermBase(mesh), nthreads(nthreads > 0 ? nthreads : std::thread::hardware_concurrency()) {
-    af::timer demagtimer = af::timer::start();
-    if (caching == false) {
-        Nfft = calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing);
-        if (verbose)
-            printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), this->nthreads,
-                   std::thread::hardware_concurrency());
-        if (verbose)
-            printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
-    } else {
-        std::string magafdir = setup_magafdir();
-        unsigned long long maxsize = 2000000;
-        unsigned long long reducedsize = 1000000;
-        //+std::to_string(1e9*mesh.dz);
-        std::string dz_string;
-        for (auto const& dz : mesh.z_spacing) {
-            dz_string.append(std::to_string(1e9 * dz));
-        }
-        std::string nfft_id = "n0exp_" + std::to_string(mesh.nx_expanded) + "_n1exp_" +
-                              std::to_string(mesh.ny_expanded) + "_nz_" + std::to_string(mesh.nz) + "_dx_" +
-                              std::to_string(1e9 * mesh.dx) + "_dy_" + std::to_string(1e9 * mesh.dy) + "_dz_" +
-                              dz_string;
-
-        std::string path_to_nfft_cached = magafdir + nfft_id;
-        int checkarray = -1;
-        if (exists(path_to_nfft_cached)) {
-            try {
-                checkarray = af::readArrayCheck(path_to_nfft_cached.c_str(), "");
-            } catch (const af::exception& e) {
-                printf("Warning, af::readArrayCheck failed, omit reading "
-                       "array.\n%s\n",
-                       e.what());
-            }
-        }
-        if (checkarray > -1) {
-            if (verbose)
-                printf("Reading demag tensor from '%s'\n", path_to_nfft_cached.c_str());
-            Nfft = af::readArray(path_to_nfft_cached.c_str(), "");
-        } else {
-            if (verbose)
-                printf("%s Starting Demag Tensor Assembly on %u out of %u "
-                       "threads.\n",
-                       Info(), this->nthreads, std::thread::hardware_concurrency());
-            Nfft = calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing);
-            unsigned long long magafdir_size_in_bytes = GetDirSize(magafdir);
-            if (magafdir_size_in_bytes > maxsize) {
-                if (verbose)
-                    printf("Maintainance: size of '%s' is %f GB > %f GB, "
-                           "removing oldest files until size < %f GB\n",
-                           magafdir.c_str(), (double)magafdir_size_in_bytes / 1e6, (double)maxsize / 1e6,
-                           (double)reducedsize / 1e6);
-                remove_oldest_files_until_size(magafdir.c_str(), reducedsize, verbose);
-                if (verbose)
-                    printf("Maintainance finished: '%s' has now %f GB\n", magafdir.c_str(),
-                           (double)GetDirSize(magafdir) / 1e6);
-            }
-            if (GetDirSize(magafdir) < maxsize) {
-                try {
-                    if (verbose)
-                        printf("Saving demag tensor to'%s'\n", path_to_nfft_cached.c_str());
-                    af::saveArray("", Nfft, path_to_nfft_cached.c_str());
-                    if (verbose)
-                        printf("Saved demag tensor to'%s'\n", path_to_nfft_cached.c_str());
-                } catch (const af::exception& e) {
-                    printf("Warning, af::saveArray failed, omit saving demag "
-                           "tensor.\n%s\n",
-                           e.what());
-                }
-            }
-        }
-        if (verbose)
-            printf("time demag init [af-s]: %f\n", af::timer::stop(demagtimer));
-    }
-}
 
 af::array NonEquiDemagField::h(const State& state) {
     timer_demagsolve = af::timer::start();
@@ -247,23 +173,6 @@ double Nxy(const double x, const double y, const double z, const double dx, cons
             G0(x - dx + dX, y, z, dy, dY, dz, dZ));
 }
 
-class NonequiLoopInfo {
-  public:
-    NonequiLoopInfo() {}
-    NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2, double dx, double dy)
-        : ix_start(ix_start), ix_end(ix_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy) {}
-    int ix_start;
-    int ix_end;
-    int n0_exp;
-    int n1_exp;
-    int n2;
-    double dx;
-    double dy;
-    static std::vector<double> z_spacing;
-};
-
-std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; // Declare static member
-
 double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j,
                               const bool verbose) {
     // Calculates the signed distance beween elements by summing up i < j:
@@ -289,56 +198,66 @@ double nonequi_index_distance(const std::vector<double> spacings, const unsigned
     return result;
 }
 
-double* N_ptr = NULL;
+struct NonequiLoopInfo {
+    NonequiLoopInfo() {}
+    NonequiLoopInfo(int ix_start, int ix_end, int n0_exp, int n1_exp, int n2, double dx, double dy)
+        : ix_start(ix_start), ix_end(ix_end), n0_exp(n0_exp), n1_exp(n1_exp), n2(n2), dx(dx), dy(dy) {}
+    int ix_start;
+    int ix_end;
+    int n0_exp;
+    int n1_exp;
+    int n2;
+    double dx;
+    double dy;
+    static std::vector<double> z_spacing;
+};
+std::vector<double> newell_nonequi::NonequiLoopInfo::z_spacing; // Declare static member
 
-void* init_N(void* arg) {
-    newell_nonequi::NonequiLoopInfo* loopinfo = static_cast<newell_nonequi::NonequiLoopInfo*>(arg);
-    for (int ix = loopinfo->ix_start; ix < loopinfo->ix_end; ix++) {
-        const int jx = (ix + loopinfo->n0_exp / 2) % loopinfo->n0_exp - loopinfo->n0_exp / 2;
-        for (int iy = 0; iy < loopinfo->n1_exp; iy++) {
-            const int jy = (iy + loopinfo->n1_exp / 2) % loopinfo->n1_exp - loopinfo->n1_exp / 2;
-            for (int i_source = 0; i_source < loopinfo->n2; i_source++) {
-                for (int i_target = 0; i_target < loopinfo->n2; i_target++) {
+void init_N(const NonequiLoopInfo& loopinfo, std::vector<double>& N) {
+    for (int ix = loopinfo.ix_start; ix < loopinfo.ix_end; ix++) {
+        const int jx = (ix + loopinfo.n0_exp / 2) % loopinfo.n0_exp - loopinfo.n0_exp / 2;
+        for (int iy = 0; iy < loopinfo.n1_exp; iy++) {
+            const int jy = (iy + loopinfo.n1_exp / 2) % loopinfo.n1_exp - loopinfo.n1_exp / 2;
+            for (int i_source = 0; i_source < loopinfo.n2; i_source++) {
+                for (int i_target = 0; i_target < loopinfo.n2; i_target++) {
 
                     if (i_source <= i_target) {
-                        const int idx = 6 * (util::ij2k(i_source, i_target, loopinfo->n2) +
-                                             ((loopinfo->n2 * (loopinfo->n2 + 1)) / 2) * (iy + loopinfo->n1_exp * ix));
+                        const int idx = 6 * (util::ij2k(i_source, i_target, loopinfo.n2) +
+                                             ((loopinfo.n2 * (loopinfo.n2 + 1)) / 2) * (iy + loopinfo.n1_exp * ix));
                         // std::cout << "idx=" << idx << " of " <<
-                        // loopinfo->n0_exp * loopinfo->n1_exp * (loopinfo->n2 *
-                        // (loopinfo->n2 + 1))/2 * 6 << std::endl;
-                        const double x = loopinfo->dx * (double)jx;
-                        const double y = loopinfo->dy * (double)jy;
-                        const double z = nonequi_index_distance(loopinfo->z_spacing, i_source, i_target);
+                        // loopinfo.n0_exp * loopinfo.n1_exp * (loopinfo.n2 *
+                        // (loopinfo.n2 + 1))/2 * 6 << std::endl;
+                        const double x = loopinfo.dx * (double)jx;
+                        const double y = loopinfo.dy * (double)jy;
+                        const double z = nonequi_index_distance(loopinfo.z_spacing, i_source, i_target);
 
-                        newell_nonequi::N_ptr[idx + 0] =
-                            newell_nonequi::Nxx(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source],
-                                                loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
-                        newell_nonequi::N_ptr[idx + 1] =
-                            newell_nonequi::Nxy(x, y, z, loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_source],
-                                                loopinfo->dx, loopinfo->dy, loopinfo->z_spacing[i_target]);
-                        newell_nonequi::N_ptr[idx + 2] =
-                            newell_nonequi::Nxy(x, z, y, loopinfo->dx, loopinfo->z_spacing[i_source], loopinfo->dy,
-                                                loopinfo->dx, loopinfo->z_spacing[i_target], loopinfo->dy);
-                        newell_nonequi::N_ptr[idx + 3] =
-                            newell_nonequi::Nxx(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx,
-                                                loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
-                        newell_nonequi::N_ptr[idx + 4] =
-                            newell_nonequi::Nxy(y, z, x, loopinfo->dy, loopinfo->z_spacing[i_source], loopinfo->dx,
-                                                loopinfo->dy, loopinfo->z_spacing[i_target], loopinfo->dx);
-                        newell_nonequi::N_ptr[idx + 5] =
-                            newell_nonequi::Nxx(z, x, y, loopinfo->z_spacing[i_source], loopinfo->dx, loopinfo->dy,
-                                                loopinfo->z_spacing[i_target], loopinfo->dx, loopinfo->dy);
+                        N[idx + 0] =
+                            newell_nonequi::Nxx(x, y, z, loopinfo.dx, loopinfo.dy, loopinfo.z_spacing[i_source],
+                                                loopinfo.dx, loopinfo.dy, loopinfo.z_spacing[i_target]);
+                        N[idx + 1] =
+                            newell_nonequi::Nxy(x, y, z, loopinfo.dx, loopinfo.dy, loopinfo.z_spacing[i_source],
+                                                loopinfo.dx, loopinfo.dy, loopinfo.z_spacing[i_target]);
+                        N[idx + 2] =
+                            newell_nonequi::Nxy(x, z, y, loopinfo.dx, loopinfo.z_spacing[i_source], loopinfo.dy,
+                                                loopinfo.dx, loopinfo.z_spacing[i_target], loopinfo.dy);
+                        N[idx + 3] =
+                            newell_nonequi::Nxx(y, z, x, loopinfo.dy, loopinfo.z_spacing[i_source], loopinfo.dx,
+                                                loopinfo.dy, loopinfo.z_spacing[i_target], loopinfo.dx);
+                        N[idx + 4] =
+                            newell_nonequi::Nxy(y, z, x, loopinfo.dy, loopinfo.z_spacing[i_source], loopinfo.dx,
+                                                loopinfo.dy, loopinfo.z_spacing[i_target], loopinfo.dx);
+                        N[idx + 5] =
+                            newell_nonequi::Nxx(z, x, y, loopinfo.z_spacing[i_source], loopinfo.dx, loopinfo.dy,
+                                                loopinfo.z_spacing[i_target], loopinfo.dx, loopinfo.dy);
                     }
                 }
             }
         }
     }
-    return NULL;
 }
-} // namespace newell_nonequi
 
-af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy,
-                                         const std::vector<double> z_spacing) {
+af::array calculate_N(int n0_exp, int n1_exp, int n2, double dx, double dy, const std::vector<double> z_spacing,
+                      unsigned nthreads) {
     std::vector<std::thread> t;
     std::vector<newell_nonequi::NonequiLoopInfo> loopinfo;
     newell_nonequi::NonequiLoopInfo::z_spacing = z_spacing;
@@ -348,20 +267,89 @@ af::array NonEquiDemagField::calculate_N(int n0_exp, int n1_exp, int n2, double 
         loopinfo.push_back(newell_nonequi::NonequiLoopInfo(start, end, n0_exp, n1_exp, n2, dx, dy));
     }
 
-    newell_nonequi::N_ptr = new double[n0_exp * n1_exp * (n2 * (n2 + 1)) / 2 * 6];
+    std::vector<double> N_values(n0_exp * n1_exp * (n2 * (n2 + 1)) / 2 * 6);
 
     for (unsigned i = 0; i < nthreads; i++) {
-        t.push_back(std::thread(newell_nonequi::init_N, &loopinfo[i]));
+        t.push_back(std::thread(newell_nonequi::init_N, std::ref(loopinfo[i]), std::ref(N_values)));
     }
 
     for (unsigned i = 0; i < nthreads; i++) {
         t[i].join();
     }
-    af::array Naf(6, (n2 * (n2 + 1)) / 2, n1_exp, n0_exp, newell_nonequi::N_ptr);
+    af::array Naf(6, (n2 * (n2 + 1)) / 2, n1_exp, n0_exp, N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
-    delete[] newell_nonequi::N_ptr;
-    newell_nonequi::N_ptr = NULL;
     Naf = af::fftR2C<2>(Naf);
     return Naf;
 }
+
+// wrappered calculate_N
+af::array calculate_N(const NonequispacedMesh& mesh, unsigned nthreads, bool verbose) {
+    af::timer timer = af::timer::start();
+    if (verbose) {
+        printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
+               std::thread::hardware_concurrency());
+    }
+    af::array result =
+        calculate_N(mesh.nx_expanded, mesh.ny_expanded, mesh.nz, mesh.dx, mesh.dy, mesh.z_spacing, nthreads);
+    if (verbose) {
+        printf("time demag init [af-s]: %f\n", af::timer::stop(timer));
+    }
+    return result;
+}
+
+} // namespace newell_nonequi
+
+namespace nonequi_util {
+std::string to_string(const NonequispacedMesh& mesh) {
+    std::string dz_string;
+    for (auto const& dz : mesh.z_spacing) {
+        dz_string.append(std::to_string(1e9 * dz));
+    }
+    return "n0exp_" + std::to_string(mesh.nx_expanded) + "_n1exp_" + std::to_string(mesh.ny_expanded) + "_nz_" +
+           std::to_string(mesh.nz) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" + std::to_string(1e9 * mesh.dy) +
+           "_dz_" + dz_string;
+}
+
+void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
+    if (util::max_of_prime_factors(n) > 13) {
+        std::cout << Warning() << " NonEquiDemagField::NonEquiDemagField: maximum prime factor of mesh." << ni << "="
+                  << n << " is " << util::max_of_prime_factors(n)
+                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
+                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
+                     "where max_prime(n) <= 13."
+                  << std::endl;
+    }
+}
+void warn_if_maxprime_lt_13(const NonequispacedMesh& mesh) {
+    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
+        warn_if_maxprime_lt_13(mesh.nx, "nx");
+        warn_if_maxprime_lt_13(mesh.ny, "ny");
+        warn_if_maxprime_lt_13(mesh.nz, "nz");
+    }
+}
+} // namespace nonequi_util
+
+af::array get_Nfft(NonequispacedMesh mesh, bool verbose, bool caching, unsigned nthreads) {
+    nonequi_util::warn_if_maxprime_lt_13(mesh);
+
+    if (caching == false) {
+        return newell_nonequi::calculate_N(mesh, nthreads, verbose);
+    } else {
+        util::CacheManager cm{verbose};
+        const std::string nfft_id = nonequi_util::to_string(mesh);
+        auto optional_Nfft = cm.get_array_if_existent(nfft_id);
+        if (optional_Nfft) {
+            return optional_Nfft.value();
+        } else {
+            auto result = newell_nonequi::calculate_N(mesh, nthreads, verbose);
+            cm.write_array(result, nfft_id);
+            return result;
+        }
+    }
+}
+
+NonEquiDemagField::NonEquiDemagField(NonequispacedMesh mesh, bool verbose, bool caching, unsigned nthreads)
+    : NonequiTermBase(mesh),
+      Nfft(get_Nfft(mesh, verbose, caching, nthreads > 0 ? nthreads : std::thread::hardware_concurrency())) {}
+
 } // namespace magnumafcpp
