@@ -30,11 +30,12 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
         std::cout << Warning() << " DemagField::DemagField: maximum prime factor of mesh." << ni << "=" << n << " is "
                   << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
-                     "factor <= 13. Please choose an alternative discretization where max_prime(n) <= 13."
+                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
+                     "where max_prime(n) <= 13."
                   << std::endl;
     }
 }
-void warn_if_maxprime_lt_13(Mesh mesh) {
+void warn_if_maxprime_lt_13(const Mesh& mesh) {
     warn_if_maxprime_lt_13(mesh.n0, "nx");
     warn_if_maxprime_lt_13(mesh.n1, "ny");
     warn_if_maxprime_lt_13(mesh.n2, "nz");
