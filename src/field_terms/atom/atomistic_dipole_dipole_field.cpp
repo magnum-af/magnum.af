@@ -1,5 +1,6 @@
 #include "field_terms/atom/atomistic_dipole_dipole_field.hpp"
 #include "util/func.hpp"
+#include <vector>
 
 namespace magnumafcpp {
 
@@ -58,8 +59,7 @@ af::array AtomisticDipoleDipoleField::h(const State& state) {
 }
 
 af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz) {
-    double* N = NULL;
-    N = new double[n0_exp * n1_exp * n2_exp * 6];
+    std::vector<double> N(n0_exp * n1_exp * n2_exp * 6);
     // Experimental
     for (int i0 = 0; i0 < n0_exp; i0++) {
         const int j0 = (i0 + n0_exp / 2) % n0_exp - n0_exp / 2;
@@ -110,13 +110,11 @@ af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
             }
         }
     }
-    af::array Naf(6, n2_exp, n1_exp, n0_exp, N);
+    af::array Naf(6, n2_exp, n1_exp, n0_exp, N.data());
     Naf = reorder(Naf, 3, 2, 1, 0);
     Naf *= 1. / (4. * M_PI);
     // print("AtomisticDipoleDipoleField::N_atomistic: Naf", Naf);
     // print("Demag:Naf", Naf(0, 0, 0, af::span));
-    delete[] N;
-    N = NULL;
     if (n2_exp == 1) {
         Naf = af::fftR2C<2>(Naf);
     } else {
