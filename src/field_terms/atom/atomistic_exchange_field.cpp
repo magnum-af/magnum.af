@@ -49,7 +49,7 @@ af::array AtomisticExchangeField::h(const State& state) {
 // return state.material.J/state.mesh.dx * mj;
 
 //  //testing
-//  array m = constant(0.0, state.mesh.dims, f64);
+//  array m = constant(0.0, dims_vector(state.mesh), f64);
 //  m(span, span, span, 2)=1;
 //  //m(span, span, span, 1)=2;
 //  //m(span, span, span, 2)=3;

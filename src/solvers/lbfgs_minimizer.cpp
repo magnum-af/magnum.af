@@ -57,7 +57,7 @@ double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradien
     double energy = llgterms_[0]->E(state, h);
     for (unsigned i = 1; i < llgterms_.size(); ++i) {
         // Alternative:
-        // af::array h = af::constant(0, state.mesh.dims,
+        // af::array h = af::constant(0, dims_vector(state.mesh),
         // f64);//llgterms_[0]->h(state); double energy =
         // 0;//llgterms_[0]->E(state, h); for(unsigned i = 0; i <
         // llgterms_.size() ; ++i ){
@@ -112,24 +112,24 @@ double LBFGS_Minimizer::Minimize(State& state) {
     const size_t m = 5;
 
     // array container
-    af::array af_zero = (af::constant(0.0, state.mesh.dims, f64));
+    af::array af_zero = (af::constant(0.0, dims_vector(state.mesh), f64));
     std::array<af::array, m> sVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
     std::array<af::array, m> yVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
 
     // vector container
-    // std::vector<af::array> sVector; //= af::constant(0.0, state.mesh.dims,
+    // std::vector<af::array> sVector; //= af::constant(0.0, dims_vector(state.mesh),
     // f64); std::vector<af::array> yVector; //= af::constant(0.0,
-    // state.mesh.dims, f64); for (size_t i = 0; i < m; i++){
-    //    sVector.push_back(af::constant(0.0, state.mesh.dims, f64));
-    //    yVector.push_back(af::constant(0.0, state.mesh.dims, f64));
+    // dims_vector(state.mesh), f64); for (size_t i = 0; i < m; i++){
+    //    sVector.push_back(af::constant(0.0, dims_vector(state.mesh), f64));
+    //    yVector.push_back(af::constant(0.0, dims_vector(state.mesh), f64));
     //}
 
     std::array<double, m> alpha = {0., 0., 0., 0., 0.};
-    af::array q = af::constant(0.0, state.mesh.dims, f64);
-    af::array s = af::constant(0.0, state.mesh.dims, f64);
-    af::array y = af::constant(0.0, state.mesh.dims, f64);
+    af::array q = af::constant(0.0, dims_vector(state.mesh), f64);
+    af::array s = af::constant(0.0, dims_vector(state.mesh), f64);
+    af::array y = af::constant(0.0, dims_vector(state.mesh), f64);
     double f_old = 0.0;
-    af::array grad_old = af::constant(0.0, state.mesh.dims, f64);
+    af::array grad_old = af::constant(0.0, dims_vector(state.mesh), f64);
     af::array x_old = state.m;
 
     size_t iter = 0, globIter = 0;

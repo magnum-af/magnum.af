@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, filepath + "relax");
     state.t = 0;
 
-    array last = constant(0, mesh.dims, f64);
+    array last = constant(0, dims_vector(mesh), f64);
     last(span, span, span, 2) = 1;
 
     std::vector<State> inputimages;

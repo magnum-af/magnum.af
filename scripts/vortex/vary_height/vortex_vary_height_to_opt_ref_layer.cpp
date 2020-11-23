@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
         std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
         af::timer timer_llgterms = af::timer::start();
-        af::array zee_field = af::constant(0, mesh.dims, f64);
+        af::array zee_field = af::constant(0, dims_vector(mesh), f64);
         zee_field(af::span, af::span, af::span, 0) = zee;
         auto demag = LlgTerm(new DemagField(mesh));
         // auto exch = LlgTerm(new SparseExchangeField(A, mesh));

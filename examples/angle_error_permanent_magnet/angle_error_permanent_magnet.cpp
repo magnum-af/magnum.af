@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, dx, dx, dx);
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, mesh.dims, f64);
+    af::array m = af::constant(0.0, dims_vector(mesh), f64);
     m(af::span, af::span, 0, 0) = 1.;
     m(af::span, af::span, 1, 0) = -1.;
     af::array Ms_field = af::constant(0.0, _1D_field, f64);
@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
     state.write_vti(filepath + "minit");
 
     auto rkky = LlgTerm(new RKKYExchangeField(
-        RKKY_values(af::constant(RKKY, mesh.dims, f64)),
-        Exchange_values(af::constant(A, mesh.dims, f64)), mesh));
+        RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
+        Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
 
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
         const double hy =
             hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
 
-        af::array zee = af::constant(0.0, state.mesh.dims, f64);
+        af::array zee = af::constant(0.0, dims_vector(state.mesh), f64);
         zee(af::span, af::span, af::span, 0) = hx;
         zee(af::span, af::span, af::span, 1) = hy;
         return zee;

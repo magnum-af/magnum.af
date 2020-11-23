@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     auto zee_func = [A, B](State state) -> af::array {
         double phi = 2 * M_PI * (state.t);
         af::dim4 dim = af::dim4(state.mesh.n0, state.mesh.n1, state.mesh.n2, 1);
-        af::array zee = af::array(state.mesh.dims, f64);
+        af::array zee = af::array(dims_vector(state.mesh), f64);
         zee(af::span, af::span, af::span, 0) = constant(A * std::cos(phi), dim, f64);
         zee(af::span, af::span, af::span, 1) = constant(A * std::sin(phi), dim, f64);
         zee(af::span, af::span, af::span, 2) = constant(0.0, dim, f64);

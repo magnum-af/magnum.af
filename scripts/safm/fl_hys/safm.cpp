@@ -59,14 +59,14 @@ int main(int argc, char** argv) {
     std::cout << mesh << std::endl;
 
     // Initial magnetic field
-    af::array m = af::constant(0, mesh.dims, f64);
+    af::array m = af::constant(0, dims_vector(mesh), f64);
     m(af::span, af::span, 0, 2) = 1;        // SAFM Layer 0 in z
     m(af::span, af::span, 1, 2) = 0;        // Vacuum Layer 1
     m(af::span, af::span, 2, 2) = -1;       // SAFM Layer 1 in -z
     m(af::span, af::span, 3, af::span) = 0; // Vacuum Layer 2
     m(af::span, af::span, 4, 0) = 1;        // Free Layer in x
 
-    af::array Ku1_field = af::constant(0, mesh.dims, f64);
+    af::array Ku1_field = af::constant(0, dims_vector(mesh), f64);
     Ku1_field(af::span, af::span, 0, af::span) = Ku1_safm;      // SAFM Layer 0 in z
     Ku1_field(af::span, af::span, 1, af::span) = 0;             // Vacuum Layer
     Ku1_field(af::span, af::span, 2, af::span) = Ku1_safm;      // SAFM Layer 1 in -z

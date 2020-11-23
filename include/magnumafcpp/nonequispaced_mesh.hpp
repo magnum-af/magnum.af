@@ -13,8 +13,9 @@ struct NonequispacedMesh {
     double dx, dy;                     //!< Distance between equidistant x, y cells
     std::vector<double> z_spacing;     //
     unsigned nx_expanded, ny_expanded; // Expanded cell sizes for demag FFT
-    af::dim4 dims;
-
     void print(std::ostream& stream = std::cout);
 };
+
+inline af::dim4 dims_vector(NonequispacedMesh nemesh) { return af::dim4(nemesh.nx, nemesh.ny, nemesh.nz, 3); }
+
 } // namespace magnumafcpp

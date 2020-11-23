@@ -75,7 +75,7 @@ af::array UniaxialAnisotropyField::h(const State& state) {
     // switch Ku1_axis and Ku1_axis_field
     af::array eu; // Array containing normal vectors
     if (Ku1_axis_field.isempty()) {
-        eu = af::array(state.mesh.dims, f64);
+        eu = af::array(dims_vector(state.mesh), f64);
         eu(af::span, af::span, af::span, 0) = Ku1_axis[0];
         eu(af::span, af::span, af::span, 1) = Ku1_axis[1];
         eu(af::span, af::span, af::span, 2) = Ku1_axis[2];

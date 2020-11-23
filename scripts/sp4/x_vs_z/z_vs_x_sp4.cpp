@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
         if (conv)
             llgterm.push_back(LlgTerm(new ExchangeField(A)));
         else
-            llgterm.push_back(LlgTerm(new NonequiExchangeField(ne_mesh, af::constant(A, mesh.dims, f64))));
+            llgterm.push_back(LlgTerm(new NonequiExchangeField(ne_mesh, af::constant(A, dims_vector(mesh), f64))));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;

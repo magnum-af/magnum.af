@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
               << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
               << " Steps rejected" << std::endl;
 
-    array last = constant(0, mesh.dims, f64);
+    array last = constant(0, dims_vector(mesh), f64);
     last(span, span, span, 2) = 1;
 
     std::vector<State> inputimages;

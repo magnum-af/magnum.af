@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     // xyz gives direction of initial magnetization direction,
     // positive_direction true points +, false in - direction
     af::array m = af::constant(0.0, nx, ny, nz, 3, f64);
-    af::array Ku1_field = af::constant(0, mesh.dims, f64);
+    af::array Ku1_field = af::constant(0, dims_vector(mesh), f64);
     for (int ix = 0; ix < nx; ix++) {
         for (int iy = 0; iy < ny; iy++) {
             const double a = (double)(nx / 2);
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
     }
     std::cout << "Info: Mesh::ellipse(): n_cells should be approx a*b*M_PI*this->n2= " << nx / 2 * ny / 2 * M_PI * nz
               << std::endl;
-    // af::array m = af::constant(0, mesh.dims, f64);
+    // af::array m = af::constant(0, dims_vector(mesh), f64);
 
     State state(mesh, Ms, m, false);
     state.mesh = Mesh(nx, ny, nz, x / nx, y / ny,

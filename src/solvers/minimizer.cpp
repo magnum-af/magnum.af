@@ -57,7 +57,7 @@ af::array Minimizer::m_next(const State& state, const double tau) {
     const af::array MxH_y = MxH(af::span, af::span, af::span, 1);
     const af::array MxH_z = MxH(af::span, af::span, af::span, 2);
 
-    af::array result = af::constant(0., state.mesh.dims, f64);
+    af::array result = af::constant(0., dims_vector(state.mesh), f64);
 
     result(af::span, af::span, af::span, 0) = (4 * Mx + 4 * tau * (MxH_y * Mz - MxH_z * My) +
                                                tau * tau * Mx * (MxH_x * MxH_x - MxH_y * MxH_y - MxH_z * MxH_z) +

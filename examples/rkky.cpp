@@ -26,12 +26,12 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, dx, dx, dx);
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, mesh.dims, f64);
+    af::array m = af::constant(0.0, dims_vector(mesh), f64);
     m(af::span, af::span, af::span, 0) = 1.;
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
-    af::array rkkyvals = af::constant(RKKY / 2., mesh.dims, f64);
-    af::array exchvals = af::constant(A, mesh.dims, f64);
+    af::array rkkyvals = af::constant(RKKY / 2., dims_vector(mesh), f64);
+    af::array exchvals = af::constant(A, dims_vector(mesh), f64);
     auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
