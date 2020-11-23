@@ -14,13 +14,13 @@ af::array NonEquiDemagField::h(const State& state) {
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms_field.isempty()) {
-        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nemesh.nx_expanded, nemesh.ny_expanded));
+        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_expanded(nemesh), ny_expanded(nemesh)));
     } else {
-        mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nemesh.nx_expanded, nemesh.ny_expanded));
+        mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_expanded(nemesh), ny_expanded(nemesh)));
     }
 
     // Pointwise product
-    af::array hfft = af::constant(0.0, nemesh.nx_expanded / 2 + 1, nemesh.ny_expanded, nemesh.nz, 3, c64);
+    af::array hfft = af::constant(0.0, nx_expanded(nemesh) / 2 + 1, ny_expanded(nemesh), nemesh.nz, 3, c64);
     for (unsigned i_source = 0; i_source < nemesh.nz; i_source++) {
         for (unsigned i_target = 0; i_target < nemesh.nz; i_target++) {
 
@@ -68,9 +68,9 @@ af::array NonEquiDemagField::h(const State& state) {
     if (state.afsync)
         af::sync();
     cpu_time += af::timer::stop(timer_demagsolve);
-    // return h_field(af::seq(0, nemesh.nx_expanded/2-1), af::seq(0,
-    // nemesh.ny_expanded/2-1));
-    return one_over_tau_vec * h_field(af::seq(0, nemesh.nx_expanded / 2 - 1), af::seq(0, nemesh.ny_expanded / 2 - 1));
+    // return h_field(af::seq(0, nx_expanded(nemesh)/2-1), af::seq(0,
+    // ny_expanded(nemesh)/2-1));
+    return one_over_tau_vec * h_field(af::seq(0, nx_expanded(nemesh) / 2 - 1), af::seq(0, ny_expanded(nemesh) / 2 - 1));
 }
 
 namespace newell_nonequi {
@@ -200,17 +200,17 @@ double nonequi_index_distance(const std::vector<double> spacings, const unsigned
 
 void init_N(const NonequispacedMesh& nemesh, std::vector<double>& N, unsigned ix_start, unsigned ix_end) {
     for (unsigned ix = ix_start; ix < ix_end; ix++) {
-        const int jx = (ix + nemesh.nx_expanded / 2) % nemesh.nx_expanded - nemesh.nx_expanded / 2;
-        for (unsigned iy = 0; iy < nemesh.ny_expanded; iy++) {
-            const int jy = (iy + nemesh.ny_expanded / 2) % nemesh.ny_expanded - nemesh.ny_expanded / 2;
+        const int jx = (ix + nx_expanded(nemesh) / 2) % nx_expanded(nemesh) - nx_expanded(nemesh) / 2;
+        for (unsigned iy = 0; iy < ny_expanded(nemesh); iy++) {
+            const int jy = (iy + ny_expanded(nemesh) / 2) % ny_expanded(nemesh) - ny_expanded(nemesh) / 2;
             for (unsigned i_source = 0; i_source < nemesh.nz; i_source++) {
                 for (unsigned i_target = 0; i_target < nemesh.nz; i_target++) {
 
                     if (i_source <= i_target) {
                         const int idx = 6 * (util::ij2k(i_source, i_target, nemesh.nz) +
-                                             ((nemesh.nz * (nemesh.nz + 1)) / 2) * (iy + nemesh.ny_expanded * ix));
+                                             ((nemesh.nz * (nemesh.nz + 1)) / 2) * (iy + ny_expanded(nemesh) * ix));
                         // std::cout << "idx=" << idx << " of " <<
-                        // nemesh.nx_expanded * nemesh.ny_expanded * (nemesh.nz *
+                        // nx_expanded(nemesh) * ny_expanded(nemesh) * (nemesh.nz *
                         // (nemesh.nz + 1))/2 * 6 << std::endl;
                         const double x = nemesh.dx * (double)jx;
                         const double y = nemesh.dy * (double)jy;
@@ -236,19 +236,19 @@ void init_N(const NonequispacedMesh& nemesh, std::vector<double>& N, unsigned ix
 }
 
 af::array calculate_N(const NonequispacedMesh& nemesh, unsigned nthreads) {
-    std::vector<double> N_values(nemesh.nx_expanded * nemesh.ny_expanded * (nemesh.nz * (nemesh.nz + 1)) / 2 * 6);
+    std::vector<double> N_values(nx_expanded(nemesh) * ny_expanded(nemesh) * (nemesh.nz * (nemesh.nz + 1)) / 2 * 6);
 
     std::vector<std::thread> t;
     for (unsigned i = 0; i < nthreads; i++) {
-        unsigned ix_start = i * (double)nemesh.nx_expanded / nthreads;
-        unsigned ix_end = (i + 1) * (double)nemesh.nx_expanded / nthreads;
+        unsigned ix_start = i * (double)nx_expanded(nemesh) / nthreads;
+        unsigned ix_end = (i + 1) * (double)nx_expanded(nemesh) / nthreads;
         t.push_back(std::thread(init_N, std::ref(nemesh), std::ref(N_values), ix_start, ix_end));
     }
 
     for (unsigned i = 0; i < nthreads; i++) {
         t[i].join();
     }
-    af::array Naf(6, (nemesh.nz * (nemesh.nz + 1)) / 2, nemesh.ny_expanded, nemesh.nx_expanded, N_values.data());
+    af::array Naf(6, (nemesh.nz * (nemesh.nz + 1)) / 2, ny_expanded(nemesh), nx_expanded(nemesh), N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
     Naf = af::fftR2C<2>(Naf);
     return Naf;
@@ -276,7 +276,7 @@ std::string to_string(const NonequispacedMesh& nemesh) {
     for (auto const& dz : nemesh.z_spacing) {
         dz_string.append(std::to_string(1e9 * dz));
     }
-    return "n0exp_" + std::to_string(nemesh.nx_expanded) + "_n1exp_" + std::to_string(nemesh.ny_expanded) + "_nz_" +
+    return "n0exp_" + std::to_string(nx_expanded(nemesh)) + "_n1exp_" + std::to_string(ny_expanded(nemesh)) + "_nz_" +
            std::to_string(nemesh.nz) + "_dx_" + std::to_string(1e9 * nemesh.dx) + "_dy_" +
            std::to_string(1e9 * nemesh.dy) + "_dz_" + dz_string;
 }
