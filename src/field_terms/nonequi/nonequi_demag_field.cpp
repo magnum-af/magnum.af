@@ -10,7 +10,7 @@
 namespace magnumafcpp {
 
 af::array NonEquiDemagField::h(const State& state) {
-    timer_demagsolve = af::timer::start();
+    af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms_field.isempty()) {
@@ -229,7 +229,7 @@ void init_N(const NonequiLoopInfo& loopinfo, std::vector<double>& N) {
                         // (loopinfo.n2 + 1))/2 * 6 << std::endl;
                         const double x = loopinfo.dx * (double)jx;
                         const double y = loopinfo.dy * (double)jy;
-                        const double z = nonequi_index_distance(loopinfo.z_spacing, i_source, i_target);
+                        const double z = nonequi_index_distance(loopinfo.z_spacing, i_source, i_target, true);
 
                         N[idx + 0] =
                             newell_nonequi::Nxx(x, y, z, loopinfo.dx, loopinfo.dy, loopinfo.z_spacing[i_source],

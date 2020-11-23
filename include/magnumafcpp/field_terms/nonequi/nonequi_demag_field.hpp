@@ -5,6 +5,20 @@
 
 namespace magnumafcpp {
 
+class NonEquiDemagField : public NonequiTermBase {
+  public:
+    NonEquiDemagField(NonequispacedMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
+    const af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
+
+    af::array h(const State& state);           // Field contribution
+    double get_cpu_time() { return cpu_time; } // CPU time
+    void print_Nfft();                         // For wrapping
+
+  private:
+    double cpu_time{0.};
+};
+
+// expose for testing:
 namespace newell_nonequi {
 double Nxx(const double x, const double y, const double z, const double dx, const double dy, const double dz,
            const double dX, const double dY, const double dZ);
@@ -12,26 +26,6 @@ double Nxy(const double x, const double y, const double z, const double dx, cons
            const double dX, const double dY, const double dZ);
 double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j,
                               const bool verbose = true);
+
 } // namespace newell_nonequi
-
-class NonEquiDemagField : public NonequiTermBase {
-  public:
-    // Field contribution
-    af::array h(const State& state);
-    // CPU time
-    double get_cpu_time() { return cpu_time; }
-
-    NonEquiDemagField(NonequispacedMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
-
-    af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
-
-    double cpu_time{0.};
-    af::timer timer_demagsolve;
-
-    // For wrapping
-    void print_Nfft();
-
-    // std::vector<double> z_spacing;
-  private:
-};
 } // namespace magnumafcpp
