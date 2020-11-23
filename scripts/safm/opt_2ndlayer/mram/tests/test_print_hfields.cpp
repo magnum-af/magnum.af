@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     // Generating Objects
     const double dz_fl = 3e-9;
     std::vector<double> z_spacing = {5e-9, 1e-9, dz, 1e-9, dz_fl};
-    NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
     // std::cout << mesh << std::endl;
 
     // Initial magnetic field
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m, false);
     state.vtr_writer(filepath + "minit");
 
-    NonEquiDemagField demag(mesh, false, false, 0);
+    NonequiDemagField demag(mesh, false, false, 0);
 
     af::array h = demag.h(state);
     vtr_writer(h, mesh, filepath + "h");

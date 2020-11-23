@@ -13,7 +13,7 @@ double calc_hz(double dz) {
 
     // Generating Objects
     std::vector<double> z_spacing = {z / nz, dz, z / nz, z / nz};
-    NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
     // std::cout << mesh << std::endl;
 
     // Initial magnetic field
@@ -23,7 +23,7 @@ double calc_hz(double dz) {
     State state(mesh, Ms, m, false);
     state.vtr_writer(filepath + "minit");
 
-    NonEquiDemagField demag(mesh, false, false, 0);
+    NonequiDemagField demag(mesh, false, false, 0);
 
     af::array h = demag.h(state);
     vtr_writer(h, mesh, filepath + "h");

@@ -12,7 +12,7 @@ TEST(State, integral_nonequimesh_dz_as_gauss_sum) {
     for (int i = 1; i <= nz; i++) {
         z_spacing.push_back(i * dz); // gauss sum: dz * (1 + 2 + 3 + ... + n)
     }
-    NonequispacedMesh mesh(nx, ny, dx, dy, z_spacing);
+    NonequiMesh mesh(nx, ny, dx, dy, z_spacing);
     af::array m = af::constant(0.0, dims_vector(mesh), f64);
     for (int i = 0; i < nz; i++) {
         if (i % 2 == 0) {
@@ -28,7 +28,7 @@ TEST(State, integral_nonequimesh_dz_as_gauss_sum) {
     double positive_sum = nz / 2 * (1 + (nz - 1)) / 2; // 1 + 3 + 5 ... + 9
     double negative_sum = -nz / 2 * (2 + nz) / 2;      // 2 + 4 + 6 ... + 10
     double result = dx * nx * dy * ny * dz * (positive_sum + negative_sum);
-    NonEquiDemagField nedemag(mesh);
+    NonequiDemagField nedemag(mesh);
     EXPECT_NEAR((-2. / constants::mu0) * nedemag.E(state, af::constant(1.0, dims_vector(mesh), f64)), result, 1e-35);
     // If integral_nonequimesh were public, we could test like this:
     // EXPECT_NEAR((-2. / constants::mu0) * nedemag.integral_nonequimesh(m,

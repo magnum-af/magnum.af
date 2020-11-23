@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
             dz_spacing.push_back(z / nz);
         }
         Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
-        NonequispacedMesh ne_mesh(nx, ny, x / nx, y / ny, dz_spacing);
+        NonequiMesh ne_mesh(nx, ny, x / nx, y / ny, dz_spacing);
 
         // Initial magnetic field
         af::array m = af::constant(0.0, nx, ny, nz, 3, f64);

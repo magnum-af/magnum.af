@@ -7,7 +7,7 @@ namespace magnumafcpp {
 
 class NonequiTermBase : public LLGTerm {
   public:
-    NonequiTermBase(NonequispacedMesh nemesh) : nemesh(nemesh){};
+    NonequiTermBase(NonequiMesh nemesh) : nemesh(nemesh){};
     virtual ~NonequiTermBase(){};
 
     // Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
@@ -18,7 +18,7 @@ class NonequiTermBase : public LLGTerm {
     double E(const State& state, const af::array& h) { return integral_nonequimesh(h * state.m, state); }
 
   protected:
-    const NonequispacedMesh nemesh;
+    const NonequiMesh nemesh;
 
   private:
     double integral_nonequimesh(const af::array& h_times_m,

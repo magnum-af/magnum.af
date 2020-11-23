@@ -5,9 +5,9 @@
 
 namespace magnumafcpp {
 
-class NonEquiDemagField : public NonequiTermBase {
+class NonequiDemagField : public NonequiTermBase {
   public:
-    NonEquiDemagField(NonequispacedMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
+    NonequiDemagField(NonequiMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
     const af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
 
     af::array h(const State& state);           // Field contribution

@@ -312,12 +312,12 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 }
 
 // wrapped function
-void vtr_writer(const af::array& field, const NonequispacedMesh& nonequimesh, std::string outputname,
+void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname,
                 const bool verbose) {
     vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, outputname, verbose);
 }
 
-void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath, const bool verbose) {
+void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose) {
     // Counterpart to vtr_writer()
     // Reads vktRectilinearGrid cell data from file
     // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
@@ -380,7 +380,7 @@ void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath,
 
     // Setting output variables
     field = A;
-    mesh = NonequispacedMesh(grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing);
+    mesh = NonequiMesh(grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing);
 }
 } // namespace magnumafcpp
 #pragma GCC diagnostic pop

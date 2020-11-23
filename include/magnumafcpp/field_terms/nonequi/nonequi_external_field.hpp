@@ -9,14 +9,14 @@ namespace magnumafcpp {
 
 class NonequiExternalField : public NonequiTermBase {
   public:
-    NonequiExternalField(NonequispacedMesh nemesh, const af::array& field)
+    NonequiExternalField(NonequiMesh nemesh, const af::array& field)
         : NonequiTermBase(nemesh), external_field(field) {}
 
-    NonequiExternalField(NonequispacedMesh nemesh, std::function<af::array(State)> function)
+    NonequiExternalField(NonequiMesh nemesh, std::function<af::array(State)> function)
         : NonequiTermBase(nemesh), callback_function(function), callback_is_defined(true) {}
 
     ///< For wrapping only
-    NonequiExternalField(NonequispacedMesh nemesh, long int fieldptr)
+    NonequiExternalField(NonequiMesh nemesh, long int fieldptr)
         : NonequiTermBase(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
 
     af::array h(const State& state) {

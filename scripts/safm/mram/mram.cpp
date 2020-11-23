@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     // Generating Objects
     std::vector<double> z_spacing = {z / 4., 1e-10, 9.84825e-10, z / 4., z / 4.};
     // std::vector<double> z_spacing = {z/nz, 9.84825e-10, z/nz, z/nz};
-    NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
     std::cout << mesh << std::endl;
 
     // Initial magnetic field
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     vtr_writer(Ku1_field, state.nonequimesh, filepath + "m_init");
     timer.print_stage("mesh  ");
 
-    auto demag = LlgTerm(new NonEquiDemagField(mesh, true, true, 0));
+    auto demag = LlgTerm(new NonequiDemagField(mesh, true, true, 0));
     auto exch = LlgTerm(new NonequiExchangeField(mesh, A, true));
     auto aniso = LlgTerm(new NonequiUniaxialAnisotropyField(mesh, Ku1_field, std::array<double, 3>{0, 0, 1}));
     LlgTerms llgterms = {demag, exch, aniso};

@@ -10,10 +10,10 @@
 namespace magnumafcpp {
 
 /// Expanded cell size for demag FFT
-inline unsigned nx_expanded(const NonequispacedMesh& nemesh) { return 2 * nemesh.nx; }
-inline unsigned ny_expanded(const NonequispacedMesh& nemesh) { return 2 * nemesh.ny; }
+inline unsigned nx_expanded(const NonequiMesh& nemesh) { return 2 * nemesh.nx; }
+inline unsigned ny_expanded(const NonequiMesh& nemesh) { return 2 * nemesh.ny; }
 
-af::array NonEquiDemagField::h(const State& state) {
+af::array NonequiDemagField::h(const State& state) {
     af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
@@ -202,7 +202,7 @@ double nonequi_index_distance(const std::vector<double> spacings, const unsigned
     return result;
 }
 
-void init_N(const NonequispacedMesh& nemesh, std::vector<double>& N, unsigned ix_start, unsigned ix_end) {
+void init_N(const NonequiMesh& nemesh, std::vector<double>& N, unsigned ix_start, unsigned ix_end) {
     for (unsigned ix = ix_start; ix < ix_end; ix++) {
         const int jx = (ix + nx_expanded(nemesh) / 2) % nx_expanded(nemesh) - nx_expanded(nemesh) / 2;
         for (unsigned iy = 0; iy < ny_expanded(nemesh); iy++) {
@@ -239,7 +239,7 @@ void init_N(const NonequispacedMesh& nemesh, std::vector<double>& N, unsigned ix
     }
 }
 
-af::array calculate_N(const NonequispacedMesh& nemesh, unsigned nthreads) {
+af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads) {
     std::vector<double> N_values(nx_expanded(nemesh) * ny_expanded(nemesh) * (nemesh.nz * (nemesh.nz + 1)) / 2 * 6);
 
     std::vector<std::thread> t;
@@ -259,7 +259,7 @@ af::array calculate_N(const NonequispacedMesh& nemesh, unsigned nthreads) {
 }
 
 // wrappered calculate_N
-af::array calculate_N(const NonequispacedMesh& nemesh, unsigned nthreads, bool verbose) {
+af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads, bool verbose) {
     af::timer timer = af::timer::start();
     if (verbose) {
         printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
@@ -275,7 +275,7 @@ af::array calculate_N(const NonequispacedMesh& nemesh, unsigned nthreads, bool v
 } // namespace newell_nonequi
 
 namespace nonequi_util {
-std::string to_string(const NonequispacedMesh& nemesh) {
+std::string to_string(const NonequiMesh& nemesh) {
     std::string dz_string;
     for (auto const& dz : nemesh.z_spacing) {
         dz_string.append(std::to_string(1e9 * dz));
@@ -287,7 +287,7 @@ std::string to_string(const NonequispacedMesh& nemesh) {
 
 void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
     if (util::max_of_prime_factors(n) > 13) {
-        std::cout << Warning() << " NonEquiDemagField::NonEquiDemagField: maximum prime factor of nemesh." << ni << "="
+        std::cout << Warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh." << ni << "="
                   << n << " is " << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
                      "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
@@ -295,7 +295,7 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
                   << std::endl;
     }
 }
-void warn_if_maxprime_lt_13(const NonequispacedMesh& nemesh) {
+void warn_if_maxprime_lt_13(const NonequiMesh& nemesh) {
     if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
         warn_if_maxprime_lt_13(nemesh.nx, "nx");
         warn_if_maxprime_lt_13(nemesh.ny, "ny");
@@ -304,7 +304,7 @@ void warn_if_maxprime_lt_13(const NonequispacedMesh& nemesh) {
 }
 } // namespace nonequi_util
 
-af::array get_Nfft(NonequispacedMesh nemesh, bool verbose, bool caching, unsigned nthreads) {
+af::array get_Nfft(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthreads) {
     nonequi_util::warn_if_maxprime_lt_13(nemesh);
 
     if (caching == false) {
@@ -323,7 +323,7 @@ af::array get_Nfft(NonequispacedMesh nemesh, bool verbose, bool caching, unsigne
     }
 }
 
-NonEquiDemagField::NonEquiDemagField(NonequispacedMesh nemesh, bool verbose, bool caching, unsigned nthreads)
+NonequiDemagField::NonequiDemagField(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthreads)
     : NonequiTermBase(nemesh),
       Nfft(get_Nfft(nemesh, verbose, caching, nthreads > 0 ? nthreads : std::thread::hardware_concurrency())) {}
 

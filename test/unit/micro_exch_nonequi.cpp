@@ -9,7 +9,7 @@ TEST(micro_exch_sparse, COO_CSR_array_A) {
     if (Version(af_version_string()) >= Version("3.7.0")) {
         unsigned nx = 10, ny = 10;
         const double A = 1e-12;
-        NonequispacedMesh mesh(nx, ny, 1e-9, 1e-9, {1e-9, 1e-9, 1e-9, 1e-9});
+        NonequiMesh mesh(nx, ny, 1e-9, 1e-9, {1e-9, 1e-9, 1e-9, 1e-9});
         const unsigned nz = mesh.nz;
         auto exch_COO = NonequiExchangeField(mesh, af::constant(A, nx, ny, nz, f64), false, true);
         auto exch_CSR = NonequiExchangeField(mesh, af::constant(A, nx, ny, nz, f64), false, false);
@@ -24,7 +24,7 @@ TEST(micro_exch_sparse, COO_CSR_const_A) {
     if (Version(af_version_string()) >= Version("3.7.0")) {
         unsigned nx = 10, ny = 10;
         const double A = 1e-12;
-        NonequispacedMesh mesh(nx, ny, 1e-9, 1e-9, {1e-9, 1e-9, 1e-9, 1e-9});
+        NonequiMesh mesh(nx, ny, 1e-9, 1e-9, {1e-9, 1e-9, 1e-9, 1e-9});
         const unsigned nz = mesh.nz;
         auto exch_COO = NonequiExchangeField(mesh, A, false, true);
         auto exch_CSR = NonequiExchangeField(mesh, A, false, false);

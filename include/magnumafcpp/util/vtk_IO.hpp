@@ -21,7 +21,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath);
 void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double> z_spacing,
                 std::string outputname,
                 const bool verbose = false); // Rectilinear grid writer
-void vtr_writer(const af::array& field, const NonequispacedMesh& nonequimesh, std::string outputname,
+void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname,
                 const bool verbose = false); // Rectilinear grid writer
-void vtr_reader(af::array& field, NonequispacedMesh& mesh, std::string filepath, const bool verbose = false);
+void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose = false);
 } // namespace magnumafcpp

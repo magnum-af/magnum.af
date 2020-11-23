@@ -30,7 +30,7 @@ from math import pi
 from numpy import zeros as np_zeros
 
 from magnumaf_decl cimport Mesh as cMesh
-from magnumaf_decl cimport NonequispacedMesh as cNonequispacedMesh
+from magnumaf_decl cimport NonequiMesh as cNonequiMesh
 from magnumaf_decl cimport State as cState
 from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
@@ -441,23 +441,23 @@ cdef class Mesh:
 
 
 
-cdef class NonequispacedMesh:
+cdef class NonequiMesh:
     """
     Nonequispaced Mesh object.
     """
     def __init__(self, nx, ny, dx, dy, z_spacing):
         pass
 
-    cdef cNonequispacedMesh* _thisptr
+    cdef cNonequiMesh* _thisptr
     cdef object owner # None if this is our own # From [1]
     #def __cinit__(self, int nx, int ny, double dx, double dy, vector[double] z_spacing):
     def __cinit__(self, unsigned nx, unsigned ny, double dx, double dy, z_spacing):
         cdef vector[double] z_spacing_cvec
         for val in z_spacing:
             z_spacing_cvec.push_back(val)
-        self._thisptr = new cNonequispacedMesh(nx, ny, dx, dy, z_spacing)
+        self._thisptr = new cNonequiMesh(nx, ny, dx, dy, z_spacing)
         owner = None # see [1]
-    cdef set_ptr(self, cNonequispacedMesh* ptr, owner):
+    cdef set_ptr(self, cNonequiMesh* ptr, owner):
         if self.owner is None:
             del self._thisptr
         self._thisptr = ptr
@@ -974,7 +974,7 @@ cdef class DmiField(HeffTerm):
 
 cdef class NonequiExchangeField(HeffTerm):
     cdef cNonequiExchangeField* _thisptr
-    def __cinit__(self, NonequispacedMesh mesh, A, verbose = True):
+    def __cinit__(self, NonequiMesh mesh, A, verbose = True):
         if hasattr(A, 'arr'):
             self._thisptr = new cNonequiExchangeField (deref(mesh._thisptr), <long int> addressof(A.arr), <bool> verbose)
         else:
@@ -1083,7 +1083,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
 
 cdef class NonequiUniaxialAnisotropyField(HeffTerm):
     cdef cNonequiUniaxialAnisotropyField* _thisptr
-    def __cinit__(self, NonequispacedMesh mesh, Ku1, Ku1_axis = [0, 0, 1]):
+    def __cinit__(self, NonequiMesh mesh, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
             self._thisptr = new cNonequiUniaxialAnisotropyField (deref(mesh._thisptr), <long int> addressof(Ku1.arr), <long int> addressof(Ku1_axis.arr))
         elif hasattr(Ku1, 'arr') :

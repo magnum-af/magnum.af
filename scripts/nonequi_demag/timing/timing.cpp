@@ -79,9 +79,9 @@ int main(int argc, char** argv) {
             for (int i = 0; i < nz; ++i) {
                 z_spacing.push_back(z / nz);
             }
-            NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+            NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
             State state_ne(mesh_ne, 8e5, m, false, true);
-            NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 0);
+            NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 0);
             std::vector<double> times;
             const bool sync = true;
 

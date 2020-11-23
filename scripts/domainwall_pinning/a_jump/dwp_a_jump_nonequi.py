@@ -101,7 +101,7 @@ for i in range(nz):
         zval = (2 - 1/factor_cell2_vs_cell1) * z/nz
         z_spacing.append(zval)
         length = length + zval
-ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
+ne_mesh = NonequiMesh(nx, ny, x/nx, y/ny, z_spacing)
 print("length=", length)
 print(ne_mesh.nz)
 print(ne_mesh.z_spacing)

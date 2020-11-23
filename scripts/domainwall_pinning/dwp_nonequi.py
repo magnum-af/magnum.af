@@ -50,7 +50,7 @@ mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 z_spacing = []
 for i in range(nz):
     z_spacing.append(z/nz)
-nemesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
+nemesh = NonequiMesh(nx, ny, x/nx, y/ny, z_spacing)
 print(nemesh.nz)
 print(nemesh.z_spacing)
 #nemesh.z_spacing = [2e-9, 2e-9, 2e-9, 2e-9]

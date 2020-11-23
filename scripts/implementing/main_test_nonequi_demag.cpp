@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 
         DemagField demag = DemagField(mesh_full, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh_nonequi, material, true, false, 1);
+        NonequiDemagField nonequi_demag = NonequiDemagField(mesh_nonequi, material, true, false, 1);
 
         // af::print("full h", demag.h(state_full));
         af::print("full h", demag.h(state_full)(af::span, af::span, 1, af::span));
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 
         DemagField demag = DemagField(mesh_full, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh_nonequi, material, true, false, 1);
+        NonequiDemagField nonequi_demag = NonequiDemagField(mesh_nonequi, material, true, false, 1);
 
         af::print("full h", demag.h(state_full)(af::span, af::span, 1, af::span));
 
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
 
         DemagField demag = DemagField(mesh, material, true, false, 1);
 
-        NonEquiDemagField nonequi_demag = NonEquiDemagField(mesh, material, true, false, 1);
+        NonequiDemagField nonequi_demag = NonequiDemagField(mesh, material, true, false, 1);
 
         // af::print("full h", demag.h(state_full));
 

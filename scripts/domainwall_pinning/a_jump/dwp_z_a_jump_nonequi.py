@@ -55,7 +55,7 @@ for i in range(nz):
     print("i=", i, z/nz)
     length = length + z/nz
     z_spacing.append(z/nz)
-ne_mesh = NonequispacedMesh(nx, ny, x/nx, y/ny, z_spacing)
+ne_mesh = NonequiMesh(nx, ny, x/nx, y/ny, z_spacing)
 print("length=", length)
 print(ne_mesh.nz)
 print(ne_mesh.z_spacing)

@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
         for (int i = 0; i < idz_vortex; i++) {
             z_spacing.push_back(dz_fl);
         }
-        NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
+        NonequiMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
         // std::cout << mesh << std::endl;
 
         // Initial magnetic field
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
         State state(mesh, Ms, m, false);
         state.vtr_writer(filepath + "minit");
 
-        NonEquiDemagField demag(mesh, false, false, 0);
+        NonequiDemagField demag(mesh, false, false, 0);
 
         af::array h = demag.h(state);
         vtr_writer(h, mesh, filepath + "h");

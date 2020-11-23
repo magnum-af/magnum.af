@@ -29,12 +29,12 @@ TEST(vtkIO, vtiWriteReadTest) {
 TEST(vtkIO, vtrWriteReadTest) {
     af::array a = af::randu(6, 5, 4, 10, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
-    NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
+    NonequiMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "vtr_unittest", false);
 
     af::array read_a;
-    NonequispacedMesh read_mesh(0, 0, 0, 0, {0});
+    NonequiMesh read_mesh(0, 0, 0, 0, {0});
 
     vtr_reader(read_a, read_mesh, "vtr_unittest", false);
     EXPECT_EQ(remove("vtr_unittest.vtr"), 0);
@@ -55,7 +55,7 @@ TEST(vtkIO, vtrWriteReadTest) {
 TEST(vtkIO, vtrWriteReadScalarFieldTest) {
     af::array a = af::randu(6, 5, 4, 1, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
-    NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
+    NonequiMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "vtr_unittest", false);
 
@@ -70,7 +70,7 @@ TEST(vtkIO, vtrWriteReadScalarFieldTest) {
 TEST(vtkIO, vtrWriteReadAddFileExtensionTest) {
     af::array a = af::randu(6, 5, 4, 1, f64);
     std::vector<double> z_spacing = {0.1, 0.2, 0.3, 0.4};
-    NonequispacedMesh mesh(6, 5, 0.1, 0.2, z_spacing);
+    NonequiMesh mesh(6, 5, 0.1, 0.2, z_spacing);
 
     vtr_writer(a, mesh, "unittesting_a", false);
 

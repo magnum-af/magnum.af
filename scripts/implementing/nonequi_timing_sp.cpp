@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
             for (int j = 0; j < nz; j++) {
                 z_spacing.push_back(z / nz);
             }
-            llgterm.push_back(LlgTerm(new NonEquiDemagField(mesh, z_spacing, true, false, 1)));
+            llgterm.push_back(LlgTerm(new NonequiDemagField(mesh, z_spacing, true, false, 1)));
         } else {
             llgterm.push_back(LlgTerm(new DemagField(mesh, material, true, false, 1)));
         }

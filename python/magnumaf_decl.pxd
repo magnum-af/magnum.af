@@ -29,8 +29,8 @@ cdef extern from "field_terms/micro/sparse_exchange_field.hpp" namespace "magnum
 
 cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiExchangeField:
-        NonequiExchangeField (NonequispacedMesh mesh, long int A_exchange_field_ptr, bool verbose);
-        NonequiExchangeField (NonequispacedMesh mesh, double A_exchange, bool verbose);
+        NonequiExchangeField (NonequiMesh mesh, long int A_exchange_field_ptr, bool verbose);
+        NonequiExchangeField (NonequiMesh mesh, double A_exchange, bool verbose);
         long int h_ptr(const State& state);
         double E(const State& state);
         double get_cpu_time();
@@ -43,11 +43,11 @@ cdef extern from "mesh.hpp" namespace "magnumafcpp":
         Mesh (unsigned int, unsigned int, unsigned int, double, double, double)
 
 cdef extern from "nonequispaced_mesh.hpp" namespace "magnumafcpp":
-    cdef cppclass NonequispacedMesh:
+    cdef cppclass NonequiMesh:
         unsigned nx, ny, nz;
         double dx, dy;
         vector[double] z_spacing;
-        NonequispacedMesh (unsigned, unsigned, double, double, vector[double] z_spacing);
+        NonequiMesh (unsigned, unsigned, double, double, vector[double] z_spacing);
 
 cdef extern from "state.hpp" namespace "magnumafcpp":
     cdef cppclass State:
@@ -152,10 +152,10 @@ cdef extern from "field_terms/micro/cubic_anisotropy_field.hpp" namespace "magnu
 
 cdef extern from "field_terms/nonequi/nonequi_uniaxial_anisotropy_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiUniaxialAnisotropyField:
-        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
-        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
-        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
-        NonequiUniaxialAnisotropyField (NonequispacedMesh nemesh, double Ku1, long int Ku1_axis_field_ptr);
+        NonequiUniaxialAnisotropyField (NonequiMesh nemesh, long int Ku1_field, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (NonequiMesh nemesh, double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
+        NonequiUniaxialAnisotropyField (NonequiMesh nemesh, long int Ku1_field_ptr, long int Ku1_axis_field_ptr);
+        NonequiUniaxialAnisotropyField (NonequiMesh nemesh, double Ku1, long int Ku1_axis_field_ptr);
         double E(const State& state);
         long int h_ptr(const State& state);
         double Ku1;

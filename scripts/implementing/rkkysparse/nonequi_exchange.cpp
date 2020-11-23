@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     A = A * 1e-12;
     // double A = 1e-12;
     std::vector<double> zvec = {1e-9, 2e-9, 3e-9, 4e-9};
-    NonequispacedMesh mesh(nx, ny, dx, dy, zvec);
+    NonequiMesh mesh(nx, ny, dx, dy, zvec);
     auto coo = NonequiExchangeField(mesh, A, true, true);
     af::array coo_to_dense = af::sparseConvertTo(coo.matr, AF_STORAGE_DENSE);
     auto csr = NonequiExchangeField(mesh, A, true, false);

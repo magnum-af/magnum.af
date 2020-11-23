@@ -22,10 +22,10 @@ namespace magnumafcpp {
 /// Sundqvist & George Veronis
 class NonequiExchangeField : public NonequiTermBase {
   public:
-    NonequiExchangeField(NonequispacedMesh nemesh, double A_exchange, bool verbose = true, bool COO = true);
-    NonequiExchangeField(NonequispacedMesh nemesh, const af::array& A_exchange_field, bool verbose = true,
+    NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose = true, bool COO = true);
+    NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose = true,
                          bool COO = true);
-    NonequiExchangeField(NonequispacedMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
+    NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
 
     af::array h(const State& state); // Field contribution
 
@@ -34,11 +34,11 @@ class NonequiExchangeField : public NonequiTermBase {
     const af::array matr;
 
   private:
-    af::array calc_CSR_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
-    af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
-    af::array calc_COO_matrix(const double A_exchange, const NonequispacedMesh&, const bool verbose);
-    af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequispacedMesh&, const bool verbose);
-    unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequispacedMesh& mesh);
+    af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh&, const bool verbose);
+    af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh&, const bool verbose);
+    af::array calc_COO_matrix(const double A_exchange, const NonequiMesh&, const bool verbose);
+    af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh&, const bool verbose);
+    unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequiMesh& mesh);
     double af_time{0};
 };
 

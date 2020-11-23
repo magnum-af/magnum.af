@@ -12,7 +12,7 @@ using namespace magnumafcpp;
 //    double dx = 1;
 //    double dy = 2;
 //    std::vector<double> dz = {1, 2, 3};
-//    NonequispacedMesh nemesh(nx, ny, dx, dy, dz);
+//    NonequiMesh nemesh(nx, ny, dx, dy, dz);
 //    af::array m = af::constant(1., nx, ny, nemesh.nz, 3, f64);
 //    af::array field = af::constant(1., nx, ny, nemesh.nz, 3, f64);
 //    NonequiExternalField nonequi_external(nemesh, field);

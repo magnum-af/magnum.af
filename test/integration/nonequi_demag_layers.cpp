@@ -5,7 +5,7 @@
 
 using namespace magnumafcpp;
 
-TEST(NonEquiDemagField, energy_homogenuous_cube) {
+TEST(NonequiDemagField, energy_homogenuous_cube) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization
     const double dx = 1e-9, dy = 1e-9, dz = 1e-9;
@@ -20,12 +20,12 @@ TEST(NonEquiDemagField, energy_homogenuous_cube) {
             z_spacing.push_back(1.5 * dz);
         }
     }
-    NonequispacedMesh mesh_ne(nx, ny, dx, dy, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, dx, dy, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state(m2, Ms, false, true);
-    NonEquiDemagField demag = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag = NonequiDemagField(mesh_ne, false, false, 1);
 
     double E_analytic = 1. / 6. * nx * pow(dx, 3) * pow(state.Ms, 2) * constants::mu0;
 
@@ -41,10 +41,10 @@ TEST(NonEquiDemagField, energy_homogenuous_cube) {
     EXPECT_NEAR(demag.E(state, h_demag), E_analytic, 3.7e-20);
 }
 
-TEST(NonEquiDemagField, EnergyTest) {
+TEST(NonequiDemagField, EnergyTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization NOTE: this test is
-    // only sensitive to i_source >= i_target (in NonEquiDemagField::h() method)
+    // only sensitive to i_source >= i_target (in NonequiDemagField::h() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -65,7 +65,7 @@ TEST(NonEquiDemagField, EnergyTest) {
 
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_1;
     m2(af::span, af::span, 1, af::span) = random_2;
@@ -74,7 +74,7 @@ TEST(NonEquiDemagField, EnergyTest) {
     // even though constructor should not exist: //State state_ne(mesh_ne,
     // (af::array) m2, false, true);
     State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     // testing E(state)
     EXPECT_NEAR(demag_ed.E(state_ed), demag_ne.E(state_ne),
@@ -87,10 +87,10 @@ TEST(NonEquiDemagField, EnergyTest) {
                 2e-24); // Note: this is for opencl, cpu and cuda achieve 3e-27
 }
 
-TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
+TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization NOTE: this test is
-    // only sensitive to i_source >= i_target (in NonEquiDemagField::h() method)
+    // only sensitive to i_source >= i_target (in NonequiDemagField::h() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -111,13 +111,13 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
 
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_1;
     m2(af::span, af::span, 1, af::span) = random_2;
 
     State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
@@ -129,10 +129,10 @@ TEST(NonEquiDemagField, RandomMagnetizationHeffTest) {
                 0.009); // Note: this is for opencl, cpu and cuda achieve
 }
 
-TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
+TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     // Same as above but testing else{} in nedemag.h(state) method
     // NOTE: this test is only sensitive to i_source < i_target (in
-    // NonEquiDemagField::h() method)
+    // NonequiDemagField::h() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -153,13 +153,13 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
 
     // nonequi
     std::vector<double> z_spacing = {2 * z / nz, z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_2;
     m2(af::span, af::span, 1, af::span) = random_1;
 
     State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 2, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 1, af::span);
@@ -171,7 +171,7 @@ TEST(NonEquiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
                 0.009); // Note: this is for opencl, cpu and cuda achieve 0.0009
 }
 
-TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
+TEST(NonequiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
@@ -193,7 +193,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
 
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, 1, af::span) = random;
 
@@ -202,7 +202,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // State state_ne(mesh_ne, Ms_field, m2, false, true);
     // std::cout << "test" << std::endl;
     State state_ne(m2, 8e5, false, true);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
@@ -212,7 +212,7 @@ TEST(NonEquiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
                 0.0009); // cpu and cuda 0.0003; 100x25x3:  0.003
 }
 
-TEST(NonEquiDemagField, UMagnetizationHeffTest) {
+TEST(NonequiDemagField, UMagnetizationHeffTest) {
     // Compare SP4 layer (with ↑ → → → → ↑ magnetization) once with nz = 3
     // equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
@@ -233,7 +233,7 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
 
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::seq(1, af::end - 1), af::span, af::span, 0) =
         af::constant(1.0, mesh_ne.nx - 2, mesh_ne.ny, mesh_ne.nz, 1, f64);
@@ -243,7 +243,7 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
 
     State state_ne(m2, 8e5, false, true);
     state_ne.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
@@ -255,7 +255,7 @@ TEST(NonEquiDemagField, UMagnetizationHeffTest) {
                          // and cuda achieve 0.0006
 }
 
-TEST(NonEquiDemagField, HomogenuousMagnetizationHeffTest) {
+TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
@@ -272,13 +272,13 @@ TEST(NonEquiDemagField, HomogenuousMagnetizationHeffTest) {
 
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
-    NonequispacedMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
+    NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
     af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state_ne(m2, 8e5, false, true);
     state_ne.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
-    NonEquiDemagField demag_ne = NonEquiDemagField(mesh_ne, false, false, 1);
+    NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
