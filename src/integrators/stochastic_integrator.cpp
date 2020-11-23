@@ -5,8 +5,8 @@
 namespace magnumafcpp {
 
 af::array Stochastic_Integrator::Heun(const State& state) {
-    const double D =
-        (this->alpha * constants::kb * this->T) / (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const double D = (alpha * constants::kb * T) /
+                     (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
     const af::array h_th = sqrt((2. * D) / dt) * randn(state.mesh.dims, f64,
                                                        rand_engine); // Random thermal field at t+dt/2
     af::array k1 = dt * stochfdmdt(state, h_th_prev);
@@ -16,8 +16,8 @@ af::array Stochastic_Integrator::Heun(const State& state) {
 }
 
 af::array Stochastic_Integrator::SemiImplicitHeun(const State& state) {
-    const double D =
-        (this->alpha * constants::kb * this->T) / (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const double D = (alpha * constants::kb * T) /
+                     (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
     const af::array h_th_init =
         sqrt((2. * D) / dt) * randn(state.mesh.dims, f64, rand_engine); // Random thermal field at t
     const af::array h_th = sqrt((2. * D) / dt) * randn(state.mesh.dims, f64,
@@ -74,8 +74,8 @@ int get_mode(std::string smode) {
 Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, State state,
                                              std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in, std::string smode)
     : alpha(alpha), T(T), dt(dt), Fieldterms(Fieldterms_in), m_prev(state.m), mode(get_mode(smode)) {
-    const double D =
-        (this->alpha * constants::kb * this->T) / (constants::gamma * constants::mu0 * state.Ms * state.mesh.V);
+    const double D = (alpha * constants::kb * T) /
+                     (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
     unsigned long long int seed =
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();

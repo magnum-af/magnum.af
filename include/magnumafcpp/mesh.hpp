@@ -11,7 +11,6 @@ struct Mesh {
 
     unsigned n0, n1, n2;             // Number of cells in x, y, z
     double dx, dy, dz;               // Distance between cells
-    double V;                        // Volume of one cell
     unsigned n0_exp, n1_exp, n2_exp; // Expanded cell sizes for demag FFT
     af::dim4 dims;                   // Dimension for vector field on mesh, i.e. [nx, ny, nz, 3]
     af::dim4 dims_scalar;            // Dimension for scalar field on mesh, i.e. [nx, ny, nz, 1]

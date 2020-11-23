@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.dx * state.mesh.dy * state.mesh.dz) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.dx * state.mesh.dy * state.mesh.dz) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;
@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 
         mean_mz = mean_mz / measure_steps;
         abs_mean_mz = abs_mean_mz / measure_steps;
-        chi = (state.material.Ku1 * state.mesh.V) / (constants::kb * Stoch.material.T);
+        chi = (state.material.Ku1 * state.mesh.dx * state.mesh.dy * state.mesh.dz) / (constants::kb * Stoch.material.T);
         std::cout << "at " << Stoch.material.T << " K" << std::endl;
         std::cout << "Calculated <mz>/Ms  = " << mean_mz << std::endl;
         std::cout << "Cal  <fabs(mz)>/Ms  = " << abs_mean_mz << std::endl;

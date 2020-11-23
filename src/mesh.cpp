@@ -5,12 +5,12 @@
 namespace magnumafcpp {
 
 Mesh::Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double dz)
-    : n0(nx), n1(ny), n2(nz), dx(dx), dy(dy), dz(dz), V(dx * dy * dz), n0_exp(2 * n0), n1_exp(2 * n1),
-      n2_exp((n2 == 1) ? 1 : 2 * n2), dims(af::dim4(n0, n1, n2, 3)), dims_scalar(af::dim4(n0, n1, n2, 1)),
+    : n0(nx), n1(ny), n2(nz), dx(dx), dy(dy), dz(dz), n0_exp(2 * n0), n1_exp(2 * n1), n2_exp((n2 == 1) ? 1 : 2 * n2),
+      dims(af::dim4(n0, n1, n2, 3)), dims_scalar(af::dim4(n0, n1, n2, 1)),
       dims_expanded(af::dim4(n0_exp, n1_exp, n2_exp, 3)) {}
 
 void Mesh::print(std::ostream& stream) {
-    stream << "n0=" << n0 << " n1=" << n1 << " n2=" << n2 << " dx=" << dx << " dy=" << dy << " dz=" << dz << " V=" << V
+    stream << "n0=" << n0 << " n1=" << n1 << " n2=" << n2 << " dx=" << dx << " dy=" << dy << " dz=" << dz
            << " n0_exp=" << n0_exp << " n1_exp=" << n1_exp << " n2_exp=" << n2_exp << std::endl;
 }
 
