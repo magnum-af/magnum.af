@@ -4,24 +4,29 @@
 
 namespace magnumafcpp {
 
+// Expanded cell sizes for demag FFT
+inline unsigned nx_exp(unsigned nx) { return 2 * nx; }
+inline unsigned ny_exp(unsigned ny) { return 2 * ny; }
+inline unsigned nz_exp(unsigned nz) { return (nz == 1) ? 1 : 2 * nz; }
+
 af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
 AtomisticDipoleDipoleField::AtomisticDipoleDipoleField(Mesh mesh) {
-    Nfft = N_atomistic(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz);
-    // h   =af::array (mesh.n0_exp    , mesh.n1_exp, mesh.n2_exp, 3, f64);
+    Nfft = N_atomistic(nx_exp(mesh.n0), ny_exp(mesh.n1), nz_exp(mesh.n2), mesh.dx, mesh.dy, mesh.dz);
+    // h   =af::array (nx_exp(mesh.n0)    , ny_exp(mesh.n1), nz_exp(mesh.n2), 3, f64);
 }
 
 af::array AtomisticDipoleDipoleField::h(const State& state) {
     timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
-    if (state.mesh.n2_exp == 1) {
-        mfft = af::fftR2C<2>(state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp));
+    if (nz_exp(state.mesh.n2) == 1) {
+        mfft = af::fftR2C<2>(state.m, af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1)));
     } else {
-        mfft = af::fftR2C<3>(state.m, af::dim4(state.mesh.n0_exp, state.mesh.n1_exp, state.mesh.n2_exp));
+        mfft = af::fftR2C<3>(state.m, af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1), nz_exp(state.mesh.n2)));
     }
 
-    af::array hfft = af::array(state.mesh.n0_exp / 2 + 1, state.mesh.n1_exp, state.mesh.n2_exp, 3, c64);
+    af::array hfft = af::array(nx_exp(state.mesh.n0) / 2 + 1, ny_exp(state.mesh.n1), nz_exp(state.mesh.n2), 3, c64);
     // Pointwise product
     hfft(af::span, af::span, af::span, 0) =
         Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
@@ -38,23 +43,23 @@ af::array AtomisticDipoleDipoleField::h(const State& state) {
 
     // IFFT reversing padding
     af::array h_field;
-    if (state.mesh.n2_exp == 1) {
+    if (nz_exp(state.mesh.n2) == 1) {
         h_field = af::fftC2R<2>(hfft);
-        // af::print("h_dip", state.Ms * h_field(seq(0, state.mesh.n0_exp/2-1),
-        // seq(0, state.mesh.n1_exp/2-1)));//TODO hack
+        // af::print("h_dip", state.Ms * h_field(seq(0, nx_exp(state.mesh.n0)/2-1),
+        // seq(0, ny_exp(state.mesh.n1)/2-1)));//TODO hack
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return state.Ms * h_field(af::seq(0, state.mesh.n0_exp / 2 - 1),
-                                  af::seq(0, state.mesh.n1_exp / 2 - 1)); // TODO consider p density, then we
+        return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.n0) / 2 - 1),
+                                  af::seq(0, ny_exp(state.mesh.n1) / 2 - 1)); // TODO consider p density, then we
                                                                           // have to multip at m before fft
     } else {
         h_field = af::fftC2R<3>(hfft);
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return state.Ms * h_field(af::seq(0, state.mesh.n0_exp / 2 - 1), af::seq(0, state.mesh.n1_exp / 2 - 1),
-                                  af::seq(0, state.mesh.n2_exp / 2 - 1), af::span);
+        return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.n0) / 2 - 1), af::seq(0, ny_exp(state.mesh.n1) / 2 - 1),
+                                  af::seq(0, nz_exp(state.mesh.n2) / 2 - 1), af::span);
     }
 }
 
