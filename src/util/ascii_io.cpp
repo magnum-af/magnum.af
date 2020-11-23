@@ -1,4 +1,5 @@
 #include "ascii_io.hpp"
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -91,68 +92,63 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
         }
     }
 }
-void read_ascii(af::array& a, Mesh& mesh, std::string filename, bool verbose) {
+std::pair<af::array, Mesh> read_ascii(std::string filename, bool verbose) {
     std::ifstream infile(filename);
-    if (infile.is_open()) {
-        af::timer timer = af::timer::start();
-        if (verbose) {
-            printf("reading from ascii file %s\n", filename.c_str());
+    if (!infile.is_open()) {
+        printf("read_ascii: Could not read file! Aborting...\n");
+        std::exit(EXIT_FAILURE);
+    }
+    af::timer timer = af::timer::start();
+    if (verbose) {
+        printf("reading from ascii file %s\n", filename.c_str());
+    }
+
+    std::string line;
+
+    // Getting mesh size and discretization
+    unsigned nx, ny, nz, n_scalar;
+    double dx, dy, dz;
+    std::getline(infile, line);
+    line.erase(0, 2);
+    std::istringstream iss1(line);
+    if (!(iss1 >> nx >> ny >> nz >> n_scalar >> dx >> dy >> dz)) {
+        printf("Error while reading line!\n");
+    }
+    std::vector<double> raw_read_a(nx * ny * nz * n_scalar);
+
+    // skipping all further lines starting with '#'
+    while (std::getline(infile, line)) {
+        if (line.at(0) == '#') {
+            continue;
         }
 
-        std::string line;
-
-        // Getting mesh size and discretization
-        unsigned nx, ny, nz, n_scalar;
-        double dx, dy, dz;
-        std::getline(infile, line);
-        line.erase(0, 2);
-        std::istringstream iss1(line);
-        if (!(iss1 >> nx >> ny >> nz >> n_scalar >> dx >> dy >> dz)) {
-            printf("Error while reading line!\n");
-        }
-        Mesh read_mesh(nx, ny, nz, dx, dy, dz);
-        mesh = read_mesh;
-        double* raw_read_a = new double[nx * ny * nz * n_scalar];
-
-        // skipping all further lines starting with '#'
-        while (std::getline(infile, line)) {
-            if (line.at(0) == '#') {
-                continue;
-            }
-
-            // reading in with loop
-            for (unsigned ix = 0; ix < nx; ix++) {
-                for (unsigned iy = 0; iy < ny; iy++) {
-                    for (unsigned iz = 0; iz < nz; iz++) {
-                        std::istringstream iss(line);
-                        double ddx, ddy, ddz;
-                        if (!(iss >> ddx >> ddy >> ddz)) {
+        // reading in with loop
+        for (unsigned ix = 0; ix < nx; ix++) {
+            for (unsigned iy = 0; iy < ny; iy++) {
+                for (unsigned iz = 0; iz < nz; iz++) {
+                    std::istringstream iss(line);
+                    double ddx, ddy, ddz;
+                    if (!(iss >> ddx >> ddy >> ddz)) {
+                        printf("Error while reading line!\n");
+                        break;
+                    }
+                    for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
+                        double value;
+                        if (!(iss >> value)) {
                             printf("Error while reading line!\n");
                             break;
                         }
-                        for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
-                            double value;
-                            if (!(iss >> value)) {
-                                printf("Error while reading line!\n");
-                                break;
-                            }
-                            raw_read_a[colum_major_stride(ix, iy, iz, i_scalar, nx, ny, nz)] = value;
-                        }
-                        std::getline(infile, line);
+                        raw_read_a[colum_major_stride(ix, iy, iz, i_scalar, nx, ny, nz)] = value;
                     }
+                    std::getline(infile, line);
                 }
             }
-            af::array read_a = af::array(nx, ny, nz, n_scalar, raw_read_a);
-            delete[] raw_read_a;
-            raw_read_a = NULL;
-            a = read_a;
         }
-        if (verbose) {
-            printf("Wrote ascii file in %f [s]\n", timer.stop());
-        }
-    } else {
-        printf("Could not read file!\n");
     }
+    if (verbose) {
+        printf("Wrote ascii file in %f [s]\n", timer.stop());
+    }
+    return {af::array(nx, ny, nz, n_scalar, raw_read_a.data()), Mesh(nx, ny, nz, dx, dy, dz)};
 }
 
 } // namespace magnumafcpp

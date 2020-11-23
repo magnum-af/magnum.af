@@ -11,10 +11,7 @@ TEST(ascii_io, ascii_io_test_vector_field) {
     std::string filename = ("ascii_unittest.txt");
     write_ascii(a, mesh, filename, false);
 
-    af::array read_a;
-    Mesh read_mesh(0, 0, 0, 0, 0, 0);
-
-    read_ascii(read_a, read_mesh, filename, false);
+    auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
     EXPECT_EQ(read_mesh.n0, 6);
@@ -33,10 +30,7 @@ TEST(ascii_io, ascii_io_test_scalar_field) {
     std::string filename = ("ascii_unittest.txt");
     write_ascii(a, mesh, filename, false);
 
-    af::array read_a;
-    Mesh read_mesh(0, 0, 0, 0, 0, 0);
-
-    read_ascii(read_a, read_mesh, filename, false);
+    auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
     EXPECT_EQ(read_mesh.n0, 6);
@@ -55,10 +49,7 @@ TEST(ascii_io, ascii_io_test_10d_field) {
     std::string filename = ("ascii_unittest.txt");
     write_ascii(a, mesh, filename, false);
 
-    af::array read_a;
-    Mesh read_mesh(0, 0, 0, 0, 0, 0);
-
-    read_ascii(read_a, read_mesh, filename, false);
+    auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
     EXPECT_EQ(read_mesh.n0, 6);

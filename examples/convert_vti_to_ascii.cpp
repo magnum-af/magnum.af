@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     // mesh.n1, 1, mesh.dx, mesh.dy, mesh.dz), filepath + "toplayer_" +
     // argv[4]);
     write_ascii(m, mesh, argv[2]);
-    // read_ascii(m, mesh, filepath + argv[4]);
+    // auto [arr, mesh] = read_ascii(filename, false);
 
     return 0;
 }
