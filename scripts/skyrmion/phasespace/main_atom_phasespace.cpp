@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     std::cout << "D_atom=" << material.D_atom << std::endl;
     std::cout << "Ku1_atom=" << material.K_atom << std::endl;
 
-    State state(mesh, material, mesh.skyrmconf());
+    State state(mesh, material, util::skyrmconf(mesh));
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;

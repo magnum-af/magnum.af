@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     material.A = 1.5e-11;             //[J/m]
     std::cout << "A=" << A << "B= " << B << "steps_full_rotation=" << steps_full_rotation << std::endl;
 
-    State state(mesh, material, mesh.init_vortex());
+    State state(mesh, material, util::init_vortex(mesh));
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
 
     af::timer timer_llgterms = af::timer::start();

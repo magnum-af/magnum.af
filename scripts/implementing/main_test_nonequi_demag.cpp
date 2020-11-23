@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
         material.A = 1.3e-11;
         material.alpha = 1;
 
-        State state(mesh, material, mesh.init_sp4());
+        State state(mesh, material, util::init_sp4(mesh));
 
         DemagField demag = DemagField(mesh, material, true, false, 1);
 

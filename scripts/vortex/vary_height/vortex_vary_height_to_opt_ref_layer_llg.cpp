@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         double A = 1.5e-11;  //[J/m]
         double zee = 40e-3 / constants::mu0;
 
-        af::array m0 = mesh.init_vortex();
+        af::array m0 = util::init_vortex(mesh);
         m0(af::span, af::span, 0, af::span) = 0;
         State state(mesh, Ms, m0);
         state.write_vti(filepath + "m_init" + std::to_string(nz));

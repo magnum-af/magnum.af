@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
     double Ms = 1.393e6; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     double A = 1.5e-11;  //[J/m]
 
-    State state(mesh, Ms, mesh.ellipse({0.08748866352, 0, -1}, true)); // 5 degree tilted
+    State state(mesh, Ms, util::ellipse(mesh, {0.08748866352, 0, -1}, true)); // 5 degree tilted
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 

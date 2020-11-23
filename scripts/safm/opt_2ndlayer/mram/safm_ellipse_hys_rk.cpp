@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     //[1] "Ferromagnetic resonance and damping properties of CoFeB thin films as
     // free layers inMgO-based magnetic tunnel junctions"
 
-    State state(mesh, Ms, mesh.ellipse(1));
+    State state(mesh, Ms, util::ellipse(mesh, 1));
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 

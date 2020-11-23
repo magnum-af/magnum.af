@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     material.alpha = 1;
 
     // Initial magnetic field
-    State state(mesh, material, mesh.init_sp4());
+    State state(mesh, material, util::init_sp4(mesh));
     vti_writer_micro(state.m, mesh, (filepath + "minit"));
 
     af::timer timer_llgterms = af::timer::start();

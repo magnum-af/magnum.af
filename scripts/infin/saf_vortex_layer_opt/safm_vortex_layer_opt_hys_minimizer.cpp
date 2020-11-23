@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     const double A = 1.5e-11;               //[J/m]
     const double Ku1 = 0.2e6;               // J/m^3
 
-    State state(mesh, Ms, mesh.init_vortex(true));
+    State state(mesh, Ms, util::init_vortex(mesh));
     vti_writer_micro(state.Ms_field, mesh, filepath + "2nd_Ms");
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 

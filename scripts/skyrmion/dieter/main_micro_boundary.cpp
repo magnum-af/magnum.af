@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     material.D = 3e-3;
     material.Ku1 = 0.6e6;
 
-    State state(mesh, material, mesh.skyrmconf());
+    State state(mesh, material, util::skyrmconf(mesh));
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;

@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     Mesh mesh(100, 25, 1, 1e-9, 2e-9, 3e-9);
 
     // Initial magnetic field
-    State state(mesh, 8e5, mesh.init_sp4());
+    State state(mesh, 8e5, util::init_sp4(mesh));
     for (int i = 0; i < n_writes; i++) {
         double vm, rss;
         process_mem_usage(vm, rss);

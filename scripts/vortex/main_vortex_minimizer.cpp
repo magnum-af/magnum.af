@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     double Ms = 1.393e6; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     double A = 1.5e-11;  //[J/m]
 
-    State state(mesh, Ms, mesh.init_vortex());
+    State state(mesh, Ms, util::init_vortex(mesh));
     vti_writer_micro(state.Ms_field, mesh, filepath + "Ms");
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 

@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     state.Ms = 1.75 / constants::mu0; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A = 1.5e-11;             //[J/m]
     std::cout << "A=" << A << "B= " << B << "steps_full_rotation=" << steps_full_rotation << std::endl;
-    State state(mesh, material, mesh.init_vortex());
+    State state(mesh, material, util::init_vortex(mesh));
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
 
     Material param_stress = material;

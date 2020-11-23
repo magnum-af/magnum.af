@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     long int n_cells = 0; // Number of cells with Ms!=0
-    State state(mesh, Ms, mesh.ellipse(n_cells));
+    State state(mesh, Ms, util::ellipse(mesh, n_cells));
     state.calc_mean_m(std::cout, n_cells);
     vti_writer_micro(state.m, mesh, (filepath + "minit_nonnormalized").c_str());
     vti_writer_micro(state.Ms_field, mesh, (filepath + "Ms").c_str());

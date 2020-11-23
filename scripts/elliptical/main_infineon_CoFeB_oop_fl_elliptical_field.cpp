@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     material.alpha = 0.02;
 
     long int n_cells = 0; // Number of cells with Ms!=0
-    State state(mesh, material, mesh.ellipse(n_cells, 2));
+    State state(mesh, material, util::ellipse(mesh, n_cells, 2));
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());

@@ -1,4 +1,5 @@
 #include "field_terms/micro/exchange_field.hpp"
+#include "util/geometry.hpp"
 #include <gtest/gtest.h>
 #include <iostream>
 
@@ -9,7 +10,7 @@ TEST(ExchangeField, A_scalar_vs_array_value) {
     double A = 1.3e-11;
     double Ms = 8e5;
     Mesh mesh(3, 3, 3, 0.1, 0.2, 0.3);
-    State state(mesh, Ms, mesh.init_sp4());
+    State state(mesh, Ms, util::init_sp4(mesh));
     ExchangeField exch_global(A);
     af::array globalA = exch_global.h(state);
 

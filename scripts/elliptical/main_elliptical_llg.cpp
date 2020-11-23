@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
     long int n_cells = 0; // Number of cells with Ms!=0
-    State state(mesh, material, mesh.ellipse(n_cells));
+    State state(mesh, material, util::ellipse(mesh, n_cells));
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());

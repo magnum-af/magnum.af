@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     param_stress.Ku1_axis[2] = 0;
     param_stress.ms = state.Ms; // TODO should be taken form state in the future
 
-    State state(mesh, material, mesh.ellipse(2));
+    State state(mesh, material, util::ellipse(mesh, 2));
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
     std::cout << "Mean i for check: " << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2)
               << std::endl;

@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
         // Generating Objects
         Mesh mesh(nx, ny, nz, x / nx, y / ny, dz);
 
-        af::array m0 = mesh.init_vortex();
+        af::array m0 = util::init_vortex(mesh);
         m0(af::span, af::span, 0, af::span) = 0;
         State state(mesh, Ms, m0);
         state.write_vti((filepath + "m_init" + std::to_string(nz)).c_str());

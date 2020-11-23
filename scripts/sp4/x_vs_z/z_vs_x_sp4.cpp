@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
         Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
         // Initial magnetic field
-        State state(mesh, 8e5, mesh.init_sp4());
+        State state(mesh, 8e5, util::init_sp4(mesh));
         vti_writer_micro(state.m, mesh, (filepath + "x_minit").c_str());
 
         LlgTerms llgterm;

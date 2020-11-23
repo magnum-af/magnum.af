@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 
     double Ku1_stress = 1400; // TODO
 
-    State state(mesh, material, mesh.ellipse(2));
+    State state(mesh, material, util::ellipse(mesh, 2));
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
     std::cout << "Mean i for check: " << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2)
               << std::endl;
