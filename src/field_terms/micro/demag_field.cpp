@@ -11,14 +11,14 @@ namespace magnumafcpp {
 
 void DemagField::print_Nfft() const { af::print("Nfft=", Nfft); }
 
-af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, unsigned nthreads);
+af::array calculate_N(const Mesh& mesh, unsigned nthreads);
 af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
     af::timer demagtimer = af::timer::start();
     if (verbose) {
         printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
                std::thread::hardware_concurrency());
     }
-    auto result = calculate_N(mesh.n0_exp, mesh.n1_exp, mesh.n2_exp, mesh.dx, mesh.dy, mesh.dz, nthreads);
+    auto result = calculate_N(mesh, nthreads);
     if (verbose) {
         printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
     }
@@ -206,62 +206,44 @@ double Nxy(const int ix, const int iy, const int iz, const double dx, const doub
     return result;
 }
 
-struct LoopInfo {
-    LoopInfo() {}
-    LoopInfo(int i0_start, int i0_end, int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz)
-        : i0_start(i0_start), i0_end(i0_end), n0_exp(n0_exp), n1_exp(n1_exp), n2_exp(n2_exp), dx(dx), dy(dy), dz(dz) {}
-    int i0_start;
-    int i0_end;
-    int n0_exp;
-    int n1_exp;
-    int n2_exp;
-    double dx;
-    double dy;
-    double dz;
-};
-
-void setup_N(const LoopInfo& loopinfo, std::vector<double>& N) {
-    for (int i0 = loopinfo.i0_start; i0 < loopinfo.i0_end; i0++) {
-        const int j0 = (i0 + loopinfo.n0_exp / 2) % loopinfo.n0_exp - loopinfo.n0_exp / 2;
-        for (int i1 = 0; i1 < loopinfo.n1_exp; i1++) {
-            const int j1 = (i1 + loopinfo.n1_exp / 2) % loopinfo.n1_exp - loopinfo.n1_exp / 2;
-            for (int i2 = 0; i2 < loopinfo.n2_exp; i2++) {
-                const int j2 = (i2 + loopinfo.n2_exp / 2) % loopinfo.n2_exp - loopinfo.n2_exp / 2;
-                const int idx = 6 * (i2 + loopinfo.n2_exp * (i1 + loopinfo.n1_exp * i0));
-                N[idx + 0] = newell::Nxx(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                N[idx + 1] = newell::Nxy(j0, j1, j2, loopinfo.dx, loopinfo.dy, loopinfo.dz);
-                N[idx + 2] = newell::Nxy(j0, j2, j1, loopinfo.dx, loopinfo.dz, loopinfo.dy);
-                N[idx + 3] = newell::Nxx(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                N[idx + 4] = newell::Nxy(j1, j2, j0, loopinfo.dy, loopinfo.dz, loopinfo.dx);
-                N[idx + 5] = newell::Nxx(j2, j0, j1, loopinfo.dz, loopinfo.dx, loopinfo.dy);
+void setup_N(const Mesh& mesh, std::vector<double>& N, unsigned ix_start, unsigned ix_end) {
+    for (unsigned i0 = ix_start; i0 < ix_end; i0++) {
+        const int j0 = (i0 + mesh.n0_exp / 2) % mesh.n0_exp - mesh.n0_exp / 2;
+        for (unsigned i1 = 0; i1 < mesh.n1_exp; i1++) {
+            const int j1 = (i1 + mesh.n1_exp / 2) % mesh.n1_exp - mesh.n1_exp / 2;
+            for (unsigned i2 = 0; i2 < mesh.n2_exp; i2++) {
+                const int j2 = (i2 + mesh.n2_exp / 2) % mesh.n2_exp - mesh.n2_exp / 2;
+                const int idx = 6 * (i2 + mesh.n2_exp * (i1 + mesh.n1_exp * i0));
+                N[idx + 0] = newell::Nxx(j0, j1, j2, mesh.dx, mesh.dy, mesh.dz);
+                N[idx + 1] = newell::Nxy(j0, j1, j2, mesh.dx, mesh.dy, mesh.dz);
+                N[idx + 2] = newell::Nxy(j0, j2, j1, mesh.dx, mesh.dz, mesh.dy);
+                N[idx + 3] = newell::Nxx(j1, j2, j0, mesh.dy, mesh.dz, mesh.dx);
+                N[idx + 4] = newell::Nxy(j1, j2, j0, mesh.dy, mesh.dz, mesh.dx);
+                N[idx + 5] = newell::Nxx(j2, j0, j1, mesh.dz, mesh.dx, mesh.dy);
             }
         }
     }
 }
 } // namespace newell
 
-af::array calculate_N(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz, unsigned nthreads) {
-    std::vector<newell::LoopInfo> loopinfo;
-    for (unsigned i = 0; i < nthreads; i++) {
-        unsigned start = i * (double)n0_exp / nthreads;
-        unsigned end = (i + 1) * (double)n0_exp / nthreads;
-        loopinfo.push_back(newell::LoopInfo(start, end, n0_exp, n1_exp, n2_exp, dx, dy, dz));
-    }
-
+af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
+    std::vector<double> N_values(mesh.n0_exp * mesh.n1_exp * mesh.n2_exp * 6);
     std::vector<std::thread> t;
-    std::vector<double> N_values(n0_exp * n1_exp * n2_exp * 6);
+
     for (unsigned i = 0; i < nthreads; i++) {
-        t.push_back(std::thread(newell::setup_N, std::ref(loopinfo[i]), std::ref(N_values)));
+        unsigned ix_start = i * (double)mesh.n0_exp / nthreads;
+        unsigned ix_end = (i + 1) * (double)mesh.n0_exp / nthreads;
+        t.push_back(std::thread(newell::setup_N, std::ref(mesh), std::ref(N_values), ix_start, ix_end));
     }
 
     for (unsigned i = 0; i < nthreads; i++) {
         t[i].join();
     }
 
-    af::array Naf(6, n2_exp, n1_exp, n0_exp, N_values.data());
+    af::array Naf(6, mesh.n2_exp, mesh.n1_exp, mesh.n0_exp, N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
 
-    if (n2_exp == 1) {
+    if (mesh.n2_exp == 1) {
         Naf = af::fftR2C<2>(Naf);
     } else {
         Naf = af::fftR2C<3>(Naf);
