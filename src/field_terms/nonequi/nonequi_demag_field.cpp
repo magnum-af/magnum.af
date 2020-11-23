@@ -9,6 +9,10 @@
 
 namespace magnumafcpp {
 
+/// Expanded cell size for demag FFT
+inline unsigned nx_expanded(const NonequispacedMesh& nemesh) { return 2 * nemesh.nx; }
+inline unsigned ny_expanded(const NonequispacedMesh& nemesh) { return 2 * nemesh.ny; }
+
 af::array NonEquiDemagField::h(const State& state) {
     af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
