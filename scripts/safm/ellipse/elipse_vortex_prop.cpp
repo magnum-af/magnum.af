@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     std::vector<double> z_spacing = {dz, 1e-10, dz, dz, dz};
     // std::vector<double> z_spacing = {z/nz, 9.84825e-10, z/nz, z/nz};
     NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-    mesh.print();
+    std::cout << mesh << std::endl;
 
     // Initial magnetic field
     // Returns an initial elliptical magnetization

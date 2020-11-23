@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     std::vector<double> z_spacing = {z / 4., 1e-10, 9.84825e-10, z / 4., z / 4.};
     // std::vector<double> z_spacing = {z/nz, 9.84825e-10, z/nz, z/nz};
     NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-    mesh.print();
+    std::cout << mesh << std::endl;
 
     // Initial magnetic field
     af::array m = af::constant(0, mesh.dims, f64);

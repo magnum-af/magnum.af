@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 
     // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
     Material material = Material();
     state.Ms = 1.58 / constants::mu0; // [J/T/m^3] = Ms = Js/mu0 = 1.58 Tesla
                                       // /mu_0 // Js = 1.58 Tesla
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer;

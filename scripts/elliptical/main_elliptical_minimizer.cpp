@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit_nonnormalized").c_str());
     vti_writer_micro(state.Ms_field, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
 
     af::timer timer_llgterms = af::timer::start();
     // Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);

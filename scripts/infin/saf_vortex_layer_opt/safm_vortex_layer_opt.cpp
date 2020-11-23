@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
             z_spacing.push_back(dz_fl);
         }
         NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-        // mesh.print(std::cout);
+        // std::cout << mesh << std::endl;
 
         // Initial magnetic field
         af::array m_free_geom_for_meandemag = af::constant(0, nx, ny, 1, 1, f64);
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         vtr_writer(h, mesh, filepath + "h_" + std::to_string(i_callback));
         // af::print("h slice", h(nx/2, ny/2, af::span, af::span));
         // af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
-        // mesh.print(stream);
+        // stream << mesh << std::endl;
         // const int index_free_layer = 4;
         Mesh mesh_fl(nx, ny, idz_vortex, x / nx, y / ny, dz_fl);
         auto fl_seq = af::seq(4, 4 + idz_vortex - 1);

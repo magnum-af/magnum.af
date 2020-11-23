@@ -9,9 +9,10 @@ Mesh::Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double d
       dims(af::dim4(n0, n1, n2, 3)), dims_scalar(af::dim4(n0, n1, n2, 1)),
       dims_expanded(af::dim4(n0_exp, n1_exp, n2_exp, 3)) {}
 
-void Mesh::print(std::ostream& stream) {
-    stream << "n0=" << n0 << " n1=" << n1 << " n2=" << n2 << " dx=" << dx << " dy=" << dy << " dz=" << dz
-           << " n0_exp=" << n0_exp << " n1_exp=" << n1_exp << " n2_exp=" << n2_exp << std::endl;
+std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
+    os << "n0=" << mesh.n0 << " n1=" << mesh.n1 << " n2=" << mesh.n2 << " dx=" << mesh.dx << " dy=" << mesh.dy
+       << " dz=" << mesh.dz << " n0_exp=" << mesh.n0_exp << " n1_exp=" << mesh.n1_exp << " n2_exp=" << mesh.n2_exp;
+    return os;
 }
 
 af::array Mesh::skyrmconf(const bool point_up) {

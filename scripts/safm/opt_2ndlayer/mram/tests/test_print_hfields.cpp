@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     const double dz_fl = 3e-9;
     std::vector<double> z_spacing = {5e-9, 1e-9, dz, 1e-9, dz_fl};
     NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-    // mesh.print(std::cout);
+    // std::cout << mesh << std::endl;
 
     // Initial magnetic field
     af::array m_free_geom_for_meandemag = af::constant(0, nx, ny, 1, 1, f64);

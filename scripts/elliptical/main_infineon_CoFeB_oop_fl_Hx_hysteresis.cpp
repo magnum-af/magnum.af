@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 
     // Generating Objects
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
     Material material = Material();
     state.Ms = 1.58 / constants::mu0; //[J/T/m^3] == [Joule/Tesla/meter^3] = 1.75 T/mu_0
     material.A = 15e-12;              //[J/m]
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
 
     std::vector<LlgTerm> llgterm;
     llgterm.push_back(LlgTerm(new DemagField(mesh, material)));

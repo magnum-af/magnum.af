@@ -14,7 +14,7 @@ double calc_hz(double dz) {
     // Generating Objects
     std::vector<double> z_spacing = {z / nz, dz, z / nz, z / nz};
     NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-    // mesh.print(std::cout);
+    // std::cout << mesh << std::endl;
 
     // Initial magnetic field
     af::array m = af::constant(0, mesh.dims, f64);
@@ -29,7 +29,7 @@ double calc_hz(double dz) {
     vtr_writer(h, mesh, filepath + "h");
     // af::print("h slice", h(nx/2, ny/2, af::span, af::span));
     // af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
-    // mesh.print(stream);
+    // stream << mesh << std::endl;
     stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", " << afvalue(h(nx / 2, ny / 2, 3, 1))
            << ", " << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
     // std::cout << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, 3, 0)) << ", "

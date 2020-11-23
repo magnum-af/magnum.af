@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
         const double dz_fl = 10e-9;
         std::vector<double> z_spacing = {10e-9, 0.3e-9, dz, 5e-9, dz_fl};
         NonequispacedMesh mesh(nx, ny, x / nx, y / ny, z_spacing);
-        // mesh.print(std::cout);
+        // std::cout << mesh << std::endl;
 
         // Initial magnetic field
         af::array m = af::constant(0, mesh.dims, f64);
@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
         vtr_writer(h, mesh, filepath + "h_" + std::to_string(i_callback));
         // af::print("h slice", h(nx/2, ny/2, af::span, af::span));
         // af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
-        // mesh.print(stream);
+        // stream << mesh << std::endl;
         const int index_free_layer = 4;
         Mesh mesh_fl(nx, ny, 1, x / nx, y / ny, dz_fl);
         vti_writer_micro(h(af::span, af::span, index_free_layer, af::span), mesh_fl, filepath + "h_free_layer");

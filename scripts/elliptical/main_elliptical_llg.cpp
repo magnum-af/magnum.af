@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
-    mesh.print(std::cout);
+    std::cout << mesh << std::endl;
 
     std::vector<LlgTerm> llgterm;
     timer t_demag = af::timer::start();
