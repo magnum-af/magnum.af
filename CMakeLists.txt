@@ -44,6 +44,12 @@ else()
   )
 endif()
 
+# avoid redundant linking when modifying shared libraries
+# (especially when an executables source file changes)
+set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -M") # test linking
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H") # test linking tree
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")

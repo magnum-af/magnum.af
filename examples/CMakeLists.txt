@@ -13,9 +13,8 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
   # stripping off possible paths to get a valid target name
   get_filename_component(EXAMPLE ${EXAMPLE} NAME)
   #MESSAGE("${EXAMPLE}")
-  add_executable(${EXAMPLE} ${EXAMPLE_SOURCE_FILE}
-                            $<TARGET_OBJECTS:magnumaf_object_lib>)
-  target_link_libraries(${EXAMPLE} ArrayFire::af ${VTK_LIBRARIES})
+  add_executable(${EXAMPLE} ${EXAMPLE_SOURCE_FILE})
+  target_link_libraries(${EXAMPLE} ArrayFire::af magnumafcpp ${VTK_LIBRARIES})
 endforeach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
 
 # Adding magnumafcpp_info binary to installation

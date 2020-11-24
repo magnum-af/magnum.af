@@ -35,9 +35,8 @@ foreach(testsourcefile ${APP_SOURCES})
   get_filename_component(testname ${testname} NAME)
   set(testname test_cpu_${testname})
   # Adding executables and linking
-  add_executable(${testname} ${testsourcefile}
-                             $<TARGET_OBJECTS:magnumaf_object_lib>)
-  target_link_libraries(${testname} ${GTEST_LIBRARIES}
+  add_executable(${testname} ${testsourcefile})
+  target_link_libraries(${testname} magnumafcpp ${GTEST_LIBRARIES}
                         ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} pthread)
   add_test(
     NAME ${testname}
@@ -54,10 +53,9 @@ if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     get_filename_component(testname ${testname} NAME)
     set(testname test_opencl_${testname})
     # Adding executables and linking
-    add_executable(${testname} ${testsourcefile}
-                               $<TARGET_OBJECTS:magnumaf_object_lib>)
+    add_executable(${testname} ${testsourcefile})
     target_link_libraries(
-      ${testname} ${GTEST_LIBRARIES} ${ArrayFire_OpenCL_LIBRARIES}
+      ${testname} magnumafcpp ${GTEST_LIBRARIES} ${ArrayFire_OpenCL_LIBRARIES}
       ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} pthread)
     add_test(
       NAME ${testname}
@@ -79,10 +77,10 @@ if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     get_filename_component(testname ${testname} NAME)
     set(testname test_cuda_${testname})
     # Adding executables and linking
-    add_executable(${testname} ${testsourcefile}
-                               $<TARGET_OBJECTS:magnumaf_object_lib>)
+    add_executable(${testname} ${testsourcefile})
     target_link_libraries(
       ${testname}
+      magnumafcpp
       ${GTEST_LIBRARIES}
       ${ArrayFire_CUDA_LIBRARIES}
       ${CMAKE_THREAD_LIBS_INIT}

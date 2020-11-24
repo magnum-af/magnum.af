@@ -43,13 +43,18 @@ file(GLOB SOURCE "*.cpp" "*/*.cpp" "*/*/*.cpp")
 # adding OBJECT library instead of SHARED such that the python binding doesn't
 # have to recompile all sources:
 add_library(magnumaf_object_lib OBJECT ${SOURCE})
-# explicitly turning PIC on (in case the compiler flag is not set):
+
+# adding shared library from object library for linking targets
+# (also avoids recompile on source change via set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE))
+# (would not be possible when adding object lib to executable instad of linking against shared lib)
+add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnumaf_object_lib>)
+
+# explicitly turning POSITION_INDEPENDENT_CODE (PIC) on (in case the compiler flag is not set):
 set_property(TARGET magnumaf_object_lib PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(SETINSTALL)
   # installing magnumafcpp lib, adapted from:
   # https://rix0r.nl/blog/2015/08/13/cmake-guide/
-  add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnumaf_object_lib>)
 
   # Define headers for this library. PUBLIC headers are used for compiling the
   # library, and will be added to consumers' build paths.
