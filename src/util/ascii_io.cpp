@@ -148,7 +148,7 @@ std::pair<af::array, Mesh> read_ascii(std::string filename, bool verbose) {
     if (verbose) {
         printf("Wrote ascii file in %f [s]\n", timer.stop());
     }
-    return {af::array(nx, ny, nz, n_scalar, raw_read_a.data()), Mesh(nx, ny, nz, dx, dy, dz)};
+    return {af::array(nx, ny, nz, n_scalar, raw_read_a.data()), Mesh{nx, ny, nz, dx, dy, dz}};
 }
 
 } // namespace magnumafcpp

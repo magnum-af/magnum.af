@@ -14,6 +14,7 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wcast-align"
 #pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wnarrowing" // occurs in Mesh{...}
 #pragma GCC diagnostic ignored "-Weffc++"
 #pragma GCC diagnostic ignored "-Wextra"
 #pragma GCC diagnostic ignored "-Wshadow"
@@ -22,22 +23,21 @@
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 // af_to_vti
 #include <vtkImageData.h>
-#include <vtkSmartPointer.h>
 #include <vtkXMLImageDataWriter.h>
 // af_to_vtk
 #include <vtkCellData.h>
-#include <vtkDoubleArray.h>
 #include <vtkExtractRectilinearGrid.h>
 #include <vtkPointData.h>
 // vti_to_af
-#include <assert.h>
-#include <string>
 #include <vtkDataSet.h>
 #include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkXMLImageDataReader.h>
 #include <vtkXMLRectilinearGridReader.h>
 #include <vtkXMLRectilinearGridWriter.h>
+
+#include <string>
+#include <vector>
 
 namespace magnumafcpp {
 
@@ -102,7 +102,7 @@ void vti_writer_micro(const af::array field, const Mesh& mesh, std::string outpu
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz,
                              const std::string outputname) {
     af::array afarray = *(new af::array(*((void**)afarray_ptr)));
-    Mesh mesh(afarray.dims(0), afarray.dims(1), afarray.dims(2), dx, dy, dz);
+    Mesh mesh{afarray.dims(0), afarray.dims(1), afarray.dims(2), dx, dy, dz};
     implementation_vti_writer_micro(afarray, mesh, outputname);
 }
 
@@ -147,7 +147,9 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
     af::freeHost(host_a);
 }
 
-void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
+std::pair<af::array, Mesh> vti_reader(std::string filepath) {
+    af::array A_out; // returned array
+    // void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
     int dim4th = 3; // This is the number of the components of the 3D Field
                     // (until now only 3)
     vtkSmartPointer<vtkXMLImageDataReader> reader = vtkSmartPointer<vtkXMLImageDataReader>::New();
@@ -176,17 +178,15 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
         // IF Celldata:
         vtkSmartPointer<vtkDoubleArray> temp = vtkSmartPointer<vtkDoubleArray>::New();
         imageData->GetCellData()->GetScalars()->GetData(0, imageData->GetNumberOfCells() - 1, 0, dim4th - 1, temp);
-        double* A_host = NULL;
-        A_host = new double[dim4th * imageData->GetNumberOfCells()];
+        std::vector<double> A_host(dim4th * imageData->GetNumberOfCells());
         // VERSION SORT WITH ARRAYFIRE
         for (int i = 0; i < dim4th * imageData->GetNumberOfCells(); i++) {
             A_host[i] = temp->GetValue(i);
         }
-        af::array A(dim4th * imageData->GetNumberOfCells(), 1, 1, 1, A_host);
-        delete[] A_host;
+        af::array A(dim4th * imageData->GetNumberOfCells(), 1, 1, 1, A_host.data());
         A = af::moddims(A, af::dim4(dim4th, dims[0], dims[1], dims[2]));
         A = af::reorder(A, 1, 2, 3, 0);
-        field = A;
+        A_out = A;
         // Two Versions to sort CellData to double* A_host
         // Perform equally both on CPU and OpenCL
 
@@ -204,8 +204,7 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
         // A=af::moddims(A, af::dim4(dims_reduced[0], dims_reduced[1],
         // dims_reduced[2], dim4th)); field=A;
     } else {
-        double* A_host = NULL;
-        A_host = new double[dim4th * imageData->GetNumberOfPoints()];
+        std::vector<double> A_host(dim4th * imageData->GetNumberOfPoints());
         for (int z = 0; z < dims[2]; z++) {
             for (int y = 0; y < dims[1]; y++) {
                 for (int x = 0; x < dims[0]; x++) {
@@ -217,12 +216,18 @@ void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
             }
         }
 
-        af::array A(dim4th * imageData->GetNumberOfPoints(), 1, 1, 1, A_host);
-        delete[] A_host;
+        af::array A(dim4th * imageData->GetNumberOfPoints(), 1, 1, 1, A_host.data());
         A = af::moddims(A, af::dim4(dims[0], dims[1], dims[2], dim4th));
-        field = A;
+        A_out = A;
     }
-    mesh = Mesh(dims[0], dims[1], dims[2], spacing[0], spacing[1], spacing[2]);
+    return {A_out, Mesh{dims[0], dims[1], dims[2], spacing[0], spacing[1], spacing[2]}};
+}
+
+// legacy/wrapping method returns via ref parameter
+void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
+    auto [a_returned, mesh_returned] = vti_reader(filepath);
+    field = a_returned;
+    mesh = mesh_returned;
 }
 
 void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double> z_spacing,
@@ -317,7 +322,7 @@ void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::str
     vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, outputname, verbose);
 }
 
-void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose) {
+std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool verbose) {
     // Counterpart to vtr_writer()
     // Reads vktRectilinearGrid cell data from file
     // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
@@ -361,15 +366,13 @@ void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const
     vtkDoubleArray* xyz_data = vtkArrayDownCast<vtkDoubleArray>(output_data->GetCellData()->GetArray(0)); ///("xyz")
     const int data_dim = xyz_data->GetNumberOfComponents();
     double* xyz = static_cast<double*>(xyz_data->GetVoidPointer(0));
-    double* A_host = NULL;
-    A_host = new double[data_dim * output_data->GetNumberOfCells()];
+    std::vector<double> A_host(data_dim * output_data->GetNumberOfCells());
 
     for (int i = 0; i < data_dim * output_data->GetNumberOfCells(); i++) {
         A_host[i] = xyz[i];
     }
 
-    af::array A(data_dim * output_data->GetNumberOfCells(), 1, 1, 1, A_host);
-    delete[] A_host;
+    af::array A(data_dim * output_data->GetNumberOfCells(), 1, 1, 1, A_host.data());
     A = af::moddims(A, af::dim4(data_dim, grid_dims[0] - 1, grid_dims[1] - 1, grid_dims[2] - 1));
     A = af::reorder(A, 1, 2, 3, 0);
 
@@ -378,9 +381,15 @@ void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const
         std::cout << "vtr_reader: read vtkCellData of dimension [" << grid_dims[0] - 1 << ", " << grid_dims[1] - 1
                   << ", " << grid_dims[2] - 1 << ", " << data_dim << "] from '" << filepath << "'" << std::endl;
 
-    // Setting output variables
-    field = A;
-    mesh = NonequiMesh(grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing);
+    return {A, NonequiMesh{grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing}};
 }
+
+// legacy/wrapper for returning via parameter ref
+void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose) {
+    auto [A_returned, mesh_returned] = vtr_reader(filepath, verbose);
+    field = A_returned;
+    mesh = mesh_returned;
+}
+
 } // namespace magnumafcpp
 #pragma GCC diagnostic pop
