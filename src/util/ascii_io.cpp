@@ -1,4 +1,5 @@
 #include "ascii_io.hpp"
+#include "util/host_ptr_accessor.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
@@ -66,7 +67,7 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
 
         // copying raw data to host is factor ~10 faster than accessing
         // af::array with indices
-        double* host_a = a.host<double>();
+        util::HostPtrAccessor<double> host_a(a);
 
         for (unsigned ix = 0; ix < nx; ix++) {
             for (unsigned iy = 0; iy < ny; iy++) {
@@ -86,7 +87,6 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
                 }
             }
         }
-        af::freeHost(host_a);
         if (verbose) {
             printf("Wrote ascii file in %f [s]\n", timer.stop());
         }
