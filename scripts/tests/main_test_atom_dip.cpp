@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     // Initial magnetic field
     //
     //-------------------------------------------------------
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     std::cout << "H_dip_2   = " << 0 << ", " << 0 << ", " << material.p / (4 * M_PI * pow(dx, 3)) << std::endl;
 
     //-------------------------------------------------------
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     std::cout << "H_dip_1   = " << -2 * material.p / (4 * M_PI * pow(dx, 3)) << ", " << 0 << ", " << 0 << std::endl;
     std::cout << "H_dip_2   = " << 0 << ", " << 0 << ", " << material.p / (4 * M_PI * pow(dx, 3)) << std::endl;
     //-------------------------------------------------------
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 
     nx = 1, ny = 2, nz = 1;
     mesh = Mesh(nx, ny, nz, dx, dx, dx);
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
     std::cout << "Analytical= " << -pow(material.p, 2) * constants::mu0 / (4. * M_PI) / pow(dx, 3)
               << std::endl; // TODO calc on paper, but should be like case 1
     //-------------------------------------------------------
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 1;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 0;

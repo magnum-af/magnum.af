@@ -16,10 +16,10 @@ int main(int argc, char** argv) {
     af::array m;
 
     vti_reader(m, mesh, argv[1]);
-    // vti_writer_micro(m(af::span, af::span, 0, af::span), Mesh(mesh.n0,
-    // mesh.n1, 1, mesh.dx, mesh.dy, mesh.dz), filepath + "toplayer_" +
-    // argv[3]); write_ascii(m(af::span, af::span, 0, af::span), Mesh(mesh.n0,
-    // mesh.n1, 1, mesh.dx, mesh.dy, mesh.dz), filepath + "toplayer_" +
+    // vti_writer_micro(m(af::span, af::span, 0, af::span), Mesh(mesh.nx,
+    // mesh.ny, 1, mesh.dx, mesh.dy, mesh.dz), filepath + "toplayer_" +
+    // argv[3]); write_ascii(m(af::span, af::span, 0, af::span), Mesh(mesh.nx,
+    // mesh.ny, 1, mesh.dx, mesh.dy, mesh.dz), filepath + "toplayer_" +
     // argv[4]);
     write_ascii(m, mesh, argv[2]);
     // auto [arr, mesh] = read_ascii(filename, false);

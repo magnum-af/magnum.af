@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     material.p = state.Ms * pow(dx, 3); // Compensate nz=1 instead of nz=4
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(span, span, span, 0) = 1.;
 
     State state(mesh, material, m);
@@ -58,14 +58,14 @@ int main(int argc, char** argv) {
     Llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
 
     // Out-of-plane
-    state.m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    state.m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     state.m(span, span, span, 2) = 1.;
     vti_writer_micro(state.m, state.mesh, (filepath + "m_ouf_of_plane").c_str());
     const double E_out_of_plane = Llg.E(state);
     Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
 
     // Keff
-    const double Keff = -0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
+    const double Keff = -0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.nx * mesh.ny * mesh.nz;
 
     const double g_electron = 2.002319;
     const double correction = 1.07831;
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     const double deltaEd = 2 * M_PI * correction * pow(g_electron * mub, 2) / pow(dx, 3);
     // TODO
     // const double deltaEd = 2 * M_PI * correction * pow( g_electron * mub,
-    // 2)/pow(dx, 3) * mesh.n0 * mesh.n1 * mesh.n2;
+    // 2)/pow(dx, 3) * mesh.nx * mesh.ny * mesh.nz;
 
     std::cout << "deltaEd = " << deltaEd << std::endl;
 

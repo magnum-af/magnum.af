@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     // TODO temp fix: going to left boundary to check boundary annihilatoin. In
     // relax skyrm, top and right boundary seems wrong
     inputimages.push_back(State(mesh, material, state.m));
-    for (int i = 1; i < mesh.n0; i++) {
+    for (int i = 1; i < mesh.nx; i++) {
         array mm = array(state.m);
         mm = shift(mm, -i);
         mm(seq(-i, -1), span, span, span) = 0;
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     }
 
     // Corner
-    // for(int i=0; i < mesh.n0; i++){
+    // for(int i=0; i < mesh.nx; i++){
     //    array mm = array(state.m);
     //    mm=shift(mm, i, i);
     //    mm(seq(0, i), span, span, span)=0;

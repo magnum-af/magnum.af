@@ -395,28 +395,28 @@ cdef class Mesh:
             del self._thisptr
             self._thisptr = NULL
     def print_nx(self):
-        print (self._thisptr.n0)
+        print (self._thisptr.nx)
 
     @property
     def nx(self):
-        return self._thisptr.n0
+        return self._thisptr.nx
     @nx.setter
     def nx(self, value):
-        self._thisptr.n0=value
+        self._thisptr.nx=value
 
     @property
     def ny(self):
-        return self._thisptr.n1
+        return self._thisptr.ny
     @ny.setter
     def ny(self, value):
-        self._thisptr.n1=value
+        self._thisptr.ny=value
 
     @property
     def nz(self):
-        return self._thisptr.n2
+        return self._thisptr.nz
     @nz.setter
     def nz(self, value):
-        self._thisptr.n2=value
+        self._thisptr.nz=value
 
     @property
     def dx(self):

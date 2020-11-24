@@ -54,7 +54,7 @@ af::array DmiField::h(const State& state) {
     af::timer timer_dmi = af::timer::start();
     // Normal vector
     double norm = sqrt(pow(D_axis[0], 2) + pow(D_axis[1], 2) + pow(D_axis[2], 2));
-    af::array n = af::array(state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    af::array n = af::array(state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
     n(af::span, af::span, af::span, 0) = D_axis[0] / norm;
     n(af::span, af::span, af::span, 1) = D_axis[1] / norm;
     n(af::span, af::span, af::span, 2) = D_axis[2] / norm;

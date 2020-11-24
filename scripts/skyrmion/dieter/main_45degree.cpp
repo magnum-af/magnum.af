@@ -8,7 +8,7 @@ typedef std::shared_ptr<LLGTerm> llgt_ptr;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
-    const int ncells = state.mesh.n0 * state.mesh.n1 * state.mesh.n2;
+    const int ncells = state.mesh.nx * state.mesh.ny * state.mesh.nz;
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) / ncells << "\t"
            << afvalue(sum_dim3(span, span, span, 1)) / ncells << "\t" << afvalue(sum_dim3(span, span, span, 2)) / ncells
            << "\t" << hzee << std::endl;
@@ -21,9 +21,9 @@ const double rate = hzee_max / simtime; //[T/s]
 af::array zee_func(State state) {
     double field_Tesla = 0;
     field_Tesla = rate * state.t;
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
     return zee;
 }
 
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     material.J_atom = 2. * material.A * dx;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(span, span, span, 0) = 1. / sqrt(2);
     m(span, span, span, 2) = 1. / sqrt(2);
 

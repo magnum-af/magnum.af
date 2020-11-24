@@ -89,14 +89,14 @@ int main(int argc, char** argv) {
 
     // Initial magnetic field
     // CASE 1
-    // array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    // m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.n0-2, mesh.n1,
-    // mesh.n2, 1, f64); m(0, span, span, 1 ) = constant(1.0, 1, mesh.n1,
-    // mesh.n2, 1, f64); m(-1, span, span, 1) = constant(1.0, 1, mesh.n1,
-    // mesh.n2, 1, f64); CASE 1
+    // array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
+    // m(seq(1, end-1), span, span, 0) = constant(1.0, mesh.nx-2, mesh.ny,
+    // mesh.nz, 1, f64); m(0, span, span, 1 ) = constant(1.0, 1, mesh.ny,
+    // mesh.nz, 1, f64); m(-1, span, span, 1) = constant(1.0, 1, mesh.ny,
+    // mesh.nz, 1, f64); CASE 1
 
     // CASE 2
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(seq((nx - spnx) / 2 + 1, end - (nx - spnx) / 2 - 1), seq((ny - spny) / 2, end - (ny - spny) / 2),
       seq((nz - spnz) / 2, end - (nz - spnz) / 2), 0) = constant(1.0, spnx - 2, spny, spnz, 1, f64);
     m((ny - spny) / 2, seq((ny - spny) / 2, end - (ny - spny) / 2), seq((nz - spnz) / 2, end - (nz - spnz) / 2), 1) =
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
       1) = constant(1.0, 1, spny, spnz, 1, f64);
     // std::cout << m(seq((nx-spnx)/2+1, end-(nx-spnx)/2-1), seq((ny-spny)/2,
     // end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 0).dims() <<
-    // std::endl; std::cout << constant(1.0, mesh.n0-2, mesh.n1, mesh.n2, 1,
+    // std::endl; std::cout << constant(1.0, mesh.nx-2, mesh.ny, mesh.nz, 1,
     // f64).dims() << std::endl; std::cout << m(-(ny-spny)/2-1, seq((ny-spny)/2,
     // end-(ny-spny)/2), seq((nz-spnz)/2, end-(nz-spnz)/2), 1).dims() <<
     // std::endl; print ("case 2 m:", m); CASE 2
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 
     // mesh=Mesh(4, 4, 4, x/nx, y/ny, z/nz);
     // m=constant(0, dims_vector(mesh), f64);
-    // m(span, span, span, 0) = constant(1.0, mesh.n0 , mesh.n1, mesh.n2, 1,
+    // m(span, span, span, 0) = constant(1.0, mesh.nx , mesh.ny, mesh.nz, 1,
     // f64); print("m", m);
 
     // array Ms=constant(1., dims_vector(mesh), f64);
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 2) = 0.0;
-    zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+    zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     llgterm.push_back(llgt_ptr(new ExternalField(zeeswitch, mesh, material)));
     Llg.Fieldterms = llgterm;
     Llg.state0.material.alpha = 0.02;

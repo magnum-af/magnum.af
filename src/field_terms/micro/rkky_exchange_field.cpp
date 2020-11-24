@@ -17,7 +17,7 @@ RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_val
 af::array RKKYExchangeField::h(const State& state) {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
-    exch = af::moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
+    exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
     if (state.afsync)
         af::sync();
     af_time += af::timer::stop(aftimer);
@@ -32,7 +32,7 @@ af::array RKKYExchangeField::h(const State& state) {
 
 // Get inner index (index per matrix column)
 int RKKYExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
-    return static_cast<int>(i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im)));
+    return static_cast<int>(i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im)));
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
@@ -44,7 +44,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     af::timer t;
     if (verbose)
         af::timer::start();
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
     // matrix values,  of length "number of elements"
     std::vector<double> CSR_values;
     std::vector<int> CSR_IA(dimension + 1); // recursive row indices of length (n_rows + 1): IA[0] =
@@ -62,9 +62,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
         rkky_indices_raw = rkky_indices.host<unsigned int>();
     }
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     unsigned csr_ia = 0; // counter for SCR_IA
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // Note: skippable due to cross product
@@ -72,9 +72,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
                     // 2)+pow(mesh.dz, 2));
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.n0, mesh.n1)];
+                    if (i0 < mesh.nx - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -84,8 +84,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -95,9 +95,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.n0, mesh.n1)];
+                    if (i1 < mesh.ny - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -107,8 +107,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -118,15 +118,15 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     }
 
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
-                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                    if (i2 < mesh.nz - 1) {
+                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
+                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const unsigned int RKKY_index_i_p =
                             rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         // std::cout << "rkkyindex = " << RKKY_index_i
                         // << "and" << RKKY_index_i_p << std::endl;
                         // Preferring RKKY over exch vals
@@ -137,8 +137,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                             CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                             csr_ia++;
                         } else {
-                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                            double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                             if (A_i != 0) {
                                 CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
                                                      (A_i_p + A_i));
@@ -149,14 +149,14 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
+                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const unsigned int RKKY_index_i_m =
                             rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) && (RKKY_i_m != 0)) {
                             // assuming rkky jump condition equal to
@@ -165,8 +165,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                             CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
                         } else {
-                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                            double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                             if (A_i != 0) {
                                 CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
                                                      (A_i_m + A_i));
@@ -216,7 +216,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     if (verbose) {
         af::timer::start();
     }
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
     std::vector<int> COO_ROW;
@@ -232,14 +232,14 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     // NOTE aborts program//#pragma omp parallel for
     // consider removing im loop, but tiling with sparse is not supported.
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.n0, mesh.n1)];
+                    if (i0 < mesh.nx - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -249,8 +249,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -260,9 +260,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.n0, mesh.n1)];
+                    if (i1 < mesh.ny - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -272,8 +272,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -284,15 +284,15 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
 
                     // z
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
-                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                    if (i2 < mesh.nz - 1) {
+                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
+                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const unsigned int RKKY_index_i_p =
                             rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         // std::cout << "rkkyindex = " << RKKY_index_i << "and"
                         // << RKKY_index_i_p << std::endl;
                         // Preferring RKKY over exch vals:
@@ -301,8 +301,8 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         } else {
-                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                            double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                             if (A_i != 0) {
                                 COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
                                                      (A_i_p + A_i));
@@ -313,22 +313,22 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                        double RKKY_i = rkky_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
+                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const unsigned int RKKY_index_i_m =
                             rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) && (RKKY_i_m != 0)) {
                             COO_values.push_back((2. * RKKY_i) / (constants::mu0 * pow(mesh.dz, 2)));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         } else {
-                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                            double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                            double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                             if (A_i != 0) {
                                 COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
                                                      (A_i_m + A_i));

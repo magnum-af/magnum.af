@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     material.T = 1;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 2) = 1.;
     std::vector<llgt_ptr> llgterm;
     array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);

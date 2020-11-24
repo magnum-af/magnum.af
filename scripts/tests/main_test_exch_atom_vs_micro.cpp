@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     material.p = state.Ms * pow(dx, 3);
 
     //-------------------------------------------------------
-    array m = randu(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = randu(mesh.nx, mesh.ny, mesh.nz, 3, f64);
     State state(mesh, material, m);
 
     std::vector<llgt_ptr> llgterm;

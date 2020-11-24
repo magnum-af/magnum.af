@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     material.T = 0;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     const double tile = M_PI / 4.;
     m(0, 0, 0, 0) = sin(tile);
     m(0, 0, 0, 1) = 0.;

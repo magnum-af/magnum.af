@@ -41,12 +41,12 @@ int main(int argc, char** argv) {
     const double p = Ms * pow(dx, 3); // Compensate nz=1 instead of nz=4
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (unsigned ix = 0; ix < mesh.n0; ix++) {
-        for (unsigned iy = 0; iy < mesh.n1; iy++) {
-            const double rx = double(ix) - mesh.n0 / 2.;
-            const double ry = double(iy) - mesh.n1 / 2.;
+    for (unsigned ix = 0; ix < mesh.nx; ix++) {
+        for (unsigned iy = 0; iy < mesh.ny; iy++) {
+            const double rx = double(ix) - mesh.nx / 2.;
+            const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > 30 / 4.)
                 m(ix, iy, af::span, 2) = 1.;

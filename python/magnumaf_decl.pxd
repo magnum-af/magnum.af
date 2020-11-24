@@ -37,7 +37,7 @@ cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "mag
 
 cdef extern from "mesh.hpp" namespace "magnumafcpp":
     cdef cppclass Mesh:
-        unsigned int n0,n1,n2;
+        unsigned int nx,ny,nz;
         double dx,dy,dz;
         unsigned int n0_exp, n1_exp, n2_exp;
         Mesh (unsigned int, unsigned int, unsigned int, double, double, double)

@@ -16,7 +16,7 @@ TEST(CubicAnisotropyField, Constructor) {
 void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc3, const double z) {
     const Mesh mesh(2, 2, 2, 1e-9, 1e-9, 1e-9);
     // const Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9); // Alternative
-    const unsigned num_of_cells = mesh.n0 * mesh.n1 * mesh.n2;
+    const unsigned num_of_cells = mesh.nx * mesh.ny * mesh.nz;
     // const double Ms = 1 / constants::mu0; // Alternative
     af::array Ms = af::constant(1 / constants::mu0, dims_scalar(mesh), f64);
     af::array m = af::constant(0, dims_vector(mesh), f64);

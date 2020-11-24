@@ -42,13 +42,13 @@ int main(int argc, char** argv) {
         // std::cout << "fild= "<< field_Tesla << std::endl;
         //{0.08715574, 0, 0.996194698};//field tile 5 degree sin\cos(5/360 * 2
         // pi)
-        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
         const double hext_x_factor = std::sin(hext_angle / 360 * 2 * M_PI);
         const double hext_z_factor = std::cos(hext_angle / 360 * 2 * M_PI);
-        zee(af::span, af::span, af::span, 0) = af::constant(hext_x_factor * field_Tesla / constants::mu0, state.mesh.n0,
-                                                            state.mesh.n1, state.mesh.n2, 1, f64);
+        zee(af::span, af::span, af::span, 0) = af::constant(hext_x_factor * field_Tesla / constants::mu0, state.mesh.nx,
+                                                            state.mesh.ny, state.mesh.nz, 1, f64);
         zee(af::span, af::span, af::span, im_free_layer) = af::constant(
-            hext_z_factor * field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+            hext_z_factor * field_Tesla / constants::mu0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
         // std::cout << "dims= " << zee.dims() << ", "<< h_demag_safm.dims() <<
         // std::endl;
         return zee + h_demag_safm;

@@ -198,12 +198,12 @@ int main(int argc, char** argv) {
     vti_writer_micro(RKKY, mesh, filepath + "RKKY_field");
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (unsigned ix = 0; ix < mesh.n0; ix++) {
-        for (unsigned iy = 0; iy < mesh.n1; iy++) {
-            const double rx = double(ix) - mesh.n0 / 2.;
-            const double ry = double(iy) - mesh.n1 / 2.;
+    for (unsigned ix = 0; ix < mesh.nx; ix++) {
+        for (unsigned iy = 0; iy < mesh.ny; iy++) {
+            const double rx = double(ix) - mesh.nx / 2.;
+            const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > nx / r_ratio_to_sample)
                 m(ix, iy, af::span, 2) = 1.;
@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
     if (!exists(filepath + "m_relaxed.vti")) {
         std::cout << "Relaxing minit" << std::endl;
         double Hz_init = 130e-3 / constants::mu0;
-        af::array zee_init = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array zee_init = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee_init(af::span, af::span, af::span, 2) = Hz_init;
         llg.llgterms.push_back(LlgTerm(new ExternalField(zee_init)));
 
@@ -299,7 +299,7 @@ int main(int argc, char** argv) {
         // for (int iHz_current = 130; iHz_current < iHz_max; iHz_current++) {
         for (int iHz_current = 130; iHz_current < iHz_max; iHz_current += 2) {
             double Hz_current = iHz_current * 1e-3 / constants::mu0;
-            af::array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+            af::array zee = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
             zee(af::span, af::span, af::span, 2) = Hz_current;
             llg.llgterms.push_back(LlgTerm(new ExternalField(zee)));
             llg.relax(state_1, 1e-10);
@@ -329,7 +329,7 @@ int main(int argc, char** argv) {
         const double H_xz_plane_tilt_in_degree = 1;
 
         auto calc_Hext = [H_strt, H_stop, inttime_in_sec, H_xz_plane_tilt_in_degree](State state) {
-            af::array field = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+            af::array field = af::constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
             const double H_current = (H_stop - H_strt) * state.t / inttime_in_sec + H_strt;
             const double H_x = H_current * std::sin(2 * M_PI * H_xz_plane_tilt_in_degree / 360.);
             const double H_z = H_current * std::cos(2 * M_PI * H_xz_plane_tilt_in_degree / 360.);

@@ -70,11 +70,11 @@ int main(int argc, char** argv) {
         Mesh mesh(nx, ny, nz, dx, dy, dz);
 
         // Initial magnetic field
-        array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-        for (unsigned ix = 0; ix < mesh.n0; ix++) {
-            for (unsigned iy = 0; iy < mesh.n1; iy++) {
-                const double rx = double(ix) - mesh.n0 / 2.;
-                const double ry = double(iy) - mesh.n1 / 2.;
+        array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
+        for (unsigned ix = 0; ix < mesh.nx; ix++) {
+            for (unsigned iy = 0; iy < mesh.ny; iy++) {
+                const double rx = double(ix) - mesh.nx / 2.;
+                const double ry = double(iy) - mesh.ny / 2.;
                 const double r = sqrt(pow(rx, 2) + pow(ry, 2));
                 if (r > nx / 4.) {
                     m(ix, iy, af::span, 2) = 1.;
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
         auto exch = LlgTerm(new ExchangeField(A));
         auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
-        af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
         auto external = LlgTerm(new ExternalField(zee));
 
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
         state_1.write_vti(filepath + "m_relaxed_nz_" + std::to_string(nz));
         std::cout << "skrmy relaxed after [s]" << state_1.t << std::endl;
 
-        af::array m2 = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array m2 = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         m2(af::span, af::span, af::span, 2) = 1;
 
         State state_2(mesh, Ms, m2);

@@ -54,10 +54,10 @@ int main(int argc, char** argv) {
     state.material.afsync = false;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
-    m(0, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
-    m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
+    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.nx - 2, mesh.ny, mesh.nz, 1, f64);
+    m(0, span, span, 1) = constant(1.0, 1, mesh.ny, mesh.nz, 1, f64);
+    m(-1, span, span, 1) = constant(1.0, 1, mesh.ny, mesh.nz, 1, f64);
     m = iota(dim4(nx, ny, nz, 3), dim4(1, 1, 1, 1), f64);
     print("A", m);
     State state(mesh, material, m);
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
     vti_writer_atom(A, newmesh, (filepath + "aminit").c_str());
     print("A", A);
-    std::cout << newmesh.n0 << "  " << newmesh.n1 << "  " << newmesh.n2 << "  " << newmesh.dx << "  " << newmesh.dy
+    std::cout << newmesh.nx << "  " << newmesh.ny << "  " << newmesh.nz << "  " << newmesh.dx << "  " << newmesh.dy
               << "  " << newmesh.dz << "  " << std::endl;
     array B = array();
     Mesh bmesh = Mesh(0, 0, 0, 0, 0, 0);
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     vti_reader(B, bmesh, "/home/pth/git/magnum.af/Data/Testing/aminit.vti");
 
     print("B", B);
-    std::cout << bmesh.n0 << "  " << bmesh.n1 << "  " << bmesh.n2 << "  " << bmesh.dx << "  " << bmesh.dy << "  "
+    std::cout << bmesh.nx << "  " << bmesh.ny << "  " << bmesh.nz << "  " << bmesh.dx << "  " << bmesh.dy << "  "
               << bmesh.dz << "  " << std::endl;
 
     vtr_writer(B, bmesh, (filepath + "minit").c_str());
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     Mesh cmesh = Mesh(0, 0, 0, 0, 0, 0);
     vtr_reader(C, cmesh, "/home/pth/git/magnum.af/Data/Testing/minit.vtr");
     print("C", C);
-    std::cout << cmesh.n0 << "  " << cmesh.n1 << "  " << cmesh.n2 << "  " << cmesh.dx << "  " << cmesh.dy << "  "
+    std::cout << cmesh.nx << "  " << cmesh.ny << "  " << cmesh.nz << "  " << cmesh.dx << "  " << cmesh.dy << "  "
               << cmesh.dz << "  " << std::endl;
     //  std::vector<llgt_ptr> llgterm;
     //  llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     //  zeeswitch(0, 0, 0, 0)=-24.6e-3/constants::mu0;
     //  zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
     //  zeeswitch(0, 0, 0, 2)=0.0;
-    //  zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+    //  zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     //  llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch, mesh,
     //  material))); Llg.Fieldterms=llgterm;
     //  //TODO remove state0 in LLG!

@@ -65,7 +65,7 @@ af::array AtomisticExchangeField::h(const State& state) {
 
 // AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material
 // paramin) : material(paramin), mesh(meshin){
-//  array exch = array(mesh.n0, mesh.n1, mesh.n2, 3, f64);
+//  array exch = array(mesh.nx, mesh.ny, mesh.nz, 3, f64);
 //  //initialize filters
 //  filtr=constant(0.0, 3, 3, 3, f64);
 //  filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -115,25 +115,25 @@ af::array AtomisticExchangeField::h(const State& state) {
 //
 ////Function returns index
 // int AtomisticExchangeField::findex(int i0, int i1, int i2, int im, int id){
-//  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
+//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
 //}
 //
 ////Inner index (index per matrix column)
 // int AtomisticExchangeField::findex(int i0, int i1, int i2, int im){
-//  return i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
+//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*im));
 //}
 //
 // AtomisticExchangeField::AtomisticExchangeField (Mesh meshin, Material
 // paramin) : material(paramin), mesh(meshin){
-//  const int dimension=mesh.n0*mesh.n1*mesh.n2*3;
+//  const int dimension=mesh.nx*mesh.ny*mesh.nz*3;
 //  double* vmatr = NULL;
 //  vmatr = new double[dimension*dimension];
 //  for (int id = 0; id < dimension; id++){
 //    for (int im = 0; im < 3; im++){
-//      for (int i2 = 0; i2 < mesh.n2; i2++){
-//        for (int i1 = 0; i1 < mesh.n1; i1++){
-//          for (int i0 = 0; i0 < mesh.n0; i0++){
-//            const int index=i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
+//      for (int i2 = 0; i2 < mesh.nz; i2++){
+//        for (int i1 = 0; i1 < mesh.ny; i1++){
+//          for (int i0 = 0; i0 < mesh.nx; i0++){
+//            const int index=i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
 //            vmatr[index]=0.;
 //          }
 //        }
@@ -143,27 +143,27 @@ af::array AtomisticExchangeField::h(const State& state) {
 //
 //  for (int id = 0; id < dimension; id++){
 //    for (int im = 0; im < 3; im++){
-//      for (int i2 = 0; i2 < mesh.n2; i2++){
-//        for (int i1 = 0; i1 < mesh.n1; i1++){
-//          for (int i0 = 0; i0 < mesh.n0; i0++){
+//      for (int i2 = 0; i2 < mesh.nz; i2++){
+//        for (int i1 = 0; i1 < mesh.ny; i1++){
+//          for (int i0 = 0; i0 < mesh.nx; i0++){
 //            const int ind=findex(i0, i1, i2, im);
-//            //const int index=i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im+3*id)));
-//            //const int ind=i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*im));
+//            //const int index=i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
+//            //const int ind=i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*im));
 //            if(ind==id) {
 //              vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx,
 //              2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
 //              //x
 //              if(i0==0){
 //                vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                if (mesh.n0>1) vmatr[findex(i0+1, i1, i2, im,
+//                if (mesh.nx>1) vmatr[findex(i0+1, i1, i2, im,
 //                id)]+= 1./pow(mesh.dx, 2);
 //              }
-//              if (i0==mesh.n0-1){
+//              if (i0==mesh.nx-1){
 //                vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                if (mesh.n0>1) vmatr[findex(i0-1, i1, i2, im,
+//                if (mesh.nx>1) vmatr[findex(i0-1, i1, i2, im,
 //                id)]+= 1./pow(mesh.dx, 2);
 //              }
-//              if(i0>0 && i0< mesh.n0-1){
+//              if(i0>0 && i0< mesh.nx-1){
 //                vmatr[findex(i0-1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
 //                vmatr[findex(i0+1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
 //              }
@@ -171,15 +171,15 @@ af::array AtomisticExchangeField::h(const State& state) {
 //              //y
 //              if(i1==0){
 //                vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                if (mesh.n1>1) vmatr[findex(i0, i1+1, i2, im,
+//                if (mesh.ny>1) vmatr[findex(i0, i1+1, i2, im,
 //                id)]+= 1./pow(mesh.dy, 2);
 //              }
-//              if (i1==mesh.n1-1){
+//              if (i1==mesh.ny-1){
 //                vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                if (mesh.n1>1) vmatr[findex(i0, i1-1, i2, im,
+//                if (mesh.ny>1) vmatr[findex(i0, i1-1, i2, im,
 //                id)]+= 1./pow(mesh.dy, 2);
 //              }
-//              if(i1>0 && i1< mesh.n1-1){
+//              if(i1>0 && i1< mesh.ny-1){
 //                vmatr[findex(i0, i1-1, i2, im, id)]+= 1./pow(mesh.dy, 2);
 //                vmatr[findex(i0, i1+1, i2, im, id)]+= 1./pow(mesh.dy, 2);
 //              }
@@ -187,29 +187,29 @@ af::array AtomisticExchangeField::h(const State& state) {
 //              //z
 //              if (i2==0){
 //                vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                if (mesh.n2>1) vmatr[findex(i0, i1, i2+1, im,
+//                if (mesh.nz>1) vmatr[findex(i0, i1, i2+1, im,
 //                id)]+= 1./pow(mesh.dz, 2);
 //              }
-//              if (i2==mesh.n2-1){
+//              if (i2==mesh.nz-1){
 //                vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                if (mesh.n2>1) vmatr[findex(i0, i1, i2-1, im,
+//                if (mesh.nz>1) vmatr[findex(i0, i1, i2-1, im,
 //                id)]+= 1./pow(mesh.dz, 2);
 //              }
-//              if(i2>0 && i2< mesh.n2-1){
+//              if(i2>0 && i2< mesh.nz-1){
 //                vmatr[findex(i0, i1, i2-1, im, id)]+= 1./pow(mesh.dz, 2);
 //                vmatr[findex(i0, i1, i2+1, im, id)]+= 1./pow(mesh.dz, 2);
 //              }
 //
 //            //  if(i1==0){
 //            //  }
-//            //  else if (i1==mesh.n1-1){
+//            //  else if (i1==mesh.ny-1){
 //            //  }
 //            //  else
 //            //    vmatr[findex(i0, i1-1, i2, im, id)]+= 1.;
 //            //    vmatr[findex(i0, i1+1, i2, im, id)]+= 1.;
 //            //  if(i2==0){
 //            //  }
-//            //  else if (i2==mesh.n2-1){
+//            //  else if (i2==mesh.nz-1){
 //            //  }
 //            //  else
 //            //    vmatr[findex(i0, i1, i2-1, im, id)]+= 1.;
@@ -220,7 +220,7 @@ af::array AtomisticExchangeField::h(const State& state) {
 //              //  vmatr[findex(i0, i1+1, i2, im, id)]+= 1.;
 //              //}
 //            }
-//            //if(i0+mesh.n0*(i1+mesh.n1*(i2+mesh.n2*(im)))==id)
+//            //if(i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im)))==id)
 //            vmatr[index]=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz,
 //            2));
 //          }
@@ -254,7 +254,7 @@ af::array AtomisticExchangeField::h(const State& state) {
 //  timer_exchsolve = timer::start();
 //  array exch = matmul(matr, flat(m));
 ////print("ex0", exch);
-//  exch=moddims(exch, mesh.n0, mesh.n1, mesh.n2, 3);
+//  exch=moddims(exch, mesh.nx, mesh.ny, mesh.nz, 3);
 ////print("ex1", flat(exch));
 //
 //  exch.eval();

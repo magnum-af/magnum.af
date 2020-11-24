@@ -41,14 +41,14 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
     }
 }
 void warn_if_maxprime_lt_13(const Mesh& mesh) {
-    warn_if_maxprime_lt_13(mesh.n0, "nx");
-    warn_if_maxprime_lt_13(mesh.n1, "ny");
-    warn_if_maxprime_lt_13(mesh.n2, "nz");
+    warn_if_maxprime_lt_13(mesh.nx, "nx");
+    warn_if_maxprime_lt_13(mesh.ny, "ny");
+    warn_if_maxprime_lt_13(mesh.nz, "nz");
 }
 
 std::string to_string(const Mesh& mesh) {
-    return "Nfft_n0exp_" + std::to_string(nx_exp(mesh.n0)) + "_n1exp_" + std::to_string(ny_exp(mesh.n1)) + "_n2exp_" +
-           std::to_string(nz_exp(mesh.n2)) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" +
+    return "Nfft_n0exp_" + std::to_string(nx_exp(mesh.nx)) + "_n1exp_" + std::to_string(ny_exp(mesh.ny)) + "_n2exp_" +
+           std::to_string(nz_exp(mesh.nz)) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" +
            std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
 }
 
@@ -89,21 +89,21 @@ af::array DemagField::h(const State& state) {
 
     // FFT with zero-padding of the m field
     af::array mfft;
-    if (nz_exp(state.mesh.n2) == 1) {
+    if (nz_exp(state.mesh.nz) == 1) {
         if (state.Ms_field.isempty())
-            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1)));
+            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
         else
-            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1)));
+            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
     } else {
         if (state.Ms_field.isempty())
-            mfft = af::fftR2C<3>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1), nz_exp(state.mesh.n2)));
+            mfft = af::fftR2C<3>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
         else
             mfft = af::fftR2C<3>(state.Ms_field * state.m,
-                                 af::dim4(nx_exp(state.mesh.n0), ny_exp(state.mesh.n1), nz_exp(state.mesh.n2)));
+                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
     }
 
     // Pointwise product
-    af::array hfft = af::array(nx_exp(state.mesh.n0) / 2 + 1, ny_exp(state.mesh.n1), nz_exp(state.mesh.n2), 3, Nfft.type());
+    af::array hfft = af::array(nx_exp(state.mesh.nx) / 2 + 1, ny_exp(state.mesh.ny), nz_exp(state.mesh.nz), 3, Nfft.type());
     hfft(af::span, af::span, af::span, 0) =
         Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
         Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +
@@ -119,19 +119,19 @@ af::array DemagField::h(const State& state) {
 
     // IFFT reversing padding
     af::array h_field;
-    if (nz_exp(state.mesh.n2) == 1) {
+    if (nz_exp(state.mesh.nz) == 1) {
         h_field = af::fftC2R<2>(hfft);
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return h_field(af::seq(0, nx_exp(state.mesh.n0) / 2 - 1), af::seq(0, ny_exp(state.mesh.n1) / 2 - 1));
+        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
     } else {
         h_field = af::fftC2R<3>(hfft);
         if (state.afsync)
             af::sync();
         cpu_time += af::timer::stop(timer_demagsolve);
-        return h_field(af::seq(0, nx_exp(state.mesh.n0) / 2 - 1), af::seq(0, ny_exp(state.mesh.n1) / 2 - 1),
-                       af::seq(0, nz_exp(state.mesh.n2) / 2 - 1), af::span);
+        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
+                       af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
     }
 }
 
@@ -213,12 +213,12 @@ double Nxy(const int ix, const int iy, const int iz, const double dx, const doub
 
 void setup_N(const Mesh& mesh, std::vector<double>& N, unsigned ix_start, unsigned ix_end) {
     for (unsigned i0 = ix_start; i0 < ix_end; i0++) {
-        const int j0 = (i0 + nx_exp(mesh.n0) / 2) % nx_exp(mesh.n0) - nx_exp(mesh.n0) / 2;
-        for (unsigned i1 = 0; i1 < ny_exp(mesh.n1); i1++) {
-            const int j1 = (i1 + ny_exp(mesh.n1) / 2) % ny_exp(mesh.n1) - ny_exp(mesh.n1) / 2;
-            for (unsigned i2 = 0; i2 < nz_exp(mesh.n2); i2++) {
-                const int j2 = (i2 + nz_exp(mesh.n2) / 2) % nz_exp(mesh.n2) - nz_exp(mesh.n2) / 2;
-                const int idx = 6 * (i2 + nz_exp(mesh.n2) * (i1 + ny_exp(mesh.n1) * i0));
+        const int j0 = (i0 + nx_exp(mesh.nx) / 2) % nx_exp(mesh.nx) - nx_exp(mesh.nx) / 2;
+        for (unsigned i1 = 0; i1 < ny_exp(mesh.ny); i1++) {
+            const int j1 = (i1 + ny_exp(mesh.ny) / 2) % ny_exp(mesh.ny) - ny_exp(mesh.ny) / 2;
+            for (unsigned i2 = 0; i2 < nz_exp(mesh.nz); i2++) {
+                const int j2 = (i2 + nz_exp(mesh.nz) / 2) % nz_exp(mesh.nz) - nz_exp(mesh.nz) / 2;
+                const int idx = 6 * (i2 + nz_exp(mesh.nz) * (i1 + ny_exp(mesh.ny) * i0));
                 N[idx + 0] = newell::Nxx(j0, j1, j2, mesh.dx, mesh.dy, mesh.dz);
                 N[idx + 1] = newell::Nxy(j0, j1, j2, mesh.dx, mesh.dy, mesh.dz);
                 N[idx + 2] = newell::Nxy(j0, j2, j1, mesh.dx, mesh.dz, mesh.dy);
@@ -232,12 +232,12 @@ void setup_N(const Mesh& mesh, std::vector<double>& N, unsigned ix_start, unsign
 } // namespace newell
 
 af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
-    std::vector<double> N_values(nx_exp(mesh.n0) * ny_exp(mesh.n1) * nz_exp(mesh.n2) * 6);
+    std::vector<double> N_values(nx_exp(mesh.nx) * ny_exp(mesh.ny) * nz_exp(mesh.nz) * 6);
     std::vector<std::thread> t;
 
     for (unsigned i = 0; i < nthreads; i++) {
-        unsigned ix_start = i * (double)nx_exp(mesh.n0) / nthreads;
-        unsigned ix_end = (i + 1) * (double)nx_exp(mesh.n0) / nthreads;
+        unsigned ix_start = i * (double)nx_exp(mesh.nx) / nthreads;
+        unsigned ix_end = (i + 1) * (double)nx_exp(mesh.nx) / nthreads;
         t.push_back(std::thread(newell::setup_N, std::ref(mesh), std::ref(N_values), ix_start, ix_end));
     }
 
@@ -245,10 +245,10 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
         t[i].join();
     }
 
-    af::array Naf(6, nz_exp(mesh.n2), ny_exp(mesh.n1), nx_exp(mesh.n0), N_values.data());
+    af::array Naf(6, nz_exp(mesh.nz), ny_exp(mesh.ny), nx_exp(mesh.nx), N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
 
-    if (nz_exp(mesh.n2) == 1) {
+    if (nz_exp(mesh.nz) == 1) {
         Naf = af::fftR2C<2>(Naf);
     } else {
         Naf = af::fftR2C<3>(Naf);

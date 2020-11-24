@@ -17,9 +17,9 @@ TEST(vtkIO, vtiWriteReadTest) {
     vti_reader(read_a, read_mesh, "vti_unittest.vti");
     EXPECT_EQ(remove("vti_unittest.vti"), 0);
 
-    EXPECT_EQ(read_mesh.n0, 6);
-    EXPECT_EQ(read_mesh.n1, 5);
-    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.nx, 6);
+    EXPECT_EQ(read_mesh.ny, 5);
+    EXPECT_EQ(read_mesh.nz, 4);
     EXPECT_EQ(read_mesh.dx, 0.1);
     EXPECT_EQ(read_mesh.dy, 0.2);
     EXPECT_EQ(read_mesh.dz, 0.3);

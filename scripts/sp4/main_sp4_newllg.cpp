@@ -35,10 +35,10 @@ int main(int argc, char** argv) {
     material.T = 300;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.n0 - 2, mesh.n1, mesh.n2, 1, f64);
-    m(0, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
-    m(-1, span, span, 1) = constant(1.0, 1, mesh.n1, mesh.n2, 1, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
+    m(seq(1, end - 1), span, span, 0) = constant(1.0, mesh.nx - 2, mesh.ny, mesh.nz, 1, f64);
+    m(0, span, span, 1) = constant(1.0, 1, mesh.ny, mesh.nz, 1, f64);
+    m(-1, span, span, 1) = constant(1.0, 1, mesh.ny, mesh.nz, 1, f64);
     State state(mesh, material, m);
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 2) = 0.0;
-    zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+    zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
     state.material.alpha = 0.02;
 

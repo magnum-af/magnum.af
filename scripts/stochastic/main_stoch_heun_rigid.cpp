@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     double dt = 1e-15;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 2) = 1.;
     State state(mesh, material, m); // ATTENTION, to be set in each loop
     state.Ms = 1281197;

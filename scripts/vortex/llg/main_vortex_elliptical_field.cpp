@@ -29,19 +29,19 @@ int main(int argc, char** argv) {
     // Defining lamdas
     auto zee_func_for_relax_in_init = [A, B](State state) -> af::array {
         double phi = 0;
-        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(span, span, span, 0) = constant(A * std::cos(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
-        zee(span, span, span, 1) = constant(B * std::sin(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
-        zee(span, span, span, 2) = constant(A * std::sin(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        array zee = constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
+        zee(span, span, span, 0) = constant(A * std::cos(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
+        zee(span, span, span, 1) = constant(B * std::sin(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
+        zee(span, span, span, 2) = constant(A * std::sin(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
         return zee;
     };
 
     auto zee_func = [t_full_rotation, A, B](State state) -> af::array {
         double phi = 2 * M_PI * (state.t / t_full_rotation);
-        array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
-        zee(span, span, span, 0) = constant(A * std::cos(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
-        zee(span, span, span, 1) = constant(B * std::sin(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
-        zee(span, span, span, 2) = constant(A * std::sin(phi), state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        array zee = constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
+        zee(span, span, span, 0) = constant(A * std::cos(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
+        zee(span, span, span, 1) = constant(B * std::sin(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
+        zee(span, span, span, 2) = constant(A * std::sin(phi), state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
         return zee;
     };
 

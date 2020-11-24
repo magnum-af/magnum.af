@@ -40,12 +40,12 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, dx, dy, dz);
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(af::span, af::span, af::span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++) {
-        for (int iy = 0; iy < mesh.n1; iy++) {
-            const double rx = double(ix) - mesh.n0 / 2.;
-            const double ry = double(iy) - mesh.n1 / 2.;
+    for (int ix = 0; ix < mesh.nx; ix++) {
+        for (int iy = 0; iy < mesh.ny; iy++) {
+            const double rx = double(ix) - mesh.nx / 2.;
+            const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > nx / 4.)
                 m(ix, iy, af::span, 2) = 1.;
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     material.D_axis[2] = -1;
     auto dmi = LlgTerm(new DmiField(mesh, material));
 
-    array zee = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array zee = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = LlgTerm(new ExternalField(zee));
 

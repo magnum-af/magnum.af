@@ -883,14 +883,14 @@ cmplx FADDEEVA(w)(cmplx z, double relerr) {
             ret = exp(-x * x); // not negligible in real part if y very small
 #endif
         // (round instead of ceil as in original paper; note that x/a > 1 here)
-        double n0 = floor(x / a + 0.5); // sum in both directions, starting at n0
-        double dx = a * n0 - x;
-        sum3 = exp(-dx * dx) / (a2 * (n0 * n0) + y * y);
-        sum5 = a * n0 * sum3;
+        double nx = floor(x / a + 0.5); // sum in both directions, starting at nx
+        double dx = a * nx - x;
+        sum3 = exp(-dx * dx) / (a2 * (nx * nx) + y * y);
+        sum5 = a * nx * sum3;
         double exp1 = exp(4 * a * dx), exp1dn = 1;
         int dn;
-        for (dn = 1; n0 - dn > 0; ++dn) { // loop over n0-dn and n0+dn terms
-            double np = n0 + dn, nm = n0 - dn;
+        for (dn = 1; nx - dn > 0; ++dn) { // loop over nx-dn and nx+dn terms
+            double np = nx + dn, nm = nx - dn;
             double tp = exp(-sqr(a * dn + dx));
             double tm = tp * (exp1dn *= exp1); // trick to get tm from tp
             tp /= (a2 * (np * np) + y * y);
@@ -900,8 +900,8 @@ cmplx FADDEEVA(w)(cmplx z, double relerr) {
             if (a * (np * tp + nm * tm) < relerr * sum5)
                 goto finish;
         }
-        while (1) { // loop over n0+dn terms only (since n0-dn <= 0)
-            double np = n0 + dn++;
+        while (1) { // loop over nx+dn terms only (since nx-dn <= 0)
+            double np = nx + dn++;
             double tp = exp(-sqr(a * dn + dx)) / (a2 * (np * np) + y * y);
             sum3 += tp;
             sum5 += a * np * tp;

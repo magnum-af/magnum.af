@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     // material.p=9.274009994e-24;
 
     //-------------------------------------------------------
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     // material.J_atom/constants::mu0/material.p <<std::endl;
 
     //    //-------------------------------------------------------
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     // <<std::endl; std::cout << "H_exch_2   = " <<0<<", "<<0<<", "<<
     // material.J_atom/constants::mu0/material.p <<std::endl;
     //-------------------------------------------------------
-    //    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    //    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     //    m(0, 0, 0, 0) = 0;
     //    m(0, 0, 0, 1) = 0;
     //    m(0, 0, 0, 2) = 1;
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
     ////
     nx = 1, ny = 2, nz = 1;
     mesh = Mesh(nx, ny, nz, dx, dx, dx);
-    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 0) = 0;
     m(0, 0, 0, 1) = 0;
     m(0, 0, 0, 2) = 1;
@@ -169,7 +169,7 @@ int main(int argc, char** argv) {
     if (compare(afvalue(Llg2.Fieldterms[0]->h(state)(0, 1, 0, 2)), 2 * material.K_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     ////    //-------------------------------------------------------
-    ////    m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    ////    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     ////    m(0, 0, 0, 0) = 1;
     ////    m(0, 0, 0, 1) = 0;
     ////    m(0, 0, 0, 2) = 0;

@@ -21,9 +21,9 @@ af::array zee_func(State state) {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
     return zee;
 }
 
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "n_cells= " << n_cells
-              << ", should be a*b*M_PI*mesh.n2= " << mesh.n0 / 2 * mesh.n1 / 2 * M_PI * mesh.n2 << std::endl;
+              << ", should be a*b*M_PI*mesh.nz= " << mesh.nx / 2 * mesh.ny / 2 * M_PI * mesh.nz << std::endl;
 
     std::ofstream stream;
     stream.precision(12);

@@ -45,12 +45,12 @@ int main(int argc, char** argv) {
     const int demag(argc > 4 ? std::stoi(argv[4]) : 0); // 0 == false, else true
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(span, span, span, 2) = -1;
-    for (unsigned ix = 0; ix < mesh.n0; ix++) {
-        for (unsigned iy = 0; iy < mesh.n1; iy++) {
-            const double rx = double(ix) - mesh.n0 / 2.;
-            const double ry = double(iy) - mesh.n1 / 2.;
+    for (unsigned ix = 0; ix < mesh.nx; ix++) {
+        for (unsigned iy = 0; iy < mesh.ny; iy++) {
+            const double rx = double(ix) - mesh.nx / 2.;
+            const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > nx / 4.)
                 m(ix, iy, span, 2) = 1.;
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     array zee = constant(0.0, 1, 1, 1, 3, f64);
     zee(0, 0, 0, 2) = bz_in_dims_of_J_atom * J_atom / (p * constants::mu0);
     af::print("zee_pre_tile", zee);
-    zee = tile(zee, mesh.n0, mesh.n1, mesh.n2);
+    zee = tile(zee, mesh.nx, mesh.ny, mesh.nz);
 
     LLGIntegrator Llg(alpha);
     if (demag) {

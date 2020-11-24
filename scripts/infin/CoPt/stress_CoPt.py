@@ -22,14 +22,14 @@ af.info()
 
 # Initializing disk with magnetization in x, y or z
 # xyz=0 initializes magnetization in x, xyz=1 in y, xyz=2 in z direction, default is 2 == z
-def disk(n0, n1, n2, xyz = 2):
-    m = np.zeros((n0, n1, n2, 3));
-    for ix in range (0, n0):
-        for iy in range(0, n1):
-            a= n0/2
-            b= n1/2
-            rx=ix-n0/2.
-            ry=iy-n1/2.
+def disk(nx, ny, nz, xyz = 2):
+    m = np.zeros((nx, ny, nz, 3));
+    for ix in range (0, nx):
+        for iy in range(0, ny):
+            a= nx/2
+            b= ny/2
+            rx=ix-nx/2.
+            ry=iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2);
             if(r<1):
                 m[ix, iy, :, xyz]=1

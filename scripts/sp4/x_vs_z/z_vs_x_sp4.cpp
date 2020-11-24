@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
         zeeswitch(0, 0, 0, 2) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
-        zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+        zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
         Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
         Llg.alpha = 0.02;
 
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
         af::array zeeswitch = af::constant(0.0, 1, 1, 1, 3, f64);
         zeeswitch(0, 0, 0, 0) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
-        zeeswitch = tile(zeeswitch, mesh.n0, mesh.n1, mesh.n2);
+        zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
         Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
         Llg.alpha = 0.02;
 

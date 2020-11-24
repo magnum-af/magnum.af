@@ -17,13 +17,13 @@ int main(int argc, char** argv) {
     material.D_axis[2] = 0;
     material.A = 1;
 
-    // array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
-    // m(span, span, span, 0) = constant(1.0, mesh.n0, mesh.n1, mesh.n2, 1,
+    // array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
+    // m(span, span, span, 0) = constant(1.0, mesh.nx, mesh.ny, mesh.nz, 1,
     // f64);
-    std::cout << mesh.n0 << std::endl;
-    array m = constant(0, dim4(mesh.n0, mesh.n1, mesh.n2, 3), f64);
+    std::cout << mesh.nx << std::endl;
+    array m = constant(0, dim4(mesh.nx, mesh.ny, mesh.nz, 3), f64);
     m(span, span, span, 0) = 1.;
-    // array m = iota(dim4(mesh.n0, mesh.n1, mesh.n2, 3), dim4(1, 1, 1, 1),
+    // array m = iota(dim4(mesh.nx, mesh.ny, mesh.nz, 3), dim4(1, 1, 1, 1),
     // f64);
     print("m", m);
     // m=reorder(m, 2, 1, 0, 3);

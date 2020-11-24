@@ -55,7 +55,7 @@ TEST(NonequiDemagField, EnergyTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::span, af::span, 0, af::span) = random_1;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_2;
@@ -101,7 +101,7 @@ TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::span, af::span, 0, af::span) = random_1;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_2;
@@ -143,7 +143,7 @@ TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::span, af::span, 0, af::span) = random_2;
     m(af::span, af::span, 1, af::span) = random_2;
     m(af::span, af::span, 2, af::span) = random_1;
@@ -183,7 +183,7 @@ TEST(NonequiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::span, af::span, 1, af::span) = random;
     m(af::span, af::span, 2, af::span) = random;
 
@@ -221,11 +221,11 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::seq(1, af::end - 1), af::span, af::span, 0) =
-        af::constant(1.0, mesh_ed.n0 - 2, mesh_ed.n1, mesh_ed.n2, 1, f64);
-    m(0, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
-    m(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.n1, mesh_ed.n2, 1, f64);
+        af::constant(1.0, mesh_ed.nx - 2, mesh_ed.ny, mesh_ed.nz, 1, f64);
+    m(0, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.ny, mesh_ed.nz, 1, f64);
+    m(-1, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ed.ny, mesh_ed.nz, 1, f64);
     m(af::span, af::span, 0, af::span) = 0;
 
     State state_ed(mesh_ed, 8e5, m, false, true);
@@ -264,7 +264,7 @@ TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
     // equi
     Mesh mesh_ed(nx, ny, nz, x / nx, y / ny, z / nz);
 
-    af::array m = af::constant(0.0, mesh_ed.n0, mesh_ed.n1, mesh_ed.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh_ed.nx, mesh_ed.ny, mesh_ed.nz, 3, f64);
     m(af::span, af::span, af::span, 2) = 1;
 
     State state_ed(mesh_ed, 8e5, m, false, true);

@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     material.J_atom = 1;
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 

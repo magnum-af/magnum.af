@@ -46,12 +46,12 @@ int main(int argc, char** argv) {
         Mesh mesh(nx, ny, nz, dx, dy, dz);
 
         // Initial magnetic field
-        array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         m(af::span, af::span, af::span, 2) = -1;
-        for (int ix = 0; ix < mesh.n0; ix++) {
-            for (int iy = 0; iy < mesh.n1; iy++) {
-                const double rx = double(ix) - mesh.n0 / 2.;
-                const double ry = double(iy) - mesh.n1 / 2.;
+        for (int ix = 0; ix < mesh.nx; ix++) {
+            for (int iy = 0; iy < mesh.ny; iy++) {
+                const double rx = double(ix) - mesh.nx / 2.;
+                const double ry = double(iy) - mesh.ny / 2.;
                 const double r = sqrt(pow(rx, 2) + pow(ry, 2));
                 if (r > nx / 4.)
                     m(ix, iy, af::span, 2) = 1.;
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
         auto exch = LlgTerm(new ExchangeField(A));
         auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
-        af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
         auto external = LlgTerm(new ExternalField(zee));
 
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
         Mesh mesh(nx, ny, nz, dx, dy, dz);
 
         // Initial magnetic field
-        af::array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         m(af::span, af::span, 0, af::span) = m_relaxed;
         State state_1(mesh, Ms, m);
         state_1.write_vti(filepath + "m_relaxed_nz" + std::to_string(nz));
@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
         // auto exch = LlgTerm (new SparseExchangeField(A, mesh));
         auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
         auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
-        af::array zee = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
         auto external = LlgTerm(new ExternalField(zee));
 

@@ -17,7 +17,7 @@ SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mes
 af::array SparseExchangeField::h(const State& state) {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
-    exch = af::moddims(exch, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3);
+    exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
     if (state.afsync)
         af::sync();
     af_time += af::timer::stop(aftimer);
@@ -32,22 +32,22 @@ af::array SparseExchangeField::h(const State& state) {
 
 // Get inner index (index per matrix column)
 unsigned SparseExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
-    return i0 + mesh.n0 * (i1 + mesh.n1 * (i2 + mesh.n2 * im));
+    return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
 af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
     af::timer t;
     if (verbose)
         af::timer::start();
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_ROW;       //
     std::vector<int> COO_COL;       //
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     const unsigned ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im << ", " <<
                     // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
@@ -56,7 +56,7 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
                     // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz,
                     // 2)); x: interaction from (i0, i1, i2) to (i0+-1, i1, i2)
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
+                    if (i0 < mesh.nx - 1) {
                         COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0 + 1, i1, i2, im, mesh));
@@ -69,7 +69,7 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
+                    if (i1 < mesh.ny - 1) {
                         COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
@@ -82,7 +82,7 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
                     }
 
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
+                    if (i2 < mesh.nz - 1) {
                         COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
@@ -120,7 +120,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
     af::timer t;
     if (verbose)
         af::timer::start();
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;         // matrix values,  of length "number of elements"
     std::vector<int> CSR_IA(dimension + 1); // recursive row indices of length (n_rows + 1): IA[0] =
@@ -129,9 +129,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     int csr_ia = 0; // counter for SCR_IA
                     const unsigned ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im <<
@@ -142,7 +142,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
                     // 2)+pow(mesh.dz, 2)); x: interaction from (i0, i1,
                     // i2) to (i0+-1, i1, i2)
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
+                    if (i0 < mesh.nx - 1) {
                         CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
                         CSR_JA.push_back(findex(i0 + 1, i1, i2, im, mesh));
                         csr_ia++;
@@ -155,7 +155,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
+                    if (i1 < mesh.ny - 1) {
                         CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
                         CSR_JA.push_back(findex(i0, i1 + 1, i2, im, mesh));
                         csr_ia++;
@@ -168,7 +168,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
                     }
 
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
+                    if (i2 < mesh.nz - 1) {
                         CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
                         CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         csr_ia++;
@@ -203,7 +203,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     af::timer t;
     if (verbose)
         af::timer::start();
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;         // matrix values,  of length "number of elements"
     std::vector<int> CSR_IA(dimension + 1); // recursive row indices of length (n_rows + 1): IA[0] =
@@ -214,9 +214,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
     double* a_host = NULL;
     a_host = A_exchange_field.host<double>();
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     int csr_ia = 0; // counter for SCR_IA
                     const unsigned ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im <<
@@ -226,9 +226,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
                     // 2)+pow(mesh.dz, 2));
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_host[util::stride(i0 + 1, i1, i2, mesh.n0, mesh.n1)];
+                    if (i0 < mesh.nx - 1) {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -238,8 +238,8 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_host[util::stride(i0 - 1, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -249,9 +249,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.n0, mesh.n1)];
+                    if (i1 < mesh.ny - 1) {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -261,8 +261,8 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -272,9 +272,9 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     }
 
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                    if (i2 < mesh.nz - 1) {
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -284,8 +284,8 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -320,7 +320,7 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
     af::timer t;
     if (verbose)
         af::timer::start();
-    const unsigned dimension = mesh.n0 * mesh.n1 * mesh.n2 * 3;
+    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;       // column indices
@@ -328,9 +328,9 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
     double* a_raw = NULL;
     a_raw = A_exchange_field.host<double>();
     for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.n2; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.n1; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.n0; i0++) {
+        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
+            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
+                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
                     const int ind = findex(i0, i1, i2, im, mesh);
                     // std::cout << ind << ", " << id << ", " << im << ", " <<
                     // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
@@ -339,9 +339,9 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz,
                     // 2));
                     // +x: ix, ix+1
-                    if (i0 < mesh.n0 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.n0, mesh.n1)];
+                    if (i0 < mesh.nx - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -351,8 +351,8 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -362,9 +362,9 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     }
 
                     // +y: iy, iy+1
-                    if (i1 < mesh.n1 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.n0, mesh.n1)];
+                    if (i1 < mesh.ny - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -374,8 +374,8 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
@@ -385,9 +385,9 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     }
 
                     // +z: iz, iz+1
-                    if (i2 < mesh.n2 - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.n0, mesh.n1)];
+                    if (i2 < mesh.nz - 1) {
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
@@ -397,8 +397,8 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.n0, mesh.n1)];
-                        double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.n0, mesh.n1)];
+                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                        double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
                             COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));

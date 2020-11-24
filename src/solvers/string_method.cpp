@@ -220,11 +220,11 @@ double StringMethod::run(const std::string filepath, const double string_abort_r
         }
 
         std::ofstream stream_E_barrier(filepath + "E_barrier.dat");
-        stream_E_barrier << "# max_lowest \t this->images[0].mesh.n0 \t "
+        stream_E_barrier << "# max_lowest \t this->images[0].mesh.nx \t "
                             "this->images[0].mesh.dx"
                          << std::endl;
         stream_E_barrier.precision(12);
-        stream_E_barrier << max_lowest << "\t" << this->images[0].mesh.n0 << "\t" << this->images[0].mesh.dx
+        stream_E_barrier << max_lowest << "\t" << this->images[0].mesh.nx << "\t" << this->images[0].mesh.dx
                          << std::endl;
         stream_E_barrier.close();
 

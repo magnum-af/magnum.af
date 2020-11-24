@@ -10,7 +10,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCube) {
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
     double Ms = 1e5;
 
-    af::array m = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(af::span, af::span, af::span, 0) = 1;
     State state(mesh, Ms, m);
     DemagField demag(mesh);
@@ -35,7 +35,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCubeWithAirbox) {
     Mesh mesh(2 * nx, 2 * ny, 2 * nz, x / nx, y / ny, z / nz);
     double Ms = 1e5;
 
-    af::array m = af::constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    af::array m = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(af::seq(nx / 2, 2 * nx - nx / 2 - 1), af::seq(ny / 2, 2 * ny - ny / 2 - 1), af::seq(nz / 2, 2 * nz - nz / 2 - 1),
       0) = 1;
     State state(mesh, Ms, m, false);

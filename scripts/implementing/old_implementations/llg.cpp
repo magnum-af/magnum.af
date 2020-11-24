@@ -330,8 +330,8 @@ array LLG::rk4(const array& m, const double dt) {
 // Standard Runge-Kutta 4th order method
 array LLG::rk4minimal(const array& m, const double dt) {
     // array k, m_add;
-    array k = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
-    array m_add = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    array k = array(state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
+    array m_add = array(state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
 
     heff = fheff(m);
     k = dt * fdmdt(m, heff);
@@ -451,7 +451,7 @@ array LLG::tsit45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -460,13 +460,13 @@ array LLG::tsit45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Local extrapolation using 5th order approx
-    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Error estimation using 4th order approx
-    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += bhat[i] * k[i];
     }
@@ -486,7 +486,7 @@ array LLG::DP45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -495,13 +495,13 @@ array LLG::DP45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Local extrapolation using 5th order approx
-    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Error estimation using 4th order approx
-    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += e[i] * k[i];
     }
@@ -522,7 +522,7 @@ array LLG::BS45(const array& m, const double dt, double& err) {
     } else
         k[1] = k[s];
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -531,13 +531,13 @@ array LLG::BS45(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
 
-    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
 
-    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -576,7 +576,7 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     // calc sumbk and check second error sumbk-bi*ki
     for (int i = 2; i <= 6; i++) { // i=2, ..., 6
         // for(int i=2;i<=s;i++){
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -586,7 +586,7 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     }
 
     // Check first 4th order approx yielding directly the error
-    rk_error = array(state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = array(state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     rk_error = e[1] * k[1];
     for (int i = 3; i <= 6; i++) { // i=3, 4, 5, 6
         rk_error += e[i] * k[i];
@@ -606,12 +606,12 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     // large error, we save comp cost of 2 stages
     if (controller.success(err, h) == false) {
         std::cout << "CONTROOOL" << std::endl;
-        return constant(10000000.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        return constant(10000000.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     }
 
     // 7th and 8th stage
     for (int i = 7; i <= 8; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -621,13 +621,13 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     }
 
     // Calc sumbk
-    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i < s; i++) {
         sumbk += a[s][i] * k[i];
     }
     sumbk *= dt;
     // Calc second and more precise 4th order error estimate
-    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -644,7 +644,7 @@ array LLG::DP78(const array& m, const double dt, double& err) {
     k[1] = fdmdt(m, heff);
     // Iterating over a-matrix, calculating k[i]s
     for (int i = 2; i <= s; i++) {
-        rktemp = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+        rktemp = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
         for (int j = 1; j < i; j++) {
             rktemp += a[i][j] * k[j];
         }
@@ -653,14 +653,14 @@ array LLG::DP78(const array& m, const double dt, double& err) {
         k[i] = fdmdt(m + rktemp, heff);
     }
     // Calculating 8th order approx (local extrapolation)
-    sumbk = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    sumbk = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         sumbk += bhat[i] * k[i];
     }
     sumbk *= dt;
 
     // Calculating 7th order approx for error approx
-    rk_error = constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+    rk_error = constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
     for (int i = 1; i <= s; i++) {
         rk_error += b[i] * k[i];
     }
@@ -1644,7 +1644,7 @@ LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
 //  else
 //    k[1]=k[s];
 //  for(int i=2;i<=s;i++){
-//      rktemp=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3,
+//      rktemp=constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3,
 //      f64);
 //    for(int j=1;j<i;j++){
 //      //std::cout<<"a"<<i<<j<<std::endl;
@@ -1655,13 +1655,13 @@ LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
 //    k[i]= fdmdt(m + rktemp, heff);
 //  //std::cout<<std::endl;
 //  }
-//  sumbk=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3, f64);
+//  sumbk=constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3, f64);
 //  for(int i=1;i<s;i++){
 //    sumbk+=a[s][i]*k[i];
 //  }
 //  sumbk*=dt;
 //
-//  //rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3,
+//  //rk_error=constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3,
 //  f64);
 //  //for(int i=1;i<=s;i++){
 //  //  rk_error+=b[i]*k[i];
@@ -1669,7 +1669,7 @@ LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
 //  //rk_error*=dt;
 //  //rk_error=sumbk-rk_error;
 //
-//  rk_error=constant(0.0, state0.mesh.n0, state0.mesh.n1, state0.mesh.n2, 3,
+//  rk_error=constant(0.0, state0.mesh.nx, state0.mesh.ny, state0.mesh.nz, 3,
 //  f64); for(int i=1;i<s;i++){//i=1, 2, ..., 7
 //    rk_error+=e[i]*k[i];
 //  }

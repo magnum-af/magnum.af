@@ -14,17 +14,17 @@ TEST(ExchangeField, A_scalar_vs_array_value) {
     ExchangeField exch_global(A);
     af::array globalA = exch_global.h(state);
 
-    af::array A_field = af::constant(A, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    af::array A_field = af::constant(A, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     ExchangeField exch_local(A_field);
     af::array localA = exch_local.h(state);
 
-    for (unsigned n0 = 0; n0 < mesh.n0; n0++) {
-        for (unsigned n1 = 0; n1 < mesh.n1; n1++) {
-            for (unsigned n2 = 0; n2 < mesh.n2; n2++) {
+    for (unsigned nx = 0; nx < mesh.nx; nx++) {
+        for (unsigned ny = 0; ny < mesh.ny; ny++) {
+            for (unsigned nz = 0; nz < mesh.nz; nz++) {
                 for (unsigned n3 = 0; n3 < 3; n3++) {
-                    // std::cout << afvalue(constantA(n0, n1, n2, n3)) << "\t"
-                    // <<  afvalue(variableA(n0, n1, n2, n3)) << std::endl;
-                    EXPECT_EQ(globalA(n0, n1, n2, n3).scalar<double>(), localA(n0, n1, n2, n3).scalar<double>());
+                    // std::cout << afvalue(constantA(nx, ny, nz, n3)) << "\t"
+                    // <<  afvalue(variableA(nx, ny, nz, n3)) << std::endl;
+                    EXPECT_EQ(globalA(nx, ny, nz, n3).scalar<double>(), localA(nx, ny, nz, n3).scalar<double>());
                 }
             }
         }

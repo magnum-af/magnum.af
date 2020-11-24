@@ -23,10 +23,10 @@ double hzee_max = 2;  //[T]
 //    else if (state.t < 3*hzee_max/rate) field_Tesla = -rate *state.t +
 //    2*hzee_max; else if(state.t < 4*hzee_max/rate) field_Tesla = rate*state.t
 //    - 4*hzee_max; else {field_Tesla = 0; std::cout << "WARNING ZEE time out of
-//    range" << std::endl;} array zee = constant(0.0, state.mesh.n0,
-//    state.mesh.n1, state.mesh.n2, 3, f64); zee(span, span, span,
-//    0)=constant(field_Tesla/state.constants::mu0 , state.mesh.n0,
-//    state.mesh.n1, state.mesh.n2, 1, f64); return  zee;
+//    range" << std::endl;} array zee = constant(0.0, state.mesh.nx,
+//    state.mesh.ny, state.mesh.nz, 3, f64); zee(span, span, span,
+//    0)=constant(field_Tesla/state.constants::mu0 , state.mesh.nx,
+//    state.mesh.ny, state.mesh.nz, 1, f64); return  zee;
 //}
 
 af::array zee_func(State state) {
@@ -41,9 +41,9 @@ af::array zee_func(State state) {
         field_Tesla = 0;
         std::cout << "WARNING ZEE time out of range" << std::endl;
     }
-    array zee = constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+    array zee = constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
     zee(span, span, span, 0) =
-        constant(field_Tesla / state.constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+        constant(field_Tesla / state.constants::mu0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
     return zee;
 }
 
@@ -82,12 +82,12 @@ int main(int argc, char** argv) {
     material.p = state.Ms * pow(dx, 3); // Compensate nz=1 instead of nz=4
 
     // Initial magnetic field
-    array m = constant(0.0, mesh.n0, mesh.n1, mesh.n2, 3, f64);
+    array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(span, span, span, 2) = -1;
-    for (int ix = 0; ix < mesh.n0; ix++) {
-        for (int iy = 0; iy < mesh.n1; iy++) {
-            const double rx = double(ix) - mesh.n0 / 2.;
-            const double ry = double(iy) - mesh.n1 / 2.;
+    for (int ix = 0; ix < mesh.nx; ix++) {
+        for (int iy = 0; iy < mesh.ny; iy++) {
+            const double rx = double(ix) - mesh.nx / 2.;
+            const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > nx / 4.)
                 m(ix, iy, span, 2) = 1.;

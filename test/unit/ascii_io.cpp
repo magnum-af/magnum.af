@@ -14,9 +14,9 @@ TEST(ascii_io, ascii_io_test_vector_field) {
     auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
-    EXPECT_EQ(read_mesh.n0, 6);
-    EXPECT_EQ(read_mesh.n1, 5);
-    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.nx, 6);
+    EXPECT_EQ(read_mesh.ny, 5);
+    EXPECT_EQ(read_mesh.nz, 4);
     EXPECT_EQ(read_mesh.dx, 0.1);
     EXPECT_EQ(read_mesh.dy, 0.2);
     EXPECT_EQ(read_mesh.dz, 0.3);
@@ -33,9 +33,9 @@ TEST(ascii_io, ascii_io_test_scalar_field) {
     auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
-    EXPECT_EQ(read_mesh.n0, 6);
-    EXPECT_EQ(read_mesh.n1, 5);
-    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.nx, 6);
+    EXPECT_EQ(read_mesh.ny, 5);
+    EXPECT_EQ(read_mesh.nz, 4);
     EXPECT_EQ(read_mesh.dx, 0.1);
     EXPECT_EQ(read_mesh.dy, 0.2);
     EXPECT_EQ(read_mesh.dz, 0.3);
@@ -52,9 +52,9 @@ TEST(ascii_io, ascii_io_test_10d_field) {
     auto [read_a, read_mesh] = read_ascii(filename, false);
     EXPECT_EQ(remove(filename.c_str()), 0);
 
-    EXPECT_EQ(read_mesh.n0, 6);
-    EXPECT_EQ(read_mesh.n1, 5);
-    EXPECT_EQ(read_mesh.n2, 4);
+    EXPECT_EQ(read_mesh.nx, 6);
+    EXPECT_EQ(read_mesh.ny, 5);
+    EXPECT_EQ(read_mesh.nz, 4);
     EXPECT_EQ(read_mesh.dx, 0.2);
     EXPECT_EQ(read_mesh.dy, 0.3);
     EXPECT_EQ(read_mesh.dz, 0.4);

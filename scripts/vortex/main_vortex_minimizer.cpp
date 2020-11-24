@@ -34,9 +34,9 @@ int main(int argc, char** argv) {
                       << std::endl;
         }
         // std::cout << "fild= "<< field_Tesla << std::endl;
-        af::array zee = af::constant(0.0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 3, f64);
+        af::array zee = af::constant(0.0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
         zee(af::span, af::span, af::span, 0) =
-            af::constant(field_Tesla / constants::mu0, state.mesh.n0, state.mesh.n1, state.mesh.n2, 1, f64);
+            af::constant(field_Tesla / constants::mu0, state.mesh.nx, state.mesh.ny, state.mesh.nz, 1, f64);
         return zee;
     };
 
