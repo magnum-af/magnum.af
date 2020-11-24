@@ -1,5 +1,6 @@
 #include "nonequi/nonequi_exchange_field.hpp"
 #include "util/func.hpp"
+#include "util/host_ptr_accessor.hpp"
 #include "util/misc.hpp"
 
 namespace magnumafcpp {
@@ -182,8 +183,7 @@ af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_fiel
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_ROW;       //
     std::vector<int> COO_COL;       //
-    double* a_host = NULL;
-    a_host = A_exchange_field.host<double>();
+    util::HostPtrAccessor<double> a_host(A_exchange_field);
     for (unsigned im = 0; im < 3; im++) {
         for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
             for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
@@ -320,7 +320,6 @@ af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_fiel
             }
         }
     }
-    af::freeHost(a_host);
     af::array matr_COO = af::sparse((dim_t)dimension, (dim_t)dimension, af::array(COO_values.size(), COO_values.data()),
                                     af::array(COO_ROW.size(), COO_ROW.data()),
                                     af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
@@ -480,8 +479,7 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
                                             // the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
-    double* a_host = NULL;
-    a_host = A_exchange_field.host<double>();
+    util::HostPtrAccessor<double> a_host(A_exchange_field);
     for (unsigned im = 0; im < 3; im++) {
         for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
             for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
@@ -632,7 +630,6 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
             }
         }
     }
-    af::freeHost(a_host);
     af::array result = af::sparse((dim_t)dimension, (dim_t)dimension, (dim_t)CSR_values.size(),
                                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {

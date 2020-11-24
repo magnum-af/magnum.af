@@ -94,7 +94,7 @@ void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, s
     }
 }
 
-void vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outputname) { // TODO make const
+void vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outputname) {
     implementation_vti_writer_micro(field, mesh, outputname);
 }
 

@@ -71,20 +71,10 @@ double afvalue(const af::array& a) {
                      "may lead to unexpected behaviour."
                   << std::endl;
     }
-    double* dhost = NULL;
-    dhost = a.host<double>();
-    double value = dhost[0];
-    af::freeHost(dhost);
-    return value;
+    return a.scalar<double>();
 }
 
-unsigned int afvalue_u32(const af::array& a) {
-    unsigned int* dhost = NULL;
-    dhost = a.host<unsigned int>();
-    unsigned int value = dhost[0];
-    af::freeHost(dhost);
-    return value;
-}
+unsigned int afvalue_u32(const af::array& a) { return a.scalar<unsigned int>(); }
 
 double full_inner_product(const af::array& a, const af::array& b) {
     return afvalue(sum(sum(sum(sum(a * b, 3), 2), 1), 0));
@@ -114,29 +104,18 @@ af::array vecnorm(const af::array& a) { return af::sqrt(af::sum(a * a, 3)); }
 
 // Mean value of i = 0, 1, 2 entry entry
 double meani(const af::array& a, const int i) {
-    double* norm_host = NULL;
-    norm_host = mean(mean(mean(a(af::span, af::span, af::span, i), 0), 1), 2).host<double>();
-    double norm = norm_host[0];
-    af::freeHost(norm_host);
-    return norm;
+    return af::mean(af::mean(af::mean(a(af::span, af::span, af::span, i), 0), 1), 2).scalar<double>();
 }
+
 // Frobenius Norm
 //||A||=sqrt(sum(fabs(a)))
 double FrobeniusNorm(const af::array& a) {
-    double* norm_host = NULL;
-    norm_host = sqrt(mean(mean(mean(mean(a * a, 0), 1), 2), 3)).host<double>();
-    double norm = norm_host[0];
-    af::freeHost(norm_host);
-    return norm;
+    return af::sqrt(af::mean(af::mean(af::mean(af::mean(a * a, 0), 1), 2), 3)).scalar<double>();
 }
 
 // Experimental: eucledian norm
 double euclnorm(const af::array& a) {
-    double* norm_host = NULL;
-    norm_host = mean(mean(mean(mean((a * a), 0), 1), 2), 3).host<double>();
-    double norm = norm_host[0];
-    af::freeHost(norm_host);
-    return norm;
+    return af::mean(af::mean(af::mean(af::mean((a * a), 0), 1), 2), 3).scalar<double>();
 }
 
 /// Mean of absolute difference
@@ -266,32 +245,6 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     }
     return prec_prev;
 }
-
-// Experimental: eucledian norm
-// double maxnorm(const af::array& a){
-//  double *maxnorm_host=NULL;
-//  maxnorm_host = mean(mean(mean(mean((a*a), 0), 1), 2), 3).host<double>();
-//  //maxnorm_host = max(max(max(max(abs(a), 0), 1), 2), 3).host<double>();
-//  double maxnorm = maxnorm_host[0];
-//  af::freeHost(maxnorm_host);
-//  return maxnorm;
-//}
-
-// void calcm(State state, LLG Llg, std::ostream& myfile){
-//  double *host_mx=NULL, *host_my=NULL, *host_mz=NULL;
-//  host_mx = mean(mean(mean(state.m(af::span, af::span, af::span, 0), 0), 1),
-//  2).host<double>(); host_my = mean(mean(mean(state.m(af::span, af::span,
-//  af::span, 1), 0), 1), 2).host<double>(); host_mz =
-//  mean(mean(mean(state.m(af::span, af::span, af::span, 2), 0), 1),
-//  2).host<double>(); myfile << std::setw(12) << state.t << "\t"; myfile <<
-//  std::setw(12) << state.t*1e9 << "\t" << host_mx[0] << "\t"<< host_my[0] <<
-//  "\t"; myfile << host_mz[0] <<"\t" << Llg.E(state) <<std::endl;
-//
-//  af::freeHost(host_mx);
-//  af::freeHost(host_my);
-//  af::freeHost(host_mz);
-//
-//}
 
 // Maximum value norm
 double max_4d_abs(const af::array& a) {

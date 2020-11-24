@@ -3,6 +3,7 @@
 
 namespace magnumafcpp::util {
 
+/// RAII wrapper for raw data read access of af::array
 template <typename T> class HostPtrAccessor {
   public:
     HostPtrAccessor(const af::array& a) : ptr(a.host<T>()) {}
@@ -13,6 +14,7 @@ template <typename T> class HostPtrAccessor {
     const T* const ptr;
 };
 
+/// RAII wrapper for raw data read/write access of af::array
 template <typename T> class HostPtrManipulator {
   public:
     HostPtrManipulator(af::array& a) : ptr(a.host<T>()) {}

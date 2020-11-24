@@ -1,5 +1,6 @@
 #include "micro/rkky_exchange_field.hpp"
 #include "util/func.hpp"
+#include "util/host_ptr_accessor.hpp"
 #include "util/misc.hpp"
 
 namespace magnumafcpp {
@@ -52,11 +53,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                                             // the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
-    double* a_raw = NULL;
-    a_raw = A_exchange_field.host<double>();
-    double* rkky_raw = NULL;
-    rkky_raw = RKKY_field.host<double>();
-    unsigned int* rkky_indices_raw = NULL;
+    util::HostPtrAccessor<double> a_raw(A_exchange_field);
+    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
+    unsigned int* rkky_indices_raw = NULL; // TODO replace with RAII variant
     // af::print("", rkky_indices);
     if (!rkky_indices.isempty()) {
         rkky_indices_raw = rkky_indices.host<unsigned int>();
@@ -187,8 +186,6 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     // for (auto const& value: CSR_JA){
     //    std::cout << "CSR_JA=" << value << std::endl;
     //}
-    af::freeHost(a_raw);
-    af::freeHost(rkky_raw);
     if (!rkky_indices.isempty()) {
         af::freeHost(rkky_indices_raw);
     }
@@ -220,11 +217,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
     std::vector<int> COO_ROW;
-    double* a_raw = NULL;
-    a_raw = A_exchange_field.host<double>();
-    double* rkky_raw = NULL;
-    rkky_raw = RKKY_field.host<double>();
-    unsigned int* rkky_indices_raw = NULL;
+    util::HostPtrAccessor<double> a_raw(A_exchange_field);
+    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
+    unsigned int* rkky_indices_raw = NULL; // TODO replace with RAII variant
     // af::print("", rkky_indices);
     if (!rkky_indices.isempty()) {
         rkky_indices_raw = rkky_indices.host<unsigned int>();
@@ -342,8 +337,6 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
         }
     }
 
-    af::freeHost(a_raw);
-    af::freeHost(rkky_raw);
     if (!rkky_indices.isempty()) {
         af::freeHost(rkky_indices_raw);
     }
