@@ -36,6 +36,7 @@
 #include <vtkXMLRectilinearGridReader.h>
 #include <vtkXMLRectilinearGridWriter.h>
 
+#include "util/host_ptr_handle.hpp"
 #include <string>
 #include <vector>
 
@@ -46,7 +47,7 @@ namespace magnumafcpp {
 void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, std::string outputname) {
 
     try {
-        double* host_a = field.host<double>();
+        util::HostPtrHandle<double> field_handle(field);
 
         vtkSmartPointer<vtkImageData> imageDataPointCentered = vtkSmartPointer<vtkImageData>::New();
         imageDataPointCentered->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
@@ -65,7 +66,7 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
                 for (int x = 0; x < dims[0]; x++) {
                     for (int im = 0; im < field.dims(3); im++) {
                         double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x, y, z));
-                        pixel[im] = host_a[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
+                        pixel[im] = field_handle.ptr[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
                     }
                 }
             }
@@ -88,8 +89,6 @@ void implementation_vti_writer_micro(const af::array field, const Mesh& mesh, st
         writer->SetInputData(imageDataCellCentered);
 #endif
         writer->Write();
-
-        af::freeHost(host_a); // free allocated memory
     } catch (const std::exception& e) {
         printf("\33[1;31mWarning:\33[0m exception in vti_writer_micro:\n%s\n", e.what());
     }
@@ -109,7 +108,7 @@ void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const 
 // 3D vtkImageData vtkPointData writer
 void vti_writer_atom(const af::array field, const Mesh& mesh, std::string outputname) {
 
-    double* host_a = field.host<double>();
+    util::HostPtrHandle<double> field_handle(field);
 
     vtkSmartPointer<vtkImageData> imageData = vtkSmartPointer<vtkImageData>::New();
     imageData->SetDimensions(field.dims(0), field.dims(1), field.dims(2));
@@ -127,7 +126,7 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
             for (int x = 0; x < dims[0]; x++) {
                 for (int im = 0; im < field.dims(3); im++) {
                     double* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
-                    pixel[im] = host_a[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
+                    pixel[im] = field_handle.ptr[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
                 }
             }
         }
@@ -143,8 +142,6 @@ void vti_writer_atom(const af::array field, const Mesh& mesh, std::string output
     writer->SetInputData(imageData);
 #endif
     writer->Write();
-
-    af::freeHost(host_a);
 }
 
 std::pair<af::array, Mesh> vti_reader(std::string filepath) {
@@ -282,7 +279,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
     coords[2]->Delete();
 
     // Write af::array data as vtk cell data
-    const double* host_a = field.host<double>(); // accesses af::array raw data
+    util::HostPtrHandle<double> field_handle(field);
     const vtkIdType ncells = grid->GetNumberOfCells();
 
     vtkDoubleArray* data = vtkDoubleArray::New();
@@ -292,7 +289,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 
     for (vtkIdType cellId = 0; cellId < ncells; ++cellId) {
         for (int i = 0; i < field.dims(3); ++i) {
-            data->SetValue(field.dims(3) * cellId + i, host_a[cellId + i * ncells]);
+            data->SetValue(field.dims(3) * cellId + i, field_handle.ptr[cellId + i * ncells]);
         }
     }
 
@@ -313,7 +310,6 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 
     writer->Delete();
     data->Delete();
-    af::freeHost(host_a);
 }
 
 // wrapped function
