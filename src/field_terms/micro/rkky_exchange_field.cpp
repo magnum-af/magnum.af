@@ -1,7 +1,8 @@
 #include "micro/rkky_exchange_field.hpp"
 #include "util/func.hpp"
-#include "util/host_ptr_accessor.hpp"
 #include "util/misc.hpp"
+#include <functional>
+#include <memory>
 
 namespace magnumafcpp {
 
@@ -53,13 +54,14 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                                             // the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
-    util::HostPtrAccessor<double> a_raw(A_exchange_field);
-    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
-    unsigned int* rkky_indices_raw = NULL; // TODO replace with RAII variant
-    // af::print("", rkky_indices);
-    if (!rkky_indices.isempty()) {
-        rkky_indices_raw = rkky_indices.host<unsigned int>();
+    std::unique_ptr<double[], decltype(&af::freeHost)> a_raw(A_exchange_field.host<double>(), &af::freeHost);
+    std::unique_ptr<double[], decltype(&af::freeHost)> rkky_raw(RKKY_field.host<double>(), &af::freeHost);
+
+    std::unique_ptr<unsigned[], decltype(&af::freeHost)> rkky_indices_raw(nullptr, &af::freeHost);
+    if (not rkky_indices.isempty()) {
+        rkky_indices_raw.reset(rkky_indices.host<unsigned>());
     }
+
     for (unsigned im = 0; im < 3; im++) {
         for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
             for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
@@ -122,10 +124,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                         double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)] : 0;
                         const unsigned int RKKY_index_i_p =
-                            rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)] : 0;
                         // std::cout << "rkkyindex = " << RKKY_index_i
                         // << "and" << RKKY_index_i_p << std::endl;
                         // Preferring RKKY over exch vals
@@ -152,10 +153,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                         double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)] : 0;
                         const unsigned int RKKY_index_i_m =
-                            rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)] : 0;
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) && (RKKY_i_m != 0)) {
                             // assuming rkky jump condition equal to
@@ -186,9 +186,6 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     // for (auto const& value: CSR_JA){
     //    std::cout << "CSR_JA=" << value << std::endl;
     //}
-    if (!rkky_indices.isempty()) {
-        af::freeHost(rkky_indices_raw);
-    }
     af::array result = af::sparse((dim_t)dimension, (dim_t)dimension, (dim_t)CSR_values.size(),
                                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
@@ -205,24 +202,20 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
 // A_exchange_field
 af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field,
                                              const Mesh& mesh, const af::array& rkky_indices, const bool verbose) {
-    // printf("%s RKKYExchangeField::calc_COO_matrix unit testing not
-    // finished!\n", Warning());
-    printf("%s Starting RKKYExchangeField sparse matrix setup\n", Info());
-    fflush(stdout);
-    af::timer t;
-    if (verbose) {
-        af::timer::start();
-    }
+    std::cout << Info() << " Starting RKKYExchangeField sparse matrix setup" << std::endl;
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
     std::vector<int> COO_ROW;
-    util::HostPtrAccessor<double> a_raw(A_exchange_field);
-    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
-    unsigned int* rkky_indices_raw = NULL; // TODO replace with RAII variant
-    // af::print("", rkky_indices);
-    if (!rkky_indices.isempty()) {
-        rkky_indices_raw = rkky_indices.host<unsigned int>();
+    std::unique_ptr<double[], decltype(&af::freeHost)> a_raw(A_exchange_field.host<double>(), &af::freeHost);
+    std::unique_ptr<double[], decltype(&af::freeHost)> rkky_raw(RKKY_field.host<double>(), &af::freeHost);
+
+    // relying on unique_ptr dtor not calling get_deleter() when get()==nullptr
+    std::unique_ptr<unsigned[], decltype(&af::freeHost)> rkky_indices_raw(nullptr, &af::freeHost);
+    std::cout << "rkky_indices_raw==" << (rkky_indices_raw ? "true" : "false") << std::endl;
+    if (not rkky_indices.isempty()) {
+        rkky_indices_raw.reset(rkky_indices.host<unsigned>());
     }
     // NOTE aborts program//#pragma omp parallel for
     // consider removing im loop, but tiling with sparse is not supported.
@@ -284,10 +277,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                         double RKKY_i_p = rkky_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)] : 0;
                         const unsigned int RKKY_index_i_p =
-                            rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)] : 0;
                         // std::cout << "rkkyindex = " << RKKY_index_i << "and"
                         // << RKKY_index_i_p << std::endl;
                         // Preferring RKKY over exch vals:
@@ -312,10 +304,9 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                         double RKKY_i_m = rkky_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
 
                         const unsigned int RKKY_index_i =
-                            rkky_indices.isempty() ? 0 : rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)] : 0;
                         const unsigned int RKKY_index_i_m =
-                            rkky_indices.isempty() ? 0
-                                                   : rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
+                            rkky_indices_raw ? rkky_indices_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)] : 0;
 
                         if ((RKKY_index_i == RKKY_index_i_m) && (RKKY_i != 0) && (RKKY_i_m != 0)) {
                             COO_values.push_back((2. * RKKY_i) / (constants::mu0 * pow(mesh.dz, 2)));
@@ -335,10 +326,6 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
                 }
             }
         }
-    }
-
-    if (!rkky_indices.isempty()) {
-        af::freeHost(rkky_indices_raw);
     }
     af::array matr_COO = af::sparse((dim_t)dimension, (dim_t)dimension,
                                     af::array(static_cast<dim_t>(COO_values.size()), COO_values.data()),
