@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # RKKY example from https://mumax.github.io/examples.html
 
 import numpy as np
@@ -6,6 +7,7 @@ from magnumaf import *
 import sys
 import time
 
+args = parse()
 af.info()
 
 # Discretization
@@ -36,7 +38,7 @@ llg = LLGIntegrator(alpha = 1, terms = [demag, rkkyexch])
 
 E = []
 print("Start rotating")
-stream = open(sys.argv[1]+"m.dat", "w")
+stream = open(args.dir + "m.dat", "w")
 timer = time.time()
 for i in range(0, 360):
     mix = np.cos(i * np.pi/180.);
@@ -58,15 +60,15 @@ print("E diff =", max(E) - min(E), "[J], should be around 2.1e-19 (from mumax3 p
 from os import system
 system('gnuplot -e "\
     set terminal pdf;\
-    set output \'' + sys.argv[1] + 'm.pdf\';\
+    set output \'' + args.dir + 'm.pdf\';\
     set xlabel \'angle [°]\';\
     set ylabel \'E\';\
-    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'E\';\
+    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'E\';\
     set ylabel \'<m>\';\
-    p \'' + sys.argv[1] + '/m.dat\' u 1:3 w l t \'<m_x>\',\
+    p \'' + args.dir + '/m.dat\' u 1:3 w l t \'<m_x>\',\
     \'\' u 1:4 w l t \'<m_y>\',\
     \'\' u 1:5 w l t \'<m_z>\';\
 "')
 
 # show pdf with evince
-system('evince ' + sys.argv[1] +'m.pdf')
+system('evince ' + args.dir +'m.pdf')

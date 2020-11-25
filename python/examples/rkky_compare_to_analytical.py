@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #  RKKY-coupled layers with comparison to analytical solution
 
 import numpy as np
