@@ -1,8 +1,7 @@
 #include "micro/rkky_exchange_field.hpp"
 #include "util/func.hpp"
+#include "util/host_ptr_accessor.hpp"
 #include "util/misc.hpp"
-#include <functional>
-#include <memory>
 
 namespace magnumafcpp {
 
@@ -54,13 +53,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                                             // the i-1-th row in the original matrix)
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
-    std::unique_ptr<double[], decltype(&af::freeHost)> a_raw(A_exchange_field.host<double>(), &af::freeHost);
-    std::unique_ptr<double[], decltype(&af::freeHost)> rkky_raw(RKKY_field.host<double>(), &af::freeHost);
-
-    std::unique_ptr<unsigned[], decltype(&af::freeHost)> rkky_indices_raw(nullptr, &af::freeHost);
-    if (not rkky_indices.isempty()) {
-        rkky_indices_raw.reset(rkky_indices.host<unsigned>());
-    }
+    util::HostPtrAccessor<double> a_raw(A_exchange_field);
+    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
+    util::HostPtrAccessor<unsigned> rkky_indices_raw(rkky_indices); // .ptr is set to nullptr if a.isempty()
 
     for (unsigned im = 0; im < 3; im++) {
         for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
@@ -208,15 +203,10 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;
     std::vector<int> COO_ROW;
-    std::unique_ptr<double[], decltype(&af::freeHost)> a_raw(A_exchange_field.host<double>(), &af::freeHost);
-    std::unique_ptr<double[], decltype(&af::freeHost)> rkky_raw(RKKY_field.host<double>(), &af::freeHost);
 
-    // relying on unique_ptr dtor not calling get_deleter() when get()==nullptr
-    std::unique_ptr<unsigned[], decltype(&af::freeHost)> rkky_indices_raw(nullptr, &af::freeHost);
-    std::cout << "rkky_indices_raw==" << (rkky_indices_raw ? "true" : "false") << std::endl;
-    if (not rkky_indices.isempty()) {
-        rkky_indices_raw.reset(rkky_indices.host<unsigned>());
-    }
+    util::HostPtrAccessor<double> a_raw(A_exchange_field);
+    util::HostPtrAccessor<double> rkky_raw(RKKY_field);
+    util::HostPtrAccessor<unsigned> rkky_indices_raw(rkky_indices); // .ptr is set to nullptr if a.isempty()
     // NOTE aborts program//#pragma omp parallel for
     // consider removing im loop, but tiling with sparse is not supported.
     for (unsigned im = 0; im < 3; im++) {
