@@ -1,85 +1,89 @@
 #pragma once
 #include <arrayfire.h>
+#include <optional>
 #include <stdexcept>
 
 namespace magnumafcpp {
 
+/// Class for handling a variable/value which is either a double or an af::array of size [nx, ny, nz, 1]
+/// overloads operators + - * / for usage.
 class DoubleOrArray {
 public:
-  DoubleOrArray(double value) : scalar_value(value) {}
-  DoubleOrArray(af::array value) : array_value(value) {
+  DoubleOrArray(double value) : scalar(value) {}
+  DoubleOrArray(af::array value) : arr(value) {
       if (value.dims(3) != 1) {
           throw std::runtime_error("DoubleOrArray::DoubleOrArray(af::array): invalid input dimension, array.dims(3) != "
                                    "1. Please provide array of dimension [nx, ny, nz, 1].");
       }
   }
 
-  // Data members
-  const double scalar_value{0.};
-  const af::array array_value;
+  // Data members, only one of the two must be value initialized
+  const std::optional<double> scalar{};
+  const std::optional<af::array> arr{};
 
   af::array operator+(const af::array& b) const {
-      if (array_value.isempty()) {
+      if (scalar) {
           // Two variants nearly equally fast:
-          // return af::constant(scalar_value, b.dims(), b.type()) + b;
-          return scalar_value + b;
-      } else if (array_value.dims() == b.dims()) {
-          return array_value + b;
-      } else if (array_value.dims(0) == b.dims(0) and array_value.dims(1) == b.dims(1) and
-                 array_value.dims(2) == b.dims(2) and b.dims(3) == 3) {
-          return af::tile(array_value, 1, 1, 1, 3) + b;
+          // return af::constant(scalar.value(), b.dims(), b.type()) + b;
+          return scalar.value() + b;
+      } else if (arr.value().dims() == b.dims()) {
+          return arr.value() + b;
+      } else if (arr.value().dims(0) == b.dims(0) and arr.value().dims(1) == b.dims(1) and
+                 arr.value().dims(2) == b.dims(2) and b.dims(3) == 3) {
+          return af::tile(arr.value(), 1, 1, 1, 3) + b;
       } else {
           throw std::runtime_error("DoubleOrArray::operator+: array dims do not match.");
       }
   }
 
   af::array operator-(const af::array& b) const {
-      if (array_value.isempty()) {
-          return scalar_value - b;
-      } else if (array_value.dims() == b.dims()) {
-          return array_value - b;
-      } else if (array_value.dims(0) == b.dims(0) and array_value.dims(1) == b.dims(1) and
-                 array_value.dims(2) == b.dims(2) and b.dims(3) == 3) {
-          return af::tile(array_value, 1, 1, 1, 3) - b;
+      if (scalar) {
+          return scalar.value() - b;
+      } else if (arr.value().dims() == b.dims()) {
+          return arr.value() - b;
+      } else if (arr.value().dims(0) == b.dims(0) and arr.value().dims(1) == b.dims(1) and
+                 arr.value().dims(2) == b.dims(2) and b.dims(3) == 3) {
+          return af::tile(arr.value(), 1, 1, 1, 3) - b;
       } else {
           throw std::runtime_error("DoubleOrArray::operator-: array dims do not match.");
       }
   }
 
   af::array operator*(const af::array &b) const {
-      if (array_value.isempty()) {
-          // return af::constant(scalar_value, b.dims(), b.type()) * b;
-          return scalar_value * b;
-      } else if (array_value.dims() == b.dims()) {
-          return array_value * b;
-      } else if (array_value.dims(0) == b.dims(0) and array_value.dims(1) == b.dims(1) and
-                 array_value.dims(2) == b.dims(2) and b.dims(3) == 3) {
-          return af::tile(array_value, 1, 1, 1, 3) * b;
+      if (scalar) {
+          // return af::constant(scalar.value(), b.dims(), b.type()) * b;
+          return scalar.value() * b;
+      } else if (arr.value().dims() == b.dims()) {
+          return arr.value() * b;
+      } else if (arr.value().dims(0) == b.dims(0) and arr.value().dims(1) == b.dims(1) and
+                 arr.value().dims(2) == b.dims(2) and b.dims(3) == 3) {
+          return af::tile(arr.value(), 1, 1, 1, 3) * b;
       } else {
-          // std::cout << "array_value.dims()=" << array_value.dims() << ", b.dims()=" << b.dims() << std::endl;
+          // std::cout << "arr.value().dims()=" << arr.value().dims() << ", b.dims()=" << b.dims() <<
+          // std::endl;
           throw std::runtime_error("DoubleOrArray::operator*: array dims do not match.");
       }
   }
 
   af::array operator/(const af::array& b) const {
-      if (array_value.isempty()) {
-          return scalar_value / b;
-      } else if (array_value.dims() == b.dims()) {
-          return array_value / b;
-      } else if (array_value.dims(0) == b.dims(0) and array_value.dims(1) == b.dims(1) and
-                 array_value.dims(2) == b.dims(2) and b.dims(3) == 3) {
-          return af::tile(array_value, 1, 1, 1, 3) / b;
+      if (scalar) {
+          return scalar.value() / b;
+      } else if (arr.value().dims() == b.dims()) {
+          return arr.value() / b;
+      } else if (arr.value().dims(0) == b.dims(0) and arr.value().dims(1) == b.dims(1) and
+                 arr.value().dims(2) == b.dims(2) and b.dims(3) == 3) {
+          return af::tile(arr.value(), 1, 1, 1, 3) / b;
       } else {
           throw std::runtime_error("DoubleOrArray::operator/: array dims do not match.");
       }
   }
 
-  // Getter function, returns scalar_value or array_value as af::array
+  // Getter function, returns scalar or arr as af::array
   af::array get(af::dim4 dims, af::dtype type) const {
-      if (array_value.isempty()) {
-          return af::constant(scalar_value, dims, type);
+      if (scalar) {
+          return af::constant(scalar.value(), dims, type);
       } else {
-          return array_value;
+          return arr.value();
       }
   }
   af::array get_as_vec(af::dim4 dims, af::dtype type) const { return af::tile(get(dims, type), 1, 1, 1, 3); }
