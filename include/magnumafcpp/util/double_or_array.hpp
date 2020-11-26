@@ -95,11 +95,11 @@ private:
 
 inline af::array operator+(const af::array& a, const DoubleOrArray& b) { return b + a; }
 
-inline af::array operator-(const af::array& a, const DoubleOrArray& b) { return b - a; }
+// not commutative //inline af::array operator-(const af::array& a, const DoubleOrArray& b) { return ; }
 
 inline af::array operator*(const af::array& a, const DoubleOrArray& b) { return b * a; }
 
-inline af::array operator/(const af::array& a, const DoubleOrArray& b) { return b / a; }
+// not commutative //inline af::array operator/(const af::array& a, const DoubleOrArray& b) { return ; }
 
 af::array operator+(double a, const DoubleOrArray& b) = delete;
 af::array operator-(double a, const DoubleOrArray& b) = delete;
