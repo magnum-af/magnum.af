@@ -9,8 +9,8 @@ namespace magnumafcpp {
 /// overloads operators + - * / for usage.
 class DoubleOrArray {
 public:
-  DoubleOrArray(double value) : scalar(value) {}
-  DoubleOrArray(af::array value) : arr(value) {
+  explicit DoubleOrArray(double value) : scalar(value) {}
+  explicit DoubleOrArray(af::array value) : arr(value) {
       if (value.dims(3) != 1) {
           throw std::runtime_error("DoubleOrArray::DoubleOrArray(af::array): invalid input dimension, array.dims(3) != "
                                    "1. Please provide array of dimension [nx, ny, nz, 1].");
