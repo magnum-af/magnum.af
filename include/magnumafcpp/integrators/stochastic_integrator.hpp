@@ -9,12 +9,12 @@ namespace magnumafcpp {
 class Stochastic_Integrator {
   public:
     Stochastic_Integrator(double alpha, double T, double dt, State state,
-                          std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in, std::string smode);
+                          std::vector<std::unique_ptr<LLGTerm>> Fieldterms_in, std::string smode);
     virtual ~Stochastic_Integrator() = default;
     double alpha;
     double T;  //<! Temparature in [K]
     double dt; //<! Timestep in [s]
-    std::vector<std::shared_ptr<LLGTerm>> Fieldterms;
+    std::vector<std::unique_ptr<LLGTerm>> Fieldterms;
     void step(State& state);
     double cpu_time();
 
@@ -41,7 +41,7 @@ class Stochastic_Integrator {
     af::array m_prev;
     af::array h_th_prev{};
 
-    const int mode; // Integration mode
+    int mode; // Integration mode
 
     af::randomEngine rand_engine;
 };

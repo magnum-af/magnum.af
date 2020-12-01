@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
     auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    LLGIntegrator Llg(1, {demag, rkky});
+    LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
 
     std::ofstream stream(filepath + "m.dat");
     stream.precision(12);

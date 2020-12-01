@@ -4,6 +4,11 @@
 #include "arrayfire.h"
 
 namespace magnumafcpp {
+template <class T> struct movable_il {
+    mutable T t;
+    operator T() const&& { return std::move(t); }
+    movable_il(T&& in) : t(std::move(in)) {}
+};
 
 ///
 /// The LLGIntegrator class performs time integration of the
@@ -22,10 +27,12 @@ class LLGIntegrator : public AdaptiveRungeKutta {
                   bool dissipation_term_only = false);
     LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme = "RKF45", Controller controller = Controller(),
                   bool dissipation_term_only = false);
+    LLGIntegrator(double alpha, std::initializer_list<movable_il<LlgTerm>> llgterms, std::string scheme = "RKF45",
+                  Controller controller = Controller(), bool dissipation_term_only = false);
     double alpha{0}; //!< Unitless damping constant in the
                      //!< Landau-Lifshitz-Gilbert equation
     LlgTerms llgterms;
-    const bool dissipation_term_only;
+    bool dissipation_term_only;
     double E(const State&);
 
     double get_time_heff() { return time_heff; }

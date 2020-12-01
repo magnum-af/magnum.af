@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     auto exch = LlgTerm(new ExchangeField(A));
     auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
     auto dmi = LlgTerm(new DmiField(D, {0, 0, 1}));
-    LLGIntegrator Llg(1, {exch, aniso, dmi});
+    LLGIntegrator Llg(1, {std::move(exch), std::move(aniso), std::move(dmi)});
 
     std::ofstream stream;
     stream.precision(12);

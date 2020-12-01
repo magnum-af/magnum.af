@@ -10,7 +10,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::shared_ptr<LLGTerm> llgt_ptr;
+typedef std::unique_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv) {
     std::cout << "argc" << argc << std::endl;
     for (int i = 0; i < argc; i++)

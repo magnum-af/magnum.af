@@ -21,7 +21,7 @@ A finite differences GPU-accelerated micromagnetic and atomistic simulation soft
 import arrayfire as af
 
 from ctypes import addressof, c_void_p
-from libcpp.memory cimport shared_ptr
+from libcpp.memory cimport unique_ptr
 from libcpp.vector cimport vector
 from libcpp cimport bool
 from cython.operator cimport dereference as deref
@@ -697,12 +697,12 @@ cdef class Stochastic_LLG:
     """
     cdef cStochastic_LLG* _thisptr
     def __cinit__(self, alpha, T, dt, State state, terms=[], smode="Heun"):
-        cdef vector[shared_ptr[cLLGTerm]] vector_in
+        cdef vector[unique_ptr[cLLGTerm]] vector_in
         if not terms:
             print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
         else:
             for arg in terms:
-                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+                vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
             self._thisptr = new cStochastic_LLG (alpha, T, dt, deref(state._thisptr), vector_in, smode.encode('utf-8'))
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
@@ -760,12 +760,12 @@ cdef class LLGIntegrator:
     """
     cdef cLLGIntegrator* _thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
-        cdef vector[shared_ptr[cLLGTerm]] vector_in
+        cdef vector[unique_ptr[cLLGTerm]] vector_in
         if not terms:
             print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
         else:
             for arg in terms:
-                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+                vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
             self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
     #def __dealloc__(self):
     #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
@@ -780,7 +780,7 @@ cdef class LLGIntegrator:
         return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
     def add_terms(self, *args):
         for arg in args:
-            self._thisptr.llgterms.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+            self._thisptr.llgterms.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000, verbose = True):
         """
         relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
@@ -798,9 +798,9 @@ cdef class LLGIntegrator:
     def accumulated_steps(self):
         return self._thisptr.accumulated_steps
 
-        #cdef vector[shared_ptr[cLLGTerm]] vector_in
+        #cdef vector[unique_ptr[cLLGTerm]] vector_in
         #for term in terms:
-        #  vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))
+        #  vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>terms._get_thisptr()))
         #self._thisptr = new cLLGIntegrator (vector_in)
 
     #def print_stepsize(self):
@@ -1300,12 +1300,12 @@ cdef class LBFGS_Minimizer:
     """
     cdef cLBFGS_Minimizer* _thisptr
     def __cinit__(self, terms=[], tol = 1e-6, maxiter = 230, verbose = 0):
-        cdef vector[shared_ptr[cLLGTerm]] vector_in
+        cdef vector[unique_ptr[cLLGTerm]] vector_in
         if not terms:
             print("cLBFGS_Minimizer: no terms provided, please add some either by providing a list terms=[...] or calling add_terms(*args)")
         else:
             for arg in terms:
-                vector_in.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+                vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
             self._thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, verbose)
             # Note: std::cout is not handled and leads to segfault on some installs, hence c++ backend uses prinft
 
@@ -1315,7 +1315,7 @@ cdef class LBFGS_Minimizer:
     #      self._thisptr = NULL
     def add_terms(self, *args):
         for arg in args:
-            self._thisptr.llgterms_.push_back(shared_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
+            self._thisptr.llgterms_.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
         self._thisptr.llgterms_.pop_back()
     def minimize(self, State state):

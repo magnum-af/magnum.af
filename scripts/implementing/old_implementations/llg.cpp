@@ -670,10 +670,10 @@ array LLG::DP78(const array& m, const double dt, double& err) {
     return sumbk;
 }
 
-LLG::LLG(State state0_in, std::vector<std::shared_ptr<LLGTerm>> Fieldterms_in)
+LLG::LLG(State state0_in, std::vector<std::unique_ptr<LLGTerm>> Fieldterms_in)
     : Fieldterms(Fieldterms_in), state0(state0_in) {
     // LLG::LLG (State state0_in, double atol_in, double  rtol_in, double
-    // hmax_in, double  hmin_in, std::vector<std::shared_ptr<LLGTerm> >
+    // hmax_in, double  hmin_in, std::vector<std::unique_ptr<LLGTerm> >
     // Fieldterms_in) : Fieldterms(Fieldterms_in), state0(state0_in),
     // atol(atol_in), rtol(rtol_in), hmax(hmax_in), hmin(hmin_in){
 

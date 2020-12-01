@@ -10,8 +10,13 @@ LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller contro
 
 LLGIntegrator::LLGIntegrator(double alpha, LlgTerms llgterms, std::string scheme, Controller controller,
                              bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(llgterms),
+    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
+
+LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<LlgTerm>> il, std::string scheme,
+                             Controller controller, bool dissipation_term_only)
+    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
+                    controller, dissipation_term_only) {}
 
 af::array LLGIntegrator::fheff(const State& state) {
     af::timer timer_heff = af::timer::start();

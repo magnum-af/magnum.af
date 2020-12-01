@@ -13,9 +13,9 @@ using namespace af;
 
 class LLG {
   public:
-    LLG(State, std::vector<std::shared_ptr<LLGTerm>>);
+    LLG(State, std::vector<std::unique_ptr<LLGTerm>>);
     // Field Term Contributions
-    std::vector<std::shared_ptr<LLGTerm>> Fieldterms;
+    std::vector<std::unique_ptr<LLGTerm>> Fieldterms;
     // Class Objects
     State state0;
 

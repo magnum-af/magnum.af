@@ -30,7 +30,7 @@ TEST(RKKY, mumax3test) {
     auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, false));
 
     auto demag = LlgTerm(new DemagField(mesh, false, false, 0));
-    LLGIntegrator Llg(1, {demag, rkky});
+    LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
 
     std::vector<double> vecE;
 

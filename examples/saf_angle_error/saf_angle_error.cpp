@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
         return zee;
     };
     auto external = LlgTerm(new ExternalField(zee_func));
-    LLGIntegrator llg(1, {demag, rkky, external});
+    LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external)});
     // LLGIntegrator llg(1, {demag, rkky, external, aniso});
 
     std::ofstream stream(filepath + "m.dat");

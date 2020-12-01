@@ -10,7 +10,7 @@
 namespace magnumafcpp {
 
 StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
-    : Llg(llg), n_interp(n_interp), dt(dt) {
+    : Llg(std::move(llg)), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
 

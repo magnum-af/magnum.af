@@ -6,7 +6,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::shared_ptr<LLGTerm> llgt_ptr;
+typedef std::unique_ptr<LLGTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile);
 

@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::shared_ptr<LLGTerm> llgt_ptr;
+typedef std::unique_ptr<LLGTerm> llgt_ptr;
 int main(int argc, char** argv) {
     // const double x = 1.e-0, y = 1.e-0, z = 1.e-0;
     const int nx = 4, ny = 4, nz = 4;

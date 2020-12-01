@@ -15,7 +15,7 @@ LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
     : tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 LBFGS_Minimizer::LBFGS_Minimizer(LlgTerms llgterms, double tolerance, size_t maxIter, int verbose)
-    : llgterms_(llgterms), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
+    : llgterms_(std::move(llgterms)), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 // Energy calculation
 double LBFGS_Minimizer::E(const State& state) {

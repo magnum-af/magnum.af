@@ -33,9 +33,14 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
-    auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(new ExchangeField(A));
-    LLGIntegrator Llg(1, {demag, exch});
+    std::vector<std::unique_ptr<LLGTerm>> v;
+    v.push_back(LlgTerm(new DemagField(mesh, true, true, 0)));
+    v.push_back(LlgTerm(new ExchangeField(A)));
+    LLGIntegrator Llg(1, std::move(v));
+    // Alternative:
+    // auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
+    // auto exch = LlgTerm(new ExchangeField(A));
+    // LLGIntegrator Llg(1, {std::move(demag), std::move(exch)});
 
     std::ofstream stream;
     stream.precision(12);
