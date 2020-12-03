@@ -73,7 +73,7 @@ int get_mode(std::string smode) {
 
 Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, State state,
                                              std::vector<std::unique_ptr<LLGTerm>> fieldterms_in, std::string smode)
-    : alpha(alpha), T(T), dt(dt), Fieldterms(std::move(fieldterms_in)), m_prev(state.m), mode(get_mode(smode)) {
+    : alpha(alpha), T(T), dt(dt), fieldterms(std::move(fieldterms_in)), m_prev(state.m), mode(get_mode(smode)) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
     unsigned long long int seed =
@@ -86,8 +86,8 @@ Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, 
 
 double Stochastic_Integrator::cpu_time() {
     double cpu_time = 0.;
-    for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        cpu_time += Fieldterms[i]->get_cpu_time();
+    for (unsigned i = 0; i < fieldterms.size(); ++i) {
+        cpu_time += fieldterms[i]->get_cpu_time();
     }
     return cpu_time;
 }

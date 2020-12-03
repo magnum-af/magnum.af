@@ -8,16 +8,16 @@ namespace magnumafcpp {
 // Energy calculation
 double Stochastic_LLG::E(const State& state) {
     double solution = 0.;
-    for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        solution += Fieldterms[i]->E(state);
+    for (unsigned i = 0; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->E(state);
     }
     return solution;
 }
 
 af::array Stochastic_LLG::fheff(const State& state) {
-    af::array solution = Fieldterms[0]->h(state);
-    for (unsigned i = 1; i < Fieldterms.size(); ++i) {
-        solution += Fieldterms[i]->h(state);
+    af::array solution = fieldterms[0]->h(state);
+    for (unsigned i = 1; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->h(state);
     }
     return solution;
 }

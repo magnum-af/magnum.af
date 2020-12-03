@@ -85,10 +85,7 @@ int main(int argc, char** argv) {
         return zee;
     };
     auto external = LlgTerm(new ExternalField(zee_func));
-    // LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(aniso), std::move(external)});
-    // TODO use vector with push_back or workaround for init list with std::make_move_iterator
-    // LLGIntegrator llg(1, {demag, rkky, external, aniso});
-    LLGIntegrator llg(1, {std::unique_ptr<LLGTerm>(new DemagField(mesh, true, true, 0))});
+    LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external), std::move(aniso)});
 
     std::ofstream stream(filepath + "m.dat");
     stream.precision(12);
@@ -100,10 +97,8 @@ int main(int argc, char** argv) {
     for (unsigned i = 0; i <= 360; i += 20) {
         current_step = i;
         llg.relax(state);
-        // const double Hx_component =
-        //    llg.llgterms[2]->h(state)(0, 0, 1, 0).scalar<double>() *
-        //    constants::mu0;
-        const double Hx_component = external->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
+        // using external instead of llg.llgterms only possible with shared_ptr
+        const double Hx_component = llg.llgterms[2]->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
         const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
         const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
         abs_my_pin.push_back(std::abs(my_z0));

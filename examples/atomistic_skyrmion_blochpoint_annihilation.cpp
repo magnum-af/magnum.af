@@ -65,14 +65,14 @@ int main(int argc, char** argv) {
     zee(af::span, af::span, af::span, 2) = ext;
     llgterm.push_back(LlgTerm(new AtomisticExternalField(zee)));
 
-    LLGIntegrator Llg(alpha, std::move(llgterm));
+    LLGIntegrator llg(alpha, std::move(llgterm));
 
     af::timer t = af::timer::start();
-    Llg.relax(state, 1e-12, 100, 100);
+    llg.relax(state, 1e-12, 100, 100);
 
-    // af::print("exch", af::mean(af::mean(af::mean(af::mean(llgterm[0]->h(state), 0), 1), 2), 3));
-    // af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llgterm[1]->h(state), 0), 1), 2), 3));
-    // af::print("ani ", af::mean(af::mean(af::mean(af::mean(llgterm[2]->h(state), 0), 1), 2), 3));
+    af::print("exch", af::mean(af::mean(af::mean(af::mean(llg.llgterms[0]->h(state), 0), 1), 2), 3));
+    af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[1]->h(state), 0), 1), 2), 3));
+    af::print("ani ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[2]->h(state), 0), 1), 2), 3));
 
     std::cout << state << std::endl;
     vti_writer_atom(state.m, mesh, filepath + "relax");
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     double string_abort_rel_diff = 1e-12;
     double string_abort_abs_diff = 1e-27;
 
-    StringMethod string(state, inputimages, n_interp, string_dt, std::move(Llg));
+    StringMethod string(state, inputimages, n_interp, string_dt, std::move(llg));
     double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
     // without demag and zee//double expected_barrier = 4.420526609492e-20;
