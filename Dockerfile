@@ -84,7 +84,7 @@ RUN apt-get update && \
     python3-setuptools && \
     pip3 install arrayfire numpy && \
     # install cython 0.29 (pip3 would install 0.26)
-    wget https://files.pythonhosted.org/packages/6c/9f/f501ba9d178aeb1f5bf7da1ad5619b207c90ac235d9859961c11829d0160/Cython-0.29.21.tar.gz . && \
+    wget https://files.pythonhosted.org/packages/6c/9f/f501ba9d178aeb1f5bf7da1ad5619b207c90ac235d9859961c11829d0160/Cython-0.29.21.tar.gz && \
     tar -xzf Cython-*.tar.gz && \
     cd Cython-*/ && \
     python3 setup.py install && \
