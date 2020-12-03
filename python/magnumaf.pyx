@@ -62,6 +62,29 @@ from magnumaf_decl cimport StringMethod as cString
 from magnumaf_decl cimport double_array3
 from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
+# wrapping std::move
+# we move constructed std::vector<unique_ptr<Base>> instances into the wrapped ctors
+# not moving would cause "error: static assertion failed: result type must be constructible from value type of input range"
+# with cython upgrade we could instead use: from libcpp.utility cimport move
+# from https://github.com/cython/cython/issues/2169
+cdef extern from * namespace "polyfill":
+    """
+    namespace polyfill {
+
+    template <typename T>
+    inline typename std::remove_reference<T>::type&& move(T& t) {
+        return std::move(t);
+    }
+
+    template <typename T>
+    inline typename std::remove_reference<T>::type&& move(T&& t) {
+        return std::move(t);
+    }
+
+    }  // namespace polyfill
+    """
+    cdef T move[T](T)
+
 # argparse
 import argparse
 import os
@@ -703,7 +726,7 @@ cdef class Stochastic_LLG:
         else:
             for arg in terms:
                 vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cStochastic_LLG (alpha, T, dt, deref(state._thisptr), vector_in, smode.encode('utf-8'))
+            self._thisptr = new cStochastic_LLG (alpha, T, dt, deref(state._thisptr), move(vector_in), smode.encode('utf-8'))
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
     def E(self, State state):
@@ -766,7 +789,7 @@ cdef class LLGIntegrator:
         else:
             for arg in terms:
                 vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLLGIntegrator (alpha, vector_in, mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            self._thisptr = new cLLGIntegrator (alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
     #def __dealloc__(self):
     #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
     #    # NOTE is also problematic in minimizer class
@@ -834,7 +857,9 @@ cdef class StringMethod:
                     else:
                         vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
 
-            self._thisptr = new cString (deref(state._thisptr), vector_in, n_interp, dt, deref(llg._thisptr))
+            self._thisptr = new cString (deref(state._thisptr), move(vector_in), n_interp, dt, move(deref(llg._thisptr)))
+            # Note: move(...llg._thisptr) prevents: "error: static assertion failed: result type must be constructible from value type of input range"
+            # Note: we move vector_in also (is not strictly necessary here)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -1306,7 +1331,7 @@ cdef class LBFGS_Minimizer:
         else:
             for arg in terms:
                 vector_in.push_back(unique_ptr[cLLGTerm] (<cLLGTerm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLBFGS_Minimizer (vector_in, tol, maxiter, verbose)
+            self._thisptr = new cLBFGS_Minimizer (move(vector_in), tol, maxiter, verbose)
             # Note: std::cout is not handled and leads to segfault on some installs, hence c++ backend uses prinft
 
     #TODO
