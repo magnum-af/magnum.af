@@ -91,7 +91,7 @@ af::array CubicAnisotropyField::h(const State& state) const {
     return h[0] + h[1] + h[2];
 }
 
-double CubicAnisotropyField::E(const State& state) {
+double CubicAnisotropyField::E(const State& state) const {
     const af::array Ms = state.get_Ms_field_in_vector_dims();
     auto h = h_1to3(state);
     return constants::mu0 *
@@ -103,7 +103,7 @@ double CubicAnisotropyField::E(const State& state) {
 }
 
 // TODO reglects h caching:
-double CubicAnisotropyField::E(const State& state, const af::array& h) {
+double CubicAnisotropyField::E(const State& state, const af::array& h) const {
     auto h_avoid_warning = h;
     return E(state);
 }

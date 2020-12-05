@@ -10,7 +10,7 @@ class NonequiDemagField : public NonequiTermBase {
     NonequiDemagField(NonequiMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
     const af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
 
-    af::array h(const State& state) const override;           // Field contribution
+    virtual af::array h(const State& state) const override;           // Field contribution
     void print_Nfft();                         // For wrapping
 
   private:

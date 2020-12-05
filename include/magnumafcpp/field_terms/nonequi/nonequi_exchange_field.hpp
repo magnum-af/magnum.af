@@ -27,7 +27,7 @@ class NonequiExchangeField : public NonequiTermBase {
                          bool COO = true);
     NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
 
-    af::array h(const State& state) const override; // Field contribution
+    virtual af::array h(const State& state) const override; // Field contribution
 
     af::array matr;
 

@@ -11,7 +11,7 @@ class SparseExchangeField : public IntegratorTermMeshBase {
     SparseExchangeField(const af::array& A_exchange_field, Mesh, bool verbose = true, bool COO = true);
     SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose = true);
 
-    af::array h(const State& state) const override; // Field contribution
+    virtual af::array h(const State& state) const override; // Field contribution
 
     const af::array matr;
 

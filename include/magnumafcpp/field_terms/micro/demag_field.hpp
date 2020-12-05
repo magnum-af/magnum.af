@@ -14,7 +14,7 @@ class DemagField : public IntegratorTermMeshBase {
   public:
     DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
 
-    af::array h(const State& state) const override;
+    virtual af::array h(const State& state) const override;
 
     ///< Get copy of array storing the Fourier transfrom of the demag tensor.
     af::array get_Nfft() const { return Nfft; }

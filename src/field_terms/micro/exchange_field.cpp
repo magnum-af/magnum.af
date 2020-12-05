@@ -7,7 +7,7 @@ namespace magnumafcpp {
 // Eex=-mu0/2 integral(M . Hex) dx
 // Virtual method is overwritten as to use h_withedges
 // Note: maybe this is irrelevant and can be dropped.
-double ExchangeField::E(const State& state) {
+double ExchangeField::E(const State& state) const {
     if (state.Ms_field.isempty()) {
         return -constants::mu0 / 2. * state.Ms *
                af::sum(af::sum(af::sum(af::sum(h_withedges(state) * state.m, 0), 1), 2), 3).scalar<double>() *
@@ -41,8 +41,8 @@ ExchangeField::ExchangeField(long int A_field_ptr)
            "SparseExchangeField or RKKYExchangeField!\n");
 }
 
-af::array ExchangeField::h_withedges(const State& state) {
-    timer_exchsolve = af::timer::start();
+af::array ExchangeField::h_withedges(const State& state) const {
+    af::timer timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
     // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -57,7 +57,6 @@ af::array ExchangeField::h_withedges(const State& state) {
 
     // Accounting for boundary conditions by adding initial m values on the
     // boundaries by adding all 6 boundary surfaces
-    timer_edges = af::timer::start();
     exch(0, af::span, af::span, af::span) += state.m(0, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
     exch(-1, af::span, af::span, af::span) += state.m(-1, af::span, af::span, af::span) / pow(state.mesh.dx, 2);
 
@@ -69,8 +68,7 @@ af::array ExchangeField::h_withedges(const State& state) {
 
     if (state.afsync)
         af::sync();
-    time_edges += af::timer::stop(timer_edges);
-    computation_time_heff += af::timer::stop(timer_exchsolve);
+    accumulated_time += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
@@ -134,7 +132,7 @@ af::array ExchangeField::h(const State& state) const {
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::E(const State& state){
+// double ExchangeField::E(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
 //  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;
@@ -315,7 +313,7 @@ af::array ExchangeField::h(const State& state) const {
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::E(const State& state){
+// double ExchangeField::E(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
 //  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;

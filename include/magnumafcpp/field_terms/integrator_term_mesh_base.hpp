@@ -10,10 +10,11 @@ namespace magnumafcpp {
 
 class IntegratorTermMeshBase : public LLGTerm {
   public:
+    virtual ~IntegratorTermMeshBase() = default;
     /// Calculating the micromagnetic energy \f$E\f$.
     /// This is a prototype for all llgterms with are linear in m and must be
     /// overwritten in e.g. zeeman where factor 1/2 becomes 1.
-    virtual double E(const State& state) {
+    virtual double E(const State& state) const override {
         if (state.Ms_field.isempty()) {
             return -constants::mu0 / 2. * state.Ms *
                    af::sum(af::sum(af::sum(af::sum(h(state) * state.m, 0), 1), 2), 3).as(f64).scalar<double>() *
@@ -28,7 +29,7 @@ class IntegratorTermMeshBase : public LLGTerm {
     }
     ///< Calculating the micromagnetic energy for a already calculated h field
     ///< (to save computational cost)
-    virtual double E(const State& state, const af::array& h) {
+    virtual double E(const State& state, const af::array& h) const override {
         if (state.Ms_field.isempty()) {
             return -constants::mu0 / 2. * state.Ms *
                    af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3).as(f64).scalar<double>() *
@@ -41,8 +42,6 @@ class IntegratorTermMeshBase : public LLGTerm {
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         }
     }
-
-    virtual ~IntegratorTermMeshBase(){};
 };
 
 } // namespace magnumafcpp

@@ -14,12 +14,11 @@ class ExternalField : public LLGTerm {
     ExternalField(std::function<af::array(State)>);
     ExternalField(long int zee_in_addr); ///< For wrapping only
 
-    af::array h(const State& state) const override; // Field contribution
+    virtual af::array h(const State& state) const override; // Field contribution
 
-    double E(const State& state); // Energy contribution
-    double E(const State& state,
-             const af::array& h); ///< Calculating the micromagnetic energy for
-                                  ///< a already calculated h field
+    virtual double E(const State& state) const override; // Energy contribution
+    virtual double E(const State& state, const af::array& h) const override;
+    ///< Calculating the micromagnetic energy for an already calculated h field
 
     void set_homogeneous_field(const double x, const double y,
                                const double z); ///< Setting homogeneous zeeman field with x, y, z

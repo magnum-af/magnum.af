@@ -20,7 +20,7 @@ class NonequiUniaxialAnisotropyField : public NonequiTermBase {
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                    long int Ku1_axis_field_ptr); //!< wrapping only
 
-    af::array h(const State& state) const override;                        // Field contribution
+    virtual af::array h(const State& state) const override;                        // Field contribution
                                  //!< [J/m^3] defined at each node
     long int get_Ku1_field() const;
 

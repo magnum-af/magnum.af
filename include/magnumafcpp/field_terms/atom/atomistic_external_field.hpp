@@ -9,10 +9,8 @@ namespace magnumafcpp {
 class AtomisticExternalField : public ExternalField {
   public:
     using ExternalField::ExternalField;
-    double E(const State& state) override; // Energy contribution
-    double E(const State& state,
-             const af::array& h) override; ///< Calculating the micromagnetic energy
-                                           ///< for a already calculated h field
+    virtual double E(const State& state) const override;
+    virtual double E(const State& state, const af::array& h) const override;
 
   private:
 };

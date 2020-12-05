@@ -18,7 +18,7 @@ class UniaxialAnisotropyField : public IntegratorTermMeshBase {
     UniaxialAnisotropyField(double Ku1,
                             long int Ku1_axis_field_ptr); //!< wrapping only
 
-    af::array h(const State& state) const override;                        // Field contribution
+    virtual af::array h(const State& state) const override;                        // Field contribution
 
     double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
