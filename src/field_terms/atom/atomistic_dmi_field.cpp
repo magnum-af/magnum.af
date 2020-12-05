@@ -16,7 +16,7 @@ AtomisticDmiField::AtomisticDmiField(const double D_atom, double D_atom_axis_x, 
     : D_atom(D_atom),
       D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
 
-af::array AtomisticDmiField::h(const State& state) {
+af::array AtomisticDmiField::h(const State& state) const {
     af::timer timer_dmi = af::timer::start();
 
     af::array n = af::array(state.m.dims(), f64);
@@ -51,7 +51,7 @@ af::array AtomisticDmiField::h(const State& state) {
     if (state.afsync) {
         af::sync();
     }
-    cpu_time += af::timer::stop(timer_dmi);
+    accumulated_time += af::timer::stop(timer_dmi);
     return D_atom / (constants::mu0 * state.Ms) * (first - second);
 }
 

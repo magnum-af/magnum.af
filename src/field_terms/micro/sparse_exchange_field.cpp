@@ -15,13 +15,13 @@ SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh
 SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
     : matr(calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), mesh, verbose)) {}
 
-af::array SparseExchangeField::h(const State& state) {
+af::array SparseExchangeField::h(const State& state) const {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
     if (state.afsync)
         af::sync();
-    af_time += af::timer::stop(aftimer);
+    accumulated_time += af::timer::stop(aftimer);
     if (state.Ms_field.isempty()) {
         return exch / state.Ms;
     } else {

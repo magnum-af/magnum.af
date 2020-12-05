@@ -27,11 +27,9 @@ class NonequiExchangeField : public NonequiTermBase {
                          bool COO = true);
     NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
 
-    af::array h(const State& state); // Field contribution
+    af::array h(const State& state) const override; // Field contribution
 
-    double get_cpu_time() { return af_time; } // af time
-
-    const af::array matr;
+    af::array matr;
 
   private:
     af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh&, const bool verbose);

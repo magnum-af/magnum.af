@@ -7,15 +7,10 @@ namespace magnumafcpp {
 
 class AtomisticDipoleDipoleField : public AtomisticTermBase {
   public:
-    // Field contribution
-    af::array h(const State& state);
-    // CPU time
-    double get_cpu_time() { return cpu_time; }
-
+    af::array h(const State& state) const override;
     AtomisticDipoleDipoleField(Mesh);
 
+  private:
     af::array Nfft;
-    double cpu_time{0.};
-    af::timer timer_demagsolve;
 };
 } // namespace magnumafcpp

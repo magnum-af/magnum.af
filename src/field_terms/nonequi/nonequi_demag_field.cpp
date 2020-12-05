@@ -13,7 +13,7 @@ namespace magnumafcpp {
 inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }
 inline unsigned ny_expanded(unsigned ny) { return 2 * ny; }
 
-af::array NonequiDemagField::h(const State& state) {
+af::array NonequiDemagField::h(const State& state) const {
     af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
@@ -71,7 +71,7 @@ af::array NonequiDemagField::h(const State& state) {
     h_field = af::fftC2R<2>(hfft);
     if (state.afsync)
         af::sync();
-    cpu_time += af::timer::stop(timer_demagsolve);
+    accumulated_time += af::timer::stop(timer_demagsolve);
     // return h_field(af::seq(0, nx_expanded(nemesh.nx)/2-1), af::seq(0,
     // ny_expanded(nemesh.ny)/2-1));
     return one_over_tau_vec *

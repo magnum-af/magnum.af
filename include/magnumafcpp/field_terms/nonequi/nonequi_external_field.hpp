@@ -19,7 +19,7 @@ class NonequiExternalField : public NonequiTermBase {
     NonequiExternalField(NonequiMesh nemesh, long int fieldptr)
         : NonequiTermBase(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
 
-    af::array h(const State& state) {
+    af::array h(const State& state) const override {
         if (callback_is_defined) {
             return callback_function(state);
         } else {
@@ -30,8 +30,6 @@ class NonequiExternalField : public NonequiTermBase {
     // Energy contribution differs by factor of 2 compared to terms linear in m
     double E(const State& state) { return 2. * NonequiTermBase::E(state); };
     double E(const State& state, const af::array& h) { return 2. * NonequiTermBase::E(state, h); };
-
-    double get_cpu_time() { return 0; } // use or remove
 
   private:
     af::array external_field;

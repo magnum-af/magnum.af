@@ -69,7 +69,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double 
     }
 }
 
-af::array UniaxialAnisotropyField::h(const State& state) {
+af::array UniaxialAnisotropyField::h(const State& state) const {
     af::timer timer_anisotropy = af::timer::start();
 
     // switch Ku1_axis and Ku1_axis_field
@@ -89,7 +89,7 @@ af::array UniaxialAnisotropyField::h(const State& state) {
 
     if (state.afsync)
         af::sync();
-    computation_time_heff += af::timer::stop(timer_anisotropy);
+    accumulated_time += af::timer::stop(timer_anisotropy);
     if (state.Ms_field.isempty() && Ku1_field.isempty()) {
         return 2. * Ku1 / (constants::mu0 * state.Ms) * (eu * anisotropy);
     } else if (!state.Ms_field.isempty() && Ku1_field.isempty()) {

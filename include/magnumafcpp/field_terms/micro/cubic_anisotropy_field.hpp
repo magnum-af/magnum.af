@@ -20,18 +20,17 @@ class CubicAnisotropyField : public IntegratorTermMeshBase {
     CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr,
                          long int c2_array_ptr);
 
-    const DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
 
-    /// Pairwise orthogonal unit vectors either as std::array<double,3> or as af::array.
-    /// Input is normalized in ctor of UnitVectorOrArray class
-    const UnitVectorOrArray c1, c2, c3;
-
-    af::array h(const State& state);
-    double get_cpu_time() { return 0; } // TODO//!< accumulated heff computation time in [s]
+    af::array h(const State& state) const override;
     double E(const State& state);
     double E(const State& state, const af::array& h);
 
+    DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
+    /// Pairwise orthogonal unit vectors either as std::array<double,3> or as af::array.
+    /// Input is normalized in ctor of UnitVectorOrArray class
+    UnitVectorOrArray c1, c2, c3;
+
   private:
-    std::array<af::array, 3> h_1to3(const State& state);
+    std::array<af::array, 3> h_1to3(const State& state) const;
 };
 } // namespace magnumafcpp

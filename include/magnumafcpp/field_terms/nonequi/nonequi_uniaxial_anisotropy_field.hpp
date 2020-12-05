@@ -20,23 +20,17 @@ class NonequiUniaxialAnisotropyField : public NonequiTermBase {
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                    long int Ku1_axis_field_ptr); //!< wrapping only
 
-    af::array h(const State& state);                        // Field contribution
-    long int h_ptr(const State& state);                     // For wrapping only: pointer to heff
-    double get_cpu_time() { return computation_time_heff; } //!< accumulated heff computation time in [s]
-
-    const double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
-
-    const af::array Ku1_field{}; //!< Spacially varying anisotropy energy in
+    af::array h(const State& state) const override;                        // Field contribution
                                  //!< [J/m^3] defined at each node
-    long int get_Ku1_field();
+    long int get_Ku1_field() const;
 
-    const std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
-    const af::array Ku1_axis_field{};                 //!< Spacially varying anisotropy axis
-    double get_ku1_axis(int i);                       // For wrapping only
-
+    double Ku1{0};              //!< [J/m^3]  Uniaxial Anisotropy
+    double get_ku1_axis(int i); // For wrapping only
   private:
-    double computation_time_heff{0.};
+    af::array Ku1_field{};                      //!< Spacially varying anisotropy energy in
+    std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
+    af::array Ku1_axis_field{};                 //!< Spacially varying anisotropy axis
     std::array<double, 3> get_normalized_vector(std::array<double, 3> vector);
-    af::array calc_heff(const State& state);
+    af::array calc_heff(const State& state) const;
 };
 } // namespace magnumafcpp

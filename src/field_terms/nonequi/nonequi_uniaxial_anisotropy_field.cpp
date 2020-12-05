@@ -36,13 +36,10 @@ NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemes
     : NonequiTermBase(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
       Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {}
 
-af::array NonequiUniaxialAnisotropyField::h(const State& state) { return calc_heff(state); }
+af::array NonequiUniaxialAnisotropyField::h(const State& state) const { return calc_heff(state); }
 
-long int NonequiUniaxialAnisotropyField::h_ptr(const State& state) {
-    return (long int)(new af::array(calc_heff(state)))->get();
-}
 
-af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) {
+af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
     af::timer timer_anisotropy = af::timer::start();
 
     // switch Ku1_axis and Ku1_axis_field
@@ -62,7 +59,7 @@ af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) {
 
     if (state.afsync)
         af::sync();
-    computation_time_heff += af::timer::stop(timer_anisotropy);
+    accumulated_time += af::timer::stop(timer_anisotropy);
     if (state.Ms_field.isempty() && Ku1_field.isempty()) {
         return 2. * Ku1 / (constants::mu0 * state.Ms) * (eu * anisotropy);
     } else if (!state.Ms_field.isempty() && Ku1_field.isempty()) {
@@ -87,7 +84,7 @@ std::array<double, 3> NonequiUniaxialAnisotropyField::get_normalized_vector(std:
 
 double NonequiUniaxialAnisotropyField::get_ku1_axis(int i) { return Ku1_axis[i]; }
 
-long int NonequiUniaxialAnisotropyField::get_Ku1_field() {
+long int NonequiUniaxialAnisotropyField::get_Ku1_field() const {
     af::array* a = new af::array(Ku1_field);
     return (long int)a->get();
 }

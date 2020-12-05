@@ -41,9 +41,7 @@ class RKKYExchangeField : public IntegratorTermMeshBase {
     RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                       bool verbose = true);
 
-    af::array h(const State& state); // Field contribution
-
-    double get_cpu_time() { return af_time; } // af time
+    af::array h(const State& state) const override; // Field contribution
 
     const af::array matr; // TODO private
   private:

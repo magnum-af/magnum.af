@@ -14,8 +14,7 @@ class DmiField : public IntegratorTermMeshBase {
     DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y,
              double D_axis_z); //! wrapping only
 
-    af::array h(const State& state);
-    double get_cpu_time() { return cpu_time; }
+    af::array h(const State& state) const override;
 
   private:
     double cpu_time{0.};

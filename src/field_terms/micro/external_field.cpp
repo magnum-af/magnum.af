@@ -22,7 +22,7 @@ void ExternalField::set_homogeneous_field(const double x, const double y, const 
     zee_field(af::span, af::span, af::span, 2) = af::constant(z, dim, f64);
 }
 
-af::array ExternalField::h(const State& state) {
+af::array ExternalField::h(const State& state) const {
     // af::timer timer = af::timer::start();
     // if(state.afsync) sync();
     // af_time += af::timer::stop(timer);

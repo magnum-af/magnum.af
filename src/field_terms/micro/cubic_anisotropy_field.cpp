@@ -54,8 +54,7 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, d
                                            double c2x, double c2y, double c2z)
     : CubicAnisotropyField(Kc1, Kc2, Kc3, {c1x, c1y, c1z}, {c2x, c2y, c2z}) {}
 
-
-std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
+std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) const {
     af::array c1_ = c1.get_as_array(state.m.dims(), state.m.type());
     af::array c2_ = c2.get_as_array(state.m.dims(), state.m.type());
     af::array c3_ = c3.get_as_array(state.m.dims(), state.m.type());
@@ -87,7 +86,7 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) {
     return {h1, h2, h3};
 }
 
-af::array CubicAnisotropyField::h(const State& state) {
+af::array CubicAnisotropyField::h(const State& state) const {
     auto h = h_1to3(state);
     return h[0] + h[1] + h[2];
 }

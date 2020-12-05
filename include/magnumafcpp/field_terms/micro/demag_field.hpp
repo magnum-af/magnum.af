@@ -14,9 +14,7 @@ class DemagField : public IntegratorTermMeshBase {
   public:
     DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
 
-    af::array h(const State& state);
-
-    double get_cpu_time() { return cpu_time; }
+    af::array h(const State& state) const override;
 
     ///< Get copy of array storing the Fourier transfrom of the demag tensor.
     af::array get_Nfft() const { return Nfft; }
@@ -24,7 +22,7 @@ class DemagField : public IntegratorTermMeshBase {
     void print_Nfft() const;
 
   private:
-    af::array Nfft;
+    mutable af::array Nfft; // mutable for c64-c32 conversion
     double cpu_time{0.};
 };
 } // namespace magnumafcpp

@@ -50,7 +50,7 @@ DmiField::DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, d
 /// nanostructures in the presence of Dzyaloshinskii–Moriya interaction Phys.
 /// Rev. B 88 184422
 ///
-af::array DmiField::h(const State& state) {
+af::array DmiField::h(const State& state) const {
     af::timer timer_dmi = af::timer::start();
     // Normal vector
     double norm = sqrt(pow(D_axis[0], 2) + pow(D_axis[1], 2) + pow(D_axis[2], 2));
@@ -100,7 +100,7 @@ af::array DmiField::h(const State& state) {
 
     if (state.afsync)
         af::sync();
-    cpu_time += af::timer::stop(timer_dmi);
+    accumulated_time += af::timer::stop(timer_dmi);
     // if (state.Ms_field.isempty()){
     //  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note:
     //  Js=mu0*Ms

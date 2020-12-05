@@ -21,13 +21,13 @@ NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchan
       matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
                : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
 
-af::array NonequiExchangeField::h(const State& state) {
+af::array NonequiExchangeField::h(const State& state) const {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, nemesh.nx, nemesh.ny, nemesh.nz, 3);
     if (state.afsync)
         af::sync();
-    af_time += af::timer::stop(aftimer);
+    accumulated_time += af::timer::stop(aftimer);
     if (state.Ms_field.isempty()) {
         return exch / state.Ms;
     } else {

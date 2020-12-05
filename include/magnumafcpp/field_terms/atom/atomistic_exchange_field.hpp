@@ -8,18 +8,9 @@ namespace magnumafcpp {
 class AtomisticExchangeField : public AtomisticTermBase {
   public:
     AtomisticExchangeField(double J_atom);
-    // Field contribution
-    af::array h(const State& state);
-    // CPU time
-    double get_cpu_time() { return cpu_time; }
+    af::array h(const State& state) const override;
 
-    const double J_atom; //!< Atomistic exchange energy [J]
-
-    double cpu_time{0.};
-    af::timer timer_solve;
-    double time_conv{0.};
-    af::timer timer_conv;
-    double time_edges{0.};
-    af::timer timer_edges;
+  private:
+    double J_atom; //!< Atomistic exchange energy [J]
 };
 } // namespace magnumafcpp

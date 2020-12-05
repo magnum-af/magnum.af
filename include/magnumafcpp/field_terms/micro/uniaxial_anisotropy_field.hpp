@@ -18,21 +18,19 @@ class UniaxialAnisotropyField : public IntegratorTermMeshBase {
     UniaxialAnisotropyField(double Ku1,
                             long int Ku1_axis_field_ptr); //!< wrapping only
 
-    af::array h(const State& state);                        // Field contribution
-    double get_cpu_time() { return computation_time_heff; } //!< accumulated heff computation time in [s]
+    af::array h(const State& state) const override;                        // Field contribution
 
-    const double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
+    double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
-    const af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined
-                               //!< at each node. Expects size of [nx, ny, nz, 1], stores as
-                               //!< [nx, ny, nz, 3];
+    af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined
+                         //!< at each node. Expects size of [nx, ny, nz, 1], stores as
+                         //!< [nx, ny, nz, 3];
     long int get_Ku1_field();
 
-    const std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
-    const af::array Ku1_axis_field;                   //!< Spacially varying anisotropy axis
+    std::array<double, 3> Ku1_axis = {0, 0, 0};       //!< Anisotropy axis
+    af::array Ku1_axis_field;                         //!< Spacially varying anisotropy axis
     double get_ku1_axis(int i);                       // For wrapping only
 
   private:
-    double computation_time_heff{0.};
 };
 } // namespace magnumafcpp

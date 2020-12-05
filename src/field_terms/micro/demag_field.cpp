@@ -77,7 +77,7 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthrea
     : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
                                    in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
-af::array DemagField::h(const State& state) {
+af::array DemagField::h(const State& state) const {
     af::timer timer_demagsolve = af::timer::start();
 
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
@@ -123,13 +123,13 @@ af::array DemagField::h(const State& state) {
         h_field = af::fftC2R<2>(hfft);
         if (state.afsync)
             af::sync();
-        cpu_time += af::timer::stop(timer_demagsolve);
+        accumulated_time += af::timer::stop(timer_demagsolve);
         return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
     } else {
         h_field = af::fftC2R<3>(hfft);
         if (state.afsync)
             af::sync();
-        cpu_time += af::timer::stop(timer_demagsolve);
+        accumulated_time += af::timer::stop(timer_demagsolve);
         return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
                        af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
     }
