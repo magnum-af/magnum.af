@@ -327,7 +327,7 @@ af::array get_Nfft(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthr
 }
 
 NonequiDemagField::NonequiDemagField(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthreads)
-    : NonequiTermBase(nemesh),
+    : NonequiTerm(nemesh),
       Nfft(get_Nfft(nemesh, verbose, caching, nthreads > 0 ? nthreads : std::thread::hardware_concurrency())) {}
 
 } // namespace magnumafcpp

@@ -5,10 +5,10 @@
 
 namespace magnumafcpp {
 
-class NonequiTermBase : public Fieldterm {
+class NonequiTerm : public Fieldterm {
   public:
-    NonequiTermBase(NonequiMesh nemesh) : nemesh(nemesh){};
-    virtual ~NonequiTermBase() = default;
+    NonequiTerm(NonequiMesh nemesh) : nemesh(nemesh){};
+    virtual ~NonequiTerm() = default;
 
     /// Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
     /// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where

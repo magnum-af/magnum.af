@@ -1,11 +1,11 @@
 #pragma once
 #include "state.hpp"
 #include "arrayfire.h"
-#include "field_terms/atom/atomistic_term.hpp"
+#include "field_terms/atom/atom_term.hpp"
 
 namespace magnumafcpp {
 
-class AtomisticExchangeField : public AtomisticTermBase {
+class AtomisticExchangeField : public AtomTerm {
   public:
     AtomisticExchangeField(double J_atom);
     virtual af::array h(const State& state) const override;

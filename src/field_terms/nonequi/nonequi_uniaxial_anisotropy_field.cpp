@@ -5,35 +5,35 @@ namespace magnumafcpp {
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                                                std::array<double, 3> Ku1_axis)
-    : NonequiTermBase(nemesh), Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)) {}
+    : NonequiTerm(nemesh), Ku1(Ku1), Ku1_axis(get_normalized_vector(Ku1_axis)) {}
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field,
                                                                std::array<double, 3> Ku1_axis)
-    : NonequiTermBase(nemesh), Ku1_field(Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis)) {}
+    : NonequiTerm(nemesh), Ku1_field(Ku1_field), Ku1_axis(get_normalized_vector(Ku1_axis)) {}
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field,
                                                                af::array Ku1_axis_field)
-    : NonequiTermBase(nemesh), Ku1_field(Ku1_field), Ku1_axis_field(Ku1_axis_field) {}
+    : NonequiTerm(nemesh), Ku1_field(Ku1_field), Ku1_axis_field(Ku1_axis_field) {}
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                                                long int Ku1_axis_field_ptr)
-    : NonequiTermBase(nemesh), Ku1(Ku1), Ku1_axis_field(*(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
+    : NonequiTerm(nemesh), Ku1(Ku1), Ku1_axis_field(*(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, long int Ku1_field_ptr,
                                                                long int Ku1_axis_field_ptr)
-    : NonequiTermBase(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
+    : NonequiTerm(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
       Ku1_axis_field(*(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
 
 // For wrapping only
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1, double Ku1_axis_0,
                                                                double Ku1_axis_1, double Ku1_axis_2)
-    : NonequiTermBase(nemesh), Ku1(Ku1),
+    : NonequiTerm(nemesh), Ku1(Ku1),
       Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {}
 
 // For wrapping only
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, long int Ku1_field_ptr,
                                                                double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2)
-    : NonequiTermBase(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
+    : NonequiTerm(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
       Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {}
 
 af::array NonequiUniaxialAnisotropyField::h(const State& state) const { return calc_heff(state); }

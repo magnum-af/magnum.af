@@ -8,9 +8,9 @@
 
 namespace magnumafcpp {
 
-class IntegratorTermMeshBase : public Fieldterm {
+class MicroTerm : public Fieldterm {
   public:
-    virtual ~IntegratorTermMeshBase() = default;
+    virtual ~MicroTerm() = default;
     /// Calculating the micromagnetic energy \f$E\f$.
     /// This is a prototype for all llgterms with are linear in m and must be
     /// overwritten in e.g. zeeman where factor 1/2 becomes 1.

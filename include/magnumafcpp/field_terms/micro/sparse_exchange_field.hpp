@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-class SparseExchangeField : public IntegratorTermMeshBase {
+class SparseExchangeField : public MicroTerm {
   public:
     SparseExchangeField(double A_exchange, Mesh, bool verbose = true, bool COO = true);
     SparseExchangeField(const af::array& A_exchange_field, Mesh, bool verbose = true, bool COO = true);

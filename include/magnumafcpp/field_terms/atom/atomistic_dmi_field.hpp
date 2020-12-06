@@ -1,11 +1,11 @@
 #pragma once
 #include "state.hpp"
 #include "arrayfire.h"
-#include "field_terms/atom/atomistic_term.hpp"
+#include "field_terms/atom/atom_term.hpp"
 
 namespace magnumafcpp {
 
-class AtomisticDmiField : public AtomisticTermBase {
+class AtomisticDmiField : public AtomTerm {
   public:
     AtomisticDmiField(const double D_atom, std::array<double, 3> D_atom_axis);
     AtomisticDmiField(const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);

@@ -10,7 +10,7 @@ double Nxx(const int ix, const int iy, const int iz, const double dx, const doub
 double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz);
 } // namespace newell
 
-class DemagField : public IntegratorTermMeshBase {
+class DemagField : public MicroTerm {
   public:
     DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
 

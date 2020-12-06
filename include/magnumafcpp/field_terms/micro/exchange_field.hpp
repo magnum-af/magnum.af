@@ -5,13 +5,13 @@
 
 namespace magnumafcpp {
 
-class ExchangeField : public IntegratorTermMeshBase {
+class ExchangeField : public MicroTerm {
   public:
     ExchangeField(double A);
     ExchangeField(af::array A_field);
     ExchangeField(long int A_field_ptr);
     virtual af::array h(const State& state) const override;
-    using IntegratorTermMeshBase::E;
+    using MicroTerm::E;
     virtual double E(const State& state, const af::array& h) const override;
 
     double A{0}; //!< Exchange energy in [J/m]

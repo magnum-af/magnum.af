@@ -6,18 +6,18 @@
 namespace magnumafcpp {
 
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose, bool COO)
-    : NonequiTermBase(nemesh),
+    : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
 
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose,
                                            bool COO)
-    : NonequiTermBase(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
+    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
                                         : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose,
                                            bool COO)
-    : NonequiTermBase(nemesh),
+    : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
                : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
 

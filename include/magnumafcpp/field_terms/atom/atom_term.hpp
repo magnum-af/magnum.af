@@ -3,9 +3,9 @@
 #include "arrayfire.h"
 namespace magnumafcpp {
 
-class AtomisticTermBase : public Fieldterm {
+class AtomTerm : public Fieldterm {
   public:
-    virtual ~AtomisticTermBase() = default;
+    virtual ~AtomTerm() = default;
 
     ///< Calculating the atomistic energy Eex=-mu0/2 integral(M . Hex) dx
     using Fieldterm::E;

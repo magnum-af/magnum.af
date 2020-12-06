@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-class NonequiUniaxialAnisotropyField : public NonequiTermBase {
+class NonequiUniaxialAnisotropyField : public NonequiTerm {
   public:
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1, std::array<double, 3> Ku1_axis = {0, 0, 1});
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field,

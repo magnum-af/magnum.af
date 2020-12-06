@@ -34,7 +34,7 @@ using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>
 /// All cells are exchange coupled along the xy plane.
 /// @param COO Switch between COO and CSR sparse matrix format, true is COO.
 
-class RKKYExchangeField : public IntegratorTermMeshBase {
+class RKKYExchangeField : public MicroTerm {
   public:
     RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
                       const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);

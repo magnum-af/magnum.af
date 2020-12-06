@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-class DmiField : public IntegratorTermMeshBase {
+class DmiField : public MicroTerm {
   public:
     DmiField(double D, std::array<double, 3> D_axis = {0, 0, 1});
     DmiField(af::array D_constants, std::array<double, 3> D_axis = {0, 0, 1});

@@ -20,7 +20,7 @@ namespace magnumafcpp {
 ///
 /// [1] "A simple finite-difference grid with non-constant intervals" by Hilding
 /// Sundqvist & George Veronis
-class NonequiExchangeField : public NonequiTermBase {
+class NonequiExchangeField : public NonequiTerm {
   public:
     NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose = true, bool COO = true);
     NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose = true,

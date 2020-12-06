@@ -8,7 +8,7 @@
 
 namespace magnumafcpp {
 
-class CubicAnisotropyField : public IntegratorTermMeshBase {
+class CubicAnisotropyField : public MicroTerm {
   public:
     CubicAnisotropyField(double Kc1, double Kc2 = 0, double Kc3 = 0, std::array<double, 3> c1 = {1, 0, 0},
                          std::array<double, 3> c2 = {0, 1, 0});
@@ -22,7 +22,7 @@ class CubicAnisotropyField : public IntegratorTermMeshBase {
 
 
     virtual af::array h(const State& state) const override;
-    using IntegratorTermMeshBase::E;
+    using MicroTerm::E;
     virtual double E(const State& state, const af::array& h) const override;
 
     DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]

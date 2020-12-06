@@ -1,12 +1,12 @@
 #pragma once
 #include "state.hpp"
 #include "arrayfire.h"
-#include "field_terms/atom/atomistic_term.hpp"
+#include "field_terms/atom/atom_term.hpp"
 #include <array>
 
 namespace magnumafcpp {
 
-class AtomisticUniaxialAnisotropyField : public AtomisticTermBase {
+class AtomisticUniaxialAnisotropyField : public AtomTerm {
   public:
     AtomisticUniaxialAnisotropyField(const double K_atom, std::array<double, 3> K_atom_axis = {0, 0, 1});
     AtomisticUniaxialAnisotropyField(const double K_atom, double K_atom_axis_x, double K_atom_axis_y,

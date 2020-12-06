@@ -6,7 +6,7 @@
 
 namespace magnumafcpp {
 
-class SpinTransferTorqueField : public IntegratorTermMeshBase {
+class SpinTransferTorqueField : public MicroTerm {
   public:
     virtual af::array h(const State& state) const override; ///< Effective field term contribution
 

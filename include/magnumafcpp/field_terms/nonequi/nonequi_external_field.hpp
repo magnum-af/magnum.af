@@ -7,17 +7,17 @@
 
 namespace magnumafcpp {
 
-class NonequiExternalField : public NonequiTermBase {
+class NonequiExternalField : public NonequiTerm {
   public:
     NonequiExternalField(NonequiMesh nemesh, const af::array& field)
-        : NonequiTermBase(nemesh), external_field(field) {}
+        : NonequiTerm(nemesh), external_field(field) {}
 
     NonequiExternalField(NonequiMesh nemesh, std::function<af::array(State)> function)
-        : NonequiTermBase(nemesh), callback_function(function), callback_is_defined(true) {}
+        : NonequiTerm(nemesh), callback_function(function), callback_is_defined(true) {}
 
     ///< For wrapping only
     NonequiExternalField(NonequiMesh nemesh, long int fieldptr)
-        : NonequiTermBase(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
+        : NonequiTerm(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
 
     virtual af::array h(const State& state) const override {
         if (callback_is_defined) {
@@ -28,8 +28,8 @@ class NonequiExternalField : public NonequiTermBase {
     }
 
     // Energy contribution differs by factor of 2 compared to terms linear in m
-    using NonequiTermBase::E;
-    virtual double E(const State& state, const af::array& h) const override { return 2. * NonequiTermBase::E(state, h); };
+    using NonequiTerm::E;
+    virtual double E(const State& state, const af::array& h) const override { return 2. * NonequiTerm::E(state, h); };
 
   private:
     af::array external_field;
