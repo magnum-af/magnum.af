@@ -6,7 +6,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 
 void calcm(State state, std::ostream& myfile, double get_avg) {
     myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t" << get_avg << std::endl;

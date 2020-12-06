@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-class NonequiTerm : public Fieldterm {
+class NonequiTerm : public FieldTerm {
   public:
     NonequiTerm(NonequiMesh nemesh) : nemesh(nemesh){};
     virtual ~NonequiTerm() = default;
@@ -13,7 +13,7 @@ class NonequiTerm : public Fieldterm {
     /// Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
     /// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where
     /// M = Ms * m
-    using Fieldterm::E;
+    using FieldTerm::E;
     virtual double E(const State& state, const af::array& h) const override { return integral_nonequimesh(h * state.m, state); }
 
   protected:

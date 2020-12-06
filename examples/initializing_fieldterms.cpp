@@ -68,13 +68,13 @@ int main() {
         LLGIntegrator llg2(alpha, {cp_to_uptr(dmag), cp_to_uptr(exch)});
 
         // state explicitly what's going on
-        LLGIntegrator llg3(alpha, {std::unique_ptr<Fieldterm>(std::make_unique<DemagField>(dmag)),
-                                   std::unique_ptr<Fieldterm>(std::make_unique<ExchangeField>(exch))});
+        LLGIntegrator llg3(alpha, {std::unique_ptr<FieldTerm>(std::make_unique<DemagField>(dmag)),
+                                   std::unique_ptr<FieldTerm>(std::make_unique<ExchangeField>(exch))});
 
         // versions using new (should be avoided by using make_unique)
         LLGIntegrator llg4(alpha, {uptr_Fieldterm(new DemagField(dmag)), uptr_Fieldterm(new ExchangeField(exch))});
         LLGIntegrator llg5(
-            alpha, {std::unique_ptr<Fieldterm>(new DemagField(dmag)), std::unique_ptr<Fieldterm>(new ExchangeField(exch))});
+            alpha, {std::unique_ptr<FieldTerm>(new DemagField(dmag)), std::unique_ptr<FieldTerm>(new ExchangeField(exch))});
 
         // we can still use the fieldterms
         exch.h(state);

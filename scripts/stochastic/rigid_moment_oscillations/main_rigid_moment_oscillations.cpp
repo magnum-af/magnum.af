@@ -13,7 +13,7 @@ using namespace magnumafcpp;
 using namespace af;
 using namespace std::complex_literals;
 using Faddeeva::erfi;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 
 // Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1

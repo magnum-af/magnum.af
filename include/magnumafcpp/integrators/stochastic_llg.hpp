@@ -7,7 +7,7 @@ namespace magnumafcpp {
 
 class Stochastic_LLG : public Stochastic_Integrator {
   public:
-    Stochastic_LLG(double alpha, double T, double dt, State state, std::vector<std::unique_ptr<Fieldterm>> terms,
+    Stochastic_LLG(double alpha, double T, double dt, State state, std::vector<std::unique_ptr<FieldTerm>> terms,
                    std::string smode)
         : Stochastic_Integrator(alpha, T, dt, state, std::move(terms), smode) {}
     virtual ~Stochastic_LLG() = default;

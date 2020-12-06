@@ -4,7 +4,7 @@
 #include "arrayfire.h"
 #include "magnum_af.hpp"
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 int main(int argc, char** argv) {
     if (argc > 1)
         setDevice(std::stoi(argv[2]));

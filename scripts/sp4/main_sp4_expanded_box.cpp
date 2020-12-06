@@ -20,7 +20,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 // void calcm(State state, std::ostream& myfile);
 void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz);
 void calcm_autodetect(State state, std::ostream& myfile) {

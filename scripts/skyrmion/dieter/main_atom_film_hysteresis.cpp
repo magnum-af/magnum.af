@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);

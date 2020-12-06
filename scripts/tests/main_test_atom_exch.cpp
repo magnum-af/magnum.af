@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 
 bool compare(double a, double b) {
     // std::cout << "COM:"<< a <<", " << b <<",

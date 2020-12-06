@@ -54,7 +54,7 @@ from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
 from magnumaf_decl cimport ExternalField as cExternalField
 from magnumaf_decl cimport AtomisticExternalField as cAtomisticExternalField
 from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
-from magnumaf_decl cimport Fieldterm as cFieldterm
+from magnumaf_decl cimport FieldTerm as cFieldterm
 
 from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
 from magnumaf_decl cimport StringMethod as cString

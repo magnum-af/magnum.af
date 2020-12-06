@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<Fieldterm> llgt_ptr;
+typedef std::unique_ptr<FieldTerm> llgt_ptr;
 int main(int argc, char** argv) {
     std::string filepath(argc >= 1 ? argv[1] : "data");
     if (argc >= 1) {

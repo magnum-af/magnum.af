@@ -72,7 +72,7 @@ int get_mode(std::string smode) {
 }
 
 Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, State state,
-                                             std::vector<std::unique_ptr<Fieldterm>> fieldterms_in, std::string smode)
+                                             std::vector<std::unique_ptr<FieldTerm>> fieldterms_in, std::string smode)
     : alpha(alpha), T(T), dt(dt), fieldterms(std::move(fieldterms_in)), m_prev(state.m), mode(get_mode(smode)) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
