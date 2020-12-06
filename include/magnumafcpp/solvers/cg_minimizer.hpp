@@ -15,7 +15,7 @@ namespace magnumafcpp {
 //!
 class CG_Minimizer {
   public:
-    LlgTerms llgterms_{};
+    vec_uptr_Fieldterm llgterms_{};
     void Minimize(State&); // Minimization routine
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
   private:

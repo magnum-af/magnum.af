@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         state.nonequimesh = ne_mesh; // TODO avoid
         vti_writer_micro(state.m, mesh, (filepath + "z_minit").c_str());
 
-        LlgTerms llgterm;
+        vec_uptr_Fieldterm llgterm;
         llgterm.push_back(LlgTerm(new DemagField(mesh, true, true, 0)));
         if (conv)
             llgterm.push_back(LlgTerm(new ExchangeField(A)));
@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
         State state(mesh, 8e5, util::init_sp4(mesh));
         vti_writer_micro(state.m, mesh, (filepath + "x_minit").c_str());
 
-        LlgTerms llgterm;
+        vec_uptr_Fieldterm llgterm;
         llgterm.push_back(LlgTerm(new DemagField(mesh, true, true, 0)));
         if (conv)
             llgterm.push_back(LlgTerm(new ExchangeField(A)));

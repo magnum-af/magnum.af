@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
-    LlgTerms llgterm;
+    vec_uptr_Fieldterm llgterm;
     llgterm.push_back(LlgTerm(new DemagField(mesh, material, true)));
     llgterm.push_back(LlgTerm(new ExchangeField(mesh, material)));
     llgterm.push_back(LlgTerm(new SpinTransferTorqueField(pol, .3, .4, 2e10)));

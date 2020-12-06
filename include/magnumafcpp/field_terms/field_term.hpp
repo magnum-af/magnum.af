@@ -63,6 +63,6 @@ template <typename... Args> auto mv_to_vec(Args&&... args) {
 
 // Aliases used to initialize objects wich inherit from this class
 using LlgTerm = std::unique_ptr<Fieldterm>;
-using LlgTerms = std::vector<LlgTerm>;
+using vec_uptr_Fieldterm = std::vector<LlgTerm>;
 
 } // namespace magnumafcpp

@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     auto exch = LlgTerm(new NonequiExchangeField(mesh, A, true));
     auto aniso = LlgTerm(new NonequiUniaxialAnisotropyField(
         mesh, Ku1_field, std::array<double, 3>{0, 0, 1})); // TODO energy is wrong is its not nonequi!
-    LlgTerms llgterms = {demag, exch, aniso};
+    vec_uptr_Fieldterm llgterms = {demag, exch, aniso};
     timer.print_stage("setup ");
 
     af::array h = demag->h(state);

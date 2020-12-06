@@ -19,7 +19,7 @@ class Minimizer {
     af::array h(const State& m); // Effective Field
     void minimize(State&);       // Minimization routine
 
-    LlgTerms llgterms;
+    vec_uptr_Fieldterm llgterms;
 
     double get_time_h() const { return time_h; };
 

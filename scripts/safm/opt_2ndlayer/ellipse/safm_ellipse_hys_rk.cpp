@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     auto demag = LlgTerm(new DemagField(mesh));
     auto exch = LlgTerm(new ExchangeField(A));
     auto zee = LlgTerm(new ExternalField(zee_func));
-    LlgTerms llgterms = {demag, exch, zee};
+    vec_uptr_Fieldterm llgterms = {demag, exch, zee};
     LLGIntegrator llg(1, llgterms);
     // LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
     // minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");

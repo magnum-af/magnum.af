@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         State state(mesh, material, util::init_sp4(mesh));
         vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
-        LlgTerms llgterm;
+        vec_uptr_Fieldterm llgterm;
         const bool nonequi = true;
 
         if (nonequi) {

@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     m(-1, span, span, 1) = constant(1.0, 1, mesh.ny, mesh.nz, 1, f64);
     State state(mesh, material, m);
 
-    // LlgTerms llgterms;
+    // vec_uptr_Fieldterm llgterms;
     Minimizer minimizer;
     minimizer.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
     minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));

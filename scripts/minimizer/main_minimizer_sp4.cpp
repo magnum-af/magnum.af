@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         vti_reader(state.m, mesh, path_mrelax);
     }
 
-    // LlgTerms llgterms;
+    // vec_uptr_Fieldterm llgterms;
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 10);
     minimizer.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
     minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));

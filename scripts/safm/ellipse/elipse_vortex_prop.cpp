@@ -109,9 +109,9 @@ int main(int argc, char** argv) {
     auto demag = LlgTerm(new NonequiDemagField(mesh, true, true, 0));
     auto exch = LlgTerm(new NonequiExchangeField(mesh, A, true));
     // TODO//auto aniso = LlgTerm (new NonequiUniaxialAnisotropyField(nemesh,
-    // Ku1_field, std::array<double, 3>{0, 0, 1})); LlgTerms llgterms = {demag,
+    // Ku1_field, std::array<double, 3>{0, 0, 1})); vec_uptr_Fieldterm llgterms = {demag,
     // exch, aniso};
-    LlgTerms llgterms = {demag, exch};
+    vec_uptr_Fieldterm llgterms = {demag, exch};
     timer.print_stage("setup ");
 
     af::array h = demag->h(state);
