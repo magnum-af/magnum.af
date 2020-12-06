@@ -33,7 +33,7 @@ include(UseCython)
 # ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
 # ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 # include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning:
-# commenting this out leads to "fatal error: ../../src/LLGTerm.hpp: No such file
+# commenting this out leads to "fatal error: ../../src/field_term.hpp: No such file
 # or directory compilation terminated." If the pyx file is a C++ file, we should
 # specify that here.
 set_source_files_properties(

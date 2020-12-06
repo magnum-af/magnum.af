@@ -1,5 +1,5 @@
 #pragma once
-#include "field_terms/LLGTerm.hpp"
+#include "field_terms/field_term.hpp"
 #include "state.hpp"
 #include "arrayfire.h"
 

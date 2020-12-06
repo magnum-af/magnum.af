@@ -1,8 +1,5 @@
-#include "field_terms/LLGTerm.hpp"
 #include "magnum_af.hpp"
 #include <cassert>
-#include <filesystem>
-#include <utility>
 
 // Demonstrating initialization of fieldterms
 // Mainly with helper function templates to_vec and mv_to_vec

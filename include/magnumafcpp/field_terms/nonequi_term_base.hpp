@@ -1,5 +1,5 @@
 #pragma once
-#include "LLGTerm.hpp"
+#include "field_term.hpp"
 #include "arrayfire.h"
 #include "nonequispaced_mesh.hpp"
 

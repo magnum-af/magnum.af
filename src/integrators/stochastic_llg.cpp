@@ -1,6 +1,6 @@
 #include "stochastic_llg.hpp"
 #include "util/func.hpp"
-#include "field_terms/LLGTerm.hpp"
+#include "field_terms/field_term.hpp"
 #include <memory>
 
 namespace magnumafcpp {

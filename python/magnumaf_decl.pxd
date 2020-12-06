@@ -4,7 +4,7 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp cimport bool
 
-cdef extern from "field_terms/LLGTerm.hpp" namespace "magnumafcpp":
+cdef extern from "field_terms/field_term.hpp" namespace "magnumafcpp":
     cdef cppclass LLGTerm
 
 cdef extern from "<arrayfire.h>" namespace "af":
