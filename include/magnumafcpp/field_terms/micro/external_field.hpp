@@ -6,7 +6,7 @@
 
 namespace magnumafcpp {
 
-class ExternalField : public LLGTerm {
+class ExternalField : public Fieldterm {
   public:
     ExternalField(af::array zee_in);                           ///< Constant Zeeman field.
     ExternalField(af::array (*callback_func_in)(State state)); ///< Callback function for e.g. time dependent external
@@ -16,7 +16,7 @@ class ExternalField : public LLGTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    using LLGTerm::E;
+    using Fieldterm::E;
     virtual double E(const State& state, const af::array& h) const override;
 
     void set_homogeneous_field(const double x, const double y,

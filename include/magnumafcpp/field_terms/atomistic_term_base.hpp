@@ -3,12 +3,12 @@
 #include "arrayfire.h"
 namespace magnumafcpp {
 
-class AtomisticTermBase : public LLGTerm {
+class AtomisticTermBase : public Fieldterm {
   public:
     virtual ~AtomisticTermBase() = default;
 
     ///< Calculating the atomistic energy Eex=-mu0/2 integral(M . Hex) dx
-    using LLGTerm::E;
+    using Fieldterm::E;
     virtual double E(const State& state, const af::array& h) const override {
         return -constants::mu0 / 2. * state.Ms *
                af::sum(af::sum(af::sum(af::sum(h * state.m, 0), 1), 2), 3).as(f64).scalar<double>();

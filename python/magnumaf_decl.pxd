@@ -5,7 +5,7 @@ from libcpp.string cimport string
 from libcpp cimport bool
 
 cdef extern from "field_terms/field_term.hpp" namespace "magnumafcpp":
-    cdef cppclass LLGTerm
+    cdef cppclass Fieldterm
 
 cdef extern from "<arrayfire.h>" namespace "af":
     cdef cppclass array:
@@ -100,8 +100,8 @@ cdef extern from "integrators/controller.hpp" namespace "magnumafcpp":
 
 cdef extern from "integrators/llg_integrator.hpp" namespace "magnumafcpp":
     cdef cppclass LLGIntegrator:
-        LLGIntegrator (double alpha, vector[unique_ptr[LLGTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
-        vector[unique_ptr[LLGTerm]] llgterms;
+        LLGIntegrator (double alpha, vector[unique_ptr[Fieldterm]] vector_in, string mode, Controller, bool dissipation_term_only);
+        vector[unique_ptr[Fieldterm]] llgterms;
         void step(State& state);
         double E(const State& state);
         void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
@@ -111,7 +111,7 @@ cdef extern from "integrators/llg_integrator.hpp" namespace "magnumafcpp":
 
 cdef extern from "integrators/stochastic_llg.hpp" namespace "magnumafcpp":
     cdef cppclass Stochastic_LLG:
-        Stochastic_LLG(double alpha, double T, double dt, State state, vector[unique_ptr[LLGTerm]] terms, string smode);
+        Stochastic_LLG(double alpha, double T, double dt, State state, vector[unique_ptr[Fieldterm]] terms, string smode);
         void step(State& state);
         double E(const State& state);
 
@@ -206,8 +206,8 @@ cdef extern from "field_terms/atom/atomistic_external_field.hpp" namespace "magn
 cdef extern from "solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
     cdef cppclass LBFGS_Minimizer:
         LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose );
-        vector[unique_ptr[LLGTerm]] llgterms_;
-        LBFGS_Minimizer(vector[unique_ptr[LLGTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
+        vector[unique_ptr[Fieldterm]] llgterms_;
+        LBFGS_Minimizer(vector[unique_ptr[Fieldterm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
         double Minimize(State& state);
         double GetTimeCalcHeff();
 

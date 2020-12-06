@@ -7,9 +7,9 @@
 namespace magnumafcpp {
 
 // Abstract basis class for all terms in the LLG equation.
-class LLGTerm {
+class Fieldterm {
   public:
-    virtual ~LLGTerm() = default;
+    virtual ~Fieldterm() = default;
     virtual af::array h(const State& state) const = 0;
     ///< Calculating the micromagnetic energy from the h field
     virtual double E(const State& state, const af::array& h) const = 0;
@@ -34,35 +34,35 @@ class LLGTerm {
 
 // create a unique_ptr (e.g. from ctor or copy-ctor)
 template <typename T, class... Args> auto fieldterm_ptr(Args&&... args) {
-    return std::unique_ptr<LLGTerm>(std::make_unique<T>(std::forward<Args>(args)...));
+    return std::unique_ptr<Fieldterm>(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 // create unique_ptr to a copy
-template <typename T> std::unique_ptr<LLGTerm> cp_to_uptr(const T& t) { return std::make_unique<T>(t); }
+template <typename T> std::unique_ptr<Fieldterm> cp_to_uptr(const T& t) { return std::make_unique<T>(t); }
 
 // moves to a unique_ptr, do not use element afterwards
 // requires std::move() at callsite
-template <typename T> std::unique_ptr<LLGTerm> mv_to_uptr(T&& t) { return std::make_unique<T>(t); }
+template <typename T> std::unique_ptr<Fieldterm> mv_to_uptr(T&& t) { return std::make_unique<T>(t); }
 
-/// returns std::vector<std::unique_ptr<LLGTerm>> from args
+/// returns std::vector<std::unique_ptr<Fieldterm>> from args
 /// args called with std::move() are moved, copied elsewise
 template <typename... Args> auto to_vec(Args... args) {
-    std::vector<std::unique_ptr<LLGTerm>> v;
-    (v.push_back(std::unique_ptr<LLGTerm>(std::make_unique<Args>(args))), ...);
+    std::vector<std::unique_ptr<Fieldterm>> v;
+    (v.push_back(std::unique_ptr<Fieldterm>(std::make_unique<Args>(args))), ...);
     return v;
 }
 
 // Always moves arguments, except when arg is const itself
 // Uses mv-ctor on args or copy-ctor as fallback (when arg is const)
-template <typename T> std::unique_ptr<LLGTerm> to_uptr(T t) { return std::make_unique<T>(t); }
+template <typename T> std::unique_ptr<Fieldterm> to_uptr(T t) { return std::make_unique<T>(t); }
 template <typename... Args> auto mv_to_vec(Args&&... args) {
-    std::vector<std::unique_ptr<LLGTerm>> v;
+    std::vector<std::unique_ptr<Fieldterm>> v;
     (v.push_back(to_uptr(std::move(args))), ...);
     return v;
 }
 
 // Aliases used to initialize objects wich inherit from this class
-using LlgTerm = std::unique_ptr<LLGTerm>;
+using LlgTerm = std::unique_ptr<Fieldterm>;
 using LlgTerms = std::vector<LlgTerm>;
 
 } // namespace magnumafcpp

@@ -3,7 +3,7 @@
 
 using namespace magnumafcpp;
 
-typedef std::unique_ptr<LLGTerm> llgt_ptr;
+typedef std::unique_ptr<Fieldterm> llgt_ptr;
 
 int main(int argc, char** argv) {
 
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     State state(mesh, p, m);
     vti_writer_atom(state.m, mesh, filepath + "minit");
 
-    std::vector<std::unique_ptr<LLGTerm>> llgterm;
+    std::vector<std::unique_ptr<Fieldterm>> llgterm;
     llgterm.push_back(LlgTerm(new AtomisticExchangeField(J_atom)));
     llgterm.push_back(LlgTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
     llgterm.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
