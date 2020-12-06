@@ -100,9 +100,9 @@ int main(int argc, char** argv) {
     vtr_writer(Ku1_field, state.nonequimesh, filepath + "m_init");
     timer.print_stage("mesh  ");
 
-    auto demag = LlgTerm(new NonequiDemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(new NonequiExchangeField(mesh, A, true));
-    auto aniso = LlgTerm(new NonequiUniaxialAnisotropyField(mesh, Ku1_field, std::array<double, 3>{0, 0, 1}));
+    auto demag = uptr_Fieldterm(new NonequiDemagField(mesh, true, true, 0));
+    auto exch = uptr_Fieldterm(new NonequiExchangeField(mesh, A, true));
+    auto aniso = uptr_Fieldterm(new NonequiUniaxialAnisotropyField(mesh, Ku1_field, std::array<double, 3>{0, 0, 1}));
     vec_uptr_Fieldterm llgterms = {demag, exch, aniso};
     timer.print_stage("setup ");
 
@@ -170,8 +170,8 @@ int main(int argc, char** argv) {
                 return zee;
             };
 
-            llg.llgterms.push_back(LlgTerm(new NonequiExternalField(mesh, zee_func_llg)));
-            // llg.llgterms.push_back( LlgTerm (new
+            llg.llgterms.push_back(uptr_Fieldterm(new NonequiExternalField(mesh, zee_func_llg)));
+            // llg.llgterms.push_back( uptr_Fieldterm (new
             // NonequiExternalField(zee_func_llg)));
             stream.open(filepath + "m.dat");
             stream << "# step	<mx>    <my>    <mz>    hx      hy      hz" << std::endl;
@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
         // hys loop
         state.t = 0;
         state.steps = 0;
-        minimizer.llgterms_.push_back(LlgTerm(new NonequiExternalField(mesh, zee_func)));
+        minimizer.llgterms_.push_back(uptr_Fieldterm(new NonequiExternalField(mesh, zee_func)));
         stream.precision(12);
         stream.open(filepath + "m.dat");
         stream << "# step	<mx>    <my>    <mz>    hx      hy      hz" << std::endl;

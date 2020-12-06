@@ -34,8 +34,8 @@ int main(int argc, char** argv) {
 
     // vec_uptr_Fieldterm llgterms;
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 10);
-    minimizer.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
     vti_writer_micro(state.m, mesh, (filepath + "init").c_str());
     minimizer.minimize(state);
     vti_writer_micro(state.m, mesh, (filepath + "minimized").c_str());

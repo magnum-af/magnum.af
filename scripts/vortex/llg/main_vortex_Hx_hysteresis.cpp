@@ -56,9 +56,9 @@ int main(int argc, char** argv) {
     State state(mesh, material, util::init_vortex(mesh));
     vti_writer_micro(state.Ms, mesh, (filepath + "Ms").c_str());
 
-    std::vector<LlgTerm> llgterm;
-    llgterm.push_back(LlgTerm(new DemagField(mesh, material)));
-    llgterm.push_back(LlgTerm(new ExchangeField(mesh, material)));
+    std::vector<uptr_Fieldterm> llgterm;
+    llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
+    llgterm.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
     LLGIntegrator Llg(llgterm);
 
     // Calculating relaxed initial magnetization or reading in given
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
 
     timer t_hys = af::timer::start();
-    Llg.llgterms.push_back(LlgTerm(new ExternalField(&zee_func))); // Rate in
+    Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(&zee_func))); // Rate in
                                                                    // T/s
     while (state.t < 4 * hzee_max / rate) {
         Llg.step(state);

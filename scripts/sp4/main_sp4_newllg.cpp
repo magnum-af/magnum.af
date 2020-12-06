@@ -43,8 +43,8 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg = LLGIntegrator("RKF45");
-    Llg.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
-    Llg.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
 
     std::ofstream stream;
     stream.precision(12);
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 2) = 0.0;
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-    Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zeeswitch)));
     state.material.alpha = 0.02;
 
     // Switch

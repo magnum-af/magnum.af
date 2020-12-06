@@ -125,12 +125,12 @@ int main(int argc, char** argv) {
     //// Relax
     // af::timer timer_llgterms = af::timer::start();
     // Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
-    ////minimizer.llgterms.push_back( LlgTerm (new
+    ////minimizer.llgterms.push_back( uptr_Fieldterm (new
     /// AtomisticDipoleDipoleField(mesh)));
-    // minimizer.llgterms.push_back( LlgTerm (new
-    // AtomisticExchangeField(mesh))); minimizer.llgterms.push_back( LlgTerm
+    // minimizer.llgterms.push_back( uptr_Fieldterm (new
+    // AtomisticExchangeField(mesh))); minimizer.llgterms.push_back( uptr_Fieldterm
     // (new AtomisticDmiField(mesh, material))); minimizer.llgterms.push_back(
-    // LlgTerm (new AtomisticUniaxialAnisotropyField(mesh, material)));
+    // uptr_Fieldterm (new AtomisticUniaxialAnisotropyField(mesh, material)));
     // std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms)
     // <<std::endl;
 
@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
 
     // timer t_hys = af::timer::start();
     // double rate = hzee_max/quater_steps; //[T/s]
-    // minimizer.llgterms.push_back( LlgTerm (new ExternalField(&zee_func)));
+    // minimizer.llgterms.push_back( uptr_Fieldterm (new ExternalField(&zee_func)));
     // while (state.t < 4* hzee_max/rate){
     //    minimizer.minimize(state);
     //    calc_mean_m(state, stream, afvalue(minimizer.llgterms[4]->h(state)(0,

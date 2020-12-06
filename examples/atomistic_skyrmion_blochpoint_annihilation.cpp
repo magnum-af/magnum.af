@@ -57,13 +57,13 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, filepath + "minit");
 
     std::vector<std::unique_ptr<Fieldterm>> llgterm;
-    llgterm.push_back(LlgTerm(new AtomisticExchangeField(J_atom)));
-    llgterm.push_back(LlgTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    llgterm.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
-    llgterm.push_back(LlgTerm(new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back(uptr_Fieldterm(new AtomisticExchangeField(J_atom)));
+    llgterm.push_back(uptr_Fieldterm(new AtomisticDmiField(D_atom, {0, 0, -1})));
+    llgterm.push_back(uptr_Fieldterm(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
+    llgterm.push_back(uptr_Fieldterm(new AtomisticDipoleDipoleField(mesh)));
     af::array zee = af::constant(0, dims_vector(mesh), f64);
     zee(af::span, af::span, af::span, 2) = ext;
-    llgterm.push_back(LlgTerm(new AtomisticExternalField(zee)));
+    llgterm.push_back(uptr_Fieldterm(new AtomisticExternalField(zee)));
 
     LLGIntegrator llg(alpha, std::move(llgterm));
 

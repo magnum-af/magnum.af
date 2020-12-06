@@ -39,11 +39,11 @@ int main(int argc, char** argv) {
             for (int j = 0; j < nz; j++) {
                 z_spacing.push_back(z / nz);
             }
-            llgterm.push_back(LlgTerm(new NonequiDemagField(mesh, z_spacing, true, false, 1)));
+            llgterm.push_back(uptr_Fieldterm(new NonequiDemagField(mesh, z_spacing, true, false, 1)));
         } else {
-            llgterm.push_back(LlgTerm(new DemagField(mesh, material, true, false, 1)));
+            llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, material, true, false, 1)));
         }
-        llgterm.push_back(LlgTerm(new ExchangeField(mesh, material)));
+        llgterm.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
         LLGIntegrator Llg(llgterm);
 
         std::ofstream stream;
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 2) = 0.0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
+        Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zeeswitch)));
         state.material.alpha = 0.02;
 
         // Switch

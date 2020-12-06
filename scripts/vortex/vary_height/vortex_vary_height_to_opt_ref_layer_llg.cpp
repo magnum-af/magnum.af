@@ -48,9 +48,9 @@ int main(int argc, char** argv) {
         af::timer timer_llgterms = af::timer::start();
         af::array zee_field = af::constant(0, dims_vector(mesh), f64);
         zee_field(af::span, af::span, af::span, 0) = zee;
-        auto demag = LlgTerm(new DemagField(mesh));
-        auto exch = LlgTerm(new ExchangeField(A));
-        auto ext = LlgTerm(new ExternalField(zee_field));
+        auto demag = uptr_Fieldterm(new DemagField(mesh));
+        auto exch = uptr_Fieldterm(new ExchangeField(A));
+        auto ext = uptr_Fieldterm(new ExternalField(zee_field));
         std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
         LLGIntegrator llg(1, {demag, exch, ext});

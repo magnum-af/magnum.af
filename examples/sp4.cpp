@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
-    auto demag = LlgTerm(std::make_unique<DemagField>(mesh, true, true, 0));
-    auto exch = LlgTerm(std::make_unique<ExchangeField>(A));
+    auto demag = uptr_Fieldterm(std::make_unique<DemagField>(mesh, true, true, 0));
+    auto exch = uptr_Fieldterm(std::make_unique<ExchangeField>(A));
     LLGIntegrator Llg(1, {std::move(demag), std::move(exch)});
 
     std::ofstream stream;
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
     zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
-    Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zeeswitch)));
     Llg.alpha = 0.02;
 
     // Switch

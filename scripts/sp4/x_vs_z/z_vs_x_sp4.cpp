@@ -42,11 +42,11 @@ int main(int argc, char** argv) {
         vti_writer_micro(state.m, mesh, (filepath + "z_minit").c_str());
 
         vec_uptr_Fieldterm llgterm;
-        llgterm.push_back(LlgTerm(new DemagField(mesh, true, true, 0)));
+        llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, true, true, 0)));
         if (conv)
-            llgterm.push_back(LlgTerm(new ExchangeField(A)));
+            llgterm.push_back(uptr_Fieldterm(new ExchangeField(A)));
         else
-            llgterm.push_back(LlgTerm(new NonequiExchangeField(ne_mesh, af::constant(A, dims_vector(mesh), f64))));
+            llgterm.push_back(uptr_Fieldterm(new NonequiExchangeField(ne_mesh, af::constant(A, dims_vector(mesh), f64))));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 2) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
+        Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zeeswitch)));
         Llg.alpha = 0.02;
 
         // Switch
@@ -99,11 +99,11 @@ int main(int argc, char** argv) {
         vti_writer_micro(state.m, mesh, (filepath + "x_minit").c_str());
 
         vec_uptr_Fieldterm llgterm;
-        llgterm.push_back(LlgTerm(new DemagField(mesh, true, true, 0)));
+        llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, true, true, 0)));
         if (conv)
-            llgterm.push_back(LlgTerm(new ExchangeField(A)));
+            llgterm.push_back(uptr_Fieldterm(new ExchangeField(A)));
         else
-            llgterm.push_back(LlgTerm(new SparseExchangeField(A, mesh)));
+            llgterm.push_back(uptr_Fieldterm(new SparseExchangeField(A, mesh)));
         LLGIntegrator Llg(1, llgterm);
 
         std::ofstream stream;
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 0) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(LlgTerm(new ExternalField(zeeswitch)));
+        Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zeeswitch)));
         Llg.alpha = 0.02;
 
         // Switch

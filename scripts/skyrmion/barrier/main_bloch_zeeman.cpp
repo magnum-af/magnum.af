@@ -65,10 +65,10 @@ int main(int argc, char** argv) {
     LLGIntegrator Llg;
     // demag?//llgterm.push_back( llgt_ptr (new
     // AtomisticDipoleDipoleField(mesh)));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(LlgTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
-    Llg.llgterms.push_back(LlgTerm(new ExternalField(zee)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDmiField(mesh, material)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zee)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

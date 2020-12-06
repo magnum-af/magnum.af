@@ -72,7 +72,7 @@ int main() {
                                    std::unique_ptr<Fieldterm>(std::make_unique<ExchangeField>(exch))});
 
         // versions using new (should be avoided by using make_unique)
-        LLGIntegrator llg4(alpha, {LlgTerm(new DemagField(dmag)), LlgTerm(new ExchangeField(exch))});
+        LLGIntegrator llg4(alpha, {uptr_Fieldterm(new DemagField(dmag)), uptr_Fieldterm(new ExchangeField(exch))});
         LLGIntegrator llg5(
             alpha, {std::unique_ptr<Fieldterm>(new DemagField(dmag)), std::unique_ptr<Fieldterm>(new ExchangeField(exch))});
 

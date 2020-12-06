@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
 
     // vec_uptr_Fieldterm llgterms;
     Minimizer minimizer;
-    minimizer.llgterms.push_back(LlgTerm(new DemagField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
     // minimizer.h(state);
     // af::print("h", minimizer.h(state));
     vti_writer_micro(state.m, mesh, (filepath + "init").c_str());

@@ -46,10 +46,10 @@ int main(int argc, char** argv) {
         af::timer timer_llgterms = af::timer::start();
         af::array zee_field = af::constant(0, dims_vector(mesh), f64);
         zee_field(af::span, af::span, af::span, 0) = zee;
-        auto demag = LlgTerm(new DemagField(mesh));
-        // auto exch = LlgTerm(new SparseExchangeField(A, mesh));
-        auto exch = LlgTerm(new ExchangeField(A)); // only use with opencl !!!
-        auto ext = LlgTerm(new ExternalField(zee_field));
+        auto demag = uptr_Fieldterm(new DemagField(mesh));
+        // auto exch = uptr_Fieldterm(new SparseExchangeField(A, mesh));
+        auto exch = uptr_Fieldterm(new ExchangeField(A)); // only use with opencl !!!
+        auto ext = uptr_Fieldterm(new ExternalField(zee_field));
         std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
         LBFGS_Minimizer minimizer = LBFGS_Minimizer({demag, exch, ext}, 1e-6, 1000, 0);
         minimizer.of_convergence.open(filepath + "minimizer_convergence.dat" + std::to_string(nz));

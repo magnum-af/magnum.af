@@ -85,12 +85,12 @@ int main(int argc, char** argv) {
         }
 
         // defining interactions
-        auto exch = LlgTerm(new ExchangeField(A));
-        auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
-        auto dmi = LlgTerm(new DmiField(D, {0, 0, -1}));
+        auto exch = uptr_Fieldterm(new ExchangeField(A));
+        auto aniso = uptr_Fieldterm(new UniaxialAnisotropyField(Ku, (std::array<double, 3>){0, 0, 1}));
+        auto dmi = uptr_Fieldterm(new DmiField(D, {0, 0, -1}));
         af::array zee = af::constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee(af::span, af::span, af::span, 2) = Hz;
-        auto external = LlgTerm(new ExternalField(zee));
+        auto external = uptr_Fieldterm(new ExternalField(zee));
 
         // af::print("dmi", dmi->h(state_1));
         // af::print("exch", exch->h(state_1));

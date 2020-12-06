@@ -82,10 +82,10 @@ int main(int argc, char** argv) {
     // Relax
     af::timer timer_llgterms = af::timer::start();
     Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
-    // minimizer.llgterms.push_back( LlgTerm (new DemagField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new ExchangeField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new DmiField(mesh, material)));
-    minimizer.llgterms.push_back(LlgTerm(new UniaxialAnisotropyField(mesh, material)));
+    // minimizer.llgterms.push_back( uptr_Fieldterm (new DemagField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new DmiField(mesh, material)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(mesh, material)));
     std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // obtaining relaxed magnetization
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
     timer t_hys = af::timer::start();
     double rate = hzee_max / quater_steps; //[T/s]
-    minimizer.llgterms.push_back(LlgTerm(new ExternalField(&zee_func)));
+    minimizer.llgterms.push_back(uptr_Fieldterm(new ExternalField(&zee_func)));
     while (state.t < 4 * hzee_max / rate) {
         minimizer.minimize(state);
         calc_mean_m(state, stream, afvalue(minimizer.llgterms[3]->h(state)(0, 0, 0, 0)));

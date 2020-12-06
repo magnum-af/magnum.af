@@ -220,12 +220,12 @@ int main(int argc, char** argv) {
     }
 
     // defining interactions
-    auto demag = LlgTerm(new DemagField(mesh, true, true, 0));
-    auto exch = LlgTerm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
-    auto aniso = LlgTerm(new UniaxialAnisotropyField(Ku, std::array<double, 3>{0, 0, 1}));
+    auto demag = uptr_Fieldterm(new DemagField(mesh, true, true, 0));
+    auto exch = uptr_Fieldterm(new RKKYExchangeField(RKKY_values(RKKY), Exchange_values(A), mesh));
+    auto aniso = uptr_Fieldterm(new UniaxialAnisotropyField(Ku, std::array<double, 3>{0, 0, 1}));
 
-    // NOTE try//auto dmi = LlgTerm (new DmiField(SK_D, {0, 0, -1}));
-    auto dmi = LlgTerm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
+    // NOTE try//auto dmi = uptr_Fieldterm (new DmiField(SK_D, {0, 0, -1}));
+    auto dmi = uptr_Fieldterm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
 
     // af::print("dmi", dmi->h(state_1));
     // af::print("exch", exch->h(state_1));
@@ -240,7 +240,7 @@ int main(int argc, char** argv) {
         double Hz_init = 130e-3 / constants::mu0;
         af::array zee_init = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
         zee_init(af::span, af::span, af::span, 2) = Hz_init;
-        llg.llgterms.push_back(LlgTerm(new ExternalField(zee_init)));
+        llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zee_init)));
 
         state_1.write_vti(filepath + "minit");
         if (int_over_relax) {
@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
             double Hz_current = iHz_current * 1e-3 / constants::mu0;
             af::array zee = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
             zee(af::span, af::span, af::span, 2) = Hz_current;
-            llg.llgterms.push_back(LlgTerm(new ExternalField(zee)));
+            llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(zee)));
             llg.relax(state_1, 1e-10);
             // TODO mean must account for empty layers
             auto mean = spacial_mean_in_region(state_1.m, eval_mean_region);
@@ -337,7 +337,7 @@ int main(int argc, char** argv) {
             field(af::span, af::span, af::span, 2) = H_z;
             return field;
         };
-        llg.llgterms.push_back(LlgTerm(new ExternalField(calc_Hext)));
+        llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(calc_Hext)));
         while (state_1.t < inttime_in_sec) {
             llg.step(state_1);
             if (state_1.steps % 100 == 0) {

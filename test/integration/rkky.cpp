@@ -27,9 +27,9 @@ TEST(RKKY, mumax3test) {
     State state(mesh, Ms, m);
     af::array rkkyvals = af::constant(RKKY / 2., dims_vector(mesh), f64);
     af::array exchvals = af::constant(A, dims_vector(mesh), f64);
-    auto rkky = LlgTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, false));
+    auto rkky = uptr_Fieldterm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, false));
 
-    auto demag = LlgTerm(new DemagField(mesh, false, false, 0));
+    auto demag = uptr_Fieldterm(new DemagField(mesh, false, false, 0));
     LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
 
     std::vector<double> vecE;
