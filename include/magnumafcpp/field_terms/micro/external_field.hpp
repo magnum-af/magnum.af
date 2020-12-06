@@ -8,11 +8,11 @@ namespace magnumafcpp {
 
 class ExternalField : public FieldTerm {
   public:
-    ExternalField(af::array zee_in);                           ///< Constant Zeeman field.
-    ExternalField(af::array (*callback_func_in)(State state)); ///< Callback function for e.g. time dependent external
-                                                               ///< field
-    ExternalField(std::function<af::array(State)>);
-    ExternalField(long int zee_in_addr); ///< For wrapping only
+    explicit ExternalField(af::array zee_in);                           ///< Constant Zeeman field.
+    explicit ExternalField(af::array (*callback_func_in)(State state)); ///< Callback function for e.g. time dependent
+                                                                        ///< external field
+    explicit ExternalField(std::function<af::array(State)>);
+    explicit ExternalField(long int zee_in_addr); ///< For wrapping only
 
     virtual af::array h(const State& state) const override; // Field contribution
 
@@ -26,9 +26,9 @@ class ExternalField : public FieldTerm {
   private:
     af::array zee_field;
     af::array (*callback_func)(State state);
-    const bool callback{false};
+    bool callback{false};
     std::function<af::array(State)> lamda_callback;
-    const bool is_lamda{false};
+    bool is_lamda{false};
     // double af_time{0.};
 };
 

@@ -7,7 +7,7 @@ namespace magnumafcpp {
 
 class AtomisticExchangeField : public AtomTerm {
   public:
-    AtomisticExchangeField(double J_atom);
+    explicit AtomisticExchangeField(double J_atom);
     virtual af::array h(const State& state) const override;
 
   private:

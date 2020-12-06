@@ -24,7 +24,7 @@ class State {
 
     void set_m(long int aptr); ///< For wrapping only: Setting member af::array
                                ///< m to values obtained from wrapped af.array
-    long int get_m_addr();
+    long int get_m_addr() const;
     Mesh mesh{0, 0, 0, 0, 0, 0};
     double t{0.};       // time
     af::array m;        //!< magnetic field configuration
@@ -36,10 +36,10 @@ class State {
     af::array get_Ms_field() const;
     af::array get_Ms_field_in_vector_dims() const; //!< return Ms tiled to dims [nx, ny, nz, 3].
     void set_Ms_field(long int afarray_ptr);       // for wrapping only
-    long int wrapping_get_Ms_field();
+    long int wrapping_get_Ms_field() const;
 
     void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);
-    void check_m_norm(double tol = 1e-6);
+    void check_m_norm(double tol = 1e-6) const;
     unsigned long long steps{0};
     void Normalize(); ///< normalize the magnetization to 1
     // af::array m_out;
@@ -50,18 +50,18 @@ class State {
     void _vti_reader(std::string inputname);
 
     /// Get the i'th component of <m>: 0 == mx, 1 == my, 2 == mz
-    double meani(const int i);
+    double meani(const int i) const;
     /// Returns {<mx>, <my>, <mz>}, the average magnetization in each spacial direction
     std::array<double, 3> mean_m() const;
     af::array mean_m_as_afarray() const;
     /// Returns <mx>, i.e. average magnetisation in x-direction
-    double mean_mx() { return mean_m()[0]; }
+    double mean_mx() const { return mean_m()[0]; }
     /// Returns <my>, i.e. average magnetisation in y-direction
-    double mean_my() { return mean_m()[1]; }
+    double mean_my() const { return mean_m()[1]; }
     /// Returns <mz>, i.e. average magnetisation in z-direction
-    double mean_mz() { return mean_m()[2]; }
+    double mean_mz() const { return mean_m()[2]; }
 
-    unsigned int get_n_cells_() { return n_cells_; };
+    unsigned int get_n_cells_() const { return n_cells_; };
 
     bool verbose{true};
     bool mute_warning{false};

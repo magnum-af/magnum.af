@@ -164,7 +164,7 @@ void correct_edges(af::array& out, const af::array& in, Mesh mesh) {
 // confinement in ultrathin film nanostructures ... dm/dn = 1/xi (n_DM x
 // n_surface) x m ; xi = 2 A/D here: dm/dn = 1/xi (D_axis x n_surface) x m ; xi
 // = 2 A/D
-void DmiField::apply_boundary_condition(af::array& hfield, const State& state) {
+void DmiField::apply_boundary_condition(af::array& hfield, const State& state) const {
     // DM Vector:
     const af::array n_DM(1, 1, 1, 3, this->D_axis.data());
     double A = 15e-12; // TODO set exchange A as class member and pass in constructor

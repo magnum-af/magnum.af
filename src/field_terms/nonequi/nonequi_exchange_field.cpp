@@ -5,21 +5,6 @@
 
 namespace magnumafcpp {
 
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose, bool COO)
-    : NonequiTerm(nemesh),
-      matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
-
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose,
-                                           bool COO)
-    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
-                                    : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
-
-// For wrapping only: constructor version taking A_exchange_field
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
-    : NonequiTerm(nemesh),
-      matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
-               : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
-
 af::array NonequiExchangeField::h(const State& state) const {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
@@ -37,11 +22,11 @@ af::array NonequiExchangeField::h(const State& state) const {
 }
 
 // Get inner index (index per matrix column)
-unsigned NonequiExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequiMesh& mesh) {
+unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequiMesh& mesh) {
     return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
-af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
+af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -162,8 +147,7 @@ af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange, const N
 
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
-af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh,
-                                                const bool verbose) {
+af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -337,7 +321,7 @@ af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_fiel
     return matr_CSR;
 }
 
-af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
+af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -448,14 +432,14 @@ af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const N
     if (verbose)
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(), static_cast<double>(af::sparseGetNNZ(matr)) / static_cast<double>(matr.elements()));
+               Info(), t.stop(),
+               static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
     return result;
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
-af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh,
-                                                const bool verbose) {
+af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -637,4 +621,20 @@ af::array NonequiExchangeField::calc_CSR_matrix(const af::array& A_exchange_fiel
     }
     return result;
 }
+
+NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose, bool COO)
+    : NonequiTerm(nemesh),
+      matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
+
+NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose,
+                                           bool COO)
+    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
+                                    : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
+
+// For wrapping only: constructor version taking A_exchange_field
+NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
+    : NonequiTerm(nemesh),
+      matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
+               : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
+
 } // namespace magnumafcpp

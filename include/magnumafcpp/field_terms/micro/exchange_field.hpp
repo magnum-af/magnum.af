@@ -7,9 +7,9 @@ namespace magnumafcpp {
 
 class ExchangeField : public MicroTerm {
   public:
-    ExchangeField(double A);
-    ExchangeField(af::array A_field);
-    ExchangeField(long int A_field_ptr);
+    explicit ExchangeField(double A);
+    explicit ExchangeField(af::array A_field);
+    explicit ExchangeField(long int A_field_ptr);
     virtual af::array h(const State& state) const override;
     using MicroTerm::E;
     virtual double E(const State& state, const af::array& h) const override;

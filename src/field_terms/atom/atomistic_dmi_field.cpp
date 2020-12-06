@@ -8,11 +8,10 @@ std::array<double, 3> get_normalized_vector(std::array<double, 3> vector) {
     return std::array<double, 3>{vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
 
-AtomisticDmiField::AtomisticDmiField(const double D_atom, std::array<double, 3> D_atom_axis)
+AtomisticDmiField::AtomisticDmiField(double D_atom, std::array<double, 3> D_atom_axis)
     : D_atom(D_atom), D_atom_axis(get_normalized_vector(D_atom_axis)) {}
 
-AtomisticDmiField::AtomisticDmiField(const double D_atom, double D_atom_axis_x, double D_atom_axis_y,
-                                     double D_atom_axis_z)
+AtomisticDmiField::AtomisticDmiField(double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z)
     : D_atom(D_atom),
       D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
 

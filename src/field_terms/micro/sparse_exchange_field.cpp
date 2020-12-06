@@ -5,16 +5,6 @@
 
 namespace magnumafcpp {
 
-SparseExchangeField::SparseExchangeField(double A_exchange, Mesh mesh, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose) : calc_CSR_matrix(A_exchange, mesh, verbose)) {}
-
-SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh mesh, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose) : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
-
-// For wrapping only: constructor version taking A_exchange_field
-SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
-    : matr(calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), mesh, verbose)) {}
-
 af::array SparseExchangeField::h(const State& state) const {
     af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
@@ -32,11 +22,11 @@ af::array SparseExchangeField::h(const State& state) const {
 }
 
 // Get inner index (index per matrix column)
-unsigned SparseExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
+unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
     return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
-af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
+af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
     af::timer t;
     if (verbose)
         af::timer::start();
@@ -117,7 +107,7 @@ af::array SparseExchangeField::calc_COO_matrix(const double A_exchange, const Me
     return matr_CSR;
 }
 
-af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
+af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
     af::timer t;
     if (verbose)
         af::timer::start();
@@ -191,14 +181,14 @@ af::array SparseExchangeField::calc_CSR_matrix(const double A_exchange, const Me
     if (verbose)
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(), static_cast<double>(af::sparseGetNNZ(matr)) / static_cast<double>(matr.elements()));
+               Info(), t.stop(),
+               static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
     return result;
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
-af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh,
-                                               const bool verbose) {
+af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
     printf("%s SparseExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -312,8 +302,7 @@ af::array SparseExchangeField::calc_CSR_matrix(const af::array& A_exchange_field
 
 // Assembly of COO sparse matrix for spacially varying exchange energy
 // A_exchange_field
-af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh,
-                                               const bool verbose) {
+af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
     printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -426,4 +415,15 @@ af::array SparseExchangeField::calc_COO_matrix(const af::array& A_exchange_field
     }
     return matr_CSR;
 }
+
+SparseExchangeField::SparseExchangeField(double A_exchange, Mesh mesh, bool verbose, bool COO)
+    : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose) : calc_CSR_matrix(A_exchange, mesh, verbose)) {}
+
+SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh mesh, bool verbose, bool COO)
+    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose) : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
+
+// For wrapping only: constructor version taking A_exchange_field
+SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
+    : matr(calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), mesh, verbose)) {}
+
 } // namespace magnumafcpp

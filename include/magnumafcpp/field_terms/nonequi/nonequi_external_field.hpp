@@ -33,7 +33,7 @@ class NonequiExternalField : public NonequiTerm {
   private:
     af::array external_field;
     std::function<af::array(State)> callback_function;
-    const bool callback_is_defined{false};
+    bool callback_is_defined{false};
 };
 
 } // namespace magnumafcpp

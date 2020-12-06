@@ -32,14 +32,15 @@ af::array RKKYExchangeField::h(const State& state) const {
 }
 
 // Get inner index (index per matrix column)
-int RKKYExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
+int RKKYExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) const {
     return static_cast<int>(i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im)));
 }
 
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const af::array& A_exchange_field,
-                                             const Mesh& mesh, const af::array& rkky_indices, const bool verbose) {
+                                             const Mesh& mesh, const af::array& rkky_indices,
+                                             const bool verbose) const {
     printf("%s RKKYExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -196,7 +197,8 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field,
-                                             const Mesh& mesh, const af::array& rkky_indices, const bool verbose) {
+                                             const Mesh& mesh, const af::array& rkky_indices,
+                                             const bool verbose) const {
     std::cout << Info() << " Starting RKKYExchangeField sparse matrix setup" << std::endl;
     af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;

@@ -16,7 +16,7 @@ class FieldTerm {
     /// Calculating the micromagnetic energy \f$E\f$.
     // virtual double E(const State& state) const = 0;
     double E(const State& state) const { return E(state, h(state)); };
-    auto h_and_E(const State& state) {
+    auto h_and_E(const State& state) const {
         const auto htmp = h(state);
         return std::make_pair(htmp, E(state, htmp));
     };
@@ -24,7 +24,7 @@ class FieldTerm {
     double get_cpu_time() const { return accumulated_time; };
 
     /// For wrapping only: pointer to h()
-    virtual long int h_ptr(const State& state) { return (long int)(new af::array(h(state)))->get(); }
+    virtual long int h_ptr(const State& state) const { return (long int)(new af::array(h(state)))->get(); }
 
   protected:
     mutable double accumulated_time{0.};

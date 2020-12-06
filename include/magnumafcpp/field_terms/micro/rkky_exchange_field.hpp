@@ -43,13 +43,14 @@ class RKKYExchangeField : public MicroTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    const af::array matr; // TODO private
+    af::array get_matr() const { return matr; };
+
   private:
+    af::array matr;
     af::array calc_CSR_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&,
-                              const af::array& rkky_indices, const bool verbose);
+                              const af::array& rkky_indices, const bool verbose) const;
     af::array calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&,
-                              const af::array& rkky_indices, const bool verbose);
-    int findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh);
-    double af_time{0};
+                              const af::array& rkky_indices, const bool verbose) const;
+    int findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) const;
 };
 } // namespace magnumafcpp

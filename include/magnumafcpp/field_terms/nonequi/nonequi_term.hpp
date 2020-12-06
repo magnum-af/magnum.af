@@ -19,7 +19,7 @@ class NonequiTerm : public FieldTerm {
     }
 
   protected:
-    const NonequiMesh nemesh;
+    NonequiMesh nemesh;
 
   private:
     double integral_nonequimesh(const af::array& h_times_m,

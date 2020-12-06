@@ -28,15 +28,10 @@ class NonequiExchangeField : public NonequiTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    af::array matr;
+    af::array get_matr() const { return matr; };
 
   private:
-    af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh&, const bool verbose);
-    af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh&, const bool verbose);
-    af::array calc_COO_matrix(const double A_exchange, const NonequiMesh&, const bool verbose);
-    af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh&, const bool verbose);
-    unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequiMesh& mesh);
-    double af_time{0};
+    af::array matr;
 };
 
 } // namespace magnumafcpp

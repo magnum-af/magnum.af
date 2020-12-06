@@ -17,10 +17,9 @@ class DmiField : public MicroTerm {
     virtual af::array h(const State& state) const override;
 
   private:
-    double cpu_time{0.};
-    const double D{0};
-    const af::array D_constants;
-    const std::array<double, 3> D_axis;
-    void apply_boundary_condition(af::array& hfield, const State& state);
+    double D{0};
+    af::array D_constants;
+    std::array<double, 3> D_axis;
+    void apply_boundary_condition(af::array& hfield, const State& state) const;
 };
 } // namespace magnumafcpp

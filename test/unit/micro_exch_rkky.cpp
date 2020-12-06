@@ -15,7 +15,8 @@ TEST(micro_exch_sparse, COO_CSR_comparison) {
         auto COO = RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, af::array(), false, true);
         auto CSR = RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, af::array(), false, false);
 
-        af::array m = af::mean(af::matmul(COO.matr - CSR.matr, af::flat(af::constant(1., nx, ny, nz, 3, f64))));
+        af::array m =
+            af::mean(af::matmul(COO.get_matr() - CSR.get_matr(), af::flat(af::constant(1., nx, ny, nz, 3, f64))));
         EXPECT_EQ(m.scalar<double>(), 0);
     }
 }

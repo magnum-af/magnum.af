@@ -81,7 +81,7 @@ std::array<double, 3> NonequiUniaxialAnisotropyField::get_normalized_vector(std:
     return std::array<double, 3>{vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
 
-double NonequiUniaxialAnisotropyField::get_ku1_axis(int i) { return Ku1_axis[i]; }
+double NonequiUniaxialAnisotropyField::get_ku1_axis(int i) const { return Ku1_axis[i]; }
 
 long int NonequiUniaxialAnisotropyField::get_Ku1_field() const {
     af::array* a = new af::array(Ku1_field);
