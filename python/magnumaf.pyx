@@ -63,9 +63,11 @@ from magnumaf_decl cimport double_array3
 from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
 # wrapping std::move
+# runs with cython 0.29.14 (ubuntu 20.04 distro version), not working with cython 0.26 (ubuntu 18.04)
+# with cython 0.29.21+ we could even only use:
+# from libcpp.utility cimport move
 # we move constructed std::vector<unique_ptr<Base>> instances into the wrapped ctors
 # not moving would cause "error: static assertion failed: result type must be constructible from value type of input range"
-# with cython upgrade we could instead use: from libcpp.utility cimport move
 # from https://github.com/cython/cython/issues/2169
 cdef extern from * namespace "polyfill":
     """
