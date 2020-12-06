@@ -25,6 +25,25 @@ class LLGTerm {
     mutable double accumulated_time{0.};
 };
 
+// helper function to create unique_ptrs
+template <typename T> std::unique_ptr<LLGTerm> cp_to_uptr(const T& t) { return std::make_unique<T>(t); }
+
+/// returns std::vector<std::unique_ptr<LLGTerm>> from args
+/// args called with std::move() are moved, copied elsewise
+template <typename... Args> auto to_vec(Args... args) {
+    std::vector<std::unique_ptr<LLGTerm>> v;
+    (v.push_back(std::unique_ptr<LLGTerm>(std::make_unique<Args>(args))), ...);
+    return v;
+}
+
+// Always moves arguments (except when arg is const, then copies)
+template <typename T> std::unique_ptr<LLGTerm> to_uptr(T t) { return std::make_unique<T>(t); }
+template <typename... Args> auto mv_to_vec(Args&&... args) {
+    std::vector<std::unique_ptr<LLGTerm>> v;
+    (v.push_back(to_uptr(std::move(args))), ...); // works and moves as well
+    return v;
+}
+
 // Aliases used to initialize objects wich inherit from this class
 using LlgTerm = std::unique_ptr<LLGTerm>;
 using LlgTerms = std::vector<LlgTerm>;
