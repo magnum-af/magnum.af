@@ -1,8 +1,8 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "double_or_array.hpp"
 #include "field_terms/micro/micro_term.hpp"
+#include "state.hpp"
 #include "unit_vector_or_array.hpp"
 #include <array>
 
@@ -19,7 +19,6 @@ class CubicAnisotropyField : public MicroTerm {
                          double c2z);
     CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr,
                          long int c2_array_ptr);
-
 
     virtual af::array h(const State& state) const override;
     using MicroTerm::E;

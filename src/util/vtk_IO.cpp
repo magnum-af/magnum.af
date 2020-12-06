@@ -313,8 +313,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 }
 
 // wrapped function
-void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname,
-                const bool verbose) {
+void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname, const bool verbose) {
     vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, outputname, verbose);
 }
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "field_terms/micro/micro_term.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 

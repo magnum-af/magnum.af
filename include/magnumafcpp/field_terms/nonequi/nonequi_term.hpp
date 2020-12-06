@@ -1,6 +1,6 @@
 #pragma once
-#include "field_term.hpp"
 #include "arrayfire.h"
+#include "field_term.hpp"
 #include "nonequispaced_mesh.hpp"
 
 namespace magnumafcpp {
@@ -14,7 +14,9 @@ class NonequiTerm : public FieldTerm {
     /// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where
     /// M = Ms * m
     using FieldTerm::E;
-    virtual double E(const State& state, const af::array& h) const override { return integral_nonequimesh(h * state.m, state); }
+    virtual double E(const State& state, const af::array& h) const override {
+        return integral_nonequimesh(h * state.m, state);
+    }
 
   protected:
     const NonequiMesh nemesh;

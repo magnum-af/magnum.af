@@ -1,6 +1,6 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
+#include "state.hpp"
 #include "stochastic_integrator.hpp"
 
 namespace magnumafcpp {

@@ -1,9 +1,9 @@
 #include "lbfgs_minimizer.hpp"
-#include "util/func.hpp"
-#include "field_terms/field_term.hpp"
-#include "util/misc.hpp"
-#include "state.hpp"
 #include "arrayfire.h"
+#include "field_terms/field_term.hpp"
+#include "state.hpp"
+#include "util/func.hpp"
+#include "util/misc.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <list>

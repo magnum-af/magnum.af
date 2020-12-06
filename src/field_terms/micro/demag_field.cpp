@@ -96,14 +96,16 @@ af::array DemagField::h(const State& state) const {
             mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
     } else {
         if (state.Ms_field.isempty())
-            mfft = af::fftR2C<3>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
+            mfft = af::fftR2C<3>(state.Ms * state.m,
+                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
         else
             mfft = af::fftR2C<3>(state.Ms_field * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
     }
 
     // Pointwise product
-    af::array hfft = af::array(nx_exp(state.mesh.nx) / 2 + 1, ny_exp(state.mesh.ny), nz_exp(state.mesh.nz), 3, Nfft.type());
+    af::array hfft =
+        af::array(nx_exp(state.mesh.nx) / 2 + 1, ny_exp(state.mesh.ny), nz_exp(state.mesh.nz), 3, Nfft.type());
     hfft(af::span, af::span, af::span, 0) =
         Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
         Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +

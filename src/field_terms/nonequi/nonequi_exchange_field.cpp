@@ -12,11 +12,10 @@ NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose,
                                            bool COO)
     : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
-                                        : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
+                                    : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose,
-                                           bool COO)
+NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
                : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
@@ -38,13 +37,11 @@ af::array NonequiExchangeField::h(const State& state) const {
 }
 
 // Get inner index (index per matrix column)
-unsigned NonequiExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im,
-                                      const NonequiMesh& mesh) {
+unsigned NonequiExchangeField::findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const NonequiMesh& mesh) {
     return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
-af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh,
-                                                const bool verbose) {
+af::array NonequiExchangeField::calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;
@@ -340,8 +337,7 @@ af::array NonequiExchangeField::calc_COO_matrix(const af::array& A_exchange_fiel
     return matr_CSR;
 }
 
-af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh,
-                                                const bool verbose) {
+af::array NonequiExchangeField::calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t;

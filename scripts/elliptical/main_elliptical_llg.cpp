@@ -88,10 +88,10 @@ int main(int argc, char** argv) {
     stream << "# t	<mx>" << std::endl;
 
     timer t_hys = af::timer::start();
-    double rate = 0.34e6;                                          //[T/s]
-    double hzee_max = 0.25;                                        //[T]
+    double rate = 0.34e6;                                                 //[T/s]
+    double hzee_max = 0.25;                                               //[T]
     Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in
-                                                                   // T/s
+                                                                          // T/s
     while (state.t < 4 * hzee_max / rate) {
         Llg.step(state);
         state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));

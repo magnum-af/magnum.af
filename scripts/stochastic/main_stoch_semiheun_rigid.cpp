@@ -14,7 +14,6 @@ using namespace af;
 // TODO//compilererror//using namespace std::complex_literals;
 using Faddeeva::erfi;
 
-
 // Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1
 //)/(int(exp(x * z^2)) dz from 0 to 1)

@@ -33,8 +33,7 @@ class UnitVectorOrArray {
         if (scalar_vector) {
             af::array vector_as_array = af::array(1, 1, 1, 3, scalar_vector.value().data());
             return af::tile(vector_as_array.as(type), dims.dims[0], dims.dims[1], dims.dims[2], 1);
-        }
-        else {
+        } else {
             if (dims != array_vector.value().dims()) {
             }
             return array_vector.value().as(type);

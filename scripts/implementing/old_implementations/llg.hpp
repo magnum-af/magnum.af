@@ -1,10 +1,10 @@
 #ifndef LLG_H
 #define LLG_H
-#include "util/func.hpp"
-#include "field_terms/field_term.hpp"
-#include "state.hpp"
 #include "arrayfire.h"
 #include "controller.hpp"
+#include "field_terms/field_term.hpp"
+#include "state.hpp"
+#include "util/func.hpp"
 #include <initializer_list>
 #include <memory>
 #include <vector>

@@ -1,5 +1,5 @@
-#include "nonequi/nonequi_exchange_field.hpp"
 #include "mesh.hpp"
+#include "nonequi/nonequi_exchange_field.hpp"
 #include "util/version.hpp"
 #include <gtest/gtest.h>
 

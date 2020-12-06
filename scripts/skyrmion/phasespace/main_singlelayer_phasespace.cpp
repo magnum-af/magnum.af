@@ -9,10 +9,10 @@
 #include <string>
 //#include "micro/demag_field.hpp"
 //#include "micro/exchange_field.hpp"
-#include "atom/atomistic_uniaxial_anisotropy_field.hpp"
 #include "atom/atomistic_dipole_dipole_field.hpp"
 #include "atom/atomistic_dmi_field.hpp"
 #include "atom/atomistic_exchange_field.hpp"
+#include "atom/atomistic_uniaxial_anisotropy_field.hpp"
 #include "solvers/string_method.hpp"
 #include "vtk_writer.hpp"
 

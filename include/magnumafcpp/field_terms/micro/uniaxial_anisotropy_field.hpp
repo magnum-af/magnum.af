@@ -1,7 +1,7 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "field_terms/micro/micro_term.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 
@@ -18,7 +18,7 @@ class UniaxialAnisotropyField : public MicroTerm {
     UniaxialAnisotropyField(double Ku1,
                             long int Ku1_axis_field_ptr); //!< wrapping only
 
-    virtual af::array h(const State& state) const override;                        // Field contribution
+    virtual af::array h(const State& state) const override; // Field contribution
 
     double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
@@ -27,9 +27,9 @@ class UniaxialAnisotropyField : public MicroTerm {
                          //!< [nx, ny, nz, 3];
     long int get_Ku1_field();
 
-    std::array<double, 3> Ku1_axis = {0, 0, 0};       //!< Anisotropy axis
-    af::array Ku1_axis_field;                         //!< Spacially varying anisotropy axis
-    double get_ku1_axis(int i);                       // For wrapping only
+    std::array<double, 3> Ku1_axis = {0, 0, 0}; //!< Anisotropy axis
+    af::array Ku1_axis_field;                   //!< Spacially varying anisotropy axis
+    double get_ku1_axis(int i);                 // For wrapping only
 
   private:
 };

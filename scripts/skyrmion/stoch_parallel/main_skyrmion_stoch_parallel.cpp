@@ -7,7 +7,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 void calcm(State state, std::ostream& myfile, double get_avg) {
     myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t" << get_avg << std::endl;
     // myfile << std::setw(12) << state.t << "\t" <<meani(state.m, 0)<< "\t"

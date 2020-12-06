@@ -5,7 +5,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 int main(int argc, char** argv) {
 
     std::cout << "argc = " << argc << std::endl;

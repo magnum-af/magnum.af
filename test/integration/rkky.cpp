@@ -1,7 +1,7 @@
 // RKKY example from https://mumax.github.io/examples.html
-#include "integrators/llg_integrator.hpp"
 #include "field_terms/micro/demag_field.hpp"
 #include "field_terms/micro/rkky_exchange_field.hpp"
+#include "integrators/llg_integrator.hpp"
 #include <algorithm>
 #include <cmath>
 #include <gtest/gtest.h>

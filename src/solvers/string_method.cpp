@@ -19,7 +19,8 @@ StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_in
         if (state.Ms_field.isempty()) {
             images.push_back(State(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), dims_vector(state.mesh), f64)));
         } else {
-            images.push_back(State(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), dims_vector(state.mesh), f64)));
+            images.push_back(
+                State(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), dims_vector(state.mesh), f64)));
         }
     }
     for (int i = 0; i < n_interp; i++) {
@@ -164,8 +165,9 @@ void write_plotfile(const std::string filepath) {
     stream.close();
 }
 
-double StringMethod::run(const std::string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff,
-                   const int string_steps, const int every_string_to_vti, const bool verbose) {
+double StringMethod::run(const std::string filepath, const double string_abort_rel_diff,
+                         const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti,
+                         const bool verbose) {
     write_plotfile(filepath);
 
     this->write_vti(filepath + "init_string");

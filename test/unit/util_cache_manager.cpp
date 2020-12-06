@@ -38,7 +38,6 @@ TEST(util_cache_manager, read_array) {
         // check if read arrays are equal to initial arrays:
         EXPECT_EQ(af::sum(a != a_in).scalar<unsigned>(), 0);
         EXPECT_EQ(af::sum(b != b_in).scalar<unsigned>(), 0);
-
     }
     EXPECT_TRUE(fs::exists(cm_path));
 }

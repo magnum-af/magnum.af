@@ -52,7 +52,7 @@ af::array AtomisticDipoleDipoleField::h(const State& state) const {
         accumulated_time += af::timer::stop(timer_demagsolve);
         return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1),
                                   af::seq(0, ny_exp(state.mesh.ny) / 2 - 1)); // TODO consider p density, then we
-                                                                          // have to multip at m before fft
+                                                                              // have to multip at m before fft
     } else {
         h_field = af::fftC2R<3>(hfft);
         if (state.afsync)

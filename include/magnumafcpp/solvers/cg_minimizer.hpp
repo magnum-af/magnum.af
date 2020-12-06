@@ -1,7 +1,7 @@
 #pragma once
+#include "arrayfire.h"
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
-#include "arrayfire.h"
 
 namespace magnumafcpp {
 
@@ -16,7 +16,7 @@ namespace magnumafcpp {
 class CG_Minimizer {
   public:
     vec_uptr_FieldTerm llgterms_{};
-    void Minimize(State&); // Minimization routine
+    void Minimize(State&);                                      // Minimization routine
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
   private:
     af::array Heff(const State& m); ///< Effective Field

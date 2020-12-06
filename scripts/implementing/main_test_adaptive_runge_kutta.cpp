@@ -7,7 +7,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 void calcm(State state, std::ostream& myfile);
 
 af::array givem(const double t, const af::array& m) { return t * sqrt(m); }

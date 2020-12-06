@@ -5,7 +5,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 bool compare(double a, double b) {
     // std::cout << "COM:"<< a <<", " << b <<",
     // "<<fabs(a-b)/fabs(a+b)<<std::endl;

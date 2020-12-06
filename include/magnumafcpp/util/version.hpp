@@ -45,13 +45,9 @@ struct Version {
         }
     }
 
-    bool operator>(const Version& other) {
-        return !(*this <= other);
-    }
+    bool operator>(const Version& other) { return !(*this <= other); }
 
-    bool operator>=(const Version& other) {
-        return !(*this < other);
-    }
+    bool operator>=(const Version& other) { return !(*this < other); }
 
     friend std::ostream& operator<<(std::ostream& stream, const Version& ver) {
         stream << ver.major_;

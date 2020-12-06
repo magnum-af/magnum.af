@@ -5,7 +5,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 void calcm(State state, std::ostream& myfile);
 
 int main(int argc, char** argv) {

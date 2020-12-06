@@ -5,7 +5,6 @@ using namespace magnumafcpp;
 
 using namespace af;
 
-
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) << "\t"

@@ -1,7 +1,7 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "field_terms/nonequi/nonequi_term.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 
@@ -10,8 +10,8 @@ class NonequiDemagField : public NonequiTerm {
     NonequiDemagField(NonequiMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
     const af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
 
-    virtual af::array h(const State& state) const override;           // Field contribution
-    void print_Nfft();                         // For wrapping
+    virtual af::array h(const State& state) const override; // Field contribution
+    void print_Nfft();                                      // For wrapping
 
   private:
     double cpu_time{0.};

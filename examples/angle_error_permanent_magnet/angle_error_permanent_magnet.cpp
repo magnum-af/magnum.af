@@ -67,17 +67,15 @@ int main(int argc, char** argv) {
     state.write_vti(filepath + "minit");
 
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
-                                              Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
+                                                     Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
 
     unsigned current_step = 0;
     // Defining H_zee via lamdas
     auto zee_func = [&current_step, hzee_max](State state) -> af::array {
-        const double hx =
-            hzee_max / constants::mu0 * std::cos(current_step * M_PI / 180.);
-        const double hy =
-            hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
+        const double hx = hzee_max / constants::mu0 * std::cos(current_step * M_PI / 180.);
+        const double hy = hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
 
         af::array zee = af::constant(0.0, dims_vector(state.mesh), f64);
         zee(af::span, af::span, af::span, 0) = hx;
@@ -104,10 +102,8 @@ int main(int argc, char** argv) {
         abs_my_pin.push_back(std::abs(my_z0));
         abs_my_ref.push_back(std::abs(my_z1));
 
-        std::cout << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1
-                  << std::endl;
-        stream << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1
-               << std::endl;
+        std::cout << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1 << std::endl;
+        stream << i << "\t" << Hx_component << "\t" << my_z0 << "\t" << my_z1 << std::endl;
     }
     stream.close();
 
@@ -153,8 +149,7 @@ int main(int argc, char** argv) {
     stream << "replot" << std::endl;
     stream.close();
 
-    int syscall =
-        std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
+    int syscall = std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
     if (syscall != 0) {
         std::cout << "syscall plotting with gnuplot failed" << std::endl;
     }

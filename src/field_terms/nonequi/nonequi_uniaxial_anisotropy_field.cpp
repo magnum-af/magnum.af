@@ -38,7 +38,6 @@ NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemes
 
 af::array NonequiUniaxialAnisotropyField::h(const State& state) const { return calc_heff(state); }
 
-
 af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
     af::timer timer_anisotropy = af::timer::start();
 

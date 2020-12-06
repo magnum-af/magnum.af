@@ -8,8 +8,8 @@ struct Mesh {
     Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double dz)
         : nx(nx), ny(ny), nz(nz), dx(dx), dy(dy), dz(dz) {}
 
-    unsigned nx, ny, nz;             // Number of cells in x, y, z
-    double dx, dy, dz;               // Distance between cells
+    unsigned nx, ny, nz; // Number of cells in x, y, z
+    double dx, dy, dz;   // Distance between cells
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {

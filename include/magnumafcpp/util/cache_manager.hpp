@@ -15,7 +15,6 @@ class CacheManager {
     std::optional<af::array> get_array_if_existent(const std::string& filename) const;
     void write_array(const af::array& a, const std::string& filename, const std::string& key = "") const;
 
-
   private:
     const bool verbose{true};
     const std::filesystem::path cache_folder;

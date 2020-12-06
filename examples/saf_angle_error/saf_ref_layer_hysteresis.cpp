@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     state.write_vti(filepath + "minit");
 
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
-                                              Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
+                                                     Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
 

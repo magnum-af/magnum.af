@@ -1,15 +1,14 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "field_terms/nonequi/nonequi_term.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 
 class NonequiUniaxialAnisotropyField : public NonequiTerm {
   public:
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1, std::array<double, 3> Ku1_axis = {0, 0, 1});
-    NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field,
-                                   std::array<double, 3> Ku1_axis = {0, 0, 1});
+    NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field, std::array<double, 3> Ku1_axis = {0, 0, 1});
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, af::array Ku1_field, af::array Ku1_axis_field);
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1, double Ku1_axis_0, double Ku1_axis_1,
                                    double Ku1_axis_2);
@@ -20,8 +19,8 @@ class NonequiUniaxialAnisotropyField : public NonequiTerm {
     NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                    long int Ku1_axis_field_ptr); //!< wrapping only
 
-    virtual af::array h(const State& state) const override;                        // Field contribution
-                                 //!< [J/m^3] defined at each node
+    virtual af::array h(const State& state) const override; // Field contribution
+                                                            //!< [J/m^3] defined at each node
     long int get_Ku1_field() const;
 
     double Ku1{0};              //!< [J/m^3]  Uniaxial Anisotropy

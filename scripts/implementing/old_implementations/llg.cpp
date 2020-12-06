@@ -270,7 +270,7 @@ array LLG::step(State& state) {
         return normalize(mtemp);
     else
         return (normalize_handle_zero_vectors(mtemp)); // Normalized array where all initial values == 0 are set
-                                                        // to 0
+                                                       // to 0
     // return mtemp;
 
     // TODO

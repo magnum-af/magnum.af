@@ -1,7 +1,7 @@
 #pragma once
-#include "state.hpp"
 #include "arrayfire.h"
 #include "controller.hpp"
+#include "state.hpp"
 #include <stdio.h>
 #include <string>
 

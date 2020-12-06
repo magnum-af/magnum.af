@@ -1,6 +1,6 @@
 #pragma once
-#include "field_term.hpp"
 #include "arrayfire.h"
+#include "field_term.hpp"
 namespace magnumafcpp {
 
 class AtomTerm : public FieldTerm {
