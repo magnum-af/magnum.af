@@ -27,21 +27,21 @@ class Stochastic_Integrator {
   protected:
     af::array Heun(const State&);
     af::array SemiImplicitHeun(const State&);
-    af::array detRK4(const State&);
+    af::array detRK4(const State&) const;
 
-    unsigned long int calls{0};
-    unsigned long int fdmdt_calls{0};
-    unsigned long int stochfdmdt_calls{0};
-    double timer{0.};
+    mutable unsigned long int calls{0};
+    mutable unsigned long int fdmdt_calls{0};
+    mutable unsigned long int stochfdmdt_calls{0};
+    mutable double timer{0.};
 
   private:
-    virtual af::array detfdmdt(const State&) = 0;
-    virtual af::array stochfdmdt(const State&, const af::array& h_th) = 0;
+    virtual af::array detfdmdt(const State&) const = 0;
+    virtual af::array stochfdmdt(const State&, const af::array& h_th) const = 0;
 
     af::array m_prev;
     af::array h_th_prev{};
 
-    const int mode; // Integration mode
+    int mode; // Integration mode // could be const
 
     af::randomEngine rand_engine;
 };

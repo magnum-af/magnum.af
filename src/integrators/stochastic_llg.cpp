@@ -14,7 +14,7 @@ double Stochastic_LLG::E(const State& state) {
     return solution;
 }
 
-af::array Stochastic_LLG::fheff(const State& state) {
+af::array Stochastic_LLG::fheff(const State& state) const {
     af::array solution = fieldterms[0]->h(state);
     for (unsigned i = 1; i < fieldterms.size(); ++i) {
         solution += fieldterms[i]->h(state);
@@ -22,7 +22,7 @@ af::array Stochastic_LLG::fheff(const State& state) {
     return solution;
 }
 
-af::array Stochastic_LLG::detfdmdt(const State& state) {
+af::array Stochastic_LLG::detfdmdt(const State& state) const {
     fdmdt_calls++;
     const af::array heff = fheff(state);
     const af::array cross_temp = cross4(state.m, heff);
@@ -30,7 +30,7 @@ af::array Stochastic_LLG::detfdmdt(const State& state) {
            this->alpha * constants::gamma / (1. + pow(this->alpha, 2)) * cross4(state.m, cross_temp);
 }
 
-af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th) {
+af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th) const {
     stochfdmdt_calls++;
     const af::array h = fheff(state) + h_th;
     const af::array cross_temp = cross4(state.m, h);

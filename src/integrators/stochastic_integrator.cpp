@@ -7,8 +7,8 @@ namespace magnumafcpp {
 af::array Stochastic_Integrator::Heun(const State& state) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
-    const af::array h_th = sqrt((2. * D) / dt) * randn(dims_vector(state.mesh), f64,
-                                                       rand_engine); // Random thermal field at t+dt/2
+    const af::array h_th = sqrt((2. * D) / dt) * af::randn(dims_vector(state.mesh), f64,
+                                                           rand_engine); // Random thermal field at t+dt/2
     af::array k1 = dt * stochfdmdt(state, h_th_prev);
     af::array k2 = dt * stochfdmdt(state + k1, h_th);
     h_th_prev = h_th;
@@ -30,7 +30,7 @@ af::array Stochastic_Integrator::SemiImplicitHeun(const State& state) {
     return dt * stochfdmdt(state + m5, h_th);
 }
 
-af::array Stochastic_Integrator::detRK4(const State& state) {
+af::array Stochastic_Integrator::detRK4(const State& state) const {
     af::array k1 = dt * detfdmdt(state);
     af::array k2 = dt * detfdmdt(state + 1. / 2. * k1);
     af::array k3 = dt * detfdmdt(state + 1. / 2. * k2);

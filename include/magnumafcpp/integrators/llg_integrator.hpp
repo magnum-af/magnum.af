@@ -32,19 +32,22 @@ class LLGIntegrator : public AdaptiveRungeKutta {
                   bool dissipation_term_only = false);
     double alpha{0}; //!< Unitless damping constant in the
                      //!< Landau-Lifshitz-Gilbert equation
-    vec_uptr_FieldTerm llgterms;
-    const bool dissipation_term_only;
-    double E(const State&);
 
-    double get_time_heff() { return time_heff; }
-    void relax(State& state, double precision = 1e-10, const unsigned iloop = 100, const unsigned iwritecout = 1000,
-               const bool verbose = true);
-    long int h_addr(const State& state);
+    vec_uptr_FieldTerm llgterms;
+
+    double E(const State&) const;
+
+    void relax(State& state, double precision = 1e-10, unsigned iloop = 100, unsigned iwritecout = 1000,
+               bool verbose = true);
+
+    double get_time_heff() const { return time_heff; }
+    long int h_addr(const State& state) const;
 
   private:
-    af::array f(const State& state);
-    af::array fheff(const State& state);
-    double time_heff{0};
+    const bool dissipation_term_only;
+    virtual af::array f(const State& state) const override;
+    af::array fheff(const State& state) const;
+    mutable double time_heff{0};
 };
 
 } // namespace magnumafcpp

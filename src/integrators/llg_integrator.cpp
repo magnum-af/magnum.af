@@ -18,7 +18,7 @@ LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr
     : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
                     controller, dissipation_term_only) {}
 
-af::array LLGIntegrator::fheff(const State& state) {
+af::array LLGIntegrator::fheff(const State& state) const {
     af::timer timer_heff = af::timer::start();
     af::array solution = llgterms[0]->h(state);
 
@@ -29,7 +29,7 @@ af::array LLGIntegrator::fheff(const State& state) {
     return solution;
 }
 
-af::array LLGIntegrator::f(const State& state) {
+af::array LLGIntegrator::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
@@ -44,7 +44,7 @@ af::array LLGIntegrator::f(const State& state) {
 }
 
 // Energy calculation
-double LLGIntegrator::E(const State& state) {
+double LLGIntegrator::E(const State& state) const {
     double solution = 0.;
     for (unsigned i = 0; i < llgterms.size(); ++i) {
         solution += llgterms[i]->E(state);
@@ -52,8 +52,7 @@ double LLGIntegrator::E(const State& state) {
     return solution;
 }
 
-void LLGIntegrator::relax(State& state, const double precision, const unsigned eval_E, const unsigned iwritecout,
-                          const bool verbose) {
+void LLGIntegrator::relax(State& state, double precision, unsigned eval_E, unsigned iwritecout, bool verbose) {
     double start_time = state.t;
     af::timer t = af::timer::start();
     double E_prev = 1e20;
@@ -78,7 +77,7 @@ void LLGIntegrator::relax(State& state, const double precision, const unsigned e
     }
 }
 
-long int LLGIntegrator::h_addr(const State& state) {
+long int LLGIntegrator::h_addr(const State& state) const {
     af::array* heff = new af::array(fheff(state));
     return (long int)heff->get();
 }

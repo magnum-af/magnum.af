@@ -11,13 +11,16 @@ class Controller {
     Controller(double hmin = 1e-15, double hmax = 3.5e-10, double atol = 1e-6, double rtol = 1e-6)
         : hmin(hmin), hmax(hmax), atol(atol), rtol(rtol) {}
 
+    double get_hnext() const { return hnext; }; // # of rejections
+    bool get_reject() const { return reject; };
+    af::array givescale(const af::array& a) const { return atol + rtol * af::abs(a); };
+
+  private:
     const double hmin;
     const double hmax;
     // Scale function return= atol + abs(y) * rtol
     const double atol;                          // Tolerated absolute error
     const double rtol;                          // Tolerated relative error
-    double get_hnext() const { return hnext; }; // # of rejections
-    af::array givescale(const af::array& a) { return atol + rtol * af::abs(a); };
     // Access counters in read only
     unsigned long long int get_counter_reject() const { return counter_reject; };     // # of rejections
     unsigned long long int get_counter_accepted() const { return counter_accepted; }; // # of accepced steps
@@ -26,9 +29,6 @@ class Controller {
     unsigned long long int get_counter_maxscale() const { return counter_maxscale; }; // # of rejections
     unsigned long long int get_counter_minscale() const { return counter_minscale; }; // # of rejections
 
-    bool get_reject() const { return reject; };
-
-  private:
     // Numerical Recipies 3rd Edition suggests these values:
     const double beta = 0.4 / 5.0;
     const double alpha = 0.2 - 0.75 * beta;

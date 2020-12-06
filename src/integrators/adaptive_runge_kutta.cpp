@@ -64,7 +64,7 @@ void AdaptiveRungeKutta::step(State& state) {
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control
-af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err_) {
+af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err_) const {
     State tempstate = state;
     // stage1
     af::array k1 = dt * f(state);
@@ -271,7 +271,7 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt, double& 
 }
 
 // Dormand Prince 7, 8  method
-af::array AdaptiveRungeKutta::DP78(const State& state, const double dt, double& err_) {
+af::array AdaptiveRungeKutta::DP78(const State& state, const double dt, double& err_) const {
     State tempstate = state;
 
     double a[14][13] = {{0.}};
