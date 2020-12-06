@@ -90,7 +90,7 @@ void CacheManager::write_array(const af::array& a, const std::string& filename, 
     }
 }
 
-void CacheManager::shrink_cache_if_gt_maxsize() {
+void CacheManager::shrink_cache_if_gt_maxsize() const {
     auto vec = get_files_in_dir(cache_folder);
     if (accum_size_in_byte(vec) > max_size_in_byte) {
         sort_by_write_time_newest_first(vec);

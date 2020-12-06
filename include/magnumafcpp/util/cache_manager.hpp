@@ -21,7 +21,7 @@ class CacheManager {
     const std::uintmax_t max_size_in_byte;
     const std::uintmax_t shrink_size_in_byte;
 
-    void shrink_cache_if_gt_maxsize();
+    void shrink_cache_if_gt_maxsize() const;
 };
 
 } // namespace magnumafcpp::util

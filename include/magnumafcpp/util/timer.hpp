@@ -23,7 +23,7 @@ class StageTimer {
         stagename != "" ? stream << "'" << stagename << "'" : stream << "stage " << stage;
         stream << ": " << get_time_and_restart_timer() << " [s]" << std::endl;
     }
-    void print_accumulated(std::ostream& stream = std::cout) {
+    void print_accumulated(std::ostream& stream = std::cout) const {
         stream << "timing accumulated: " << accumulated_time << " [s]" << std::endl;
     }
 
