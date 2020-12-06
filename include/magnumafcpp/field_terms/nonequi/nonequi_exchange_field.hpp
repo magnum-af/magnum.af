@@ -1,6 +1,6 @@
 #pragma once
 #include "arrayfire.h"
-#include "nonequi_term_base.hpp"
+#include "field_terms/nonequi/nonequi_term.hpp"
 #include "nonequispaced_mesh.hpp"
 #include "state.hpp"
 

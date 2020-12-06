@@ -1,4 +1,4 @@
-//#include "nonequi_term_base.hpp"
+//#include "field_terms/nonequi/nonequi_term.hpp"
 //#include "nonequispaced_mesh.hpp"
 #include "nonequi/nonequi_demag_field.hpp"
 #include "state.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 #include "state.hpp"
 #include "arrayfire.h"
-#include "nonequi_term_base.hpp"
+#include "field_terms/nonequi/nonequi_term.hpp"
 
 namespace magnumafcpp {
 
