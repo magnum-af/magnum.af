@@ -206,7 +206,7 @@ cdef extern from "field_terms/atom/atomistic_external_field.hpp" namespace "magn
 cdef extern from "solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
     cdef cppclass LBFGS_Minimizer:
         LBFGS_Minimizer(double tolerance_ , size_t maxIter_ , int verbose );
-        vector[unique_ptr[FieldTerm]] llgterms_;
+        vector[unique_ptr[FieldTerm]] fieldterms;
         LBFGS_Minimizer(vector[unique_ptr[FieldTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
         double Minimize(State& state);
         double GetTimeCalcHeff();

@@ -15,74 +15,73 @@ LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
     : tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, size_t maxIter, int verbose)
-    : llgterms_(std::move(llgterms)), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
+    : fieldterms(std::move(llgterms)), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 // Energy calculation
-double LBFGS_Minimizer::E(const State& state) {
+double LBFGS_Minimizer::E(const State& state) const {
     double solution = 0.;
-    for (unsigned i = 0; i < llgterms_.size(); ++i) {
-        solution += llgterms_[i]->E(state);
+    for (unsigned i = 0; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->E(state);
     }
     return solution;
 }
 // Calculation of effective field
-af::array LBFGS_Minimizer::Heff(const State& state) {
-    if (llgterms_.size() == 0) {
+af::array LBFGS_Minimizer::Heff(const State& state) const {
+    if (fieldterms.size() == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
-                              "LBFGS_Minimizer.llgterms_! Aborting...")
+                              "LBFGS_Minimizer.fieldterms! Aborting...")
                   << std::endl;
         exit(EXIT_FAILURE);
     }
     af::timer timer = af::timer::start();
-    af::array solution = llgterms_[0]->h(state);
-    for (unsigned i = 1; i < llgterms_.size(); ++i) {
-        solution += llgterms_[i]->h(state);
+    af::array solution = fieldterms[0]->h(state);
+    for (unsigned i = 1; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->h(state);
     }
     time_calc_heff_ += af::timer::stop(timer);
     return solution;
 }
 
-double LBFGS_Minimizer::EnergyAndGradient(const State& state, af::array& gradient) {
-    if (llgterms_.size() == 0) {
+std::pair<double, af::array> LBFGS_Minimizer::EnergyAndGradient(const State& state) const {
+    if (fieldterms.size() == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
-                              "LBFGS_Minimizer.llgterms_! Aborting...")
+                              "LBFGS_Minimizer.fieldterms! Aborting...")
                   << std::endl;
         exit(EXIT_FAILURE);
     }
     af::timer timer = af::timer::start();
     // Avoiding array with zeros, starting loop with second term in llgterms
-    af::array h = llgterms_[0]->h(state);
-    double energy = llgterms_[0]->E(state, h);
-    for (unsigned i = 1; i < llgterms_.size(); ++i) {
+    af::array h = fieldterms[0]->h(state);
+    double energy = fieldterms[0]->E(state, h);
+    for (unsigned i = 1; i < fieldterms.size(); ++i) {
         // Alternative:
         // af::array h = af::constant(0, dims_vector(state.mesh),
-        // f64);//llgterms_[0]->h(state); double energy =
-        // 0;//llgterms_[0]->E(state, h); for(unsigned i = 0; i <
-        // llgterms_.size() ; ++i ){
-        af::array temp_h = llgterms_[i]->h(state);
+        // f64);//fieldterms[0]->h(state); double energy =
+        // 0;//fieldterms[0]->E(state, h); for(unsigned i = 0; i <
+        // fieldterms.size() ; ++i ){
+        af::array temp_h = fieldterms[i]->h(state);
         h += temp_h;
-        energy += llgterms_[i]->E(state, temp_h);
+        energy += fieldterms[i]->E(state, temp_h);
     }
-    gradient = 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h));
     time_calc_heff_ += af::timer::stop(timer);
-    return energy;
+    return {energy, 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h))};
 }
 
-af::array LBFGS_Minimizer::Gradient(const State& state) {
+af::array LBFGS_Minimizer::Gradient(const State& state) const {
     return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, Heff(state)));
 }
 
 double mydot(const af::array& a, const af::array& b) { return full_inner_product(a, b); }
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
-double LBFGS_Minimizer::mxmxhMax(const State& state) { return max_4d_abs(Gradient(state)); }
+double LBFGS_Minimizer::mxmxhMax(const State& state) const { return max_4d_abs(Gradient(state)); }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 // TODO Currently Minimize() fails when called second time, i.e. when m already
 // relaxed linesearch rate is 0 even with changed zeeman field
-double LBFGS_Minimizer::Minimize(State& state) {
+double LBFGS_Minimizer::Minimize(State& state) const {
     std::cout.precision(24);
     af::timer timer = af::timer::start();
     // af::print("h in minimize", af::mean(Heff(state)));//TODEL
@@ -96,8 +95,8 @@ double LBFGS_Minimizer::Minimize(State& state) {
     double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
     // double f = this->E(state);
     // af::array grad = this->Gradient(state);
-    af::array grad;
-    double f = this->EnergyAndGradient(state, grad);
+    auto [f, grad] = EnergyAndGradient(state);
+
     // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
     // not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
@@ -214,11 +213,13 @@ double LBFGS_Minimizer::Minimize(State& state) {
             std::cout << "bb> " << globIter << " " << f << " "
                       << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
         }
-        if (of_convergence.is_open()) {
-            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
-                           << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
-                           << std::endl;
-        }
+
+        // if (of_convergence.is_open()) {
+        //    of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
+        //                   << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
+        //                   << std::endl;
+        //}
+
         if (((f_old - f) < (tolerance_ * f1)) && (max_4d_abs(s) < (tolf2 * (1 + max_4d_abs(state.m)))) &&
             (gradNorm <= (tolf3 * f1))) {
             break;
@@ -267,7 +268,7 @@ double LBFGS_Minimizer::Minimize(State& state) {
 }
 
 double LBFGS_Minimizer::linesearch(State& state, double& fval, const af::array& x_old, af::array& g,
-                                   const af::array& searchDir, const double tolf) {
+                                   const af::array& searchDir, const double tolf) const {
     double rate = 1.0;
     cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
     return rate;
@@ -280,7 +281,7 @@ double LBFGS_Minimizer::linesearch(State& state, double& fval, const af::array& 
 // &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf)
 // {// ak = 1.0 == double &stp moved into function
 int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
-                            const double tolf) {
+                            const double tolf) const {
     // we rewrite this from MIN-LAPACK and some MATLAB code
 
     int info = 0;
@@ -355,7 +356,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
         state.m = normalize_handle_zero_vectors(state.m);
-        f = this->EnergyAndGradient(state, g);
+        auto [f, g] = EnergyAndGradient(state);
         nfev++;
         double dg = mydot(g, s);
         double ftest1 = finit + stp * dgtest;
@@ -434,7 +435,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
 }
 
 int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp,
-                           double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) {
+                           double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) const {
     info = 0;
     bool bound = false;
 

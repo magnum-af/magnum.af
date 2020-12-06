@@ -10,7 +10,7 @@
 namespace magnumafcpp {
 
 StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
-    : Llg(std::move(llg)), n_interp(n_interp), dt(dt) {
+    : llg(std::move(llg)), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
 
@@ -48,7 +48,7 @@ void StringMethod::calc_E() {
         E.clear();
     }
     for (int i = 0; i < n_interp; i++) {
-        E.push_back(Llg.E(images[i]));
+        E.push_back(llg.E(images[i]));
     }
 }
 
@@ -105,12 +105,12 @@ void StringMethod::integrate() {
     for (unsigned int i = 0; i < images.size(); i++) {
         double imagtime = images[i].t;
         while (images[i].t < imagtime + dt) {
-            Llg.step(images[i]);
+            llg.step(images[i]);
         }
         // Now skipping step backwards
         // double h=imagtime+dt-images[i].t;
         // double dummy_err;
-        // images[i].m += Llg.RKF45(images[i], h, dummy_err);
+        // images[i].m += llg.RKF45(images[i], h, dummy_err);
 
         // NOTE:
         // af::eval(images[i].m);//If memory error occurs, uncomment this
@@ -165,9 +165,8 @@ void write_plotfile(const std::string filepath) {
     stream.close();
 }
 
-double StringMethod::run(const std::string filepath, const double string_abort_rel_diff,
-                         const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti,
-                         const bool verbose) {
+double StringMethod::run(std::string filepath, double string_abort_rel_diff, double string_abort_abs_diff,
+                         int string_steps, int every_string_to_vti, bool verbose) {
     write_plotfile(filepath);
 
     this->write_vti(filepath + "init_string");
@@ -284,11 +283,11 @@ double StringMethod::run(const std::string filepath, const double string_abort_r
         vti_writer_micro(images_max_lowest[i].m, this->images[0].mesh, name.c_str());
     }
 
-    // for(unsigned i=0;i<Llg.llgterms.size();++i){
+    // for(unsigned i=0;i<llg.llgterms.size();++i){
     //  std::cout<<"get_cpu_time()"<<std::endl;
-    //  std::cout<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //  std::cout<<i<<"\t"<<llg.cpu_time()<<std::endl;
     //  stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
-    //  stream_steps<<"#"<<i<<"\t"<<Llg.cpu_time()<<std::endl;
+    //  stream_steps<<"#"<<i<<"\t"<<llg.cpu_time()<<std::endl;
     //}
 
     myfileE.close();

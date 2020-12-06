@@ -8,10 +8,10 @@ namespace magnumafcpp {
 
 // Energy calculation
 // only for testing, remove?
-double Minimizer::E(const State& state) {
+double Minimizer::E(const State& state) const {
     double solution = 0.;
-    for (unsigned i = 0; i < llgterms.size(); ++i) {
-        solution += llgterms[i]->E(state);
+    for (unsigned i = 0; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->E(state);
     }
     return solution;
 }
@@ -20,25 +20,25 @@ Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double 
     : scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info) {}
 
 // Calculation of effective field
-af::array Minimizer::h(const State& state) {
-    if (llgterms.size() == 0) {
-        std::cout << "ERROR: minimizer.cpp: Number of llgterms == 0. Please "
-                     "add at least one term to Minimizer.llgterms! Aborting..."
+af::array Minimizer::h(const State& state) const {
+    if (fieldterms.size() == 0) {
+        std::cout << "ERROR: minimizer.cpp: Number of fieldterms == 0. Please "
+                     "add at least one term to Minimizer.fieldterms! Aborting..."
                   << std::endl;
         exit(EXIT_FAILURE);
     }
     af::timer timer = af::timer::start();
-    af::array solution = llgterms[0]->h(state);
-    for (unsigned i = 1; i < llgterms.size(); ++i) {
-        solution += llgterms[i]->h(state);
+    af::array solution = fieldterms[0]->h(state);
+    for (unsigned i = 1; i < fieldterms.size(); ++i) {
+        solution += fieldterms[i]->h(state);
     }
     time_h += af::timer::stop(timer);
     return solution;
 }
 
-af::array Minimizer::dm(const State& state) { return cross4(state.m, cross4(state.m, h(state))); }
+af::array Minimizer::dm(const State& state) const { return cross4(state.m, cross4(state.m, h(state))); }
 
-af::array Minimizer::m_next(const State& state, const double tau) {
+af::array Minimizer::m_next(const State& state, const double tau) const {
 
     const af::array Mx = state.m(af::span, af::span, af::span, 0);
     const af::array My = state.m(af::span, af::span, af::span, 1);
@@ -75,7 +75,7 @@ af::array Minimizer::m_next(const State& state, const double tau) {
     return result;
 }
 
-void Minimizer::minimize(State& state) {
+void Minimizer::minimize(State& state) const {
     double tau = tau_min;
     unsigned long int step = 0;
     double dm_max = 1e18;

@@ -1342,9 +1342,9 @@ cdef class LBFGS_Minimizer:
     #      self._thisptr = NULL
     def add_terms(self, *args):
         for arg in args:
-            self._thisptr.llgterms_.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
+            self._thisptr.fieldterms.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
     def delete_last_term(self):
-        self._thisptr.llgterms_.pop_back()
+        self._thisptr.fieldterms.pop_back()
     def minimize(self, State state):
         return self._thisptr.Minimize(deref(state._thisptr))
     def pyGetTimeCalcHeff(self):

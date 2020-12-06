@@ -12,19 +12,22 @@ class StringMethod {
     ///
     /// Runs the string method.
     /// This populates files in \param filepath.
+    /// Returns dE in [J] of the minimal energy barrier found
     ///
-    double run(const std::string filepath, const double string_abort_rel_diff = 1e-12,
-               const double string_abort_abs_diff = 1e-27, const int string_steps = 10000,
-               const int every_string_to_vti = 50, const bool verbose = true);
+    double run(std::string filepath, double string_abort_rel_diff = 1e-12, double string_abort_abs_diff = 1e-27,
+               int string_steps = 10000, int every_string_to_vti = 50, bool verbose = true);
 
-    LLGIntegrator Llg; //(state_relax, atol, rtol, hmax, hmin);
+  private:
+    LLGIntegrator llg; //(state_relax, atol, rtol, hmax, hmin);
     const int n_interp;
     const double dt;
     double time{0};
+
     std::vector<double> x{};        // Current x values
     std::vector<double> x_interp{}; // x-values where to interpolate at (will be regular grid)
     std::vector<double> E{};        // Energy values
     std::vector<State> images{};    // Current images
+
     void calc_E();
     void calc_x();
     void calc_x(std::vector<State>);
@@ -33,8 +36,6 @@ class StringMethod {
     void step();
     void vec_normalize();
     void write_vti(std::string file);
-
-  private:
 };
 
 } // namespace magnumafcpp
