@@ -9,7 +9,7 @@ namespace magnumafcpp {
 class AtomisticExternalField : public ExternalField {
   public:
     using ExternalField::ExternalField;
-    virtual double E(const State& state) const override;
+    using LLGTerm::E; // Could be AtomisticTermBase::E if inherited from there
     virtual double E(const State& state, const af::array& h) const override;
 
   private:

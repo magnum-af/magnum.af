@@ -11,11 +11,16 @@ class LLGTerm {
   public:
     virtual ~LLGTerm() = default;
     virtual af::array h(const State& state) const = 0;
-    /// Calculating the micromagnetic energy \f$E\f$.
-    virtual double E(const State& state) const = 0;
-    ///< Calculating the micromagnetic energy for a already calculated h field
-    ///< (to save computational cost)
+    ///< Calculating the micromagnetic energy from the h field
     virtual double E(const State& state, const af::array& h) const = 0;
+    /// Calculating the micromagnetic energy \f$E\f$.
+    // virtual double E(const State& state) const = 0;
+    double E(const State& state) const { return E(state, h(state)); };
+    auto h_and_E(const State& state) {
+        const auto htmp = h(state);
+        return std::make_pair(htmp, E(state, htmp));
+    };
+
     double get_cpu_time() const { return accumulated_time; };
 
     /// For wrapping only: pointer to h()

@@ -91,21 +91,21 @@ af::array CubicAnisotropyField::h(const State& state) const {
     return h[0] + h[1] + h[2];
 }
 
-double CubicAnisotropyField::E(const State& state) const {
+double CubicAnisotropyField::E(const State& state, const af::array& h) const {
+    // Note, h is ignored here, we need h_1to3
+    // would require interface exception
+    h.isempty(); // avoiding unused warning
     const af::array Ms = state.get_Ms_field_in_vector_dims();
-    auto h = h_1to3(state);
+    auto htemp = h_1to3(state);
     return constants::mu0 *
-           af::sum(af::sum(af::sum(af::sum(Ms * (-1 / 4. * h[0] - 1 / 6. * h[1] - 1 / 8. * h[2]) * state.m, 0), 1), 2),
-                   3)
+           af::sum(
+               af::sum(
+                   af::sum(af::sum(Ms * (-1 / 4. * htemp[0] - 1 / 6. * htemp[1] - 1 / 8. * htemp[2]) * state.m, 0), 1),
+                   2),
+               3)
                .as(f64)
                .scalar<double>() *
            state.mesh.dx * state.mesh.dy * state.mesh.dz;
-}
-
-// TODO reglects h caching:
-double CubicAnisotropyField::E(const State& state, const af::array& h) const {
-    auto h_avoid_warning = h;
-    return E(state);
 }
 
 } // namespace magnumafcpp

@@ -34,17 +34,6 @@ af::array ExternalField::h(const State& state) const {
         return zee_field;
 }
 
-// Zeeman energy term
-double ExternalField::E(const State& state) const {
-    if (state.Ms_field.isempty()) {
-        return -constants::mu0 * state.Ms * afvalue(sum(sum(sum(sum(h(state) * state.m, 0), 1), 2), 3)) *
-               state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    } else {
-        return -constants::mu0 * afvalue(sum(sum(sum(sum(state.Ms_field * h(state) * state.m, 0), 1), 2), 3)) *
-               state.mesh.dx * state.mesh.dy * state.mesh.dz;
-    }
-}
-
 double ExternalField::E(const State& state, const af::array& h) const {
     if (state.Ms_field.isempty()) {
         return -constants::mu0 * state.Ms * sum(sum(sum(sum(h * state.m, 0), 1), 2), 3).scalar<double>() *

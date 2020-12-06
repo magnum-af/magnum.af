@@ -28,7 +28,7 @@ class NonequiExternalField : public NonequiTermBase {
     }
 
     // Energy contribution differs by factor of 2 compared to terms linear in m
-    virtual double E(const State& state) const override { return 2. * NonequiTermBase::E(state); };
+    using NonequiTermBase::E;
     virtual double E(const State& state, const af::array& h) const override { return 2. * NonequiTermBase::E(state, h); };
 
   private:

@@ -16,9 +16,8 @@ class ExternalField : public LLGTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    virtual double E(const State& state) const override; // Energy contribution
+    using LLGTerm::E;
     virtual double E(const State& state, const af::array& h) const override;
-    ///< Calculating the micromagnetic energy for an already calculated h field
 
     void set_homogeneous_field(const double x, const double y,
                                const double z); ///< Setting homogeneous zeeman field with x, y, z

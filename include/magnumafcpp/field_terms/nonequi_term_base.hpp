@@ -10,11 +10,10 @@ class NonequiTermBase : public LLGTerm {
     NonequiTermBase(NonequiMesh nemesh) : nemesh(nemesh){};
     virtual ~NonequiTermBase() = default;
 
-    // Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
-    // Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where
-    // M = Ms * m
-    virtual double E(const State& state) const override { return integral_nonequimesh(h(state) * state.m, state); }
-
+    /// Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
+    /// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where
+    /// M = Ms * m
+    using LLGTerm::E;
     virtual double E(const State& state, const af::array& h) const override { return integral_nonequimesh(h * state.m, state); }
 
   protected:

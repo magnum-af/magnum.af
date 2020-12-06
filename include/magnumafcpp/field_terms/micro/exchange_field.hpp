@@ -10,14 +10,9 @@ class ExchangeField : public IntegratorTermMeshBase {
     ExchangeField(double A);
     ExchangeField(af::array A_field);
     ExchangeField(long int A_field_ptr);
-    // Field contribution
     virtual af::array h(const State& state) const override;
-    // Energy contribution
-    // using LLGTerm::E;
-    using IntegratorTermMeshBase::E; // bringing overload E(state, h) back into scope, hidden otherwise
-    virtual double E(const State& state) const override;
-    // TODO//virtual double E(const State& state, const af::array& h) const override;
-    // IntegratorTermMeshBase::E(const State& state, const af::array& h) is called with h, not with h_withedges
+    using IntegratorTermMeshBase::E;
+    virtual double E(const State& state, const af::array& h) const override;
 
     double A{0}; //!< Exchange energy in [J/m]
     af::array A_field;
