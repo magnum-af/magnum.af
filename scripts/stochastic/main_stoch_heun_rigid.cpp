@@ -13,7 +13,7 @@ using namespace magnumafcpp;
 using namespace af;
 // TODO//compilererror//using namespace std::complex_literals;
 using Faddeeva::erfi;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 // Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
     m(0, 0, 0, 2) = 1.;
     State state(mesh, material, m); // ATTENTION, to be set in each loop
     state.Ms = 1281197;
-    std::vector<llgt_ptr> llgterm;
+    std::vector<uptr_FieldTerm> llgterm;
     Stochastic_LLG Stoch(alpha, T, dt, state, llgterm, "Heun");
 
     // Declare Variables
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
         // T=10
         state = State(mesh, material, m);
         state.Ms = 1281197;
-        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(Ku1)));
+        llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz = 0;
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
         // T=50
         state = State(mesh, material, m);
         state.Ms = 1281197;
-        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(Ku1)));
+        llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz = 0;
@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
         // T=200
         state = State(mesh, material, m);
         state.Ms = 1281197;
-        llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(Ku1)));
+        llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
         Stoch = Stochastic_LLG(alpha, T, dt, state, llgterm, "Heun");
         llgterm.clear();
         mean_mz = 0;

@@ -25,13 +25,13 @@ class LLGIntegrator : public AdaptiveRungeKutta {
   public:
     LLGIntegrator(double alpha, std::string scheme = "RKF45", Controller controller = Controller(),
                   bool dissipation_term_only = false);
-    LLGIntegrator(double alpha, vec_uptr_Fieldterm llgterms, std::string scheme = "RKF45", Controller controller = Controller(),
+    LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, std::string scheme = "RKF45", Controller controller = Controller(),
                   bool dissipation_term_only = false);
-    LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_Fieldterm>> llgterms, std::string scheme = "RKF45",
+    LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms, std::string scheme = "RKF45",
                   Controller controller = Controller(), bool dissipation_term_only = false);
     double alpha{0}; //!< Unitless damping constant in the
                      //!< Landau-Lifshitz-Gilbert equation
-    vec_uptr_Fieldterm llgterms;
+    vec_uptr_FieldTerm llgterms;
     const bool dissipation_term_only;
     double E(const State&);
 

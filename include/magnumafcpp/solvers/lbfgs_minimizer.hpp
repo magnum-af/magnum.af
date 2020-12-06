@@ -13,11 +13,11 @@ namespace magnumafcpp {
 class LBFGS_Minimizer {
   public:
     LBFGS_Minimizer(double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose = 4);
-    LBFGS_Minimizer(vec_uptr_Fieldterm llgterms, double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose = 4);
+    LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance_ = 1e-6, size_t maxIter_ = 230, int verbose = 4);
 
     double Minimize(State&);
 
-    vec_uptr_Fieldterm llgterms_{}; // default init, as not constructed in init list
+    vec_uptr_FieldTerm llgterms_{}; // default init, as not constructed in init list
 
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
     std::ofstream of_convergence{};                             // optional output stream

@@ -8,12 +8,12 @@ namespace magnumafcpp {
 LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_Fieldterm llgterms, std::string scheme, Controller controller,
+LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, std::string scheme, Controller controller,
                              bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_Fieldterm>> il, std::string scheme,
+LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il, std::string scheme,
                              Controller controller, bool dissipation_term_only)
     : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
                     controller, dissipation_term_only) {}

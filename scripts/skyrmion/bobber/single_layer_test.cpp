@@ -56,18 +56,18 @@ int main(int argc, char** argv) {
     state.write_vti(filepath + "minit");
 
     // defining interactions
-    auto demag = uptr_Fieldterm(new DemagField(mesh, true, true, 0));
-    auto exch = uptr_Fieldterm(new ExchangeField(A));
-    auto aniso = uptr_Fieldterm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
+    auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
+    auto exch = uptr_FieldTerm(new ExchangeField(A));
+    auto aniso = uptr_FieldTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
 
     Material material = Material();
     material.D = D;
     material.D_axis[2] = -1;
-    auto dmi = uptr_Fieldterm(new DmiField(mesh, material));
+    auto dmi = uptr_FieldTerm(new DmiField(mesh, material));
 
     array zee = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     zee(af::span, af::span, af::span, 2) = Hz;
-    auto external = uptr_Fieldterm(new ExternalField(zee));
+    auto external = uptr_FieldTerm(new ExternalField(zee));
 
     af::print("dmi", dmi->h(state));
 

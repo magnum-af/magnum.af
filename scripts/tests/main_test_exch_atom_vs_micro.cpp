@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 bool compare(double a, double b) {
     // std::cout << "COM:"<< a <<", " << b <<",
@@ -39,11 +39,11 @@ int main(int argc, char** argv) {
     array m = randu(mesh.nx, mesh.ny, mesh.nz, 3, f64);
     State state(mesh, material, m);
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
     LLG Llg(state, llgterm);
-    std::vector<llgt_ptr> llgterm2;
-    llgterm2.push_back(llgt_ptr(new ExchangeField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm2;
+    llgterm2.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     LLG Llg2(state, llgterm2);
 
     for (int x = 0; x < nx; x++) {

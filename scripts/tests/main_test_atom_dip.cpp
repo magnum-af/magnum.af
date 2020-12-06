@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 bool compare(double a, double b) {
     if (fabs(a - b) / fabs(a + b) < 1e-30)
@@ -43,8 +43,8 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "/minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     LLG Llg(state, llgterm);
     double analytical = -pow(material.p, 2) * constants::mu0 / (4. * M_PI) / pow(dx, 3);
     // std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, (filepath + "/minit").c_str());
 
     llgterm.pop_back();
-    llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     // TODO this leads to compiler error
     // Llg=LLG(state, llgterm);
     LLG Llg2(state, llgterm);

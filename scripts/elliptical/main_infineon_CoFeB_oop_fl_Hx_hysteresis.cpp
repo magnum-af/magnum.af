@@ -64,10 +64,10 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
     std::cout << mesh << std::endl;
 
-    std::vector<uptr_Fieldterm> llgterm;
-    llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
-    llgterm.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
-    llgterm.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
     LLGIntegrator Llg(llgterm);
 
     // Relaxation
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
     stream << "# t	<mx>" << std::endl;
 
     timer t_hys = af::timer::start();
-    Llg.llgterms.push_back(uptr_Fieldterm(new ExternalField(&zee_func))); // Rate in
+    Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in
                                                                    // T/s
     while (state.t < 4 * hzee_max / rate) {
         Llg.step(state);

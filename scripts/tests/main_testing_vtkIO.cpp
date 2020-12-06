@@ -19,7 +19,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 void calcm(State state, std::ostream& myfile);
 int main(int argc, char** argv) {
     std::cout << "argc" << argc << std::endl;
@@ -86,9 +86,9 @@ int main(int argc, char** argv) {
     print("C", C);
     std::cout << cmesh.nx << "  " << cmesh.ny << "  " << cmesh.nz << "  " << cmesh.dx << "  " << cmesh.dy << "  "
               << cmesh.dz << "  " << std::endl;
-    //  std::vector<llgt_ptr> llgterm;
-    //  llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
-    //  llgterm.push_back( llgt_ptr (new ExchangeField(mesh, material)));
+    //  std::vector<uptr_FieldTerm> llgterm;
+    //  llgterm.push_back( uptr_FieldTerm (new DemagField(mesh, material)));
+    //  llgterm.push_back( uptr_FieldTerm (new ExchangeField(mesh, material)));
     //  LLG Llg(state, llgterm);
     //  //LLG Llg(state, atol, rtol, hmax, hmin, llgterm);
     //
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
     //  zeeswitch(0, 0, 0, 1)=+4.3e-3/constants::mu0;
     //  zeeswitch(0, 0, 0, 2)=0.0;
     //  zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-    //  llgterm.push_back( llgt_ptr (new ExternalField(zeeswitch, mesh,
+    //  llgterm.push_back( uptr_FieldTerm (new ExternalField(zeeswitch, mesh,
     //  material))); Llg.Fieldterms=llgterm;
     //  //TODO remove state0 in LLG!
     //  Llg.state0.material.alpha=0.02;

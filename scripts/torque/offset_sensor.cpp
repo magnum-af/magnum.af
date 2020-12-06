@@ -40,11 +40,11 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
-    vec_uptr_Fieldterm llgterm;
-    llgterm.push_back(uptr_Fieldterm(new DemagField(mesh, material, true)));
-    llgterm.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
-    llgterm.push_back(uptr_Fieldterm(new SpinTransferTorqueField(pol, .3, .4, 2e10)));
-    llgterm.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(mesh, material)));
+    vec_uptr_FieldTerm llgterm;
+    llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material, true)));
+    llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new SpinTransferTorqueField(pol, .3, .4, 2e10)));
+    llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
     LLGIntegrator Llg(llgterm);
 
     std::ofstream stream;

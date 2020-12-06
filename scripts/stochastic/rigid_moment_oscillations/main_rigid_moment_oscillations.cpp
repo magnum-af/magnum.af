@@ -13,7 +13,7 @@ using namespace magnumafcpp;
 using namespace af;
 using namespace std::complex_literals;
 using Faddeeva::erfi;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 // Mathematica:
 //(e^x-1)/(sqrt(pi*x)*erfi(sqrt(x))) =(int(exp(x * z^2)*z) dz from 0 to 1
@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     m(0, 0, 0, 1) = 0.;
     m(0, 0, 0, 2) = cos(tile);
     State state(mesh, material, m); // ATTENTION, to be set in each loop
-    std::vector<llgt_ptr> llgterm;
+    std::vector<uptr_FieldTerm> llgterm;
     Stochastic_LLG Stoch(state, llgterm, 0.,
                          "Heun"); // ATTENTION, to be set in each loop
 
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     double prev_y_t = 0;
 
     state = State(mesh, material, m);
-    llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
     Stoch = Stochastic_LLG(state, llgterm, dt, "Heun");
     while (state.t < 30e-12) {
         prev_x = meani(state.m, 0);

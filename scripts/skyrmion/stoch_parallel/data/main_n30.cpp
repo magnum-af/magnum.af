@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 int main(int argc, char** argv) {
 
@@ -60,18 +60,18 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    // llgterm.push_back( llgt_ptr (new DemagField(mesh, material)));
-    // llgterm.push_back( llgt_ptr (new ExchangeField(mesh, material)));
-    // llgterm.push_back( llgt_ptr (new DmiField(mesh, material)));
-    // llgterm.push_back( llgt_ptr (new UniaxialAnisotropyField(mesh,
+    std::vector<uptr_FieldTerm> llgterm;
+    // llgterm.push_back( uptr_FieldTerm (new DemagField(mesh, material)));
+    // llgterm.push_back( uptr_FieldTerm (new ExchangeField(mesh, material)));
+    // llgterm.push_back( uptr_FieldTerm (new DmiField(mesh, material)));
+    // llgterm.push_back( uptr_FieldTerm (new UniaxialAnisotropyField(mesh,
     // material)));
 
     // TODO//run with demag?
-    // llgterm.push_back( llgt_ptr (new AtomisticDipoleDipoleField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    // llgterm.push_back( uptr_FieldTerm (new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 

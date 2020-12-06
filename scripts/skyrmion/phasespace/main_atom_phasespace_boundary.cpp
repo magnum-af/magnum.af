@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 int main(int argc, char** argv) {
     std::string filepath(argc >= 1 ? argv[1] : "data");
     if (argc >= 1) {
@@ -48,10 +48,10 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDipoleDipoleField(mesh)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

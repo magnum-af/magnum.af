@@ -59,11 +59,11 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
-    // Demag?//Llg.llgterms.push_back( uptr_Fieldterm (new
+    // Demag?//Llg.llgterms.push_back( uptr_FieldTerm (new
     // AtomisticDipoleDipoleField(mesh)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

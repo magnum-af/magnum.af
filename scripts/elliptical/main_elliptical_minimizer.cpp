@@ -67,9 +67,9 @@ int main(int argc, char** argv) {
     af::timer timer_llgterms = af::timer::start();
     // Minimizer minimizer("BB", 1e-10, 1e-5, 1e4, 100);
     LBFGS_Minimizer minimizer = LBFGS_Minimizer();
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new DemagField(mesh)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new ExchangeField(A)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(Ku1)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(A)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
     std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Relaxation
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 
     timer t_hys = af::timer::start();
     double rate = hzee_max / quater_steps; //[T/s]
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new ExternalField(zee_func)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
     while (state.t < 4 * hzee_max / rate) {
         state.t += 1.;
         minimizer.Minimize(state);

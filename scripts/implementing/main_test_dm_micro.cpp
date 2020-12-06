@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 int main(int argc, char** argv) {
     // const double x = 1.e-0, y = 1.e-0, z = 1.e-0;
     const int nx = 4, ny = 4, nz = 4;
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
     print("m", m);
     // m=reorder(m, 2, 1, 0, 3);
     State state(mesh, material, m);
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new DmiField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
     LLG Llg(state, llgterm);
 
     print("DmiField", Llg.Fieldterms[0]->h(state));

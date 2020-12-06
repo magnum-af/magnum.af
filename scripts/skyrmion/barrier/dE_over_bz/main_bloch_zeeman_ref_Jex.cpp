@@ -68,14 +68,14 @@ int main(int argc, char** argv) {
     LLGIntegrator Llg(alpha);
     if (demag) {
         std::cout << "Enabling demag field" << std::endl;
-        Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDipoleDipoleField(mesh)));
+        Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     } else {
         std::cout << "Not enabling demag field" << std::endl;
     }
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticExchangeField(J_atom)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticUniaxialAnisotropyField(K_atom)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new AtomisticExternalField(zee)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(J_atom)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExternalField(zee)));
 
     Llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");

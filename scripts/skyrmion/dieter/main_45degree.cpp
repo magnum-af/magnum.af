@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
@@ -65,9 +65,9 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
 
     LLG Llg(state, llgterm);
 

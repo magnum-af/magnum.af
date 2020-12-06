@@ -14,7 +14,7 @@ namespace magnumafcpp {
 LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
     : tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
-LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_Fieldterm llgterms, double tolerance, size_t maxIter, int verbose)
+LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, size_t maxIter, int verbose)
     : llgterms_(std::move(llgterms)), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
 // Energy calculation

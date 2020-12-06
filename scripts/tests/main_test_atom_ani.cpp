@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 bool compare(double a, double b) {
     // std::cout << "COM:"<< a <<", " << b <<",
@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "/minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
     LLG Llg(state, llgterm);
     if (compare(Llg.E(state), -2 * material.K_atom))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
@@ -150,7 +150,7 @@ int main(int argc, char** argv) {
     state = State(mesh, material, m);
 
     llgterm.pop_back();
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
     // TODO this leads to compiler error
     // Llg=LLG(state, llgterm);
     LLG Llg2(state, llgterm);

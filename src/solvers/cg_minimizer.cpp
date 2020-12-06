@@ -4,7 +4,7 @@
 
 namespace magnumafcpp {
 
-void abort_on_empty_size(const vec_uptr_Fieldterm& llgterms_) {
+void abort_on_empty_size(const vec_uptr_FieldTerm& llgterms_) {
     if (llgterms_.size() == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "

@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
 
     af::timer timer_llgterms = af::timer::start();
     CG_Minimizer minimizer = CG_Minimizer();
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     timer_llgterms = af::timer::start();

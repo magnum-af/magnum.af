@@ -9,7 +9,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 int main(int argc, char** argv) {
     std::cout << "argc" << argc << std::endl;
     for (int i = 0; i < argc; i++)
@@ -41,9 +41,9 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
+    std::vector<uptr_FieldTerm> llgterm;
 
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
     af::print("llgterm", llgterm[0]->h(state));
     // LLG Llg(state, llgterm);
 

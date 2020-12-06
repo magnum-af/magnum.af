@@ -63,10 +63,10 @@ int main(int argc, char** argv) {
     State state(mesh, Ms_field, m);
     state.write_vti(filepath + "minit");
 
-    auto rkky = uptr_Fieldterm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
+    auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
                                               Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
 
-    auto demag = uptr_Fieldterm(new DemagField(mesh, true, true, 0));
+    auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
 
     unsigned current_step = 0;
     // Defining H_zee via lamdas
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         return zee;
     };
 
-    auto external = uptr_Fieldterm(new ExternalField(zee_func));
+    auto external = uptr_FieldTerm(new ExternalField(zee_func));
     LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external)});
 
     std::ofstream stream(filepath + "m.dat");

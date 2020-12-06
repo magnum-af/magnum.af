@@ -32,10 +32,10 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m);
     state.write_vti(filepath + "minit");
 
-    // auto demag = uptr_Fieldterm (new DemagField(mesh, true, true, 0));
-    auto exch = uptr_Fieldterm(new ExchangeField(A));
-    auto aniso = uptr_Fieldterm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
-    auto dmi = uptr_Fieldterm(new DmiField(D, {0, 0, 1}));
+    // auto demag = uptr_FieldTerm (new DemagField(mesh, true, true, 0));
+    auto exch = uptr_FieldTerm(new ExchangeField(A));
+    auto aniso = uptr_FieldTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
+    auto dmi = uptr_FieldTerm(new DmiField(D, {0, 0, 1}));
     LLGIntegrator Llg(1, {std::move(exch), std::move(aniso), std::move(dmi)});
 
     std::ofstream stream;

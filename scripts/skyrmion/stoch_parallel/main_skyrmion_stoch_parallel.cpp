@@ -6,7 +6,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 void calcm(State state, std::ostream& myfile, double get_avg) {
     myfile << std::setw(12) << state.t << "\t" << meani(state.m, 2) << "\t" << get_avg << std::endl;
@@ -154,10 +154,10 @@ int main(int argc, char** argv) {
 
     // Assemble Stochastic Integrator and State object
     State state(mesh, material, m);
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
 
     // ofs_antime<<"#detect_time << \t << state.t << \t << i <<\t << reverse "

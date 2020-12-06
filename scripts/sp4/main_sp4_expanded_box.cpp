@@ -20,7 +20,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 // void calcm(State state, std::ostream& myfile);
 void calcm(State state, std::ostream& myfile, int nx, int ny, int nz, int spnx, int spny, int spnz);
 void calcm_autodetect(State state, std::ostream& myfile) {
@@ -154,9 +154,9 @@ int main(int argc, char** argv) {
     // replace(Div, Ms!=0, 0);
     // print("Div", Div);
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new DemagField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new ExchangeField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     LLG Llg(state, llgterm);
 
     std::ofstream stream;
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 2) = 0.0;
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-    llgterm.push_back(llgt_ptr(new ExternalField(zeeswitch, mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new ExternalField(zeeswitch, mesh, material)));
     Llg.Fieldterms = llgterm;
     Llg.state0.material.alpha = 0.02;
 

@@ -6,7 +6,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 void calcm(State state, std::ostream& myfile) {
     myfile << std::setw(12) << state.t << "\t" << meani(state.m, 0) << "\t" << meani(state.m, 1) << "\t"
@@ -43,10 +43,10 @@ int main(int argc, char** argv) {
     // Initial magnetic field
     array m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     m(0, 0, 0, 2) = 1.;
-    std::vector<llgt_ptr> llgterm;
+    std::vector<uptr_FieldTerm> llgterm;
     array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
     zeeswitch(0, 0, 0, 2) = 1. / constants::mu0;
-    llgterm.push_back(llgt_ptr(new ExternalField(zeeswitch, mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new ExternalField(zeeswitch, mesh, material)));
     State state(mesh, material, m);
     Stochastic_LLG Stoch(state, llgterm, dt, "Heun");
 

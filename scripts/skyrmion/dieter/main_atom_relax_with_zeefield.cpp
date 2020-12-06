@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 int main(int argc, char** argv) {
 
@@ -56,16 +56,16 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new AtomisticDipoleDipoleField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticExchangeField(mesh)));
-    llgterm.push_back(llgt_ptr(new AtomisticDmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
     array zeeswitch = constant(0.0, 1, 1, 1, 3, f64);
     zeeswitch(0, 0, 0, 2) = -0.07 * pow(state.Ms, 2) * constants::mu0;
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-    llgterm.push_back(llgt_ptr(new ExternalField(zeeswitch)));
+    llgterm.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
 
     LLG Llg(state, llgterm);
     Llg.write_fieldterms_micro(state, filepath + "init_field_micro_");

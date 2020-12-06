@@ -35,10 +35,10 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
     LLGIntegrator Llg;
-    Llg.llgterms.push_back(uptr_Fieldterm(new DemagField(mesh, material)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new ExchangeField(mesh, material)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new DmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
+    Llg.llgterms.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
 
     if (!exists(path_mrelax)) {
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;

@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 using namespace af;
-typedef std::unique_ptr<FieldTerm> llgt_ptr;
+
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
@@ -72,11 +72,11 @@ int main(int argc, char** argv) {
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
     // Relax
-    std::vector<llgt_ptr> llgterm;
-    llgterm.push_back(llgt_ptr(new DemagField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new ExchangeField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new DmiField(mesh, material)));
-    llgterm.push_back(llgt_ptr(new UniaxialAnisotropyField(mesh, material)));
+    std::vector<uptr_FieldTerm> llgterm;
+    llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
+    llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
 
     LLG Llg(state, llgterm);
 
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
 
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back(llgt_ptr(new ExternalField(&zee_func))); // Rate in T/s
+    Llg.Fieldterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in T/s
     while (state.t < simtime) {
         state.m = Llg.step(state);
         if (state.steps % 1000 == 0) {

@@ -61,11 +61,11 @@ int main(int argc, char** argv) {
     LBFGS_Minimizer minimizer;
     // LBFGS_Minimizer minimizer = LBFGS_Minimizer();//Fails on GTO, maybe due
     // to gcc verions < 7.2
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new DemagField(mesh)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new ExchangeField(A_ex)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(Ku1)));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new UniaxialAnisotropyField(Ku1_stress, {1, 0, 0})));
-    minimizer.llgterms_.push_back(uptr_Fieldterm(new ExternalField(zee_func)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(A_ex)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1_stress, {1, 0, 0})));
+    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
     std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Checking aniso
