@@ -1,4 +1,5 @@
 #include "integrators/llg_integrator.hpp"
+#include "equations.hpp"
 #include "state.hpp"
 #include "util/func.hpp"
 #include <memory>
@@ -33,12 +34,10 @@ af::array LLGIntegrator::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
-        af::array heff = fheff(state);
-        return -alpha * constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
+        return equations::dampingless_LLG(alpha, state.m, fheff(state));
+
     } else {
-        af::array heff = fheff(state);
-        return -constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, heff) -
-               alpha * constants::gamma / (1. + std::pow(alpha, 2)) * cross4(state.m, cross4(state.m, heff));
+        return equations::LLG(alpha, state.m, fheff(state));
     }
     // time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

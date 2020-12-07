@@ -33,7 +33,7 @@ af::array CG_Minimizer::Heff(const State& state) const {
     return solution;
 }
 
-std::tuple<double, af::array> CG_Minimizer::EnergyAndGradient(const State& state) const {
+std::pair<double, af::array> CG_Minimizer::EnergyAndGradient(const State& state) const {
     abort_on_empty_size(fieldterms);
     af::timer timer = af::timer::start();
     // Avoiding array with zeros, starting loop with second term in llgterms

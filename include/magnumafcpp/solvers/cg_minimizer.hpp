@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
-#include <tuple>
+#include <utility>
 
 namespace magnumafcpp {
 
@@ -21,7 +21,7 @@ class CG_Minimizer {
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
   private:
     af::array Heff(const State& m) const; ///< Effective Field
-    std::tuple<double, af::array> EnergyAndGradient(const State& state) const;
+    std::pair<double, af::array> EnergyAndGradient(const State& state) const;
     mutable double time_calc_heff_{0}; ///< Timer measuring calls to effective field _h
 };
 

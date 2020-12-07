@@ -1,4 +1,5 @@
 #include "stochastic_llg.hpp"
+#include "equations.hpp"
 #include "field_terms/field_term.hpp"
 #include "util/func.hpp"
 #include <memory>
@@ -24,18 +25,12 @@ af::array Stochastic_LLG::fheff(const State& state) const {
 
 af::array Stochastic_LLG::detfdmdt(const State& state) const {
     fdmdt_calls++;
-    const af::array heff = fheff(state);
-    const af::array cross_temp = cross4(state.m, heff);
-    return -constants::gamma / (1. + pow(this->alpha, 2)) * cross_temp -
-           this->alpha * constants::gamma / (1. + pow(this->alpha, 2)) * cross4(state.m, cross_temp);
+    return equations::LLG(alpha, state.m, fheff(state));
 }
 
 af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th) const {
     stochfdmdt_calls++;
-    const af::array h = fheff(state) + h_th;
-    const af::array cross_temp = cross4(state.m, h);
-    return -constants::gamma / (1. + pow(this->alpha, 2)) * cross_temp -
-           this->alpha * constants::gamma / (1. + pow(this->alpha, 2)) * cross4(state.m, cross_temp);
+    return equations::LLG(alpha, state.m, fheff(state) + h_th);
 }
 
 } // namespace magnumafcpp
