@@ -43,10 +43,11 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     double get_time_heff() const { return time_heff; }
     long int h_addr(const State& state) const;
 
+    af::array fheff(const State& state) const; // TODO move to priv again
+
   private:
     const bool dissipation_term_only;
     virtual af::array f(const State& state) const override;
-    af::array fheff(const State& state) const;
     mutable double time_heff{0};
 };
 

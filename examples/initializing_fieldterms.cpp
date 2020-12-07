@@ -2,7 +2,7 @@
 #include <cassert>
 
 // Demonstrating initialization of fieldterms
-// Mainly with helper function templates to_vec and mv_to_vec
+// Mainly with helper function templates fieldterm::to_vec and fieldterm::mv_to_vec
 
 using namespace magnumafcpp;
 int main() {
@@ -27,21 +27,21 @@ int main() {
     ExchangeField exch(A);
 
     // copy fieldterms to LLGIntegrator, retaining copy
-    LLGIntegrator llg1(alpha, to_vec(dmag, exch));
+    LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
     // we can dmag,exch fieldterms afterwards:
     exch.h(state);
     dmag.h(state);
 
     // when we use std::move, fieldterm pointers are moved-from
-    LLGIntegrator llg2(alpha, to_vec(std::move(dmag), std::move(exch)));
+    LLGIntegrator llg2(alpha, fieldterm::to_vec(std::move(dmag), std::move(exch)));
     // We can not use dmag, exch anylonger; would cause segfault:
     // exch.h(state); // segfaults
     // dmag.h(state); // segfaults
 
-    // with mv_to_vec, elements are implicitly moved from, use with care
+    // with fieldterm::mv_to_vec, elements are implicitly moved from, use with care
     DemagField dmag2(mesh, false, true, 0);
     ExchangeField exch2(A);
-    LLGIntegrator llg3(alpha, mv_to_vec(dmag2, exch2));
+    LLGIntegrator llg3(alpha, fieldterm::mv_to_vec(dmag2, exch2));
     // dmag2.h(state); // segfaults
     // exch2.h(state); // segfaults
 
@@ -49,8 +49,9 @@ int main() {
     {
         const DemagField dmag(mesh, false, true, 0);
         const ExchangeField exch(A);
-        LLGIntegrator llg1(alpha, to_vec(std::move(dmag), std::move(exch))); // does not move as dmag, exch are const
-        LLGIntegrator llg2(alpha, mv_to_vec(dmag, exch));                    // does not move as dmag, exch are const
+        LLGIntegrator llg1(
+            alpha, fieldterm::to_vec(std::move(dmag), std::move(exch))); // does not move as dmag, exch are const
+        LLGIntegrator llg2(alpha, fieldterm::mv_to_vec(dmag, exch));     // does not move as dmag, exch are const
         // we can still use them
         exch.h(state);
         dmag.h(state);
@@ -61,11 +62,11 @@ int main() {
         DemagField dmag(mesh, false, true, 0);
         ExchangeField exch(A);
 
-        // prefered way, using to_vec helper template function
-        LLGIntegrator llg1(alpha, to_vec(dmag, exch));
+        // prefered way, using fieldterm::to_vec helper template function
+        LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
 
         // copy the fieldterms into a vector-of-pointer using cp_to_uptr helper
-        LLGIntegrator llg2(alpha, {cp_to_uptr(dmag), cp_to_uptr(exch)});
+        LLGIntegrator llg2(alpha, {magnumafcpp::fieldterm::cp_to_uptr(dmag), magnumafcpp::fieldterm::cp_to_uptr(exch)});
 
         // state explicitly what's going on
         LLGIntegrator llg3(alpha, {std::unique_ptr<FieldTerm>(std::make_unique<DemagField>(dmag)),
@@ -83,8 +84,8 @@ int main() {
 
     // Example creating uptr in advance and then moving from them
     {
-        auto dmag = fieldterm_ptr<DemagField>(mesh, false, true, 0);
-        auto exch = fieldterm_ptr<ExchangeField>(A);
+        auto dmag = fieldterm::fieldterm_ptr<DemagField>(mesh, false, true, 0);
+        auto exch = fieldterm::fieldterm_ptr<ExchangeField>(A);
         LLGIntegrator llg(alpha, {std::move(dmag), std::move(exch)});
         // after std::move, the unique_ptr is set to void and should not be used anymore
         // using it leads to a segfault
