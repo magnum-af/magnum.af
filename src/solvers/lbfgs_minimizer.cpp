@@ -17,66 +17,42 @@ LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
 LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, size_t maxIter, int verbose)
     : fieldterms(std::move(llgterms)), tolerance_(tolerance), maxIter_(maxIter), verbose(verbose) {}
 
-// Energy calculation
-double LBFGS_Minimizer::E(const State& state) const {
-    double solution = 0.;
-    for (unsigned i = 0; i < fieldterms.size(); ++i) {
-        solution += fieldterms[i]->E(state);
-    }
-    return solution;
-}
-// Calculation of effective field
-af::array LBFGS_Minimizer::Heff(const State& state) const {
-    if (fieldterms.size() == 0) {
+void abort_if_size_is_zero(std::size_t size) {
+    if (size == 0) {
         std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
                               "LBFGS_Minimizer.fieldterms! Aborting...")
                   << std::endl;
         exit(EXIT_FAILURE);
     }
-    af::timer timer = af::timer::start();
-    af::array solution = fieldterms[0]->h(state);
-    for (unsigned i = 1; i < fieldterms.size(); ++i) {
-        solution += fieldterms[i]->h(state);
-    }
-    time_calc_heff_ += af::timer::stop(timer);
-    return solution;
 }
 
-std::pair<double, af::array> LBFGS_Minimizer::EnergyAndGradient(const State& state) const {
-    if (fieldterms.size() == 0) {
-        std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
-                              "_llgterms == 0. Please add at least one term to "
-                              "LBFGS_Minimizer.fieldterms! Aborting...")
-                  << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    af::timer timer = af::timer::start();
-    // Avoiding array with zeros, starting loop with second term in llgterms
-    af::array h = fieldterms[0]->h(state);
-    double energy = fieldterms[0]->E(state, h);
-    for (unsigned i = 1; i < fieldterms.size(); ++i) {
-        // Alternative:
-        // af::array h = af::constant(0, dims_vector(state.mesh),
-        // f64);//fieldterms[0]->h(state); double energy =
-        // 0;//fieldterms[0]->E(state, h); for(unsigned i = 0; i <
-        // fieldterms.size() ; ++i ){
-        af::array temp_h = fieldterms[i]->h(state);
-        h += temp_h;
-        energy += fieldterms[i]->E(state, temp_h);
-    }
-    time_calc_heff_ += af::timer::stop(timer);
-    return {energy, 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, h))};
+// af::array LBFGS_Minimizer::Gradient(const State& state) const {
+//    const auto heff = fieldterm::accumulate_heff(fieldterms, state);
+//    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff));
+//}
+
+///< Calculate gradient as energy-dissipation term of llg
+af::array Gradient(const State& state, const af::array& heff) {
+    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff));
+    // TODO: consider taking '- LLG_damping(1, m, m_x_h)'?
 }
 
-af::array LBFGS_Minimizer::Gradient(const State& state) const {
-    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, Heff(state)));
+std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms,
+                                               double& time_calc_heff_) {
+    abort_if_size_is_zero(fieldterms.size());
+    af::timer timer = af::timer::start();
+    const auto [heff, energy] = fieldterm::accumulate_heff_and_E(fieldterms, state);
+    time_calc_heff_ += af::timer::stop(timer);
+    return {energy, Gradient(state, heff)};
 }
 
 double mydot(const af::array& a, const af::array& b) { return full_inner_product(a, b); }
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
-double LBFGS_Minimizer::mxmxhMax(const State& state) const { return max_4d_abs(Gradient(state)); }
+double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
+    return max_4d_abs(Gradient(state, fieldterm::accumulate_heff(fieldterms, state)));
+}
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 // TODO Currently Minimize() fails when called second time, i.e. when m already
@@ -93,9 +69,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     // double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolerance_);
     double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
-    // double f = this->E(state);
-    // af::array grad = this->Gradient(state);
-    auto [f, grad] = EnergyAndGradient(state);
+    auto [f, grad] = EnergyAndGradient(state, fieldterms, time_calc_heff_);
 
     // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
     // not calculating Heff double
@@ -255,7 +229,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     if (this->verbose > 0) {
         State temp = state;
         temp.m = grad;
-        auto mxh = this->mxmxhMax(temp);
+        auto mxh = mxmxhMax(temp, fieldterms);
         auto deltaF = f - f_old;
         std::cout << "aa> " << globIter << " " << deltaF << " "
                   << " " << mxh << std::endl;
@@ -356,7 +330,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
         state.m = normalize_handle_zero_vectors(state.m);
-        auto [f, g] = EnergyAndGradient(state);
+        auto [f, g] = EnergyAndGradient(state, fieldterms, time_calc_heff_);
         nfev++;
         double dg = mydot(g, s);
         double ftest1 = finit + stp * dgtest;

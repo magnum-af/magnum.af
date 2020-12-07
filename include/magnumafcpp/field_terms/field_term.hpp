@@ -16,14 +16,12 @@ class FieldTerm {
     virtual double E(const State& state, const af::array& h) const = 0;
     /// Calculating the micromagnetic energy \f$E\f$.
     // virtual double E(const State& state) const = 0;
+
     double E(const State& state) const { return E(state, h(state)); };
-    std::pair<af::array, double> h_and_E(const State& state) {
-        const auto htemp = h(state);
-        return {htemp, E(state, htemp)};
-    }
-    auto h_and_E(const State& state) const {
+
+    std::pair<af::array, double> h_and_E(const State& state) const {
         const auto htmp = h(state);
-        return std::make_pair(htmp, E(state, htmp));
+        return {htmp, E(state, htmp)};
     };
 
     double get_cpu_time() const { return accumulated_time; };
@@ -41,6 +39,14 @@ using uptr_FieldTerm = std::unique_ptr<FieldTerm>;
 using vec_uptr_FieldTerm = std::vector<uptr_FieldTerm>;
 
 namespace fieldterm {
+
+// template <typename T> std::ostream& print_elapsed_time(std::ostream& os, const T& fieldterms) {
+template <typename T> void print_elapsed_time(const T& fieldterms, std::ostream& os = std::cout) {
+    for (const auto& elem : fieldterms) {
+        auto i = &elem - &fieldterms[0];
+        os << "[" << i++ << "] elapsed time [s]: " << elem->get_cpu_time() << std::endl;
+    }
+}
 
 /// Calculate effective field by accumulating all h(state) terms in container.
 /// Expects non-empty container with at least one element

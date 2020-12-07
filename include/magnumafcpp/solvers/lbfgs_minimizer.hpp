@@ -23,13 +23,6 @@ class LBFGS_Minimizer {
     double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
 
   private:
-    af::array Gradient(const State&) const; ///< Calculate gradient as
-                                            ///< energy-dissipation term of llg
-    af::array Heff(const State& m) const;   ///< Effective Field
-    double E(const State&) const;           ///< Calculate Energy
-    std::pair<double, af::array> EnergyAndGradient(const State& state) const;
-
-    double mxmxhMax(const State& state) const; ///< TODO investigate definition, init value etc
     double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
                       const double tolf) const;
     int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,

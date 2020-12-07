@@ -30,7 +30,7 @@ af::array LLGIntegrator::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
-        return equations::dampingless_LLG(alpha, state.m, fheff(state));
+        return equations::LLG_damping(alpha, state.m, cross4(state.m, fheff(state)));
 
     } else {
         return equations::LLG(alpha, state.m, fheff(state));
