@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
     zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
-    Llg.llgterms.push_back(fieldterm::fieldterm_ptr<ExternalField>(zeeswitch));
+    Llg.llgterms.push_back(fieldterm::to_uptr<ExternalField>(zeeswitch));
     Llg.alpha = 0.02;
 
     // Switch

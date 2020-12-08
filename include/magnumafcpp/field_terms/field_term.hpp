@@ -118,7 +118,7 @@ template <typename T> std::pair<af::array, double> accumulate_heff_and_E(const T
 }
 
 // create a unique_ptr (e.g. from ctor or copy-ctor)
-template <typename T, class... Args> auto fieldterm_ptr(Args&&... args) {
+template <typename T, class... Args> auto to_uptr(Args&&... args) {
     return std::unique_ptr<FieldTerm>(std::make_unique<T>(std::forward<Args>(args)...));
 }
 

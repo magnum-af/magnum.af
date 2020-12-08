@@ -18,12 +18,10 @@ template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<
 namespace argparser {
 
 inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_posargs(int argc, char** argv) {
-    // inline std::pair<std::string, std::vector<std::string>> setup_and_get_posargs(int argc, char** argv) {
     namespace po = boost::program_options;
     namespace fs = std::filesystem;
     std::vector<std::string> posargs{};
     fs::path outdir{};
-    // std::string outdir{};
 
     const auto filename = fs::path(argv[0]).filename().string();
     po::options_description desc{"magnum.af ArgParser\nUsage: " + filename + " [options]"};
@@ -31,8 +29,6 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
     desc.add_options()("outdir,o", po::value<fs::path>(&outdir)->default_value("output_" + filename),
                        "Output directory. Will be created and is accessible via ArgParser.outdir(). Defaults to "
                        "'output_<binaryname>'.");
-    // desc.add_options()("outdir,o", po::value<std::string>(&outdir)->default_value("output_" + filename),
-    //                   "set output directory, default is output_<binaryname>");
     desc.add_options()("no-overwrite,n", "Abort if outdir already exists. Prevents file overwriting.");
     desc.add_options()("gpu,g", po::value<unsigned>(), "set GPU number");
     desc.add_options()("verbose,v", "print parsing steps");
@@ -55,7 +51,6 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
         if (vm.count("gpu")) {
             if (vm.count("verbose")) {
                 std::cout << "Setting GPU to " << vm["gpu"].as<unsigned>() << ".\n";
-                af::info();
             }
             try {
                 af::setDevice(vm["gpu"].as<unsigned>());
@@ -66,7 +61,6 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
         }
 
         if (vm.count("outdir")) {
-            // check if outdir already exists, abort if -n is set
             if (vm.count("no-overwrite") and fs::exists(fs::path(outdir))) {
                 std::cout << "active flag -n (--no-overwrite) prevents writing into already existing outdir " << outdir
                           << std::endl;
@@ -77,9 +71,10 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
             bool mkdirs = fs::create_directories(outdir);
 
             if (vm.count("verbose") and mkdirs) {
-                std::cout << "Created outdir " << outdir << std::endl;
+                std::cout << "Created outdir " << fs::absolute(outdir) << std::endl;
             } else if (vm.count("verbose")) {
-                std::cout << "Outputdir " << outdir << " already exists, possibly overwriting files ..." << std::endl;
+                std::cout << "Outputdir " << fs::absolute(outdir) << " already exists, files could be overwritten."
+                          << std::endl;
             }
         }
 
@@ -93,12 +88,22 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
             }
         }
 
-        std::ofstream ofst(outdir / "log.txt");
-        ofst << "Logging info for script reproducability." << std::endl;
-        for (int i = 0; i < argc; i++) {
-            ofst << "argv[" << i << "]= " << argv[i] << '\n';
+        // Writing logging info
+        const auto logfile = outdir / "log.txt";
+        if (vm.count("verbose")) {
+            std::cout << "Logging posargs info for script reproducability to" << fs::absolute(logfile) << std::endl;
+        }
+        std::ofstream ofst(logfile);
+        for (const auto& elem : posargs) {
+            const auto i = &elem - &posargs[0];
+            ofst << "posargs[" << i << "] = " << elem << '\n';
         }
         ofst << "GIT_HEAD_SHA1=" << GIT_HEAD_SHA1 << std::endl;
+
+        if (vm.count("verbose")) {
+            af::info();
+            std::cout << "Argument parsing finished." << std::endl;
+        }
 
     } catch (const std::exception& e) {
         std::cerr << "Exception while parsing command line arguments: " << e.what() << '\n';

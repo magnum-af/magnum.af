@@ -84,8 +84,8 @@ int main() {
 
     // Example creating uptr in advance and then moving from them
     {
-        auto dmag = fieldterm::fieldterm_ptr<DemagField>(mesh, false, true, 0);
-        auto exch = fieldterm::fieldterm_ptr<ExchangeField>(A);
+        auto dmag = fieldterm::to_uptr<DemagField>(mesh, false, true, 0);
+        auto exch = fieldterm::to_uptr<ExchangeField>(A);
         LLGIntegrator llg(alpha, {std::move(dmag), std::move(exch)});
         // after std::move, the unique_ptr is set to void and should not be used anymore
         // using it leads to a segfault
@@ -93,7 +93,7 @@ int main() {
         assert(exch == nullptr);
     }
 
-    // creating fieldterm_ptr in place:
+    // creating to_uptr in place:
     {
         LLGIntegrator llg(alpha);
         llg.llgterms.push_back(std::make_unique<DemagField>(mesh, false, true, 0));
