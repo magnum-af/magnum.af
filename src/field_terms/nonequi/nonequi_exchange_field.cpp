@@ -29,7 +29,7 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
-        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i + 1)) / 2.);
+        h.push_back((mesh.z_spacing[i] + mesh.z_spacing[i + 1]) / 2.);
     }
 
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -94,21 +94,20 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
                         // Note: skipping f-1 term as it drops out in llg:
                         // neumann bc is assumed, which would consider fictive
                         // m[-1] with value m[0]
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h.at(i2), 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h[i2], 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
                     } else if (i2 == mesh.nz - 1 && mesh.nz > 1) { // TODO check
                         // Note: skipping f+1 term as it drops out in llg:
                         // neumann bc is assumed, which would consider fictive
                         // m[n] with value m[n-1]
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h.at(i2 - 1), 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h[i2 - 1], 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                     } else if (i2 > 0 && i2 < mesh.nz - 1) {
-                        double h_divisor = h.at(i2) * h.at(i2 - 1) * (1. + h.at(i2) / h.at(i2 - 1));
+                        double h_divisor = h[i2] * h[i2 - 1] * (1. + h[i2] / h[i2 - 1]);
                         // f_{i-1} term
-                        COO_values.push_back((2. * A_exchange / constants::mu0) * (2. * h.at(i2) / h.at(i2 - 1)) /
-                                             h_divisor);
+                        COO_values.push_back((2. * A_exchange / constants::mu0) * (2. * h[i2] / h[i2 - 1]) / h_divisor);
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         // f_{i+1} term
@@ -148,7 +147,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
-        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i + 1)) / 2.);
+        h.push_back((mesh.z_spacing[i] + mesh.z_spacing[i + 1]) / 2.);
     }
 
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -257,7 +256,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            COO_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h.at(i2), 2) * 2. * A_i_p /
+                            COO_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h[i2], 2) * 2. * A_i_p /
                                                  (A_i_p + A_i));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
@@ -266,7 +265,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            COO_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h.at(i2 - 1), 2) * 2. * A_i_m /
+                            COO_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h[i2 - 1], 2) * 2. * A_i_m /
                                                  (A_i_m + A_i));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
@@ -274,10 +273,10 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                     } else if (i2 > 0 && i2 < mesh.nz - 1) {
                         const double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
-                        const double h_divisor = h.at(i2) * h.at(i2 - 1) * (1. + h.at(i2) / h.at(i2 - 1));
+                        const double h_divisor = h[i2] * h[i2 - 1] * (1. + h[i2] / h[i2 - 1]);
                         if (A_i_m != 0) {
-                            COO_values.push_back(2. * A_i / constants::mu0 * (2. * h.at(i2) / h.at(i2 - 1)) /
-                                                 h_divisor * 2. * A_i_m / (A_i_m + A_i));
+                            COO_values.push_back(2. * A_i / constants::mu0 * (2. * h[i2] / h[i2 - 1]) / h_divisor * 2. *
+                                                 A_i_m / (A_i_m + A_i));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         }
@@ -320,7 +319,7 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
-        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i + 1)) / 2.);
+        h.push_back((mesh.z_spacing[i] + mesh.z_spacing[i + 1]) / 2.);
     }
 
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -389,21 +388,20 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
                         // Note: skipping f-1 term as it drops out in
                         // llg: neumann bc is assumed, which would
                         // consider fictive m[-1] with value m[0]
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h.at(i2), 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h[i2], 2));
                         CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         csr_ia++;
                     } else if (i2 == mesh.nz - 1 && mesh.nz > 1) { // TODO check
                         // Note: skipping f+1 term as it drops out in
                         // llg: neumann bc is assumed, which would
                         // consider fictive m[n] with value m[n-1]
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h.at(i2 - 1), 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(h[i2 - 1], 2));
                         CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         csr_ia++;
                     } else if (i2 > 0 && i2 < mesh.nz - 1) {
-                        double h_divisor = h.at(i2) * h.at(i2 - 1) * (1. + h.at(i2) / h.at(i2 - 1));
+                        double h_divisor = h[i2] * h[i2 - 1] * (1. + h[i2] / h[i2 - 1]);
                         // f_{i-1} term
-                        CSR_values.push_back((2. * A_exchange / constants::mu0) * (2. * h.at(i2) / h.at(i2 - 1)) /
-                                             h_divisor);
+                        CSR_values.push_back((2. * A_exchange / constants::mu0) * (2. * h[i2] / h[i2 - 1]) / h_divisor);
                         CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         csr_ia++;
                         // f_{i+1} term
@@ -436,7 +434,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
-        h.push_back((mesh.z_spacing.at(i) + mesh.z_spacing.at(i + 1)) / 2.);
+        h.push_back((mesh.z_spacing[i] + mesh.z_spacing[i + 1]) / 2.);
     }
 
     const int dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -561,7 +559,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            CSR_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h.at(i2), 2) * 2. * A_i_p /
+                            CSR_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h[i2], 2) * 2. * A_i_p /
                                                  (A_i_p + A_i));
                             CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                             csr_ia++;
@@ -570,7 +568,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            CSR_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h.at(i2 - 1), 2) * 2. * A_i_m /
+                            CSR_values.push_back(2. * A_i / constants::mu0 * 1. / pow(h[i2 - 1], 2) * 2. * A_i_m /
                                                  (A_i_m + A_i));
                             CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
@@ -578,10 +576,10 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                     } else if (i2 > 0 && i2 < mesh.nz - 1) {
                         const double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         const double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
-                        const double h_divisor = h.at(i2) * h.at(i2 - 1) * (1. + h.at(i2) / h.at(i2 - 1));
+                        const double h_divisor = h[i2] * h[i2 - 1] * (1. + h[i2] / h[i2 - 1]);
                         if (A_i_m != 0) {
-                            CSR_values.push_back(2. * A_i / constants::mu0 * (2. * h.at(i2) / h.at(i2 - 1)) /
-                                                 h_divisor * 2. * A_i_m / (A_i_m + A_i));
+                            CSR_values.push_back(2. * A_i / constants::mu0 * (2. * h[i2] / h[i2 - 1]) / h_divisor * 2. *
+                                                 A_i_m / (A_i_m + A_i));
                             CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
                         }

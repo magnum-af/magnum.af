@@ -265,7 +265,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
         if (j == 0) {
             add_val = 0;
         } else {
-            add_val += z_spacing.at(j - 1);
+            add_val += z_spacing[j - 1];
         }
         coords[2]->SetTuple(j, &add_val);
     }

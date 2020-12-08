@@ -118,7 +118,7 @@ std::pair<af::array, Mesh> read_ascii(std::string filename, bool verbose) {
 
     // skipping all further lines starting with '#'
     while (std::getline(infile, line)) {
-        if (line.at(0) == '#') {
+        if (line[0] == '#') {
             continue;
         }
 

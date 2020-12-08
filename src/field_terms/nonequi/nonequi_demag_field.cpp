@@ -184,11 +184,11 @@ double nonequi_index_distance(const std::vector<double> spacings, const unsigned
     double result = 0;
     if (i > j) {
         for (unsigned k = i; k > j; k--) {
-            result -= spacings.at(k - 1);
+            result -= spacings[k - 1];
         }
     } else {
         for (unsigned k = i; k < j; k++) {
-            result += spacings.at(k);
+            result += spacings[k];
         }
     }
     return result;
