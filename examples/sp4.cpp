@@ -1,17 +1,11 @@
 #include "magnum_af.hpp"
+#include "util/arg_parser.hpp"
 #include <filesystem>
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-    // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++) {
-        std::cout << "argv[" << i << "]= " << argv[i] << std::endl;
-    }
-    std::string filepath(argc > 1 ? argv[1] + std::string("/") : "output_magnum.af/");
-    std::filesystem::create_directories(filepath);
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::info();
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
 
     // Parameter initialization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
@@ -31,15 +25,14 @@ int main(int argc, char** argv) {
 
     // State object
     State state(mesh, Ms, m);
-    state.write_vti(filepath + "minit");
+    state.write_vti(outdir / "minit");
 
-    auto demag = uptr_FieldTerm(std::make_unique<DemagField>(mesh, true, true, 0));
-    auto exch = uptr_FieldTerm(std::make_unique<ExchangeField>(A));
-    LLGIntegrator Llg(1, {std::move(demag), std::move(exch)});
+    DemagField dmag(mesh, true, true, 0);
+    ExchangeField exch(A);
+    LLGIntegrator Llg(1, fieldterm::to_vec(std::move(dmag), std::move(exch)));
 
-    std::ofstream stream;
+    std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
-    stream.open(filepath + "m.dat");
 
     // Relax
     StageTimer timer;
@@ -48,13 +41,13 @@ int main(int argc, char** argv) {
         stream << state << std::endl;
     }
     timer.print_stage("relax ");
-    state.write_vti(filepath + "relax");
+    state.write_vti(outdir / "relax");
 
     // Prepare switch
     af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
     zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
+    Llg.llgterms.push_back(fieldterm::fieldterm_ptr<ExternalField>(zeeswitch));
     Llg.alpha = 0.02;
 
     // Switch
@@ -62,7 +55,7 @@ int main(int argc, char** argv) {
         Llg.step(state);
         stream << state << std::endl;
     }
-    state.write_vti(filepath + "2ns");
+    state.write_vti(outdir / "2ns");
     stream.close();
     timer.print_stage("switch");
     timer.print_accumulated();
