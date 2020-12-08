@@ -58,13 +58,12 @@ int main(int argc, char** argv) {
     state.m = normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "minit_renorm").c_str());
 
-    af::timer timer_llgterms = af::timer::start();
-    LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
+    DemagField dmag(mesh);
+    ExchangeField exch(A);
+    ExternalField extr(zee_func);
+    LBFGS_Minimizer minimizer =
+        LBFGS_Minimizer(fieldterm::to_vec(std::move(dmag), std::move(exch), extr), 1e-6, 1000, 0);
     minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
-    minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh)));
-    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(A)));
-    minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     std::ofstream stream;
     stream.precision(24);
@@ -73,8 +72,12 @@ int main(int argc, char** argv) {
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++) {
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream,
-                                afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state)(0, 0, 0, 0)));
+        const auto extrHeff = extr.H_eff(state).scalar<double>();
+        const auto [mx, my, mz] = state.mean_m();
+        std::cout << "Step " << i << ": " << mx << " " << my << " " << mz << ", Hx[T]=" << constants::mu0 * extrHeff
+                  << std::endl;
+        stream << i << " " << mx << " " << my << " " << mz << " " << constants::mu0 * extrHeff << std::endl;
+        // stream << state << extrHeff << std::endl;
         if (state.steps % 10 == 0) {
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }

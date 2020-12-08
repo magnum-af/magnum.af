@@ -185,11 +185,12 @@ double LBFGS_Minimizer::Minimize(State& state) const {
                       << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
         }
 
-        // if (of_convergence.is_open()) {
-        //    of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
-        //                   << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
-        //                   << std::endl;
-        //}
+        if (of_convergence.is_open()) {
+            of_convergence << std::setprecision(std::numeric_limits<double>::digits10 + 12);
+            of_convergence << (f_old - f) / (tolerance_ * f1) << "\t"
+                           << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
+                           << std::endl;
+        }
 
         if (((f_old - f) < (tolerance_ * f1)) && (max_4d_abs(s) < (tolf2 * (1 + max_4d_abs(state.m)))) &&
             (gradNorm <= (tolf3 * f1))) {

@@ -20,6 +20,8 @@ class LBFGS_Minimizer {
 
     vec_uptr_FieldTerm fieldterms{}; // default init, as not constructed in init list
 
+    mutable std::ofstream of_convergence;
+
   private:
     double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
                       const double tolf) const;
