@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++) {
         minimizer.Minimize(state);
-        const auto extrHeff = extr.H_eff(state).scalar<double>();
+        const auto extrHeff = extr.H_eff_in_Apm(state).scalar<double>();
         const auto [mx, my, mz] = state.mean_m();
         std::cout << "Step " << i << ": " << mx << " " << my << " " << mz << ", Hx[T]=" << constants::mu0 * extrHeff
                   << std::endl;

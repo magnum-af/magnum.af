@@ -16,7 +16,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCube) {
     DemagField demag(mesh);
 
     std::cout.precision(24);
-    double demagE = demag.Energy(state);
+    double demagE = demag.Energy_in_J(state);
     double analytic = 1. / 6. * x * y * z * pow(state.Ms, 2) * constants::mu0;
 
     // EXPECT_NEAR(llgE, analytic, (llgE+analytic)/2. * 1e-12);// cpu precision
@@ -42,7 +42,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCubeWithAirbox) {
     DemagField demag(mesh);
 
     std::cout.precision(24);
-    double demagE = demag.Energy(state);
+    double demagE = demag.Energy_in_J(state);
     double analytic = 1. / 6. * x * y * z * pow(state.Ms, 2) * constants::mu0;
 
     // EXPECT_NEAR(llgE, analytic, (llgE+analytic)/2. * 1e-12);// cpu precision

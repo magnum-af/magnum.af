@@ -24,10 +24,10 @@ constexpr double hbar = 1.0545718e-34; ///< [J s] Reduced Planck constant
 
 namespace conversion {
 /// Conversion of Ampere per meter [A/m] to Tesla [T]
-template <typename T> T Am_to_Tesla(T Ampere_per_meter) { return Ampere_per_meter * constants::mu0; }
+template <typename T> T Apm_to_Tesla(T Ampere_per_meter) { return Ampere_per_meter * constants::mu0; }
 
 /// Conversion of Tesla [T] to Ampere per meter [A/m]
-template <typename T> T Tesla_to_Am(T Tesla) { return Tesla / constants::mu0; }
+template <typename T> T Tesla_to_Apm(T Tesla) { return Tesla / constants::mu0; }
 
 /// Conversion of Joule [J] to electron volt [eV]
 template <typename T> T J_to_eV(T Joule) { return Joule / constants::e_abs; }

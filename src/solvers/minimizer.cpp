@@ -8,7 +8,7 @@ namespace magnumafcpp {
 
 // Energy calculation
 // only for testing, remove?
-double Minimizer::E(const State& state) const { return fieldterm::accumulate_E(fieldterms, state); }
+double Minimizer::E(const State& state) const { return fieldterm::accumulate_E_in_J(fieldterms, state); }
 
 Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples, bool info)
     : scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info) {}
@@ -21,7 +21,7 @@ af::array Minimizer::h(const State& state) const {
                   << std::endl;
         exit(EXIT_FAILURE);
     }
-    const auto solution = fieldterm::accumulate_heff(fieldterms, state);
+    const auto solution = fieldterm::accumulate_Heff_in_Apm(fieldterms, state);
     return solution;
 }
 

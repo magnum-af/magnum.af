@@ -7,9 +7,9 @@
 namespace magnumafcpp {
 
 // Energy calculation
-double Stochastic_LLG::E(const State& state) const { return fieldterm::accumulate_E(fieldterms, state); }
+double Stochastic_LLG::E(const State& state) const { return fieldterm::accumulate_E_in_J(fieldterms, state); }
 
-af::array Stochastic_LLG::fheff(const State& state) const { return fieldterm::accumulate_heff(fieldterms, state); }
+af::array Stochastic_LLG::fheff(const State& state) const { return fieldterm::accumulate_Heff_in_Apm(fieldterms, state); }
 
 af::array Stochastic_LLG::detfdmdt(const State& state) const {
     fdmdt_calls++;

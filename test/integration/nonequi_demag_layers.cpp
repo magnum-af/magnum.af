@@ -31,14 +31,14 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
 
     af::array h_demag = demag.h(state);
     // testing state.Ms
-    EXPECT_NEAR(demag.Energy(state), E_analytic, 3.7e-19);
-    EXPECT_NEAR(demag.Energy(state, h_demag), E_analytic, 3.7e-19);
+    EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-19);
+    EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-19);
 
     // testing state.Ms_field switch
     state.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
     h_demag = demag.h(state);
-    EXPECT_NEAR(demag.Energy(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
-    EXPECT_NEAR(demag.Energy(state, h_demag), E_analytic, 3.7e-20);
+    EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
+    EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-20);
 }
 
 TEST(NonequiDemagField, EnergyTest) {
@@ -77,7 +77,7 @@ TEST(NonequiDemagField, EnergyTest) {
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     // testing E(state)
-    EXPECT_NEAR(demag_ed.Energy(state_ed), demag_ne.Energy(state_ne),
+    EXPECT_NEAR(demag_ed.Energy_in_J(state_ed), demag_ne.Energy_in_J(state_ne),
                 2e-24); // Note: this is for opencl, cpu and cuda achieve 3e-27
 
     // testing E(state, heff)

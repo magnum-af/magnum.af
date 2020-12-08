@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
     af::timer t = af::timer::start();
     llg.relax(state, 1e-12, 100, 100);
 
-    af::print("exch", af::mean(af::mean(af::mean(af::mean(llg.llgterms[0]->H_eff(state), 0), 1), 2), 3));
-    af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[1]->H_eff(state), 0), 1), 2), 3));
-    af::print("ani ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[2]->H_eff(state), 0), 1), 2), 3));
+    af::print("exch", af::mean(af::mean(af::mean(af::mean(llg.llgterms[0]->H_eff_in_Apm(state), 0), 1), 2), 3));
+    af::print("dmi ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[1]->H_eff_in_Apm(state), 0), 1), 2), 3));
+    af::print("ani ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[2]->H_eff_in_Apm(state), 0), 1), 2), 3));
 
     std::cout << state << std::endl;
     vti_writer_atom(state.m, mesh, filepath + "relax");
