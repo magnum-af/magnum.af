@@ -17,8 +17,6 @@ class FieldTerm {
     /// Calculating the micromagnetic energy \f$E\f$.
     // virtual double E(const State& state) const = 0;
 
-    double E(const State& state) const { return Energy(state, H_eff(state)); };
-
     std::pair<af::array, double> h_and_E(const State& state) const {
         const auto htmp = H_eff(state);
         return {htmp, Energy(state, htmp)};
@@ -37,6 +35,8 @@ class FieldTerm {
     virtual double E(const State& state, const af::array& h) const = 0;
 
   private:
+    double E(const State& state) const { return Energy(state, H_eff(state)); };
+
     virtual af::array h(const State& state) const = 0;
     mutable double accumulated_time_Heff{0.};
     mutable double accumulated_time_Energy{0.};

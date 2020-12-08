@@ -16,7 +16,6 @@ class ExternalField : public FieldTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    using FieldTerm::E;
     virtual double E(const State& state, const af::array& h) const override;
 
     void set_homogeneous_field(const double x, const double y,

@@ -48,7 +48,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             CubicAnisotropyField Kc1_caniso(Kc1, 0, 0, c1, c2);
             const double Kc1_E_density_analytic = num_of_cells * Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
             const double Kc1_E_analytic = Kc1_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc1_E_calculated = Kc1_caniso.E(state);
+            const double Kc1_E_calculated = Kc1_caniso.Energy(state);
             const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 2e-36);
             EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 2e-9);
@@ -68,7 +68,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             CubicAnisotropyField Kc1_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
             const double Kc1_E_density_analytic = num_of_cells * Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
             const double Kc1_E_analytic = Kc1_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc1_E_calculated = Kc1_caniso.E(state);
+            const double Kc1_E_calculated = Kc1_caniso.Energy(state);
             const double Kc1_E_density_calculated = Kc1_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc1_E_calculated, Kc1_E_analytic, 2e-36);
             EXPECT_NEAR(Kc1_E_density_calculated, Kc1_E_density_analytic, 3e-9);
@@ -81,7 +81,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             CubicAnisotropyField Kc2_caniso(0, Kc2, 0, c1, c2);
             const double Kc2_E_density_analytic = num_of_cells * Kc2 * (c1m2 * c2m2 * c3m2);
             const double Kc2_E_analytic = Kc2_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc2_E_calculated = Kc2_caniso.E(state);
+            const double Kc2_E_calculated = Kc2_caniso.Energy(state);
             const double Kc2_E_density_calculated = Kc2_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc2_E_calculated, Kc2_E_analytic, 1e-36);
             EXPECT_NEAR(Kc2_E_density_calculated, Kc2_E_density_analytic, 1e-10);
@@ -101,7 +101,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             CubicAnisotropyField Kc2_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
             const double Kc2_E_density_analytic = num_of_cells * Kc2 * (c1m2 * c2m2 * c3m2);
             const double Kc2_E_analytic = Kc2_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc2_E_calculated = Kc2_caniso.E(state);
+            const double Kc2_E_calculated = Kc2_caniso.Energy(state);
             const double Kc2_E_density_calculated = Kc2_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc2_E_calculated, Kc2_E_analytic, 1e-36);
             EXPECT_NEAR(Kc2_E_density_calculated, Kc2_E_density_analytic, 1e-10);
@@ -117,7 +117,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double c3m4 = std::pow(dot_product(c3, m), 4);
             const double Kc3_E_density_analytic = num_of_cells * Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc3_E_calculated = Kc3_caniso.E(state);
+            const double Kc3_E_calculated = Kc3_caniso.Energy(state);
             const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 5e-37);
             EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 5e-10);
@@ -140,7 +140,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             const double c3m4 = std::pow(dot_product(c3, m), 4);
             const double Kc3_E_density_analytic = num_of_cells * Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
-            const double Kc3_E_calculated = Kc3_caniso.E(state);
+            const double Kc3_E_calculated = Kc3_caniso.Energy(state);
             const double Kc3_E_density_calculated = Kc3_E_calculated / (mesh.dx * mesh.dy * mesh.dz);
             EXPECT_NEAR(Kc3_E_calculated, Kc3_E_analytic, 5e-37);
             EXPECT_NEAR(Kc3_E_density_calculated, Kc3_E_density_analytic, 5e-10);
