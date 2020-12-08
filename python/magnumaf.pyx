@@ -1347,8 +1347,6 @@ cdef class LBFGS_Minimizer:
         self._thisptr.fieldterms.pop_back()
     def minimize(self, State state):
         return self._thisptr.Minimize(deref(state._thisptr))
-    def pyGetTimeCalcHeff(self):
-        return self._thisptr.GetTimeCalcHeff()
 
 
 class Constants:

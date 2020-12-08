@@ -8,7 +8,7 @@ namespace magnumafcpp {
 class AtomisticDipoleDipoleField : public AtomTerm {
   public:
     virtual af::array h(const State& state) const override;
-    AtomisticDipoleDipoleField(Mesh);
+    explicit AtomisticDipoleDipoleField(Mesh);
 
   private:
     af::array Nfft;

@@ -65,7 +65,6 @@ class State {
 
     bool verbose{true};
     bool mute_warning{false};
-    bool afsync{false};
 
   private:
     ///< Number of cells with Ms != 0

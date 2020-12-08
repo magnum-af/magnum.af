@@ -21,9 +21,7 @@ af::array Minimizer::h(const State& state) const {
                   << std::endl;
         exit(EXIT_FAILURE);
     }
-    af::timer timer = af::timer::start();
     const auto solution = fieldterm::accumulate_heff(fieldterms, state);
-    time_h += af::timer::stop(timer);
     return solution;
 }
 
@@ -74,9 +72,7 @@ void Minimizer::minimize(State& state) const {
     af::timer timer = af::timer::start();
 
     while (last_dm_max.size() < samples || *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) > dm_max) {
-        af::timer t;
-        if (info)
-            t = af::timer::start();
+        af::timer t = af::timer::start();
         af::array m_next = this->m_next(state, tau);
         af::array dm = this->dm(state);
 

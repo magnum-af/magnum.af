@@ -22,7 +22,6 @@ AtomisticUniaxialAnisotropyField::AtomisticUniaxialAnisotropyField(const double 
       K_atom_axis(get_normalized_vector(std::array<double, 3>{K_atom_axis_x, K_atom_axis_y, K_atom_axis_z})) {}
 
 af::array AtomisticUniaxialAnisotropyField::h(const State& state) const {
-    af::timer timer_anisotropy = af::timer::start();
     // Normal vector
     af::array eu = af::array(state.m.dims(), f64);
     eu(af::span, af::span, af::span, 0) = K_atom_axis[0];
@@ -31,11 +30,6 @@ af::array AtomisticUniaxialAnisotropyField::h(const State& state) const {
     af::array anisotropy = eu * state.m;
     anisotropy = af::sum(anisotropy, 3);
     anisotropy = af::tile(anisotropy, 1, 1, 1, 3);
-
-    if (state.afsync) {
-        af::sync();
-    }
-    accumulated_time += af::timer::stop(timer_anisotropy);
     return 2 * K_atom / (constants::mu0 * state.Ms) * anisotropy * eu;
 }
 

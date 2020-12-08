@@ -38,12 +38,9 @@ af::array Gradient(const State& state, const af::array& heff) {
     // TODO: consider taking '- LLG_damping(1, m, m_x_h)'?
 }
 
-std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms,
-                                               double& time_calc_heff_) {
+std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {
     abort_if_size_is_zero(fieldterms.size());
-    af::timer timer = af::timer::start();
     const auto [heff, energy] = fieldterm::accumulate_heff_and_E(fieldterms, state);
-    time_calc_heff_ += af::timer::stop(timer);
     return {energy, Gradient(state, heff)};
 }
 
@@ -69,7 +66,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     // double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolerance_);
     double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
-    auto [f, grad] = EnergyAndGradient(state, fieldterms, time_calc_heff_);
+    auto [f, grad] = EnergyAndGradient(state, fieldterms);
 
     // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
     // not calculating Heff double
@@ -330,7 +327,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
         state.m = normalize_handle_zero_vectors(state.m);
-        auto [f, g] = EnergyAndGradient(state, fieldterms, time_calc_heff_);
+        auto [f, g] = EnergyAndGradient(state, fieldterms);
         nfev++;
         double dg = mydot(g, s);
         double ftest1 = finit + stp * dgtest;

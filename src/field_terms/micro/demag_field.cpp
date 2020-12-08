@@ -78,8 +78,6 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthrea
                                    in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
 af::array DemagField::h(const State& state) const {
-    af::timer timer_demagsolve = af::timer::start();
-
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
     if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
         std::cout << "DemagField::h: state.m is of type " << state.m.type() << ", converting Nfft type from "
@@ -123,15 +121,9 @@ af::array DemagField::h(const State& state) const {
     af::array h_field;
     if (nz_exp(state.mesh.nz) == 1) {
         h_field = af::fftC2R<2>(hfft);
-        if (state.afsync)
-            af::sync();
-        accumulated_time += af::timer::stop(timer_demagsolve);
         return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
     } else {
         h_field = af::fftC2R<3>(hfft);
-        if (state.afsync)
-            af::sync();
-        accumulated_time += af::timer::stop(timer_demagsolve);
         return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
                        af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
     }

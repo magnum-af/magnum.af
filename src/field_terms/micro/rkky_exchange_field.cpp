@@ -16,12 +16,8 @@ RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_val
                            *(new af::array(*((void**)rkky_indices))), verbose)) {}
 
 af::array RKKYExchangeField::h(const State& state) const {
-    af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(aftimer);
     if (state.Ms_field.isempty()) {
         return exch / state.Ms;
     } else {
@@ -43,9 +39,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
                                              const bool verbose) const {
     printf("%s RKKYExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
     // matrix values,  of length "number of elements"
     std::vector<double> CSR_values;

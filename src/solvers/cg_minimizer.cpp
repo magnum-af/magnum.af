@@ -14,27 +14,15 @@ void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
     }
 }
 
-void sync(const State& state) {
-    if (state.afsync) {
-        af::sync();
-    }
-}
-
 // Calculation of effective field
 af::array CG_Minimizer::Heff(const State& state) const {
     abort_on_empty_size(fieldterms);
-    af::timer timer = af::timer::start();
     const auto solution = fieldterm::accumulate_heff(fieldterms, state);
-    sync(state);
-    time_calc_heff_ += af::timer::stop(timer);
     return solution;
 }
 
 std::pair<double, af::array> CG_Minimizer::EnergyAndGradient(const State& state) const {
     abort_on_empty_size(fieldterms);
-    af::timer timer = af::timer::start();
-    sync(state);
-    time_calc_heff_ += af::timer::stop(timer);
     const auto [heff, energy] = fieldterm::accumulate_heff_and_E(fieldterms, state);
     return {energy, 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff))};
 }

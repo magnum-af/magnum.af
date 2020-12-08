@@ -11,28 +11,71 @@ namespace magnumafcpp {
 class FieldTerm {
   public:
     virtual ~FieldTerm() = default;
-    virtual af::array h(const State& state) const = 0;
-    ///< Calculating the micromagnetic energy from the h field
-    virtual double E(const State& state, const af::array& h) const = 0;
+    af::array H_eff(const State& state) const;
+    double Energy(const State& state, const af::array& h) const;
+    double Energy(const State& state) const;
     /// Calculating the micromagnetic energy \f$E\f$.
     // virtual double E(const State& state) const = 0;
 
-    double E(const State& state) const { return E(state, h(state)); };
+    double E(const State& state) const { return Energy(state, H_eff(state)); };
 
     std::pair<af::array, double> h_and_E(const State& state) const {
-        const auto htmp = h(state);
-        return {htmp, E(state, htmp)};
+        const auto htmp = H_eff(state);
+        return {htmp, Energy(state, htmp)};
     };
 
-    double get_cpu_time() const { return accumulated_time; };
+    double get_cpu_time() const { return accumulated_time_Heff + accumulated_time_Energy; };
+    std::pair<double, double> elapsed_time_Heff_and_Energy() const {
+        return {accumulated_time_Heff, accumulated_time_Energy};
+    }
 
     /// For wrapping only: pointer to h()
-    virtual long int h_ptr(const State& state) const { return (long int)(new af::array(h(state)))->get(); }
+    virtual long int h_ptr(const State& state) const { return (long int)(new af::array(H_eff(state)))->get(); }
 
   protected:
-    mutable double accumulated_time{0.};
+    ///< Calculating the micromagnetic energy from the h field
+    virtual double E(const State& state, const af::array& h) const = 0;
+
   private:
+    virtual af::array h(const State& state) const = 0;
+    mutable double accumulated_time_Heff{0.};
+    mutable double accumulated_time_Energy{0.};
 };
+
+constexpr bool timing_is_on{true};
+
+inline af::array FieldTerm::H_eff(const State& state) const {
+    if (timing_is_on) {
+        af::timer timer = af::timer::start();
+        const auto result = h(state);
+        accumulated_time_Heff += timer.stop();
+        return result;
+    } else {
+        return h(state);
+    }
+}
+
+inline double FieldTerm::Energy(const State& state, const af::array& h) const {
+    if (timing_is_on) {
+        af::timer timer = af::timer::start();
+        const auto result = E(state, h);
+        accumulated_time_Energy += timer.stop();
+        return result;
+    } else {
+        return E(state, h);
+    }
+}
+
+inline double FieldTerm::Energy(const State& state) const {
+    if (timing_is_on) {
+        af::timer timer = af::timer::start();
+        const auto result = E(state, H_eff(state));
+        accumulated_time_Energy += timer.stop();
+        return result;
+    } else {
+        return E(state, H_eff(state));
+    }
+}
 
 // Aliases used to initialize objects wich inherit from this class
 using uptr_FieldTerm = std::unique_ptr<FieldTerm>;
@@ -43,22 +86,23 @@ namespace fieldterm {
 // template <typename T> std::ostream& print_elapsed_time(std::ostream& os, const T& fieldterms) {
 template <typename T> void print_elapsed_time(const T& fieldterms, std::ostream& os = std::cout) {
     for (const auto& elem : fieldterms) {
-        auto i = &elem - &fieldterms[0];
-        os << "[" << i++ << "] elapsed time [s]: " << elem->get_cpu_time() << std::endl;
+        const auto i = &elem - &fieldterms[0];
+        const auto [H_eff, Energy] = elem->elapsed_time_Heff_and_Energy();
+        os << "[" << i << "] elapsed time [s]: H_eff: " << H_eff << ", Energy: " << Energy << std::endl;
     }
 }
 
 /// Calculate effective field by accumulating all h(state) terms in container.
 /// Expects non-empty container with at least one element
 template <typename T> af::array accumulate_heff(const T& fieldterms, const State& state) {
-    return std::accumulate(std::begin(fieldterms) + 1, std::end(fieldterms), fieldterms[0]->h(state),
-                           [&state](const auto& sum, const auto& elem) { return sum + elem->h(state); });
+    return std::accumulate(std::begin(fieldterms) + 1, std::end(fieldterms), fieldterms[0]->H_eff(state),
+                           [&state](const auto& sum, const auto& elem) { return sum + elem->H_eff(state); });
 }
 
-/// Accumulates E(state) of all fieldterms
+/// Accumulates Energy(state) of all fieldterms
 template <typename T> double accumulate_E(const T& fieldterms, const State& state) {
     return std::accumulate(std::begin(fieldterms), std::end(fieldterms), double{},
-                           [&state](const auto& sum, const auto& elem) { return sum + elem->E(state); });
+                           [&state](const auto& sum, const auto& elem) { return sum + elem->Energy(state); });
 }
 
 template <typename T, typename U> std::pair<T, U> operator+(const std::pair<T, U>& l, const std::pair<T, U>& r) {

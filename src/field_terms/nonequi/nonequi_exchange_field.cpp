@@ -6,12 +6,8 @@
 namespace magnumafcpp {
 
 af::array NonequiExchangeField::h(const State& state) const {
-    af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, nemesh.nx, nemesh.ny, nemesh.nz, 3);
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(aftimer);
     if (state.Ms_field.isempty()) {
         return exch / state.Ms;
     } else {
@@ -29,9 +25,7 @@ unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Nonequ
 af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
@@ -150,9 +144,7 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
@@ -324,9 +316,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
 af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {
@@ -442,9 +432,7 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
     printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
     for (unsigned int i = 0; i < mesh.z_spacing.size() - 1; i++) {

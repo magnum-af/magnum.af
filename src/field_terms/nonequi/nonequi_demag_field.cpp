@@ -14,7 +14,6 @@ inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }
 inline unsigned ny_expanded(unsigned ny) { return 2 * ny; }
 
 af::array NonequiDemagField::h(const State& state) const {
-    af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms_field.isempty()) {
@@ -60,20 +59,12 @@ af::array NonequiDemagField::h(const State& state) const {
     af::array one_over_tau_vec = af::array(1, 1, nemesh.nz, 1, f64);
     for (unsigned i = 0; i < nemesh.nz; i++) {
         one_over_tau_vec(0, 0, i, 0) = 1. / (nemesh.dx * nemesh.dy * nemesh.z_spacing[i]);
-        // std::cout << afvalue(one_over_tau_vec(0, 0, i, 0)) << "\n";
     }
-    // af::print("tau", one_over_tau_vec);
     one_over_tau_vec = af::tile(one_over_tau_vec, nemesh.nx, nemesh.ny, 1, 3);
-    // af::print("tau", one_over_tau_vec);
 
     // IFFT reversing padding
     af::array h_field;
     h_field = af::fftC2R<2>(hfft);
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_demagsolve);
-    // return h_field(af::seq(0, nx_expanded(nemesh.nx)/2-1), af::seq(0,
-    // ny_expanded(nemesh.ny)/2-1));
     return one_over_tau_vec *
            h_field(af::seq(0, nx_expanded(nemesh.nx) / 2 - 1), af::seq(0, ny_expanded(nemesh.ny) / 2 - 1));
 }

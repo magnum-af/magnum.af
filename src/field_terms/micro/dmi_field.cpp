@@ -51,7 +51,6 @@ DmiField::DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, d
 /// Rev. B 88 184422
 ///
 af::array DmiField::h(const State& state) const {
-    af::timer timer_dmi = af::timer::start();
     // Normal vector
     double norm = sqrt(pow(D_axis[0], 2) + pow(D_axis[1], 2) + pow(D_axis[2], 2));
     af::array n = af::array(state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);
@@ -98,9 +97,6 @@ af::array DmiField::h(const State& state) const {
     // TODO causes segfault//
     // apply_boundary_condition(second, state);
 
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_dmi);
     // if (state.Ms_field.isempty()){
     //  return 2.* material.D/(constants::mu0*state.Ms) * (first-second);//Note:
     //  Js=mu0*Ms

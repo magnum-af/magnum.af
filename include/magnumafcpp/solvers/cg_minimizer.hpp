@@ -18,11 +18,9 @@ class CG_Minimizer {
   public:
     vec_uptr_FieldTerm fieldterms{};
     void Minimize(State&) const;                                // Minimization routine
-    double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
   private:
     af::array Heff(const State& m) const; ///< Effective Field
     std::pair<double, af::array> EnergyAndGradient(const State& state) const;
-    mutable double time_calc_heff_{0}; ///< Timer measuring calls to effective field _h
 };
 
 } // namespace magnumafcpp

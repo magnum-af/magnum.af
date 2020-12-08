@@ -11,13 +11,10 @@ inline unsigned nz_exp(unsigned nz) { return (nz == 1) ? 1 : 2 * nz; }
 
 af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, double dz);
 
-AtomisticDipoleDipoleField::AtomisticDipoleDipoleField(Mesh mesh) {
-    Nfft = N_atomistic(nx_exp(mesh.nx), ny_exp(mesh.ny), nz_exp(mesh.nz), mesh.dx, mesh.dy, mesh.dz);
-    // h   =af::array (nx_exp(mesh.nx)    , ny_exp(mesh.ny), nz_exp(mesh.nz), 3, f64);
-}
+AtomisticDipoleDipoleField::AtomisticDipoleDipoleField(Mesh mesh)
+    : Nfft(N_atomistic(nx_exp(mesh.nx), ny_exp(mesh.ny), nz_exp(mesh.nz), mesh.dx, mesh.dy, mesh.dz)) {}
 
 af::array AtomisticDipoleDipoleField::h(const State& state) const {
-    af::timer timer_demagsolve = af::timer::start();
     // FFT with zero-padding of the m field
     af::array mfft;
     if (nz_exp(state.mesh.nz) == 1) {
@@ -45,19 +42,11 @@ af::array AtomisticDipoleDipoleField::h(const State& state) const {
     af::array h_field;
     if (nz_exp(state.mesh.nz) == 1) {
         h_field = af::fftC2R<2>(hfft);
-        // af::print("h_dip", state.Ms * h_field(seq(0, nx_exp(state.mesh.nx)/2-1),
-        // seq(0, ny_exp(state.mesh.ny)/2-1)));//TODO hack
-        if (state.afsync)
-            af::sync();
-        accumulated_time += af::timer::stop(timer_demagsolve);
         return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1),
                                   af::seq(0, ny_exp(state.mesh.ny) / 2 - 1)); // TODO consider p density, then we
                                                                               // have to multip at m before fft
     } else {
         h_field = af::fftC2R<3>(hfft);
-        if (state.afsync)
-            af::sync();
-        accumulated_time += af::timer::stop(timer_demagsolve);
         return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
                                   af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
     }

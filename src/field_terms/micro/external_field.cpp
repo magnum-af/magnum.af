@@ -23,9 +23,6 @@ void ExternalField::set_homogeneous_field(const double x, const double y, const 
 }
 
 af::array ExternalField::h(const State& state) const {
-    // af::timer timer = af::timer::start();
-    // if(state.afsync) sync();
-    // af_time += af::timer::stop(timer);
     if (is_lamda) {
         return lamda_callback(state);
     } else if (callback) {

@@ -20,8 +20,6 @@ class LBFGS_Minimizer {
 
     vec_uptr_FieldTerm fieldterms{}; // default init, as not constructed in init list
 
-    double GetTimeCalcHeff() const { return time_calc_heff_; }; ///< Accumulated time for calculation of Heff.
-
   private:
     double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
                       const double tolf) const;
@@ -30,7 +28,6 @@ class LBFGS_Minimizer {
     int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp,
               double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) const;
 
-    mutable double time_calc_heff_{0}; ///< Timer measuring calls to effective field _h
     const double tolerance_;           ///< Error tolerance with default 1e-6
     const size_t maxIter_;             ///< Maximum number of iterations
     const int verbose;                 ///< Setting output options, valid values are 0, 1, 2, 3, 4

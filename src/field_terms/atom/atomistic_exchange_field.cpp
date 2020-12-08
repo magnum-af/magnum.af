@@ -6,8 +6,6 @@ namespace magnumafcpp {
 AtomisticExchangeField::AtomisticExchangeField(double J_atom) : J_atom(J_atom) {}
 
 af::array AtomisticExchangeField::h(const State& state) const {
-    af::timer timer_solve = af::timer::start();
-
     af::array filtr = af::constant(0.0, 3, 3, 3, 3, f64);
     filtr(0, 1, 1, af::span) = 1.;
     filtr(2, 1, 1, af::span) = 1.;
@@ -38,10 +36,6 @@ af::array AtomisticExchangeField::h(const State& state) const {
 
     // convolution
     af::array mj = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_solve);
     return J_atom / (constants::mu0 * state.Ms) * mj;
 }
 // return state.material.J/(state.mesh.dx*constants::mu0) * mj;

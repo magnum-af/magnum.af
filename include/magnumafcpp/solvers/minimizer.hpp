@@ -18,8 +18,6 @@ class Minimizer {
 
     void minimize(State&) const; // Minimization routine
 
-    double get_time_h() const { return time_h; };
-
   private:
     af::array h(const State& m) const; // Effective Field
     af::array dm(const State& state) const;
@@ -27,8 +25,6 @@ class Minimizer {
     double E(const State& state) const; // only for testing, remove?
 
     vec_uptr_FieldTerm fieldterms;
-
-    mutable double time_h{0};
 
     std::string scheme;
     double tau_min;

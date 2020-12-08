@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
         current_step = i;
         llg.relax(state);
         // using external instead of llg.llgterms only possible with shared_ptr
-        const double Hx_component = llg.llgterms[2]->h(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
+        const double Hx_component = llg.llgterms[2]->H_eff(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
         const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
         const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
         abs_my_pin.push_back(std::abs(my_z0));

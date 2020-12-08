@@ -44,7 +44,6 @@ ExchangeField::ExchangeField(long int A_field_ptr)
 }
 
 af::array ExchangeField::h_withedges(const State& state) const {
-    af::timer timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
     // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -68,9 +67,6 @@ af::array ExchangeField::h_withedges(const State& state) const {
     exch(af::span, af::span, 0, af::span) += state.m(af::span, af::span, 0, af::span) / pow(state.mesh.dz, 2);
     exch(af::span, af::span, -1, af::span) += state.m(af::span, af::span, -1, af::span) / pow(state.mesh.dz, 2);
 
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
@@ -90,7 +86,6 @@ af::array ExchangeField::h_withedges(const State& state) const {
 // neglected as arrayfire is extremely slow with indexing operations NOTE: This
 // yields no longer the physical exchange field but optimizes the caluclation
 af::array ExchangeField::h(const State& state) const {
-    af::timer timer_exchsolve = af::timer::start();
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
     // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -101,9 +96,6 @@ af::array ExchangeField::h(const State& state) const {
     filtr(1, 1, 0) = 1 / pow(state.mesh.dz, 2);
     filtr(1, 1, 2) = 1 / pow(state.mesh.dz, 2);
     af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_exchsolve);
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {

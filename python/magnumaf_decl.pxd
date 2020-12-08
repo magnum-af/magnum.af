@@ -209,7 +209,6 @@ cdef extern from "solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
         vector[unique_ptr[FieldTerm]] fieldterms;
         LBFGS_Minimizer(vector[unique_ptr[FieldTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
         double Minimize(State& state);
-        double GetTimeCalcHeff();
 
 cdef extern from "func.hpp" namespace "magnumafcpp":
     cdef cppclass WrappedArray:

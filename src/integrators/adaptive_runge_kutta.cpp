@@ -60,7 +60,7 @@ void AdaptiveRungeKutta::step(State& state) {
     time_allsteps_ += af::timer::stop(timer_allsteps);
     state.steps++;
     this->accumulated_steps++;
-    af::eval(state.m);
+    // TODO// might prevent crash// af::eval(state.m);
 }
 
 // Runge-Kutta-Fehlberg method with stepsize control

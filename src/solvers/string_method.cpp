@@ -127,7 +127,7 @@ void StringMethod::vec_normalize() {
     for (unsigned int i = 0; i < images.size(); i++) {
         images[i].m = normalize_handle_zero_vectors(images[i].m);
         // af::eval avoids JIT crash here!
-        af::eval(images[i].m);
+        af::eval(images[i].m); // TODO reassess necessity for newer af-versions
     }
 }
 

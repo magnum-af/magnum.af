@@ -16,8 +16,6 @@ AtomisticDmiField::AtomisticDmiField(double D_atom, double D_atom_axis_x, double
       D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
 
 af::array AtomisticDmiField::h(const State& state) const {
-    af::timer timer_dmi = af::timer::start();
-
     af::array n = af::array(state.m.dims(), f64);
     n(af::span, af::span, af::span, 0) = D_atom_axis[0];
     n(af::span, af::span, af::span, 1) = D_atom_axis[1];
@@ -47,10 +45,6 @@ af::array AtomisticDmiField::h(const State& state) const {
     // Expand for fd1 convolution
     second = tile(second, 1, 1, 1, 3);
     second = convolve(second, filtr_fd1, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-    if (state.afsync) {
-        af::sync();
-    }
-    accumulated_time += af::timer::stop(timer_dmi);
     return D_atom / (constants::mu0 * state.Ms) * (first - second);
 }
 

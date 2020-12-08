@@ -39,8 +39,6 @@ NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemes
 af::array NonequiUniaxialAnisotropyField::h(const State& state) const { return calc_heff(state); }
 
 af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
-    af::timer timer_anisotropy = af::timer::start();
-
     // switch Ku1_axis and Ku1_axis_field
     af::array eu; // Array containing normal vectors
     if (Ku1_axis_field.isempty()) {
@@ -56,9 +54,6 @@ af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
     anisotropy = af::sum(anisotropy, 3);
     anisotropy = af::tile(anisotropy, 1, 1, 1, 3);
 
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(timer_anisotropy);
     if (state.Ms_field.isempty() && Ku1_field.isempty()) {
         return 2. * Ku1 / (constants::mu0 * state.Ms) * (eu * anisotropy);
     } else if (!state.Ms_field.isempty() && Ku1_field.isempty()) {

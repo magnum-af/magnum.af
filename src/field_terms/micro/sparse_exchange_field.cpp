@@ -6,12 +6,8 @@
 namespace magnumafcpp {
 
 af::array SparseExchangeField::h(const State& state) const {
-    af::timer aftimer = af::timer::start();
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
-    if (state.afsync)
-        af::sync();
-    accumulated_time += af::timer::stop(aftimer);
     if (state.Ms_field.isempty()) {
         return exch / state.Ms;
     } else {
@@ -27,9 +23,7 @@ unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& 
 }
 
 af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
@@ -108,9 +102,7 @@ af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool 
 }
 
 af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool verbose) {
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;         // matrix values,  of length "number of elements"
@@ -191,9 +183,7 @@ af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool 
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
     printf("%s SparseExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> CSR_values;         // matrix values,  of length "number of elements"
@@ -305,9 +295,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
 af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
     printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
-    af::timer t;
-    if (verbose)
-        af::timer::start();
+    af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
