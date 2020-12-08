@@ -1,22 +1,15 @@
-#include "arrayfire.h"
-#include "magnum_af.hpp"
-#include <filesystem>
-#include <numeric>
+#include "field_terms/micro/demag_field.hpp"
+#include "field_terms/micro/external_field.hpp"
+#include "field_terms/micro/rkky_exchange_field.hpp"
+#include "field_terms/micro/uniaxial_anisotropy_field.hpp"
+#include "integrators/llg_integrator.hpp"
+#include "util/arg_parser.hpp"
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-    // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
-    }
-    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
-    std::filesystem::create_directories(filepath);
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::setBackend(AF_BACKEND_CPU);
-    const double hzee_max = argc > 3 ? std::stod(argv[3]) : 0.100; //[Tesla]
-
-    af::info();
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
+    const double hzee_max = argc > 3 ? std::stod(posargs[0]) : 0.100; //[Tesla]
 
     // Parameter initialization
     // z1 i.e. m(span, span, span, 0): Pinned Layer
@@ -28,11 +21,11 @@ int main(int argc, char** argv) {
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
-    const double RKKY_mJ_per_m2 = argc > 4 ? std::stod(argv[4]) : -0.8;
+    const double RKKY_mJ_per_m2 = argc > 4 ? std::stod(posargs[1]) : -0.8;
     const double RKKY = RKKY_mJ_per_m2 * 1e-3 * dx;
     std::cout << "RKKY=" << RKKY << std::endl;
 
-    const double Ms1 = argc > 5 ? std::stod(argv[5]) : 0.37 / constants::mu0;
+    const double Ms1 = argc > 5 ? std::stod(posargs[2]) : 0.37 / constants::mu0;
     std::cout << "Ms1=" << Ms1 << std::endl;
     const double Ms2 = 1e6;
     // TODO//const double Ms2 = 0.37 / constants::mu0;
@@ -64,7 +57,7 @@ int main(int argc, char** argv) {
     Ms_field(af::span, af::span, 0) = Ms1;
     Ms_field(af::span, af::span, 1) = Ms2;
     State state(mesh, Ms_field, m);
-    state.write_vti(filepath + "minit");
+    state.write_vti(outdir / "minit");
 
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
                                                      Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
@@ -85,7 +78,7 @@ int main(int argc, char** argv) {
     auto external = uptr_FieldTerm(new ExternalField(zee_func));
     LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external), std::move(aniso)});
 
-    std::ofstream stream(filepath + "m.dat");
+    std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
 
     std::vector<double> abs_my_pin; // Pinned Layer m_y list
@@ -129,7 +122,7 @@ int main(int argc, char** argv) {
     std::cout << "mean_ref=" << mean_ref << "mean_pin=" << mean_pin << std::endl;
     std::cout << "max _ref=" << max_ref << "max _pin=" << max_pin << std::endl;
 
-    stream.open(filepath + "table.dat");
+    stream.open(outdir / "table.dat");
     stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max_ref(abs(my)) << "
               "mean_ref(abs(my)) << max_pin(abs(my)) << mean_pin(abs(my))"
            << std::endl;
@@ -137,7 +130,7 @@ int main(int argc, char** argv) {
            << "\t" << mean_pin << "\t" << std::endl;
     stream.close();
 
-    stream.open(filepath + "plotfile.gpi");
+    stream.open(outdir / "plotfile.gpi");
     stream << "set terminal pdf;" << std::endl;
     stream << "set xlabel 'H_x [T]'" << std::endl;
     stream << "set ylabel 'm_y'" << std::endl;
@@ -149,7 +142,7 @@ int main(int argc, char** argv) {
     stream << "replot" << std::endl;
     stream.close();
 
-    int syscall = std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
+    int syscall = std::system(("cd " + outdir.string() + " && gnuplot plotfile.gpi").c_str());
     if (syscall != 0) {
         std::cout << "syscall plotting with gnuplot failed" << std::endl;
     }

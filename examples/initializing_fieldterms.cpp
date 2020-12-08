@@ -1,4 +1,6 @@
-#include "magnum_af.hpp"
+#include "field_terms/micro/demag_field.hpp"
+#include "field_terms/micro/exchange_field.hpp"
+#include "integrators/llg_integrator.hpp"
 #include <cassert>
 
 // Demonstrating initialization of fieldterms

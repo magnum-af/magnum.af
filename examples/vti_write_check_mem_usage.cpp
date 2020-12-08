@@ -1,5 +1,6 @@
-#include "arrayfire.h"
-#include "magnum_af.hpp"
+#include "state.hpp"
+#include "util/arg_parser.hpp"
+#include "util/geometry.hpp"
 #include <iomanip>
 
 // from:
@@ -56,15 +57,8 @@ void process_mem_usage(double& vm_usage, double& resident_set) {
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-    // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
-    }
-    std::string filepath(argc > 1 ? argv[1] : "./");
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::info();
-
-    const int n_writes(argc > 3 ? std::stoi(argv[3]) : 200);
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
+    const int n_writes(posargs.size() > 0 ? std::stoi(posargs[0]) : 200);
     std::cout << "n_writes = " << n_writes << std::endl;
 
     Mesh mesh(100, 25, 1, 1e-9, 2e-9, 3e-9);
@@ -78,7 +72,7 @@ int main(int argc, char** argv) {
                   << 100. * ((double)i) / ((double)n_writes) << "VIRT[GB]=" << std::setw(10) << vm / 1e6
                   << "RES[GB]=" << std::setw(9) << rss / 1e6 << "VIRT=" << std::setw(8) << vm << "RES=" << std::setw(6)
                   << rss << std::endl;
-        state.write_vti(filepath + "minit");
+        state.write_vti(outdir / "minit");
     }
     return 0;
 }

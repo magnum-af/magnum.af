@@ -1,4 +1,3 @@
-#include "magnum_af.hpp"
 #include "util/arg_parser.hpp"
 
 using namespace magnumafcpp;

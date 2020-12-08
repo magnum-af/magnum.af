@@ -1,23 +1,16 @@
 // Calculates pinned layer and reference layer for a full 360 [deg] Hext-rotation
-#include "arrayfire.h"
-#include "magnum_af.hpp"
-#include <algorithm>
-#include <numeric>
+#include "field_terms/micro/demag_field.hpp"
+#include "field_terms/micro/exchange_field.hpp"
+#include "field_terms/micro/external_field.hpp"
+#include "field_terms/micro/rkky_exchange_field.hpp"
+#include "integrators/llg_integrator.hpp"
+#include "util/arg_parser.hpp"
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-    // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
-    }
-    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::setBackend(AF_BACKEND_CPU);
-    const double hzee_max = argc > 3 ? std::stod(argv[3]) : 0.100; //[Tesla]
-
-    af::info();
-
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
+    const double hzee_max = posargs.size() > 0 ? std::stod(posargs[0]) : 0.100; //[Tesla]
     // Parameter initialization
     // z1: Pinned Layer
     // z2: Reference Layer
@@ -27,11 +20,11 @@ int main(int argc, char** argv) {
     // const double dx = 10e-9;
     auto _1D_field = af::dim4(nx, ny, nz, 1);
 
-    const double RKKY_mJ_per_m2 = argc > 4 ? std::stod(argv[4]) : -0.8;
+    const double RKKY_mJ_per_m2 = posargs.size() > 1 ? std::stod(posargs[1]) : -0.8;
     const double RKKY = RKKY_mJ_per_m2 * 1e-3 * dx;
     std::cout << "RKKY=" << RKKY << std::endl;
 
-    const double Ms1 = argc > 5 ? std::stod(argv[5]) : 1.4e6;
+    const double Ms1 = posargs.size() > 2 ? std::stod(posargs[2]) : 1.4e6;
     std::cout << "Ms1=" << Ms1 << std::endl;
     const double Ms2 = 1e6;
     const double A = 15e-12; // Note: A is replaced by RKKY here
@@ -40,7 +33,7 @@ int main(int argc, char** argv) {
     // Jaf u1 . u2 A == Js H A dz
     // H = Jaf/(Js dz)
     // double Jaf = 0.72e-3;
-    double Jaf = argc > 6 ? std::stod(argv[6]) : 0.36e-3;
+    double Jaf = posargs.size() > 3 ? std::stod(posargs[3]) : 0.36e-3;
     std::cout << "Jaf=" << Jaf << std::endl;
     const double H_af = Jaf / (Ms1 * constants::mu0 * dx);
     std::cout << "H_af[Oe]=" << H_af << std::endl;
@@ -70,7 +63,7 @@ int main(int argc, char** argv) {
     Ms_field(af::span, af::span, 0) = Ms1;
     Ms_field(af::span, af::span, 1) = Ms2;
     State state(mesh, Ms_field, m);
-    state.write_vti(filepath + "minit");
+    state.write_vti(outdir / "minit");
 
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
                                                      Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
@@ -93,7 +86,7 @@ int main(int argc, char** argv) {
     LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external)});
     // LLGIntegrator llg(1, {demag, rkky, external, aniso});
 
-    std::ofstream stream(filepath + "m.dat");
+    std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
 
     std::vector<double> abs_my_rl; // Ref Layer my list
@@ -122,7 +115,7 @@ int main(int argc, char** argv) {
     std::cout << "max=" << max << std::endl;
 
     std::cout << "mean=" << mean << std::endl;
-    stream.open(filepath + "table.dat");
+    stream.open(outdir / "table.dat");
     stream << "# dx <<  Ms1[J/T/m3] << RKKY[mJ/m2] << max(abs(my)) << J_af "
               "[J/m2]  << Haf[T] << mean(abs(my))"
            << std::endl;
@@ -130,7 +123,7 @@ int main(int argc, char** argv) {
            << "\t" << mean << std::endl;
     stream.close();
 
-    stream.open(filepath + "plotfile.gpi");
+    stream.open(outdir / "plotfile.gpi");
     stream << "set terminal pdf;" << std::endl;
     stream << "set xlabel 'H_x [T]'" << std::endl;
     stream << "set ylabel 'm_y'" << std::endl;
@@ -142,7 +135,7 @@ int main(int argc, char** argv) {
     stream << "replot" << std::endl;
     stream.close();
 
-    int syscall = std::system(("cd " + filepath + " && gnuplot plotfile.gpi").c_str());
+    int syscall = std::system(("cd " / outdir / " && gnuplot plotfile.gpi").c_str());
     if (syscall != 0) {
         std::cout << "syscall plotting with gnuplot failed" << std::endl;
     }

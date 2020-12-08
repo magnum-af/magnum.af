@@ -1,9 +1,7 @@
 #include "arrayfire.h"
-#include "magnum_af.hpp"
 #include "magnumafConfig.hpp"
 #include "magnumafConfig_git.hpp"
-
-using namespace magnumafcpp;
+#include <iostream>
 
 int main(int argc, char** argv) {
     af::setBackend(argc > 1 ? static_cast<af_backend>(std::stoi(argv[1])) : AF_BACKEND_DEFAULT);

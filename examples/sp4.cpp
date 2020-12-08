@@ -1,6 +1,9 @@
-#include "magnum_af.hpp"
+#include "field_terms/micro/demag_field.hpp"
+#include "field_terms/micro/exchange_field.hpp"
+#include "field_terms/micro/external_field.hpp"
+#include "integrators/llg_integrator.hpp"
 #include "util/arg_parser.hpp"
-#include <filesystem>
+#include "util/timer.hpp"
 
 using namespace magnumafcpp;
 

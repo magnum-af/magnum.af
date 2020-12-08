@@ -1,18 +1,15 @@
 // RKKY example from https://mumax.github.io/examples.html
-#include "arrayfire.h"
-#include "magnum_af.hpp"
+#include "field_terms/micro/demag_field.hpp"
+#include "field_terms/micro/exchange_field.hpp"
+#include "field_terms/micro/rkky_exchange_field.hpp"
+#include "integrators/llg_integrator.hpp"
+#include "util/arg_parser.hpp"
 #include <cmath>
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-    // Checking input variables and setting GPU Device
-    for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << std::endl;
-    }
-    std::string filepath(argc > 1 ? argv[1] : "output_magnum.af/");
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::info();
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
 
     // Parameter initialization
     const int nx = 10, ny = 10, nz = 2;
@@ -29,7 +26,7 @@ int main(int argc, char** argv) {
     af::array m = af::constant(0.0, dims_vector(mesh), f64);
     m(af::span, af::span, af::span, 0) = 1.;
     State state(mesh, Ms, m);
-    state.write_vti(filepath + "minit");
+    state.write_vti(outdir / "minit");
     af::array rkkyvals = af::constant(RKKY / 2., dims_vector(mesh), f64);
     af::array exchvals = af::constant(A, dims_vector(mesh), f64);
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
@@ -37,10 +34,10 @@ int main(int argc, char** argv) {
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
     LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
 
-    std::ofstream stream(filepath + "m.dat");
+    std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
 
-    std::ofstream streamE(filepath + "E.dat");
+    std::ofstream streamE(outdir / "E.dat");
     streamE.precision(12);
 
     std::vector<double> vecE;
@@ -56,7 +53,7 @@ int main(int argc, char** argv) {
         std::cout << "i = " << i << ", E= " << E << std::endl;
         streamE << i << "\t" << E << std::endl;
         stream << state << std::endl;
-        state.write_vti(filepath + "m_field_" + std::to_string(i));
+        state.write_vti(outdir / ("m_field_" + std::to_string(i)));
     }
     stream.close();
     streamE.close();

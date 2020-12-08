@@ -1,22 +1,17 @@
-#include "arrayfire.h"
-#include "magnum_af.hpp"
+#include "field_terms/atom/atomistic_dipole_dipole_field.hpp"
+#include "field_terms/atom/atomistic_dmi_field.hpp"
+#include "field_terms/atom/atomistic_exchange_field.hpp"
+#include "field_terms/atom/atomistic_external_field.hpp"
+#include "field_terms/atom/atomistic_uniaxial_anisotropy_field.hpp"
+#include "integrators/llg_integrator.hpp"
+#include "solvers/string_method.hpp"
+#include "util/arg_parser.hpp"
+#include "util/vtk_IO.hpp"
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
-
-    std::cout << "argc = " << argc << std::endl;
-    for (int i = 0; i < argc; i++) {
-        std::cout << "Parameter " << i << " was " << argv[i] << "\n";
-    }
-
-    std::string filepath(argc > 1 ? argv[1] : "../Data/skyrmion_stoch");
-    if (argc > 0)
-        filepath.append("/");
-    std::cout << "Writing into path " << filepath.c_str() << std::endl;
-
-    af::setDevice(argc > 2 ? std::stoi(argv[2]) : 0);
-    af::info();
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
 
     // Parameter initialization
     const int nxy = 30, nz = 1;
@@ -52,7 +47,7 @@ int main(int argc, char** argv) {
     }
 
     State state(mesh, p, m);
-    vti_writer_atom(state.m, mesh, filepath + "minit");
+    vti_writer_atom(state.m, mesh, outdir / "minit");
 
     std::vector<std::unique_ptr<FieldTerm>> llgterm;
     llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(J_atom)));
@@ -73,7 +68,7 @@ int main(int argc, char** argv) {
     af::print("ani ", af::mean(af::mean(af::mean(af::mean(llg.llgterms[2]->H_eff_in_Apm(state), 0), 1), 2), 3));
 
     std::cout << state << std::endl;
-    vti_writer_atom(state.m, mesh, filepath + "relax");
+    vti_writer_atom(state.m, mesh, outdir / "relax");
 
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
 
@@ -94,7 +89,7 @@ int main(int argc, char** argv) {
     double string_abort_abs_diff = 1e-27;
 
     StringMethod string(state, inputimages, n_interp, string_dt, std::move(llg));
-    double barrier = string.run(filepath, string_abort_rel_diff, string_abort_abs_diff, string_steps);
+    double barrier = string.run(outdir, string_abort_rel_diff, string_abort_abs_diff, string_steps);
 
     // without demag and zee//double expected_barrier = 4.420526609492e-20;
     double expected_barrier = 1.045386540512e-19; // Value with demag and zee
