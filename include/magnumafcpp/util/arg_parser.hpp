@@ -31,7 +31,9 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
                        "Output directory. Will be created and is accessible via ArgParser.outdir(). Defaults to "
                        "'output_<binaryname>'.");
     desc.add_options()("no-overwrite,n", "Abort if outdir already exists. Prevents file overwriting.");
-    desc.add_options()("gpu,g", po::value<unsigned>(), "set GPU number");
+    desc.add_options()("backend,b", po::value<std::string>(),
+                       "'cuda', 'opencl' or 'cpu'. Select arrayfire backend via af::setBackend.");
+    desc.add_options()("device,d", po::value<unsigned>(), "Set af::setDevice, e.g. used for selecting a GPU.");
     desc.add_options()("verbose,v", "print parsing steps");
     desc.add_options()("posargs", po::value<std::vector<std::string>>(&posargs),
                        "positional arguments, access via ArgParser.posargs()");
@@ -49,67 +51,105 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
             std::exit(0);
         }
 
-        if (vm.count("gpu")) {
+        if (vm.count("backend")) {
+            const auto backend = vm["backend"].as<std::string>();
             if (vm.count("verbose")) {
-                std::cout << "Setting GPU to " << vm["gpu"].as<unsigned>() << ".\n";
+                std::cout << "--backend: Setting af::setBackend() to " << backend << ".\n";
+            }
+
+            if (backend == "cuda" or backend == "opencl" or backend == "cpu") {
+                try {
+                    if (backend == "cuda") {
+                        af::setBackend(AF_BACKEND_CUDA);
+                    }
+                    if (backend == "opencl") {
+                        af::setBackend(AF_BACKEND_OPENCL);
+                    }
+                    if (backend == "cpu") {
+                        af::setBackend(AF_BACKEND_CPU);
+                    }
+
+                } catch (const std::exception& e) {
+                    std::cerr << "--backend: Error while calling af::setBackend() with '" << backend << "'.\n"
+                              << "Maybe your hardware does not support the selected backend or drivers are not "
+                                 "installed.\n";
+                    throw;
+                }
+            } else {
+                throw po::validation_error(po::validation_error::invalid_option_value, "backend");
+            }
+        }
+
+        if (vm.count("device")) {
+            if (vm.count("verbose")) {
+                std::cout << "--device: Setting af::setDevice(" << vm["device"].as<unsigned>() << ").\n";
             }
             try {
-                af::setDevice(vm["gpu"].as<unsigned>());
+                af::setDevice(vm["device"].as<unsigned>());
             } catch (const std::exception& e) {
-                std::cerr << "af::setDevice(" << vm["gpu"].as<unsigned>() << ") caused: " << e.what() << std::endl;
-                std::cerr << "GPU number not valid, skipping af::setDevice()." << std::endl;
+                std::cerr << "--device: Error while calling af::setDevice(" << vm["device"].as<unsigned>()
+                          << "). Device number not valid.\n";
+                throw;
+            }
+        }
+
+        // Location dependent, don't move after --outdir option.
+        if (vm.count("no-overwrite")) {
+            if (vm.count("verbose")) {
+                std::cout << "--no-overwrite: Checking if --outdir " << fs::absolute(outdir) << "  exists.\n";
+            }
+            if (fs::exists(fs::path(outdir))) {
+                throw std::runtime_error(
+                    "--no-overwrite: Error, active flag '--no-overwrite' prevents writing into already "
+                    "existing outdir" +
+                    fs::absolute(outdir).string());
             }
         }
 
         if (vm.count("outdir")) {
-            if (vm.count("no-overwrite") and fs::exists(fs::path(outdir))) {
-                std::cout << "active flag -n (--no-overwrite) prevents writing into already existing outdir " << outdir
-                          << std::endl;
-                std::cout << "Aborting..." << std::endl;
-                std::exit(1);
-            }
-
             bool mkdirs = fs::create_directories(outdir);
-
             if (vm.count("verbose") and mkdirs) {
-                std::cout << "Created outdir " << fs::absolute(outdir) << std::endl;
+                std::cout << "--outdir: Created outdir " << fs::absolute(outdir) << '\n';
             } else if (vm.count("verbose")) {
-                std::cout << "Outputdir " << fs::absolute(outdir) << " already exists, files could be overwritten."
-                          << std::endl;
+                std::cout << "--outdir: Outputdir " << fs::absolute(outdir)
+                          << " already exists, files could be overwritten.\n";
             }
         }
 
         if (vm.count("posargs")) {
             if (vm.count("verbose")) {
-                std::cout << "positional arguments are: " << vm["posargs"].as<std::vector<std::string>>() << std::endl;
+                std::cout << "--posargs: Positional arguments are: " << vm["posargs"].as<std::vector<std::string>>()
+                          << '\n';
             }
         } else {
             if (vm.count("verbose")) {
-                std::cout << "No positional arguments, ArgParser.posargs() is empty." << std::endl;
+                std::cout << "--posargs: No positional arguments, ArgParser.posargs() is empty.\n";
             }
         }
 
         // Writing logging info
         const auto logfile = outdir / "log.txt";
         if (vm.count("verbose")) {
-            std::cout << "Logging posargs info for script reproducability to" << fs::absolute(logfile) << std::endl;
+            std::cout << "Logging posargs info for script reproducibility to" << fs::absolute(logfile) << '\n';
         }
         std::ofstream ofst(logfile);
         for (const auto& elem : posargs) {
             const auto i = &elem - &posargs[0];
             ofst << "posargs[" << i << "] = " << elem << '\n';
         }
-        ofst << "GIT_HEAD_SHA1=" << GIT_HEAD_SHA1 << std::endl;
+        ofst << "GIT_HEAD_SHA1=" << GIT_HEAD_SHA1 << '\n';
 
         if (vm.count("verbose")) {
             af::info();
-            std::cout << "Argument parsing finished." << std::endl;
+            std::cout << "Argument parsing finished.\n";
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "Exception while parsing command line arguments: " << e.what() << '\n';
-        std::cerr << desc << '\n';
-        std::cerr << "Aborting..." << '\n';
+        std::cerr << "Exception occurred while parsing command line arguments:\n"
+                  << e.what() << '\n'
+                  << "Showing help (" << filename << " -h):\n"
+                  << desc << '\n'
+                  << "Aborting...\n";
         std::exit(1);
     }
 
