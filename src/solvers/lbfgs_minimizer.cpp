@@ -328,7 +328,9 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
         state.m = normalize_handle_zero_vectors(state.m);
-        auto [f, g] = EnergyAndGradient(state, fieldterms);
+        std::tie(f, g) = EnergyAndGradient(state, fieldterms);
+        // Note: using struc-binding via 'auto [f, g] = ' is a bug
+        // as it would declare f,g in this while scope and shadow outer f,g
         nfev++;
         double dg = mydot(g, s);
         double ftest1 = finit + stp * dgtest;
