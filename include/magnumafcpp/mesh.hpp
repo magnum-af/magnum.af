@@ -1,14 +1,15 @@
 #pragma once
 #include "arrayfire.h"
+#include <cstddef>
 #include <iostream>
 
 namespace magnumafcpp {
 
 struct Mesh {
-    Mesh(unsigned nx, unsigned ny, unsigned nz, double dx, double dy, double dz)
+    Mesh(std::size_t nx, std::size_t ny, std::size_t nz, double dx, double dy, double dz)
         : nx(nx), ny(ny), nz(nz), dx(dx), dy(dy), dz(dz) {}
 
-    unsigned nx, ny, nz; ///< Number of cells in x, y, z
+    std::size_t nx, ny, nz; ///< Number of cells in x, y, z
     double dx, dy, dz;   ///< Distance between cells
 };
 

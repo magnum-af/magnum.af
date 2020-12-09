@@ -2,6 +2,7 @@
 #include "adaptive_runge_kutta.hpp"
 #include "arrayfire.h"
 #include "field_terms/field_term.hpp"
+#include "state.hpp"
 
 namespace magnumafcpp {
 template <class T> struct movable_il {
