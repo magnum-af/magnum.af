@@ -41,6 +41,28 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     void relax(State& state, double precision = 1e-10, unsigned iloop = 100, unsigned iwritecout = 1000,
                bool verbose = true);
 
+    // void relax_dense(State& state, const vec_uptr_FieldTerm & fieldterms, size_t print_every_ns = 10){
+    //}
+    void run(double time_in_s, double print_every_s, State& state, const vec_uptr_FieldTerm& fieldterms,
+             std::ostream& os = std::cout) {
+        const double time_init = state.t;
+        os << state << '\n';
+
+        double time_last_write = state.t;
+        double time_next_write = state.t;
+        while (state.t < time_init + time_in_s) {
+            step(state);
+            if (state.t >= time_next_write) {
+                // auto m_int = interpolate_m_at(time_next_write);
+                // os << m_int << '\n';
+                time_last_write = time_next_write;
+
+                do {
+                    time_next_write += print_every_s;
+                } while (time_next_write < state.t); // in case state.t is already bigger, we skipp timestap
+            }
+        }
+    }
     double get_time_heff() const { return time_heff; }
     long int h_addr(const State& state) const;
 
