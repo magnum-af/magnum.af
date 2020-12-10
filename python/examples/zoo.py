@@ -57,7 +57,7 @@ for iD in range(0, dn + 1):
         print_steps_every = 10
         write_vti_every = 100
         while state.t < integration_time:
-            E_curr = llg.E(state)
+            E_curr = llg.Eeff_in_J(state)
             Ediff = abs((E_prev - E_curr) / E_prev)
             print('Ediff', Ediff)
             if Ediff < precision:

@@ -142,7 +142,7 @@ for i in range(0, hys_steps + 1):
         llg.relax(state, precision = 1e-11, verbose = True)
     state.write_vti(sys.argv[1] + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
-    print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.h(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
+    print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
     stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))
 
 stream.close()
@@ -194,7 +194,7 @@ stream.close()
 #    m[:, :, 1, 0] = mix
 #    m[:, :, 1, 1] = miy
 #    state.m = m
-#    E.append( llg.E(state) )
+#    E.append( llg.Eeff_in_J(state) )
 #    print("angle=[°]", i, " E=", E[-1])
 #    mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
 #    stream.write("%d, %e, %e, %e, %e\n" %(i, E[-1], mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))

@@ -45,7 +45,7 @@ class MicroAnisotropyTest(unittest.TestCase):
         m[0, :, :, 0] = 1.
         m[1, :, :, 1] = 1.
         state = State(mesh, Ms = 1., m = m)
-        h = aniso.h(state)
+        h = aniso.H_in_Apm(state)
         self.assertEqual(h[0, 0, 0, 0].scalar(), 2/Constants.mu0)
         self.assertEqual(h[0, 0, 0, 1].scalar(), 0)
         self.assertEqual(h[0, 0, 0, 2].scalar(), 0)

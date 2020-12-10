@@ -92,8 +92,8 @@ for i in range(1, hys_steps + 1):
     my_bottom = af.mean(af.mean(state.m[:, :, 0, 1], dim=0), dim=1).scalar()
     mx_a = mx_analytical(dz, Ms, extfield * Constants.mu0, RKKY_surface)
     my_a = my_analytical(dz, Ms, extfield * Constants.mu0, RKKY_surface)
-    print(i, 'ext[T]={:2.3f}, my_analytical={:1.3f}, my_bottom={:1.3f}'.format(ext.h(state)[0, 0, 0, 1].scalar() * Constants.mu0, my_a, my_bottom))
-    # full output# print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}, mxa={:1.3f}, mya={:1.3f}, mx_top={:1.3f}, mx_bottom={:1.3f}, my_top={:1.3f}, my_bottom={:1.3f}'.format(ext.h(state)[0, 0, 0, 1].scalar() * Constants.mu0, mx, my, mz, mx_a, my_a, mx_top, mx_bottom, my_top, my_bottom))
+    print(i, 'ext[T]={:2.3f}, my_analytical={:1.3f}, my_bottom={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 1].scalar() * Constants.mu0, my_a, my_bottom))
+    # full output# print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}, mxa={:1.3f}, mya={:1.3f}, mx_top={:1.3f}, mx_bottom={:1.3f}, my_top={:1.3f}, my_bottom={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 1].scalar() * Constants.mu0, mx, my, mz, mx_a, my_a, mx_top, mx_bottom, my_top, my_bottom))
     stream.write("%e, %e, %e, %e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz, mx_a, my_a, my_bottom))
 
 stream.close()

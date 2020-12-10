@@ -25,9 +25,9 @@ llg = LLGIntegrator(alpha = 1, terms = [external])
 # Using external.set_homogeneous_field()
 for i in range(10):
     external.set_homogeneous_field(i, i/2, 0)
-    hx = external.h(state)[0, 0, 0, 0].scalar()
-    hy = external.h(state)[0, 0, 0, 1].scalar()
-    hz = external.h(state)[0, 0, 0, 2].scalar()
+    hx = external.H_in_Apm(state)[0, 0, 0, 0].scalar()
+    hy = external.H_in_Apm(state)[0, 0, 0, 1].scalar()
+    hz = external.H_in_Apm(state)[0, 0, 0, 2].scalar()
     print(i, hx, hy, hz)
 
 # More general alternative
@@ -37,7 +37,7 @@ for i in range(10):
     h_current[:, :, :, 0] = i; # Setting Hx component
     h_current[:, :, :, 1] = i/2; # Setting Hy component
     external = ExternalField(h_current) # this overwrites the existing object named 'external'
-    hx = external.h(state)[0, 0, 0, 0].scalar()
-    hy = external.h(state)[0, 0, 0, 1].scalar()
-    hz = external.h(state)[0, 0, 0, 2].scalar()
+    hx = external.H_in_Apm(state)[0, 0, 0, 0].scalar()
+    hy = external.H_in_Apm(state)[0, 0, 0, 1].scalar()
+    hz = external.H_in_Apm(state)[0, 0, 0, 2].scalar()
     print(i, hx, hy, hz)

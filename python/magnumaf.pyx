@@ -731,7 +731,7 @@ cdef class Stochastic_LLG:
             self._thisptr = new cStochastic_LLG (alpha, T, dt, deref(state._thisptr), move(vector_in), smode.encode('utf-8'))
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
-    def E(self, State state):
+    def Eeff_in_J(self, State state):
         return self._thisptr.E(deref(state._thisptr))
 
 cdef class LLGIntegrator:
@@ -767,7 +767,7 @@ cdef class LLGIntegrator:
     step(State)
         Make one Runge Kutta timestep integrating the LLG
         This manipulates state.m and state.t
-    E(State) : float
+    Eeff_in_J(State) : float
         Calculates the micromagnetic energy of all terms for the magnetization state.m
     h(State) : af.array
         Returns the effective field H_in_Apm for the magnetization state.m
@@ -781,7 +781,7 @@ cdef class LLGIntegrator:
     ----------
     llg = LLGIntegrator (alpha = 0.02, terms = terms, mode = "RKF45")
     llg.step(state)
-    print(llg.E(state))
+    print(llg.Eeff_in_J(state))
     """
     cdef cLLGIntegrator* _thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
@@ -799,9 +799,9 @@ cdef class LLGIntegrator:
     #    self._thisptr = NULL
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
-    def E(self, State state):
+    def Eeff_in_J(self, State state):
         return self._thisptr.E(deref(state._thisptr))
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
     def add_terms(self, *args):
         for arg in args:
@@ -871,7 +871,7 @@ cdef class StringMethod:
 
 # base class for clearification (especially for heritage diagramms in docu)
 cdef class HeffTerm:
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         pass
     def Energy_in_J(self, State state):
         pass
@@ -901,7 +901,7 @@ cdef class DemagField(HeffTerm):
     def print_Nfft(self):
         self._thisptr.print_Nfft()
     ## Calculate energy contribution in [J]
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -921,7 +921,7 @@ cdef class ExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -955,7 +955,7 @@ cdef class SparseExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -989,7 +989,7 @@ cdef class DmiField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1010,7 +1010,7 @@ cdef class NonequiExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1053,7 +1053,7 @@ cdef class CubicAnisotropyField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1077,7 +1077,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1122,7 +1122,7 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1160,7 +1160,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1178,7 +1178,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1195,7 +1195,7 @@ cdef class AtomisticExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1212,7 +1212,7 @@ cdef class AtomisticDmiField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1229,7 +1229,7 @@ cdef class ExternalField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1248,7 +1248,7 @@ cdef class AtomisticExternalField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1267,7 +1267,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
@@ -1288,7 +1288,7 @@ cdef class RKKYExchangeField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
-    def h(self, State state):
+    def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))

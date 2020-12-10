@@ -125,7 +125,7 @@ for iext_y in range(0,6):
         stream.write('{:d}\t{:1.6e}\t{:1.6f}\t{:1.6f}\t{:1.6f}\n'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         if llg.accumulated_steps % write_vti_every == 0:
             state.write_vti(filepath + "m_relaxing_step_" + str(llg.accumulated_steps))
-            Util.write_vti(demag.h(state), dx, dy, dz, filepath + "demag_step_" + str(llg.accumulated_steps))
+            Util.write_vti(demag.H_in_Apm(state), dx, dy, dz, filepath + "demag_step_" + str(llg.accumulated_steps))
     print("relaxed in", time.time() - timer, "[s]")
     state.write_vti(filepath + "m_relaxed")
 

@@ -47,7 +47,7 @@ for i in range(0, 360):
     m[:, :, 1, 0] = mix
     m[:, :, 1, 1] = miy
     state.m = m
-    E.append( llg.E(state) )
+    E.append( llg.Eeff_in_J(state) )
     print("angle=[°]", i, " E=", E[-1])
     mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
     stream.write("%d, %e, %e, %e, %e\n" %(i, E[-1], mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))

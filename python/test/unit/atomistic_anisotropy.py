@@ -31,7 +31,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(atom_ani.Energy_in_J(state), -2*Ku1_atom)
 
-    af_heff = atom_ani.h(state)
+    af_heff = atom_ani.H_in_Apm(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
@@ -59,7 +59,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(atom_ani.Energy_in_J(state), -Ku1_atom)
 
-    af_heff = atom_ani.h(state)
+    af_heff = atom_ani.H_in_Apm(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
@@ -87,7 +87,7 @@ class AtomisticAnisotropyTest(unittest.TestCase):
 
     self.assertAlmostEqual(atom_ani.Energy_in_J(state), -2*Ku1_atom)
 
-    af_heff = atom_ani.h(state)
+    af_heff = atom_ani.H_in_Apm(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
