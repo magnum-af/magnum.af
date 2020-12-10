@@ -902,7 +902,7 @@ cdef class DemagField(HeffTerm):
         self._thisptr.print_Nfft()
     ## Calculate energy contribution in [J]
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -922,7 +922,7 @@ cdef class ExchangeField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -956,7 +956,7 @@ cdef class SparseExchangeField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -990,7 +990,7 @@ cdef class DmiField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1011,7 +1011,7 @@ cdef class NonequiExchangeField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1054,7 +1054,7 @@ cdef class CubicAnisotropyField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1078,7 +1078,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1123,7 +1123,7 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1161,7 +1161,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1179,7 +1179,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1196,7 +1196,7 @@ cdef class AtomisticExchangeField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1213,7 +1213,7 @@ cdef class AtomisticDmiField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1230,7 +1230,7 @@ cdef class ExternalField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1249,7 +1249,7 @@ cdef class AtomisticExternalField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
@@ -1268,7 +1268,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):
@@ -1289,7 +1289,7 @@ cdef class RKKYExchangeField(HeffTerm):
         del self._thisptr
         self._thisptr = NULL
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):

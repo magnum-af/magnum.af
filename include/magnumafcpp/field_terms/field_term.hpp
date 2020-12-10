@@ -36,8 +36,8 @@ class FieldTerm {
         return {accumulated_time_Heff, accumulated_time_Energy};
     }
 
-    /// For wrapping only: pointer to h()
-    virtual long int h_ptr(const State& state) const { return (long int)(new af::array(H_in_Apm(state)))->get(); }
+    /// For wrapping only: raw pointer to copy of H_in_Apm(state)
+    long int _pywrap_H_in_Apm(const State& state) const { return (long int)(new af::array(H_in_Apm(state)))->get(); }
 
   protected:
     ///< Calculating the micromagnetic energy from the h field
