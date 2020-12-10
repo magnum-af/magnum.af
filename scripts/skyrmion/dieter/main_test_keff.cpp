@@ -49,19 +49,19 @@ int main(int argc, char** argv) {
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     // Inplane
     vti_writer_micro(state.m, state.mesh, (filepath + "m_inplane").c_str());
-    const double E_inplane = Llg.E(state);
-    Llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
+    const double E_inplane = llg.E(state);
+    llg.write_fieldterms_micro(state, (filepath + "demagfield_in_plane").c_str());
 
     // Out-of-plane
     state.m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     state.m(span, span, span, 2) = 1.;
     vti_writer_micro(state.m, state.mesh, (filepath + "m_ouf_of_plane").c_str());
-    const double E_out_of_plane = Llg.E(state);
-    Llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
+    const double E_out_of_plane = llg.E(state);
+    llg.write_fieldterms_micro(state, (filepath + "demagfield_out_of_plane").c_str());
 
     // Keff
     const double Keff = -0.5 * pow(state.Ms, 2) * constants::mu0 * pow(mesh.dx, 3) * mesh.nx * mesh.ny * mesh.nz;

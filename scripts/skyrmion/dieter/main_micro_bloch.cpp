@@ -34,15 +34,15 @@ int main(int argc, char** argv) {
     State state(mesh, material, util::skyrmconf(mesh));
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
-    LLGIntegrator Llg;
-    Llg.llgterms.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
+    LLGIntegrator llg;
+    llg.llgterms.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
 
     if (!exists(path_mrelax)) {
         std::cout << "mrelax.vti not found, starting relaxation" << std::endl;
-        Llg.relax(state);
+        llg.relax(state);
         vti_writer_micro(state.m, mesh, filepath + "relax");
         state.t = 0;
     } else {
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, material, last));
 
-    StringMethod string(state, inputimages, 60, 5e-14, Llg.llgterms);
+    StringMethod string(state, inputimages, 60, 5e-14, llg.llgterms);
     string.run(filepath, 1e-13, 1e-28, 10000);
     return 0;
 }

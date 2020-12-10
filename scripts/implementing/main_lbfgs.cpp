@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     LBFGS_Minimizer minimizer = LBFGS_Minimizer();
     minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
-    std::cout << "Llgterms assembled in [s]: " << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "llgterms assembled in [s]: " << af::timer::stop(timer_llgterms) << std::endl;
 
     double f = minimizer.Minimize(state);
     std::cout << "main: f= " << f << std::endl;

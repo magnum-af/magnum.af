@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
         if (!exists(filepath + "m_relaxed.vti")) {
             std::cout << "Relaxing minit" << std::endl;
             state_1.write_vti(filepath + "minit");
-            // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
+            // LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
             while (state_1.t < 3e-9) {
                 if (state_1.steps % 100 == 0)
                     state_1.write_vti(filepath + "m_step" + std::to_string(state_1.steps));
@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
                 std::cout << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t"
                           << llg.E(state_1) << std::endl;
             }
-            // Llg.relax(state_1);
+            // llg.relax(state_1);
             timer.print_stage("relax");
             state_1.write_vti(filepath + "m_relaxed");
         } else {

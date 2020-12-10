@@ -40,20 +40,20 @@ int main(int argc, char** argv) {
 
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
     std::vector<uptr_FieldTerm> llgterm2;
     llgterm2.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
-    LLG Llg2(state, llgterm2);
+    LLG llg2(state, llgterm2);
 
     for (int x = 0; x < nx; x++) {
         for (int y = 0; y < ny; y++) {
             for (int z = 0; z < nz; z++) {
                 for (int m = 0; m < 3; m++) {
-                    if (compare(afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m)),
-                                afvalue(Llg2.Fieldterms[0]->h(state)(x, y, z, m)))) {
+                    if (compare(afvalue(llg.Fieldterms[0]->h(state)(x, y, z, m)),
+                                afvalue(llg2.Fieldterms[0]->h(state)(x, y, z, m)))) {
                         std::cout << "!!! TEST  FAILED at " << x << " " << y << " " << z << " " << m << std::endl;
-                        std::cout << afvalue(Llg.Fieldterms[0]->h(state)(x, y, z, m)) << " , "
-                                  << afvalue(Llg2.Fieldterms[0]->h(state)(x, y, z, m)) << std::endl;
+                        std::cout << afvalue(llg.Fieldterms[0]->h(state)(x, y, z, m)) << " , "
+                                  << afvalue(llg2.Fieldterms[0]->h(state)(x, y, z, m)) << std::endl;
                     }
                 }
             }

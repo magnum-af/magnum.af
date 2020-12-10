@@ -16,7 +16,7 @@ class sp4(unittest.TestCase):
 
   demag=magnumaf.DemagField(mesh)
   exch=magnumaf.ExchangeField(A)
-  Llg=magnumaf.LLGIntegrator(alpha = 1, terms = [demag, exch])
+  llg=magnumaf.LLGIntegrator(alpha = 1, terms = [demag, exch])
 
   def test_relaxation(self):
     intx=0
@@ -24,7 +24,7 @@ class sp4(unittest.TestCase):
     intz=0
     while self.state.t < 1e-9:
       t1=self.state.t
-      self.Llg.step(self.state)
+      self.llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
       intx+=self.state.mean_m(0)*stepsize
@@ -36,7 +36,7 @@ class sp4(unittest.TestCase):
     self.assertLess(math.fabs(intz + 5.74381785359e-13), 1e-15)
 
   def test_switch(self):
-    self.Llg.alpha = 0.02
+    self.llg.alpha = 0.02
 
     zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
     zeeswitch[0, 0, 0, 0]=-24.6e-3/magnumaf.Constants.mu0
@@ -44,13 +44,13 @@ class sp4(unittest.TestCase):
     zeeswitch[0, 0, 0, 2]=0.0
     zeeswitch = af.tile(zeeswitch, 100, 25, 1)
     zee=magnumaf.ExternalField(zeeswitch)
-    self.Llg.add_terms(zee)
+    self.llg.add_terms(zee)
     intx=0
     inty=0
     intz=0
     while self.state.t < 2e-9:
       t1=self.state.t
-      self.Llg.step(self.state)
+      self.llg.step(self.state)
       t2=self.state.t
       stepsize=t2-t1
       intx+= self.state.mean_m(0) * stepsize

@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, param_stress)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Starting Hysteresis loop
     std::ofstream stream;

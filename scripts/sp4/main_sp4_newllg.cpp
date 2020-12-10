@@ -41,9 +41,9 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
-    LLGIntegrator Llg = LLGIntegrator("RKF45");
-    Llg.llgterms.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
+    LLGIntegrator llg = LLGIntegrator("RKF45");
+    llg.llgterms.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
 
     std::ofstream stream;
     stream.precision(12);
@@ -54,14 +54,14 @@ int main(int argc, char** argv) {
     double time = 0;
     while (state.t < 5.e-10) {
         timer t2 = af::timer::start();
-        Llg.step(state);
+        llg.step(state);
         time += af::timer::stop(t2);
         calcm(state, stream);
     }
     std::cout << "timerelax              [af-s]: " << af::timer::stop(t) << std::endl;
     std::cout << "time                   [af-s]: " << time << std::endl;
-    std::cout << "Llg.get_time_allsteps  [af-s]: " << Llg.get_time_allsteps() << std::endl;
-    std::cout << "Llg.get_time_heff      [af-s]: " << Llg.get_time_heff() << std::endl;
+    std::cout << "llg.get_time_allsteps  [af-s]: " << llg.get_time_allsteps() << std::endl;
+    std::cout << "llg.get_time_heff      [af-s]: " << llg.get_time_heff() << std::endl;
     vti_writer_micro(state.m, mesh, (filepath + "relax").c_str());
 
     // Prepare switch
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
     zeeswitch(0, 0, 0, 2) = 0.0;
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
+    llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
     state.material.alpha = 0.02;
 
     // Switch
@@ -78,14 +78,14 @@ int main(int argc, char** argv) {
     time = 0;
     while (state.t < 1.5e-9) {
         timer t2 = af::timer::start();
-        Llg.step(state);
+        llg.step(state);
         time += af::timer::stop(t2);
         calcm(state, stream);
     }
-    std::cout << "Llg.get_time_heff       [af-s]: " << Llg.get_time_heff() << std::endl;
+    std::cout << "llg.get_time_heff       [af-s]: " << llg.get_time_heff() << std::endl;
     std::cout << "time                    [af-s]: " << time << std::endl;
     std::cout << "Time integrate 1ns      [af-s]: " << af::timer::stop(t) << std::endl;
-    std::cout << "Llg.get_timer_allsteps  [af-s]: " << Llg.get_time_allsteps() << std::endl;
+    std::cout << "llg.get_timer_allsteps  [af-s]: " << llg.get_time_allsteps() << std::endl;
     vti_writer_micro(state.m, mesh, (filepath + "2ns").c_str());
     stream.close();
     return 0;

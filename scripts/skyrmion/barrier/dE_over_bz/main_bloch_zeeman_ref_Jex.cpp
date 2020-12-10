@@ -65,19 +65,19 @@ int main(int argc, char** argv) {
     af::print("zee_pre_tile", zee);
     zee = tile(zee, mesh.nx, mesh.ny, mesh.nz);
 
-    LLGIntegrator Llg(alpha);
+    LLGIntegrator llg(alpha);
     if (demag) {
         std::cout << "Enabling demag field" << std::endl;
-        Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
+        llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     } else {
         std::cout << "Not enabling demag field" << std::endl;
     }
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(J_atom)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExternalField(zee)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(J_atom)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(K_atom)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExternalField(zee)));
 
-    Llg.relax(state);
+    llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");
     state.t = 0;
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, p, last));
 
-    StringMethod string(state, inputimages, n_interp, string_dt, Llg);
+    StringMethod string(state, inputimages, n_interp, string_dt, llg);
     double barrier = string.run(filepath);
     std::ofstream myfileE;
     myfileE.precision(12);

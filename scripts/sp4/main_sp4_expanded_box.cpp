@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     std::ofstream stream;
     stream.precision(12);
@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
     timer t = af::timer::start();
     // for (int i = 0; i<5; i++){
     while (state.t < 5.e-10) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
         calcm(state, std::cout, nx, ny, nz, spnx, spny, spnz);
         calcm(state, stream, nx, ny, nz, spnx, spny, spnz);
     }
@@ -181,11 +181,11 @@ int main(int argc, char** argv) {
     zeeswitch(0, 0, 0, 2) = 0.0;
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     llgterm.push_back(uptr_FieldTerm(new ExternalField(zeeswitch, mesh, material)));
-    Llg.Fieldterms = llgterm;
-    Llg.state0.material.alpha = 0.02;
+    llg.Fieldterms = llgterm;
+    llg.state0.material.alpha = 0.02;
 
     while (state.t < 1.5e-9) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
         calcm(state, std::cout, nx, ny, nz, spnx, spny, spnz);
         calcm(state, stream, nx, ny, nz, spnx, spny, spnz);
     }

@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new SpinTransferTorqueField(pol, .3, .4, 2e10)));
     llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
-    LLGIntegrator Llg(llgterm);
+    LLGIntegrator llg(llgterm);
 
     std::ofstream stream;
     stream.precision(12);
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     // Relax
     timer t = af::timer::start();
     while (state.t < 1e-7) {
-        Llg.step(state);
+        llg.step(state);
         stream << state << std::endl;
         // state.calc_mean_m(std::cout);
         // std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1))

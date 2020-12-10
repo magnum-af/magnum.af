@@ -120,15 +120,15 @@ int main(int argc, char** argv) {
     // af::print("dmi", dmi->h(state));
     // af::print("exch", exch->h(state));
 
-    LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
-    // LLGIntegrator Llg(1, {demag, exch, aniso, dmi, external});
+    LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
+    // LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     while (state.t < 3e-9) {
         if (state.steps % 100 == 0)
             state.write_vti(filepath + "m_step" + std::to_string(state.steps));
-        Llg.step(state);
-        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << Llg.E(state) << std::endl;
+        llg.step(state);
+        std::cout << state.steps << "\t" << state.t << "\t" << state.meani(2) << "\t" << llg.E(state) << std::endl;
     }
-    //    Llg.relax(state);
+    //    llg.relax(state);
     state.write_vti(filepath + "m_relaxed");
 
     // preparing string method
@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
     //    inputimages.push_back(state);
     //    inputimages.push_back(State(mesh, material, last));
     //
-    //    StringMethod string(state, inputimages, n_interp, string_dt , Llg.llgterms);
+    //    StringMethod string(state, inputimages, n_interp, string_dt , llg.llgterms);
     //    string.run(filepath);
     return 0;
 }

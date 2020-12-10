@@ -105,7 +105,7 @@ long int LLG::h_addr(const State& state) {
     return (long int)h_addr_temp_array.back().get();
 }
 
-//  std::cout<<"cpu_time = "<<Llg.cpu_time()<<""<<std::endl;
+//  std::cout<<"cpu_time = "<<llg.cpu_time()<<""<<std::endl;
 //// Calculation of effective field
 // array LLG::fheffminimal(array m){
 //  if (state0.b_zee){return Demag.h(m) + Exch.h(m) + state0.h_zee;}

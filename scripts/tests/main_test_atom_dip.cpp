@@ -44,11 +44,11 @@ int main(int argc, char** argv) {
 
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
     double analytical = -pow(material.p, 2) * constants::mu0 / (4. * M_PI) / pow(dx, 3);
-    // std::cout << "ENERGY    = " << Llg.E(state) <<std::endl;
+    // std::cout << "ENERGY    = " << llg.E(state) <<std::endl;
     std::cout << "Analytical= " << analytical << std::endl;
-    if (compare(Llg.E(state), analytical))
+    if (compare(llg.E(state), analytical))
         std::cout << "!!! TEST FAILED !!!" << std::endl;
     // std::cout << "Analytical= " << - pow(material.p,
     // 2)*constants::mu0/(4.*M_PI)/pow(dx, 3) <<std::endl;
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 
     state.m = m;
     vti_writer_atom(state.m, mesh, (filepath + "/minit2").c_str());
-    std::cout << "ENERGY    = " << Llg.E(state) << std::endl;
+    std::cout << "ENERGY    = " << llg.E(state) << std::endl;
     std::cout << "Analytical= " << 0 << std::endl;
     std::cout << "H_dip_1   = " << -2 * material.p / (4 * M_PI * pow(dx, 3)) << ", " << 0 << ", " << 0 << std::endl;
     std::cout << "H_dip_2   = " << 0 << ", " << 0 << ", " << material.p / (4 * M_PI * pow(dx, 3)) << std::endl;
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
     m(1, 0, 0, 2) = -1;
     state.m = m;
     vti_writer_atom(state.m, mesh, (filepath + "/minit2").c_str());
-    std::cout << "ENERGY    = " << Llg.E(state) << std::endl;
+    std::cout << "ENERGY    = " << llg.E(state) << std::endl;
     std::cout << "Analytical= " << pow(material.p, 2) * constants::mu0 / (4. * M_PI) / pow(dx, 3) << std::endl;
     std::cout << "H_dip_1   = " << 0 << ", " << 0 << ", " << -material.p / (4 * M_PI * pow(dx, 3)) << std::endl;
     std::cout << "H_dip_2   = " << 0 << ", " << 0 << ", " << material.p / (4 * M_PI * pow(dx, 3)) << std::endl;
@@ -104,9 +104,9 @@ int main(int argc, char** argv) {
     llgterm.pop_back();
     llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     // TODO this leads to compiler error
-    // Llg=LLG(state, llgterm);
-    LLG Llg2(state, llgterm);
-    std::cout << "ENERGY    = " << Llg2.E(state) << std::endl;
+    // llg=LLG(state, llgterm);
+    LLG llg2(state, llgterm);
+    std::cout << "ENERGY    = " << llg2.E(state) << std::endl;
     std::cout << "Analytical= " << -pow(material.p, 2) * constants::mu0 / (4. * M_PI) / pow(dx, 3)
               << std::endl; // TODO calc on paper, but should be like case 1
     //-------------------------------------------------------
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
     m(0, 1, 0, 1) = 0;
     m(0, 1, 0, 2) = 1;
     state.m = m;
-    std::cout << "ENERGY    = " << Llg2.E(state) << std::endl;
+    std::cout << "ENERGY    = " << llg2.E(state) << std::endl;
     std::cout << "Analytical= " << 0 << std::endl;
     return 0;
 }

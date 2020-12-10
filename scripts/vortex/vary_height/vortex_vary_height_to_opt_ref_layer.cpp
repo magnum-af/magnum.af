@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
         // auto exch = uptr_FieldTerm(new SparseExchangeField(A, mesh));
         auto exch = uptr_FieldTerm(new ExchangeField(A)); // only use with opencl !!!
         auto ext = uptr_FieldTerm(new ExternalField(zee_field));
-        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+        std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
         LBFGS_Minimizer minimizer = LBFGS_Minimizer({demag, exch, ext}, 1e-6, 1000, 0);
         minimizer.of_convergence_.open(filepath + "minimizer_convergence.dat" + std::to_string(nz));
         LLGIntegrator llg(1, {demag, exch, ext});

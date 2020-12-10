@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     std::vector<State> inputimages;
     for (int i = 0; i < n_interp; i++) {

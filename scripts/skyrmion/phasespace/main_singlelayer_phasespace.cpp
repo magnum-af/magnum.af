@@ -108,32 +108,32 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state, atol, rtol, hmax, hmin, llgterm);
+    LLG llg(state, atol, rtol, hmax, hmin, llgterm);
 
     double energy_n0 = 1.e20;
     double energy_n1 = 1.e30;
     int irel = 0;
     timer t = af::timer::start();
     while (state.t < 1.e-8) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
         irel++;
         if (irel % 100 == 0)
-            std::cout << "irel: " << irel << " at time: " << state.t << " Energy: " << Llg.E(state) << std::endl;
-        energy_n1 = Llg.E(state);
+            std::cout << "irel: " << irel << " at time: " << state.t << " Energy: " << llg.E(state) << std::endl;
+        energy_n1 = llg.E(state);
         if (fabs(2 * (energy_n1 - energy_n0) / (energy_n1 + energy_n0)) < 1e-10) {
             std::cout << "Exiting loop: initial image relaxated,  relative "
                          "difference smaller than 1e-10"
                       << std::endl;
             break;
         }
-        energy_n0 = Llg.E(state);
+        energy_n0 = llg.E(state);
     }
     double timerelax = af::timer::stop(t);
     af_to_vti(state.m, mesh, (filepath + "relax").c_str());
 
     std::cout << "Relaxed after:" << state.t << " timerelax [af-s]: " << timerelax << " for "
-              << Llg.counter_accepted + Llg.counter_reject << " steps, thereof " << Llg.counter_accepted
-              << " Steps accepted, " << Llg.counter_reject << " Steps rejected" << std::endl;
+              << llg.counter_accepted + llg.counter_reject << " steps, thereof " << llg.counter_accepted
+              << " Steps accepted, " << llg.counter_reject << " Steps rejected" << std::endl;
 
     array last = constant(0, mesh::dims_v(mesh), f64);
     last(span, span, span, 2) = 1;
@@ -255,12 +255,12 @@ int main(int argc, char** argv) {
         af_to_vti(images_max_lowest[i].m, mesh, name.c_str());
     }
 
-    for (unsigned i = 0; i < Llg.Fieldterms.size(); ++i) {
+    for (unsigned i = 0; i < llg.Fieldterms.size(); ++i) {
         std::cout << "elapsed_eval_time()" << std::endl;
-        std::cout << i << "\t" << *Llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
+        std::cout << i << "\t" << *llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
         stream_steps << "#"
                      << "elapsed_eval_time()" << std::endl;
-        stream_steps << "#" << i << "\t" << *Llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
+        stream_steps << "#" << i << "\t" << *llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
     }
 
     myfileE.close();

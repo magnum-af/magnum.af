@@ -46,7 +46,7 @@ double max_4d_abs(const af::array& a);
 double min_4d(const af::array& a);
 double meani(const af::array& a, const int i);
 double FrobeniusNorm(const af::array& a);
-// TODO void calcm(State state, LLG Llg, std::ostream& myfile);
+// TODO void calcm(State state, LLG llg, std::ostream& myfile);
 double euclnorm(const af::array& a);
 // TODO auto rk4(af::array f(double, af::array));
 double mean_abs_diff(const af::array& a,

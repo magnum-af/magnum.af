@@ -79,7 +79,7 @@ fields = [
     UniaxialAnisotropyField(Ku1_field, Ku1_axis=[1., 0., 0.]),
     #DemagField(mesh),
 ]
-Llg = LLGIntegrator(alpha=1.0, terms=fields)
+llg = LLGIntegrator(alpha=1.0, terms=fields)
 
 maxField = 2./Constants.mu0 # 2 [T]
 simtime = 100e-9 # [s]
@@ -94,7 +94,7 @@ while (state.t < simtime and state.mean_m(0) < (1. - 1e-6)):
         state.write_vti(sys.argv[1] + "m_" + str(nvti))
         nvti = nvti + 1
     fields[0].set_homogeneous_field(state.t / simtime * maxField, 0.0, 0.0)
-    Llg.step(state)
+    llg.step(state)
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
     print(printzee[0, 0, 0, 0].scalar()*Constants.mu0 / H_analytic, state.t/simtime, state.mean_m(0), state.t /simtime * maxField, printzee[0, 0, 0, 0].scalar()*Constants.mu0)
     stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), state.t/50e-9/Constants.mu0, printzee[0, 0, 0, 0].scalar()))

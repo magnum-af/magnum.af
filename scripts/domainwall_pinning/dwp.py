@@ -130,7 +130,7 @@ fields = [
 
 llg_before_mini = True
 if llg_before_mini == True:
-    Llg = LLGIntegrator(alpha=1.0, terms=fields)
+    llg = LLGIntegrator(alpha=1.0, terms=fields)
 else:
     minimizer = LBFGS_Minimizer(fields)
 
@@ -160,7 +160,7 @@ while (state.t < field.simtime and state.mean_m(wire_dir_val) < (1. - 1e-6)):
     elif wire_dir == "x":
         fields[0].set_homogeneous_field(field.from_time(state.t), 0.0, 0.0)
     if llg_before_mini == True:
-        Llg.step(state)
+        llg.step(state)
     else:
         minimizer.minimize(state)
 

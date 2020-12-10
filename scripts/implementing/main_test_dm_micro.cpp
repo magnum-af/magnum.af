@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
-    print("DmiField", Llg.Fieldterms[0]->h(state));
+    print("DmiField", llg.Fieldterms[0]->h(state));
     return 0;
 }

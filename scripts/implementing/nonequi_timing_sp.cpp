@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
             llgterm.push_back(uptr_FieldTerm(new DemagField(mesh, material, true, false, 1)));
         }
         llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
-        LLGIntegrator Llg(llgterm);
+        LLGIntegrator llg(llgterm);
 
         std::ofstream stream;
         stream.precision(12);
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
         // Relax
         timer t = af::timer::start();
         while (state.t < 1e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         double timerelax = af::timer::stop(t);
@@ -66,13 +66,13 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 2) = 0.0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
+        llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
         state.material.alpha = 0.02;
 
         // Switch
         t = af::timer::start();
         while (state.t < 2e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         double timeintegrate = af::timer::stop(t);

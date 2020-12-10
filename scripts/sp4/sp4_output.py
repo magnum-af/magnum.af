@@ -28,15 +28,15 @@ pystate.write_vti(path+"minit")
 
 demag=magnumaf.DemagField(meshvar, material)
 exch=magnumaf.ExchangeField(meshvar, material)
-Llg=magnumaf.LLGIntegrator([pystate, demag, exch])
+llg=magnumaf.LLGIntegrator([pystate, demag, exch])
 
 print "relax --------------------"
 while pystate.t() < 1e-9:
-  Llg.step(pystate)
+  llg.step(pystate)
 pystate.write_vti(path+"mrelax")
 
 print "switch --------------------"
-Llg.set_state0_alpha(0.02)# this should be changed in cpp version
+llg.set_state0_alpha(0.02)# this should be changed in cpp version
 
 zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
 zeeswitch[0, 0, 0, 0]=-24.6e-3/material.print_mu0()
@@ -44,11 +44,11 @@ zeeswitch[0, 0, 0, 1]=+4.3e-3/material.print_mu0()
 zeeswitch[0, 0, 0, 2]=0.0
 zeeswitch = af.tile(zeeswitch, 100, 25, 1)
 zee=magnumaf.ExternalField(zeeswitch)
-Llg.add_terms(zee)
+llg.add_terms(zee)
 
 with open(path + 'm.dat', 'w') as f:
   while pystate.t() < 2e-9:
-    Llg.step(pystate)
+    llg.step(pystate)
     f.write("%10.12f %10.12f %10.12f %10.12f\n" % (pystate.t(), pystate.mean_m(0), pystate.mean_m(1), pystate.mean_m(2)))
 
 # pyplot fails:

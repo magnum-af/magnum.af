@@ -150,7 +150,7 @@ fields = [
     #SparseExchangeField(A_field, mesh),
     NonequiUniaxialAnisotropyField(ne_mesh, Ku1_field, Ku1_axis),
 ]
-Llg = LLGIntegrator(alpha=1.0, terms=fields)
+llg = LLGIntegrator(alpha=1.0, terms=fields)
 
 
 ##TODO# maxField = 0. # Note: for zero field, the domainwall does not pin to the interface for current implementation i.e. sparse yielding correct Hanalytic
@@ -179,7 +179,7 @@ while (state.t < field.simtime and state.mean_m(wire_dir_val) < (1. - 1e-6)):
         fields[0].set_homogeneous_field(0.0,  field.from_time(state.t), 0.0)
     elif wire_dir == "x":
         fields[0].set_homogeneous_field(field.from_time(state.t), 0.0, 0.0)
-    Llg.step(state)
+    llg.step(state)
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
 
     if i%20 == 0:

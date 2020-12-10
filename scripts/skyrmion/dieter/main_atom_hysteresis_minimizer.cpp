@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
     minimizer.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     minimizer.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // obtaining relaxed magnetization
     timer t = af::timer::start();

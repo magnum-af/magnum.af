@@ -15,9 +15,9 @@ class ZeemanTest(unittest.TestCase):
     zeefield[1, 0, 0, 1]=1
     zeefield[2, 0, 0, 2]=1
     zee=magnumaf.ExternalField(zeefield)
-    Llg=magnumaf.LLGIntegrator(0, [zee])
+    llg=magnumaf.LLGIntegrator(0, [zee])
 
-    af_heff = Llg.h(pystate)
+    af_heff = llg.h(pystate)
     np_heff = af_heff.__array__()
 
     self.assertEqual(np_heff[0, 0, 0, 0], 1)

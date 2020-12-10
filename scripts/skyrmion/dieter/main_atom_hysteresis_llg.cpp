@@ -102,19 +102,19 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     timer t = af::timer::start();
     double E_prev = 1e20;
-    while (fabs((E_prev - Llg.E(state)) / E_prev) > 1e-10) {
-        E_prev = Llg.E(state);
+    while (fabs((E_prev - llg.E(state)) / E_prev) > 1e-10) {
+        E_prev = llg.E(state);
         for (int i = 0; i < 100; i++) {
-            state.m = Llg.step(state);
+            state.m = llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
+            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - llg.E(state)) / E_prev) << std::endl;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
+    std::cout << "time =" << state.t << " [s], E = " << llg.E(state) << "[J]" << std::endl;
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
     // AtomisticExchangeField(mesh))); minimizer.llgterms.push_back( uptr_FieldTerm
     // (new AtomisticDmiField(mesh, material))); minimizer.llgterms.push_back(
     // uptr_FieldTerm (new AtomisticUniaxialAnisotropyField(mesh, material)));
-    // std::cout<<"Llgterms assembled in "<< af::timer::stop(timer_llgterms)
+    // std::cout<<"llgterms assembled in "<< af::timer::stop(timer_llgterms)
     // <<std::endl;
 
     ////obtaining relaxed magnetization
@@ -160,15 +160,15 @@ int main(int argc, char** argv) {
     // std::cout<<"time full hysteresis [af-s]: "<< af::timer::stop(t_hys)
     // <<std::endl;
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in T/s
+    llg.Fieldterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in T/s
     while (state.t < 4 * hzee_max / rate) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
         if (state.steps % 2000 == 0) {
-            calc_mean_m(state, stream, afvalue(Llg.Fieldterms[4]->h(state)(0, 0, 0, 0)));
+            calc_mean_m(state, stream, afvalue(llg.Fieldterms[4]->h(state)(0, 0, 0, 0)));
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
         // std::cout << state.t << "\t" <<
-        // afvalue(sum(sum(sum(sum(Llg.Fieldterms[2]->h(state), 3), 2), 1),
+        // afvalue(sum(sum(sum(sum(llg.Fieldterms[2]->h(state), 3), 2), 1),
         // 0))<< std::endl;
     }
     stream.close();

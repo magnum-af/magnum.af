@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
         else
             llgterm.push_back(
                 uptr_FieldTerm(new NonequiExchangeField(ne_mesh, af::constant(A, mesh::dims_v(mesh), f64))));
-        LLGIntegrator Llg(1, llgterm);
+        LLGIntegrator llg(1, llgterm);
 
         std::ofstream stream;
         stream.precision(12);
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
         // Relax
         af::timer t = af::timer::start();
         while (state.t < 1e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         std::cout << "timerelax [af-s]: " << af::timer::stop(t) << std::endl;
@@ -68,13 +68,13 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 2) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
-        Llg.alpha = 0.02;
+        llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
+        llg.alpha = 0.02;
 
         // Switch
         t = af::timer::start();
         while (state.t < 2e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
             llgterm.push_back(uptr_FieldTerm(new ExchangeField(A)));
         else
             llgterm.push_back(uptr_FieldTerm(new SparseExchangeField(A, mesh)));
-        LLGIntegrator Llg(1, llgterm);
+        LLGIntegrator llg(1, llgterm);
 
         std::ofstream stream;
         stream.precision(12);
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
         // Relax
         af::timer t = af::timer::start();
         while (state.t < 1e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         std::cout << "timerelax [af-s]: " << af::timer::stop(t) << std::endl;
@@ -125,13 +125,13 @@ int main(int argc, char** argv) {
         zeeswitch(0, 0, 0, 0) = -24.6e-3 / constants::mu0;
         zeeswitch(0, 0, 0, 1) = +4.3e-3 / constants::mu0;
         zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
-        Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
-        Llg.alpha = 0.02;
+        llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
+        llg.alpha = 0.02;
 
         // Switch
         t = af::timer::start();
         while (state.t < 2e-9) {
-            Llg.step(state);
+            llg.step(state);
             stream << state << std::endl;
         }
         std::cout << "time integrate 1ns [af-s]: " << af::timer::stop(t) << std::endl;

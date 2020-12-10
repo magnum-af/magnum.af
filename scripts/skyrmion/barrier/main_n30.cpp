@@ -58,14 +58,14 @@ int main(int argc, char** argv) {
     State state(mesh, material, m);
     vti_writer_atom(state.m, mesh, (filepath + "minit").c_str());
 
-    LLGIntegrator Llg;
-    // Demag?//Llg.llgterms.push_back( uptr_FieldTerm (new
+    LLGIntegrator llg;
+    // Demag?//llg.llgterms.push_back( uptr_FieldTerm (new
     // AtomisticDipoleDipoleField(mesh)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    Llg.relax(state);
+    llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");
     state.t = 0;
 
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, material, last));
 
-    StringMethod string(state, inputimages, n_interp, string_dt, Llg.llgterms);
+    StringMethod string(state, inputimages, n_interp, string_dt, llg.llgterms);
     string.run(filepath);
     return 0;
 }

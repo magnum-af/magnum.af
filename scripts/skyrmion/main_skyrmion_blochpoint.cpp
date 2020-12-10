@@ -65,17 +65,17 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     timer t = af::timer::start();
     double E_prev = 1e20;
-    while (fabs((E_prev - Llg.E(state)) / E_prev) > 1e-20) {
-        E_prev = Llg.E(state);
-        state.m = Llg.step(state);
+    while (fabs((E_prev - llg.E(state)) / E_prev) > 1e-20) {
+        E_prev = llg.E(state);
+        state.m = llg.step(state);
         if (state.steps % 1000 == 0)
             std::cout << "step " << state.steps << std::endl;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
+    std::cout << "time =" << state.t << " [s], E = " << llg.E(state) << "[J]" << std::endl;
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
@@ -197,12 +197,12 @@ int main(int argc, char** argv) {
         vti_writer_atom(images_max_lowest[i].m, mesh, name.c_str());
     }
 
-    for (unsigned i = 0; i < Llg.Fieldterms.size(); ++i) {
+    for (unsigned i = 0; i < llg.Fieldterms.size(); ++i) {
         std::cout << "elapsed_eval_time()" << std::endl;
-        std::cout << i << "\t" << Llg.cpu_time() << std::endl;
+        std::cout << i << "\t" << llg.cpu_time() << std::endl;
         stream_steps << "#"
                      << "elapsed_eval_time()" << std::endl;
-        stream_steps << "#" << i << "\t" << Llg.cpu_time() << std::endl;
+        stream_steps << "#" << i << "\t" << llg.cpu_time() << std::endl;
     }
 
     myfileE.close();

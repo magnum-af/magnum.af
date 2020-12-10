@@ -67,11 +67,11 @@ int main(int argc, char** argv) {
     std::cout << "Demag assembled in " << af::timer::stop(t_demag) << std::endl;
     llgterm.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, material)));
-    LLGIntegrator Llg(llgterm);
+    LLGIntegrator llg(llgterm);
 
     // Relaxation
     if (!exists(path_mrelax)) {
-        Llg.relax(state, 1e-7);
+        llg.relax(state, 1e-7);
         vti_writer_micro(state.m, mesh, (filepath + "mrelax").c_str());
         state.t = 0; // Setting t=0 for hysteresis
     } else {
@@ -90,11 +90,11 @@ int main(int argc, char** argv) {
     timer t_hys = af::timer::start();
     double rate = 0.34e6;                                                 //[T/s]
     double hzee_max = 0.25;                                               //[T]
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in
+    llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in
                                                                           // T/s
     while (state.t < 4 * hzee_max / rate) {
-        Llg.step(state);
-        state.calc_mean_m(stream, n_cells, Llg.llgterms[Llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
+        llg.step(state);
+        state.calc_mean_m(stream, n_cells, llg.llgterms[llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
         if (state.steps % 2000 == 0) {
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)));
         }

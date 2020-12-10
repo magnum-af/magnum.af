@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
-    LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
+    LLGIntegrator llg(1, {std::move(demag), std::move(rkky)});
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
         state.m(af::span, af::span, 1, 0) = mix;
         state.m(af::span, af::span, 1, 1) = miy;
 
-        double E = Llg.E(state);
+        double E = llg.E(state);
         vecE.push_back(E);
         std::cout << "i = " << i << ", E= " << E << std::endl;
         streamE << i << "\t" << E << std::endl;

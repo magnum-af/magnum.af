@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(A)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(1.5 * Ms, {0, 0, 1})));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     std::ofstream stream;
     stream.precision(24);

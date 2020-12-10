@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     auto exch = uptr_FieldTerm(new ExchangeField(A));
     auto aniso = uptr_FieldTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
     auto dmi = uptr_FieldTerm(new DmiField(D, {0, 0, 1}));
-    LLGIntegrator Llg(1, {std::move(exch), std::move(aniso), std::move(dmi)});
+    LLGIntegrator llg(1, {std::move(exch), std::move(aniso), std::move(dmi)});
 
     std::ofstream stream;
     stream.precision(12);
@@ -44,12 +44,12 @@ int main(int argc, char** argv) {
     // Relax
     StageTimer timer;
     while (state.t < 2e-10) {
-        Llg.step(state);
+        llg.step(state);
         stream << state << std::endl;
         if (state.steps % 100 == 0)
             state.write_vti(outdir / ("m_step" + std::to_string(state.steps)));
     }
-    // Llg.relax(state, 1e-10, 100, 1);
+    // llg.relax(state, 1e-10, 100, 1);
     stream.close();
     timer.print_stage("relax ");
     state.write_vti(outdir / "relax");

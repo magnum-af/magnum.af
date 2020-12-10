@@ -62,7 +62,7 @@ fields = [
     #ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
 ]
 print ("Initialized interaction terms in ", time.time() - start, "[s]")
-Llg = LLGIntegrator(terms = fields)
+llg = LLGIntegrator(terms = fields)
 
 # Relaxing
 stream = open(sys.argv[1]+"m.dat", "w")
@@ -73,14 +73,14 @@ E_prev = 1
 while E_diff > 1e-10 and state.t < 3e-8:
 
   # integrate one step
-  Llg.step(state)
+  llg.step(state)
 
   # Fixing layer to +z direction
   state.m_partial[:, :, 0, :] = fixed_layer
 
   # check energy difference every 100th step
   if i % 100 == 0:
-    E_current = Llg.E(state)
+    E_current = llg.E(state)
     E_diff = fabs((E_current - E_prev)/E_current)
     print ("Step i=", i, "E_diff=", E_diff)
     E_prev = E_current

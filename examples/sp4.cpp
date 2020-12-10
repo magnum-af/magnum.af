@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 
     DemagField dmag(mesh, true, true, 0);
     ExchangeField exch(A);
-    LLGIntegrator Llg(1, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+    LLGIntegrator llg(1, fieldterm::to_vec(std::move(dmag), std::move(exch)));
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     // Relax
     StageTimer timer;
     while (state.t < 1e-9) {
-        Llg.step(state);
+        llg.step(state);
         stream << state << std::endl;
     }
     timer.print_stage("relax ");
@@ -50,12 +50,12 @@ int main(int argc, char** argv) {
     af::array zeeswitch = af::constant(0.0, nx, ny, nz, 3, f64);
     zeeswitch(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     zeeswitch(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
-    Llg.llgterms.push_back(fieldterm::to_uptr<ExternalField>(zeeswitch));
-    Llg.alpha = 0.02;
+    llg.llgterms.push_back(fieldterm::to_uptr<ExternalField>(zeeswitch));
+    llg.alpha = 0.02;
 
     // Switch
     while (state.t < 2e-9) {
-        Llg.step(state);
+        llg.step(state);
         stream << state << std::endl;
     }
     state.write_vti(outdir / "2ns");

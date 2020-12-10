@@ -89,8 +89,8 @@ int main(int argc, char** argv) {
     //  std::vector<uptr_FieldTerm> llgterm;
     //  llgterm.push_back( uptr_FieldTerm (new DemagField(mesh, material)));
     //  llgterm.push_back( uptr_FieldTerm (new ExchangeField(mesh, material)));
-    //  LLG Llg(state, llgterm);
-    //  //LLG Llg(state, atol, rtol, hmax, hmin, llgterm);
+    //  LLG llg(state, llgterm);
+    //  //LLG llg(state, atol, rtol, hmax, hmin, llgterm);
     //
     //  std::ofstream stream;
     //  stream.precision(12);
@@ -98,16 +98,16 @@ int main(int argc, char** argv) {
     //
     //  timer t = af::timer::start();
     //  while (state.t < 1.e-9){
-    //    state.m=Llg.step(state);
+    //    state.m=llg.step(state);
     //    calcm(state, stream);
     //  }
-    //  std::cout<<"Energy of relaxed state = "<<Llg.E(state)<<"\n"<<std::endl;
+    //  std::cout<<"Energy of relaxed state = "<<llg.E(state)<<"\n"<<std::endl;
     //  double timerelax= af::timer::stop(t);
     //  af_to_vti(state.m, mesh , (filepath + "relax").c_str());
     //
     //  std::cout<<"timerelax [af-s]: "<< timerelax << " for
-    //  "<<Llg.counter_accepted+Llg.counter_reject<<" steps, thereof "<<
-    //  Llg.counter_accepted << " Steps accepted, "<< Llg.counter_reject<< "
+    //  "<<llg.counter_accepted+llg.counter_reject<<" steps, thereof "<<
+    //  llg.counter_accepted << " Steps accepted, "<< llg.counter_reject<< "
     //  Steps rejected" << std::endl;
     //
     //  // Prepare switch
@@ -117,17 +117,17 @@ int main(int argc, char** argv) {
     //  zeeswitch(0, 0, 0, 2)=0.0;
     //  zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     //  llgterm.push_back( uptr_FieldTerm (new ExternalField(zeeswitch, mesh,
-    //  material))); Llg.Fieldterms=llgterm;
+    //  material))); llg.Fieldterms=llgterm;
     //  //TODO remove state0 in LLG!
-    //  Llg.state0.material.alpha=0.02;
+    //  llg.state0.material.alpha=0.02;
     //
     //  while (state.t < 2.e-9){
-    //    state.m=Llg.step(state);
+    //    state.m=llg.step(state);
     //    calcm(state, stream);
     //  }
     //  af_to_vti(state.m, mesh , (filepath + "2ns").c_str());
     //  stream.close();
-    //  Llg.print_cpu_time(std::cout);
+    //  llg.print_cpu_time(std::cout);
     return 0;
 }
 void calcm(State state, std::ostream& myfile) {

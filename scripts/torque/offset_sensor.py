@@ -35,7 +35,7 @@ fields = [
     ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
 ]
 print (fields)
-Llg = LLGIntegrator(terms=fields, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)
+llg = LLGIntegrator(terms=fields, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)
 
 #print(fields[2].polarization_field)
 #print(state.m)
@@ -48,7 +48,7 @@ timer = time.time()
 itcount=0
 print ("Starting integration for", simtime, " [ns]. Calculating mean every ", nstep, "step.")
 while state.t < simtime:
-    Llg.step(state)
+    llg.step(state)
     if itcount % nstep == 0:
         mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2) # calculates spacially averaged <mx>, <my>, <mz>
         print(state.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar())

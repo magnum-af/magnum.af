@@ -44,10 +44,10 @@ int main(int argc, char** argv) {
     std::vector<uptr_FieldTerm> llgterm;
     llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
     std::cout << "test " << std::endl;
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
     std::cout << "test " << std::endl;
     // TODO: not calling step or llgterm->h causes segfault in cleanup
     // af::print("h", llgterm[0]->h(state));
-    // state.m=Llg.step(state);
+    // state.m=llg.step(state);
     return 0;
 }

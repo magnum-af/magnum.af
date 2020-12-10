@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 
     llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
     af::print("llgterm", llgterm[0]->h(state));
-    // LLG Llg(state, llgterm);
+    // LLG llg(state, llgterm);
 
     return 0;
 }

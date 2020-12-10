@@ -71,19 +71,19 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     timer t = af::timer::start();
     double E_prev = 1e20;
-    while (fabs((E_prev - Llg.E(state)) / E_prev) > 1e-8) {
-        E_prev = Llg.E(state);
+    while (fabs((E_prev - llg.E(state)) / E_prev) > 1e-8) {
+        E_prev = llg.E(state);
         for (int i = 0; i < 100; i++) {
-            state.m = Llg.step(state);
+            state.m = llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
+            std::cout << "step " << state.steps << " rdiff= " << fabs((E_prev - llg.E(state)) / E_prev) << std::endl;
     }
-    std::cout << "time =" << state.t << " [s], E = " << Llg.E(state) << "[J]" << std::endl;
+    std::cout << "time =" << state.t << " [s], E = " << llg.E(state) << "[J]" << std::endl;
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
@@ -95,11 +95,11 @@ int main(int argc, char** argv) {
     calc_mean_m(state, stream, 0);
 
     timer t_hys = af::timer::start();
-    Llg.Fieldterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in T/s
+    llg.Fieldterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func))); // Rate in T/s
     while (state.t < simtime) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
         if (state.steps % 1000 == 0) {
-            calc_mean_m(state, stream, afvalue(Llg.Fieldterms[Llg.Fieldterms.size() - 1]->h(state)(0, 0, 0, 2)));
+            calc_mean_m(state, stream, afvalue(llg.Fieldterms[llg.Fieldterms.size() - 1]->h(state)(0, 0, 0, 2)));
             vti_writer_atom(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
     }

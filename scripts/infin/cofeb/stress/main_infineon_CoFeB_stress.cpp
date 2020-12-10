@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1_stress, {1, 0, 0})));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExternalField(zee_func)));
-    std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+    std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Checking aniso
     vti_writer_micro(minimizer.llgterms_.end()[-3]->h(state), mesh, filepath + "check_h_ani_z");

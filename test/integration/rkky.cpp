@@ -30,7 +30,7 @@ TEST(RKKY, mumax3test) {
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, false));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, false, false, 0));
-    LLGIntegrator Llg(1, {std::move(demag), std::move(rkky)});
+    LLGIntegrator llg(1, {std::move(demag), std::move(rkky)});
 
     std::vector<double> vecE;
 
@@ -40,7 +40,7 @@ TEST(RKKY, mumax3test) {
         state.m(af::span, af::span, 1, 0) = mix;
         state.m(af::span, af::span, 1, 1) = miy;
 
-        double E = Llg.E(state);
+        double E = llg.E(state);
         vecE.push_back(E);
         // std::cout << "i = " << i <<  ", E= " << E << std::endl;
     }

@@ -66,33 +66,33 @@ int main(int argc, char** argv) {
     zeeswitch = tile(zeeswitch, mesh.nx, mesh.ny, mesh.nz);
     llgterm.push_back(uptr_FieldTerm(new ExternalField(zeeswitch)));
 
-    LLG Llg(state, llgterm);
-    Llg.write_fieldterms_micro(state, filepath + "init_field_micro_");
-    Llg.write_fieldterms_atom(state, filepath + "init_field_atom_");
+    LLG llg(state, llgterm);
+    llg.write_fieldterms_micro(state, filepath + "init_field_micro_");
+    llg.write_fieldterms_atom(state, filepath + "init_field_atom_");
 
     timer t = af::timer::start();
     double E_prev = 1e20;
-    while (fabs((E_prev - Llg.E(state)) / E_prev) > 1e-10) {
-        E_prev = Llg.E(state);
+    while (fabs((E_prev - llg.E(state)) / E_prev) > 1e-10) {
+        E_prev = llg.E(state);
         for (int i = 0; i < 100; i++) {
-            state.m = Llg.step(state);
+            state.m = llg.step(state);
         }
         if (state.steps % 1000 == 0)
-            std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev - Llg.E(state)) / E_prev) << std::endl;
+            std::cout << "step " << state.steps << "reldiff= " << fabs((E_prev - llg.E(state)) / E_prev) << std::endl;
     }
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, filepath + "relax");
-    Llg.write_fieldterms_micro(state, filepath);
-    Llg.write_fieldterms_micro(state, filepath + "field_micro_");
-    Llg.write_fieldterms_atom(state, filepath + "field_atom_");
-    // vti_writer_atom(Llg.Fieldterms[0]->h(state), mesh , filepath + "aDemag");
-    // vti_writer_atom(Llg.Fieldterms[1]->h(state), mesh , filepath + "aExch");
-    // vti_writer_atom(Llg.Fieldterms[2]->h(state), mesh , filepath + "aDMI");
-    // vti_writer_atom(Llg.Fieldterms[3]->h(state), mesh , filepath + "aAni");
-    // vti_writer_atom(Llg.Fieldterms[4]->h(state), mesh , filepath + "aZee");
+    llg.write_fieldterms_micro(state, filepath);
+    llg.write_fieldterms_micro(state, filepath + "field_micro_");
+    llg.write_fieldterms_atom(state, filepath + "field_atom_");
+    // vti_writer_atom(llg.Fieldterms[0]->h(state), mesh , filepath + "aDemag");
+    // vti_writer_atom(llg.Fieldterms[1]->h(state), mesh , filepath + "aExch");
+    // vti_writer_atom(llg.Fieldterms[2]->h(state), mesh , filepath + "aDMI");
+    // vti_writer_atom(llg.Fieldterms[3]->h(state), mesh , filepath + "aAni");
+    // vti_writer_atom(llg.Fieldterms[4]->h(state), mesh , filepath + "aZee");
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
-              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << llg.counter_accepted + llg.counter_reject
+              << " steps, thereof " << llg.counter_accepted << " Steps accepted, " << llg.counter_reject
               << " Steps rejected" << std::endl;
     return 0;
 }

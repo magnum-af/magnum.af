@@ -91,7 +91,7 @@ fields = [
     #SparseExchangeField(A_field, mesh),
     NonequiUniaxialAnisotropyField(ne_mesh, Ku1_field, Ku1_axis=[0, 0, 1]),
 ]
-Llg = LLGIntegrator(alpha=1.0, terms=fields)
+llg = LLGIntegrator(alpha=1.0, terms=fields)
 
 
 maxField = 2./Constants.mu0 # 2 [T]
@@ -109,7 +109,7 @@ while (state.t < simtime and state.mean_m(2) < (1. - 1e-6)):
         state.write_vti(sys.argv[1] + "m_" + str(nvti))
         nvti = nvti + 1
     fields[0].set_homogeneous_field(0.0, 0.0, state.t / simtime * maxField)
-    Llg.step(state)
+    llg.step(state)
     printzee = af.mean(af.mean(af.mean(fields[0].h(state), dim=0), dim=1), dim=2)
     print(printzee[0, 0, 0, 2].scalar()*Constants.mu0 / H_analytic, state.t/simtime, state.mean_m(2), state.t /simtime * maxField, printzee[0, 0, 0, 2].scalar()*Constants.mu0)
     stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), state.t /simtime * maxField, printzee[0, 0, 0, 0].scalar()))

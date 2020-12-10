@@ -93,17 +93,17 @@ int main(int argc, char** argv) {
     // llgterm.push_back( uptr_FieldTerm (new AtomisticUniaxialAnisotropyField(mesh,
     // material)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     timer t = af::timer::start();
     while (state.t < 2.e-10) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
     }
     double timerelax = af::timer::stop(t);
     vti_writer_micro(state.m, mesh, (filepath + "relax").c_str());
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
-              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << llg.counter_accepted + llg.counter_reject
+              << " steps, thereof " << llg.counter_accepted << " Steps accepted, " << llg.counter_reject
               << " Steps rejected" << std::endl;
 
     array last = constant(0, mesh::dims_v(mesh), f64);
@@ -209,12 +209,12 @@ int main(int argc, char** argv) {
         vti_writer_micro(images_max_lowest[i].m, mesh, name.c_str());
     }
 
-    for (unsigned i = 0; i < Llg.Fieldterms.size(); ++i) {
+    for (unsigned i = 0; i < llg.Fieldterms.size(); ++i) {
         std::cout << "elapsed_eval_time()" << std::endl;
-        std::cout << i << "\t" << Llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
+        std::cout << i << "\t" << llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
         stream_steps << "#"
                      << "elapsed_eval_time()" << std::endl;
-        stream_steps << "#" << i << "\t" << Llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
+        stream_steps << "#" << i << "\t" << llg.Fieldterms[i]->elapsed_eval_time() << std::endl;
     }
 
     myfileE.close();

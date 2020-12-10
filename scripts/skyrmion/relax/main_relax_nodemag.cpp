@@ -66,17 +66,17 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
 
-    LLG Llg(state, llgterm);
+    LLG llg(state, llgterm);
 
     timer t = af::timer::start();
     while (state.t < 8.e-10) {
-        state.m = Llg.step(state);
+        state.m = llg.step(state);
     }
     double timerelax = af::timer::stop(t);
     vti_writer_atom(state.m, mesh, (filepath + "relax").c_str());
 
-    std::cout << "timerelax [af-s]: " << timerelax << " for " << Llg.counter_accepted + Llg.counter_reject
-              << " steps, thereof " << Llg.counter_accepted << " Steps accepted, " << Llg.counter_reject
+    std::cout << "timerelax [af-s]: " << timerelax << " for " << llg.counter_accepted + llg.counter_reject
+              << " steps, thereof " << llg.counter_accepted << " Steps accepted, " << llg.counter_reject
               << " Steps rejected" << std::endl;
     return 0;
 }

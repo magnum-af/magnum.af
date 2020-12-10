@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
         auto demag = uptr_FieldTerm(new DemagField(mesh));
         auto exch = uptr_FieldTerm(new ExchangeField(A));
         auto ext = uptr_FieldTerm(new ExternalField(zee_field));
-        std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
+        std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
         LLGIntegrator llg(1, {demag, exch, ext});
         af::timer t_hys = af::timer::start();

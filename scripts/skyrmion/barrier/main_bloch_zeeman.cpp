@@ -62,15 +62,15 @@ int main(int argc, char** argv) {
     af::print("zee_pre_tile", zee);
     zee = tile(zee, mesh.nx, mesh.ny, mesh.nz);
 
-    LLGIntegrator Llg;
+    LLGIntegrator llg;
     // demag?//llgterm.push_back( uptr_FieldTerm (new
     // AtomisticDipoleDipoleField(mesh)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
-    Llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zee)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticExchangeField(mesh)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticDmiField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(mesh, material)));
+    llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zee)));
 
-    Llg.relax(state);
+    llg.relax(state);
     vti_writer_micro(state.m, mesh, filepath + "relax");
     state.t = 0;
 
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     inputimages.push_back(state);
     inputimages.push_back(State(mesh, material, last));
 
-    StringMethod string(state, inputimages, n_interp, string_dt, Llg.llgterms);
+    StringMethod string(state, inputimages, n_interp, string_dt, llg.llgterms);
     string.run(filepath);
     return 0;
 }

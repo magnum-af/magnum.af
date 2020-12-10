@@ -19,24 +19,24 @@ class sp4(unittest.TestCase):
 
   demag=magnumaf.DemagField(meshvar, material)
   exch=magnumaf.ExchangeField(meshvar, material)
-  Llg=magnumaf.LLGIntegrator([pystate, demag, exch])
+  llg=magnumaf.LLGIntegrator([pystate, demag, exch])
 
   def test_relaxation(self):
     intx=0
     inty=0
     intz=0
     while self.pystate.t() < 1e-9:
-      self.Llg.step(self.pystate)
-      intx+=self.pystate.mean_m(0)*self.Llg.print_stepsize()
-      inty+=self.pystate.mean_m(1)*self.Llg.print_stepsize()
-      intz+=self.pystate.mean_m(2)*self.Llg.print_stepsize()
+      self.llg.step(self.pystate)
+      intx+=self.pystate.mean_m(0)*self.llg.print_stepsize()
+      inty+=self.pystate.mean_m(1)*self.llg.print_stepsize()
+      intz+=self.pystate.mean_m(2)*self.llg.print_stepsize()
 
     self.assertLess(math.fabs(intx - 9.81206172824e-10), 1e-15)
     self.assertLess(math.fabs(inty - 9.14350283169e-11), 1e-15)
     self.assertLess(math.fabs(intz + 5.74381785359e-13), 1e-15)
 
   def test_switch(self):
-    self.Llg.set_state0_alpha(0.02)
+    self.llg.set_state0_alpha(0.02)
 
     zeeswitch = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
     zeeswitch[0, 0, 0, 0]=-24.6e-3/self.material.print_mu0()
@@ -44,17 +44,17 @@ class sp4(unittest.TestCase):
     zeeswitch[0, 0, 0, 2]=0.0
     zeeswitch = af.tile(zeeswitch, 100, 25, 1)
     zee=magnumaf.ExternalField(zeeswitch)
-    self.Llg.add_terms(zee)
+    self.llg.add_terms(zee)
     intx=0
     inty=0
     intz=0
 
     with open('../../Data/sp4.dat', 'w') as f:
       while self.pystate.t() < 2e-9:
-        self.Llg.step(self.pystate)
-        intx+= self.pystate.mean_m(0) * self.Llg.print_stepsize()
-        inty+= self.pystate.mean_m(1) * self.Llg.print_stepsize()
-        intz+= self.pystate.mean_m(2) * self.Llg.print_stepsize()
+        self.llg.step(self.pystate)
+        intx+= self.pystate.mean_m(0) * self.llg.print_stepsize()
+        inty+= self.pystate.mean_m(1) * self.llg.print_stepsize()
+        intz+= self.pystate.mean_m(2) * self.llg.print_stepsize()
         f.write("%10.12f %10.12f %10.12f %10.12f\n" % (self.pystate.t(), self.pystate.mean_m(0), self.pystate.mean_m(1), self.pystate.mean_m(2)))
 
     self.assertLess(math.fabs(intx + 6.41261165705e-10), 1e-15)
