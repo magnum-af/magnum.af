@@ -10,15 +10,15 @@ class NonequiTerm : public FieldTerm {
     NonequiTerm(NonequiMesh nemesh) : nemesh(nemesh){};
     virtual ~NonequiTerm() = default;
 
+  protected:
+    NonequiMesh nemesh;
+
     /// Energy calculation: Edemag = - mu0/2 * integral(M . Hdemag) dx
     /// Calculate nonequi distant mesh integral:  integral(M * Hdemag) dx, where
     /// M = Ms * m
     virtual double impl_E_in_J(const State& state, const af::array& h) const override {
         return integral_nonequimesh(h * state.m, state);
     }
-
-  protected:
-    NonequiMesh nemesh;
 
   private:
     double integral_nonequimesh(const af::array& h_times_m,

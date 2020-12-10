@@ -7,6 +7,7 @@ class AtomTerm : public FieldTerm {
   public:
     virtual ~AtomTerm() = default;
 
+  private:
     ///< Calculating the atomistic energy Eex=-mu0/2 integral(M . Hex) dx
     virtual double impl_E_in_J(const State& state, const af::array& h) const override {
         return -constants::mu0 / 2. * state.Ms *

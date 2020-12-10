@@ -39,14 +39,12 @@ class FieldTerm {
     /// For wrapping only: raw pointer to copy of H_in_Apm(state)
     long int _pywrap_H_in_Apm(const State& state) const { return (long int)(new af::array(H_in_Apm(state)))->get(); }
 
-  protected:
+  private:
     ///< Calculating the micromagnetic energy from the h field
     virtual double impl_E_in_J(const State& state, const af::array& h) const = 0;
-
-  private:
     double impl_E_in_J(const State& state) const { return Energy_in_J(state, H_in_Apm(state)); };
-
     virtual af::array impl_H_in_Apm(const State& state) const = 0;
+
     mutable double accumulated_time_Heff{0.};
     mutable double accumulated_time_Energy{0.};
 };

@@ -25,27 +25,29 @@ int main() {
     // State object
     State state(mesh, Ms, m);
 
-    DemagField dmag(mesh, false, true, 0);
-    ExchangeField exch(A);
+    {
+        DemagField dmag(mesh, false, true, 0);
+        ExchangeField exch(A);
 
-    // copy fieldterms to LLGIntegrator, retaining copy
-    LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
-    // we can dmag,exch fieldterms afterwards:
-    exch.H_in_Apm(state);
-    dmag.H_in_Apm(state);
+        // copy fieldterms to LLGIntegrator, retaining copy
+        LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
+        // we can dmag,exch fieldterms afterwards:
+        exch.H_in_Apm(state);
+        dmag.H_in_Apm(state);
 
-    // when we use std::move, fieldterm pointers are moved-from
-    LLGIntegrator llg2(alpha, fieldterm::to_vec(std::move(dmag), std::move(exch)));
-    // We can not use dmag, exch anylonger; would cause segfault:
-    // exch.h(state); // segfaults
-    // dmag.h(state); // segfaults
+        // when we use std::move, fieldterm pointers are moved-from
+        LLGIntegrator llg2(alpha, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+        // We can not use dmag, exch anylonger; would cause segfault:
+        // exch.h(state); // segfaults
+        // dmag.h(state); // segfaults
 
-    // with fieldterm::mv_to_vec, elements are implicitly moved from, use with care
-    DemagField dmag2(mesh, false, true, 0);
-    ExchangeField exch2(A);
-    LLGIntegrator llg3(alpha, fieldterm::mv_to_vec(dmag2, exch2));
-    // dmag2.h(state); // segfaults
-    // exch2.h(state); // segfaults
+        // with fieldterm::mv_to_vec, elements are implicitly moved from, use with care
+        DemagField dmag2(mesh, false, true, 0);
+        ExchangeField exch2(A);
+        LLGIntegrator llg3(alpha, fieldterm::mv_to_vec(dmag2, exch2));
+        // dmag2.h(state); // segfaults
+        // exch2.h(state); // segfaults
+    }
 
     // when fieldterms are const, nothing is moved
     {

@@ -18,7 +18,6 @@ class ExchangeField : public MicroTerm {
     af::array h_withedges(const State& state) const;
 
     virtual af::array impl_H_in_Apm(const State& state) const override;
-    using MicroTerm::impl_E_in_J;
     virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 };
 } // namespace magnumafcpp
