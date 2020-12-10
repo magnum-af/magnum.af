@@ -83,7 +83,7 @@ TEST(NonequiDemagField, EnergyTest) {
     // testing E(state, heff)
     af::array h_ed = demag_ed.h(state_ed);
     af::array h_ne = demag_ne.h(state_ne);
-    EXPECT_NEAR(demag_ed.E(state_ed, h_ed), demag_ne.E(state_ne, h_ne),
+    EXPECT_NEAR(demag_ed.Energy_in_J(state_ed, h_ed), demag_ne.Energy_in_J(state_ne, h_ne),
                 2e-24); // Note: this is for opencl, cpu and cuda achieve 3e-27
 }
 

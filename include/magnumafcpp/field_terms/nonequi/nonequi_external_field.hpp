@@ -27,8 +27,10 @@ class NonequiExternalField : public NonequiTerm {
     }
 
     // Energy contribution differs by factor of 2 compared to terms linear in m
-    using NonequiTerm::E;
-    virtual double E(const State& state, const af::array& h) const override { return 2. * NonequiTerm::E(state, h); };
+    using NonequiTerm::impl_E_in_J;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override {
+        return 2. * NonequiTerm::impl_E_in_J(state, h);
+    };
 
   private:
     af::array external_field;

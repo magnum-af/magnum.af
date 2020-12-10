@@ -71,10 +71,10 @@ int main(int argc, char** argv) {
     af::print("1e20 * mean diff h", 1e20 * af::mean(af::flat(hcsr - hcoo)));
     af::print("1e20 * min  diff h", 1e20 * af::min(af::flat(hcsr - hcoo)));
     std::cout.precision(12);
-    std::cout << "Ecoo=" << coo.E(state) << std::endl;
-    std::cout << "Ecsr=" << csr.E(state) << std::endl;
-    std::cout << "Ecoo=" << coo.E(state, hcoo) << std::endl;
-    std::cout << "Ecsr=" << csr.E(state, hcsr) << std::endl;
+    std::cout << "Ecoo=" << coo.Energy_in_J(state) << std::endl;
+    std::cout << "Ecsr=" << csr.Energy_in_J(state) << std::endl;
+    std::cout << "Ecoo=" << coo.Energy_in_J(state, hcoo) << std::endl;
+    std::cout << "Ecsr=" << csr.Energy_in_J(state, hcsr) << std::endl;
 
     return 0;
 }

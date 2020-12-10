@@ -16,7 +16,7 @@ class ExternalField : public FieldTerm {
 
     virtual af::array h(const State& state) const override; // Field contribution
 
-    virtual double E(const State& state, const af::array& h) const override;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 
     void set_homogeneous_field(const double x, const double y,
                                const double z); ///< Setting homogeneous zeeman field with x, y, z

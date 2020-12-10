@@ -21,7 +21,7 @@ class CubicAnisotropyField : public MicroTerm {
                          long int c2_array_ptr);
 
     virtual af::array h(const State& state) const override;
-    virtual double E(const State& state, const af::array& h) const override;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 
     DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
     /// Pairwise orthogonal unit vectors either as std::array<double,3> or as af::array.

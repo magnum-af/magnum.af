@@ -9,7 +9,7 @@ namespace magnumafcpp {
 class AtomisticExternalField : public ExternalField {
   public:
     using ExternalField::ExternalField;
-    virtual double E(const State& state, const af::array& h) const override;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 
   private:
 };

@@ -20,10 +20,10 @@ using namespace magnumafcpp;
 //    double Ms = 1;
 //    State state(m, Ms);
 //    // TODO:
-//    // EXPECT_EQ(nonequi_external.E(state_nemesh), external.E(state_nemesh));
+//    // EXPECT_EQ(nonequi_external.Energy_in_J(state_nemesh), external.Energy_in_J(state_nemesh));
 //    // State state_mesh(Mesh(nx, ny, nemesh.nz, dx, dy, dz[0]), 1, m);
-//    // EXPECT_EQ(nonequi_external.E(state_nemesh), external.E(state_mesh));
-//    // EXPECT_EQ(nonequi_external.E(state_nemesh), 0);
+//    // EXPECT_EQ(nonequi_external.Energy_in_J(state_nemesh), external.Energy_in_J(state_mesh));
+//    // EXPECT_EQ(nonequi_external.Energy_in_J(state_nemesh), 0);
 //}
 
 int main(int argc, char** argv) {

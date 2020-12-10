@@ -27,7 +27,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_exch=magnumaf.AtomisticExchangeField(J_atom)
 
-    self.assertAlmostEqual(atom_exch.E(state), -J_atom)
+    self.assertAlmostEqual(atom_exch.Energy_in_J(state), -J_atom)
 
     af_heff = atom_exch.h(state)
     np_heff = af_heff.__array__()
@@ -55,7 +55,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_exch=magnumaf.AtomisticExchangeField(J_atom)
 
-    self.assertAlmostEqual(atom_exch.E(state), 0)
+    self.assertAlmostEqual(atom_exch.Energy_in_J(state), 0)
 
     af_heff = atom_exch.h(state)
     np_heff = af_heff.__array__()
@@ -83,7 +83,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_exch=magnumaf.AtomisticExchangeField(J_atom)
 
-    self.assertAlmostEqual(atom_exch.E(state), J_atom)
+    self.assertAlmostEqual(atom_exch.Energy_in_J(state), J_atom)
 
     af_heff = atom_exch.h(state)
     np_heff = af_heff.__array__()
@@ -111,7 +111,7 @@ class AtomisticExchangeFieldTest(unittest.TestCase):
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_exch=magnumaf.AtomisticExchangeField(J_atom)
 
-    self.assertAlmostEqual(atom_exch.E(state), -J_atom)
+    self.assertAlmostEqual(atom_exch.Energy_in_J(state), -J_atom)
 
     af_heff = atom_exch.h(state)
     np_heff = af_heff.__array__()

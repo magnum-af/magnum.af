@@ -11,7 +11,7 @@ using namespace af;
 double LLG::E(const State& state) {
     double solution = 0.;
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        solution += Fieldterms[i]->E(state);
+        solution += Fieldterms[i]->Energy_in_J(state);
     }
     return solution;
 }

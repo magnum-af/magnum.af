@@ -150,13 +150,13 @@ int main(int argc, char** argv) {
         std::cout << std::scientific << nz << ", t=" << state_1.t << ", mz=" << state_1.meani(2)
                   << ", E=" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_1);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->Energy_in_J(state_1);
         }
         std::cout << std::endl;
 
         stream << std::scientific << nz << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            stream << "\t" << llg.llgterms[i]->E(state_1);
+            stream << "\t" << llg.llgterms[i]->Energy_in_J(state_1);
         }
         stream << std::endl;
     }

@@ -7,7 +7,7 @@ namespace magnumafcpp {
 // Eex=-mu0/2 integral(M . Hex) dx
 // virtual parent method is overwritten as to use h_withedges
 // Note: maybe this is irrelevant and can be dropped.
-double ExchangeField::E(const State& state, const af::array& h) const {
+double ExchangeField::impl_E_in_J(const State& state, const af::array& h) const {
     h.isempty();
     // TODO use h or h_widtheges?
     const auto htemp = h_withedges(state);
@@ -126,7 +126,7 @@ af::array ExchangeField::h(const State& state) const {
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::E(const State& state) const{
+// double ExchangeField::impl_E_in_J(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
 //  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;
@@ -307,7 +307,7 @@ af::array ExchangeField::h(const State& state) const {
 //
 ////Energy calculation
 ////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::E(const State& state) const{
+// double ExchangeField::impl_E_in_J(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
 //  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;

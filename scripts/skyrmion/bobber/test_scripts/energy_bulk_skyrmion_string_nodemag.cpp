@@ -129,26 +129,26 @@ int main(int argc, char** argv) {
         std::cout << std::scientific << "Skrym, " << nz << ", t=" << state_1.t << ", mz=" << state_1.meani(2)
                   << ", E=" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_1);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->Energy_in_J(state_1);
         }
         std::cout << std::endl;
 
         std::cout << std::scientific << "Ferro, " << nz << ", t=" << state_2.t << ", mz=" << state_2.meani(2)
                   << ", E=" << llg.E(state_2);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->E(state_2);
+            std::cout << ", " << llgnames[i] << "=" << llg.llgterms[i]->Energy_in_J(state_2);
         }
         std::cout << std::endl;
 
         stream << std::scientific << nz << "\t" << state_1.t << "\t" << state_1.meani(2) << "\t" << llg.E(state_1);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            stream << "\t" << llg.llgterms[i]->E(state_1);
+            stream << "\t" << llg.llgterms[i]->Energy_in_J(state_1);
         }
 
         stream << std::scientific << "\t" << nz << "\t" << state_2.t << "\t" << state_2.meani(2) << "\t"
                << llg.E(state_2);
         for (unsigned i = 0; i < llg.llgterms.size(); i++) {
-            stream << "\t" << llg.llgterms[i]->E(state_2);
+            stream << "\t" << llg.llgterms[i]->Energy_in_J(state_2);
         }
         stream << std::endl;
         timer.print_stage(std::to_string(nz) + " stateenergy");

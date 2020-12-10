@@ -11,8 +11,8 @@ class ExchangeField : public MicroTerm {
     explicit ExchangeField(af::array A_field);
     explicit ExchangeField(long int A_field_ptr);
     virtual af::array h(const State& state) const override;
-    using MicroTerm::E;
-    virtual double E(const State& state, const af::array& h) const override;
+    using MicroTerm::impl_E_in_J;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 
     double A{0}; //!< Exchange energy in [J/m]
     af::array A_field;

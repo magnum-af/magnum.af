@@ -11,7 +11,7 @@ class StateTest(unittest.TestCase):
         m[:, :, :, 0] = 1.
         m[:, :, :, 1] = 1.
         state = State(mesh, Ms = 1., m = m)
-        E = caniso.E(state)
+        E = caniso.Energy_in_J(state)
         # 250000 from: Kc1_E_density_analytic = Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
         self.assertAlmostEqual(E, 250000 * mesh.dx * mesh.dy * mesh.dz, 36)
 
@@ -30,7 +30,7 @@ class StateTest(unittest.TestCase):
         m[:, :, :, 0] = 1.
         m[:, :, :, 1] = 1.
         state = State(mesh, Ms = 1., m = m)
-        E = caniso.E(state)
+        E = caniso.Energy_in_J(state)
         # 250000 from: Kc1_E_density_analytic = Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
         self.assertAlmostEqual(E, mesh.nx * mesh.ny * mesh.nz * 250000 * mesh.dx * mesh.dy * mesh.dz, 20) # precision 36 for nx=ny=nz=1
 

@@ -873,7 +873,7 @@ cdef class StringMethod:
 cdef class HeffTerm:
     def h(self, State state):
         pass
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         pass
 
 
@@ -903,7 +903,7 @@ cdef class DemagField(HeffTerm):
     ## Calculate energy contribution in [J]
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -923,7 +923,7 @@ cdef class ExchangeField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -957,7 +957,7 @@ cdef class SparseExchangeField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -991,7 +991,7 @@ cdef class DmiField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1012,7 +1012,7 @@ cdef class NonequiExchangeField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1055,7 +1055,7 @@ cdef class CubicAnisotropyField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1079,7 +1079,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1124,7 +1124,7 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1162,7 +1162,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1180,7 +1180,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1197,7 +1197,7 @@ cdef class AtomisticExchangeField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1214,7 +1214,7 @@ cdef class AtomisticDmiField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1231,7 +1231,7 @@ cdef class ExternalField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1250,7 +1250,7 @@ cdef class AtomisticExternalField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
@@ -1269,7 +1269,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
@@ -1290,7 +1290,7 @@ cdef class RKKYExchangeField(HeffTerm):
         self._thisptr = NULL
     def h(self, State state):
         return array_from_addr(self._thisptr.h_ptr(deref(state._thisptr)))
-    def E(self, State state):
+    def Energy_in_J(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr

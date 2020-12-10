@@ -23,7 +23,7 @@ class FieldTerm {
     double Energy_in_eV(const State& state) const { return conversion::J_to_eV(Energy_in_J(state)); };
 
     /// Calculating the micromagnetic energy \f$E\f$.
-    // virtual double E(const State& state) const = 0;
+    // virtual double impl_E_in_J(const State& state) const = 0;
 
     std::pair<af::array, double> H_in_Apm_Energy_in_J(const State& state) const {
         const auto htmp = H_in_Apm(state);
@@ -41,10 +41,10 @@ class FieldTerm {
 
   protected:
     ///< Calculating the micromagnetic energy from the h field
-    virtual double E(const State& state, const af::array& h) const = 0;
+    virtual double impl_E_in_J(const State& state, const af::array& h) const = 0;
 
   private:
-    double E(const State& state) const { return Energy_in_J(state, H_in_Apm(state)); };
+    double impl_E_in_J(const State& state) const { return Energy_in_J(state, H_in_Apm(state)); };
 
     virtual af::array h(const State& state) const = 0;
     mutable double accumulated_time_Heff{0.};
@@ -67,22 +67,22 @@ inline af::array FieldTerm::H_in_Apm(const State& state) const {
 inline double FieldTerm::Energy_in_J(const State& state, const af::array& h) const {
     if (timing_is_on) {
         af::timer timer = af::timer::start();
-        const auto result = E(state, h);
+        const auto result = impl_E_in_J(state, h);
         accumulated_time_Energy += timer.stop();
         return result;
     } else {
-        return E(state, h);
+        return impl_E_in_J(state, h);
     }
 }
 
 inline double FieldTerm::Energy_in_J(const State& state) const {
     if (timing_is_on) {
         af::timer timer = af::timer::start();
-        const auto result = E(state, H_in_Apm(state));
+        const auto result = impl_E_in_J(state, H_in_Apm(state));
         accumulated_time_Energy += timer.stop();
         return result;
     } else {
-        return E(state, H_in_Apm(state));
+        return impl_E_in_J(state, H_in_Apm(state));
     }
 }
 

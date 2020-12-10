@@ -91,7 +91,7 @@ af::array CubicAnisotropyField::h(const State& state) const {
     return h[0] + h[1] + h[2];
 }
 
-double CubicAnisotropyField::E(const State& state, const af::array& h) const {
+double CubicAnisotropyField::impl_E_in_J(const State& state, const af::array& h) const {
     // Note, h is ignored here, we need h_1to3
     // would require interface exception
     h.isempty(); // avoiding unused warning
