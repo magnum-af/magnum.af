@@ -14,12 +14,11 @@ class DmiField : public MicroTerm {
     DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y,
              double D_axis_z); //! wrapping only
 
-    virtual af::array impl_H_in_Apm(const State& state) const override;
-
   private:
     double D{0};
     af::array D_constants;
     std::array<double, 3> D_axis;
     void apply_boundary_condition(af::array& hfield, const State& state) const;
+    virtual af::array impl_H_in_Apm(const State& state) const override;
 };
 } // namespace magnumafcpp

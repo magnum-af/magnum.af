@@ -2,7 +2,6 @@
 #include "arrayfire.h"
 #include "constants.hpp"
 #include "state.hpp"
-// TODO #include "llg_term_interface.hpp"
 #include "field_term.hpp"
 #include <memory>
 

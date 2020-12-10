@@ -26,12 +26,11 @@ class NonequiExchangeField : public NonequiTerm {
     NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose = true, bool COO = true);
     NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
 
-    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
-
     af::array get_matr() const { return matr; };
 
   private:
     af::array matr;
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
 
 } // namespace magnumafcpp

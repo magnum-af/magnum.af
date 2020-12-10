@@ -18,8 +18,6 @@ class UniaxialAnisotropyField : public MicroTerm {
     UniaxialAnisotropyField(double Ku1,
                             long int Ku1_axis_field_ptr); //!< wrapping only
 
-    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
-
     double Ku1{0}; //!< [J/m^3]  Uniaxial Anisotropy
 
     af::array Ku1_field; //!< Spacially varying anisotropy energy in [J/m^3] defined
@@ -32,5 +30,6 @@ class UniaxialAnisotropyField : public MicroTerm {
     double get_ku1_axis(int i);                 // For wrapping only
 
   private:
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
 } // namespace magnumafcpp

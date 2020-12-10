@@ -8,10 +8,10 @@ namespace magnumafcpp {
 class NonequiDemagField : public NonequiTerm {
   public:
     NonequiDemagField(NonequiMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
-    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 
   private:
     af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
 
 // expose for testing:

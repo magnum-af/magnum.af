@@ -14,10 +14,6 @@ class ExternalField : public FieldTerm {
     explicit ExternalField(std::function<af::array(State)>);
     explicit ExternalField(long int zee_in_addr); ///< For wrapping only
 
-    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
-
-    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
-
     void set_homogeneous_field(const double x, const double y,
                                const double z); ///< Setting homogeneous zeeman field with x, y, z
                                                 ///< components of static Zeeman field.
@@ -29,6 +25,10 @@ class ExternalField : public FieldTerm {
     std::function<af::array(State)> lamda_callback;
     bool is_lamda{false};
     // double af_time{0.};
+
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
+
+    virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 };
 
 // for wrapping:

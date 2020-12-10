@@ -14,8 +14,6 @@ class DemagField : public MicroTerm {
   public:
     DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
 
-    virtual af::array impl_H_in_Apm(const State& state) const override;
-
     ///< Get copy of array storing the Fourier transfrom of the demag tensor.
     af::array get_Nfft() const { return Nfft; }
     // For wrapping
@@ -24,5 +22,6 @@ class DemagField : public MicroTerm {
   private:
     mutable af::array Nfft; // mutable for c64-c32 conversion
     double cpu_time{0.};
+    virtual af::array impl_H_in_Apm(const State& state) const override;
 };
 } // namespace magnumafcpp

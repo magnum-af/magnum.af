@@ -41,8 +41,6 @@ class RKKYExchangeField : public MicroTerm {
     RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                       bool verbose = true);
 
-    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
-
     af::array get_matr() const { return matr; };
 
   private:
@@ -52,5 +50,7 @@ class RKKYExchangeField : public MicroTerm {
     af::array calc_COO_matrix(const af::array& RKKY_field, const af::array& A_exchange_field, const Mesh&,
                               const af::array& rkky_indices, const bool verbose) const;
     int findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) const;
+
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
 } // namespace magnumafcpp

@@ -20,7 +20,6 @@ class CubicAnisotropyField : public MicroTerm {
     CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr,
                          long int c2_array_ptr);
 
-    virtual af::array impl_H_in_Apm(const State& state) const override;
     virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 
     DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
@@ -30,5 +29,6 @@ class CubicAnisotropyField : public MicroTerm {
 
   private:
     std::array<af::array, 3> h_1to3(const State& state) const;
+    virtual af::array impl_H_in_Apm(const State& state) const override;
 };
 } // namespace magnumafcpp

@@ -18,14 +18,6 @@ class NonequiExternalField : public NonequiTerm {
     NonequiExternalField(NonequiMesh nemesh, long int fieldptr)
         : NonequiTerm(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
 
-    virtual af::array impl_H_in_Apm(const State& state) const override {
-        if (callback_is_defined) {
-            return callback_function(state);
-        } else {
-            return external_field;
-        }
-    }
-
     // Energy contribution differs by factor of 2 compared to terms linear in m
     using NonequiTerm::impl_E_in_J;
     virtual double impl_E_in_J(const State& state, const af::array& h) const override {
@@ -36,6 +28,14 @@ class NonequiExternalField : public NonequiTerm {
     af::array external_field;
     std::function<af::array(State)> callback_function;
     bool callback_is_defined{false};
+
+    virtual af::array impl_H_in_Apm(const State& state) const override {
+        if (callback_is_defined) {
+            return callback_function(state);
+        } else {
+            return external_field;
+        }
+    }
 };
 
 } // namespace magnumafcpp
