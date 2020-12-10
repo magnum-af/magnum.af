@@ -102,9 +102,9 @@ void write_plotfile(fs::path outdir, std::string plotfile) {
       << "set ylabel 'Average Magnetizaion';\n"
       << "set output 'hys.pdf';\n"
       << "p "
-      << "'m.dat' u 5:2 w l t '<m_x>',"
-      << "'m.dat' u 5:3 w l t '<m_y>',"
-      << "'m.dat' u 5:4 w l t '<m_z>'";
+      << "'m.dat' u 4:1 w l t '<m_x>',"
+      << "'m.dat' u 4:2 w l t '<m_y>',"
+      << "'m.dat' u 4:3 w l t '<m_z>'";
 }
 
 void plot(fs::path outdir, std::string plotfile) {

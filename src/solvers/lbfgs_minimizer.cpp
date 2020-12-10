@@ -28,16 +28,16 @@ void abort_if_size_is_zero(std::size_t size) {
     }
 }
 
-// af::array LBFGS_Minimizer::Gradient(const State& state) const {
-//    const auto heff = fieldterm::Heff_in_Apm(fieldterms_, state);
-//    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff));
-//}
-
-///< Calculate gradient as energy-dissipation term of llg
+///< Calculate gradient as m x (m x Heff), which is proportional to energy-dissipation term of the LLG
 af::array Gradient(const State& state, const af::array& heff) {
-    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff));
-    // TODO: consider taking //return -equations::LLG_damping(1, state.m, cross4(state.m, heff));
+    return cross4(state.m, cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
 }
+
+// Alternatives
+// af::array Gradient(const State& state, const af::array& heff) {
+//    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff)); // NOTE: state.Ms must not be 0!
+//    return -equations::LLG_damping(1, state.m, cross4(state.m, heff)); // Also works, but is stuck at step 15 in
+//}
 
 std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {
     abort_if_size_is_zero(fieldterms.size());
