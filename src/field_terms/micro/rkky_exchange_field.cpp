@@ -15,7 +15,7 @@ RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_val
     : matr(calc_COO_matrix(*(new af::array(*((void**)rkky_values))), *(new af::array(*((void**)exchange_values))), mesh,
                            *(new af::array(*((void**)rkky_indices))), verbose)) {}
 
-af::array RKKYExchangeField::h(const State& state) const {
+af::array RKKYExchangeField::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, state.mesh.nx, state.mesh.ny, state.mesh.nz, 3);
     if (state.Ms_field.isempty()) {

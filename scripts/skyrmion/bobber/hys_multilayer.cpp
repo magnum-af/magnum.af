@@ -227,8 +227,8 @@ int main(int argc, char** argv) {
     // NOTE try//auto dmi = uptr_FieldTerm (new DmiField(SK_D, {0, 0, -1}));
     auto dmi = uptr_FieldTerm(new DmiField(D, {0, 0, -1})); // TODO current definition, will change sign with update
 
-    // af::print("dmi", dmi->h(state_1));
-    // af::print("exch", exch->h(state_1));
+    // af::print("dmi", dmi->H_in_Apm(state_1));
+    // af::print("exch", exch->H_in_Apm(state_1));
 
     LLGIntegrator llg(1, {demag, exch, aniso, dmi});
     State state_1(mesh, Ms, m);
@@ -341,7 +341,7 @@ int main(int argc, char** argv) {
         while (state_1.t < inttime_in_sec) {
             llg.step(state_1);
             if (state_1.steps % 100 == 0) {
-                af::array Hext = af::mean(af::mean(af::mean(llg.llgterms.back()->h(state_1), 0), 1), 2);
+                af::array Hext = af::mean(af::mean(af::mean(llg.llgterms.back()->H_in_Apm(state_1), 0), 1), 2);
                 double Hx_in_mT = Hext(0, 0, 0, 0).scalar<double>() * constants::mu0 * 1e3;
                 double Hz_in_mT = Hext(0, 0, 0, 2).scalar<double>() * constants::mu0 * 1e3;
                 std::cout << state_1 << " " << Hx_in_mT << " " << Hz_in_mT << std::endl;

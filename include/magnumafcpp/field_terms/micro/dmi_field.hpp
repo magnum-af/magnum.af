@@ -14,7 +14,7 @@ class DmiField : public MicroTerm {
     DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y,
              double D_axis_z); //! wrapping only
 
-    virtual af::array h(const State& state) const override;
+    virtual af::array impl_H_in_Apm(const State& state) const override;
 
   private:
     double D{0};

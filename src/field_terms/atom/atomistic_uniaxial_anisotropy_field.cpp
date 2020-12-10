@@ -21,7 +21,7 @@ AtomisticUniaxialAnisotropyField::AtomisticUniaxialAnisotropyField(const double 
     : K_atom(K_atom),
       K_atom_axis(get_normalized_vector(std::array<double, 3>{K_atom_axis_x, K_atom_axis_y, K_atom_axis_z})) {}
 
-af::array AtomisticUniaxialAnisotropyField::h(const State& state) const {
+af::array AtomisticUniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
     // Normal vector
     af::array eu = af::array(state.m.dims(), f64);
     eu(af::span, af::span, af::span, 0) = K_atom_axis[0];

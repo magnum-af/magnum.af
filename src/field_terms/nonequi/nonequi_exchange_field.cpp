@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-af::array NonequiExchangeField::h(const State& state) const {
+af::array NonequiExchangeField::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));
     exch = af::moddims(exch, nemesh.nx, nemesh.ny, nemesh.nz, 3);
     if (state.Ms_field.isempty()) {

@@ -5,7 +5,7 @@ namespace magnumafcpp {
 
 AtomisticExchangeField::AtomisticExchangeField(double J_atom) : J_atom(J_atom) {}
 
-af::array AtomisticExchangeField::h(const State& state) const {
+af::array AtomisticExchangeField::impl_H_in_Apm(const State& state) const {
     af::array filtr = af::constant(0.0, 3, 3, 3, 3, f64);
     filtr(0, 1, 1, af::span) = 1.;
     filtr(2, 1, 1, af::span) = 1.;

@@ -262,18 +262,18 @@ int main(int argc, char** argv) {
 
     af::print("m", af::mean(af::mean(af::mean(state_1.m, 0), 1), 2));
     af::print("Ms", af::mean(af::mean(af::mean(state_1.Ms_field, 0), 1), 2));
-    af::print("demag", af::mean(af::mean(af::mean(demag->h(state_1), 0), 1), 2));
-    af::print("exch", af::mean(af::mean(af::mean(exch->h(state_1), 0), 1), 2));
-    af::print("aniso", af::mean(af::mean(af::mean(aniso->h(state_1), 0), 1), 2));
-    af::print("dmi", af::mean(af::mean(af::mean(dmi->h(state_1), 0), 1), 2));
-    // af::print("dmi", dmi->h(state_1));
-    // af::print("exch", exch->h(state_1));
+    af::print("demag", af::mean(af::mean(af::mean(demag->H_in_Apm(state_1), 0), 1), 2));
+    af::print("exch", af::mean(af::mean(af::mean(exch->H_in_Apm(state_1), 0), 1), 2));
+    af::print("aniso", af::mean(af::mean(af::mean(aniso->H_in_Apm(state_1), 0), 1), 2));
+    af::print("dmi", af::mean(af::mean(af::mean(dmi->H_in_Apm(state_1), 0), 1), 2));
+    // af::print("dmi", dmi->H_in_Apm(state_1));
+    // af::print("exch", exch->H_in_Apm(state_1));
 
     std::cout << "Relaxing minit" << std::endl;
     state_1.write_vti(filepath + "minit");
     std::cout << "Prestart:" << std::scientific << state_1.steps << "\t" << state_1.t << "\t" << state_1.meani(2)
               << "\t" << llg.E(state_1) << std::endl;
-    // auto demag_init = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+    // auto demag_init = demag->H_in_Apm(state_1) * 1e3 * constants::mu0; // in mT
     // vti_writer_micro(demag_init, mesh, filepath + "demag_init");
     // vti_writer_micro(demag_init(af::span, af::span, 53, af::span), mesh,
     // filepath + "demag_init_21nm_above_top");
@@ -293,7 +293,7 @@ int main(int argc, char** argv) {
             vti_writer_micro(m_current_cleanPtLayer(af::span, af::span, af::seq(nz + 1), af::span),
                              Mesh(nx, ny, nz + 1, dx, dy, dz), filepath + "m_current_step_cleanPtlayer_no_airbox");
 
-            auto demag_current = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+            auto demag_current = demag->H_in_Apm(state_1) * 1e3 * constants::mu0; // in mT
             vti_writer_micro(demag_current(af::span, af::span, 53, af::span), mesh,
                              filepath + "demag_current_21nm_above_top");
             // vti_writer_micro(demag_current, mesh, filepath +
@@ -309,7 +309,7 @@ int main(int argc, char** argv) {
     }
 
     timer.print_stage("relax");
-    auto demag_relaxed = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+    auto demag_relaxed = demag->H_in_Apm(state_1) * 1e3 * constants::mu0; // in mT
     vti_writer_micro(demag_relaxed, mesh, filepath + "demag_relaxed");
     vti_writer_micro(demag_relaxed(af::span, af::span, 53, af::span), mesh, filepath + "demag_relaxed_21nm_above_top");
 

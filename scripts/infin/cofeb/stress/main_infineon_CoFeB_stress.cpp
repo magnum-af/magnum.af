@@ -69,10 +69,10 @@ int main(int argc, char** argv) {
     std::cout << "llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
 
     // Checking aniso
-    vti_writer_micro(minimizer.llgterms_.end()[-3]->h(state), mesh, filepath + "check_h_ani_z");
-    vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh,
+    vti_writer_micro(minimizer.llgterms_.end()[-3]->H_in_Apm(state), mesh, filepath + "check_h_ani_z");
+    vti_writer_micro(minimizer.llgterms_.end()[-2]->H_in_Apm(state), mesh,
                      filepath + "check_h_ani_stress"); // TODO this looks strange
-    vti_writer_micro(minimizer.llgterms_.end()[-1]->h(state), mesh, filepath + "check_h_zee");
+    vti_writer_micro(minimizer.llgterms_.end()[-1]->H_in_Apm(state), mesh, filepath + "check_h_zee");
 
     // obtaining relaxed magnetization
     af::timer t = af::timer::start();
@@ -91,9 +91,9 @@ int main(int argc, char** argv) {
         state.t = (double)i / (double)max_i;
         state.steps++;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
+        state.calc_mean_m(stream, minimizer.llgterms_.end()[-1]->H_in_Apm(state)(0, 0, 0, af::span));
         vti_writer_micro(state.m, mesh, filepath + "m_" + std::to_string(state.steps));
-        vti_writer_micro(minimizer.llgterms_.end()[-2]->h(state), mesh,
+        vti_writer_micro(minimizer.llgterms_.end()[-2]->H_in_Apm(state), mesh,
                          filepath + "check_h_ani_stress" +
                              std::to_string(state.steps)); // TODO this looks interesting, value drops
                                                            // at the boundaries of the disc

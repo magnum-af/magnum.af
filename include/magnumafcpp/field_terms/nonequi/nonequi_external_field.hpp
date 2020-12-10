@@ -18,7 +18,7 @@ class NonequiExternalField : public NonequiTerm {
     NonequiExternalField(NonequiMesh nemesh, long int fieldptr)
         : NonequiTerm(nemesh), external_field(*(new af::array(*((void**)fieldptr)))) {}
 
-    virtual af::array h(const State& state) const override {
+    virtual af::array impl_H_in_Apm(const State& state) const override {
         if (callback_is_defined) {
             return callback_function(state);
         } else {

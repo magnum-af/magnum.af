@@ -23,7 +23,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCube) {
     EXPECT_NEAR(demagE, analytic,
                 (demagE + analytic) / 2. * 5.3e-8); // opencl precision
 
-    double demagEh = demag.Energy_in_J(state, demag.h(state));
+    double demagEh = demag.Energy_in_J(state, demag.H_in_Apm(state));
     EXPECT_NEAR(demagEh, analytic,
                 (demagEh + analytic) / 2. * 5.3e-8); // opencl precision
 }
@@ -49,7 +49,7 @@ TEST(MicroDemag, EnergyOfHomogeneousCubeWithAirbox) {
     EXPECT_NEAR(demagE, analytic,
                 (demagE + analytic) / 2. * 5.3e-8); // opencl precision
 
-    double demagEh = demag.Energy_in_J(state, demag.h(state));
+    double demagEh = demag.Energy_in_J(state, demag.H_in_Apm(state));
     EXPECT_NEAR(demagEh, analytic,
                 (demagEh + analytic) / 2. * 5.3e-8); // opencl precision
 }

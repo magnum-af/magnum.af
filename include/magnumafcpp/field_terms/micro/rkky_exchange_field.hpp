@@ -41,7 +41,7 @@ class RKKYExchangeField : public MicroTerm {
     RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                       bool verbose = true);
 
-    virtual af::array h(const State& state) const override; // Field contribution
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 
     af::array get_matr() const { return matr; };
 

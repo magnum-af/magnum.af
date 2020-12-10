@@ -29,14 +29,14 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
 
     double E_analytic = 1. / 6. * nx * pow(dx, 3) * pow(state.Ms, 2) * constants::mu0;
 
-    af::array h_demag = demag.h(state);
+    af::array h_demag = demag.H_in_Apm(state);
     // testing state.Ms
     EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-19);
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-19);
 
     // testing state.Ms_field switch
     state.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
-    h_demag = demag.h(state);
+    h_demag = demag.H_in_Apm(state);
     EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-20);
 }
@@ -44,7 +44,7 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
 TEST(NonequiDemagField, EnergyTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization NOTE: this test is
-    // only sensitive to i_source >= i_target (in NonequiDemagField::h() method)
+    // only sensitive to i_source >= i_target (in NonequiDemagField::H_in_Apm() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -81,8 +81,8 @@ TEST(NonequiDemagField, EnergyTest) {
                 2e-24); // Note: this is for opencl, cpu and cuda achieve 3e-27
 
     // testing E(state, heff)
-    af::array h_ed = demag_ed.h(state_ed);
-    af::array h_ne = demag_ne.h(state_ne);
+    af::array h_ed = demag_ed.H_in_Apm(state_ed);
+    af::array h_ne = demag_ne.H_in_Apm(state_ne);
     EXPECT_NEAR(demag_ed.Energy_in_J(state_ed, h_ed), demag_ne.Energy_in_J(state_ne, h_ne),
                 2e-24); // Note: this is for opencl, cpu and cuda achieve 3e-27
 }
@@ -90,7 +90,7 @@ TEST(NonequiDemagField, EnergyTest) {
 TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     // Compare SP4 layer with random z-magnetization once with nz = 3
     // equidistant and nz=2 non-equidistant discretization NOTE: this test is
-    // only sensitive to i_source >= i_target (in NonequiDemagField::h() method)
+    // only sensitive to i_source >= i_target (in NonequiDemagField::H_in_Apm() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -119,8 +119,8 @@ TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     State state_ne(m2, af::constant(8e5, nemesh::dims_v(mesh_ne), f64), false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -130,9 +130,9 @@ TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
 }
 
 TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
-    // Same as above but testing else{} in nedemag.h(state) method
+    // Same as above but testing else{} in nedemag.H_in_Apm(state) method
     // NOTE: this test is only sensitive to i_source < i_target (in
-    // NonequiDemagField::h() method)
+    // NonequiDemagField::H_in_Apm() method)
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
     const int nx = 10, ny = 10, nz = 3;
 
@@ -161,8 +161,8 @@ TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     State state_ne(m2, af::constant(8e5, nemesh::dims_v(mesh_ne), f64), false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 2, af::span);
-    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 1, af::span);
+    af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 2, af::span);
+    af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 1, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -204,8 +204,8 @@ TEST(NonequiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     State state_ne(m2, 8e5, false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.004); // cpu and cuda 0.001; 100x25x3: 0.01
     EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
@@ -245,8 +245,8 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
     state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.002); // 0.0001; 100x25x3: 0.01, Note: this is for opencl, cpu and
                         // cuda achieve 0.007
@@ -280,8 +280,8 @@ TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
     state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
-    af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
-    af::array demag_ne_h = demag_ne.h(state_ne)(af::span, af::span, 0, af::span);
+    af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
+    af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
     EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.04); // 0.0004; 100x25x3: 0.04 Note: this is for opencl, cpu and
                        // cuda achieve 0.007

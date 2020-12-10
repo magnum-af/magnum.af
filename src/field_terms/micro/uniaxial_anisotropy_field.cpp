@@ -69,7 +69,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double 
     }
 }
 
-af::array UniaxialAnisotropyField::h(const State& state) const {
+af::array UniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
     // switch Ku1_axis and Ku1_axis_field
     af::array eu; // Array containing normal vectors
     if (Ku1_axis_field.isempty()) {

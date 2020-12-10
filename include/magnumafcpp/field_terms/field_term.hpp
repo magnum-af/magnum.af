@@ -46,7 +46,7 @@ class FieldTerm {
   private:
     double impl_E_in_J(const State& state) const { return Energy_in_J(state, H_in_Apm(state)); };
 
-    virtual af::array h(const State& state) const = 0;
+    virtual af::array impl_H_in_Apm(const State& state) const = 0;
     mutable double accumulated_time_Heff{0.};
     mutable double accumulated_time_Energy{0.};
 };
@@ -56,11 +56,11 @@ constexpr bool timing_is_on{true};
 inline af::array FieldTerm::H_in_Apm(const State& state) const {
     if (timing_is_on) {
         af::timer timer = af::timer::start();
-        const auto result = h(state);
+        const auto result = impl_H_in_Apm(state);
         accumulated_time_Heff += timer.stop();
         return result;
     } else {
-        return h(state);
+        return impl_H_in_Apm(state);
     }
 }
 

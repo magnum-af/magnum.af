@@ -50,7 +50,7 @@ DmiField::DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, d
 /// nanostructures in the presence of Dzyaloshinskii–Moriya interaction Phys.
 /// Rev. B 88 184422
 ///
-af::array DmiField::h(const State& state) const {
+af::array DmiField::impl_H_in_Apm(const State& state) const {
     // Normal vector
     double norm = sqrt(pow(D_axis[0], 2) + pow(D_axis[1], 2) + pow(D_axis[2], 2));
     af::array n = af::array(state.mesh.nx, state.mesh.ny, state.mesh.nz, 3, f64);

@@ -32,6 +32,6 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new DmiField(mesh, material)));
     LLG llg(state, llgterm);
 
-    print("DmiField", llg.Fieldterms[0]->h(state));
+    print("DmiField", llg.Fieldterms[0]->H_in_Apm(state));
     return 0;
 }

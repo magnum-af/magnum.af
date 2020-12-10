@@ -15,7 +15,7 @@ AtomisticDmiField::AtomisticDmiField(double D_atom, double D_atom_axis_x, double
     : D_atom(D_atom),
       D_atom_axis(get_normalized_vector(std::array<double, 3>{D_atom_axis_x, D_atom_axis_y, D_atom_axis_z})) {}
 
-af::array AtomisticDmiField::h(const State& state) const {
+af::array AtomisticDmiField::impl_H_in_Apm(const State& state) const {
     af::array n = af::array(state.m.dims(), f64);
     n(af::span, af::span, af::span, 0) = D_atom_axis[0];
     n(af::span, af::span, af::span, 1) = D_atom_axis[1];

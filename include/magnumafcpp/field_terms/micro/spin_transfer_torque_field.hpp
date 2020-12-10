@@ -8,7 +8,7 @@ namespace magnumafcpp {
 
 class SpinTransferTorqueField : public MicroTerm {
   public:
-    virtual af::array h(const State& state) const override; ///< Effective field term contribution
+    virtual af::array impl_H_in_Apm(const State& state) const override; ///< Effective field term contribution
 
     SpinTransferTorqueField(af::array polarization_field, double nu_dampinglike, double nu_field, double j_e);
     SpinTransferTorqueField(long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e);

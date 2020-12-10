@@ -59,13 +59,13 @@ int main(int argc, char** argv) {
         std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys) << std::endl;
         // state.calc_mean_m_steps(stream,
         // afvalue(minimizer.llgterms_[minimizer.llgterms_.size() -
-        // 1]->h(state)(0, 0, 0, 0))); vti_writer_micro(state.m, mesh, filepath
+        // 1]->H_in_Apm(state)(0, 0, 0, 0))); vti_writer_micro(state.m, mesh, filepath
         // + "m_hysteresis_" + std::to_string(nz));
         state.write_vti(filepath + "m_relaxed" + std::to_string(nz));
         std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
-                  << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
+                  << afvalue(demag->H_in_Apm(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
         stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
-               << afvalue(demag->h(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
+               << afvalue(demag->H_in_Apm(state)(nx / 2, ny / 2, 0, 0)) * constants::mu0 << "\t" << std::endl;
     }
     stream.close();
     return 0;

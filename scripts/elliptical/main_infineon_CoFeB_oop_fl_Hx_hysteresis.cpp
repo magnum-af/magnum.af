@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
                                                                           // T/s
     while (state.t < 4 * hzee_max / rate) {
         llg.step(state);
-        state.calc_mean_m(stream, n_cells, llg.llgterms[llg.llgterms.size() - 1]->h(state)(0, 0, 0, af::span));
+        state.calc_mean_m(stream, n_cells, llg.llgterms[llg.llgterms.size() - 1]->H_in_Apm(state)(0, 0, 0, af::span));
         if (state.steps % 2000 == 0) {
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)));
         }

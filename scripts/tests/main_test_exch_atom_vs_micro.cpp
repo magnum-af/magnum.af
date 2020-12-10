@@ -49,11 +49,11 @@ int main(int argc, char** argv) {
         for (int y = 0; y < ny; y++) {
             for (int z = 0; z < nz; z++) {
                 for (int m = 0; m < 3; m++) {
-                    if (compare(afvalue(llg.Fieldterms[0]->h(state)(x, y, z, m)),
-                                afvalue(llg2.Fieldterms[0]->h(state)(x, y, z, m)))) {
+                    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(x, y, z, m)),
+                                afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(x, y, z, m)))) {
                         std::cout << "!!! TEST  FAILED at " << x << " " << y << " " << z << " " << m << std::endl;
-                        std::cout << afvalue(llg.Fieldterms[0]->h(state)(x, y, z, m)) << " , "
-                                  << afvalue(llg2.Fieldterms[0]->h(state)(x, y, z, m)) << std::endl;
+                        std::cout << afvalue(llg.Fieldterms[0]->H_in_Apm(state)(x, y, z, m)) << " , "
+                                  << afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(x, y, z, m)) << std::endl;
                     }
                 }
             }

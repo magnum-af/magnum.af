@@ -12,11 +12,11 @@ TEST(ExchangeField, A_scalar_vs_array_value) {
     Mesh mesh(3, 3, 3, 0.1, 0.2, 0.3);
     State state(mesh, Ms, util::init_sp4(mesh));
     ExchangeField exch_global(A);
-    af::array globalA = exch_global.h(state);
+    af::array globalA = exch_global.H_in_Apm(state);
 
     af::array A_field = af::constant(A, mesh.nx, mesh.ny, mesh.nz, 3, f64);
     ExchangeField exch_local(A_field);
-    af::array localA = exch_local.h(state);
+    af::array localA = exch_local.H_in_Apm(state);
 
     for (unsigned nx = 0; nx < mesh.nx; nx++) {
         for (unsigned ny = 0; ny < mesh.ny; ny++) {

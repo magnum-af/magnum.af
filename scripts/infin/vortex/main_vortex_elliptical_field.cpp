@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     timer t_rot = af::timer::start();
     for (int i = 0; i <= steps_full_rotation; i++) {
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream, minimizer.llgterms_.end()[-1]->h(state)(0, 0, 0, af::span));
+        state.calc_mean_m_steps(stream, minimizer.llgterms_.end()[-1]->H_in_Apm(state)(0, 0, 0, af::span));
         if (state.steps % 2000 == 0) {
             vti_writer_micro(state.m, mesh, filepath + "m_rotation_" + std::to_string(state.steps));
         }

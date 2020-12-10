@@ -145,8 +145,8 @@ int main(int argc, char** argv) {
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = uptr_FieldTerm(new ExternalField(zee));
 
-    // af::print("dmi", dmi->h(state_1));
-    // af::print("exch", exch->h(state_1));
+    // af::print("dmi", dmi->H_in_Apm(state_1));
+    // af::print("exch", exch->H_in_Apm(state_1));
 
     LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     timer.print_stage("init ");

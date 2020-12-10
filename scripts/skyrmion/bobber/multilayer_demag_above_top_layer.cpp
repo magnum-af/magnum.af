@@ -170,8 +170,8 @@ int main(int argc, char** argv) {
     zee(af::span, af::span, af::span, 2) = Hz;
     auto external = uptr_FieldTerm(new ExternalField(zee));
 
-    // af::print("dmi", dmi->h(state_1));
-    // af::print("exch", exch->h(state_1));
+    // af::print("dmi", dmi->H_in_Apm(state_1));
+    // af::print("exch", exch->H_in_Apm(state_1));
 
     LLGIntegrator llg(1, {demag, exch, aniso, dmi, external});
     timer.print_stage("init ");
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
 
     std::cout << "Relaxing minit" << std::endl;
     state_1.write_vti(filepath + "minit");
-    auto demag_init = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+    auto demag_init = demag->H_in_Apm(state_1) * 1e3 * constants::mu0; // in mT
     vti_writer_micro(demag_init, mesh, filepath + "demag_init");
     vti_writer_micro(demag_init(af::span, af::span, 52, af::span), mesh, filepath + "demag_init_21nm_above_top");
 
@@ -196,7 +196,7 @@ int main(int argc, char** argv) {
     }
 
     timer.print_stage("relax");
-    auto demag_relaxed = demag->h(state_1) * 1e3 * constants::mu0; // in mT
+    auto demag_relaxed = demag->H_in_Apm(state_1) * 1e3 * constants::mu0; // in mT
     vti_writer_micro(demag_relaxed, mesh, filepath + "demag_relaxed");
     vti_writer_micro(demag_relaxed(af::span, af::span, 52, af::span), mesh, filepath + "demag_relaxed_21nm_above_top");
 

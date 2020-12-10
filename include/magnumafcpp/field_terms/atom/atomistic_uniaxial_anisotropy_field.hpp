@@ -11,7 +11,7 @@ class AtomisticUniaxialAnisotropyField : public AtomTerm {
     AtomisticUniaxialAnisotropyField(const double K_atom, std::array<double, 3> K_atom_axis = {0, 0, 1});
     AtomisticUniaxialAnisotropyField(const double K_atom, double K_atom_axis_x, double K_atom_axis_y,
                                      double K_atom_axis_z);
-    virtual af::array h(const State& state) const override;
+    virtual af::array impl_H_in_Apm(const State& state) const override;
 
   private:
     double K_atom;                     //!< Atomistic anisotropy energy in [J]

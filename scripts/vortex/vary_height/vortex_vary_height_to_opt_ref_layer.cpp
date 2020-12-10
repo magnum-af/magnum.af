@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
         }
         std::cout << "time minimize [af-s]: " << af::timer::stop(t_hys) << std::endl;
         state.write_vti((filepath + "m_relaxed" + std::to_string(nz)).c_str());
-        af::array demagfield = demag->h(state);
+        af::array demagfield = demag->H_in_Apm(state);
         vti_writer_micro(demagfield, mesh, filepath + "relaxed_demag_nz" + std::to_string(nz));
         double demag_in_center = afvalue(demagfield(nx / 2, ny / 2, 0, 0)) * constants::mu0;
         double mean_demag = afvalue(af::mean(af::mean(demagfield(af::span, af::span, 0, 0), 0), 1)) * constants::mu0;

@@ -85,7 +85,7 @@ af::array ExchangeField::h_withedges(const State& state) const {
 // Terms proportional to m dorp out in the cross product of the LLG and thus is
 // neglected as arrayfire is extremely slow with indexing operations NOTE: This
 // yields no longer the physical exchange field but optimizes the caluclation
-af::array ExchangeField::h(const State& state) const {
+af::array ExchangeField::impl_H_in_Apm(const State& state) const {
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
     // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
     // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
@@ -250,7 +250,7 @@ af::array ExchangeField::h(const State& state) const {
 //    }
 //}
 //
-// array ExchangeField::h(const State& state) const{
+// array ExchangeField::impl_H_in_Apm(const State& state) const{
 //  timer_exchsolve = af::timer::start();
 //
 //  if(mesh.nx*mesh.ny*mesh.nz>8128){
@@ -431,7 +431,7 @@ af::array ExchangeField::h(const State& state) const {
 //    }
 //}
 //
-// array ExchangeField::h(const State& state) const{
+// array ExchangeField::impl_H_in_Apm(const State& state) const{
 //  timer_exchsolve = af::timer::start();
 //
 //  if(mesh.nx*mesh.ny*mesh.nz>8128){

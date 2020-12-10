@@ -21,12 +21,12 @@ double LLG::E(const State& state) {
 //}
 void LLG::write_fieldterms_atom(const State& state, const std::string filepath) {
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        vti_writer_atom(Fieldterms[i]->h(state), state.mesh, filepath + std::to_string(i));
+        vti_writer_atom(Fieldterms[i]->H_in_Apm(state), state.mesh, filepath + std::to_string(i));
     }
 }
 void LLG::write_fieldterms_micro(const State& state, const std::string filepath) {
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        vti_writer_micro(Fieldterms[i]->h(state), state.mesh, filepath + std::to_string(i));
+        vti_writer_micro(Fieldterms[i]->H_in_Apm(state), state.mesh, filepath + std::to_string(i));
     }
 }
 
@@ -73,7 +73,7 @@ array LLG::fheff(const array& m) {
     state0.m = m; // TODO avoid state0 in the first place
     // TODO avoid this line  State temp(state0.mesh, state0.material, m);
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        solution += Fieldterms[i]->h(state0);
+        solution += Fieldterms[i]->H_in_Apm(state0);
     }
 
     time_heff += af::timer::stop(timer_heff);

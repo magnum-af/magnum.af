@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     while (state.t < simtime) {
         state.m = llg.step(state);
         if (state.steps % 1000 == 0) {
-            calc_mean_m(state, stream, afvalue(llg.Fieldterms[llg.Fieldterms.size() - 1]->h(state)(0, 0, 0, 2)));
+            calc_mean_m(state, stream, afvalue(llg.Fieldterms[llg.Fieldterms.size() - 1]->H_in_Apm(state)(0, 0, 0, 2)));
             vti_writer_atom(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
     }

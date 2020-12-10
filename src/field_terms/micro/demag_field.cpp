@@ -77,7 +77,7 @@ DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthrea
     : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
                                    in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
-af::array DemagField::h(const State& state) const {
+af::array DemagField::impl_H_in_Apm(const State& state) const {
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
     if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
         std::cout << "DemagField::h: state.m is of type " << state.m.type() << ", converting Nfft type from "

@@ -95,10 +95,10 @@ int main(int argc, char** argv) {
     while (state.t < 4 * hzee_max / rate) {
         state.t += 1.;
         minimizer.Minimize(state);
-        state.calc_mean_m(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state)(0, 0, 0, 2)));
+        state.calc_mean_m(stream, afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(state)(0, 0, 0, 2)));
         // TODO previously, maybe should be
         // considered//state.calc_mean_m(stream, n_cells,
-        // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,
+        // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
         // 0, 0, 2)));
         state.steps++;
         if (state.steps % 1 == 0) {

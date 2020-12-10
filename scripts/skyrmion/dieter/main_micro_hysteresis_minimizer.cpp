@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     minimizer.llgterms.push_back(uptr_FieldTerm(new ExternalField(&zee_func)));
     while (state.t < 4 * hzee_max / rate) {
         minimizer.minimize(state);
-        calc_mean_m(state, stream, afvalue(minimizer.llgterms[3]->h(state)(0, 0, 0, 0)));
+        calc_mean_m(state, stream, afvalue(minimizer.llgterms[3]->H_in_Apm(state)(0, 0, 0, 0)));
         state.t += 1.;
         state.steps++;
         if (state.steps % 1 == 0) {

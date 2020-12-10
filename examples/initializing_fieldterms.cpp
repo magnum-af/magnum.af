@@ -31,8 +31,8 @@ int main() {
     // copy fieldterms to LLGIntegrator, retaining copy
     LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
     // we can dmag,exch fieldterms afterwards:
-    exch.h(state);
-    dmag.h(state);
+    exch.H_in_Apm(state);
+    dmag.H_in_Apm(state);
 
     // when we use std::move, fieldterm pointers are moved-from
     LLGIntegrator llg2(alpha, fieldterm::to_vec(std::move(dmag), std::move(exch)));
@@ -55,8 +55,8 @@ int main() {
             alpha, fieldterm::to_vec(std::move(dmag), std::move(exch))); // does not move as dmag, exch are const
         LLGIntegrator llg2(alpha, fieldterm::mv_to_vec(dmag, exch));     // does not move as dmag, exch are const
         // we can still use them
-        exch.h(state);
-        dmag.h(state);
+        exch.H_in_Apm(state);
+        dmag.H_in_Apm(state);
     }
 
     // Various ways to construct LLGIntegrator containing a copy of fieldterms
@@ -80,8 +80,8 @@ int main() {
                                    std::unique_ptr<FieldTerm>(new ExchangeField(exch))});
 
         // we can still use the fieldterms
-        exch.h(state);
-        dmag.h(state);
+        exch.H_in_Apm(state);
+        dmag.H_in_Apm(state);
     }
 
     // Example creating uptr in advance and then moving from them

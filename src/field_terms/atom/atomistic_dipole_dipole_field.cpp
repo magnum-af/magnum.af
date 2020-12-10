@@ -14,7 +14,7 @@ af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
 AtomisticDipoleDipoleField::AtomisticDipoleDipoleField(Mesh mesh)
     : Nfft(N_atomistic(nx_exp(mesh.nx), ny_exp(mesh.ny), nz_exp(mesh.nz), mesh.dx, mesh.dy, mesh.dz)) {}
 
-af::array AtomisticDipoleDipoleField::h(const State& state) const {
+af::array AtomisticDipoleDipoleField::impl_H_in_Apm(const State& state) const {
     // FFT with zero-padding of the m field
     af::array mfft;
     if (nz_exp(state.mesh.nz) == 1) {

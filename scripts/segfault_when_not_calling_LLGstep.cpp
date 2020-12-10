@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     LLG llg(state, llgterm);
     std::cout << "test " << std::endl;
     // TODO: not calling step or llgterm->h causes segfault in cleanup
-    // af::print("h", llgterm[0]->h(state));
+    // af::print("h", llgterm[0]->H_in_Apm(state));
     // state.m=llg.step(state);
     return 0;
 }

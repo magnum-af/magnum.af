@@ -85,11 +85,11 @@ int main(int argc, char** argv) {
     llg.write_fieldterms_micro(state, filepath);
     llg.write_fieldterms_micro(state, filepath + "field_micro_");
     llg.write_fieldterms_atom(state, filepath + "field_atom_");
-    // vti_writer_atom(llg.Fieldterms[0]->h(state), mesh , filepath + "aDemag");
-    // vti_writer_atom(llg.Fieldterms[1]->h(state), mesh , filepath + "aExch");
-    // vti_writer_atom(llg.Fieldterms[2]->h(state), mesh , filepath + "aDMI");
-    // vti_writer_atom(llg.Fieldterms[3]->h(state), mesh , filepath + "aAni");
-    // vti_writer_atom(llg.Fieldterms[4]->h(state), mesh , filepath + "aZee");
+    // vti_writer_atom(llg.Fieldterms[0]->H_in_Apm(state), mesh , filepath + "aDemag");
+    // vti_writer_atom(llg.Fieldterms[1]->H_in_Apm(state), mesh , filepath + "aExch");
+    // vti_writer_atom(llg.Fieldterms[2]->H_in_Apm(state), mesh , filepath + "aDMI");
+    // vti_writer_atom(llg.Fieldterms[3]->H_in_Apm(state), mesh , filepath + "aAni");
+    // vti_writer_atom(llg.Fieldterms[4]->H_in_Apm(state), mesh , filepath + "aZee");
 
     std::cout << "timerelax [af-s]: " << timerelax << " for " << llg.counter_accepted + llg.counter_reject
               << " steps, thereof " << llg.counter_accepted << " Steps accepted, " << llg.counter_reject

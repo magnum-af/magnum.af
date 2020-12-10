@@ -86,7 +86,7 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) const 
     return {h1, h2, h3};
 }
 
-af::array CubicAnisotropyField::h(const State& state) const {
+af::array CubicAnisotropyField::impl_H_in_Apm(const State& state) const {
     auto h = h_1to3(state);
     return h[0] + h[1] + h[2];
 }

@@ -14,7 +14,7 @@ class ExternalField : public FieldTerm {
     explicit ExternalField(std::function<af::array(State)>);
     explicit ExternalField(long int zee_in_addr); ///< For wrapping only
 
-    virtual af::array h(const State& state) const override; // Field contribution
+    virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 
     virtual double impl_E_in_J(const State& state, const af::array& h) const override;
 

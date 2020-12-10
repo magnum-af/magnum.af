@@ -49,17 +49,17 @@ int main(int argc, char** argv) {
     double analytical = -material.J_atom;
     if (compare(llg.E(state), analytical))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 0)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 0)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 0)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 1 FAILED !!!" << std::endl;
     // std::cout << "ENERGY    = " << llg.E(state) <<std::endl;
     // std::cout << "Analytical= " << analytical <<std::endl;
@@ -83,17 +83,17 @@ int main(int argc, char** argv) {
     analytical = 0;
     if (compare(llg.E(state), analytical))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 0)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 0)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 2)), 0))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 0)), 0))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 2 FAILED !!!" << std::endl;
     // std::cout << "ENERGY    = " << llg.E(state) <<std::endl;
     // std::cout << "Analytical= " << 0 <<std::endl;
@@ -113,17 +113,17 @@ int main(int argc, char** argv) {
     state.m = m;
     if (compare(llg.E(state), material.J_atom))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 0)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 0)), 0))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0, 2)), -material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 2)), -material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 0)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 0)), 0))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 1)), 0))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 1)), 0))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg.Fieldterms[0]->h(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg.Fieldterms[0]->H_in_Apm(state)(1, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 3 FAILED !!!" << std::endl;
     // std::cout << "ENERGY    = " << llg.E(state) <<std::endl;
     // std::cout << "Analytical= " << material.J_atom <<std::endl;
@@ -131,8 +131,8 @@ int main(int argc, char** argv) {
     // "<<-material.J_atom/constants::mu0/material.p <<std::endl; std::cout <<
     // "H_exch_2   = " <<0<<", "<<0<<", "<<
     // material.J_atom/constants::mu0/material.p <<std::endl; std::cout <<
-    // "Analytical= " << afvalue(llg.Fieldterms[0]->h(state)(0, 0, 0,
-    // 2))<<std::endl; af::print("LLG", llg.Fieldterms[0]->h(state));
+    // "Analytical= " << afvalue(llg.Fieldterms[0]->H_in_Apm(state)(0, 0, 0,
+    // 2))<<std::endl; af::print("LLG", llg.Fieldterms[0]->H_in_Apm(state));
     //    //-------------------------------------------------------
     //
     nx = 1, ny = 2, nz = 1;
@@ -154,17 +154,17 @@ int main(int argc, char** argv) {
     LLG llg2(state, llgterm);
     if (compare(llg2.E(state), -material.J_atom))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 0, 0, 0)), 0))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 0)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 0, 0, 1)), 0))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 1)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 0, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 1, 0, 0)), 0))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 1, 0, 0)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 1, 0, 1)), 0))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 1, 0, 1)), 0))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
-    if (compare(afvalue(llg2.Fieldterms[0]->h(state)(0, 1, 0, 2)), material.J_atom / constants::mu0 / material.p))
+    if (compare(afvalue(llg2.Fieldterms[0]->H_in_Apm(state)(0, 1, 0, 2)), material.J_atom / constants::mu0 / material.p))
         std::cout << "!!! TEST 4 FAILED !!!" << std::endl;
     //    //-------------------------------------------------------
     //    m = constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, f64);

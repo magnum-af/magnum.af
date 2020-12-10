@@ -36,7 +36,7 @@ NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemes
     : NonequiTerm(nemesh), Ku1_field(*(new af::array(*((void**)Ku1_field_ptr)))),
       Ku1_axis(get_normalized_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {}
 
-af::array NonequiUniaxialAnisotropyField::h(const State& state) const { return calc_heff(state); }
+af::array NonequiUniaxialAnisotropyField::impl_H_in_Apm(const State& state) const { return calc_heff(state); }
 
 af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
     // switch Ku1_axis and Ku1_axis_field

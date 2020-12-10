@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     vec_uptr_FieldTerm llgterms = {demag, exch, aniso};
     timer.print_stage("setup ");
 
-    af::array h = demag->h(state);
+    af::array h = demag->H_in_Apm(state);
     vtr_writer(h, Mesh(nx, ny, nz, x / nx, y / ny, 0), z_spacing, filepath + "h");
 
     std::ofstream stream;
@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
             while (state.t < 4 * hzee_max / rate) {
                 llg.step(state);
                 if (state.steps % 100 == 0) {
-                    af::array h_zee = llg.llgterms.back()->h(state) * constants::mu0; // in Tesla only for output
+                    af::array h_zee = llg.llgterms.back()->H_in_Apm(state) * constants::mu0; // in Tesla only for output
                     std::cout << "t[ns]= " << std::fixed << state.t * 1e9 << ", mx= " << std::fixed;
                     print_m(state.m(af::span, af::span, -1, af::span), std::cout);
                     std::cout << ", zee=" << std::fixed << afvalue(h_zee(0, 0, 0, 0)) << "\t" << std::fixed
@@ -207,9 +207,9 @@ int main(int argc, char** argv) {
         while (state.t < 4 * hzee_max / rate) {
             minimizer.Minimize(state);
             // state.calc_mean_m(stream,
-            // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->h(state)(0,
+            // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
             // 0, 0, 2)));
-            af::array h_zee = minimizer.llgterms_[minimizer.llgterms_.size() - 1]->h(state) * constants::mu0;
+            af::array h_zee = minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(state) * constants::mu0;
             std::cout << state.steps << "\t";
             print_m(state.m(af::span, af::span, -1, af::span), std::cout);
             std::cout << ", zee=" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "

@@ -13,7 +13,7 @@ namespace magnumafcpp {
 inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }
 inline unsigned ny_expanded(unsigned ny) { return 2 * ny; }
 
-af::array NonequiDemagField::h(const State& state) const {
+af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
     // FFT with zero-padding of the m field
     af::array mfft;
     if (state.Ms_field.isempty()) {
