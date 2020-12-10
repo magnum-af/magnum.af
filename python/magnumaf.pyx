@@ -769,7 +769,7 @@ cdef class LLGIntegrator:
         This manipulates state.m and state.t
     Eeff_in_J(State) : float
         Calculates the micromagnetic energy of all terms for the magnetization state.m
-    h(State) : af.array
+    H_in_Apm(State) : af.array
         Returns the effective field H_in_Apm for the magnetization state.m
     add_terms(*args)
         Adds an HeffTerm object (s.a. ExchangeField) to be included in the effective field

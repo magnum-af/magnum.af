@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #  RKKY-coupled layers with comparison to analytical solution
 
 import numpy as np
@@ -6,7 +7,7 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
+args = parse()
 af.info()
 
 minimize = False # True uses minimizer, False uses llg integration
@@ -43,7 +44,7 @@ m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m0[:, :, 0, 0] =-1.
 m0[:, :, 1, 0] = 1.
 state = State(mesh, Ms, m = m0)
-state.write_vti(sys.argv[1] + "m_init")
+state.write_vti(args.dir + "m_init")
 
 
 RKKYarr = af.constant(RKKY, nx, ny, nz, 1, dtype=af.Dtype.f64)
@@ -73,7 +74,7 @@ def hysteresis_factor(i, steps):
 
 
 # running hysteresis loop
-stream = open(sys.argv[1] + "m.dat", "w", buffering = 1)
+stream = open(args.dir + "m.dat", "w", buffering = 1)
 stream.write("# Hext [T], mx, my, mz, mx_a, my_a, my_bottom")
 for i in range(1, hys_steps + 1):
     if i > hys_steps/4:
@@ -84,7 +85,7 @@ for i in range(1, hys_steps + 1):
         minimizer.minimize(state)
     else:
         llg.relax(state, precision, verbose = False)
-    state.write_vti(sys.argv[1] + "m_step_"+ str(i))
+    state.write_vti(args.dir + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
     mx_top = af.mean(af.mean(state.m[:, :, 1, 0], dim=0), dim=1).scalar()
     mx_bottom = af.mean(af.mean(state.m[:, :, 0, 0], dim=0), dim=1).scalar()
@@ -101,13 +102,13 @@ stream.close()
 # plotting data with gnuplot
 f = open('plot.gpi', 'w')
 f.write('set terminal pdf\n')
-f.write('set output "' + sys.argv[1] + 'm.pdf"\n')
+f.write('set output "' + args.dir + 'm.pdf"\n')
 f.write('set xlabel "Hx [ns]"\n')
 f.write('set ylabel "<m>"\n')
-f.write('p "' + sys.argv[1] + '/m.dat" u 1:7 w l t "m_{y, calculated}"')
+f.write('p "' + args.dir + '/m.dat" u 1:7 w l t "m_{y, calculated}"')
 f.write(',"" u 1:6 w l t "m_{y, analytical}"')
 f.close()
 
 from os import system
-system('gnuplot ' + sys.argv[1] +'plot.gpi')
-system('evince '  + sys.argv[1] +'m.pdf')
+system('gnuplot ' + args.dir +'plot.gpi')
+system('evince '  + args.dir +'m.pdf')

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os
 import numpy as np
 import arrayfire as af
@@ -5,10 +6,10 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
+args = parse()
 af.info()
 start = time.time()
-filepath_const=sys.argv[1]
+filepath_const=args.dir
 filepath=filepath_const
 
 # Physical dimensions in [m]

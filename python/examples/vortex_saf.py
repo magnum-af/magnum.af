@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Example demonstrating the MuMAG Standard Problem 4
 # Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
@@ -8,10 +9,10 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(Util.gto_gpu_renumeration(int(sys.argv[2])) if len(sys.argv) > 2 else 0)
+args = parse()
 af.info()
 start = time.time()
-filepath_const=sys.argv[1]
+filepath_const=args.dir
 filepath=filepath_const
 
 # Physical dimensions in [m]

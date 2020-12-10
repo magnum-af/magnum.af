@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Example demonstrating the MuMAG Standard Problem 4
 # Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
@@ -7,7 +8,7 @@ from magnumaf import *
 import sys
 import time
 
-af.set_device(int(sys.argv[2]) if len(sys.argv) > 2 else 0)
+args = parse()
 af.info()
 
 minimize = False # True uses minimizer, False uses llg integration
@@ -104,7 +105,7 @@ mesh = Mesh(nx, ny, nz, dx, dy, dz)
 state = State(mesh, Ms = Ms_initi(nx, ny, nz), m = m_initi(nx, ny, nz))
 #state = State(mesh, Ms = Ms_initi(nx, ny, nz), m = m_random_sphere(nx, ny, nz))
 #state = State(mesh, Ms, m = m_initi(nx, ny, nz))
-state.write_vti(sys.argv[1] + "m_init")
+state.write_vti(args.dir + "m_init")
 
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
@@ -130,7 +131,7 @@ def hysteresis_factor(i, steps):
 
 
 # running hysteresis loop
-stream = open(sys.argv[1] + "m.dat", "w", buffering = 1)
+stream = open(args.dir + "m.dat", "w", buffering = 1)
 stream.write("# Hext [T], mx, my, mz")
 for i in range(0, hys_steps + 1):
     extfield = hysteresis_factor(i, hys_steps) * ext_max_field
@@ -140,7 +141,7 @@ for i in range(0, hys_steps + 1):
         minimizer.minimize(state)
     else:
         llg.relax(state, precision = 1e-11, verbose = True)
-    state.write_vti(sys.argv[1] + "m_step_"+ str(i))
+    state.write_vti(args.dir + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
     stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))
@@ -185,7 +186,7 @@ stream.close()
 
 #E = []
 #print("Start rotating")
-#stream = open(sys.argv[1]+"m.dat", "w")
+#stream = open(args.dir+"m.dat", "w")
 #timer = time.time()
 #for i in range(0, 360):
 #    mix = np.cos(i * np.pi/180.);
@@ -207,15 +208,15 @@ stream.close()
 #from os import system
 #system('gnuplot -e "\
 #    set terminal pdf;\
-#    set output \'' + sys.argv[1] + 'm.pdf\';\
+#    set output \'' + args.dir + 'm.pdf\';\
 #    set xlabel \'angle [°]\';\
 #    set ylabel \'E\';\
-#    p \'' + sys.argv[1] + '/m.dat\' u 1:2 w l t \'E\';\
+#    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'E\';\
 #    set ylabel \'<m>\';\
-#    p \'' + sys.argv[1] + '/m.dat\' u 1:3 w l t \'<m_x>\',\
+#    p \'' + args.dir + '/m.dat\' u 1:3 w l t \'<m_x>\',\
 #    \'\' u 1:4 w l t \'<m_y>\',\
 #    \'\' u 1:5 w l t \'<m_z>\';\
 #"')
 #
 ## show pdf with evince
-#system('evince ' + sys.argv[1] +'m.pdf')
+#system('evince ' + args.dir +'m.pdf')
