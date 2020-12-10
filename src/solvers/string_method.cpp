@@ -284,9 +284,9 @@ double StringMethod::run(std::string filepath, double string_abort_rel_diff, dou
     }
 
     // for(unsigned i=0;i<llg.llgterms.size();++i){
-    //  std::cout<<"get_cpu_time()"<<std::endl;
+    //  std::cout<<"elapsed_eval_time()"<<std::endl;
     //  std::cout<<i<<"\t"<<llg.cpu_time()<<std::endl;
-    //  stream_steps<<"#"<<"get_cpu_time()"<<std::endl;
+    //  stream_steps<<"#"<<"elapsed_eval_time()"<<std::endl;
     //  stream_steps<<"#"<<i<<"\t"<<llg.cpu_time()<<std::endl;
     //}
 

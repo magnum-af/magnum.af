@@ -83,7 +83,7 @@ array LLG::fheff(const array& m) {
 double LLG::cpu_time() {
     double cpu_time = 0.;
     for (unsigned i = 0; i < Fieldterms.size(); ++i) {
-        cpu_time += Fieldterms[i]->get_cpu_time();
+        cpu_time += Fieldterms[i]->elapsed_eval_time();
     }
     return cpu_time;
 }
@@ -1351,7 +1351,7 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //    state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,
 //    2)) * crosstemp;
 
-// effective field H_eff_in_Apm as sum of all terms
+// effective field H_in_Apm as sum of all terms
 // std::cout << "LLG CKECK 1"<< std::endl;
 // std::cout << "CHECK Exch"<< std::endl;
 // array test = Exch.solve(m);

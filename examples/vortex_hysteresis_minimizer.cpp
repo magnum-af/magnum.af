@@ -46,8 +46,6 @@ int main(int argc, char** argv) {
     };
 
     // Parameter initialization
-    // const int nx = 32, ny = 32, nz = 1;
-    // TODO//const int nx = 256, ny = 256, nz = 1;
     const int nx = 250, ny = 250, nz = 1;
     const double x = 1600e-9, y = 1600e-9,
                  z = 65e-9; //[m] // Physical dimensions
@@ -80,14 +78,11 @@ int main(int argc, char** argv) {
     std::cout << oinfo << std::endl;
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++) {
-        if (i > 20)
-            break; // TODO del
         minimizer.Minimize(state);
-        const auto extrHeff = extr.H_eff_in_T(state).scalar<double>();
+        const auto extrHeff = extr.H_in_T(state).scalar<double>();
         const auto [mx, my, mz] = state.mean_m();
         std::cout << i << " " << mx << " " << my << " " << mz << ", Hx[T]=" << extrHeff << std::endl;
-        stream << i << " " << mx << " " << my << " " << mz << " " << extrHeff << std::endl;
-        // REDO// stream << mx << " " << my << " " << mz << " " << extrHeff << std::endl;
+        stream << mx << " " << my << " " << mz << " " << extrHeff << std::endl;
         // stream << state << extrHeff << std::endl;
         if (state.steps % 10 == 0) {
             vti_writer_micro(state.m, mesh, (outdir / ("m_hysteresis_" + std::to_string(state.steps))).c_str());

@@ -21,7 +21,7 @@ LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr
 
 af::array LLGIntegrator::fheff(const State& state) const {
     af::timer timer_heff = af::timer::start();
-    const auto solution = fieldterm::accumulate_Heff_in_Apm(llgterms, state);
+    const auto solution = fieldterm::Heff_in_Apm(llgterms, state);
     time_heff += af::timer::stop(timer_heff);
     return solution;
 }
@@ -39,7 +39,7 @@ af::array LLGIntegrator::f(const State& state) const {
 }
 
 // Energy calculation
-double LLGIntegrator::E(const State& state) const { return fieldterm::accumulate_E_in_J(llgterms, state); }
+double LLGIntegrator::E(const State& state) const { return fieldterm::Eeff_in_J(llgterms, state); }
 
 void LLGIntegrator::relax(State& state, double precision, unsigned eval_E, unsigned iwritecout, bool verbose) {
     double start_time = state.t;

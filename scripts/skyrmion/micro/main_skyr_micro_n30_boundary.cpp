@@ -229,10 +229,10 @@ int main(int argc, char** argv) {
     }
 
     for (unsigned i = 0; i < Llg.Fieldterms.size(); ++i) {
-        std::cout << "get_cpu_time()" << std::endl;
+        std::cout << "elapsed_eval_time()" << std::endl;
         std::cout << i << "\t" << Llg.cpu_time() << std::endl;
         stream_steps << "#"
-                     << "get_cpu_time()" << std::endl;
+                     << "elapsed_eval_time()" << std::endl;
         stream_steps << "#" << i << "\t" << Llg.cpu_time() << std::endl;
     }
 

@@ -17,13 +17,13 @@ void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
 // Calculation of effective field
 af::array CG_Minimizer::Heff(const State& state) const {
     abort_on_empty_size(fieldterms);
-    const auto solution = fieldterm::accumulate_Heff_in_Apm(fieldterms, state);
+    const auto solution = fieldterm::Heff_in_Apm(fieldterms, state);
     return solution;
 }
 
 std::pair<double, af::array> CG_Minimizer::EnergyAndGradient(const State& state) const {
     abort_on_empty_size(fieldterms);
-    const auto [heff, energy] = fieldterm::accumulate_Heff_in_Apm_and_E(fieldterms, state);
+    const auto [heff, energy] = fieldterm::Heff_in_Apm_and_E(fieldterms, state);
     return {energy, 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff))};
 }
 

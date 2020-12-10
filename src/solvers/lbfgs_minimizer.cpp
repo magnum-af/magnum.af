@@ -29,7 +29,7 @@ void abort_if_size_is_zero(std::size_t size) {
 }
 
 // af::array LBFGS_Minimizer::Gradient(const State& state) const {
-//    const auto heff = fieldterm::accumulate_Heff_in_Apm(fieldterms_, state);
+//    const auto heff = fieldterm::Heff_in_Apm(fieldterms_, state);
 //    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff));
 //}
 
@@ -41,7 +41,7 @@ af::array Gradient(const State& state, const af::array& heff) {
 
 std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {
     abort_if_size_is_zero(fieldterms.size());
-    const auto [heff, energy] = fieldterm::accumulate_Heff_in_Apm_and_E(fieldterms, state);
+    const auto [heff, energy] = fieldterm::Heff_in_Apm_and_E(fieldterms, state);
     return {energy, Gradient(state, heff)};
 }
 
@@ -49,7 +49,7 @@ double mydot(const af::array& a, const af::array& b) { return full_inner_product
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
 double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
-    return max_4d_abs(Gradient(state, fieldterm::accumulate_Heff_in_Apm(fieldterms, state)));
+    return max_4d_abs(Gradient(state, fieldterm::Heff_in_Apm(fieldterms, state)));
 }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code

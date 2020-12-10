@@ -770,7 +770,7 @@ cdef class LLGIntegrator:
     E(State) : float
         Calculates the micromagnetic energy of all terms for the magnetization state.m
     h(State) : af.array
-        Returns the effective field H_eff_in_Apm for the magnetization state.m
+        Returns the effective field H_in_Apm for the magnetization state.m
     add_terms(*args)
         Adds an HeffTerm object (s.a. ExchangeField) to be included in the effective field
     relax(State, precision, ncalcE, nprint)
@@ -906,7 +906,7 @@ cdef class DemagField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -926,7 +926,7 @@ cdef class ExchangeField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
     ## Add when needed:
@@ -960,7 +960,7 @@ cdef class SparseExchangeField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -994,7 +994,7 @@ cdef class DmiField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -1015,7 +1015,7 @@ cdef class NonequiExchangeField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
         return <size_t><void*>self._thisptr
 
@@ -1058,7 +1058,7 @@ cdef class CubicAnisotropyField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
         return <size_t><void*>self._thisptr
 
@@ -1082,7 +1082,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
     @property
@@ -1127,7 +1127,7 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
     @property
@@ -1165,7 +1165,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -1183,7 +1183,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -1200,7 +1200,7 @@ cdef class AtomisticExchangeField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -1217,7 +1217,7 @@ cdef class AtomisticDmiField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
@@ -1234,7 +1234,7 @@ cdef class ExternalField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def set_homogeneous_field(self, x, y, z):
             self._thisptr.set_homogeneous_field(x, y, z)
     def _get_thisptr(self):
@@ -1253,7 +1253,7 @@ cdef class AtomisticExternalField(HeffTerm):
     def E(self, State state):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.get_cpu_time()
+        return self._thisptr.elapsed_eval_time()
     def set_homogeneous_field(self, x, y, z):
             self._thisptr.set_homogeneous_field(x, y, z)
     def _get_thisptr(self):

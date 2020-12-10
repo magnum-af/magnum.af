@@ -17,7 +17,7 @@ cdef extern from "field_terms/micro/exchange_field.hpp" namespace "magnumafcpp":
         ExchangeField (double A);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/micro/sparse_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass SparseExchangeField:
@@ -25,7 +25,7 @@ cdef extern from "field_terms/micro/sparse_exchange_field.hpp" namespace "magnum
         SparseExchangeField (double A_exchange, Mesh mesh, bool verbose);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiExchangeField:
@@ -33,7 +33,7 @@ cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "mag
         NonequiExchangeField (NonequiMesh mesh, double A_exchange, bool verbose);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "mesh.hpp" namespace "magnumafcpp":
     cdef cppclass Mesh:
@@ -85,14 +85,14 @@ cdef extern from "field_terms/micro/dmi_field.hpp" namespace "magnumafcpp":
         DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, double D_axis_z);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/atom/atomistic_dmi_field.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDmiField:
         AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "integrators/controller.hpp" namespace "magnumafcpp":
     cdef cppclass Controller:
@@ -121,7 +121,7 @@ cdef extern from "field_terms/micro/demag_field.hpp" namespace "magnumafcpp":
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
         void print_Nfft();
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/micro/uniaxial_anisotropy_field.hpp" namespace "magnumafcpp":
     cdef cppclass UniaxialAnisotropyField:
@@ -134,7 +134,7 @@ cdef extern from "field_terms/micro/uniaxial_anisotropy_field.hpp" namespace "ma
         double Ku1;
         double get_ku1_axis(int i);
         long int get_Ku1_field();
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 #cdef extern from "<array>" namespace "std" nogil:
 #  cdef cppclass array_d3 "std::array<double, 3>":
@@ -148,7 +148,7 @@ cdef extern from "field_terms/micro/cubic_anisotropy_field.hpp" namespace "magnu
         CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr, long int c1_array_ptr, long int c2_array_ptr);
         long int h_ptr(const State& state)
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/nonequi/nonequi_uniaxial_anisotropy_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiUniaxialAnisotropyField:
@@ -161,28 +161,28 @@ cdef extern from "field_terms/nonequi/nonequi_uniaxial_anisotropy_field.hpp" nam
         double Ku1;
         double get_ku1_axis(int i);
         long int get_Ku1_field();
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/atom/atomistic_dipole_dipole_field.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDipoleDipoleField:
         AtomisticDipoleDipoleField(Mesh);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/atom/atomistic_uniaxial_anisotropy_field.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticUniaxialAnisotropyField:
         AtomisticUniaxialAnisotropyField(const double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/atom/atomistic_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticExchangeField:
         AtomisticExchangeField(double J_atom);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
 
 cdef extern from "field_terms/micro/external_field.hpp" namespace "magnumafcpp":
     cdef cppclass ExternalField:
@@ -190,7 +190,7 @@ cdef extern from "field_terms/micro/external_field.hpp" namespace "magnumafcpp":
         long int get_m_addr();
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
         void set_homogeneous_field(const double x, const double y, const double z);
 
 cdef extern from "field_terms/atom/atomistic_external_field.hpp" namespace "magnumafcpp":
@@ -199,7 +199,7 @@ cdef extern from "field_terms/atom/atomistic_external_field.hpp" namespace "magn
         long int get_m_addr();
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
         void set_homogeneous_field(const double x, const double y, const double z);
 
 
@@ -222,7 +222,7 @@ cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "m
         SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e);
         long int h_ptr(const State& state);
         double Energy_in_J(const State& state);
-        double get_cpu_time();
+        double elapsed_eval_time();
         WrappedArray polarization_field;
 
 cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumafcpp":
