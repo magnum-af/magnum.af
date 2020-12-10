@@ -17,7 +17,7 @@ double calc_hz(double dz) {
     // std::cout << mesh << std::endl;
 
     // Initial magnetic field
-    af::array m = af::constant(0, dims_vector(mesh), f64);
+    af::array m = af::constant(0, mesh::dims_v(mesh), f64);
     m(af::span, af::span, 0, 2) = 1;
     m(af::span, af::span, 1, 2) = -1;
     State state(mesh, Ms, m, false);

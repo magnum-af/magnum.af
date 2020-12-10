@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
         vti_reader(state.m, state.mesh, path_mrelax);
     }
 
-    array last = constant(0, dims_vector(mesh), f64);
+    array last = constant(0, mesh::dims_v(mesh), f64);
     last(span, span, span, 2) = 1;
 
     std::vector<State> inputimages;

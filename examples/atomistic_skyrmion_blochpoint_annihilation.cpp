@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     llgterm.push_back(uptr_FieldTerm(new AtomisticDmiField(D_atom, {0, 0, -1})));
     llgterm.push_back(uptr_FieldTerm(new AtomisticUniaxialAnisotropyField(K_atom, {0, 0, 1})));
     llgterm.push_back(uptr_FieldTerm(new AtomisticDipoleDipoleField(mesh)));
-    af::array zee = af::constant(0, dims_vector(mesh), f64);
+    af::array zee = af::constant(0, mesh::dims_v(mesh), f64);
     zee(af::span, af::span, af::span, 2) = ext;
     llgterm.push_back(uptr_FieldTerm(new AtomisticExternalField(zee)));
 
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << ", steps = " << state.steps << std::endl;
 
-    af::array last = constant(0, dims_vector(mesh), f64);
+    af::array last = constant(0, mesh::dims_v(mesh), f64);
     last(af::span, af::span, af::span, 2) = 1;
 
     std::vector<State> inputimages;

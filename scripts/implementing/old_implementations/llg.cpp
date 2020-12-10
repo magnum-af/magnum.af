@@ -67,7 +67,7 @@ array LLG::fdmdtminimal(array m, array heff) { // array LLG::fdmdt(array& m, arr
 
 // Calculation of effective field
 array LLG::fheff(const array& m) {
-    array solution = constant(0., state0.dims_vector(mesh), f64);
+    array solution = constant(0., state0.mesh::dims_v(mesh), f64);
     timer_heff = timer::start();
 
     state0.m = m; // TODO avoid state0 in the first place

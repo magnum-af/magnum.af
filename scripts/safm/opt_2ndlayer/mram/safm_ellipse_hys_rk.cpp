@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
     vec_uptr_FieldTerm llgterms = {demag, exch, aniso, zee};
     LLGIntegrator llg(1, llgterms);
     // LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
-    // minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
+    // minimizer.of_convergence_.open(filepath + "minimizer_convergence.dat");
     // minimizer.llgterms_.push_back( uptr_FieldTerm (new DemagField(mesh)));
     // minimizer.llgterms_.push_back( uptr_FieldTerm (new ExchangeField(A)));
     // minimizer.llgterms_.push_back( uptr_FieldTerm (new ExternalField(zee_func)));

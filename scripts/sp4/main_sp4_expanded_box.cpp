@@ -114,11 +114,11 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.m, mesh, (filepath + "minit").c_str());
 
     // CASE 1
-    // state.Ms=constant(state.Ms, dims_vector(state.mesh), f64);
+    // state.Ms=constant(state.Ms, mesh::dims_v(state.mesh), f64);
     // CASE 1
 
     // CASE 2
-    state.Ms = constant(0.0, dims_vector(state.mesh), f64);
+    state.Ms = constant(0.0, mesh::dims_v(state.mesh), f64);
     state.Ms(seq((nx - spnx) / 2, end - (nx - spnx) / 2), seq((ny - spny) / 2, end - (ny - spny) / 2),
              seq((nz - spnz) / 2, end - (nz - spnz) / 2), span) = constant(state.Ms, spnx, spny, spnz, 3, f64);
     // CASE 2
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
 
     // testing MS
     // std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
-    // state.Ms=constant(state.Ms, dims_vector(state.mesh), f64);
+    // state.Ms=constant(state.Ms, mesh::dims_v(state.mesh), f64);
     // std::cout << "is_empty: "<< state.Ms.isempty()<<std::endl;
     //(state.Ms.isempty()? std::cout << "TRUE" << true <<std::endl : std::cout
     //<< "flase" << false <<std::endl); if (state.Ms.isempty()){std::cout <<
@@ -135,11 +135,11 @@ int main(int argc, char** argv) {
     // empty()"<<std::endl;}
 
     // mesh=Mesh(4, 4, 4, x/nx, y/ny, z/nz);
-    // m=constant(0, dims_vector(mesh), f64);
+    // m=constant(0, mesh::dims_v(mesh), f64);
     // m(span, span, span, 0) = constant(1.0, mesh.nx , mesh.ny, mesh.nz, 1,
     // f64); print("m", m);
 
-    // array Ms=constant(1., dims_vector(mesh), f64);
+    // array Ms=constant(1., mesh::dims_v(mesh), f64);
     // Ms(0, 0, 0, span)=constant(0. , 1, 1, 1, 3, f64);
     // print("Ms", Ms);
 

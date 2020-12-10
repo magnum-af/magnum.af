@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
         std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
         af::timer timer_llgterms = af::timer::start();
-        af::array zee_field = af::constant(0, dims_vector(mesh), f64);
+        af::array zee_field = af::constant(0, mesh::dims_v(mesh), f64);
         zee_field(af::span, af::span, af::span, 0) = zee;
         auto demag = uptr_FieldTerm(new DemagField(mesh));
         // auto exch = uptr_FieldTerm(new SparseExchangeField(A, mesh));
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
         auto ext = uptr_FieldTerm(new ExternalField(zee_field));
         std::cout << "Llgterms assembled in " << af::timer::stop(timer_llgterms) << std::endl;
         LBFGS_Minimizer minimizer = LBFGS_Minimizer({demag, exch, ext}, 1e-6, 1000, 0);
-        minimizer.of_convergence.open(filepath + "minimizer_convergence.dat" + std::to_string(nz));
+        minimizer.of_convergence_.open(filepath + "minimizer_convergence.dat" + std::to_string(nz));
         LLGIntegrator llg(1, {demag, exch, ext});
 
         af::timer t_hys = af::timer::start();

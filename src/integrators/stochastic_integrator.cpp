@@ -7,7 +7,7 @@ namespace magnumafcpp {
 af::array Stochastic_Integrator::Heun(const State& state) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
-    const af::array h_th = sqrt((2. * D) / dt) * af::randn(dims_vector(state.mesh), f64,
+    const af::array h_th = sqrt((2. * D) / dt) * af::randn(mesh::dims_v(state.mesh), f64,
                                                            rand_engine); // Random thermal field at t+dt/2
     af::array k1 = dt * stochfdmdt(state, h_th_prev);
     af::array k2 = dt * stochfdmdt(state + k1, h_th);
@@ -19,8 +19,8 @@ af::array Stochastic_Integrator::SemiImplicitHeun(const State& state) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
     const af::array h_th_init =
-        sqrt((2. * D) / dt) * randn(dims_vector(state.mesh), f64, rand_engine); // Random thermal field at t
-    const af::array h_th = sqrt((2. * D) / dt) * randn(dims_vector(state.mesh), f64,
+        sqrt((2. * D) / dt) * randn(mesh::dims_v(state.mesh), f64, rand_engine); // Random thermal field at t
+    const af::array h_th = sqrt((2. * D) / dt) * randn(mesh::dims_v(state.mesh), f64,
                                                        rand_engine); // Random thermal field at t+dt/2
     af::array m1 = dt / 2. * stochfdmdt(state, h_th_init);
     af::array m2 = dt / 2. * stochfdmdt(state + m1, h_th);
@@ -80,7 +80,7 @@ Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, 
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count();
     rand_engine = af::randomEngine(AF_RANDOM_ENGINE_DEFAULT, seed);
-    h_th_prev = sqrt((2. * D) / dt) * randn(dims_vector(state.mesh), f64,
+    h_th_prev = sqrt((2. * D) / dt) * randn(mesh::dims_v(state.mesh), f64,
                                             rand_engine); // Initial random thermal field at t=0
 }
 

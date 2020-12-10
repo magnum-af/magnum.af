@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, dx, dx, dx);
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, dims_vector(mesh), f64);
+    af::array m = af::constant(0.0, mesh::dims_v(mesh), f64);
     m(af::span, af::span, 0, 0) = 1.;
     m(af::span, af::span, 1, 0) = -1.;
     af::array Ms_field = af::constant(0.0, _1D_field, f64);
@@ -56,8 +56,8 @@ int main(int argc, char** argv) {
     State state(mesh, Ms_field, m);
     state.write_vti(outdir / "minit");
 
-    auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, dims_vector(mesh), f64)),
-                                                     Exchange_values(af::constant(A, dims_vector(mesh), f64)), mesh));
+    auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(af::constant(RKKY, mesh::dims_v(mesh), f64)),
+                                                     Exchange_values(af::constant(A, mesh::dims_v(mesh), f64)), mesh));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
                       << std::endl;
         }
 
-        af::array zee = af::constant(0.0, dims_vector(state.mesh), f64);
+        af::array zee = af::constant(0.0, mesh::dims_v(state.mesh), f64);
         zee(af::span, af::span, af::span, 0) = field_Tesla / constants::mu0;
         // Adding af-coupling field in pinned layer only:
         zee(af::span, af::span, 0, 0) += H_af; // simulated af coupling

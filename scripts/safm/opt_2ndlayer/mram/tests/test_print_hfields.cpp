@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 
     // Initial magnetic field
     af::array m_free_geom_for_meandemag = af::constant(0, nx, ny, 1, 1, f64);
-    af::array m = af::constant(0, dims_vector(mesh), f64);
+    af::array m = af::constant(0, mesh::dims_v(mesh), f64);
 
     for (int ix = 0; ix < nx; ix++) {
         for (int iy = 0; iy < ny; iy++) {

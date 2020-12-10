@@ -6,11 +6,17 @@
 #include "util/geometry.hpp"
 #include "util/timer.hpp"
 #include "util/vtk_IO.hpp"
+#include <filesystem>
+
+namespace fs = std::filesystem;
+void write_plotfile(fs::path outdir, std::string plotfile = "plotfile.gpi");
+void plot(fs::path outdir, std::string plotfile = "plotfile.gpi");
 
 using namespace magnumafcpp;
 
 int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
+    write_plotfile(outdir);
     const double hzee_max = (posargs.size() > 0 ? std::stod(posargs[0]) : 0.12); //[Tesla]
     const unsigned int steps_full_hysteresis = (posargs.size() > 1 ? std::stoi(posargs[1]) : 200);
 
@@ -40,6 +46,8 @@ int main(int argc, char** argv) {
     };
 
     // Parameter initialization
+    // const int nx = 32, ny = 32, nz = 1;
+    // TODO//const int nx = 256, ny = 256, nz = 1;
     const int nx = 250, ny = 250, nz = 1;
     const double x = 1600e-9, y = 1600e-9,
                  z = 65e-9; //[m] // Physical dimensions
@@ -62,20 +70,24 @@ int main(int argc, char** argv) {
     ExternalField extr(zee_func);
     LBFGS_Minimizer minimizer =
         LBFGS_Minimizer(fieldterm::to_vec(std::move(dmag), std::move(exch), extr), 1e-6, 1000, 0);
-    minimizer.of_convergence.open(outdir / "minimizer_convergence.dat");
+    minimizer.of_convergence_.open(outdir / "minimizer_convergence.dat");
 
     std::ofstream stream;
     stream.precision(24);
     stream.open((outdir / "m.dat").c_str());
-    stream << "# t	<mx>    <my>    <mz>    hzee" << std::endl;
+    const std::string oinfo("#<mx>    <my>    <mz>    Hz[T]");
+    stream << oinfo << std::endl;
+    std::cout << oinfo << std::endl;
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis; i++) {
+        if (i > 20)
+            break; // TODO del
         minimizer.Minimize(state);
-        const auto extrHeff = extr.H_eff_in_Apm(state).scalar<double>();
+        const auto extrHeff = extr.H_eff_in_T(state).scalar<double>();
         const auto [mx, my, mz] = state.mean_m();
-        std::cout << "Step " << i << ": " << mx << " " << my << " " << mz << ", Hx[T]=" << constants::mu0 * extrHeff
-                  << std::endl;
-        stream << i << " " << mx << " " << my << " " << mz << " " << constants::mu0 * extrHeff << std::endl;
+        std::cout << i << " " << mx << " " << my << " " << mz << ", Hx[T]=" << extrHeff << std::endl;
+        stream << i << " " << mx << " " << my << " " << mz << " " << extrHeff << std::endl;
+        // REDO// stream << mx << " " << my << " " << mz << " " << extrHeff << std::endl;
         // stream << state << extrHeff << std::endl;
         if (state.steps % 10 == 0) {
             vti_writer_micro(state.m, mesh, (outdir / ("m_hysteresis_" + std::to_string(state.steps))).c_str());
@@ -84,5 +96,28 @@ int main(int argc, char** argv) {
     }
     stream.close();
     std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;
+    plot(outdir);
     return 0;
+}
+
+void write_plotfile(fs::path outdir, std::string plotfile) {
+    std::ofstream o(outdir / plotfile);
+    o << "set terminal pdf;\n"
+      << "set xlabel 'mu_0*H_ext [T]';\n"
+      << "set ylabel 'Average Magnetizaion';\n"
+      << "set output 'hys.pdf';\n"
+      << "p "
+      << "'m.dat' u 5:2 w l t '<m_x>',"
+      << "'m.dat' u 5:3 w l t '<m_y>',"
+      << "'m.dat' u 5:4 w l t '<m_z>'";
+}
+
+void plot(fs::path outdir, std::string plotfile) {
+    int syscall = std::system(("cd " + outdir.string() + " && gnuplot " + plotfile).c_str());
+    syscall != 0 ? std::cout << "syscall plotting with gnuplot failed" << std::endl : std::cout << "";
+}
+
+void write_and_plot(fs::path outdir, std::string plotfile = "plotfile.gpi") {
+    write_plotfile(outdir, plotfile);
+    plot(outdir, plotfile);
 }

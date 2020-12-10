@@ -18,8 +18,8 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
     // const Mesh mesh(1, 1, 1, 1e-9, 1e-9, 1e-9); // Alternative
     const unsigned num_of_cells = mesh.nx * mesh.ny * mesh.nz;
     // const double Ms = 1 / constants::mu0; // Alternative
-    af::array Ms = af::constant(1 / constants::mu0, dims_scalar(mesh), f64);
-    af::array m = af::constant(0, dims_vector(mesh), f64);
+    af::array Ms = af::constant(1 / constants::mu0, mesh::dims_s(mesh), f64);
+    af::array m = af::constant(0, mesh::dims_v(mesh), f64);
     m(af::span, af::span, af::span, 0) = 1;
     State state(mesh, Ms, m);
 
@@ -58,12 +58,12 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
 
         // Kc1 array input
         {
-            auto Kc1_ = af::constant(Kc1, dims_scalar(mesh), f64);
-            auto Kc2_ = af::constant(0, dims_scalar(mesh), f64);
-            auto Kc3_ = af::constant(0, dims_scalar(mesh), f64);
-            auto c1_ = af::constant(0, dims_vector(mesh), f64);
+            auto Kc1_ = af::constant(Kc1, mesh::dims_s(mesh), f64);
+            auto Kc2_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto Kc3_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto c1_ = af::constant(0, mesh::dims_v(mesh), f64);
             c1_(af::span, af::span, af::span, 0) = 1;
-            auto c2_ = af::constant(0, dims_vector(mesh), f64);
+            auto c2_ = af::constant(0, mesh::dims_v(mesh), f64);
             c2_(af::span, af::span, af::span, 1) = 1;
             CubicAnisotropyField Kc1_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
             const double Kc1_E_density_analytic = num_of_cells * Kc1 * (c1m2 * c2m2 + c1m2 * c3m2 + c2m2 * c3m2);
@@ -91,12 +91,12 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
 
         // Kc2 array input, this is always zero if z == 0
         {
-            auto Kc1_ = af::constant(0, dims_scalar(mesh), f64);
-            auto Kc2_ = af::constant(Kc2, dims_scalar(mesh), f64);
-            auto Kc3_ = af::constant(0, dims_scalar(mesh), f64);
-            auto c1_ = af::constant(0, dims_vector(mesh), f64);
+            auto Kc1_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto Kc2_ = af::constant(Kc2, mesh::dims_s(mesh), f64);
+            auto Kc3_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto c1_ = af::constant(0, mesh::dims_v(mesh), f64);
             c1_(af::span, af::span, af::span, 0) = 1;
-            auto c2_ = af::constant(0, dims_vector(mesh), f64);
+            auto c2_ = af::constant(0, mesh::dims_v(mesh), f64);
             c2_(af::span, af::span, af::span, 1) = 1;
             CubicAnisotropyField Kc2_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
             const double Kc2_E_density_analytic = num_of_cells * Kc2 * (c1m2 * c2m2 * c3m2);
@@ -127,12 +127,12 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
 
         // Kc3 array input
         {
-            auto Kc1_ = af::constant(0, dims_scalar(mesh), f64);
-            auto Kc2_ = af::constant(0, dims_scalar(mesh), f64);
-            auto Kc3_ = af::constant(Kc3, dims_scalar(mesh), f64);
-            auto c1_ = af::constant(0, dims_vector(mesh), f64);
+            auto Kc1_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto Kc2_ = af::constant(0, mesh::dims_s(mesh), f64);
+            auto Kc3_ = af::constant(Kc3, mesh::dims_s(mesh), f64);
+            auto c1_ = af::constant(0, mesh::dims_v(mesh), f64);
             c1_(af::span, af::span, af::span, 0) = 1;
-            auto c2_ = af::constant(0, dims_vector(mesh), f64);
+            auto c2_ = af::constant(0, mesh::dims_v(mesh), f64);
             c2_(af::span, af::span, af::span, 1) = 1;
             CubicAnisotropyField Kc3_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
             const double c1m4 = std::pow(dot_product(c1, m), 4);

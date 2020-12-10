@@ -21,7 +21,7 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
         }
     }
     NonequiMesh mesh_ne(nx, ny, dx, dy, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state(m2, Ms, false, true);
@@ -35,7 +35,7 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-19);
 
     // testing state.Ms_field switch
-    state.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
+    state.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     h_demag = demag.h(state);
     EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-20);
@@ -66,14 +66,14 @@ TEST(NonequiDemagField, EnergyTest) {
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_1;
     m2(af::span, af::span, 1, af::span) = random_2;
 
     // TODO this is not throwing an error but segfaults. No compiler warnign
     // even though constructor should not exist: //State state_ne(mesh_ne,
     // (af::array) m2, false, true);
-    State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
+    State state_ne(m2, af::constant(8e5, nemesh::dims_v(mesh_ne), f64), false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     // testing E(state)
@@ -112,11 +112,11 @@ TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_1;
     m2(af::span, af::span, 1, af::span) = random_2;
 
-    State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
+    State state_ne(m2, af::constant(8e5, nemesh::dims_v(mesh_ne), f64), false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
@@ -154,11 +154,11 @@ TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     // nonequi
     std::vector<double> z_spacing = {2 * z / nz, z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, 0, af::span) = random_2;
     m2(af::span, af::span, 1, af::span) = random_1;
 
-    State state_ne(m2, af::constant(8e5, dims_vector(mesh_ne), f64), false, true);
+    State state_ne(m2, af::constant(8e5, nemesh::dims_v(mesh_ne), f64), false, true);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 2, af::span);
@@ -194,10 +194,10 @@ TEST(NonequiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, 1, af::span) = random;
 
-    // af::array Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
+    // af::array Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     // std::cout << "test" << std::endl;
     // State state_ne(mesh_ne, Ms_field, m2, false, true);
     // std::cout << "test" << std::endl;
@@ -234,7 +234,7 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::seq(1, af::end - 1), af::span, af::span, 0) =
         af::constant(1.0, mesh_ne.nx - 2, mesh_ne.ny, mesh_ne.nz, 1, f64);
     m2(0, af::span, af::span, 1) = af::constant(1.0, 1, mesh_ne.ny, mesh_ne.nz, 1, f64);
@@ -242,7 +242,7 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
     m2(af::span, af::span, 0, af::span) = 0;
 
     State state_ne(m2, 8e5, false, true);
-    state_ne.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
+    state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);
@@ -273,11 +273,11 @@ TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
     // nonequi
     std::vector<double> z_spacing = {z / nz, 2 * z / nz};
     NonequiMesh mesh_ne(nx, ny, x / nx, y / ny, z_spacing);
-    af::array m2 = af::constant(0.0, dims_vector(mesh_ne), f64);
+    af::array m2 = af::constant(0.0, nemesh::dims_v(mesh_ne), f64);
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state_ne(m2, 8e5, false, true);
-    state_ne.Ms_field = af::constant(8e5, dims_vector(mesh_ne), f64);
+    state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.h(state_ed)(af::span, af::span, 0, af::span);

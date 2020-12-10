@@ -10,8 +10,8 @@ TEST(micro_exch_sparse, COO_CSR_comparison) {
         const double A = 1e-12;
         const double RKKY = 1e-3 * 1e-9;
         Mesh mesh(nx, ny, nz, 1e-9, 1e-9, 1e-9);
-        af::array rkkyvals = af::constant(RKKY / 2., dims_vector(mesh), f64);
-        af::array exchvals = af::constant(A, dims_vector(mesh), f64);
+        af::array rkkyvals = af::constant(RKKY / 2., mesh::dims_v(mesh), f64);
+        af::array exchvals = af::constant(A, mesh::dims_v(mesh), f64);
         auto COO = RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, af::array(), false, true);
         auto CSR = RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, af::array(), false, false);
 

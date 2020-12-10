@@ -5,13 +5,17 @@
 
 namespace magnumafcpp {
 
-struct Mesh {
-    Mesh(std::size_t nx, std::size_t ny, std::size_t nz, double dx, double dy, double dz)
-        : nx(nx), ny(ny), nz(nz), dx(dx), dy(dy), dz(dz) {}
+using std::size_t;
 
-    std::size_t nx, ny, nz; ///< Number of cells in x, y, z
-    double dx, dy, dz;   ///< Distance between cells
+struct Mesh {
+    Mesh(size_t nx, size_t ny, size_t nz, double dx, double dy, double dz);
+    size_t nx, ny, nz;   ///< Number of cells in x, y, z
+    double dx, dy, dz;   ///< Length of a cell in x, y, z in [m]
 };
+
+// avoiding shadow warning:
+inline Mesh::Mesh(size_t nx_, size_t ny_, size_t nz_, double dx_, double dy_, double dz_)
+    : nx(nx_), ny(ny_), nz(nz_), dx(dx_), dy(dy_), dz(dz_) {}
 
 inline std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
     os << "nx=" << mesh.nx << " ny=" << mesh.ny << " nz=" << mesh.nz << " dx=" << mesh.dx << " dy=" << mesh.dy
@@ -19,9 +23,11 @@ inline std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
     return os;
 }
 
-// Dimension for scalar field on mesh, i.e. [nx, ny, nz, 1]
-inline af::dim4 dims_scalar(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 1); }
+namespace mesh {
+// Dimension for scalar field on mesh, i.e. af::dim4(nx, ny, nz, 1)
+inline af::dim4 dims_s(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 1); }
 
-// Dimension for vector field on mesh, i.e. [nx, ny, nz, 3]
-inline af::dim4 dims_vector(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 3); }
+// Dimension for vector field on mesh, i.e. af::dim4(nx, ny, nz, 3)
+inline af::dim4 dims_v(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 3); }
+} // namespace mesh
 } // namespace magnumafcpp

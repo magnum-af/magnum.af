@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
     //    double string_dt=1e-13;
     //    const int string_steps = 10000;
 
-    //    array last   = constant( 0, dims_vector(mesh), f64);
+    //    array last   = constant( 0, mesh::dims_v(mesh), f64);
     //    last(span, span, span, 2)=1;
     //
     //    std::vector<State> inputimages;

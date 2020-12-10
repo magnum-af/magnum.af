@@ -43,7 +43,7 @@ TEST(State, mean_m) {
     auto test = [](State state, std::array<double, 3> res) { EXPECT_THAT(state.mean_m(), res); };
 
     // vec_as_array method:
-    auto m = [dims = dims_scalar(mesh)](std::array<double, 3> vec) {
+    auto m = [dims = mesh::dims_s(mesh)](std::array<double, 3> vec) {
         return af::tile(af::array(af::dim4(1, 1, 1, 3), vec.data()), dims);
     };
 
@@ -53,13 +53,13 @@ TEST(State, mean_m) {
     test({mesh, Ms, m({0, 0, 1})}, {0, 0, 1});
 
     // Ms.field
-    auto Ms_field = af::constant(Ms, dims_scalar(mesh), f64);
+    auto Ms_field = af::constant(Ms, mesh::dims_s(mesh), f64);
     test({mesh, Ms_field, m({1, 0, 0})}, {1, 0, 0});
     test({mesh, Ms_field, m({0, 1, 0})}, {0, 1, 0});
     test({mesh, Ms_field, m({0, 0, 1})}, {0, 0, 1});
 
     // Ms.field with zeros
-    auto Ms_field_with_zeros = af::constant(0, dims_scalar(mesh), f64);
+    auto Ms_field_with_zeros = af::constant(0, mesh::dims_s(mesh), f64);
     Ms_field_with_zeros(0, 0, 0) = Ms;
     test({mesh, Ms_field_with_zeros, m({1, 0, 0})}, {1, 0, 0});
     test({mesh, Ms_field_with_zeros, m({0, 1, 0})}, {0, 1, 0});

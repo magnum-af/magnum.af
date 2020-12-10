@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     LBFGS_Minimizer minimizer(1e-6, 1000, 0);
     // LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);// This fails
     // on GTO with current gcc version
-    minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
+    minimizer.of_convergence_.open(filepath + "minimizer_convergence.dat");
     minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh, material)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(mesh, material)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(mesh, param_stress)));

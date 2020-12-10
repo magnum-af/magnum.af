@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     Mesh mesh(nx, ny, nz, x / nx, y / ny, z / nz);
 
     // Initial magnetic field
-    af::array m = af::constant(0, dims_vector(mesh), f64);
+    af::array m = af::constant(0, mesh::dims_v(mesh), f64);
     m(af::span, af::span, af::span, 2) = 1;
     State state(mesh, Ms, m);
     state.write_vti(outdir / "minit");

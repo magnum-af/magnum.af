@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
         // std::to_string(nz));
 
         af::timer timer_llgterms = af::timer::start();
-        af::array zee_field = af::constant(0, dims_vector(mesh), f64);
+        af::array zee_field = af::constant(0, mesh::dims_v(mesh), f64);
         zee_field(af::span, af::span, af::span, 0) = zee;
         auto demag = uptr_FieldTerm(new DemagField(mesh));
         auto exch = uptr_FieldTerm(new ExchangeField(A));

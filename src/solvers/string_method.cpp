@@ -17,10 +17,10 @@ StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_in
     for (int i = 0; i < n_interp; i++) {
         // Note: this is set to m=|1| to // avoid tate.Ms_field creation
         if (state.Ms_field.isempty()) {
-            images.push_back(State(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), dims_vector(state.mesh), f64)));
+            images.push_back(State(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64)));
         } else {
             images.push_back(
-                State(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), dims_vector(state.mesh), f64)));
+                State(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64)));
         }
     }
     for (int i = 0; i < n_interp; i++) {

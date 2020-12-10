@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 
     af::timer timer_llgterms = af::timer::start();
     LBFGS_Minimizer minimizer = LBFGS_Minimizer(1e-6, 1000, 0);
-    minimizer.of_convergence.open(filepath + "minimizer_convergence.dat");
+    minimizer.of_convergence_.open(filepath + "minimizer_convergence.dat");
     minimizer.llgterms_.push_back(uptr_FieldTerm(new DemagField(mesh)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new ExchangeField(A)));
     minimizer.llgterms_.push_back(uptr_FieldTerm(new UniaxialAnisotropyField(Ku1, {1, 0, 0})));

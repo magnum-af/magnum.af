@@ -22,11 +22,11 @@ TEST(RKKY, mumax3test) {
     Mesh mesh(nx, ny, nz, dx, dx, dx);
 
     // Initial magnetic field
-    af::array m = af::constant(0.0, dims_vector(mesh), f64);
+    af::array m = af::constant(0.0, mesh::dims_v(mesh), f64);
     m(af::span, af::span, af::span, 0) = 1.;
     State state(mesh, Ms, m);
-    af::array rkkyvals = af::constant(RKKY / 2., dims_vector(mesh), f64);
-    af::array exchvals = af::constant(A, dims_vector(mesh), f64);
+    af::array rkkyvals = af::constant(RKKY / 2., mesh::dims_v(mesh), f64);
+    af::array exchvals = af::constant(A, mesh::dims_v(mesh), f64);
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh, false));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, false, false, 0));
