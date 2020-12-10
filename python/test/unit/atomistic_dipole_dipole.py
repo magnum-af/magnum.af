@@ -23,11 +23,10 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertEqual(llg.E(state), p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
+    self.assertEqual(atom_demag.E(state), p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
-    af_heff = llg.h(state)
+    af_heff = atom_demag.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
@@ -51,11 +50,10 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertAlmostEqual(llg.E(state), 0)
+    self.assertAlmostEqual(atom_demag.E(state), 0)
 
-    af_heff = llg.h(state)
+    af_heff = atom_demag.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 2*p /4. /math.pi /self.dx**3  )
@@ -79,11 +77,10 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertEqual(llg.E(state), -p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
+    self.assertEqual(atom_demag.E(state), -p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
-    af_heff = llg.h(state)
+    af_heff = atom_demag.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
@@ -107,9 +104,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertEqual(llg.E(state), p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
+    self.assertEqual(atom_demag.E(state), p**2 * magnumaf.Constants.mu0/(4.*math.pi)/self.dx**3)
 
   def test_atomistic_dipole_dipole_1_2_1_x_z(self):
     mesh=magnumaf.Mesh(1, 2, 1, self.dx, self.dx, self.dx)
@@ -125,9 +121,8 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertAlmostEqual(llg.E(state), 0)
+    self.assertAlmostEqual(atom_demag.E(state), 0)
 
   def test_atomistic_dipole_dipole_2_1_1_x_x(self):
     mesh=magnumaf.Mesh(2, 1, 1, self.dx, self.dx, self.dx)
@@ -143,11 +138,10 @@ class AtomisticDipoleDipoleTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_demag=magnumaf.AtomisticDipoleDipoleField(mesh)
-    llg=magnumaf.LLGIntegrator(alpha = 1, terms = [atom_demag])
 
-    self.assertAlmostEqual(llg.E(state), -p**2 * magnumaf.Constants.mu0 /(2.*math.pi) /self.dx**3)
+    self.assertAlmostEqual(atom_demag.E(state), -p**2 * magnumaf.Constants.mu0 /(2.*math.pi) /self.dx**3)
 
-    af_heff = llg.h(state)
+    af_heff = atom_demag.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], p/2./math.pi /self.dx**3 )

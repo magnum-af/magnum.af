@@ -30,11 +30,10 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_dmi=magnumaf.AtomisticDmiField(D_atom, [0, 0, 1])
-    llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_dmi])
 
-    self.assertAlmostEqual(llg.E(state), 0)
+    self.assertAlmostEqual(atom_dmi.E(state), 0)
 
-    af_heff = llg.h(state)
+    af_heff = atom_dmi.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], -D_atom/magnumaf.Constants.mu0/p )
@@ -61,11 +60,10 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_dmi=magnumaf.AtomisticDmiField(D_atom, [0, 0, 1])
-    llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_dmi])
 
-    self.assertAlmostEqual(llg.E(state), - D_atom)
+    self.assertAlmostEqual(atom_dmi.E(state), - D_atom)
 
-    af_heff = llg.h(state)
+    af_heff = atom_dmi.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
@@ -93,11 +91,10 @@ class AtomisticDmiFieldTest(unittest.TestCase):
 
     state=magnumaf.State(mesh, Ms = p, m = m)
     atom_dmi=magnumaf.AtomisticDmiField(D_atom, [0, 0, 1])
-    llg=magnumaf.LLGIntegrator(alpha = 0, terms = [atom_dmi])
 
-    self.assertAlmostEqual(llg.E(state), 0)
+    self.assertAlmostEqual(atom_dmi.E(state), 0)
 
-    af_heff = llg.h(state)
+    af_heff = atom_dmi.h(state)
     np_heff = af_heff.__array__()
 
     self.assertAlmostEqual(np_heff[0, 0, 0, 0], 0 )
