@@ -118,7 +118,6 @@ for iext_y in range(0,6):
     stream.write('#step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}\n')
     timer = time.time()
     write_vti_every = 100
-    #while state.t < 5e-12:
     while state.t < 5e-9:
         llg.step(state)
         mx, my, mz = state.mean_m()

@@ -101,10 +101,7 @@ excharr = (geom == 1) * A
 
 # Creating objects
 mesh = Mesh(nx, ny, nz, dx, dy, dz)
-#state = State(mesh, Ms = Ms_bottom, m = m_initi(nx, ny, nz))
 state = State(mesh, Ms = Ms_initi(nx, ny, nz), m = m_initi(nx, ny, nz))
-#state = State(mesh, Ms = Ms_initi(nx, ny, nz), m = m_random_sphere(nx, ny, nz))
-#state = State(mesh, Ms, m = m_initi(nx, ny, nz))
 state.write_vti(args.dir + "m_init")
 
 
@@ -147,76 +144,3 @@ for i in range(0, hys_steps + 1):
     stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))
 
 stream.close()
-
-## Initial magnetization configuration
-#m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#m0[:, :, 0, 1] = -1.
-#print(geom.type())
-#print(RKKYarr.type())
-#print(excharr.type())
-#print(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64).type())
-#print(af.mean(RKKYarr))
-#print(af.max(RKKYarr))
-#print(af.min(RKKYarr))
-#print(af.max(excharr))
-#print(af.min(excharr))
-#print(af.min(excharr))
-# when looping over state.m use .scalar() for if
-#state = State(mesh, Ms, m = Util.disk(nx, ny, nz, axis=[0, 1, 0]))
-#ntrue = 0
-#for i in range(0, nx):
-#    for j in range(0, ny):
-#        print(i, j, state.m[i, j, 1, 1].scalar())
-#        if state.m[i, j, 1, 1].scalar() == 1.:
-#            ntrue = ntrue + 1
-#            state.m_partial[i, j, 1, 1] = af.constant(-1, 1, dtype=af.Dtype.f64)
-#
-#print('ntrue', ntrue)
-
-
-#rkky_values = af.constant(RKKY, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#exch_values = af.constant(A, nx, ny, nz, 3, dtype=af.Dtype.f64)
-#rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32)
-
-## relax
-#if minimize:
-#    minimizer.minimize(state)
-#else:
-#    llg.relax(state)
-
-#E = []
-#print("Start rotating")
-#stream = open(args.dir+"m.dat", "w")
-#timer = time.time()
-#for i in range(0, 360):
-#    mix = np.cos(i * np.pi/180.);
-#    miy = np.sin(i * np.pi/180.);
-#    m = state.m
-#    m[:, :, 1, 0] = mix
-#    m[:, :, 1, 1] = miy
-#    state.m = m
-#    E.append( llg.Eeff_in_J(state) )
-#    print("angle=[°]", i, " E=", E[-1])
-#    mean = af.mean(af.mean(af.mean(state.m, dim=0), dim=1), dim=2)
-#    stream.write("%d, %e, %e, %e, %e\n" %(i, E[-1], mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
-#print("fullrotation in ", time.time() - timer, "[s]")
-#stream.close()
-#
-#print("E diff =", max(E) - min(E), "[J], should be around 2.1e-19 (from mumax3 plot)")
-#
-## plotting data with gnuplot
-#from os import system
-#system('gnuplot -e "\
-#    set terminal pdf;\
-#    set output \'' + args.dir + 'm.pdf\';\
-#    set xlabel \'angle [°]\';\
-#    set ylabel \'E\';\
-#    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'E\';\
-#    set ylabel \'<m>\';\
-#    p \'' + args.dir + '/m.dat\' u 1:3 w l t \'<m_x>\',\
-#    \'\' u 1:4 w l t \'<m_y>\',\
-#    \'\' u 1:5 w l t \'<m_z>\';\
-#"')
-#
-## show pdf with evince
-#system('evince ' + args.dir +'m.pdf')

@@ -69,7 +69,6 @@ for iext_y in range(0,6):
     state = State(mesh, Ms, m = m0)
     print('state.mean_m()', state.mean_m())
     state.write_vti(filepath + "state_m0")
-    #Util.write_vti(state.Ms, dx, dy, dz, filepath + "Ms")
 
     extf = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
     extf[:, :, 0, 0] = ext_in_bottom_ref
@@ -92,7 +91,7 @@ for iext_y in range(0,6):
     while state.t < 1e-9:
         llg.step(state)
         mx, my, mz = state.mean_m()
-        #print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
+        print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         stream.write('{:d}\t{:1.6e}\t{:1.6f}\t{:1.6f}\t{:1.6f}\n'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
         if llg.accumulated_steps % write_vti_every == 0:
             state.write_vti(filepath + "m_relaxing_step_" + str(llg.accumulated_steps))
@@ -112,15 +111,6 @@ for iext_y in range(0,6):
     np.savetxt(filepath + 'layer1_1.txt', np_m_layer1[:, :, 0, 1])
     np.savetxt(filepath + 'layer1_2.txt', np_m_layer1[:, :, 0, 2])
 
-    #pinned_layer = state.m[:, :, 0:2, :]
-    #Util.write_vti(pinned_layer, dx, dy, dz, filepath + "pinned_layer")
-    #meanlist=af.mean(af.mean(pinned_layer, dim=0), dim=1).to_ndarray()
-    #print(meanlist)
-    #saf_l1_x = meanlist[0, 0, 1, 0]
-    #saf_l1_y = meanlist[0, 0, 1, 1]
-    #print("H [mT]=", ext_y, ", Angle saf layer 1 [rad]=", np.arctan(saf_l1_y/saf_l1_x))
-    #print("H [mT]=", ext_y, ", Angle saf layer 1 [deg]=", - (360/(2 *np.pi)) * np.arctan(saf_l1_y/saf_l1_x))
-    #print("")
     pinned_layer = state.m[:, :, 0, :]
     Util.write_vti(pinned_layer, dx, dy, dz, filepath + "pinned_layer")
     reference_layer = state.m[:, :, 1, :]
