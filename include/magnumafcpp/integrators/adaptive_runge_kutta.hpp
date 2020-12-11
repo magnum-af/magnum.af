@@ -37,7 +37,6 @@ class AdaptiveRungeKutta {
     af::array BS23(const State& state, const double dt, double& err);
 
     double h_{1.01e-15}; // step size of RK used in controller
-    double err_{0};      // error for stepsize controller
     double time_allsteps_{0};
     unsigned long long int step_calls_{0};
 

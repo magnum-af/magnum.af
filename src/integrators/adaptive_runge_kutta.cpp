@@ -33,6 +33,7 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controlle
 void AdaptiveRungeKutta::step(State& state) {
     af::timer timer_allsteps = af::timer::start();
     af::array mtemp;
+    double err_{0}; // error for stepsize controller
     do {
         if (scheme_ == "RKF45") {
             mtemp = RKF45(state, h_, err_);
@@ -63,7 +64,8 @@ void AdaptiveRungeKutta::step(State& state) {
     // TODO// might prevent crash// af::eval(state.m);
 }
 
-// Runge-Kutta-Fehlberg method with stepsize control
+/// Runge-Kutta-Fehlberg method with stepsize control
+/// @param [out] err_ Error for stepsize controller
 af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double& err_) const {
     State tempstate = state;
     // stage1

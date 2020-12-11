@@ -55,6 +55,7 @@ TEST(AdaptiveRungeKutta, RKF45IntegrationTest) {
     for (int i = 0; i < 100; i++) {
         callback.step(state);
         EXPECT_NEAR(state.m.scalar<double>(), analytic_result(state.t), 1e-8);
+        // std::cout << "i=" << i << ", t= " << state.t << ", m=" << state.m.scalar<double>() << std::endl;
     }
 }
 
