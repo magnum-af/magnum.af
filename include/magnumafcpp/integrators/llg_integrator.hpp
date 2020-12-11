@@ -41,34 +41,20 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     void relax(State& state, double precision = 1e-10, unsigned iloop = 100, unsigned iwritecout = 1000,
                bool verbose = true);
 
-    // void relax_dense(State& state, const vec_uptr_FieldTerm & fieldterms, size_t print_every_ns = 10){
-    //}
-    void run(double time_in_s, double print_every_s, State& state, const vec_uptr_FieldTerm& fieldterms,
-             std::ostream& os = std::cout) {
-        const double time_init = state.t;
-        os << state << '\n';
-
-        double time_last_write = state.t;
-        double time_next_write = state.t;
-        while (state.t < time_init + time_in_s) {
-            step(state);
-            if (state.t >= time_next_write) {
-                // auto m_int = interpolate_m_at(time_next_write);
-                // os << m_int << '\n';
-                time_last_write = time_next_write;
-
-                do {
-                    time_next_write += print_every_s;
-                } while (time_next_write < state.t); // in case state.t is already bigger, we skipp timestap
-            }
-        }
-    }
+    /// Integrate and produce dense output.
+    /// @param [in, out] state State which is to be integrated
+    /// @param [in] time_in_s Time to integrate in [s]
+    /// @param [in] write_every_dt_in_s Timestap for which t, mx, my, mz is printed
+    /// @param [out] os outputstream
+    /// @param [in] verbose Verbose switch
+    void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::ostream& os = std::cout,
+                         bool verbose = true);
     double get_time_heff() const { return time_heff; }
     long int h_addr(const State& state) const;
 
-    af::array fheff(const State& state) const; // TODO move to priv again
 
   private:
+    af::array fheff(const State& state) const;
     const bool dissipation_term_only;
     virtual af::array f(const State& state) const override;
     mutable double time_heff{0};

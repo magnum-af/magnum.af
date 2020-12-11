@@ -17,6 +17,9 @@ class AdaptiveRungeKutta {
                                              //! the integration scheme
     virtual ~AdaptiveRungeKutta(){};
 
+  protected:
+    af::array RKF45(const State& state, const double dt, double& err) const;
+
   private:
     virtual af::array f(const State& state) const = 0; // callback function s.a. LLG
 
@@ -28,7 +31,6 @@ class AdaptiveRungeKutta {
     bool normalize_; // could be const
 
     // Integration methods; not const specified do change k_FSAL
-    af::array RKF45(const State& state, const double dt, double& err) const;
     af::array DP45(const State& state, const double dt, double& err);
     af::array BS45(const State& state, const double dt, double& err);
     af::array DP78(const State& state, const double dt, double& err) const;
