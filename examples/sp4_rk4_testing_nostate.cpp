@@ -6,6 +6,7 @@
 #include "rk4.hpp"
 #include "state.hpp"
 #include "util/arg_parser.hpp"
+#include "util/timer.hpp"
 #include <array>
 #include <cmath>
 #include <fstream>
@@ -48,13 +49,15 @@ int main(int argc, char** argv) {
     os.precision(12);
 
     // relax
+    StageTimer timer;
     for (std::size_t i = 0; i < imax; i++) {
         std::tie(t, m) = RK4(t, dt, m, f);
         m = normalize_handle_zero_vectors(m);
         const auto [mx, my, mz] = math::mean_3d<double>(m);
-        std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
+        // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
         os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
     }
+    timer.print_stage("relax ");
 
     af::array external = af::constant(0.0, nx, ny, nz, 3, f64);
     external(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
@@ -66,7 +69,9 @@ int main(int argc, char** argv) {
         std::tie(t, m) = RK4(t, dt, m, f);
         m = normalize_handle_zero_vectors(m);
         const auto [mx, my, mz] = math::mean_3d<double>(m);
-        std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
+        // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
         os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
     }
+    timer.print_stage("switch");
+    timer.print_accumulated();
 }

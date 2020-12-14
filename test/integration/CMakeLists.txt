@@ -20,7 +20,7 @@ foreach(testsourcefile ${APP_SOURCES})
   # String replace, to cut off .cpp.
   string(REPLACE ".cpp" "" testname ${testsourcefile})
   get_filename_component(testname ${testname} NAME)
-  set(testname test_cpu_${testname})
+  set(testname test_${testname}_cpu)
   # Adding executables and linking
   add_executable(${testname} ${testsourcefile})
   target_link_libraries(${testname} magnumafcpp ${GTEST_LIBRARIES}
@@ -38,7 +38,7 @@ if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # String replace, to cut off .cpp.
     string(REPLACE ".cpp" "" testname ${testsourcefile})
     get_filename_component(testname ${testname} NAME)
-    set(testname test_opencl_${testname})
+    set(testname test_${testname}_opencl)
     # Adding executables and linking
     add_executable(${testname} ${testsourcefile})
     target_link_libraries(
@@ -62,7 +62,7 @@ if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
     # String replace, to cut off .cpp.
     string(REPLACE ".cpp" "" testname ${testsourcefile})
     get_filename_component(testname ${testname} NAME)
-    set(testname test_cuda_${testname})
+    set(testname test_${testname}_cuda)
     # Adding executables and linking
     add_executable(${testname} ${testsourcefile})
     target_link_libraries(

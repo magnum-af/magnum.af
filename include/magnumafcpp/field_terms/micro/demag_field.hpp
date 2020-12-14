@@ -21,7 +21,6 @@ class DemagField : public MicroTerm {
 
   private:
     mutable af::array Nfft; // mutable for c64-c32 conversion
-    double cpu_time{0.};
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
 } // namespace magnumafcpp
