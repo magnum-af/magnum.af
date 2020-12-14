@@ -1,4 +1,5 @@
 #include "adaptive_runge_kutta.hpp"
+#include "math.hpp"
 #include "util/func.hpp"
 #include "util/misc.hpp"
 
@@ -99,7 +100,7 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
     af::array sumbk = 16. / 135. * k1 + 6656. / 12825. * k3 + 28561. / 56430. * k4 - 9. / 50. * k5 + 2. / 55. * k6;
     af::array rk_error = sumbk - (25. / 216. * k1 + 1408. / 2565. * k3 + 2197. / 4104. * k4 - 1. / 5. * k5);
 
-    err_ = max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = math::max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
@@ -161,7 +162,7 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
     af::array sumbk = a[7][1] * k1 + a[7][2] * k2 + a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6;
     af::array rk_error = e[1] * k1 + e[2] * k2 + e[3] * k3 + e[4] * k4 + e[5] * k5 + e[6] * k6 + e[7] * k_FSAL;
 
-    err_ = max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = math::max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
@@ -268,7 +269,7 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt, double& 
         a[8][1] * k1 + a[8][2] * k2 + a[8][3] * k3 + a[8][4] * k4 + a[8][5] * k5 + a[8][6] * k6 + a[8][7] * k7;
     af::array rk_error =
         sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 + b[6] * k6 + b[7] * k7 + b[8] * k_FSAL);
-    err_ = max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = math::max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
@@ -481,7 +482,7 @@ af::array AdaptiveRungeKutta::DP78(const State& state, const double dt, double& 
                       bhat[13] * k13;
     af::array rk_error = sumbk - (b[1] * k1 + b[2] * k2 + b[3] * k3 + b[4] * k4 + b[5] * k5 + b[6] * k6 + b[7] * k7 +
                                   b[8] * k8 + b[9] * k9 + b[10] * k10 + b[11] * k11 + b[12] * k12 + b[13] * k13);
-    err_ = max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err_ = math::max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
@@ -517,7 +518,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
     k_FSAL = f(tempstate);
 
     af::array rk_error = sumbk - dt * (7. / 24. * k1 + 1. / 4. * k2 + 1. / 3. * k3 + 1. / 8. * k_FSAL);
-    err = max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
+    err = math::max_4d_abs(rk_error / controller_.givescale(max(state.m, state.m + sumbk)));
     return sumbk;
 }
 
@@ -582,7 +583,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    k_FSAL=k[7];
 //    //!!!Note: here e is already the difference between the ususal b and
 //    bhat!!!! (no rk_error=sumbk-rk_error)
-//    err_=max_4d_abs(rk_error/controller_.givescale(max(state.m, state.m+sumbk)));
+//    err_=math::max_4d_abs(rk_error/controller_.givescale(max(state.m, state.m+sumbk)));
 //    return sumbk;
 //}
 
@@ -683,7 +684,7 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //    }
 //    rk_error*=dt;
 //    rk_error=sumbk-rk_error;
-//    err_=max_4d_abs(rk_error/controller_.givescale(max(state.m, state.m+sumbk)));
+//    err_=math::max_4d_abs(rk_error/controller_.givescale(max(state.m, state.m+sumbk)));
 //
 //    return sumbk;
 //}

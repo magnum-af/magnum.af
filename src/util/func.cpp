@@ -246,11 +246,6 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     return prec_prev;
 }
 
-// Maximum value norm
-double max_4d_abs(const af::array& a) {
-    return af::max(af::max(af::max(af::max(af::abs(a.as(f64)), 0), 1), 2), 3).scalar<double>();
-}
-
 // Minimum value
 double min_4d(const af::array& a) { return af::min(af::min(af::min(af::min(a.as(f64), 0), 1), 2), 3).scalar<double>(); }
 

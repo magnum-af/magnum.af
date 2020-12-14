@@ -42,7 +42,6 @@ double afvalue(const af::array& a);           // give value of a 1, 1, 1, 1 af a
 unsigned int afvalue_u32(const af::array& a); // Returns value an af::array of type u32 == 6
                                               // and size [1, 1, 1, 1]
 double full_inner_product(const af::array& a, const af::array& b);
-double max_4d_abs(const af::array& a);
 double min_4d(const af::array& a);
 double meani(const af::array& a, const int i);
 double FrobeniusNorm(const af::array& a);

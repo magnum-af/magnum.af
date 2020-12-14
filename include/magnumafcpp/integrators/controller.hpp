@@ -3,6 +3,11 @@
 
 namespace magnumafcpp {
 
+namespace ads_control {
+inline af::array givescale(const af::array& val, double atol, double rtol) { return atol + rtol * af::abs(val); }
+inline double givescale(double val, double atol, double rtol) { return atol + rtol * std::abs(val); }
+} // namespace ads_control
+
 class Controller {
   public:
     bool success(const double err,
@@ -13,14 +18,9 @@ class Controller {
 
     double get_hnext() const { return hnext; }; // # of rejections
     bool get_reject() const { return reject; };
-    af::array givescale(const af::array& a) const { return atol + rtol * af::abs(a); };
+    af::array givescale(const af::array& a) const { return ads_control::givescale(a, atol, rtol); };
+    // af::array givescale(const af::array& a) const { return atol + rtol * af::abs(a); };
 
-  private:
-    const double hmin;
-    const double hmax;
-    // Scale function return= atol + abs(y) * rtol
-    const double atol;                          // Tolerated absolute error
-    const double rtol;                          // Tolerated relative error
     // Access counters in read only
     unsigned long long int get_counter_reject() const { return counter_reject; };     // # of rejections
     unsigned long long int get_counter_accepted() const { return counter_accepted; }; // # of accepced steps
@@ -28,6 +28,13 @@ class Controller {
     unsigned long long int get_counter_hmin() const { return counter_hmin; };         // # of rejections
     unsigned long long int get_counter_maxscale() const { return counter_maxscale; }; // # of rejections
     unsigned long long int get_counter_minscale() const { return counter_minscale; }; // # of rejections
+
+  private:
+    const double hmin;
+    const double hmax;
+    // Scale function return= atol + abs(y) * rtol
+    const double atol;                          // Tolerated absolute error
+    const double rtol;                          // Tolerated relative error
 
     // Numerical Recipies 3rd Edition suggests these values:
     const double beta = 0.4 / 5.0;
@@ -50,5 +57,4 @@ class Controller {
     // Member of LLG:
     // double  err{0};      // Estimated error
 };
-
 } // namespace magnumafcpp

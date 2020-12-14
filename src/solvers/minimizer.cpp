@@ -1,4 +1,5 @@
 #include "minimizer.hpp"
+#include "math.hpp"
 #include "util/func.hpp"
 #include <algorithm>
 #include <list>
@@ -88,7 +89,7 @@ void Minimizer::minimize(State& state) const {
         af::array dm_diff = dm_next - dm;
 
         // Compute dm_max for convergence estimation
-        dm_max = max_4d_abs(dm_next);
+        dm_max = math::max_4d_abs(dm_next);
         last_dm_max.push_back(dm_max);
         if (last_dm_max.size() > samples)
             last_dm_max.pop_front();

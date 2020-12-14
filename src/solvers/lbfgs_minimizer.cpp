@@ -2,8 +2,8 @@
 #include "arrayfire.h"
 #include "equations.hpp"
 #include "field_terms/field_term.hpp"
+#include "math.hpp"
 #include "state.hpp"
-#include "util/func.hpp"
 #include "util/misc.hpp"
 #include <algorithm>
 #include <iomanip>
@@ -49,7 +49,7 @@ double mydot(const af::array& a, const af::array& b) { return full_inner_product
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
 double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
-    return max_4d_abs(Gradient(state, fieldterm::Heff_in_Apm(fieldterms, state)));
+    return math::max_4d_abs(Gradient(state, fieldterm::Heff_in_Apm(fieldterms, state)));
 }
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
@@ -72,7 +72,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
     // not calculating Heff double
     // NOTE: objFunc.both calcs gradient and energy E
-    double gradNorm = max_4d_abs(grad);
+    double gradNorm = math::max_4d_abs(grad);
     // af::print("grad", grad);
     if (verbose_ > 0) {
         std::cout << "f= " << f << std::endl;
@@ -148,7 +148,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         // TODO objFunc.updateTol(gradNorm);
         // TODO check version Schrefl vs Flo
         if (-mydot(grad, q) > -1e-15) {
-            gradNorm = max_4d_abs(grad);
+            gradNorm = math::max_4d_abs(grad);
             if (gradNorm < eps * (1. + fabs(f)) and verbose_ > 0) {
                 std::cout << "Minimizer: Convergence reached (due to almost "
                              "zero gradient (|g|="
@@ -173,7 +173,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
             // return(0) or, (if necessary)//exit(EXIT_FAILURE);
         }
         double f1 = 1 + fabs(f);
-        gradNorm = max_4d_abs(grad);
+        gradNorm = math::max_4d_abs(grad);
         if (gradNorm < (epsr * f1)) {
             return f;
         }
@@ -189,11 +189,11 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         if (of_convergence_.is_open()) {
             of_convergence_ << std::setprecision(std::numeric_limits<double>::digits10 + 12);
             of_convergence_ << (f_old - f) / (tolerance_ * f1) << "\t"
-                            << max_4d_abs(s) / (tolf2 * (1 + max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
+                            << math::max_4d_abs(s) / (tolf2 * (1 + math::max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
                             << std::endl;
         }
 
-        if (((f_old - f) < (tolerance_ * f1)) && (max_4d_abs(s) < (tolf2 * (1 + max_4d_abs(state.m)))) &&
+        if (((f_old - f) < (tolerance_ * f1)) && (math::max_4d_abs(s) < (tolf2 * (1 + math::max_4d_abs(state.m)))) &&
             (gradNorm <= (tolf3 * f1))) {
             break;
         }
