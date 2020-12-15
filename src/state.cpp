@@ -75,7 +75,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
                    "zero. It appears that you are using a legacy constuctor. "
                    "Please pass Ms in constructor!\n");
         Ms_field = af::constant(this->Ms, nzero.dims(),
-                                f64); // TODO this yields probem as Ms is not set in constuctor!
+                                m.type()); // TODO this yields probem as Ms is not set in constuctor!
         Ms_field *= nzero;
         Ms_field = af::tile(Ms_field, 1, 1, 1, 3);
     }
