@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;
-auto test(Mesh mesh, double Ms = 8e5, std::size_t m_layer = 7, double opclerr = 4e-3, double err = 0.0) {
+auto test(Mesh mesh, double Ms = 8e5, std::size_t m_layer = 7, double gpuerr = 4e-3, double err = 0.0) {
     DemagFieldPBC demag_pbc;
     const std::size_t nz = 2;
     af::dtype type = f32; // works for f64, f32, f16
@@ -16,11 +16,11 @@ auto test(Mesh mesh, double Ms = 8e5, std::size_t m_layer = 7, double opclerr = 
     for (std::size_t i = 0; i < mesh.nz; ++i) {
         auto Hzi = H_in_Apm(mesh.nx / 2, mesh.ny / 2, 0, nz).as(f64).scalar<double>();
         if (i != m_layer) {
-            if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
-                EXPECT_NEAR(std::abs(Hz_layer - Hzi), Ms, opclerr);
+            if (af::getActiveBackend() == AF_BACKEND_CPU) {
+                EXPECT_NEAR(std::abs(Hz_layer - Hzi), Ms, err);
             } else {
                 // Note: cpu is more precise for f32 here, could be coincidence
-                EXPECT_NEAR(std::abs(Hz_layer - Hzi), Ms, err);
+                EXPECT_NEAR(std::abs(Hz_layer - Hzi), Ms, gpuerr);
             }
         }
     }
