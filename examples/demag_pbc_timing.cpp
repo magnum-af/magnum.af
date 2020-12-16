@@ -11,12 +11,12 @@ int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
     af::info();
 
-    auto run_for_mesh = [outdir](std::size_t N) {
+    auto run_for_mesh = [outdir](std::size_t N, af::dtype type) {
         DemagFieldPBC demag_pbc;
         Mesh mesh{N, N, N, 10e-9, 10e-9, 10e-9};
 
         const double Ms = 8e5;
-        af::array m = af::constant(0, mesh::dims_v(mesh), f64);
+        af::array m = af::constant(0, mesh::dims_v(mesh), type);
         m(af::span, af::span, af::span, 0) = 1;
         m(af::seq(3, 6), af::seq(3, 6), af::seq(3, 6), 0) = -1;
         State state(mesh, Ms, m);
@@ -87,9 +87,11 @@ int main(int argc, char** argv) {
         << "NNN\t"
         << "size[GB]\t"
         << "average_time[s]" << std::endl;
-    for (std::size_t i = 10; i < 260; i += 10) {
-        if (util::max_of_prime_factors(i) <= 13) {
-            run_for_mesh(i);
+    for (std::size_t i = 10; i <= 260; i += 10) {
+        if (af::getActiveBackend() == AF_BACKEND_OPENCL and util::max_of_prime_factors(i) > 13) {
+            std::cout << "Skipping step as N=" << i << " dim not valid for OpenCL FFT" << std::endl;
+        } else {
+            run_for_mesh(i, f64);
         }
     }
 }

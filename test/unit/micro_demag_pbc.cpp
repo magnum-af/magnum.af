@@ -1,5 +1,4 @@
 #include "field_terms/micro/demag_field_pbc.hpp"
-#include <chrono>
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;
