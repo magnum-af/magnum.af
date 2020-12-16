@@ -78,6 +78,8 @@ int ij2k(const int i, const int j,
 unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int ni);
 unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni,
                     const unsigned int nj);
+
+/// Get the flat index from af::array with 4d indices, i.e. af::array(i, j, k, l), where af::dims=[ni, nj, nk, :].
 unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l,
                     const unsigned int ni, const unsigned int nj, const unsigned int nk);
 

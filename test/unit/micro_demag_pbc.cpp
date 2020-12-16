@@ -7,7 +7,7 @@ auto test(Mesh mesh, double Ms = 8e5, std::size_t m_layer = 7, std::size_t nm = 
           double err = 0.0) {
     DemagFieldPBC demag_pbc;
     const std::size_t nz = 2;
-    af::dtype type = f32; // works for f64, f32, f16
+    af::dtype type = f64; // works for f64, f32, f16
     af::array m = af::constant(0, mesh::dims_v(mesh), type);
     m(af::span, af::span, af::seq(m_layer, m_layer + nm), nz) = 1.;
     const State state(mesh, Ms, m);
