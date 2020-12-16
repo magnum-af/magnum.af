@@ -1,7 +1,6 @@
 #include "controller.hpp"
-#include "util/misc.hpp"
-#include <algorithm>
-#include <stdio.h>
+#include "util/misc.hpp" // for red
+#include <cmath>
 
 namespace magnumafcpp {
 
@@ -10,68 +9,68 @@ bool Controller::success(const double err, double& h) {
 
     if (err <= 1.0) {
         if (err == 0.0) {
-            scale = maxscale;
+            scale = maxscale_;
         } else {
-            scale = headroom * pow(err, -alpha) * pow(errold, beta);
-            if (scale < minscale) {
-                scale = minscale;
-                counter_maxscale++;
+            scale = headroom_ * std::pow(err, -alpha_) * std::pow(errold_, beta_);
+            if (scale < minscale_) {
+                scale = minscale_;
+                counter_maxscale_++;
             }
-            if (scale > maxscale) {
-                scale = maxscale;
-                counter_minscale++;
+            if (scale > maxscale_) {
+                scale = maxscale_;
+                counter_minscale_++;
             }
         }
-        if (reject) {
-            hnext = h * std::min(scale, 1.0); // Do not increase stepsize if
-                                              // previous try was rejected
+        if (reject_) {
+            hnext_ = h * std::min(scale, 1.0); // Do not increase stepsize if
+                                               // previous try was rejected
         } else {
-            hnext = h * scale;
+            hnext_ = h * scale;
         }
-        if (hnext <= hmin) {
-            hnext = hmin;
-            counter_hmin++;
+        if (hnext_ <= hmin_) {
+            hnext_ = hmin_;
+            counter_hmin_++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
                    "stepsize hnext=%e <= minimum allowed stepsize "
                    "hmin=%e\nStepsize hmin will be forced and given error "
                    "bounds may become invalid.\n",
-                   red("Warning:").c_str(), hnext, hmin);
+                   red("Warning:").c_str(), hnext_, hmin_);
         }
-        if (hnext >= hmax) {
-            hnext = hmax;
-            counter_hmax++;
+        if (hnext_ >= hmax_) {
+            hnext_ = hmax_;
+            counter_hmax_++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
                    "stepsize hnext=%e >= maximum allowed stepsize "
                    "hmax=%e\nStepsize will be limited to hmax to preserve "
                    "given error bounds.\n",
-                   red("Warning:").c_str(), hnext, hmax);
+                   red("Warning:").c_str(), hnext_, hmax_);
         }
-        errold = std::max(err, 1.0e-4); // Why?
-        reject = false;
-        counter_accepted++;
+        errold_ = std::max(err, 1.0e-4); // Why?
+        reject_ = false;
+        counter_accepted_++;
         return true;
     } else {
-        scale = std::max(headroom * pow(err, -alpha), minscale);
+        scale = std::max(headroom_ * std::pow(err, -alpha_), minscale_);
         h *= scale;
-        if (h <= hmin) {
-            h = hmin;
-            counter_hmin++;
+        if (h <= hmin_) {
+            h = hmin_;
+            counter_hmin_++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: hmin=%e "
                    "reached in else, error bounds may be invalid.\n",
-                   red("Warning:").c_str(), hmin);
+                   red("Warning:").c_str(), hmin_);
             return true;
         }
-        if (h >= hmax) {
-            h = hmax;
-            counter_hmax++;
+        if (h >= hmax_) {
+            h = hmax_;
+            counter_hmax_++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: hmax=%e "
                    "reached in else.\n Stepsize is limited to hmax to preserve "
                    "error bounds.\n",
-                   red("Warning:").c_str(), hmax);
+                   red("Warning:").c_str(), hmax_);
             return true;
         }
-        reject = true;
-        counter_reject++;
+        reject_ = true;
+        counter_reject_++;
         return false;
     }
 }
