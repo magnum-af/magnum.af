@@ -45,7 +45,7 @@ TEST(DemagFieldPBC, magnetic_xy_plane) {
     const auto nz = 16;
     auto [hzl_1, hz0_1] = test(Mesh{32, 18, nz, 1e-9, 1e-9, 1e-9}, 8e5, 7, 0, 0.2, 0.04); // opclerr = 4e-3 for f64
     auto [hzl_2, hz0_2] = test(Mesh{32, 18, nz, 1e-9, 1e-9, 1e-9}, 8e5, 7, 1, 0.2, 7e-2); // opclerr = 4e-3 for f64
-    auto [hzl_3, hz0_3] = test(Mesh{32, 18, nz, 1e-9, 1e-9, 1e-9}, 8e5, 7, 2, 0.2, 0.2);  // opclerr = 4e-3 for f64
+    auto [hzl_3, hz0_3] = test(Mesh{32, 18, nz, 1e-9, 1e-9, 1e-9}, 8e5, 7, 2, 0.3, 0.2);  // opclerr = 4e-3 for f64
     auto [hzl_4, hz0_4] = test(Mesh{32, 18, nz, 1e-9, 1e-9, 1e-9}, 8e5, 7, 3, 0.2, 0.2);  // opclerr = 4e-3 for f64
 
     EXPECT_NEAR(hzl_1 / hzl_2, (nz - 1.) / (nz - 2.), 1e-7);
@@ -53,7 +53,7 @@ TEST(DemagFieldPBC, magnetic_xy_plane) {
     EXPECT_NEAR(hzl_1 / hzl_4, (nz - 1.) / (nz - 4.), 3e-7);
 
     // Hz_l / Hz0 = #nonmag layer/ #mag layers
-    EXPECT_NEAR(std::abs(hzl_1 / hz0_1), (nz - 1.) / 1., 1e-5);
+    EXPECT_NEAR(std::abs(hzl_1 / hz0_1), (nz - 1.) / 1., 2e-5); // 1e-5 w.o. cuda
     EXPECT_NEAR(std::abs(hzl_2 / hz0_2), (nz - 2.) / 2., 1e-5);
     EXPECT_NEAR(std::abs(hzl_3 / hz0_3), (nz - 3.) / 3., 1e-5);
     EXPECT_NEAR(std::abs(hzl_4 / hz0_4), (nz - 4.) / 4., 1e-5);
