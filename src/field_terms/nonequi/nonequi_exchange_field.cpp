@@ -214,7 +214,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
+                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
@@ -223,7 +223,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
+                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1 - 1, i2, im, mesh));
@@ -233,7 +233,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                             double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                             double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                             if (A_i_m != 0) {
-                                COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
+                                COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_m /
                                                      (A_i_m + A_i));
                                 COO_ROW.push_back(ind);
                                 COO_COL.push_back(findex(i0, i1 - 1, i2, im, mesh));
@@ -243,7 +243,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                             double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                             double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                             if (A_i_p != 0) {
-                                COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
+                                COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_p /
                                                      (A_i_p + A_i));
                                 COO_ROW.push_back(ind);
                                 COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
@@ -517,7 +517,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
+                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_p /
                                                  (A_i_p + A_i));
                             CSR_JA.push_back(findex(i0, i1 + 1, i2, im, mesh));
                             csr_ia++;
@@ -526,7 +526,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                         double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                         double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                         if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
+                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_m /
                                                  (A_i_m + A_i));
                             CSR_JA.push_back(findex(i0, i1 - 1, i2, im, mesh));
                             csr_ia++;
@@ -536,7 +536,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                             double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                             double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
                             if (A_i_m != 0) {
-                                CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
+                                CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_m /
                                                      (A_i_m + A_i));
                                 CSR_JA.push_back(findex(i0, i1 - 1, i2, im, mesh));
                                 csr_ia++;
@@ -546,7 +546,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                             double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
                             double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
                             if (A_i_p != 0) {
-                                CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
+                                CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dy, 2)) * 2. * A_i_p /
                                                      (A_i_p + A_i));
                                 CSR_JA.push_back(findex(i0, i1 + 1, i2, im, mesh));
                                 csr_ia++;

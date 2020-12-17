@@ -18,7 +18,7 @@ af::array SparseExchangeField::impl_H_in_Apm(const State& state) const {
 }
 
 // Get inner index (index per matrix column)
-unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Mesh& mesh) {
+std::size_t findex(std::size_t i0, std::size_t i1, std::size_t i2, std::size_t im, const Mesh& mesh) {
     return i0 + mesh.nx * (i1 + mesh.ny * (i2 + mesh.nz * im));
 }
 
@@ -42,39 +42,39 @@ af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool 
                     // 2)); x: interaction from (i0, i1, i2) to (i0+-1, i1, i2)
                     // +x: ix, ix+1
                     if (i0 < mesh.nx - 1) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dx, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0 + 1, i1, i2, im, mesh));
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dx, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0 - 1, i1, i2, im, mesh));
                     }
 
                     // +y: iy, iy+1
                     if (i1 < mesh.ny - 1) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dy, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dy, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1 - 1, i2, im, mesh));
                     }
 
                     // +z: iz, iz+1
                     if (i2 < mesh.nz - 1) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dz, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        COO_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
+                        COO_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dz, 2));
                         COO_ROW.push_back(ind);
                         COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                     }
@@ -126,39 +126,39 @@ af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool 
                     // i2) to (i0+-1, i1, i2)
                     // +x: ix, ix+1
                     if (i0 < mesh.nx - 1) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dx, 2));
                         CSR_JA.push_back(findex(i0 + 1, i1, i2, im, mesh));
                         csr_ia++;
                     }
                     // -x: ix, ix-1
                     if (i0 > 0) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dx, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dx, 2));
                         CSR_JA.push_back(findex(i0 - 1, i1, i2, im, mesh));
                         csr_ia++;
                     }
 
                     // +y: iy, iy+1
                     if (i1 < mesh.ny - 1) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dy, 2));
                         CSR_JA.push_back(findex(i0, i1 + 1, i2, im, mesh));
                         csr_ia++;
                     }
                     // -y: iy, iy-1
                     if (i1 > 0) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dy, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dy, 2));
                         CSR_JA.push_back(findex(i0, i1 - 1, i2, im, mesh));
                         csr_ia++;
                     }
 
                     // +z: iz, iz+1
                     if (i2 < mesh.nz - 1) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dz, 2));
                         CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         csr_ia++;
                     }
                     // -z: iz, iz-1
                     if (i2 > 0) {
-                        CSR_values.push_back((2. * A_exchange) / (constants::mu0)*1. / pow(mesh.dz, 2));
+                        CSR_values.push_back((2. * A_exchange) / (constants::mu0) / pow(mesh.dz, 2));
                         CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         csr_ia++;
                     }
@@ -178,6 +178,10 @@ af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool 
     return result;
 }
 
+auto divA(const double A_i, const double A_pm, const double dxyz) {
+    return 2. * A_i / (constants::mu0 * pow(dxyz, 2)) * 2. * A_pm / (A_pm + A_i);
+}
+
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
@@ -193,87 +197,68 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
     std::vector<int> CSR_JA;                // comumn index of each element, hence of length
                                             // "number of elements"
     util::HostPtrAccessor<double> a_host(A_exchange_field);
-    for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
+    for (std::size_t im = 0; im < 3; im++) {
+        for (std::size_t i2 = 0; i2 < mesh.nz; i2++) {
+            for (std::size_t i1 = 0; i1 < mesh.ny; i1++) {
+                for (std::size_t i0 = 0; i0 < mesh.nx; i0++) {
                     int csr_ia = 0; // counter for SCR_IA
-                    const unsigned ind = findex(i0, i1, i2, im, mesh);
-                    // std::cout << ind << ", " << id << ", " << im <<
-                    // ", " << i2 << ", " << i1 << ", " << i0 <<
-                    // std::endl; Note: skippable due to cross product
-                    // property://vmatr[findex(i0, i1, i2, im,
-                    // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
-                    // 2)+pow(mesh.dz, 2));
-                    // +x: ix, ix+1
-                    if (i0 < mesh.nx - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_host[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+                    const auto ind = findex(i0, i1, i2, im, mesh);
+                    const double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                    if (A_i != 0.0) {
+                        // TODO set middle element of laplace?
+                        // std::cout << ind << ", " << id << ", " << im <<
+                        // ", " << i2 << ", " << i1 << ", " << i0 <<
+                        // std::endl; Note: skippable due to cross product
+                        // property://vmatr[findex(i0, i1, i2, im,
+                        // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy,
+                        // 2)+pow(mesh.dz, 2));
+                        // +x: ix, ix+1
+                        if (i0 < mesh.nx - 1) {
+                            const double A_i_p = a_host[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_p, mesh.dx));
                             CSR_JA.push_back(findex(i0 + 1, i1, i2, im, mesh));
                             csr_ia++;
                         }
-                    }
-                    // -x: ix, ix-1
-                    if (i0 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_host[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -x: ix, ix-1
+                        if (i0 > 0) {
+                            const double A_i_m = a_host[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_m, mesh.dx));
                             CSR_JA.push_back(findex(i0 - 1, i1, i2, im, mesh));
                             csr_ia++;
                         }
-                    }
 
-                    // +y: iy, iy+1
-                    if (i1 < mesh.ny - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+                        // +y: iy, iy+1
+                        if (i1 < mesh.ny - 1) {
+                            const double A_i_p = a_host[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_p, mesh.dy));
                             CSR_JA.push_back(findex(i0, i1 + 1, i2, im, mesh));
                             csr_ia++;
                         }
-                    }
-                    // -y: iy, iy-1
-                    if (i1 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -y: iy, iy-1
+                        if (i1 > 0) {
+                            const double A_i_m = a_host[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_m, mesh.dy));
                             CSR_JA.push_back(findex(i0, i1 - 1, i2, im, mesh));
                             csr_ia++;
                         }
-                    }
 
-                    // +z: iz, iz+1
-                    if (i2 < mesh.nz - 1) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+                        // +z: iz, iz+1
+                        if (i2 < mesh.nz - 1) {
+                            const double A_i_p = a_host[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_p, mesh.dz));
                             CSR_JA.push_back(findex(i0, i1, i2 + 1, im, mesh));
                             csr_ia++;
                         }
-                    }
-                    // -z: iz, iz-1
-                    if (i2 > 0) {
-                        double A_i = a_host[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            CSR_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -z: iz, iz-1
+                        if (i2 > 0) {
+                            const double A_i_m = a_host[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
+                            CSR_values.push_back(divA(A_i, A_i_m, mesh.dz));
                             CSR_JA.push_back(findex(i0, i1, i2 - 1, im, mesh));
                             csr_ia++;
                         }
                     }
-                    CSR_IA[ind + 1] = CSR_IA[ind] + csr_ia;
+
+                    CSR_IA[ind + 1] = CSR_IA[ind] + csr_ia; // Called at each iteration, don't move into if
                 }
             }
         }
@@ -296,87 +281,68 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
     printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
     fflush(stdout);
     af::timer t = af::timer::start();
-    const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
+    const std::size_t dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
     std::vector<double> COO_values; // matrix values,  of length "number of elements"
     std::vector<int> COO_COL;       // column indices
     std::vector<int> COO_ROW;       // row indices
     util::HostPtrAccessor<double> a_raw(A_exchange_field);
-    for (unsigned im = 0; im < 3; im++) {
-        for (unsigned i2 = 0; i2 < mesh.nz; i2++) {
-            for (unsigned i1 = 0; i1 < mesh.ny; i1++) {
-                for (unsigned i0 = 0; i0 < mesh.nx; i0++) {
-                    const int ind = findex(i0, i1, i2, im, mesh);
-                    // std::cout << ind << ", " << id << ", " << im << ", " <<
-                    // i2 << ", " << i1 << ", " << i0 << std::endl; Note:
-                    // skippable due to cross product
-                    // property://vmatr[findex(i0, i1, i2, im,
-                    // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz,
-                    // 2));
-                    // +x: ix, ix+1
-                    if (i0 < mesh.nx - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+    for (std::size_t im = 0; im < 3; im++) {
+        for (std::size_t i2 = 0; i2 < mesh.nz; i2++) {
+            for (std::size_t i1 = 0; i1 < mesh.ny; i1++) {
+                for (std::size_t i0 = 0; i0 < mesh.nx; i0++) {
+                    const std::size_t ind = findex(i0, i1, i2, im, mesh);
+                    const double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
+                    if (A_i != 0.0) {
+                        // TODO set middle element of laplace?
+                        // std::cout << ind << ", " << im << ", " << i2 << ", " << i1 << ", " << i0 << std::endl;
+                        // Note:
+                        // skippable due to cross product
+                        // property://vmatr[findex(i0, i1, i2, im,
+                        // id)]+=-6./(pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz,
+                        // 2));
+                        // +x: ix, ix+1
+
+                        if (i0 < mesh.nx - 1) {
+                            const double A_i_p = a_raw[util::stride(i0 + 1, i1, i2, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_p, mesh.dx));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0 + 1, i1, i2, im, mesh));
                         }
-                    }
-                    // -x: ix, ix-1
-                    if (i0 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -x: ix, ix-1
+                        if (i0 > 0) {
+                            const double A_i_m = a_raw[util::stride(i0 - 1, i1, i2, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_m, mesh.dx));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0 - 1, i1, i2, im, mesh));
                         }
-                    }
 
-                    // +y: iy, iy+1
-                    if (i1 < mesh.ny - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+                        // +y: iy, iy+1
+                        if (i1 < mesh.ny - 1) {
+                            const double A_i_p = a_raw[util::stride(i0, i1 + 1, i2, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_p, mesh.dy));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1 + 1, i2, im, mesh));
                         }
-                    }
-                    // -y: iy, iy-1
-                    if (i1 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dx, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -y: iy, iy-1
+                        if (i1 > 0) {
+                            const double A_i_m = a_raw[util::stride(i0, i1 - 1, i2, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_m, mesh.dy));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1 - 1, i2, im, mesh));
                         }
-                    }
 
-                    // +z: iz, iz+1
-                    if (i2 < mesh.nz - 1) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_p /
-                                                 (A_i_p + A_i));
+                        // +z: iz, iz+1
+                        if (i2 < mesh.nz - 1) {
+                            const double A_i_p = a_raw[util::stride(i0, i1, i2 + 1, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_p, mesh.dz));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 + 1, im, mesh));
                         }
-                    }
-                    // -z: iz, iz-1
-                    if (i2 > 0) {
-                        double A_i = a_raw[util::stride(i0, i1, i2, mesh.nx, mesh.ny)];
-                        double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
-                        if (A_i != 0) {
-                            COO_values.push_back((2. * A_i) / (constants::mu0 * pow(mesh.dz, 2)) * 2. * A_i_m /
-                                                 (A_i_m + A_i));
+                        // -z: iz, iz-1
+                        if (i2 > 0) {
+                            const double A_i_m = a_raw[util::stride(i0, i1, i2 - 1, mesh.nx, mesh.ny)];
+                            COO_values.push_back(divA(A_i, A_i_m, mesh.dz));
                             COO_ROW.push_back(ind);
                             COO_COL.push_back(findex(i0, i1, i2 - 1, im, mesh));
                         }
