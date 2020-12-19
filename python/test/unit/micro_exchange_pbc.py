@@ -13,7 +13,7 @@ class MicroExchangePBCTest(unittest.TestCase):
         exch_pbc = ExchangeFieldPBC(A, mesh)
         H = exch_pbc.H_in_Apm(state)
         H_sum = af.sum(af.sum(af.sum(af.sum(H, 0), 1), 2), 3).scalar()
-        self.assertEqual(H_sum, 0)
+        self.assertAlmostEqual(H_sum, 0, 5)
 
 if __name__ == '__main__':
   unittest.main()
