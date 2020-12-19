@@ -27,6 +27,14 @@ cdef extern from "field_terms/micro/sparse_exchange_field.hpp" namespace "magnum
         double Energy_in_J(const State& state);
         double elapsed_eval_time();
 
+cdef extern from "field_terms/micro/exchange_field_pbc.hpp" namespace "magnumafcpp":
+    cdef cppclass ExchangeFieldPBC:
+        ExchangeFieldPBC (long int A_exchange_field_ptr, Mesh mesh, bool verbose);
+        ExchangeFieldPBC (double A_exchange, Mesh mesh, bool verbose);
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
+        double elapsed_eval_time();
+
 cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiExchangeField:
         NonequiExchangeField (NonequiMesh mesh, long int A_exchange_field_ptr, bool verbose);
@@ -121,6 +129,13 @@ cdef extern from "field_terms/micro/demag_field.hpp" namespace "magnumafcpp":
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
         void print_Nfft();
+        double elapsed_eval_time();
+
+cdef extern from "field_terms/micro/demag_field_pbc.hpp" namespace "magnumafcpp":
+    cdef cppclass DemagFieldPBC:
+        DemagFieldPBC ();
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
         double elapsed_eval_time();
 
 cdef extern from "field_terms/micro/uniaxial_anisotropy_field.hpp" namespace "magnumafcpp":

@@ -36,12 +36,14 @@ from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
 from magnumaf_decl cimport Stochastic_LLG as cStochastic_LLG
 from magnumaf_decl cimport DemagField as cDemagField
+from magnumaf_decl cimport DemagFieldPBC as cDemagFieldPBC
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
 #from magnumaf_decl cimport array_d3 as carray_d3
 from magnumaf_decl cimport CubicAnisotropyField as cCubicAnisotropyField
 from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
+from magnumaf_decl cimport ExchangeFieldPBC as cExchangeFieldPBC
 from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
@@ -910,6 +912,25 @@ cdef class DemagField(HeffTerm):
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
+cdef class DemagFieldPBC(HeffTerm):
+    """
+    Demagnetization Field with Periodic Boundary Conditions.
+    """
+    cdef cDemagFieldPBC* _thisptr
+    def __cinit__(self):
+        self._thisptr = new cDemagFieldPBC ()
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
 
 cdef class ExchangeField(HeffTerm):
     cdef cExchangeField* _thisptr
@@ -951,6 +972,40 @@ cdef class SparseExchangeField(HeffTerm):
             self._thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
             self._thisptr = new cSparseExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
+
+cdef class ExchangeFieldPBC(HeffTerm):
+    """
+    Exchange Field with Periodic Boundary Condition (PBC). Implemented as sparse matrix.
+    """
+    cdef cExchangeFieldPBC* _thisptr
+    def __cinit__(self, A, Mesh mesh, verbose = True):
+        """
+        Parameters
+        ----------
+        A : float
+             Global exchange constant in [J/m]
+        A : af.array
+            cell-wise exchange constant defined at each cell, i.e. af.array of size [nx, ny, nz].
+        mesh: mesh
+        verbose: verbose switch
+        """
+        if hasattr(A, 'arr'):
+            self._thisptr = new cExchangeFieldPBC (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
+        else:
+            self._thisptr = new cExchangeFieldPBC (<double> A, deref(mesh._thisptr), <bool> verbose)
             # Note: use <bool_t> instead of <bool> in case of ambiguous overloading error: https://stackoverflow.com/questions/29171087/cython-overloading-no-suitable-method-found
     def __dealloc__(self):
         del self._thisptr
