@@ -15,6 +15,44 @@
 
 using namespace magnumafcpp;
 
+template <typename T = double, typename Y = af::array> class RK_Integrator {
+  public:
+    RK_Integrator(T dt = 1.01e-15) : dt_(dt) {}
+    T t_{0};
+    T dt_{1.01e-15};
+    Controller controller{};
+    // const bool normalize_ = true;
+
+    template <typename F, typename... Args> void stepRKF45(Y& yn, F f, Args... args) {
+        Y y_proposed_;
+        T error{0};
+        do {
+            const auto [tn, yndy, rk_error] = RKF45(t_, dt_, yn, f, args...);
+            y_proposed_ = yndy;
+            error = math::max_4d_abs(rk_error / controller.givescale(max(yn, yndy)));
+        } while (!controller.success(error, dt_));
+        t_ += dt_;
+        dt_ = controller.get_hnext();
+        yn = normalize(y_proposed_);
+        // handle at callsite// yn = normalize(m);
+    }
+
+    template <typename F, typename... Args>
+    void integrateRKF45(const T time, Y& yn, F f, std::ostream& os, Args... args) {
+        const T current_time = t_;
+        while (t_ < current_time + time) {
+            stepRKF45(yn, f, args...);
+            const auto [mx, my, mz] = math::mean_3d<double>(yn);
+            os << t_ << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
+        }
+    }
+
+    template <typename F, typename... Args> void stepRK4(Y& yn, F f, Args... args) {
+        std::tie(t_, yn) = RK4(t_, dt_, yn, f, args...);
+        yn = normalize(yn);
+    }
+};
+
 int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
 
@@ -49,28 +87,22 @@ int main(int argc, char** argv) {
     std::ofstream os(outdir / "m.dat");
     os.precision(12);
 
-    double t{0};
-    double dt = 1.01e-15;
-    Controller controller{};
-
     // relax
     StageTimer timer;
-    while (t < 1e-9) {
-        double error{0};
-        af::array m_proposed;
-        do {
-            const auto [tn, yndy, rk_error] = RKF45(t, dt, m, llg);
-            m_proposed = yndy;
-            error = math::max_4d_abs(rk_error / controller.givescale(max(m, yndy)));
-        } while (!controller.success(error, dt));
-        t += dt;
-        dt = controller.get_hnext();
-        m = m_proposed;
-        m = normalize(m);
-        const auto [mx, my, mz] = math::mean_3d<double>(m);
-        // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
-        os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
-    }
+
+    RK_Integrator rki{};
+    // RK_Integrator rki{1e-12};
+
+    rki.integrateRKF45(1e-9, m, llg, os);
+
+    // while (rki.t_ < 1e-9) {
+    //    // rki.stepRK4(m, llg);
+    //    rki.stepRKF45(m, llg);
+    //    const auto [mx, my, mz] = math::mean_3d<double>(m);
+    //    // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
+    //    os << rki.t_ << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
+    //}
+
     timer.print_stage("relax ");
 
     af::array external = af::constant(0.0, nx, ny, nz, 3, f64);
@@ -79,23 +111,17 @@ int main(int argc, char** argv) {
     fieldterms.push_back(fieldterm::to_uptr<ExternalField>(external));
 
     alpha = 0.02;
-    while (t < 2e-9) {
-        double error{0};
-        af::array m_proposed;
-        do {
-            const auto [tn, yndy, rk_error] = RKF45(t, dt, m, llg);
-            m_proposed = yndy;
-            error = math::max_4d_abs(rk_error / controller.givescale(max(m, yndy)));
-        } while (!controller.success(error, dt));
-        t += dt;
-        dt = controller.get_hnext();
-        m = m_proposed;
-        m = normalize(m);
 
-        const auto [mx, my, mz] = math::mean_3d<double>(m);
-        // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
-        os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
-    }
+    rki.integrateRKF45(0.997e-9, m, llg, os);
+
+    // while (rki.t_ < 2e-9) {
+    //    // rki.stepRK4(m, llg);
+    //    rki.stepRKF45(m, llg);
+    //    const auto [mx, my, mz] = math::mean_3d<double>(m);
+    //    // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
+    //    os << rki.t_ << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
+    //}
+
     timer.print_stage("switch");
     timer.print_accumulated();
 }

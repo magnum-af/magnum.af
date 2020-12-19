@@ -19,6 +19,7 @@ class Controller {
     double get_hnext() const { return hnext_; }; // # of rejections
     bool get_reject() const { return reject_; };
     af::array givescale(const af::array& a) const { return ads_control::givescale(a, atol_, rtol_); };
+    af::array givescale(double a) const { return ads_control::givescale(a, atol_, rtol_); };
     // af::array givescale(const af::array& a) const { return atol + rtol * af::abs(a); };
 
     // Access counters in read only
