@@ -1,7 +1,7 @@
 #include "nonequi/nonequi_demag_field.hpp"
 #include "util/cache_manager.hpp"
 #include "util/func.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 #include "util/prime_factors.hpp"
 #include <iostream>
 #include <thread>
@@ -178,7 +178,7 @@ double nonequi_index_distance(const std::vector<double> spacings, const unsigned
         printf("%s in nonequi_index_distance: index == vector.size(), the "
                "distance includes the last element which is not wanted "
                "behaviour\n",
-               Warning());
+               color_string::warning());
     }
 
     double result = 0;
@@ -256,7 +256,7 @@ af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads) {
 af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads, bool verbose) {
     af::timer timer = af::timer::start();
     if (verbose) {
-        printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
+        printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
                std::thread::hardware_concurrency());
     }
     af::array result = calculate_N(nemesh, nthreads);
@@ -281,7 +281,7 @@ std::string to_string(const NonequiMesh& nemesh) {
 
 void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
     if (util::max_of_prime_factors(n) > 13) {
-        std::cout << Warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh." << ni << "="
+        std::cout << color_string::warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh." << ni << "="
                   << n << " is " << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
                      "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "

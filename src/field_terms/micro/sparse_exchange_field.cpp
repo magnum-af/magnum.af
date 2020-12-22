@@ -1,7 +1,7 @@
 #include "micro/sparse_exchange_field.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 
 namespace magnumafcpp {
 
@@ -94,7 +94,7 @@ af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool 
     if (verbose) {
         printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted "
                "COO to CSR in %f [s]. Sparsity = %f\n",
-               Info(), time, time_convert,
+               color_string::info(), time, time_convert,
                static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }
@@ -173,7 +173,7 @@ af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool 
     if (verbose)
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(),
+               color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
     return result;
 }
@@ -185,7 +185,7 @@ inline auto lapA(const double A_i, const double A_pm, const double dxyz) {
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
-    printf("%s SparseExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
+    printf("%s SparseExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -273,7 +273,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(),
+               color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
         fflush(stdout);
     }
@@ -283,7 +283,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
 // Assembly of COO sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
-    printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
+    printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
     const std::size_t dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -368,7 +368,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
     if (verbose) {
         printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted "
                "COO to CSR in %f [s]. Sparsity = %f\n",
-               Info(), time, time_convert,
+               color_string::info(), time, time_convert,
                static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }

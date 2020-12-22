@@ -22,7 +22,7 @@
 #include "integrators/llg_integrator.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "mesh.hpp"
-#include "misc.hpp"
+#include "util/color_string.hpp"
 #include "nonequispaced_mesh.hpp"
 #include "pgfplot.hpp"
 #include "solvers/cg_minimizer.hpp"

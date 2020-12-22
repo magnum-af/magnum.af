@@ -28,12 +28,12 @@ int main(int argc, char** argv) {
 
     double f = minimizer.Minimize(state);
     std::cout << "main: f= " << f << std::endl;
-    std::cout << green("Starting second run ") << std::endl;
+    std::cout << color_string::green("Starting second run ") << std::endl;
     f = minimizer.Minimize(state);
     std::cout << "main: f= " << f << std::endl;
     af::print("minimizer", af::mean(state.m, 0));
     vti_writer_micro(state.m, state.mesh, filepath + "m_minimized");
     LLGIntegrator llg = LLGIntegrator(minimizer.llgterms_);
-    std::cout << red("E= ") << llg.E(state) << green(" (as reference)") << std::endl;
+    std::cout << color_string::red("E= ") << llg.E(state) << color_string::green(" (as reference)") << std::endl;
     return 0;
 }

@@ -1,12 +1,12 @@
 #include "solvers/cg_minimizer.hpp"
 #include "util/func.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 
 namespace magnumafcpp {
 
 void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
     if (fieldterms.size() == 0) {
-        std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
+        std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
                               "LBFGS_Minimizer.fieldterms! Aborting...")
                   << std::endl;

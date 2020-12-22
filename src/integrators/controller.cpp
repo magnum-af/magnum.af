@@ -1,5 +1,5 @@
 #include "controller.hpp"
-#include "util/misc.hpp" // for red
+#include "util/color_string.hpp" // for red
 #include <cmath>
 
 namespace magnumafcpp {
@@ -34,7 +34,7 @@ bool Controller::success(const double err, double& h) {
                    "stepsize hnext=%e <= minimum allowed stepsize "
                    "hmin=%e\nStepsize hmin will be forced and given error "
                    "bounds may become invalid.\n",
-                   red("Warning:").c_str(), hnext_, hmin_);
+                   color_string::red("Warning:").c_str(), hnext_, hmin_);
         }
         if (hnext_ >= hmax_) {
             hnext_ = hmax_;
@@ -43,7 +43,7 @@ bool Controller::success(const double err, double& h) {
                    "stepsize hnext=%e >= maximum allowed stepsize "
                    "hmax=%e\nStepsize will be limited to hmax to preserve "
                    "given error bounds.\n",
-                   red("Warning:").c_str(), hnext_, hmax_);
+                   color_string::red("Warning:").c_str(), hnext_, hmax_);
         }
         errold_ = std::max(err, 1.0e-4); // Why?
         reject_ = false;
@@ -57,7 +57,7 @@ bool Controller::success(const double err, double& h) {
             counter_hmin_++;
             printf("%s Runge Kutta Adaptive Stepsize Controller: hmin=%e "
                    "reached in else, error bounds may be invalid.\n",
-                   red("Warning:").c_str(), hmin_);
+                   color_string::red("Warning:").c_str(), hmin_);
             return true;
         }
         if (h >= hmax_) {
@@ -66,7 +66,7 @@ bool Controller::success(const double err, double& h) {
             printf("%s Runge Kutta Adaptive Stepsize Controller: hmax=%e "
                    "reached in else.\n Stepsize is limited to hmax to preserve "
                    "error bounds.\n",
-                   red("Warning:").c_str(), hmax_);
+                   color_string::red("Warning:").c_str(), hmax_);
             return true;
         }
         reject_ = true;

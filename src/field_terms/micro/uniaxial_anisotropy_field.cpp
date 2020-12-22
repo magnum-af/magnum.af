@@ -5,7 +5,7 @@
 #include "micro/uniaxial_anisotropy_field.hpp"
 #include "util.hpp"
 #include "util/func.hpp"
-#include "util/misc.hpp" // Warning()
+#include "util/color_string.hpp" // color_string::warning()
 
 namespace magnumafcpp {
 
@@ -19,7 +19,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
                "dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 }
 
@@ -29,7 +29,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array 
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
                "dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 }
 
@@ -46,7 +46,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long in
         printf("%s UniaxialAnisotropyField You are using legacy dimension [nx, "
                "ny, nz, 3] for Ku1, please now use scalar field dimensions "
                "[nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 }
 
@@ -65,7 +65,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double 
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
                "dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 }
 

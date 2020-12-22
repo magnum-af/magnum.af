@@ -1,7 +1,7 @@
 #include "adaptive_runge_kutta.hpp"
 #include "math.hpp"
 #include "util/func.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 
 namespace magnumafcpp {
 
@@ -26,7 +26,7 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controlle
     } else {
         printf("%s Integration method not found. Valid arguments are 'RKF45' "
                "(default) , 'DP45', 'BS45', 'DP78', 'BS23'\n",
-               bold_red("Error:").c_str());
+               color_string::bold_red("Error:").c_str());
         exit(EXIT_FAILURE);
     }
 }

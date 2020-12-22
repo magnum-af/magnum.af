@@ -1,7 +1,7 @@
 #include "micro/exchange_field_pbc.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 #include <optional>
 
 namespace magnumafcpp {
@@ -32,7 +32,7 @@ inline auto lapA(const double A_i, const double A_pm, const double dxyz) {
 // af::array PBC_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
 af::array PBC_CSR_matrix(const std::optional<af::array>& A_exchange_field, const std::optional<double> A_scalar,
                          const Mesh& mesh, const bool verbose) {
-    // printf("%s ExchangeFieldPBC::PBC_CSR_matrix unit testing not finished!\n", Warning());
+    // printf("%s ExchangeFieldPBC::PBC_CSR_matrix unit testing not finished!\n", color_string::warning());
     // fflush(stdout);
     af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -95,7 +95,7 @@ af::array PBC_CSR_matrix(const std::optional<af::array>& A_exchange_field, const
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(),
+               color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
         fflush(stdout);
     }
@@ -108,7 +108,7 @@ af::array PBC_CSR_matrix(const std::optional<af::array>& A_exchange_field, const
 af::array PBC_COO_matrix(const std::optional<af::array>& A_exchange_field, const std::optional<double> A_scalar,
                          const Mesh& mesh, const bool verbose) {
     // af::array PBC_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
-    // printf("%s ExchangeFieldPBC::PBC_COO_matrix unit testing not finished!\n", Warning());
+    // printf("%s ExchangeFieldPBC::PBC_COO_matrix unit testing not finished!\n", color_string::warning());
     // fflush(stdout);
     af::timer t = af::timer::start();
     const std::size_t dimension = mesh.nx * mesh.ny * mesh.nz * 3;
@@ -175,7 +175,7 @@ af::array PBC_COO_matrix(const std::optional<af::array>& A_exchange_field, const
     if (verbose) {
         printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted "
                "COO to CSR in %f [s]. Sparsity = %f\n",
-               Info(), time, time_convert,
+               color_string::info(), time, time_convert,
                static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }

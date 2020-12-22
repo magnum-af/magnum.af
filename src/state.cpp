@@ -1,6 +1,6 @@
 #include "state.hpp"
 #include "func.hpp"
-#include "misc.hpp"
+#include "util/color_string.hpp"
 #include "vtk_IO.hpp"
 #include <iomanip>
 
@@ -66,7 +66,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
         if (verbose) {
             printf("%s in state.cpp: initial m has values with zero norm, "
                    "building Ms_field array\n",
-                   Info());
+                   color_string::info());
         }
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
@@ -91,7 +91,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 //        max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz
 //        > max_allowed_cellsize )){
 //            if( ! mute_warning) printf("%s State::check_discretization: cell
-//            size is too large (greater than sqrt(A/Ku1)\n", Warning());
+//            size is too large (greater than sqrt(A/Ku1)\n", color_string::warning());
 //        }
 //    }
 //}
@@ -104,7 +104,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 //    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
 //        printf("%s State::check_m_norm: non-zero parts of the magnetization are "
 //               "not normalized to 1! Results won't be physically meaningfull.\n",
-//               Warning());
+//               color_string::warning());
 //    }
 //}
 
@@ -128,7 +128,7 @@ State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute
     if (Ms_field.dims(3) == 3) {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
                "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 
     normalize_inplace(this->m);
@@ -147,7 +147,7 @@ State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
     if (Ms_field.dims(3) == 3) {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
                "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
 
     normalize_inplace(this->m);
@@ -173,7 +173,7 @@ State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mu
     if ((*(new af::array(*((void**)Ms_field_ptr)))).dims(3) == 3) {
         printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
                "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               Warning());
+               color_string::warning());
     }
     normalize_inplace(this->m);
 }

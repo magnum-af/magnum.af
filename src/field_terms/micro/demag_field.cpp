@@ -1,6 +1,6 @@
 #include "field_terms/micro/demag_field.hpp"
 #include "func.hpp"
-#include "misc.hpp"
+#include "util/color_string.hpp"
 #include "util/af_overloads.hpp"
 #include "util/cache_manager.hpp"
 #include "util/prime_factors.hpp"
@@ -20,19 +20,19 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads);
 af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
     af::timer demagtimer = af::timer::start();
     if (verbose) {
-        printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", Info(), nthreads,
+        printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
                std::thread::hardware_concurrency());
     }
     auto result = calculate_N(mesh, nthreads);
     if (verbose) {
-        printf("%s Initialized demag tensor in %f [af-s]\n", Info(), af::timer::stop(demagtimer));
+        printf("%s Initialized demag tensor in %f [af-s]\n", color_string::info(), af::timer::stop(demagtimer));
     }
     return result;
 }
 
-void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
+void warn_if_maxprime_gt_13(std::size_t n, std::string ni) {
     if (util::max_of_prime_factors(n) > 13) {
-        std::cout << Warning() << " DemagField::DemagField: maximum prime factor of mesh." << ni << "=" << n << " is "
+        std::cout << color_string::warning() << " DemagField::DemagField: maximum prime factor of mesh." << ni << "=" << n << " is "
                   << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
                      "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
@@ -40,10 +40,10 @@ void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
                   << std::endl;
     }
 }
-void warn_if_maxprime_lt_13(const Mesh& mesh) {
-    warn_if_maxprime_lt_13(mesh.nx, "nx");
-    warn_if_maxprime_lt_13(mesh.ny, "ny");
-    warn_if_maxprime_lt_13(mesh.nz, "nz");
+void warn_if_maxprime_gt_13(const Mesh& mesh) {
+    warn_if_maxprime_gt_13(mesh.nx, "nx");
+    warn_if_maxprime_gt_13(mesh.ny, "ny");
+    warn_if_maxprime_gt_13(mesh.nz, "nz");
 }
 
 std::string to_string(const Mesh& mesh) {
@@ -54,7 +54,7 @@ std::string to_string(const Mesh& mesh) {
 
 af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
     if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
-        warn_if_maxprime_lt_13(mesh);
+        warn_if_maxprime_gt_13(mesh);
     }
 
     if (caching == false) {

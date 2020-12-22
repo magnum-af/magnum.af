@@ -4,7 +4,7 @@
 #include "field_terms/field_term.hpp"
 #include "math.hpp"
 #include "state.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 #include <algorithm>
 #include <iomanip>
 #include <list>
@@ -20,7 +20,7 @@ LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, 
 
 void abort_if_size_is_zero(std::size_t size) {
     if (size == 0) {
-        std::cout << bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
+        std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
                               "_llgterms == 0. Please add at least one term to "
                               "LBFGS_Minimizer.fieldterms_! Aborting...")
                   << std::endl;
@@ -162,11 +162,11 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         // grad, -q, tolf);
         if (rate == 0.0) {
             if (verbose_ > 0) {
-                std::cout << red("Warning: LBFGS_Minimizer: linesearch returned rate "
+                std::cout << color_string::red("Warning: LBFGS_Minimizer: linesearch returned rate "
                                  "== 0.0. This should not happen, elaborate! (maybe "
                                  "m is already relaxed?)")
                           << std::endl;
-                // std::cout << bold_red("Error: LBFGS_Minimizer: linesearch
+                // std::cout << color_string::bold_red("Error: LBFGS_Minimizer: linesearch
                 // failed, rate == 0.0") << std::endl;
             }
             // TODO//exit(0);// why exit with 0 (= sucess)? maybe change to
@@ -201,7 +201,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         double ys = mydot(y, s);
         if (ys <= eps2 * mynorm(y) * mynorm(s)) { // Dennis, Schnabel 9.4.1
             if (verbose_ > 2) {
-                std::cout << iter << red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
+                std::cout << iter << color_string::red("WARNING: LBFGS_Minimizer:: skipping update!") << std::endl;
             }
         } else {
             if (iter < m) {
@@ -275,7 +275,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
     if (dginit >= 0.0) {
         // no descent direction
         // TODO: handle this case
-        std::cout << red("WARNING: LBFGS_Minimizer:: no descent ") << dginit << std::endl;
+        std::cout << color_string::red("WARNING: LBFGS_Minimizer:: no descent ") << dginit << std::endl;
         return -1;
     }
 
@@ -402,7 +402,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         }
     }
 
-    std::cout << bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
+    std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
                           "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
               << std::endl;
     exit(0);

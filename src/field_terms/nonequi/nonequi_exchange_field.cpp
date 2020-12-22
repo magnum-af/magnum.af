@@ -1,7 +1,7 @@
 #include "nonequi/nonequi_exchange_field.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/misc.hpp"
+#include "util/color_string.hpp"
 
 namespace magnumafcpp {
 
@@ -23,7 +23,7 @@ unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Nonequ
 }
 
 af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
+    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
 
@@ -131,7 +131,7 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
     if (verbose) {
         printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted "
                "COO to CSR in %f [s]. Sparsity = %f\n",
-               Info(), time, time_convert,
+               color_string::info(), time, time_convert,
                static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }
@@ -141,7 +141,7 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", Warning());
+    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
 
@@ -304,7 +304,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
     if (verbose) {
         printf("%s Initialized sparse COO exchange matrix in %f [s]. Converted "
                "COO to CSR in %f [s]. Sparsity = %f\n",
-               Info(), time, time_convert,
+               color_string::info(), time, time_convert,
                static_cast<double>(af::sparseGetNNZ(matr_CSR)) / static_cast<double>(matr_CSR.elements()));
         fflush(stdout);
     }
@@ -313,7 +313,7 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
 }
 
 af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
+    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
 
@@ -420,7 +420,7 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
     if (verbose)
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(),
+               color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
     return result;
 }
@@ -428,7 +428,7 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", Warning());
+    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
     fflush(stdout);
     af::timer t = af::timer::start();
 
@@ -601,7 +601,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
-               Info(), t.stop(),
+               color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
         fflush(stdout);
     }
