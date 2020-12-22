@@ -3,12 +3,12 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-namespace magnumafcpp {
-namespace util {
+
+namespace magnumafcpp::util {
 
 /// Returns all prime factors of a given number n
 /// Special cases: n == 0 returns {0}, n == 1 returns {1}
-std::vector<unsigned> inline prime_factors(unsigned n) {
+inline std::vector<unsigned> prime_factors(unsigned n) {
     if (n == 0) {
         return {0};
     } else if (n == 1) {
@@ -39,10 +39,9 @@ std::vector<unsigned> inline prime_factors(unsigned n) {
     }
 }
 
-unsigned inline max_of_prime_factors(unsigned n) {
+inline unsigned max_of_prime_factors(unsigned n) {
     auto primes = prime_factors(n);
     return *std::max_element(primes.begin(), primes.end());
 }
 
-} // namespace util
-} // namespace magnumafcpp
+} // namespace magnumafcpp::util

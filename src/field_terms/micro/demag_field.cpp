@@ -32,14 +32,15 @@ af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
 
 void warn_if_maxprime_gt_13(std::size_t n, std::string ni) {
     if (util::max_of_prime_factors(n) > 13) {
-        std::cout << color_string::warning() << " DemagField::DemagField: maximum prime factor of mesh." << ni << "=" << n << " is "
-                  << util::max_of_prime_factors(n)
+        std::cout << color_string::warning() << "DemagField::DemagField: maximum prime factor of mesh." << ni << "="
+                  << n << " is " << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
                      "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
                      "where max_prime(n) <= 13."
                   << std::endl;
     }
 }
+
 void warn_if_maxprime_gt_13(const Mesh& mesh) {
     warn_if_maxprime_gt_13(mesh.nx, "nx");
     warn_if_maxprime_gt_13(mesh.ny, "ny");

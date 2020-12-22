@@ -1,5 +1,7 @@
 #include "field_terms/micro/demag_field_pbc.hpp"
 #include "util/af_overloads.hpp"
+#include "util/color_string.hpp"
+#include "util/prime_factors.hpp"
 #include <cmath>
 
 namespace magnumafcpp {
@@ -27,7 +29,10 @@ auto fftC2R_dim2switch = [](const af::array& h_fft) {
     }
 };
 
+inline void warn_if_maxprime_gt_13_opencl(const Mesh& mesh);
+
 af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
+    warn_if_maxprime_gt_13_opencl(state.mesh);
     const auto m_fft = calc_m_mfft(state);
     const auto nx_full = state.mesh.nx;
     const auto nx = m_fft.dims(0); // nx = nx_full / 2 + 1
@@ -62,4 +67,24 @@ af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
     const auto h_fft = af::join(3, h_fft_x, h_fft_y, h_fft_z);
     return fftC2R_dim2switch(h_fft);
 }
+
+inline void warn_if_maxprime_gt_13_opencl(std::size_t n, std::string ni) {
+    if (util::max_of_prime_factors(n) > 13) {
+        std::cout << color_string::warning() << "DemagFieldPBC: maximum prime factor of 'mesh." << ni << "'=" << n
+                  << " is " << util::max_of_prime_factors(n)
+                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
+                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
+                     "where max_prime(n) <= 13."
+                  << std::endl;
+    }
+}
+
+inline void warn_if_maxprime_gt_13_opencl(const Mesh& mesh) {
+    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
+        warn_if_maxprime_gt_13_opencl(mesh.nx, "nx");
+        warn_if_maxprime_gt_13_opencl(mesh.ny, "ny");
+        warn_if_maxprime_gt_13_opencl(mesh.nz, "nz");
+    }
+}
+
 } // namespace magnumafcpp
