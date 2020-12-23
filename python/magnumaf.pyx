@@ -104,7 +104,7 @@ def parse():
             'dir',
             type=str,
             nargs='?',
-            default='magnum.af_output/',
+            default='output_' + os.path.basename(os.path.splitext(sys.argv[0])[0]) + '/',
             help='Output directory',
             )
     parser.add_argument(
@@ -120,9 +120,9 @@ def parse():
             help='Optional arguments to be used in the simulation script.',
             )
     parser.add_argument(
-            '-f',
-            '--force',
-            help='Forces output do be written into dir, even if it alreay exists. This might overwrite files.',
+            '-n',
+            '--no_overwrite',
+            help='Abort program if output dir exists, preventing files to be overwritten.',
             action='store_true'
             )
 
@@ -150,11 +150,11 @@ def parse():
     if os.path.exists(args.dir):
         if args.verbose:
             print("Output path '", args.dir, "' exists")
-        if args.force:
-            if args.verbose:
-                print("Forcing write into existing directory '", args.dir, "'")
+        if args.no_overwrite:
+            raise RuntimeError("Output directory exists, aborting! Disable -n to overwrite.")
         else:
-            raise RuntimeError("Output directory exists! Use -f to overwrite!")
+            if args.verbose:
+                print("Writing into existing directory '", args.dir, "'")
     else:
         if args.verbose:
             print("Dir does not exist, creating directory '", args.dir, "'")
