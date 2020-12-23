@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <iostream>
 
+//! C++ magnum.af library
 namespace magnumafcpp {
 
 using std::size_t;
@@ -23,6 +24,7 @@ inline std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
     return os;
 }
 
+//! Mesh class helper functions
 namespace mesh {
 // Dimension for scalar field on mesh, i.e. af::dim4(nx, ny, nz, 1)
 inline af::dim4 dims_s(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 1); }
