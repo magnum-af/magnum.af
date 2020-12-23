@@ -6,6 +6,7 @@
 
 namespace magnumafcpp {
 
+namespace {
 af::array calc_m_mfft(const State& state) {
     if (state.mesh.nz == 1) {
         if (state.Ms_field.isempty()) {
@@ -29,7 +30,26 @@ auto fftC2R_dim2switch = [](const af::array& h_fft) {
     }
 };
 
-inline void warn_if_maxprime_gt_13_opencl(const Mesh& mesh);
+void warn_if_maxprime_gt_13_opencl(std::size_t n, std::string ni) {
+    if (util::max_of_prime_factors(n) > 13) {
+        std::cout << color_string::warning() << "DemagFieldPBC: maximum prime factor of 'mesh." << ni << "'=" << n
+                  << " is " << util::max_of_prime_factors(n)
+                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
+                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
+                     "where max_prime(n) <= 13."
+                  << std::endl;
+    }
+}
+
+void warn_if_maxprime_gt_13_opencl(const Mesh& mesh) {
+    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
+        warn_if_maxprime_gt_13_opencl(mesh.nx, "nx");
+        warn_if_maxprime_gt_13_opencl(mesh.ny, "ny");
+        warn_if_maxprime_gt_13_opencl(mesh.nz, "nz");
+    }
+}
+
+} // namespace
 
 af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
     warn_if_maxprime_gt_13_opencl(state.mesh);
@@ -67,24 +87,4 @@ af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
     const auto h_fft = af::join(3, h_fft_x, h_fft_y, h_fft_z);
     return fftC2R_dim2switch(h_fft);
 }
-
-inline void warn_if_maxprime_gt_13_opencl(std::size_t n, std::string ni) {
-    if (util::max_of_prime_factors(n) > 13) {
-        std::cout << color_string::warning() << "DemagFieldPBC: maximum prime factor of 'mesh." << ni << "'=" << n
-                  << " is " << util::max_of_prime_factors(n)
-                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
-                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
-                     "where max_prime(n) <= 13."
-                  << std::endl;
-    }
-}
-
-inline void warn_if_maxprime_gt_13_opencl(const Mesh& mesh) {
-    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
-        warn_if_maxprime_gt_13_opencl(mesh.nx, "nx");
-        warn_if_maxprime_gt_13_opencl(mesh.ny, "ny");
-        warn_if_maxprime_gt_13_opencl(mesh.nz, "nz");
-    }
-}
-
 } // namespace magnumafcpp

@@ -5,6 +5,7 @@
 
 namespace magnumafcpp {
 
+// Exporting functions for unit tests
 namespace newell {
 double Nxx(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz);
 double Nxy(const int ix, const int iy, const int iz, const double dx, const double dy, const double dz);
@@ -17,7 +18,7 @@ class DemagField : public MicroTerm {
     ///< Get copy of array storing the Fourier transfrom of the demag tensor.
     af::array get_Nfft() const { return Nfft; }
     // For wrapping
-    void print_Nfft() const;
+    void print_Nfft() const { af::print("Nfft=", Nfft); }
 
   private:
     mutable af::array Nfft; // mutable for c64-c32 conversion

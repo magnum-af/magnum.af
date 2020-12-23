@@ -9,126 +9,12 @@
 
 namespace magnumafcpp {
 
+namespace {
 // Expanded cell sizes for demag FFT
-inline unsigned nx_exp(unsigned nx) { return 2 * nx; }
-inline unsigned ny_exp(unsigned ny) { return 2 * ny; }
-inline unsigned nz_exp(unsigned nz) { return (nz == 1) ? 1 : 2 * nz; }
-
-void DemagField::print_Nfft() const { af::print("Nfft=", Nfft); }
-
-af::array calculate_N(const Mesh& mesh, unsigned nthreads);
-af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
-    af::timer demagtimer = af::timer::start();
-    if (verbose) {
-        printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
-               std::thread::hardware_concurrency());
-    }
-    auto result = calculate_N(mesh, nthreads);
-    if (verbose) {
-        printf("%s Initialized demag tensor in %f [af-s]\n", color_string::info(), af::timer::stop(demagtimer));
-    }
-    return result;
-}
-
-void warn_if_maxprime_gt_13(std::size_t n, std::string ni) {
-    if (util::max_of_prime_factors(n) > 13) {
-        std::cout << color_string::warning() << "DemagField::DemagField: maximum prime factor of mesh." << ni << "="
-                  << n << " is " << util::max_of_prime_factors(n)
-                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
-                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
-                     "where max_prime(n) <= 13."
-                  << std::endl;
-    }
-}
-
-void warn_if_maxprime_gt_13(const Mesh& mesh) {
-    warn_if_maxprime_gt_13(mesh.nx, "nx");
-    warn_if_maxprime_gt_13(mesh.ny, "ny");
-    warn_if_maxprime_gt_13(mesh.nz, "nz");
-}
-
-std::string to_string(const Mesh& mesh) {
-    return "Nfft_n0exp_" + std::to_string(nx_exp(mesh.nx)) + "_n1exp_" + std::to_string(ny_exp(mesh.ny)) + "_n2exp_" +
-           std::to_string(nz_exp(mesh.nz)) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" +
-           std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
-}
-
-af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
-    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
-        warn_if_maxprime_gt_13(mesh);
-    }
-
-    if (caching == false) {
-        return calculate_N(mesh, verbose, nthreads);
-    } else {
-        util::CacheManager cm{verbose};
-        const std::string nfft_id = to_string(mesh);
-        auto optional_Nfft = cm.get_array_if_existent(nfft_id);
-        if (optional_Nfft) {
-            return optional_Nfft.value();
-        } else {
-            auto result = calculate_N(mesh, verbose, nthreads);
-            cm.write_array(result, nfft_id);
-            return result;
-        }
-    }
-}
-
-DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
-    : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
-                                   in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
-
-af::array DemagField::impl_H_in_Apm(const State& state) const {
-    // Converting Nfft from c64 to c32 once if state.m.type() == f32
-    if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
-        std::cout << "DemagField::h: state.m is of type " << state.m.type() << ", converting Nfft type from "
-                  << Nfft.type() << " to " << af::dtype::c32 << std::endl;
-        Nfft = Nfft.as(af::dtype::c32);
-    }
-
-    // FFT with zero-padding of the m field
-    af::array mfft;
-    if (nz_exp(state.mesh.nz) == 1) {
-        if (state.Ms_field.isempty())
-            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-        else
-            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-    } else {
-        if (state.Ms_field.isempty())
-            mfft = af::fftR2C<3>(state.Ms * state.m,
-                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-        else
-            mfft = af::fftR2C<3>(state.Ms_field * state.m,
-                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-    }
-
-    // Pointwise product
-    af::array hfft =
-        af::array(nx_exp(state.mesh.nx) / 2 + 1, ny_exp(state.mesh.ny), nz_exp(state.mesh.nz), 3, Nfft.type());
-    hfft(af::span, af::span, af::span, 0) =
-        Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 2);
-    hfft(af::span, af::span, af::span, 1) =
-        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 2);
-    hfft(af::span, af::span, af::span, 2) =
-        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 0) +
-        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1) +
-        Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
-
-    // IFFT reversing padding
-    af::array h_field;
-    if (nz_exp(state.mesh.nz) == 1) {
-        h_field = af::fftC2R<2>(hfft);
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
-    } else {
-        h_field = af::fftC2R<3>(hfft);
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
-                       af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
-    }
-}
+unsigned nx_exp(unsigned nx) { return 2 * nx; }
+unsigned ny_exp(unsigned ny) { return 2 * ny; }
+unsigned nz_exp(unsigned nz) { return (nz == 1) ? 1 : 2 * nz; }
+} // namespace
 
 namespace newell {
 double f(double x, double y, double z) {
@@ -226,6 +112,7 @@ void setup_N(const Mesh& mesh, std::vector<double>& N, unsigned ix_start, unsign
 }
 } // namespace newell
 
+namespace {
 af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
     std::vector<double> N_values(nx_exp(mesh.nx) * ny_exp(mesh.ny) * nz_exp(mesh.nz) * 6);
     std::vector<std::thread> t;
@@ -250,4 +137,119 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
     }
     return Naf;
 }
+
+af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
+    af::timer demagtimer = af::timer::start();
+    if (verbose) {
+        printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
+               std::thread::hardware_concurrency());
+    }
+    auto result = calculate_N(mesh, nthreads);
+    if (verbose) {
+        printf("%s Initialized demag tensor in %f [af-s]\n", color_string::info(), af::timer::stop(demagtimer));
+    }
+    return result;
+}
+
+void warn_if_maxprime_gt_13(std::size_t n, std::string ni) {
+    if (util::max_of_prime_factors(n) > 13) {
+        std::cout << color_string::warning() << "DemagField::DemagField: maximum prime factor of mesh." << ni << "="
+                  << n << " is " << util::max_of_prime_factors(n)
+                  << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
+                     "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
+                     "where max_prime(n) <= 13."
+                  << std::endl;
+    }
+}
+
+void warn_if_maxprime_gt_13(const Mesh& mesh) {
+    warn_if_maxprime_gt_13(mesh.nx, "nx");
+    warn_if_maxprime_gt_13(mesh.ny, "ny");
+    warn_if_maxprime_gt_13(mesh.nz, "nz");
+}
+
+std::string to_string(const Mesh& mesh) {
+    return "Nfft_n0exp_" + std::to_string(nx_exp(mesh.nx)) + "_n1exp_" + std::to_string(ny_exp(mesh.ny)) + "_n2exp_" +
+           std::to_string(nz_exp(mesh.nz)) + "_dx_" + std::to_string(1e9 * mesh.dx) + "_dy_" +
+           std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
+}
+
+af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
+    if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
+        warn_if_maxprime_gt_13(mesh);
+    }
+
+    if (caching == false) {
+        return calculate_N(mesh, verbose, nthreads);
+    } else {
+        util::CacheManager cm{verbose};
+        const std::string nfft_id = to_string(mesh);
+        auto optional_Nfft = cm.get_array_if_existent(nfft_id);
+        if (optional_Nfft) {
+            return optional_Nfft.value();
+        } else {
+            auto result = calculate_N(mesh, verbose, nthreads);
+            cm.write_array(result, nfft_id);
+            return result;
+        }
+    }
+}
+} // namespace
+
+DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
+    : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
+                                   in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
+
+af::array DemagField::impl_H_in_Apm(const State& state) const {
+    // Converting Nfft from c64 to c32 once if state.m.type() == f32
+    if (Nfft.type() == af::dtype::c64 and state.m.type() == af::dtype::f32) {
+        std::cout << "DemagField::h: state.m is of type " << state.m.type() << ", converting Nfft type from "
+                  << Nfft.type() << " to " << af::dtype::c32 << std::endl;
+        Nfft = Nfft.as(af::dtype::c32);
+    }
+
+    // FFT with zero-padding of the m field
+    af::array mfft;
+    if (nz_exp(state.mesh.nz) == 1) {
+        if (state.Ms_field.isempty())
+            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
+        else
+            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
+    } else {
+        if (state.Ms_field.isempty())
+            mfft = af::fftR2C<3>(state.Ms * state.m,
+                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
+        else
+            mfft = af::fftR2C<3>(state.Ms_field * state.m,
+                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
+    }
+
+    // Pointwise product
+    af::array hfft =
+        af::array(nx_exp(state.mesh.nx) / 2 + 1, ny_exp(state.mesh.ny), nz_exp(state.mesh.nz), 3, Nfft.type());
+    hfft(af::span, af::span, af::span, 0) =
+        Nfft(af::span, af::span, af::span, 0) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 2);
+    hfft(af::span, af::span, af::span, 1) =
+        Nfft(af::span, af::span, af::span, 1) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 3) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 2);
+    hfft(af::span, af::span, af::span, 2) =
+        Nfft(af::span, af::span, af::span, 2) * mfft(af::span, af::span, af::span, 0) +
+        Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1) +
+        Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
+
+    // IFFT reversing padding
+    af::array h_field;
+    if (nz_exp(state.mesh.nz) == 1) {
+        h_field = af::fftC2R<2>(hfft);
+        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
+    } else {
+        h_field = af::fftC2R<3>(hfft);
+        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
+                       af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
+    }
+}
+
 } // namespace magnumafcpp
