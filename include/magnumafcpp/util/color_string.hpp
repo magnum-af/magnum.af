@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-///> Colorizing std::string primarily std::cout.
+///> Colorizing strings primarily for cout.
 namespace magnumafcpp::color_string {
 
 ///> Red is for warnings.
