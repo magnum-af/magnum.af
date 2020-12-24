@@ -1,5 +1,5 @@
 #include "field_terms/micro/cubic_anisotropy_field.hpp"
-#include "func.hpp"
+#include "math.hpp"
 #include "util.hpp"
 namespace magnumafcpp {
 
@@ -22,7 +22,7 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
 CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array, af::array c1,
                                            af::array c2)
     : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1(c1), c2(c2),
-      c3(cross4(this->c1.array_vector.value(), this->c2.array_vector.value())) {
+      c3(math::cross4(this->c1.array_vector.value(), this->c2.array_vector.value())) {
     // check input vectors c1, c2
     const double precision = 1e-12;
     const double max_abs_c1_c2_dot =

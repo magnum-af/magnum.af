@@ -225,7 +225,7 @@ cdef extern from "solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
         LBFGS_Minimizer(vector[unique_ptr[FieldTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
         double Minimize(State& state);
 
-cdef extern from "func.hpp" namespace "magnumafcpp":
+cdef extern from "util/func.hpp" namespace "magnumafcpp":
     cdef cppclass WrappedArray:
         WrappedArray(array);
         WrappedArray(long int array_ptr);
@@ -260,6 +260,6 @@ cdef extern from "<array>" namespace "std" nogil:
     double_array3() except+
     double& operator[](size_t)
 
-cdef extern from "func.hpp" namespace "magnumafcpp":
+cdef extern from "util/func.hpp" namespace "magnumafcpp":
     double_array3 spacial_mean_in_region(long int vectorfield, long int region)
 

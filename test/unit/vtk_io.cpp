@@ -1,5 +1,5 @@
 #include "vtk_IO.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>
 

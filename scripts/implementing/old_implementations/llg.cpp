@@ -49,20 +49,20 @@ array LLG::fdmdt(const array& m, const array& heff) {
     timer_fdmdt = timer::start();
     if (fdmdt_dissipation_term_only) {
         dmdt = -state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
-               cross4(m, cross4(m, heff));
+               math::cross4(m, math::cross4(m, heff));
     } else {
-        dmdt = -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, heff) -
+        dmdt = -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * math::cross4(m, heff) -
                state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) *
-                   cross4(m, cross4(m, heff));
+                   math::cross4(m, math::cross4(m, heff));
     }
     time_fdmdt += af::timer::stop(timer_fdmdt);
     return dmdt;
 }
 
 array LLG::fdmdtminimal(array m, array heff) { // array LLG::fdmdt(array& m, array& heff){
-    dmdt = cross4(m, heff);
-    return -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, heff) -
-           state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * cross4(m, dmdt);
+    dmdt = math::cross4(m, heff);
+    return -state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * math::cross4(m, heff) -
+           state0.material.alpha * state0.material.gamma / (1. + pow(state0.material.alpha, 2)) * math::cross4(m, dmdt);
 }
 
 // Calculation of effective field
@@ -944,25 +944,25 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 // array LLG::llgstepEEold(array& m, double dt){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m);
-//    crosstemp  =  cross4(m, heff);
+//    crosstemp  =  math::cross4(m, heff);
 //    array dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) *
-//    cross4(m, heff) -
+//    math::cross4(m, heff) -
 //    state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,
-//    2)) * cross4(m, crosstemp); m += dt * dmdt;
+//    2)) * math::cross4(m, crosstemp); m += dt * dmdt;
 //    if(state0.state.material.afsync) af::sync();
 //    time_integrator += timer::stop(timer_integrator);
 ////    std::cout << "T: heff.dims " << heff.dims() << " m.dims " << m.dims() <<
-///" cross4 " << crosstemp.dims()  << std::endl;
+///" math::cross4 " << crosstemp.dims()  << std::endl;
 //    return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1, 3);
 //};
 // array LLG::llgstepEEold(array& m, double dt, array& h_zee){
 //    timer_integrator = timer::start();
 //    heff = Demag.solve(m) + Exch.solve(m) + h_zee;
-//    crosstemp  =  cross4(m, heff); array dmdt = -
-//    state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * cross4(m, heff)
+//    crosstemp  =  math::cross4(m, heff); array dmdt = -
+//    state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * math::cross4(m, heff)
 //    -
 //    state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,
-//    2)) * cross4(m, crosstemp); m += dt * dmdt;
+//    2)) * math::cross4(m, crosstemp); m += dt * dmdt;
 //    if(state0.state.material.afsync) af::sync(); time_integrator +=
 //    timer::stop(timer_integrator); return m/tile(sqrt(sum(m*m, 3)), 1, 1, 1,
 //    3); };
@@ -1317,7 +1317,7 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //}
 
 // Slower: factor 1.14 :relative 1.2 instead of 1.06
-// array LLG::cross4(array& a, array& b){
+// array LLG::math::cross4(array& a, array& b){
 //  a=reorder(a, 3, 0, 1, 2);
 //  //array a=reorder(ain, 3, 0, 1, 2);
 //  b=reorder(b, 3, 0, 1, 2);
@@ -1337,7 +1337,7 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //};
 
 // As well Slower
-// void LLG::cross4b(array& a, array& b){ // writes result into b
+// void LLG::math::cross4b(array& a, array& b){ // writes result into b
 //  b(span, span, span, 0)=a(span, span, span, 1)*b(span, span, span, 2)-a(span,
 //  span, span, 2)*b(span, span, span, 1); b(span, span, span, 1)=a(span, span,
 //  span, 2)*b(span, span, span, 0)-a(span, span, span, 0)*b(span, span, span,
@@ -1345,8 +1345,8 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  1)-a(span, span, span, 1)*b(span, span, span, 0);
 //};
 // With this in step
-//    cross4b(m, heff);
-//    cross4b(m, crosstemp);
+//    math::cross4b(m, heff);
+//    math::cross4b(m, crosstemp);
 //    dmdt = - state0.material.gamma/(1.+pow(state0.material.alpha, 2)) * heff -
 //    state0.material.alpha*state0.material.gamma/(1.+pow(state0.material.alpha,
 //    2)) * crosstemp;

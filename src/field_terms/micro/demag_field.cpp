@@ -1,5 +1,5 @@
 #include "field_terms/micro/demag_field.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include "util/color_string.hpp"
 #include "util/af_overloads.hpp"
 #include "util/cache_manager.hpp"

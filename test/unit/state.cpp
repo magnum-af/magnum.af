@@ -1,5 +1,5 @@
 #include "state.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

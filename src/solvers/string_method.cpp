@@ -1,6 +1,6 @@
 #include "solvers/string_method.hpp"
 #include "arrayfire.h"
-#include "func.hpp"
+#include "util/func.hpp"
 #include "vtk_IO.hpp"
 #include <cstdlib>
 #include <fstream>

@@ -1,5 +1,5 @@
 #include "field_terms/micro/dmi_field.hpp"
-#include "util/func.hpp"
+#include "math.hpp"
 
 namespace magnumafcpp {
 
@@ -175,11 +175,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
         const double c_n_x_surface_low[] = {-1, 0, 0};
         const af::array n_x_surface_low(1, 1, 1, 3, c_n_x_surface_low); // normal vector to the x-surface at
                                                                         // boundary with lower index i=0
-        const af::array n_DMxn_x_surf_low = tile(cross4(n_DM, n_x_surface_low), 1, state.m.dims(1), state.m.dims(2), 1);
+        const af::array n_DMxn_x_surf_low = tile(math::cross4(n_DM, n_x_surface_low), 1, state.m.dims(1), state.m.dims(2), 1);
         const af::array x_minus_1 =
             state.m(1, af::span, af::span, 0) +
             2 * state.mesh.dx * (this->D / (2 * A)) *
-                cross4(n_DMxn_x_surf_low, state.m(0, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
+                math::cross4(n_DMxn_x_surf_low, state.m(0, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
         hfield(0, af::span, af::span, 0) += -0.5 * x_minus_1 / state.mesh.dx; // Minus due to: (m_{i+1} - m_{i-1})/(
                                                                               // 2*dx )  with m_{i-1} being replaced
 
@@ -193,11 +193,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
                                          c_n_x_surface_high); // normal vector to the x-surface at boundary
                                                               // with higher index i=0
         const af::array n_DMxn_x_surf_high =
-            tile(cross4(n_DM, n_x_surface_high), 1, state.m.dims(1), state.m.dims(2), 1);
+            tile(math::cross4(n_DM, n_x_surface_high), 1, state.m.dims(1), state.m.dims(2), 1);
         const af::array x_i_plus_1 =
             state.m(-1, af::span, af::span, 0) +
             2 * state.mesh.dx * (this->D / (2 * A)) *
-                cross4(n_DMxn_x_surf_high, state.m(-1, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
+                math::cross4(n_DMxn_x_surf_high, state.m(-1, af::span, af::span, af::span))(af::span, af::span, af::span, 0);
         hfield(-1, af::span, af::span, 0) += 0.5 * x_i_plus_1 / state.mesh.dx;
     }
 
@@ -212,11 +212,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
         const double c_n_y_surface_low[] = {0, -1, 0};
         const af::array n_y_surface_low(1, 1, 1, 3, c_n_y_surface_low); // normal vector to the y-surface at
                                                                         // boundary with lower indey i=0
-        const af::array n_DMxn_y_surf_low = tile(cross4(n_DM, n_y_surface_low), state.m.dims(0), 1, state.m.dims(2), 1);
+        const af::array n_DMxn_y_surf_low = tile(math::cross4(n_DM, n_y_surface_low), state.m.dims(0), 1, state.m.dims(2), 1);
         const af::array y_minus_1 =
             state.m(af::span, 1, af::span, 1) +
             2 * state.mesh.dy * (this->D / (2 * A)) *
-                cross4(n_DMxn_y_surf_low, state.m(af::span, 0, af::span, af::span))(af::span, af::span, af::span, 1);
+                math::cross4(n_DMxn_y_surf_low, state.m(af::span, 0, af::span, af::span))(af::span, af::span, af::span, 1);
         hfield(af::span, 0, af::span, 1) += -0.5 * y_minus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/(
                                                                               // 2*dy )  with m_{i-1} being replaced
 
@@ -227,11 +227,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
                                          c_n_y_surface_high); // normal vector to the y-surface at boundary
                                                               // with higher indey i=0
         const af::array n_DMxn_y_surf_high =
-            tile(cross4(n_DM, n_y_surface_high), state.m.dims(0), 1, state.m.dims(2), 1);
+            tile(math::cross4(n_DM, n_y_surface_high), state.m.dims(0), 1, state.m.dims(2), 1);
         const af::array y_i_plus_1 =
             state.m(af::span, -1, af::span, 1) +
             2 * state.mesh.dy * (this->D / (2 * A)) *
-                cross4(n_DMxn_y_surf_high, state.m(af::span, -1, af::span, af::span))(af::span, af::span, af::span, 1);
+                math::cross4(n_DMxn_y_surf_high, state.m(af::span, -1, af::span, af::span))(af::span, af::span, af::span, 1);
         hfield(af::span, -1, af::span, 1) += 0.5 * y_i_plus_1 / state.mesh.dy; // Minus due to: (m_{i+1} - m_{i-1})/(
                                                                                // 2*dy )  with m_{i-1} being replaced
     }
@@ -247,11 +247,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
         const double c_n_z_surface_low[] = {0, 0, -1};
         const af::array n_z_surface_low(1, 1, 1, 3, c_n_z_surface_low); // normal vector to the z-surface at
                                                                         // boundary with lower index i=0
-        const af::array n_DMxn_z_surf_low = tile(cross4(n_DM, n_z_surface_low), state.m.dims(0), state.m.dims(1), 1, 1);
+        const af::array n_DMxn_z_surf_low = tile(math::cross4(n_DM, n_z_surface_low), state.m.dims(0), state.m.dims(1), 1, 1);
         const af::array z_minus_1 =
             state.m(af::span, af::span, 1, 2) +
             2 * state.mesh.dz * (this->D / (2 * A)) *
-                cross4(n_DMxn_z_surf_low, state.m(af::span, af::span, 0, af::span))(af::span, af::span, af::span, 2);
+                math::cross4(n_DMxn_z_surf_low, state.m(af::span, af::span, 0, af::span))(af::span, af::span, af::span, 2);
         hfield(af::span, af::span, 0, 2) += -0.5 * z_minus_1 / state.mesh.dz; // Minus due to: (m_{i+1} - m_{i-1})/(
                                                                               // 2*dz )  with m_{i-1} being replaced
 
@@ -265,11 +265,11 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
                                          c_n_z_surface_high); // normal vector to the z-surface at boundary
                                                               // with higher index i=0
         const af::array n_DMxn_z_surf_high =
-            tile(cross4(n_DM, n_z_surface_high), state.m.dims(0), state.m.dims(1), 1, 1);
+            tile(math::cross4(n_DM, n_z_surface_high), state.m.dims(0), state.m.dims(1), 1, 1);
         const af::array z_i_plus_1 =
             state.m(af::span, af::span, -1, 2) +
             2 * state.mesh.dz * (this->D / (2 * A)) *
-                cross4(n_DMxn_z_surf_high, state.m(af::span, af::span, -1, af::span))(af::span, af::span, af::span, 2);
+                math::cross4(n_DMxn_z_surf_high, state.m(af::span, af::span, -1, af::span))(af::span, af::span, af::span, 2);
         hfield(af::span, af::span, -1, 2) += 0.5 * z_i_plus_1 / state.mesh.dz;
     }
 }

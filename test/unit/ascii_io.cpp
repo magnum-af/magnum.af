@@ -1,5 +1,5 @@
 #include "ascii_io.hpp"
-#include "func.hpp" // for max_abs_diff
+#include "util/func.hpp" // for max_abs_diff
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

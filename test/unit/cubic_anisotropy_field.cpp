@@ -1,5 +1,5 @@
 #include "micro/cubic_anisotropy_field.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include "util.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

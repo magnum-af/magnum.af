@@ -1,5 +1,5 @@
 #include "solvers/cg_minimizer.hpp"
-#include "util/func.hpp"
+#include "math.hpp"
 #include "util/color_string.hpp"
 
 namespace magnumafcpp {
@@ -24,7 +24,7 @@ af::array CG_Minimizer::Heff(const State& state) const {
 std::pair<double, af::array> CG_Minimizer::EnergyAndGradient(const State& state) const {
     abort_on_empty_size(fieldterms);
     const auto [heff, energy] = fieldterm::Heff_in_Apm_and_E(fieldterms, state);
-    return {energy, 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff))};
+    return {energy, 1. / (constants::mu0 * state.Ms) * math::cross4(state.m, math::cross4(state.m, heff))};
 }
 
 void CG_Minimizer::Minimize(State& state) const {

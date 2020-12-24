@@ -1,5 +1,5 @@
 #include "state.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include "util/color_string.hpp"
 #include "vtk_IO.hpp"
 #include <iomanip>

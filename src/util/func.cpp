@@ -1,4 +1,4 @@
-#include "func.hpp"
+#include "util/func.hpp"
 
 namespace magnumafcpp {
 
@@ -37,26 +37,6 @@ void WrappedArray::set_array(long int array_ptr) {
 long int WrappedArray::get_array_addr() {
     af::array* a = new af::array(this->array);
     return (long int)a->get();
-}
-
-af::array cross4(const af::array& a, const af::array& b) {
-    af::array c = af::array(a.dims(0), a.dims(1), a.dims(2), 3, a.type());
-    c(af::span, af::span, af::span, 0) = a(af::span, af::span, af::span, 1) * b(af::span, af::span, af::span, 2) -
-                                         a(af::span, af::span, af::span, 2) * b(af::span, af::span, af::span, 1);
-    c(af::span, af::span, af::span, 1) = a(af::span, af::span, af::span, 2) * b(af::span, af::span, af::span, 0) -
-                                         a(af::span, af::span, af::span, 0) * b(af::span, af::span, af::span, 2);
-    c(af::span, af::span, af::span, 2) = a(af::span, af::span, af::span, 0) * b(af::span, af::span, af::span, 1) -
-                                         a(af::span, af::span, af::span, 1) * b(af::span, af::span, af::span, 0);
-    return c;
-}
-
-/// Cross product for vector fields of format [nx, ny, nz, 3]
-af::array cross4shift(const af::array& a, const af::array& b) {
-    af::array ashift = af::shift(a, 0, 0, 0, -1);
-    af::array ashift2 = af::shift(a, 0, 0, 0, -2);
-    af::array bshift = af::shift(b, 0, 0, 0, -2);
-    af::array bshift2 = af::shift(b, 0, 0, 0, -1);
-    return ashift * bshift - ashift2 * bshift2;
 }
 
 af::array dotproduct(const af::array& a, const af::array& b) { return sum(a * b, 3); }

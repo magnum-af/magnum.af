@@ -5,6 +5,7 @@
 #include "math.hpp"
 #include "state.hpp"
 #include "util/color_string.hpp"
+#include "util/func.hpp" // full inter product (TODO move to math namespace)
 #include <algorithm>
 #include <iomanip>
 #include <list>
@@ -30,13 +31,13 @@ void abort_if_size_is_zero(std::size_t size) {
 
 ///< Calculate gradient as m x (m x Heff), which is proportional to energy-dissipation term of the LLG
 af::array Gradient(const State& state, const af::array& heff) {
-    return cross4(state.m, cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
+    return math::cross4(state.m, math::cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
 }
 
 // Alternatives
 // af::array Gradient(const State& state, const af::array& heff) {
-//    return 1. / (constants::mu0 * state.Ms) * cross4(state.m, cross4(state.m, heff)); // NOTE: state.Ms must not be 0!
-//    return -equations::LLG_damping(1, state.m, cross4(state.m, heff)); // Also works, but is stuck at step 15 in
+//    return 1. / (constants::mu0 * state.Ms) * math::cross4(state.m, math::cross4(state.m, heff)); // NOTE: state.Ms must not be 0!
+//    return -equations::LLG_damping(1, state.m, math::cross4(state.m, heff)); // Also works, but is stuck at step 15 in
 //}
 
 std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {

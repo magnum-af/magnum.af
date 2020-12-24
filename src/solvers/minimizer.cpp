@@ -1,6 +1,6 @@
 #include "minimizer.hpp"
 #include "math.hpp"
-#include "util/func.hpp"
+#include "util/func.hpp" // TODO mv to math::
 #include <algorithm>
 #include <list>
 #include <memory>
@@ -26,7 +26,7 @@ af::array Minimizer::h(const State& state) const {
     return solution;
 }
 
-af::array Minimizer::dm(const State& state) const { return cross4(state.m, cross4(state.m, h(state))); }
+af::array Minimizer::dm(const State& state) const { return math::cross4(state.m, math::cross4(state.m, h(state))); }
 
 af::array Minimizer::m_next(const State& state, const double tau) const {
 
@@ -39,7 +39,7 @@ af::array Minimizer::m_next(const State& state, const double tau) const {
     const af::array Hy = H(af::span, af::span, af::span, 1);
     const af::array Hz = H(af::span, af::span, af::span, 2);
 
-    const af::array MxH = cross4(state.m, h(state));
+    const af::array MxH = math::cross4(state.m, h(state));
     const af::array N = 4 + tau * tau * dotproduct(MxH, MxH); // TODO check whether tau and N are scalars or
                                                               // scalar fields: N_i or N is sum((mhx, mxh)0,
                                                               // 1, 2, 3), i.e. constant for all indices

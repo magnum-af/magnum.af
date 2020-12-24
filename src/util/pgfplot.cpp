@@ -1,5 +1,5 @@
 #include "pgfplot.hpp"
-#include "func.hpp"
+#include "util/func.hpp"
 #include <fstream>
 #include <iostream>
 
