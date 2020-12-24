@@ -39,8 +39,6 @@ long int WrappedArray::get_array_addr() {
     return (long int)a->get();
 }
 
-af::array dotproduct(const af::array& a, const af::array& b) { return sum(a * b, 3); }
-
 /// Returns the value of array with only one element
 double afvalue(const af::array& a) {
     if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1) {

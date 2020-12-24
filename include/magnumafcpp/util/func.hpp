@@ -31,7 +31,6 @@ std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const
 std::array<double, 3> spacial_mean_in_region(long int vectorfield,
                                              long int region); // Wrapping only
 
-af::array dotproduct(const af::array& a, const af::array& b);
 af::array normalize(const af::array& a);
 af::array normalize_handle_zero_vectors(const af::array& a);
 void normalize_inplace(af::array& a);

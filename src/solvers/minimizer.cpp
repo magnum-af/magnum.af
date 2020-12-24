@@ -28,6 +28,11 @@ af::array Minimizer::h(const State& state) const {
 
 af::array Minimizer::dm(const State& state) const { return math::cross4(state.m, math::cross4(state.m, h(state))); }
 
+/// Element wise dot product over last af::array dimension
+namespace {
+af::array dotproduct(const af::array& a, const af::array& b) { return af::sum(a * b, 3); }
+} // namespace
+
 af::array Minimizer::m_next(const State& state, const double tau) const {
 
     const af::array Mx = state.m(af::span, af::span, af::span, 0);
