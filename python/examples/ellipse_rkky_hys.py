@@ -87,7 +87,7 @@ excharr = (geom == 1) * A
 mesh = Mesh(nx, ny, nz, dx, dy, dz)
 state = State(mesh, Ms, m = m_random_sphere(nx, ny, nz))
 #state = State(mesh, Ms, m = m_initi(nx, ny, nz))
-state.write_vti(args.dir + "m_init")
+state.write_vti(args.outdir + "m_init")
 
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
@@ -113,7 +113,7 @@ def hysteresis_factor(i, steps):
 
 
 # running hysteresis loop
-stream = open(args.dir + "m.dat", "w", buffering = 1)
+stream = open(args.outdir + "m.dat", "w", buffering = 1)
 stream.write("# Hext [T], mx, my, mz")
 for i in range(0, hys_steps + 1):
     extfield = hysteresis_factor(i, hys_steps) * ext_max_field
@@ -122,7 +122,7 @@ for i in range(0, hys_steps + 1):
         minimizer.minimize(state)
     else:
         llg.relax(state, precision = 1e-11, verbose = True)
-    state.write_vti(args.dir + "m_step_"+ str(i))
+    state.write_vti(args.outdir + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
     stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))

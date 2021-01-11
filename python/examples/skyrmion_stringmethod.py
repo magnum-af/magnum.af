@@ -48,7 +48,7 @@ def disk(nx, ny, nz, r = 0.5):
     return af.from_ndarray(m)
 
 state1 = State(mesh, Ms = p, m = disk(nx, ny, nz))
-state1.write_vti(args.dir + "m_init")
+state1.write_vti(args.outdir + "m_init")
 
 zee = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 zee[:, :, :, 2] = extfield
@@ -63,7 +63,7 @@ terms = [exch, dmi, ani, dip, ext]
 llg = LLGIntegrator(alpha = 1, terms = terms)
 
 print("relaxing 1ns")
-stream = open(args.dir+"m.dat", "w")
+stream = open(args.outdir+"m.dat", "w")
 timer = time.time()
 while state1.t < 1e-09:
     llg.step(state1)
@@ -71,15 +71,15 @@ while state1.t < 1e-09:
     stream.write("%e, %e, %e, %e\n" %(state1.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
 stream.close()
 print("relaxed in", time.time() - timer, "[s]")
-state1.write_vti(args.dir + "m_relaxed")
+state1.write_vti(args.outdir + "m_relaxed")
 
 # Initial magnetization configuration
 m2 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m2[:, :, :, 2] = 1
 state2 = State(mesh, Ms = p, m = m2)
-state2.write_vti(args.dir + "m_init")
+state2.write_vti(args.outdir + "m_init")
 print("relaxing 1ns")
-stream = open(args.dir+"m2.dat", "w")
+stream = open(args.outdir+"m2.dat", "w")
 timer = time.time()
 while state2.t < 1e-09:
     llg.step(state2)
@@ -87,7 +87,7 @@ while state2.t < 1e-09:
     stream.write("%e, %e, %e, %e\n" %(state2.t, mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()))
 stream.close()
 print("relaxed in", time.time() - timer, "[s]")
-state2.write_vti(args.dir + "m_relaxed")
+state2.write_vti(args.outdir + "m_relaxed")
 
 n_interp = 60
 string_dt = 5e-14
@@ -95,7 +95,7 @@ string_dt = 5e-14
 string = StringMethod(state1, [state1.m, state2.m], n_interp, string_dt, llg)
 # also works #string = StringMethod(state1, [state1, state2], n_interp, string_dt, llg)
 print("initialized string")
-dE = string.run(args.dir, verbose = False)
+dE = string.run(args.outdir, verbose = False)
 expected_result = 1.0453675101013472e-19
 print("dE[J]=", dE, "expected", expected_result)
 

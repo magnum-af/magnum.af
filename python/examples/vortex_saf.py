@@ -12,7 +12,7 @@ import time
 args = parse()
 af.info()
 start = time.time()
-filepath_const=args.dir
+filepath_const=args.outdir
 filepath=filepath_const
 
 # Physical dimensions in [m]

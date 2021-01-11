@@ -70,9 +70,9 @@ for iD in range(0, dn + 1):
                 if llg.accumulated_steps % print_steps_every == 0:
                     print('step={:d}, t[ns]={:1.6e}, mx={:1.6f}, my={:1.6f}, mz={:1.6f}'.format(llg.accumulated_steps, state.t * 1e9, mx, my, mz))
                 if llg.accumulated_steps % write_vti_every == 0:
-                    state.write_vti(args.dir + "m_iD" + str(iD) + '_iH' + str(iH) + "step_" + str(llg.accumulated_steps) )
+                    state.write_vti(args.outdir + "m_iD" + str(iD) + '_iH' + str(iH) + "step_" + str(llg.accumulated_steps) )
 
         # Relaxing
-        state.write_vti(args.dir + 'm_relaxed_iD' + str(iD) + '_iH' + str(iH))
+        state.write_vti(args.outdir + 'm_relaxed_iD' + str(iD) + '_iH' + str(iH))
         print('step', (iD * (dn + 1) + iH), '/', (dn + 1)**2 - 1 , " took ", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")

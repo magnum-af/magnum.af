@@ -33,7 +33,7 @@ llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")
-stream = open(args.dir +"m.dat", "w")
+stream = open(args.outdir +"m.dat", "w")
 timer = time.time()
 while state.t < inttime:
     llg.step(state)
@@ -61,4 +61,4 @@ stream.close()
 print("switched in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]")
 
-Util.plot(outputdir = args.dir, lines = ['u ($1 * 1e9):2 w l t "<mx>"', 'u ($1 * 1e9):3 w l t "<my>"', 'u ($1 * 1e9):4 w l t "<mz>"'])
+Util.plot(outputdir = args.outdir, lines = ['u ($1 * 1e9):2 w l t "<mx>"', 'u ($1 * 1e9):3 w l t "<my>"', 'u ($1 * 1e9):4 w l t "<mz>"'])

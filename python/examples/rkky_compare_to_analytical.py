@@ -52,7 +52,7 @@ m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m0[:, :, 0, 2] =-1.
 m0[:, :, 1, 2] = 1.
 state = State(mesh, Ms, m = m0)
-state.write_vti(args.dir + "m_init")
+state.write_vti(args.outdir + "m_init")
 
 
 RKKYarr = af.constant(RKKY, nx, ny, nz, 1, dtype=af.Dtype.f64)
@@ -79,7 +79,7 @@ def hysteresis_factor(i, steps):
 
 
 # running hysteresis loop
-stream = open(args.dir + "m.dat", "w", buffering = 1)
+stream = open(args.outdir + "m.dat", "w", buffering = 1)
 stream.write("# Hext [T], mx, my, mz")
 for i in range(1, hys_steps + 1):
     #if i > hys_steps/4:
@@ -90,7 +90,7 @@ for i in range(1, hys_steps + 1):
         minimizer.minimize(state)
     else:
         llg.relax(state, precision = 1e-6, verbose = False)
-    state.write_vti(args.dir + "m_step_"+ str(i))
+    state.write_vti(args.outdir + "m_step_"+ str(i))
     mx, my, mz = state.mean_m()
     m_a = m_analytical(dz, Ms, extfield * Constants.mu0, RKKY_surface)
     print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}, ma={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz, m_a))
@@ -102,12 +102,12 @@ stream.close()
 from os import system
 system('gnuplot -e "\
     set terminal pdf;\
-    set output \'' + args.dir + 'm.pdf\';\
+    set output \'' + args.outdir + 'm.pdf\';\
     set xlabel \'Hx [ns]\';\
     set ylabel \'<m>\';\
-    p \'' + args.dir + '/m.dat\' u 1:2 w l t \'<m_x>\',\
+    p \'' + args.outdir + '/m.dat\' u 1:2 w l t \'<m_x>\',\
     \'\' u 1:5 w l t \'<m_{analytical}>\';\
 "')
 
 # show pdf with evince
-system('evince ' + args.dir +'m.pdf')
+system('evince ' + args.outdir +'m.pdf')
