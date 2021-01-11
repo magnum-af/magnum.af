@@ -99,82 +99,89 @@ def parse():
     """
     Invokes argument parser.
     """
-    parser = argparse.ArgumentParser(description='Magnum.af simulation script.')
+    parser = argparse.ArgumentParser(description='magnum.af simulation script.')
     parser.add_argument(
-            'dir',
+            '-o',
+            '--outdir',
             type=str,
-            nargs='?',
             default='output_' + os.path.basename(os.path.splitext(sys.argv[0])[0]) + '/',
-            help='Output directory',
-            )
-    parser.add_argument(
-            'gpu',
-            type=int,
-            nargs='?',
-            default=0,
-            help='GPU number to be used by arrayfire.'
-            )
-    parser.add_argument(
-            'oargs',
-            nargs=argparse.REMAINDER,
-            help='Optional arguments to be used in the simulation script.',
+            help="Output directory. Will be created and is accessible via 'parse.outdir'. Defaults to 'output_<scriptname>'.",
             )
     parser.add_argument(
             '-n',
-            '--no_overwrite',
-            help='Abort program if output dir exists, preventing files to be overwritten.',
+            '--no-overwrite',
+            help='Abort if outdir already exists. Prevents file overwriting.',
             action='store_true'
             )
-
     parser.add_argument(
-            '--nocopy',
-            help='Skip copying this script into dir/ as backup.',
-            action='store_true'
+            '-b',
+            '--backend',
+            type=str,
+            help="'cuda', 'opencl' or 'cpu'. Select arrayfire backend via 'af::setBackend(b)'."
             )
-
+    parser.add_argument(
+            '-d',
+            '--device',
+            type=int,
+            help="Set 'af::setDevice(d)', e.g. used for selecting a GPU."
+            )
     parser.add_argument(
             '-v',
             '--verbose',
-            help='Print more information.',
+            help="Make this parser verbose, printing parsing steps.",
             action='store_true'
             )
-
+    parser.add_argument(
+            '--nocopy',
+            help='Skip copying this script into outdir/ as backup.',
+            action='store_true' # defaults to 'False'
+            )
+    parser.add_argument(
+            'posargs',
+            nargs=argparse.REMAINDER,
+            help="Positional arguments, access via 'parser.posargs'.",
+            )
     args = parser.parse_args()
 
-    if not args.dir.endswith('/'):
-        args.dir = args.dir + '/'
+    def print_if(switch, *args, **kwargs):
+        """Prints preceding arguments if first argument evaluates to true"""
+        if switch:
+            print(*args, **kwargs)
 
-    if args.verbose:
-        print('args=', args)
+    if not args.outdir.endswith('/'):
+        args.outdir = args.outdir + '/'
 
-    if os.path.exists(args.dir):
-        if args.verbose:
-            print("Output path '", args.dir, "' exists")
+    print_if(args.verbose, '--verbose: parse()=', args)
+
+    if os.path.exists(args.outdir):
         if args.no_overwrite:
-            raise RuntimeError("Output directory exists, aborting! Disable -n to overwrite.")
+            raise RuntimeError("parse(): --no-overwrite: Output directory exists, aborting! Disable -n to overwrite.")
         else:
-            if args.verbose:
-                print("Writing into existing directory '", args.dir, "'")
+            print_if(args.verbose, "--outdir: Writing into existing directory '", args.outdir, "'")
     else:
-        if args.verbose:
-            print("Dir does not exist, creating directory '", args.dir, "'")
-        os.makedirs(args.dir, exist_ok = False)
+        print_if(args.verbose, "--outdir: Dir does not exist, creating directory '", args.outdir, "'")
+        os.makedirs(args.outdir, exist_ok = False)
 
-    af.set_device(args.gpu)
+    if args.backend is not None:
+        print_if(args.verbose, "--backend: setting backend to", args.backend)
+        af.set_backend(args.backend)
 
-    if not args.nocopy:
-        targetname = args.dir + os.path.basename(sys.argv[0]) + '.copy'
-        if args.verbose:
-            print('copy script "', os.path.basename(sys.argv[0]), '" into "', targetname, '"')
+    if args.device is not None:
+        print_if(args.verbose, "--device: setting device to", args.device)
+        af.set_device(args.device)
+
+    if args.nocopy is False:
+        targetname = args.outdir + os.path.basename(sys.argv[0]) + '.copy'
+        print_if(args.verbose, '--nocopy (not set): copying script "', os.path.basename(sys.argv[0]), '" into "', targetname, '"')
         copy(sys.argv[0], targetname)
 
     return args
 
 def parse_filepath():
     """
-    Parses input and retruns the parsed filepath using parser.pars_args().dir
+    Parses input and returns the parsed filepath using parser.pars_args().outdir
     """
-    return parse().dir
+    return parse().outdir
 
 def array_from_addr(array_addr):
     array=af.Array()

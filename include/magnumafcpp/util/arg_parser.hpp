@@ -26,17 +26,17 @@ inline std::pair<std::filesystem::path, std::vector<std::string>> setup_and_get_
 
     const auto filename = fs::path(argv[0]).filename().string();
     po::options_description desc{"magnum.af ArgParser\nUsage: " + filename + " [options]"};
-    desc.add_options()("help,h", "Produce help message");
+    desc.add_options()("help,h", "Produce help message.");
     desc.add_options()("outdir,o", po::value<fs::path>(&outdir)->default_value("output_" + filename),
                        "Output directory. Will be created and is accessible via ArgParser.outdir(). Defaults to "
                        "'output_<binaryname>'.");
     desc.add_options()("no-overwrite,n", "Abort if outdir already exists. Prevents file overwriting.");
     desc.add_options()("backend,b", po::value<std::string>(),
-                       "'cuda', 'opencl' or 'cpu'. Select arrayfire backend via af::setBackend.");
-    desc.add_options()("device,d", po::value<unsigned>(), "Set af::setDevice, e.g. used for selecting a GPU.");
-    desc.add_options()("verbose,v", "print parsing steps");
+                       "'cuda', 'opencl' or 'cpu'. Select arrayfire backend via 'af::setBackend(b)'.");
+    desc.add_options()("device,d", po::value<unsigned>(), "Set 'af::setDevice(d)', e.g. used for selecting a GPU.");
+    desc.add_options()("verbose,v", "Make this parser verbose, printing parsing steps.");
     desc.add_options()("posargs", po::value<std::vector<std::string>>(&posargs),
-                       "positional arguments, access via ArgParser.posargs()");
+                       "Positional arguments, access via 'ArgParser.posargs()'.");
 
     po::positional_options_description p;
     p.add("posargs", -1);
