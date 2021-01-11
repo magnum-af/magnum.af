@@ -23,4 +23,5 @@ af::array cross4shift(const af::array& a, const af::array& b) {
     af::array bshift2 = af::shift(b, 0, 0, 0, -1);
     return ashift * bshift - ashift2 * bshift2;
 }
-}
+
+} // namespace magnumafcpp::math
