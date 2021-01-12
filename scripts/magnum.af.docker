@@ -6,7 +6,7 @@
 #docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
 docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev"
 magaf_cache_dir="/tmp/magnumaf.cache/"
-current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)""/"
+current_dir="$PWD/"
 
 # abort if $1 not set, i.e. no args are given
 if [[ $# -eq 0 ]] ; then
@@ -43,7 +43,7 @@ function get_outdir(){
     # set outdir to default if no -o is set
     if [ -z "$outdir" ]; then
         local script_basename="$(basename -- "$1")"
-        local script_filename="${script_basename##*.}"
+        local script_filename="${script_basename%.*}" # without extension
         outdir="$current_dir""output_""$script_filename""/"
     fi
     echo "$outdir"
@@ -68,7 +68,10 @@ input_file_path=$(realpath "$1")
 
 outdir=$(get_outdir "$@")
 
-mkdir -p "$outdir" # making sure $outdir exists before mounting. Otherwise non-existent bind mounts get initialized to an empty dir owned by root, leading to permission errors
+# making sure volumes exist before mounting.
+# Otherwise non-existent bind mounts get initialized to an empty dir owned by root, leading to permission errors
+mkdir -p "$outdir"
+mkdir -p "$magaf_cache_dir"
 
 # assembling docker command
 dock="nvidia-docker run \
