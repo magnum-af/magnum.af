@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+#set -o xtrace [when x_flag = true]
+
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+__root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
+
+
+function log () {
+    if [[ "$v_flag" == "true" ]]; then
+        echo "$@"
+    fi
+}
+
+print_usage() {
+  printf "Usage: $(basename "$0") {b:|c|B|d|f|g:|h|i:|o:|p:|t|v|x} [inputfile outputdir]
+
+Run script for magnum.af using docker. Manages build process, directory creation and program execution.
+
+Arguments:
+      inputfile      Required input script with .cpp or .py extension. Must be provided either as first positional argument \$1 or as argument following the '-i' option.
+      outputdir      Required output directory. Should be provided either as second positional argument \$2 or as argument following the '-o' option. If non is given, a
+                     directory called 'output_magnum.af' is created in the current dir. This interferes with correct argument passing to the input script, though.
+      \$n             Optional further arguments are passed to the input script. Takes into account whether inputfile/outputdir is given with flags or as positional argument (see examples).
+
+Options (subsequent ':' indicates that an argument is expected):
+  -h  help           Show this help message.
+
+  -b: backend        arg={cuda, opencl, cpu} Select backend other than default for .cpp files. To be set inside file for .py.
+  -B  build image    Builds docker image prior to simulation.
+  -c: copy           Copy a given file into outputdir.
+  -d  detached       Run the simulation in a detached docker container.
+  -f  force          Forces output to be written in already existing output directory. This may overwrite files.
+  -g: GPU            Expects integer number n to specify the GPU to be used. Default is 0.
+  -i: inputfile      Inputfile for magnum.af. Either a .cpp file containing main() or a .py file.
+  -o: outputdir      Directory to write output to. Expects directory path.
+  -p: postprocess    Copies the given file into the output directory and executes it after the inputscript is finished. Extensions .gpi, .plt, .gnu are execued with gnuplot.
+  -t  tail           Use 'tail -f' to follow simulation output in 'outputdir/stdout.txt'
+  -v  verbose        Show more details of this script.
+  -x  xtrace         Debugging: print every command.
+
+Examples:
+  $(basename "$0") sp4.py
+  $(basename "$0") -d -v sp4.cpp
+  $(basename "$0") -vg 1 sp4.cpp
+
+Example passing arguments 'a b c' to the input script.  The behaviour is equivalent for all versions
+and shows how 'inputscript' and 'outputdir' can be either flagged arguments or positional arguments.
+  $(basename "$0") -i sp4.cpp -o run1 a b c
+  $(basename "$0") -i sp4.cpp run1 a b c
+  $(basename "$0") -o run1 sp4.cpp a b c
+  $(basename "$0") sp4.cpp run1 a b c
+
+Note:
+  'magnum.af sp4.cpp a b c' would interpret 'a' as outputdir, so please specify outputdir when passing arguments.
+"
+}
+
+B_flag=''
+c_flag=''
+copyfile=''
+d_flag=''
+D_flag='' # magnum.af-dev image for devel
+f_flag=''
+i_flag=''
+inputfile=''
+o_flag=''
+outputdir=''
+postprocess=''
+t_flag=''
+v_flag=''
+x_flag=''
+
+
+while getopts 'b:Bc:Ddhfg:i:o:p:rtvx' flag; do
+  #Note: some arguments are passed to magnum.af script
+  case "${flag}" in
+    h) print_usage
+       exit 0 ;;
+    b) ;;
+    B) B_flag='true' ;;
+    d) d_flag='true' ;;
+    D) D_flag='true' ;;
+    c) c_flag='true'; copyfile="${OPTARG}" ;;
+    f) f_flag='true' ;;
+    g) ;;
+    i) i_flag='true'; inputfile="${OPTARG}" ;;
+    o) o_flag='true'; outputdir="${OPTARG}" ;;
+    p) postprocess="${OPTARG}" ;;
+    r) ;;
+    t) t_flag='true' ;;
+    v) v_flag='true' ;;
+    x) x_flag='true' ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+saved_flags="${@:1:$((OPTIND-1))}"
+shift $((OPTIND-1)) # resetting counting
+
+if [[ "$x_flag" == "true" ]]; then
+    set -o xtrace
+fi
+
+log $__dir
+log $__file
+log $__base
+log $__root
+
+if [ -z "$inputfile" ]; then
+    inputfile=$1
+fi
+
+log "checking $inputfile != '' and extension"
+if [[ "$inputfile" == "" ]]; then
+    echo "Error: missing inputfile as first argument required, aborting..."
+    exit 1
+elif [ ! -e "$inputfile" ]
+then
+    echo "Error: given inputfile does not exist, aborting..."
+    exit 1
+else
+    filename=$(basename -- "$inputfile")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+    log "\$extension=$extension"
+    log "\$filename=$filename"
+    if [[ $extension != "cpp" &&  $extension != "py" ]];then
+        echo "Error: wrong extension $extension, expected .cpp or .py"
+        exit 1
+    fi
+fi
+inputfile=$(realpath $inputfile)
+
+log "checking outputdir $outputdir"
+if [ -z "$outputdir" ]; then
+    if [ "$i_flag" == "true" ] && [ "$o_flag" != "true" ] && [ "${1-}" != "" ]; then
+        log "setting outputdir to \$1=$1"
+        outputdir="$1"
+    elif [ "$i_flag" != "true" ] && [ "$o_flag" != "true" ] && [ "${2-}" != "" ]; then
+        log "setting outputdir to \$2=$2"
+        outputdir="$2"
+    else
+        outputdir="$PWD/output_magnum.af"
+        log "no output dir given, using '$outputdir' which is in current folder"
+    fi
+fi
+if [ "$f_flag" == "true" ]; then
+    if [ ! -e "$outputdir" ];then
+        log "writing in new directory $outputdir"
+        mkdir --parents $outputdir
+    else
+        log "writing in existing directory $outputdir"
+    fi
+else
+    $__root/scripts/bash/check_write_dir.sh $outputdir $v_flag
+fi
+outputdir=$(realpath $outputdir)
+
+log "checking if inputfile and outputdir are flagged arguments or mass arguments"
+skip=0
+[ "$i_flag" == "" ] && skip="$((skip + 1))"  && log "$skip iflag is not true"
+[ "$o_flag" == "" ] && skip="$((skip + 1))"  && log "$skip oflag is not true"
+min=$( (( $# <= $skip )) && echo "$#" || echo "$skip") # minimum of remaining arguments and skip to prevent overshifting
+log "shifting $min"
+shift $min
+
+log "checking if docker images exist (takes ~0.1s)"
+#nvidia_smi=$(command -v nvidia-smi || true)
+command -v nvidia-smi >/dev/null 2>&1 && docker image inspect git.exp.univie.ac.at:4567/paul/magnum.af >/dev/null 2>&1 && docker_image_exists="true"  || docker git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev >/dev/null 2>&1 && docker_image_exists="true"
+
+log "building docker image if not exist or B_flag is set"
+if [[ "$docker_image_exists" != "true" ]] || [[ "$B_flag" == "true" ]]; then
+    command -v nvidia-smi >/dev/null 2>&1 && ( cd $__root && nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" . ) || ( cd $__root &&  docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" . )
+fi
+
+[[ -n "$postprocess" ]] && cp $postprocess $outputdir
+
+runstring=""
+command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring"nvidia-docker" || runstring=$runstring"docker"
+runstring=$runstring" run --user ${UID} --rm"
+if [ "$d_flag" == "true" ];then
+    runstring=$runstring" -d"
+fi
+runstring=$runstring" -v $outputdir:$outputdir"
+runstring=$runstring" -v $inputfile:$inputfile"
+[[ -n "$postprocess" ]] && postprocess=$(realpath $postprocess) && runstring=$runstring" -v $postprocess:$postprocess"
+[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && copyfile=$(realpath $copyfile) && runstring=$runstring" -v $copyfile:$copyfile"
+runstring=$runstring" -v $HOME/.magnum.af.cache/:/home/magnum.af.user/.magnum.af.cache/"
+if [[ "$D_flag" == "true" ]]; then
+    command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev" || runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev" # Note: better swtich?
+else
+    command -v nvidia-smi >/dev/null 2>&1 && runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af" || runstring=$runstring" -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev" # Note: better swtich?
+fi
+runstring=$runstring" ./scripts/magnum.af -f"
+runstring=$runstring" $saved_flags"
+[[ -n "$postprocess" ]] && runstring=$runstring" -p $postprocess"
+[[ "$c_flag" == "true" ]] && [[ -f "$copyfile" ]] && runstring=$runstring" -c $copyfile"
+runstring=$runstring" -i $inputfile -o $outputdir $@"
+
+log "runstring: "$runstring
+$runstring
+
+if [ "$t_flag" == "true" ];then
+    log "running: tail -f $outputdir/stdout.txt. Press <ctrl+c> to exit."
+    sleep_val=0
+    while [ ! -f "$outputdir/stdout.txt" ];
+    do
+        sleep 3.0
+        echo "waiting for $outputdir/stdout.txt, sleep_val=$sleep_val"
+        sleep_val=$((sleep_val+1))
+    done
+    tail -f -n 0 $outputdir/stdout.txt
+fi
