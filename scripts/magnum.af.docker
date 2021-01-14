@@ -1,17 +1,46 @@
 #!/bin/bash +x
-# usage: magnum.af.docker <simfile.py> [...]
-# e.g. magnum.af.docker sp4.py -v -d 0
-# $1 ... input script e.g. sp4.py
 
-#docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
-docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af/cuda-dev"
-magaf_cache_dir="/tmp/magnumaf.cache/"
-current_dir="$PWD/"
+print_usage() {
+printf "Usage: $(basename "$0") {-d, -h} <script.py> [...]
 
-# abort if $1 not set, i.e. no args are given
-if [[ $# -eq 0 ]] ; then
+Run provided <script.py> in a docker container, forwarding all preceeding arguments.
+
+Required positional argument:
+    <script.py> [...]   Simulation script to be run in docker, forwarding arguments [...].
+
+Optional arguments (before <script.py>):
+    -d|--detach         Run docker in detached mode.
+    -h|--help           Show this help.
+
+Examples:
+    $(basename "$0") sp4.py
+    $(basename "$0") -d sp4.py -o outdir/ -v
+"
+}
+
+# parsing pre-script arguments
+d_flag=''
+for arg in "$@"
+do
+    case $arg in
+        -d|--detach)
+	    d_flag='true'
+            shift
+        ;;
+        -h|--help)
+            print_usage
+            exit 0
+        ;;
+        *)
+            break
+        ;;
+    esac
+done
+
+# abort if no args are given or current "$1" not a regular file
+if [ $# -eq 0 ] || [ ! -f "$1" ] ; then
     echo 'Please provide a simulation script to be run in docker.'
-    echo "e.g.: 'magnum.af.docker sp4.py'"
+    print_usage
     echo "Aborting..."
     exit 1
 fi
@@ -44,29 +73,15 @@ function get_outdir(){
     if [ -z "$outdir" ]; then
         local script_basename="$(basename -- "$1")"
         local script_filename="${script_basename%.*}" # without extension
-        outdir="$current_dir""output_""$script_filename""/"
+        outdir="$PWD/output_$script_filename/"
     fi
     echo "$outdir"
 }
 
-# parsing pre-script arguments
-d_flag=''
-for arg in "$@"
-do
-    case $arg in
-        -d|--detach)
-	    d_flag='true'
-            shift
-        ;;
-        *)
-            break
-        ;;
-    esac
-done
-
 input_file_path=$(realpath "$1")
-
 outdir=$(get_outdir "$@")
+docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
+magaf_cache_dir="/tmp/magnumaf.cache/"
 
 # making sure volumes exist before mounting.
 # Otherwise non-existent bind mounts get initialized to an empty dir owned by root, leading to permission errors
@@ -79,11 +94,11 @@ dock="nvidia-docker run \
     --user $UID \
     -v $input_file_path:$input_file_path \
     -v $outdir:$outdir \
-    -v $current_dir:$current_dir \
+    -v $PWD:$PWD \
     -v $magaf_cache_dir:$magaf_cache_dir \
 "
 [ "$d_flag" == "true" ] && dock="$dock --detach"
-dock="$dock -t $docker_tag /bin/bash -c \"cd $current_dir && python3 $*\""
+dock="$dock -t $docker_tag /bin/bash -c \"cd $PWD && python3 $*\""
 
 # run docker command
 eval "$dock"
