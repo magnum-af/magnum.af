@@ -81,7 +81,8 @@ ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
 # Install pip packages and Google Test
 RUN apt-get update && \
     apt-get install -y googletest \
-    python3-setuptools && \
+    python3-setuptools \
+    gnuplot && \
     pip3 install arrayfire numpy && \
     # install cython 0.29 (pip3 would install 0.26)
     wget https://files.pythonhosted.org/packages/6c/9f/f501ba9d178aeb1f5bf7da1ad5619b207c90ac235d9859961c11829d0160/Cython-0.29.21.tar.gz && \
