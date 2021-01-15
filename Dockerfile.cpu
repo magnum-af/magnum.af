@@ -44,7 +44,7 @@ RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.7.2 &
 
 # Install pip packages and Google Test
 RUN pip3 install arrayfire cython numpy && \
-    apt update && apt install -y libgmock-dev \
+    apt update && DEBIAN_FRONTEND=noninteractive apt install -y libgmock-dev \
     gnuplot && \
     cd /usr/src/googletest/googlemock && \
     cmake CMakeLists.txt && \
