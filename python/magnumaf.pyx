@@ -48,6 +48,7 @@ from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
 from magnumaf_decl cimport DmiField as cDmiField
+from magnumaf_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
 
 from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
 from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
@@ -1026,10 +1027,32 @@ cdef class ExchangeFieldPBC(HeffTerm):
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
+cdef class BulkDMIExchangeField(HeffTerm):
+    """
+    Bulk Dzyaloshinskii–Moriya interaction (DMI) field.
+    """
+    cdef cBulkDMIExchangeField* _thisptr
+    def __cinit__(self, D, A):
+        """
+        D : float
+            Bulk DMI constant in units of [J/m]
+        A : float
+            Exchange constant in units of [J/m2]
+        """
+        self._thisptr = new cBulkDMIExchangeField (D, A)
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
 
 cdef class DmiField(HeffTerm):
     """
-    Dzyaloshinskii–Moriya interaction (DMI) field.
+    Interface Dzyaloshinskii–Moriya interaction (DMI) field.
     """
     cdef cDmiField* _thisptr
     def __cinit__(self, D, D_axis = [0., 0., 1.]):

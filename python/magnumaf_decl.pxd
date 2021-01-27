@@ -95,6 +95,13 @@ cdef extern from "field_terms/micro/dmi_field.hpp" namespace "magnumafcpp":
         double Energy_in_J(const State& state);
         double elapsed_eval_time();
 
+cdef extern from "field_terms/micro/bulk_dmi_exchange_field.hpp" namespace "magnumafcpp":
+    cdef cppclass BulkDMIExchangeField:
+        BulkDMIExchangeField(double D, double A);
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
+        double elapsed_eval_time();
+
 cdef extern from "field_terms/atom/atomistic_dmi_field.hpp" namespace "magnumafcpp":
     cdef cppclass AtomisticDmiField:
         AtomisticDmiField (const double D_atom, double D_atom_axis_x, double D_atom_axis_y, double D_atom_axis_z);
