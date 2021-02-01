@@ -13,7 +13,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 file(
   GLOB APP_SOURCES
   RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  *.cpp)
+  "*.cpp" "*/*.cpp")
 message(STATUS "Source files found are: ${APP_SOURCES}")
 
 foreach(testsourcefile ${APP_SOURCES})
