@@ -1,8 +1,8 @@
 #!/bin/bash -e
-# script running all unit and integration tests: i.e. the previously compiled (!) binaries in ./cpp and the python scripts in ./python
+# script running all tests: i.e. the previously compiled (!) binaries in ../bin/ and the python scripts in ../python/test/
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
 
-# run C++ tests:
+# run compiled C++ tests:
 for testbin in ../bin/test*; do
     echo "running test '$testbin':"
     ./$testbin
@@ -10,5 +10,7 @@ for testbin in ../bin/test*; do
 done
 
 # run python tests
-../python/test/run_all_unit_tests.sh
-../python/test/run_all_integration_tests.sh
+for filename in ../python/test/*.py; do
+    echo "running test '$filename'"
+    PYTHONPATH=../build/python/ python3 $filename
+done
