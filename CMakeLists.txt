@@ -9,7 +9,7 @@ message(STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}.")
 # ${PROJECT_VERSION_TWEAK}" )
 
 option(EXAMPLES "Build examples." ON)
-option(TESTS "Build unit and integration tests." ON)
+option(TESTS "Build unit tests." ON)
 option(PYTHON "Build python bindings" ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
 option(SETINSTALL "Building shared library, configuring install directories."
@@ -115,10 +115,9 @@ endif()
 
 # build tests
 if(TESTS)
-  message(STATUS "Enable unit and integration testing (option 'TESTING').")
+  message(STATUS "Enable unit testing (option 'TESTING').")
   enable_testing() # enables CTest with 'make test' and 'ctest' commands
-  add_subdirectory(test/unit) # adding unit tests
-  add_subdirectory(test/integration) # adding integration tests
+  add_subdirectory(test) # adding unit tests
 endif()
 
 # build single scripts for simulations
