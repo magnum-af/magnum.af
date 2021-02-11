@@ -35,8 +35,8 @@ TEST(BS23, integrate_analytical_in_af_array) {
     const auto f = [](double t, af::array y0) { return t * af::sqrt(y0); };
     double t = 0;
     af::array y = af::constant(1., 1, f64);
-    const double dt = 1e-2;
-    const std::size_t imax = 1000;
+    constexpr double dt = 1e-2;
+    constexpr std::size_t imax = 1000;
 
     af::array rkerror;
     af::array k4;
