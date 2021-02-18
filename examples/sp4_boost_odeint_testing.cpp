@@ -1,0 +1,120 @@
+#include "arg_parser.hpp"
+#include "magnum_af.hpp"
+#include <boost/numeric/odeint.hpp>
+#include <iostream>
+
+// Necessary template specialization for af::array
+// Adapted form boost/numeric/odeint/algebra/vector_space_algebra.hpp
+// and boost/numeric/odeint/external/vexcl/vexcl_norm_inf.hpp
+namespace boost::numeric::odeint {
+template <> struct vector_space_norm_inf<af::array> {
+    typedef double result_type; // typedef definition is explicitly needed here for odeint internals.
+    result_type operator()(const af::array& x) const {
+        return af::max(af::max(af::max(af::max(af::abs(x), 0), 1), 2), 3).as(f64).scalar<double>();
+    }
+};
+} // namespace boost::numeric::odeint
+
+int main(int argc, char** argv) {
+    std::cout << "Start" << std::endl;
+
+    using namespace magnumafcpp;
+    const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;
+
+    const double x_magaf = 5.e-7, y = 1.25e-7, z = 3.e-9;
+    const int nx = 100, ny = 25, nz = 1;
+    const Mesh mesh{nx, ny, nz, x_magaf / nx, y / ny, z / nz};
+
+    double alpha = 1.;
+    const double Ms = 8e5;
+    const double A = 1.3e-11;
+
+    auto dmag = DemagField(mesh, true, true, 0);
+    auto exch = ExchangeField(A);
+    auto fieldterms = fieldterm::mv_to_vec(dmag, exch);
+
+    af::array m = af::constant(0, mesh::dims_v(mesh), f64);
+    m(0, af::span, af::span, 1) = 1;
+    m(af::seq(1, af::end - 1), af::span, af::span, 0) = 1;
+    m(-1, af::span, af::span, 1) = 1;
+
+    State state(mesh, Ms, m);
+    state.write_vti(outdir / "minit");
+
+    auto llg = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
+        // TODO: how often and where should we normalize?
+        // This normalizes every dxdt evaluation, i.e. every function callback,  e.g. 7(!) times for DP54.
+        // Meaning resulting m is not normalized, but input m is, leading to slight difference as in custom ode solvers.
+
+        state.t = t;
+        if (state.Ms_field.isempty()) {
+            state.m = normalize(m_in);
+        } else {
+            state.m = normalize_handle_zero_vectors(m_in);
+        }
+
+        const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
+        dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
+    };
+
+    struct cout_m_and_time {
+        std::filesystem::path outdir_;
+        cout_m_and_time(std::filesystem::path outdir) : outdir_(outdir) {}
+
+        void operator()(const af::array& m, double t) {
+            const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2);
+            const auto mx = mean(0, 0, 0, 0).scalar<double>();
+            const auto my = mean(0, 0, 0, 1).scalar<double>();
+            const auto mz = mean(0, 0, 0, 2).scalar<double>();
+            std::cout << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
+            std::ofstream stream(outdir_ / "m.dat", std::ios::app);
+            stream.precision(12);
+            stream << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
+        }
+    };
+
+    const double eps_abs = 1e-6;
+    const double eps_rel = 1e-6;
+    const double start_time = 0;
+    const double end_time = 1e-9;
+    const double dt = 1e-12;
+
+    // double t = 0;
+    std::ofstream stream(outdir / "m.dat");
+    stream.precision(12);
+    const bool use_const_stepper = false;
+    size_t steps{};
+    namespace ode = boost::numeric::odeint;
+
+    // choosing an integrator via typedef
+    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    // typedef ode::runge_kutta_cash_karp54<af::array, double, af::array, double, ode::vector_space_algebra>
+    // stepper_type;
+    // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
+    // stepper_type;
+
+    if (use_const_stepper) {
+        steps = integrate_const(ode::runge_kutta4<af::array, double, af::array, double, ode::vector_space_algebra>(),
+                                llg, m, start_time, end_time, dt, cout_m_and_time{outdir});
+    } else {
+        steps = integrate_adaptive(make_controlled(eps_abs, eps_rel, stepper_type()), llg, m, start_time, end_time, dt,
+                                   cout_m_and_time{outdir});
+    }
+    std::cout << "steps=" << steps << std::endl;
+
+    // Setting external field
+    af::array external = af::constant(0.0, nx, ny, nz, 3, f64);
+    external(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
+    external(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
+    fieldterms.push_back(fieldterm::to_uptr<ExternalField>(external));
+    alpha = 0.02;
+
+    if (use_const_stepper) {
+        typedef ode::runge_kutta4<af::array, double, af::array, double, ode::vector_space_algebra> const_stepper_type;
+        steps = integrate_const(const_stepper_type(), llg, m, 1e-9, 2e-9, dt, cout_m_and_time{outdir});
+    } else {
+        steps = integrate_adaptive(make_controlled(eps_abs, eps_rel, stepper_type()), llg, m, 1e-9, 2e-9, dt,
+                                   cout_m_and_time{outdir});
+    }
+    std::cout << "steps=" << steps << std::endl;
+}

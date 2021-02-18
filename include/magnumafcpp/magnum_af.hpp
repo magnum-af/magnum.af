@@ -1,5 +1,6 @@
 #pragma once
 #include "ascii_io.hpp"
+#include "equations.hpp"
 #include "field_terms/atom/atomistic_dipole_dipole_field.hpp"
 #include "field_terms/atom/atomistic_dmi_field.hpp"
 #include "field_terms/atom/atomistic_exchange_field.hpp"
@@ -22,7 +23,6 @@
 #include "integrators/llg_integrator.hpp"
 #include "integrators/stochastic_llg.hpp"
 #include "mesh.hpp"
-#include "util/color_string.hpp"
 #include "nonequispaced_mesh.hpp"
 #include "pgfplot.hpp"
 #include "solvers/cg_minimizer.hpp"
@@ -30,6 +30,7 @@
 #include "solvers/minimizer.hpp"
 #include "solvers/string_method.hpp"
 #include "util/af_overloads.hpp"
+#include "util/color_string.hpp"
 #include "util/geometry.hpp"
 #include "util/newton_iteration.hpp"
 #include "util/timer.hpp"
