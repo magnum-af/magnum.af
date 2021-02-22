@@ -4,6 +4,126 @@
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
 
+namespace custom_ode {
+
+template <class Value = double> struct rk54_fehlberg_coefficients_a1 : boost::array<Value, 1> {
+    rk54_fehlberg_coefficients_a1(void) { (*this)[0] = static_cast<Value>(1) / static_cast<Value>(4); }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_a2 : boost::array<Value, 2> {
+    rk54_fehlberg_coefficients_a2(void) {
+        (*this)[0] = static_cast<Value>(3) / static_cast<Value>(32);
+        (*this)[1] = static_cast<Value>(9) / static_cast<Value>(32);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_a3 : boost::array<Value, 3> {
+    rk54_fehlberg_coefficients_a3(void) {
+        (*this)[0] = static_cast<Value>(1932) / static_cast<Value>(2197);
+        (*this)[1] = static_cast<Value>(-7200) / static_cast<Value>(2197);
+        (*this)[2] = static_cast<Value>(7296) / static_cast<Value>(2197);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_a4 : boost::array<Value, 4> {
+    rk54_fehlberg_coefficients_a4(void) {
+        (*this)[0] = static_cast<Value>(439) / static_cast<Value>(216);
+        (*this)[1] = static_cast<Value>(-8);
+        (*this)[2] = static_cast<Value>(3680) / static_cast<Value>(513);
+        (*this)[3] = static_cast<Value>(-845) / static_cast<Value>(4104);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_a5 : boost::array<Value, 5> {
+    rk54_fehlberg_coefficients_a5(void) {
+        (*this)[0] = static_cast<Value>(-8) / static_cast<Value>(27);
+        (*this)[1] = static_cast<Value>(2);
+        (*this)[2] = static_cast<Value>(-3544) / static_cast<Value>(2565);
+        (*this)[3] = static_cast<Value>(1859) / static_cast<Value>(4104);
+        (*this)[4] = static_cast<Value>(-11) / static_cast<Value>(40);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_b : boost::array<Value, 6> {
+    rk54_fehlberg_coefficients_b(void) {
+        (*this)[0] = static_cast<Value>(16) / static_cast<Value>(135);
+        (*this)[1] = static_cast<Value>(0);
+        (*this)[2] = static_cast<Value>(6656) / static_cast<Value>(12825);
+        (*this)[3] = static_cast<Value>(28561) / static_cast<Value>(56430);
+        (*this)[4] = static_cast<Value>(-9) / static_cast<Value>(50);
+        (*this)[5] = static_cast<Value>(2) / static_cast<Value>(55);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_db : boost::array<Value, 6> {
+    rk54_fehlberg_coefficients_db(void) {
+        (*this)[0] =
+            static_cast<Value>(16) / static_cast<Value>(135) - static_cast<Value>(25) / static_cast<Value>(216);
+        (*this)[1] = static_cast<Value>(0);
+        (*this)[2] =
+            static_cast<Value>(6656) / static_cast<Value>(12825) - static_cast<Value>(1408) / static_cast<Value>(2565);
+        (*this)[3] =
+            static_cast<Value>(28561) / static_cast<Value>(56430) - static_cast<Value>(2197) / static_cast<Value>(4104);
+        (*this)[4] = static_cast<Value>(-9) / static_cast<Value>(50) - static_cast<Value>(-1) / static_cast<Value>(5);
+        (*this)[5] = static_cast<Value>(2) / static_cast<Value>(55);
+    }
+};
+
+template <class Value = double> struct rk54_fehlberg_coefficients_c : boost::array<Value, 6> {
+    rk54_fehlberg_coefficients_c(void) {
+        (*this)[0] = static_cast<Value>(0);
+        (*this)[1] = static_cast<Value>(1) / static_cast<Value>(4);
+        (*this)[2] = static_cast<Value>(3) / static_cast<Value>(8);
+        (*this)[3] = static_cast<Value>(12) / static_cast<Value>(13);
+        (*this)[4] = static_cast<Value>(1);
+        (*this)[5] = static_cast<Value>(1) / static_cast<Value>(2);
+    }
+};
+
+template <class State, class Value = double, class Deriv = State, class Time = Value,
+          class Algebra = typename boost::numeric::odeint::algebra_dispatcher<State>::algebra_type,
+          class Operations = typename boost::numeric::odeint::operations_dispatcher<State>::operations_type,
+          class Resizer = boost::numeric::odeint::initially_resizer>
+class runge_kutta_fehlberg54
+    : public boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time, Algebra,
+                                                               Operations, Resizer> {
+
+  public:
+    typedef boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time, Algebra,
+                                                              Operations, Resizer>
+        stepper_base_type;
+    typedef typename stepper_base_type::state_type state_type;
+    typedef typename stepper_base_type::value_type value_type;
+    typedef typename stepper_base_type::deriv_type deriv_type;
+    typedef typename stepper_base_type::time_type time_type;
+    typedef typename stepper_base_type::algebra_type algebra_type;
+    typedef typename stepper_base_type::operations_type operations_type;
+    typedef typename stepper_base_type::resizer_type resizer_typ;
+
+    typedef typename stepper_base_type::stepper_type stepper_type;
+    typedef typename stepper_base_type::wrapped_state_type wrapped_state_type;
+    typedef typename stepper_base_type::wrapped_deriv_type wrapped_deriv_type;
+
+    runge_kutta_fehlberg54(const algebra_type& algebra = algebra_type())
+        : stepper_base_type(
+              boost::fusion::make_vector(rk54_fehlberg_coefficients_a1<Value>(), rk54_fehlberg_coefficients_a2<Value>(),
+                                         rk54_fehlberg_coefficients_a3<Value>(), rk54_fehlberg_coefficients_a4<Value>(),
+                                         rk54_fehlberg_coefficients_a5<Value>()),
+              rk54_fehlberg_coefficients_b<Value>(), rk54_fehlberg_coefficients_db<Value>(),
+              rk54_fehlberg_coefficients_c<Value>(), algebra) {}
+};
+} // namespace custom_ode
+
+namespace boost::numeric::odeint {
+// Specializations for runge_kutta_cash_karp54
+template <class State, class Value, class Deriv, class Time, class Algebra, class Operations, class Resize>
+struct get_controller<custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>> {
+    typedef custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize> stepper_type;
+    typedef controlled_runge_kutta<stepper_type> type;
+};
+
+} // namespace boost::numeric::odeint
+
 // Necessary template specialization for af::array
 // Adapted form boost/numeric/odeint/algebra/vector_space_algebra.hpp
 // and boost/numeric/odeint/external/vexcl/vexcl_norm_inf.hpp
@@ -98,7 +218,9 @@ int main(int argc, char** argv) {
     // choosing an integrator via typedef
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
-    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    // typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    typedef custom_ode::runge_kutta_fehlberg54<af::array, double, af::array, double, ode::vector_space_algebra>
+        stepper_type;
     // typedef ode::runge_kutta_cash_karp54<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
@@ -116,9 +238,9 @@ int main(int argc, char** argv) {
 
     auto integrate = [&](double start_time, double end_time, double dt, double dt_view) {
         if (mode == intmode::times) {
-            const auto range1 = make_range(start_time, end_time, dt_view);
-            // std::copy(std::begin(range1), std::end(range1), std::ostream_iterator<double>(std::cout, " "));
-            steps.push_back(integrate_times(stepper, llg, m, range1, dt, observe_m{outdir}));
+            const auto range = make_range(start_time, end_time, dt_view);
+            // std::copy(std::begin(range), std::end(range), std::ostream_iterator<double>(std::cout, " "));
+            steps.push_back(integrate_times(stepper, llg, m, range, dt, observe_m{outdir}));
         } else if (mode == intmode::adaptive) {
             steps.push_back(integrate_adaptive(stepper, llg, m, start_time, end_time, dt, observe_m{outdir}));
         } else if (mode == intmode::constant) {
