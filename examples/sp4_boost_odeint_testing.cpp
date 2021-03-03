@@ -180,6 +180,13 @@ int main(int argc, char** argv) {
         dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
     };
 
+    auto non_normalized_llg = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
+        state.t = t;
+        state.m = m_in;
+        const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
+        dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
+    };
+
     struct observe_m {
         std::filesystem::path outdir_;
         observe_m(std::filesystem::path outdir) : outdir_(outdir) {}
@@ -205,10 +212,11 @@ int main(int argc, char** argv) {
     // times: dt is seperate from dt_view, i.e. first step dt not dependend on observer range
     // NOTE: Timings are not very reliable, const mode was once 1m40s, then 30s with fehlberg78!!!
 
-    enum class intmode { constant, adaptive, times };
+    enum class intmode { constant, adaptive, times, steps };
     // const auto mode = intmode::times;
-    const auto mode = intmode::adaptive;
+    // const auto mode = intmode::adaptive;
     // const auto mode = intmode::constant;
+    const auto mode = intmode::steps; // Exact same results ad adaptive (if same llg is used)
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
@@ -225,7 +233,7 @@ int main(int argc, char** argv) {
     // stepper_type;
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
-    const auto stepper = make_controlled(eps_abs, eps_rel, stepper_type());
+    auto stepper = make_controlled(eps_abs, eps_rel, stepper_type()); // Note: cannot be const, if try_step is used.
 
     auto make_range = [](double start_time, double end_time, double dt) {
         std::vector<double> range;
@@ -236,17 +244,61 @@ int main(int argc, char** argv) {
         return range;
     };
 
-    auto integrate = [&](double start_time, double end_time, double dt, double dt_view) {
-        if (mode == intmode::times) {
+    auto integrate = [&](const double start_time, const double end_time, const double dt, const double dt_view) {
+        switch (mode) {
+        case intmode::times: {
             const auto range = make_range(start_time, end_time, dt_view);
             // std::copy(std::begin(range), std::end(range), std::ostream_iterator<double>(std::cout, " "));
             steps.push_back(integrate_times(stepper, llg, m, range, dt, observe_m{outdir}));
-        } else if (mode == intmode::adaptive) {
+            break;
+        }
+        case intmode::adaptive:
             steps.push_back(integrate_adaptive(stepper, llg, m, start_time, end_time, dt, observe_m{outdir}));
-        } else if (mode == intmode::constant) {
+            break;
+        case intmode::constant:
             steps.push_back(integrate_const(stepper, llg, m, start_time, end_time, dt_view, observe_m{outdir}));
-        } else {
-            std::cout << "ERROR" << std::endl;
+            break;
+        case intmode::steps: {
+            double t = start_time;
+            double try_dt = dt;
+            auto observer = observe_m{outdir};
+            observer(m, t);
+            std::size_t sucessful_steps = 0;
+            while (t < end_time) {
+                enum class Llgtype { normalizing, non_normalizing };
+                auto llgtype = Llgtype::normalizing; // yields exactly the same as adaptive mode
+                // auto llgtype = Llgtype::non_normalizing; // different form adaptive mode
+
+                // Note: careful: ode::controlled_step_result would map ...::fail to true and ...::success to false!
+                // So we would need inverse logic:
+                // bool step_was_not_sucess = true;
+                // while (step_was_not_sucess) {
+                //    step_was_not_sucess = stepper.try_step(non_normalized_llg, m, t, try_dt);
+
+                auto step_was_sucess = ode::controlled_step_result::fail;
+                while (step_was_sucess != ode::controlled_step_result::success) {
+                    if (t + try_dt > end_time) { // Assure, we end at end_time
+                        try_dt = end_time - t;
+                    }
+                    switch (llgtype) {
+                    case Llgtype::non_normalizing:
+                        step_was_sucess = stepper.try_step(non_normalized_llg, m, t, try_dt);
+                        break;
+                    case Llgtype::normalizing:
+                        step_was_sucess = stepper.try_step(llg, m, t, try_dt);
+                        break;
+                    }
+                    // std::cout << "step: " << sucessful_steps << '\t' << t << '\t' << try_dt << std::endl;
+                }
+                sucessful_steps++;
+                observer(m, t);
+                if (llgtype == Llgtype::non_normalizing) {
+                    m = normalize(m); // NOTE: using non_normalizing_llg
+                }
+            }
+            steps.push_back(sucessful_steps);
+            break;
+        }
         }
     };
 
