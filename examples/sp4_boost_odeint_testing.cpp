@@ -164,7 +164,8 @@ int main(int argc, char** argv) {
     State state(mesh, Ms, m);
     state.write_vti(outdir / "minit");
 
-    auto llg = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
+    // m-normalizing LLG:
+    auto llg_norm = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
         // TODO: how often and where should we normalize?
         // This normalizes every dxdt evaluation, i.e. every function callback,  e.g. 7(!) times for DP54.
         // Meaning resulting m is not normalized, but input m is, leading to slight difference as in custom ode solvers.
@@ -180,7 +181,8 @@ int main(int argc, char** argv) {
         dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
     };
 
-    auto non_normalized_llg = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
+    // not-m-normalizing LLG:
+    auto llg_regular = [&alpha, &state, &fieldterms](const af::array& m_in, af::array& dxdt, const double t) {
         state.t = t;
         state.m = m_in;
         const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
@@ -216,7 +218,7 @@ int main(int argc, char** argv) {
     // const auto mode = intmode::times;
     // const auto mode = intmode::adaptive;
     // const auto mode = intmode::constant;
-    const auto mode = intmode::steps; // Exact same results ad adaptive (if same llg is used)
+    constexpr auto mode = intmode::steps; // Exact same results ad adaptive (if same llg is used)
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
@@ -249,14 +251,14 @@ int main(int argc, char** argv) {
         case intmode::times: {
             const auto range = make_range(start_time, end_time, dt_view);
             // std::copy(std::begin(range), std::end(range), std::ostream_iterator<double>(std::cout, " "));
-            steps.push_back(integrate_times(stepper, llg, m, range, dt, observe_m{outdir}));
+            steps.push_back(integrate_times(stepper, llg_norm, m, range, dt, observe_m{outdir}));
             break;
         }
         case intmode::adaptive:
-            steps.push_back(integrate_adaptive(stepper, llg, m, start_time, end_time, dt, observe_m{outdir}));
+            steps.push_back(integrate_adaptive(stepper, llg_norm, m, start_time, end_time, dt, observe_m{outdir}));
             break;
         case intmode::constant:
-            steps.push_back(integrate_const(stepper, llg, m, start_time, end_time, dt_view, observe_m{outdir}));
+            steps.push_back(integrate_const(stepper, llg_norm, m, start_time, end_time, dt_view, observe_m{outdir}));
             break;
         case intmode::steps: {
             double t = start_time;
@@ -265,36 +267,37 @@ int main(int argc, char** argv) {
             observer(m, t);
             std::size_t sucessful_steps = 0;
             while (t < end_time) {
-                enum class Llgtype { normalizing, non_normalizing };
-                auto llgtype = Llgtype::normalizing; // yields exactly the same as adaptive mode
-                // auto llgtype = Llgtype::non_normalizing; // different form adaptive mode
+                enum class LlgNormalize { on, off };
+                constexpr auto llg_normalize = LlgNormalize::on; // yields exactly the same as adaptive mode
+                // constexpr auto llg_normalize = LlgNormalize::off; // different form adaptive mode
 
                 // Note: careful: ode::controlled_step_result would map ...::fail to true and ...::success to false!
                 // So we would need inverse logic:
                 // bool step_was_not_sucess = true;
                 // while (step_was_not_sucess) {
-                //    step_was_not_sucess = stepper.try_step(non_normalized_llg, m, t, try_dt);
+                //    step_was_not_sucess = stepper.try_step(llg_regular, m, t, try_dt);
 
-                auto step_was_sucess = ode::controlled_step_result::fail;
-                while (step_was_sucess != ode::controlled_step_result::success) {
+                ode::controlled_step_result step_result;
+                do {
                     if (t + try_dt > end_time) { // Assure, we end at end_time
                         try_dt = end_time - t;
                     }
-                    switch (llgtype) {
-                    case Llgtype::non_normalizing:
-                        step_was_sucess = stepper.try_step(non_normalized_llg, m, t, try_dt);
+                    switch (llg_normalize) {
+                    case LlgNormalize::off:
+                        step_result = stepper.try_step(llg_regular, m, t, try_dt);
                         break;
-                    case Llgtype::normalizing:
-                        step_was_sucess = stepper.try_step(llg, m, t, try_dt);
+                    case LlgNormalize::on:
+                        step_result = stepper.try_step(llg_norm, m, t, try_dt);
                         break;
                     }
                     // std::cout << "step: " << sucessful_steps << '\t' << t << '\t' << try_dt << std::endl;
-                }
+                } while (step_result == ode::controlled_step_result::fail);
+
                 sucessful_steps++;
-                observer(m, t);
-                if (llgtype == Llgtype::non_normalizing) {
+                if (llg_normalize == LlgNormalize::off) {
                     m = normalize(m); // NOTE: using non_normalizing_llg
                 }
+                observer(m, t);
             }
             steps.push_back(sucessful_steps);
             break;
