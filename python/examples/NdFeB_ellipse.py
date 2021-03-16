@@ -9,6 +9,7 @@ start_time = time.time()
 
 args = parse() # parses comand-line arguments via sys.argv
 af.info()
+dtype = af.Dtype.f64 # setting precision
 
 # Defining material parameters
 Js = 1.750             # spontaneous polarization [J]
@@ -20,6 +21,10 @@ Ku1_axis = [1, 0, 0]
 
 x, y, z =  500e-9, 500e-9, 14e-9 # Physical dimensions in [m]
 nx, ny, nz = 64, 64, 2 # Number of cells per axis
+dx, dy, dz = x/nx, y/ny, z/nz # discretization:
+
+RKKY_surface = -3e-3 # [J/m^2]
+RKKY = RKKY_surface * dz
 
 # Switch between LLG and LBFGS Minimizer: True is LLG, False is Minimizer
 llg_over_minimizer = True
@@ -31,13 +36,13 @@ geom = Geometry.xy_ellipse(nx, ny, nz, make_3d = True)
 if True:
     # creating isotropic random distribution of unit spins in geometry:
     # random normal distribution of coordinates gives isotropic distribution of directions.
-    m0 = af.randn(nx, ny, nz, 3, dtype=af.Dtype.f64)
+    m0 = af.randn(nx, ny, nz, 3, dtype)
     m0 = Util.normalize(m0)
     m0 = geom * m0
 
 else:
     # Alternative: ellipse with bottom +x, top -x
-    m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+    m0 = af.constant(0.0, nx, ny, nz, 3, dtype)
     m0[:, :, 0, 0] = 1.  # setting mx in lower plane to 1
     m0[:, :, 1, 0] = -1. # setting mx in upper plane to -1
     m0 = geom * m0
@@ -49,10 +54,12 @@ print("dx, dy, dz=", mesh.dx, mesh.dy, mesh.dz)
 state.write_vti(args.outdir + "m0")
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 8)
-exch = ExchangeField(A)
+RKKY_arr = af.constant(RKKY, nx, ny, nz, 1, dtype)
+exch_arr = af.constant(A, nx, ny, nz, 1, dtype)
+rkkyexch = RKKYExchangeField(RKKY_arr, exch_arr, mesh)
 aniso = UniaxialAnisotropyField(Ku1, Ku1_axis)
-ext = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
-terms = [demag, exch, aniso, ext]
+ext = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype))
+terms = [demag, rkkyexch, aniso, ext]
 
 if llg_over_minimizer:
     llg = LLGIntegrator(alpha, terms, dissipation_term_only = True)

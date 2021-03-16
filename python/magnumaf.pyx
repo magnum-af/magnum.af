@@ -1403,7 +1403,9 @@ cdef class SpinTransferTorqueField(HeffTerm):
 
 cdef class RKKYExchangeField(HeffTerm):
     cdef cRKKYExchangeField* _thisptr
-    def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices, verbose = True):
+    def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices = None, verbose = True):
+        if rkky_indices is None: # setting default zeros as passing empty array is not possible
+            rkky_indices = af.constant(0, mesh.nx, mesh.ny, mesh.nz, 3, dtype=af.Dtype.u32)
         self._thisptr = new cRKKYExchangeField (addressof(rkky_values.arr), addressof(exchange_values.arr), deref(mesh._thisptr), addressof(rkky_indices.arr), <bool> verbose)
     def __dealloc__(self):
         del self._thisptr
