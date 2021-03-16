@@ -13,8 +13,8 @@ class Controller {
     bool success(const double err,
                  double& h); // Decide whether step is acceppted
 
-    Controller(double hmin = 1e-15, double hmax = 3.5e-10, double atol = 1e-6, double rtol = 1e-6)
-        : hmin_(hmin), hmax_(hmax), atol_(atol), rtol_(rtol) {}
+    Controller(double hmin = 1e-15, double hmax = 3.5e-10, double atol = 1e-6, double rtol = 1e-6, bool verbose = false)
+        : hmin_(hmin), hmax_(hmax), atol_(atol), rtol_(rtol), verbose_(verbose) {}
 
     double get_hnext() const { return hnext_; }; // # of rejections
     bool get_reject() const { return reject_; };
@@ -36,6 +36,7 @@ class Controller {
     // Scale function return= atol + abs(y) * rtol
     const double atol_; // Tolerated absolute error
     const double rtol_; // Tolerated relative error
+    bool verbose_{false}; // Switch verbose mode
 
     // Numerical Recipies 3rd Edition suggests these values:
     const double beta_ = 0.4 / 5.0;

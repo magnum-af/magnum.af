@@ -4,6 +4,33 @@
 
 namespace magnumafcpp {
 
+void warning_hnext_lt_hmin(double hnext, double hmin) {
+    printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
+           "stepsize hnext=%e <= minimum allowed stepsize "
+           "hmin=%e. Stepsize hmin will be forced and given error "
+           "bounds may become invalid.\n",
+           color_string::red("Warning:").c_str(), hnext, hmin);
+}
+
+void warning_h_lt_hmin(double h, double hmin) {
+    printf("%s Runge Kutta Adaptive Stepsize Controller: tried step h=%e <= hmin=%e."
+           "Error bounds may become invalid.\n",
+           color_string::red("Warning:").c_str(), h, hmin);
+}
+
+void info_hnext_gt_hmax(double hnext, double hmax) {
+    printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
+           "stepsize hnext=%e >= maximum allowed stepsize "
+           "hmax=%e\nStepsize will be limited to hmax.  This means that large timesteps are taken.\n",
+           color_string::green("Info:").c_str(), hnext, hmax);
+}
+
+void info_h_gt_hmax(double h, double hmax) {
+    printf("%s Runge Kutta Adaptive Stepsize Controller: tried step h=%e >= hmax=%e "
+           ".\n Stepsize is limited to hmax. This means that large timesteps are taken.\n",
+           color_string::red("Info:").c_str(), h, hmax);
+}
+
 bool Controller::success(const double err, double& h) {
     double scale;
 
@@ -28,22 +55,15 @@ bool Controller::success(const double err, double& h) {
             hnext_ = h * scale;
         }
         if (hnext_ <= hmin_) {
+            warning_hnext_lt_hmin(hnext_, hmin_);
             hnext_ = hmin_;
             counter_hmin_++;
-            printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
-                   "stepsize hnext=%e <= minimum allowed stepsize "
-                   "hmin=%e\nStepsize hmin will be forced and given error "
-                   "bounds may become invalid.\n",
-                   color_string::red("Warning:").c_str(), hnext_, hmin_);
-        }
-        if (hnext_ >= hmax_) {
+        } else if (hnext_ >= hmax_) {
+            if (verbose_) {
+                info_hnext_gt_hmax(hnext_, hmax_);
+            }
             hnext_ = hmax_;
             counter_hmax_++;
-            printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
-                   "stepsize hnext=%e >= maximum allowed stepsize "
-                   "hmax=%e\nStepsize will be limited to hmax to preserve "
-                   "given error bounds.\n",
-                   color_string::red("Warning:").c_str(), hnext_, hmax_);
         }
         errold_ = std::max(err, 1.0e-4); // Why?
         reject_ = false;
@@ -53,25 +73,22 @@ bool Controller::success(const double err, double& h) {
         scale = std::max(headroom_ * std::pow(err, -alpha_), minscale_);
         h *= scale;
         if (h <= hmin_) {
+            warning_h_lt_hmin(h, hmin_);
             h = hmin_;
             counter_hmin_++;
-            printf("%s Runge Kutta Adaptive Stepsize Controller: hmin=%e "
-                   "reached in else, error bounds may be invalid.\n",
-                   color_string::red("Warning:").c_str(), hmin_);
             return true;
-        }
-        if (h >= hmax_) {
+        } else if (h >= hmax_) {
+            if (verbose_) {
+                info_h_gt_hmax(h, hmax_);
+            }
             h = hmax_;
             counter_hmax_++;
-            printf("%s Runge Kutta Adaptive Stepsize Controller: hmax=%e "
-                   "reached in else.\n Stepsize is limited to hmax to preserve "
-                   "error bounds.\n",
-                   color_string::red("Warning:").c_str(), hmax_);
             return true;
+        } else {
+            reject_ = true;
+            counter_reject_++;
+            return false;
         }
-        reject_ = true;
-        counter_reject_++;
-        return false;
     }
 }
 } // namespace magnumafcpp
