@@ -27,7 +27,8 @@ from libcpp cimport bool
 from cython.operator cimport dereference as deref
 from math import sqrt
 from math import pi
-from numpy import zeros as np_zeros
+import numpy as np
+# from numpy import zeros as np_zeros
 
 from magnumaf_decl cimport Mesh as cMesh
 from magnumaf_decl cimport NonequiMesh as cNonequiMesh
@@ -189,6 +190,25 @@ def array_from_addr(array_addr):
     array.arr=c_void_p(array_addr)
     return array
 
+class Geometry:
+    @staticmethod
+    def xy_ellipse(nx, ny, nz, make_3d=False):
+        """Geometry array representing an ellipse in xy plane with 1, else 0."""
+        mesh = np.zeros((nx, ny, nz), dtype = np.bool)
+        for ix in range (0, nx):
+            for iy in range(0, ny):
+                for iz in range(0, nz):
+                    a= nx/2.
+                    b= ny/2.
+                    rx=ix-nx/2.
+                    ry=iy-ny/2.
+                    r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
+                    if(r<=1):
+                        mesh[ix, iy, iz]=1
+        if make_3d:
+            return af.tile(af.from_ndarray(mesh), 1, 1, 1, 3)
+        else:
+            return af.from_ndarray(mesh)
 
 class Util:
     @staticmethod
@@ -238,6 +258,17 @@ class Util:
             system('evince ' + outputfile)
 
     @staticmethod
+    def spacial_mean(field):
+        """Spacial mean of either a scalar or vector field"""
+        mean = af.mean(af.mean(af.mean(field, dim=0), dim=1), dim=2)
+        if len(mean.shape) <= 3:
+            return mean.scalar()
+        elif mean.shape[3] == 3:
+            return mean[0, 0, 0, 0].scalar(), mean[0, 0, 0, 1].scalar(), mean[0, 0, 0, 2].scalar()
+        else:
+            raise RuntimeError('spacial_mean: input array has wrong dimension')
+
+    @staticmethod
     def spacial_mean_in_region(vectorfield, region):
         a = cspacial_mean_in_region(addressof(vectorfield.arr), addressof(region.arr))
         return a[0], a[1], a[2]
@@ -264,7 +295,7 @@ class Util:
     def disk(nx, ny, nz, axis=[1, 0, 0], return_ncells = False):
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
         n_cells=0
-        m = np_zeros((nx, ny, nz, 3))
+        m = np.zeros((nx, ny, nz, 3))
         for ix in range (0, nx):
             for iy in range(0, ny):
                 for iz in range(0, nz):
@@ -286,7 +317,7 @@ class Util:
     @staticmethod
     def vortex(mesh, positive_z = True):
         """Returns a vortex configuration of dimension [mesh.nx, mesh.ny, mesh.nz, 3]. The option positive_z decides whether the vortex core points in positive (=True) or negative (=False) z-direction."""
-        m = np_zeros((mesh.nx, mesh.ny, mesh.nz, 3));
+        m = np.zeros((mesh.nx, mesh.ny, mesh.nz, 3));
         for ix in range (0, mesh.nx):
             for iy in range(0, mesh.ny):
                 rx=float(ix)-mesh.nx/2.
@@ -882,7 +913,11 @@ cdef class StringMethod:
 # base class for clearification (especially for heritage diagramms in docu)
 cdef class HeffTerm:
     def H_in_Apm(self, State state):
+        """H-field in Ampere per meter [A/m]"""
         pass
+    def H_in_T(self, State state):
+        """H-field in Tesla [T]"""
+        return Constants.mu0 * self.H_in_Apm(state)
     def Energy_in_J(self, State state):
         pass
 
