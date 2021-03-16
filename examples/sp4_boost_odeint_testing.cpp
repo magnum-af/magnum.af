@@ -194,6 +194,8 @@ int main(int argc, char** argv) {
         observe_m(std::filesystem::path outdir) : outdir_(outdir) {}
 
         void operator()(const af::array& m, double t) {
+            // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
+            // TODO // m = normalize(m);
             const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2).as(f64);
             const auto mx = mean(0, 0, 0, 0).scalar<double>();
             const auto my = mean(0, 0, 0, 1).scalar<double>();
@@ -214,13 +216,15 @@ int main(int argc, char** argv) {
     // times: dt is seperate from dt_view, i.e. first step dt not dependend on observer range
     // NOTE: Timings are not very reliable, const mode was once 1m40s, then 30s with fehlberg78!!!
 
-    enum class intmode { constant, adaptive, times, steps };
-    // const auto mode = intmode::times;
-    // const auto mode = intmode::adaptive;
-    // const auto mode = intmode::constant;
-    constexpr auto mode = intmode::steps; // Exact same results ad adaptive (if same llg is used)
+    enum class IntegationMode { constant, adaptive, times, steps, steps_dense };
+    // constexpr auto mode = IntegationMode::times;
+    constexpr auto mode = IntegationMode::adaptive;
+    // constexpr auto mode = IntegationMode::constant;
+    // constexpr auto mode = IntegationMode::steps; // Exact same results ad adaptive (if same llg is used)
+    // constexpr auto mode = IntegationMode::steps_dense; // Not exactly same as constant
+    // // .., probably because dopri45 used high order interpolation
 
-    std::ofstream stream(outdir / "m.dat");
+    std::ofstream stream(outdir / "m.dat"); // clears old file
     stream.precision(12);
     std::vector<std::size_t> steps;
     namespace ode = boost::numeric::odeint;
@@ -228,9 +232,9 @@ int main(int argc, char** argv) {
     // choosing an integrator via typedef
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
-    // typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
-    typedef custom_ode::runge_kutta_fehlberg54<af::array, double, af::array, double, ode::vector_space_algebra>
-        stepper_type;
+    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    // typedef custom_ode::runge_kutta_fehlberg54<af::array, double, af::array, double, ode::vector_space_algebra>
+    //     stepper_type;
     // typedef ode::runge_kutta_cash_karp54<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
@@ -248,19 +252,19 @@ int main(int argc, char** argv) {
 
     auto integrate = [&](const double start_time, const double end_time, const double dt, const double dt_view) {
         switch (mode) {
-        case intmode::times: {
+        case IntegationMode::times: {
             const auto range = make_range(start_time, end_time, dt_view);
             // std::copy(std::begin(range), std::end(range), std::ostream_iterator<double>(std::cout, " "));
             steps.push_back(integrate_times(stepper, llg_norm, m, range, dt, observe_m{outdir}));
             break;
         }
-        case intmode::adaptive:
+        case IntegationMode::adaptive:
             steps.push_back(integrate_adaptive(stepper, llg_norm, m, start_time, end_time, dt, observe_m{outdir}));
             break;
-        case intmode::constant:
+        case IntegationMode::constant:
             steps.push_back(integrate_const(stepper, llg_norm, m, start_time, end_time, dt_view, observe_m{outdir}));
             break;
-        case intmode::steps: {
+        case IntegationMode::steps: {
             double t = start_time;
             double try_dt = dt;
             auto observer = observe_m{outdir};
@@ -298,6 +302,51 @@ int main(int argc, char** argv) {
                     m = normalize(m); // NOTE: using non_normalizing_llg
                 }
                 observer(m, t);
+            }
+            steps.push_back(sucessful_steps);
+            break;
+        }
+        case IntegationMode::steps_dense: {
+            double t = start_time;
+            double try_dt = dt;
+            auto observer = observe_m{outdir};
+            observer(m, t);
+            std::size_t sucessful_steps = 0;
+            double t_next_observer_call = start_time + dt_view;
+            while (t < end_time) {
+                enum class LlgNormalize { on, off };
+                constexpr auto llg_normalize = LlgNormalize::on;
+                // constexpr auto llg_normalize = LlgNormalize::off;
+                ode::controlled_step_result step_result;
+                do {
+                    // Call observer only at intervals dt_view
+                    // TODO handle edge cases when step is much larger than view_dt
+                    if (t + try_dt > t_next_observer_call) {
+                        try_dt = t_next_observer_call - t;
+                    }
+                    if (t + try_dt > end_time) { // Assure, we end at end_time
+                        try_dt = end_time - t;
+                    }
+                    switch (llg_normalize) {
+                    case LlgNormalize::off:
+                        step_result = stepper.try_step(llg_regular, m, t, try_dt);
+                        break;
+                    case LlgNormalize::on:
+                        step_result = stepper.try_step(llg_norm, m, t, try_dt);
+                        break;
+                    }
+                    // std::cout << "step: " << sucessful_steps << '\t' << t << '\t' << try_dt << std::endl;
+                } while (step_result == ode::controlled_step_result::fail);
+
+                sucessful_steps++;
+                if (llg_normalize == LlgNormalize::off) {
+                    m = normalize(m); // NOTE: using non_normalizing_llg
+                }
+                if (std::abs(t - t_next_observer_call) < 1e-16) { //  or t == end_time
+                    // if (t == t_next_observer_call) { //  or t == end_time
+                    observer(m, t);
+                    t_next_observer_call += dt_view;
+                }
             }
             steps.push_back(sucessful_steps);
             break;
