@@ -22,17 +22,17 @@ nz = 2
 
 mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 material = Material(ms = 1.4e6, A = 30e-12, alpha = 0.02, Ku1=1e4, Ku1_axis=[1, 0, 0])
-m = Util.normed_homogeneous_field(nx, ny, nz, [1, 0, 0])
+m = Magnetization.homogeneous(nx, ny, nz, [1, 0, 0])
 state = State(mesh, material, m)
 
-polarization = Util.normed_homogeneous_field(nx, ny, nz, [0, 1, 0])
+polarization = Magnetization.homogeneous(nx, ny, nz, [0, 1, 0])
 
 fields = [
     DemagField(mesh, material),
     ExchangeField(mesh, material),
     SpinTransferTorqueField(polarization, nu_damp=.3, nu_field=.4, j_e=2e10),
     UniaxialAnisotropyField(mesh, material),
-    ExternalField(Util.normed_homogeneous_field(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
+    ExternalField(Magnetization.homogeneous(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
 ]
 print (fields)
 llg = LLGIntegrator(terms=fields, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6)

@@ -34,12 +34,8 @@ geom = Geometry.xy_ellipse(nx, ny, nz, make_3d = True)
 
 # Initial magnetization:
 if True:
-    # creating isotropic random distribution of unit spins in geometry:
-    # random normal distribution of coordinates gives isotropic distribution of directions.
-    m0 = af.randn(nx, ny, nz, 3, dtype)
-    m0 = Util.normalize(m0)
-    m0 = geom * m0
-
+    # creating isotropic random distribution of unit spins in geometry
+    m0 = geom * Magnetization.isotropic(nx, ny, nz, dtype)
 else:
     # Alternative: ellipse with bottom +x, top -x
     m0 = af.constant(0.0, nx, ny, nz, 3, dtype)

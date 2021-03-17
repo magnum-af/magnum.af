@@ -190,26 +190,6 @@ def array_from_addr(array_addr):
     array.arr=c_void_p(array_addr)
     return array
 
-class Geometry:
-    @staticmethod
-    def xy_ellipse(nx, ny, nz, make_3d=False):
-        """Geometry array representing an ellipse in xy plane with 1, else 0."""
-        mesh = np.zeros((nx, ny, nz), dtype = np.bool)
-        for ix in range (0, nx):
-            for iy in range(0, ny):
-                for iz in range(0, nz):
-                    a= nx/2.
-                    b= ny/2.
-                    rx=ix-nx/2.
-                    ry=iy-ny/2.
-                    r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-                    if(r<=1):
-                        mesh[ix, iy, iz]=1
-        if make_3d:
-            return af.tile(af.from_ndarray(mesh), 1, 1, 1, 3)
-        else:
-            return af.from_ndarray(mesh)
-
 class Util:
     @staticmethod
     def np_to_af(a):
@@ -282,16 +262,6 @@ class Util:
         return normalized
 
     @staticmethod
-    def normed_homogeneous_field(nx = 1, ny = 1, nz = 1, axis=[1, 0, 0], factor = 1.):
-        """Returns a homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis and normed to factor."""
-        norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
-        array = af.constant(0.0, 1, 1, 1, 3, dtype=af.Dtype.f64)
-        array [0, 0, 0, 0] = factor * axis[0]/norm
-        array [0, 0, 0, 1] = factor * axis[1]/norm
-        array [0, 0, 0, 2] = factor * axis[2]/norm
-        return af.tile(array, nx, ny, nz)
-
-    @staticmethod
     def disk(nx, ny, nz, axis=[1, 0, 0], return_ncells = False):
         norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
         n_cells=0
@@ -342,13 +312,13 @@ class Util:
                         m[ix, iy, iz, :]=m[ix, iy, iz, :]/norm
         return af.from_ndarray(m)
 
-    @classmethod
-    def sum_of_difference_of_abs(cls, a, b):
+    @staticmethod
+    def sum_of_difference_of_abs(a, b):
         return af.sum(af.sum(af.sum(af.sum(af.abs(a)-af.abs(b), 0), 1), 2), 3).scalar()
 
-    @classmethod
-    def test_sum_of_difference_of_abs(cls, a, b, verbose = True):
-            c = cls.sum_of_difference_of_abs(a, b)
+    @staticmethod
+    def test_sum_of_difference_of_abs(a, b, verbose = True):
+            c = Util.sum_of_difference_of_abs(a, b)
             if (c != 0.):
                     if (verbose == True):
                             print ("Error")
@@ -369,6 +339,45 @@ class Util:
             return abs(gpu_number - 3)
         else:
             return 0
+
+class Geometry:
+    @staticmethod
+    def xy_ellipse(nx, ny, nz, make_3d=False):
+        """Geometry array representing an ellipse in xy plane with 1, else 0."""
+        mesh = np.zeros((nx, ny, nz), dtype = np.bool)
+        for ix in range (0, nx):
+            for iy in range(0, ny):
+                for iz in range(0, nz):
+                    a= nx/2.
+                    b= ny/2.
+                    rx=ix-nx/2.
+                    ry=iy-ny/2.
+                    r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
+                    if(r<=1):
+                        mesh[ix, iy, iz]=1
+        if make_3d:
+            return af.tile(af.from_ndarray(mesh), 1, 1, 1, 3)
+        else:
+            return af.from_ndarray(mesh)
+
+class Magnetization:
+    """Functions returning normalized magnetizations. Can easily be combined with Geometry functions."""
+
+    @staticmethod
+    def isotropic(nx: int, ny: int, nz: int, dtype = af.Dtype.f64):
+        """Returns an isotropic random distribution of unit vectors."""
+        # random normal distribution of coordinates gives isotropic distribution of directions:
+        return Util.normalize(af.randn(nx, ny, nz, 3, dtype))
+
+    @staticmethod
+    def homogeneous(nx: int, ny: int, nz: int, axis = [1, 0, 0], dtype=af.Dtype.f64):
+        """Returns a normalized homogeneous field of dimension [nx, ny, nz, 3] pointing into the direction of axis."""
+        norm = sqrt(axis[0]**2+axis[1]**2+axis[2]**2)
+        array = af.constant(0.0, 1, 1, 1, 3, dtype)
+        array [0, 0, 0, 0] = axis[0]/norm
+        array [0, 0, 0, 1] = axis[1]/norm
+        array [0, 0, 0, 2] = axis[2]/norm
+        return af.tile(array, nx, ny, nz)
 
 # For adding methods as properties (e.g. the State class method m_partial as attribute)
 # From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/

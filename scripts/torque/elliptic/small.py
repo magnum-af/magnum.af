@@ -27,7 +27,7 @@ mesh = Mesh(nx, ny, nz, x/nx, y/ny, z/nz)
 state = State(mesh, material, m)
 state.write_vti(sys.argv[1] + "init")
 
-polarization = Util.normed_homogeneous_field(nx, ny, nz, [1, 0, 0]) # Current in pinned layer along y-axis creates polarization in ellipse (which is in positive z dir) in (+/-)? x-dir
+polarization = Magnetization.homogeneous(nx, ny, nz, [1, 0, 0]) # Current in pinned layer along y-axis creates polarization in ellipse (which is in positive z dir) in (+/-)? x-dir
 
 spin_diffusion_length=3e-9 # TODO get proper value and implement as option
 
@@ -61,7 +61,7 @@ stream.close()
 
 #SpinTransferTorqueField(polarization, nu_damp=.1, nu_field=.7, j_e=1.6e11),
 #UniaxialAnisotropyField(mesh, material),
-#Zee(Util.normed_homogeneous_field(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
+#Zee(Magnetization.homogeneous(nx, ny, nz, [1, 1, 0], 10e-3/Constants.mu0)),
 # Minimizer version
 #timer = time.time()
 #minimizer = LBFGS_Minimizer(terms=fields, tol=1e-15, maxiter=1000)
