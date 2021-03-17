@@ -20,7 +20,7 @@ Ku1 = 20000            # anisotropy constant [J/m^3]
 Ku1_axis = [1, 0, 0]
 
 x, y, z =  500e-9, 500e-9, 14e-9 # Physical dimensions in [m]
-nx, ny, nz = 64, 64, 2 # Number of cells per axis
+nx, ny, nz = 64, 64, 7 # Number of cells per axis
 dx, dy, dz = x/nx, y/ny, z/nz # discretization:
 
 RKKY_surface = -3e-3 # [J/m^2]
@@ -30,28 +30,52 @@ RKKY = RKKY_surface * dz
 llg_over_minimizer = True
 
 # Defining geometry
-geom = Geometry.xy_ellipse(nx, ny, nz, make_3d = True)
+geom_1d = Geometry.xy_ellipse(nx, ny, nz)
+geom_3d = Geometry.xy_ellipse(nx, ny, nz, make_3d = True)
 
 # Initial magnetization:
 if True:
     # creating isotropic random distribution of unit spins in geometry
-    m0 = geom * Magnetization.isotropic(nx, ny, nz, dtype)
+    m0 = geom_3d * Magnetization.isotropic(nx, ny, nz, dtype)
 else:
     # Alternative: ellipse with bottom +x, top -x
     m0 = af.constant(0.0, nx, ny, nz, 3, dtype)
     m0[:, :, 0, 0] = 1.  # setting mx in lower plane to 1
     m0[:, :, 1, 0] = -1. # setting mx in upper plane to -1
-    m0 = geom * m0
+    m0 = geom_3d * m0
+
+# layer 0: CoFeB
+# layer 1: CoFeB
+# layer 2: CoFeB
+# layer 3: Non-magnetic
+# layer 4: CoFeB
+# layer 5: CoFeB
+# layer 6: CoFeB
+
+# layer 2 and 3 are RKKY coupled
+# layer 3 and 4 are exchange coupled
+
+Ms_field = af.constant(Ms, nx, ny, nz, 1, dtype)
+Ms_field[:, :, 3] = 0.1 * Ms # Note: RKKY hack
+Ms_field = geom_1d * Ms_field
+
+# exch_arr = geom_1d * af.constant(A, nx, ny, nz, 1, dtype)
+
+exch_arr = af.constant(A, nx, ny, nz, 1, dtype)
+exch_arr[:, :, 3] = 2 * A # stronger exchange coupling to layer 4
+exch_arr = geom_1d * exch_arr
+
+RKKY_arr = af.constant(0.0, nx, ny, nz, 1, dtype)
+RKKY_arr[:, :, 2:3] = RKKY # coupling layers 2,3,4
+RKKY_arr = geom_1d * RKKY_arr
 
 # Creating magnumaf objects:
 mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
-state = State(mesh, Ms, m = m0)
-print("dx, dy, dz=", mesh.dx, mesh.dy, mesh.dz)
+state = State(mesh, Ms_field, m = m0)
 state.write_vti(args.outdir + "m0")
+print("dx, dy, dz=", mesh.dx, mesh.dy, mesh.dz)
 
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 8)
-RKKY_arr = af.constant(RKKY, nx, ny, nz, 1, dtype)
-exch_arr = af.constant(A, nx, ny, nz, 1, dtype)
 rkkyexch = RKKYExchangeField(RKKY_arr, exch_arr, mesh)
 aniso = UniaxialAnisotropyField(Ku1, Ku1_axis)
 ext = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype))
@@ -65,11 +89,13 @@ else:
 # Defining Hysteresis parameters
 amplitude = 0.2/Constants.mu0 # Amplitude in [A/m]
 periods = 3
-rad_per_step = 2.0 * np.pi / 1000.0
+steps_per_period = 100
+rad_per_step = 2.0 * np.pi / steps_per_period
 steps = int(periods * np.pi * 2.0 / rad_per_step)
 
 vti_every = 10
-stream = open(args.outdir + "m.dat", "w")
+stream = open(args.outdir + "m.dat", "w", buffering=1)
+stream.write("# i, mx, my, mz, Hx, Hy, Hz\n")
 
 print("Starting hysteresis with", steps, "steps.")
 for i in range(steps):
@@ -84,7 +110,7 @@ for i in range(steps):
     mx, my, mz = state.mean_m()
     Hx, Hy, Hz = Util.spacial_mean(ext.H_in_T(state))
     print(i, mx, my, mz, Hx, Hy, Hz)
-    stream.write("%e, %e, %e, %e, %e, %e, %e\n" %(i, mx, my, mz, Hx, Hy, Hz))
+    stream.write("%d, %e, %e, %e, %e, %e, %e\n" %(i, mx, my, mz, Hx, Hy, Hz))
     if steps % vti_every == 0:
         state.write_vti(args.outdir + "step" + str(i))
 
