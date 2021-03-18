@@ -27,10 +27,12 @@ RKKY_surface = -3e-3 # [J/m^2]
 RKKY = RKKY_surface * dz
 
 # Switch between LLG and LBFGS Minimizer: True is LLG, False is Minimizer
-llg_over_minimizer = True
+llg_over_minimizer = False
 
 # Defining geometry
 geom_1d = Geometry.xy_ellipse(nx, ny, nz)
+geom_magnetic = geom_1d
+geom_magnetic[:, :, 3] = 0
 geom_3d = Geometry.xy_ellipse(nx, ny, nz, make_3d = True)
 
 # Initial magnetization:
@@ -89,7 +91,8 @@ else:
 # Defining Hysteresis parameters
 amplitude = 0.2/Constants.mu0 # Amplitude in [A/m]
 periods = 3
-steps_per_period = 100
+steps_per_period = 360
+#steps_per_period = 1000
 rad_per_step = 2.0 * np.pi / steps_per_period
 steps = int(periods * np.pi * 2.0 / rad_per_step)
 
@@ -102,12 +105,13 @@ for i in range(steps):
     # make step:
     ext.set_homogeneous_field(amplitude * np.sin(i * rad_per_step), 0, 0)
     if llg_over_minimizer is True:
-        llg.relax(state, precision = 1e-4, verbose = False)
+        llg.relax(state, precision = 1e-8, verbose = False)
     else:
         minimizer.minimize(state)
 
     # write output:
-    mx, my, mz = state.mean_m()
+    mx, my, mz = Util.spacial_mean_in_region(state.m, geom_magnetic)
+    # mx, my, mz = state.mean_m() # does not reflect RKKY hack
     Hx, Hy, Hz = Util.spacial_mean(ext.H_in_T(state))
     print(i, mx, my, mz, Hx, Hy, Hz)
     stream.write("%d, %e, %e, %e, %e, %e, %e\n" %(i, mx, my, mz, Hx, Hy, Hz))

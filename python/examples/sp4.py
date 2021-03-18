@@ -33,7 +33,7 @@ llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")
-stream = open(args.outdir +"m.dat", "w")
+stream = open(args.outdir + "m.dat", "w", buffering = 1)
 timer = time.time()
 while state.t < inttime:
     llg.step(state)
