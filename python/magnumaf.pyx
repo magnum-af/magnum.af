@@ -190,6 +190,20 @@ def array_from_addr(array_addr):
     array.arr=c_void_p(array_addr)
     return array
 
+class Conversion:
+    @staticmethod
+    def Apm_to_Tesla(value_Apm):
+        return value_Apm * Constants.mu0
+    @staticmethod
+    def Tesla_to_Apm(value_Tesla):
+        return value_Tesla / Constants.mu0
+    @staticmethod
+    def J_to_eV(value_Joule):
+        return value_Joule / Constants.e_abs
+    @staticmethod
+    def eV_to_J(value_eV):
+        return value_eV * Constants.e_abs
+
 class Util:
     @staticmethod
     def np_to_af(a):
@@ -926,9 +940,11 @@ cdef class HeffTerm:
         pass
     def H_in_T(self, State state):
         """H-field in Tesla [T]"""
-        return Constants.mu0 * self.H_in_Apm(state)
+        return Conversion.Apm_to_Tesla(self.H_in_Apm(state))
     def Energy_in_J(self, State state):
         pass
+    def Energy_in_eV(self, State state):
+        return Conversion.J_to_eV(self.Energy_in_J(state))
 
 
 cdef class DemagField(HeffTerm):
@@ -1492,8 +1508,10 @@ class Constants:
         [m A^-1 s^-1] gyromagnetic ratio gamma
     mu_b : float
         [J/T] Bohr magneton mu_bohr
-    e : float
-        [C] elementary charge e
+    e_neg : float
+        [C] negative signed elementary charge e
+    e_abs : float
+        [C] absolute value of elementary charge e
     kb : float
         [J/K] Boltzmann constant kb
     hbar : float
@@ -1505,7 +1523,9 @@ class Constants:
 
     mu_b = 9.274009994e-24
 
-    e = - 1.6021766208e-19
+    e_neg = - 1.6021766208e-19
+
+    e_abs = 1.6021766208e-19
 
     kb = 1.38064852e-23
 
