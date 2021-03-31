@@ -30,6 +30,7 @@
 #include "solvers/minimizer.hpp"
 #include "solvers/string_method.hpp"
 #include "util/af_overloads.hpp"
+#include "util/arg_parser.hpp"
 #include "util/color_string.hpp"
 #include "util/geometry.hpp"
 #include "util/newton_iteration.hpp"

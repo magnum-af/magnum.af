@@ -9,13 +9,13 @@ namespace magnumafcpp {
 using std::size_t;
 
 struct Mesh {
-    Mesh(size_t nx, size_t ny, size_t nz, double dx, double dy, double dz);
+    constexpr Mesh(size_t nx, size_t ny, size_t nz, double dx, double dy, double dz); // get rid of ctor?
     size_t nx, ny, nz;   ///< Number of cells in x, y, z
     double dx, dy, dz;   ///< Length of a cell in x, y, z in [m]
 };
 
 // avoiding shadow warning:
-inline Mesh::Mesh(size_t nx_, size_t ny_, size_t nz_, double dx_, double dy_, double dz_)
+inline constexpr Mesh::Mesh(size_t nx_, size_t ny_, size_t nz_, double dx_, double dy_, double dz_)
     : nx(nx_), ny(ny_), nz(nz_), dx(dx_), dy(dy_), dz(dz_) {}
 
 inline std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
