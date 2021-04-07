@@ -1,6 +1,7 @@
 #include "state.hpp"
-#include "util/func.hpp"
+#include "math.hpp"
 #include "util/color_string.hpp"
+#include "util/func.hpp"
 #include "vtk_IO.hpp"
 #include <iomanip>
 
@@ -20,8 +21,24 @@ State State::operator+(const af::array& a) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const State& state) {
-    auto [mx, my, mz] = state.mean_m();
-    os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    const auto mean_m = state.mean_m_as_afarray();
+    switch (mean_m.type()) {
+    case f64: {
+        const auto [mx, my, mz] = math::vec_components<double>(mean_m);
+        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    } break;
+    case f32: {
+        const auto [mx, my, mz] = math::vec_components<float>(mean_m);
+        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    } break;
+    case f16: {
+        const auto [mx, my, mz] = math::vec_components<float>(mean_m.as(f32));
+        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
+    } break;
+    default:
+        throw std::runtime_error("State::operator<< af::dtype::" + std::to_string(mean_m.type()) + " not supported.");
+        break;
+    }
     return os;
 }
 
@@ -33,13 +50,7 @@ af::array State::mean_m_as_afarray() const {
     }
 }
 
-std::array<double, 3> State::mean_m() const {
-    af::array mean_m_af = mean_m_as_afarray().as(f64);
-    const double mx = mean_m_af(0, 0, 0, 0).scalar<double>();
-    const double my = mean_m_af(0, 0, 0, 1).scalar<double>();
-    const double mz = mean_m_af(0, 0, 0, 2).scalar<double>();
-    return {mx, my, mz};
-}
+std::array<double, 3> State::mean_m() const { return math::vec_components<double>(mean_m_as_afarray().as(f64)); }
 
 af::array State::get_Ms_field() const {
     if (Ms_field.isempty()) {

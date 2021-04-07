@@ -1,16 +1,24 @@
 #pragma once
 #include "arrayfire.h"
 #include <array>
+
 /// Common math functions for af::array container.
 namespace magnumafcpp::math{
 
-/// Calculate mean along first three dimensions of af::array.
-template <typename T> std::array<T, 3> mean_3d(const af::array& a) {
-    const auto mean = af::mean(af::mean(af::mean(a, 0), 1), 2);
-    const T mx = mean(0, 0, 0, 0).scalar<T>();
-    const T my = mean(0, 0, 0, 1).scalar<T>();
-    const T mz = mean(0, 0, 0, 2).scalar<T>();
-    return {mx, my, mz};
+/// Get vector components of af::array sized [1 1 1 3].
+template <typename T> std::array<T, 3> vec_components(const af::array& a) {
+    const T ax = a(0, 0, 0, 0).scalar<T>();
+    const T ay = a(0, 0, 0, 1).scalar<T>();
+    const T az = a(0, 0, 0, 2).scalar<T>();
+    return {ax, ay, az};
+}
+
+/// Calculate mean along first three dimensions of af::array, [nx ny nz :] -> [1 1 1 :]
+inline af::array mean_3d_af(const af::array& m) { return af::mean(af::mean(af::mean(m, 0), 1), 2); }
+
+/// Calculate mean along first three dimensions of af::array, [nx ny nz :] -> [1 1 1 :]
+template <typename T> std::array<T, 3> mean_3d(const af::array& m) {
+    return vec_components<T>(mean_3d_af(m));
 }
 
 /// Absolute value of maximum of all values in array
