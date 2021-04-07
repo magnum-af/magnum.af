@@ -1,5 +1,6 @@
 #include "state.hpp"
 #include "math.hpp"
+#include "util/af_overloads.hpp" // for 'os << af::array'
 #include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "vtk_IO.hpp"
@@ -22,23 +23,7 @@ State State::operator+(const af::array& a) const {
 
 std::ostream& operator<<(std::ostream& os, const State& state) {
     const auto mean_m = state.mean_m_as_afarray();
-    switch (mean_m.type()) {
-    case f64: {
-        const auto [mx, my, mz] = math::vec_components<double>(mean_m);
-        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
-    } break;
-    case f32: {
-        const auto [mx, my, mz] = math::vec_components<float>(mean_m);
-        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
-    } break;
-    case f16: {
-        const auto [mx, my, mz] = math::vec_components<float>(mean_m.as(f32));
-        os << state.t << "\t" << mx << "\t" << my << "\t" << mz;
-    } break;
-    default:
-        throw std::runtime_error("State::operator<< af::dtype::" + std::to_string(mean_m.type()) + " not supported.");
-        break;
-    }
+    os << state.t << '\t' << mean_m;
     return os;
 }
 
