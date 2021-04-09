@@ -21,14 +21,13 @@ TEST(util_vector_or_array, ctor_array) {
 }
 
 TEST(util_vector_or_array, get_as_array) {
-    auto test_get_as_array = [](util::UnitVectorOrArray uvec, std::array<double, 3> expected_unitvec,
+    auto test_get_as_array = [](const util::UnitVectorOrArray& uvec, std::array<double, 3> expected_unitvec,
                                 af::dim4 dims_scalar) {
-        util::UnitVectorOrArray v(uvec);
         auto dims_vector = dims_scalar;
         dims_vector[3] = 3;
-        auto type = af::dtype(f64);
+        auto type = af::dtype::f64;
         // auto testarray = v.get_as_array(dims_scalar, type); // <- previous test, now throws
-        auto testarray = v.get_as_array(dims_vector, type);
+        auto testarray = uvec.get_as_array(dims_vector, type);
         EXPECT_EQ(testarray.dims(), dims_vector); // Make sure scalar vector types have correct dims
                                                   // Sensitive only to get_as_array for UVOR ctor with scalar vector
         // if (std::holds_alternative<std::array<double, 3>>(uvec.variant)) {
@@ -41,8 +40,9 @@ TEST(util_vector_or_array, get_as_array) {
 
     auto test_both_scalar_and_array = [test_get_as_array](std::array<double, 3> in_vec,
                                                           std::array<double, 3> expected_vec, af::dim4 dims_scalar) {
-        test_get_as_array(in_vec, expected_vec, dims_scalar);
-        test_get_as_array(af::tile(af::array(1, 1, 1, 3, in_vec.data()), dims_scalar), expected_vec, dims_scalar);
+        test_get_as_array(util::UnitVectorOrArray(in_vec), expected_vec, dims_scalar);
+        test_get_as_array(util::UnitVectorOrArray(af::tile(af::array(1, 1, 1, 3, in_vec.data()), dims_scalar)),
+                          expected_vec, dims_scalar);
     };
 
     test_both_scalar_and_array({1, 0, 0}, {1, 0, 0}, af::dim4(1, 1, 1, 1));

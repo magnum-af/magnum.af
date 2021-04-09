@@ -10,6 +10,9 @@ namespace magnumafcpp {
 class DoubleOrArray {
   public:
     explicit DoubleOrArray(double value) : scalar(value) {}
+
+    // Note: af::array ctor is not explicit, so any ctor with int/double/... can be mapped to this ctor
+    // This can cause nasty implicit-conversion bugs, e.g. 'double 5' calls ctor for af::array(5) and not double!
     explicit DoubleOrArray(af::array value) : arr(value) {
         if (value.dims(3) != 1) {
             throw std::runtime_error(
