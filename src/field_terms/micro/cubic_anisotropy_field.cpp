@@ -1,6 +1,7 @@
 #include "field_terms/micro/cubic_anisotropy_field.hpp"
 #include "math.hpp"
 #include "util.hpp"
+#include <variant>
 namespace magnumafcpp {
 
 af::array dot_4d(const af::array& a, const af::array& b) { return af::tile(af::sum(a * b, 3), 1, 1, 1, 3); }
@@ -10,7 +11,8 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
     : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(c1), c2(c2), c3(normalize_vector(cross_product(c1, c2))) {
     // check input vectors c1, c2
     const double precision = 1e-12;
-    const double abs_dot_c1c2 = std::fabs(dot_product(this->c1.scalar_vector.value(), this->c2.scalar_vector.value()));
+    const double abs_dot_c1c2 = std::fabs(dot_product(std::get<std::array<double, 3>>(this->c1.variant),
+                                                      std::get<std::array<double, 3>>(this->c2.variant)));
     if (abs_dot_c1c2 > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. (c1 . c2) = "
                   << abs_dot_c1c2 << " > 0" << std::endl;
@@ -22,15 +24,16 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
 CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array, af::array c1,
                                            af::array c2)
     : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1(c1), c2(c2),
-      c3(math::cross4(this->c1.array_vector.value(), this->c2.array_vector.value())) {
+      c3(math::cross4(std::get<af::array>(this->c1.variant), std::get<af::array>(this->c2.variant))) {
     // check input vectors c1, c2
     const double precision = 1e-12;
     const double max_abs_c1_c2_dot =
-        af::max(
-            af::max(
-                af::max(af::max(af::abs(dot_4d(this->c1.array_vector.value(), this->c2.array_vector.value())), 0), 1),
-                2),
-            3)
+        af::max(af::max(af::max(af::max(af::abs(dot_4d(std::get<af::array>(this->c1.variant),
+                                                       std::get<af::array>(this->c2.variant))),
+                                        0),
+                                1),
+                        2),
+                3)
             .scalar<double>();
     if (max_abs_c1_c2_dot > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. "

@@ -25,7 +25,7 @@ class CubicAnisotropyField : public MicroTerm {
     DoubleOrArray Kc1, Kc2, Kc3; // First, second and third order cubic anisotropy constants in [J/m^3]
     /// Pairwise orthogonal unit vectors either as std::array<double,3> or as af::array.
     /// Input is normalized in ctor of UnitVectorOrArray class
-    UnitVectorOrArray c1, c2, c3;
+    util::UnitVectorOrArray c1, c2, c3;
 
   private:
     std::array<af::array, 3> h_1to3(const State& state) const;

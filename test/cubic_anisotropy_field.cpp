@@ -6,9 +6,13 @@
 using namespace magnumafcpp;
 TEST(CubicAnisotropyField, Constructor) {
     CubicAnisotropyField caniso(1, 1, 1, {1, 1, 0}, {-1, 1, 0});
-    EXPECT_THAT(caniso.c1.scalar_vector.value(), testing::ElementsAre(1 / std::sqrt(2), 1 / std::sqrt(2), 0));
-    EXPECT_THAT(caniso.c2.scalar_vector.value(), testing::ElementsAre(-1 / std::sqrt(2), 1 / std::sqrt(2), 0));
-    EXPECT_THAT(caniso.c3.scalar_vector.value(), testing::ElementsAre(0, 0, 1));
+    const auto c1 = std::get<std::array<double, 3>>(caniso.c1.variant);
+    const auto c2 = std::get<std::array<double, 3>>(caniso.c2.variant);
+    const auto c3 = std::get<std::array<double, 3>>(caniso.c3.variant);
+
+    EXPECT_THAT(c1, testing::ElementsAre(1 / std::sqrt(2), 1 / std::sqrt(2), 0));
+    EXPECT_THAT(c2, testing::ElementsAre(-1 / std::sqrt(2), 1 / std::sqrt(2), 0));
+    EXPECT_THAT(c3, testing::ElementsAre(0, 0, 1));
 }
 
 // single spin rotating 360 degree in xy plane with offset of z in z-dir (befor normalization)

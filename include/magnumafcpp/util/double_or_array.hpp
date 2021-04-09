@@ -19,8 +19,9 @@ class DoubleOrArray {
     }
 
     // Data members, only one of the two must be value initialized
-    const std::optional<double> scalar{};
-    const std::optional<af::array> arr{};
+    // TODO use std::variant
+    std::optional<double> scalar{};
+    std::optional<af::array> arr{};
 
     af::array operator+(const af::array& b) const {
         if (scalar) {
