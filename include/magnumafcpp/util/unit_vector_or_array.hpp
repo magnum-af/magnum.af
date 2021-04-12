@@ -1,14 +1,12 @@
 #pragma once
-#include "util/func.hpp"
 #include "util.hpp"
+#include "util/func.hpp"
+#include "util/variant_helper.hpp"
 #include <array>
 #include <arrayfire.h>
 #include <variant>
 
 namespace magnumafcpp::util {
-
-// Helper constant for visitor
-template <class> inline constexpr bool always_false_v = false;
 
 ///
 /// Wrapper for a unit vector either of type std::array<double, 3> or af::array dims [nx, ny, nz, 3]
