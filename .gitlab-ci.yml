@@ -1,6 +1,5 @@
 stages:
-  - build
-  - test
+  - build_and_test
   - deploy
 
 variables:
@@ -11,40 +10,24 @@ variables:
 before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
-build_cpu:
-  stage: build
+build_and_test_cpu:
+  stage: build_and_test
   script:
     - docker pull $CPU_TEST_IMAGE || true
     - docker build -t $CPU_TEST_IMAGE -f Dockerfile.cpu .
+    - docker run --rm $CPU_TEST_IMAGE ./scripts/runalltests.sh
     - docker push $CPU_TEST_IMAGE
   tags:
     - docker
     - gpu # temporary, avoiding PC01 runner
 
-build_gpu:
-  stage: build
+build_and_test_gpu:
+  stage: build_and_test
   script:
     - docker pull $CUDA_TEST_IMAGE || true
     - docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
-    - docker push $CUDA_TEST_IMAGE
-  tags:
-    - docker
-    - gpu
-
-test_cpu:
-  stage: test
-  script:
-    - docker pull $CPU_TEST_IMAGE
-    - docker run --rm $CPU_TEST_IMAGE ./scripts/runalltests.sh
-  tags:
-    - docker
-    - gpu # temporary, avoiding PC01 runner
-
-test_gpu:
-  stage: test
-  script:
-    - docker pull $CUDA_TEST_IMAGE
     - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./scripts/runalltests.sh
+    - docker push $CUDA_TEST_IMAGE
     - ./scripts/bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
     - docker push $CUDA_RELEASE_IMAGE # check if push is necessary or already done implicitly
   tags:
