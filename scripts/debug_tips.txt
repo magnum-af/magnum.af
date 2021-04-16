@@ -137,3 +137,19 @@ Error: Python wrapping crashes with array wrapping
 Cause: Seems to occur only if arrayfire is installed via binaries
 
 Fix: Install arrayfire via source
+
+-----------------------------------------------------
+-----------------------------------------------------
+Error: GTO1 docker run error:
+   docker: Error response from daemon: Unknown runtime specified nvidia.
+Note: This did not work:
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+Fix: explicitly stop both docker services and restart them
+    sudo systemctl stop docker.service
+    sudo systemctl stop docker.socket
+    sudo systemctl start docker
+    systemctl status docker.*
+    # Not it should run, if not try also:
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
