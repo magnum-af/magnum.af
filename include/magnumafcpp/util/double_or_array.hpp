@@ -41,19 +41,18 @@ class DoubleOrArray {
     }
 
     af::array operator-(const af::array& b) const {
-        const auto visitor = overloaded{
-            [&b](double d) { return d - b; },
-            [&b](const af::array& a) {
-                if (a.dims() == b.dims()) {
-                    return a - b;
-                } else if (a.dims(0) == b.dims(0) and a.dims(1) == b.dims(1) and a.dims(2) == b.dims(2) and
-                           b.dims(3) == 3) {
-                    return af::tile(a, 1, 1, 1, 3) - b;
-                } else {
-                    throw std::runtime_error("DoubleOrArray::operator-: array dims do not match.");
-                }
-            },
-        };
+        const auto visitor =
+            make_visitor([&b](double d) { return d - b; },
+                         [&b](const af::array& a) {
+                             if (a.dims() == b.dims()) {
+                                 return a - b;
+                             } else if (a.dims(0) == b.dims(0) and a.dims(1) == b.dims(1) and a.dims(2) == b.dims(2) and
+                                        b.dims(3) == 3) {
+                                 return af::tile(a, 1, 1, 1, 3) - b;
+                             } else {
+                                 throw std::runtime_error("DoubleOrArray::operator-: array dims do not match.");
+                             }
+                         });
         return std::visit(visitor, variant_);
     }
 
