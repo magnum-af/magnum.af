@@ -49,6 +49,9 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     /// @param [in] verbose Verbose switch
     void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::ostream& os = std::cout,
                          bool verbose = true);
+    // wrapping using filename to omit stream:
+    void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::string filename,
+                         bool verbose = true, bool append = false);
     double get_time_heff() const { return time_heff; }
     long int h_addr(const State& state) const;
 

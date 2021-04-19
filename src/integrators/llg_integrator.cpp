@@ -2,6 +2,7 @@
 #include "equations.hpp"
 #include "math.hpp"
 #include "state.hpp"
+#include <fstream>
 #include <memory>
 
 namespace magnumafcpp {
@@ -70,7 +71,7 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
                                     bool verbose) {
     const double time_init = state.t;
     const double time_final = time_init + time_in_s;
-    os << state << '\n';
+    os << state << std::flush << '\n'; // flushing for pywrap
 
     double time_next_write = time_init + write_every_dt_in_s;
     while (state.t < time_final) {
@@ -82,13 +83,13 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
                 // final backsep s.t. state.t = time_init + time_in_s;
                 state.m += RKF45(state, backstep, dummy_err);
                 state.t += backstep;
-                os << state << '\n';
+                os << state << std::flush << '\n';
                 break; // otherwise while could perform an additional step due to rounding errors
             } else {
                 State current_state = state;
                 current_state.m += RKF45(current_state, backstep, dummy_err); // backwards step
                 current_state.t += backstep;                                  // backwards
-                os << current_state << '\n';
+                os << current_state << std::flush << '\n';
                 if (verbose) {
                     std::cout << "step: " << current_state << std::endl;
                 }
@@ -102,6 +103,12 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
             }
         }
     }
+}
+
+void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::string filename,
+                                    bool verbose, bool append) {
+    auto stream = std::ofstream(filename, append ? std::ios::app : std::ios::out);
+    integrate_dense(state, time_in_s, write_every_dt_in_s, stream, verbose);
 }
 
 long int LLGIntegrator::h_addr(const State& state) const {

@@ -876,6 +876,11 @@ cdef class LLGIntegrator:
             Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
         """
         self._thisptr.relax(deref(state._thisptr), precision, ncalcE, nprint, verbose)
+    def integrate_dense(self, State state, double time_in_s, double write_every_dt_in_s, filename, verbose = False, append = False):
+        """
+            Integrate for time_in_s, using with dense output.
+        """
+        self._thisptr.integrate_dense(deref(state._thisptr), time_in_s, write_every_dt_in_s, filename.encode('utf-8'), verbose, append)
     @property
     def alpha(self):
         return self._thisptr.alpha
