@@ -2,8 +2,6 @@
 .gitignore
 build/
 bin/
-test/unit/cpp/build
-test/integration/cpp/build
 *.vti
 *.vtk
 *.dat
