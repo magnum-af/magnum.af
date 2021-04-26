@@ -48,23 +48,34 @@ print("discretization:", x, y, z, nx, ny, nz)
 # Discretization
 
 # Material
-soft_Aex        = 0.25e-11
-soft_ms         = 0.25 / Constants.mu0
-soft_K_uni      = 1e5
-
 hard_Aex        = 1.0e-11
 hard_ms         = 1.0 / Constants.mu0
 hard_K_uni      = 1e6
 
+if len(args.posargs) > 1:
+    mode_string = args.posargs[1] # any of 'AKJ', 'AJ', 'A', ...
+    set_jump_A = True if "A" in mode_string else False
+    set_jump_K = True if "K" in mode_string else False
+    set_jump_Ms = True if "J" in mode_string  else False
+else:
+    set_jump_A = False
+    set_jump_K = False
+    set_jump_Ms = False
+print("set_jump_A, set_jump_K, set_jump_Ms:", set_jump_A, set_jump_K, set_jump_Ms)
+
+soft_Aex = 0.25e-11 if set_jump_A else hard_Aex
+soft_K_uni = 1e5 if set_jump_K else hard_K_uni
+soft_ms = 0.25 / Constants.mu0 if set_jump_Ms else hard_ms
+
 # Analytical Result
-def H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
+def Hc_analytic(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni):
     eps_k=soft_K_uni/hard_K_uni
     eps_A=soft_Aex/hard_Aex
     eps_ms=soft_ms/hard_ms
     hard_J=hard_ms*Constants.mu0
     return 2*hard_K_uni/hard_J * ((1-eps_k*eps_A)/(1+sqrt(eps_ms*eps_A))**2)
 
-H_analytic = H(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Constants.mu0 # in [T]
+H_analytic = Hc_analytic(soft_Aex, soft_ms, soft_K_uni, hard_Aex, hard_ms, hard_K_uni)*Constants.mu0 # in [T]
 print ("H_analytic=", H_analytic, " [T]")
 
 # setting initial m (maybe rotation should be considered)
@@ -138,21 +149,18 @@ else:
     minimizer = LBFGS_Minimizer(fields)
 
 class Field:
-    def __init__(self, maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0/Constants.mu0):
-        self.maxField = maxField # [Oe]
-        self.simtime = simtime # [s]
-        self.startField = startField # [Oe]
+    def __init__(self, field_rate = 2./Constants.mu0/100e-9, startField = 0/Constants.mu0):
+        self.field_rate = field_rate # [A/m/s]
+        self.startField = startField # [A/m]
     def from_time(self, time):
-        return self.startField + time / self.simtime * self.maxField
-        #const#return 0.9 * H_analytic/Constants.mu0
+        return self.startField + time * self.field_rate
 
-field = Field(maxField = 2./Constants.mu0 , simtime = 100e-9, startField = 0.9 * H_analytic/Constants.mu0)
-print("Start", field.simtime, " [ns] run")
+field = Field(field_rate = 2./Constants.mu0/100e-9, startField = 0.95 * H_analytic/Constants.mu0)
 stream = open(args.outdir + "m.dat", "w")
 timer = time.time()
 i = 0
 nvti = 0
-while (state.t < field.simtime and state.mean_m(wire_dir_val) < (1. - 1e-6)):
+while (state.mean_m(wire_dir_val) < (1. - 1e-3)): # NOTE marginal difference between 1e-3 and 1e-6
     if i%300 == 0:
         state.write_vti(args.outdir + "m_" + str(nvti))
         nvti = nvti + 1
@@ -170,14 +178,17 @@ while (state.t < field.simtime and state.mean_m(wire_dir_val) < (1. - 1e-6)):
     printzee = af.mean(af.mean(af.mean(fields[0].H_in_Apm(state), dim=0), dim=1), dim=2)
 
     if i%20 == 0:
-        print("H[%analytic]", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "time[%]=", "{:6.4f}".format(state.t/field.simtime), "mean_m=", "{:5.4f}".format(state.mean_m(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0))
+        if H_analytic != 0.0:
+            print("H[%analytic]", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0 / H_analytic), "mean_m=", "{:5.4f}".format(state.mean_m(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0), flush = True)
+        else:
+            print("mean_m=", "{:5.4f}".format(state.mean_m(wire_dir_val)), "field[Oe]=", "{:6.4f}".format(field.from_time(state.t)), "field[T]=", "{:6.4f}".format(printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0), flush = True)
     stream.write("%e, %e, %e, %e, %e, %e\n" %(state.t, state.mean_m(0), state.mean_m(1), state.mean_m(2), field.from_time(state.t), printzee[0, 0, 0, wire_dir_val].scalar()))
     stream.flush()
     i = i + 1
 
 stream.close()
 state.write_vti(args.outdir + "m_switched")
-print("simulated", state.t, "[s] (out of", field.simtime, ") in", time.time() - timer, "[s]")
+print("simulated", state.t, "[s] in", time.time() - timer, "[s]")
 print("total time =", time.time() - start, "[s]\n")
 print("H_analytic=", H_analytic, " [T]")
 print("switched at Hext=", printzee[0, 0, 0, wire_dir_val].scalar()*Constants.mu0, " [T] with state.t=", state.t, " [s]")
