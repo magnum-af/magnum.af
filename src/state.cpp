@@ -151,11 +151,11 @@ State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
 
 // Wrapping:
 State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
-    : State(mesh, *(new af::array(*((void**)m))), Ms, verbose, mute_warning) {}
+    : State(mesh, Ms, *(new af::array(*((void**)m))), verbose, mute_warning) {}
 
 // Wrapping only, memory management to be done by python:
 State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning)
-    : State(mesh, *(new af::array(*((void**)m))), *(new af::array(*((void**)Ms_field_ptr))), verbose, mute_warning) {}
+    : State(mesh, *(new af::array(*((void**)Ms_field_ptr))), *(new af::array(*((void**)m))), verbose, mute_warning) {}
 
 void State::Normalize() { this->m = normalize(this->m); }
 

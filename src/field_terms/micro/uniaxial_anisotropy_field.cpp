@@ -23,8 +23,13 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array
     }
 }
 
+// // Woulde be ambigous due to af::array non-explicit ctor
+// UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, af::array Ku1_axis_field)
+//     : Ku1(Ku1), Ku1_axis_field(normalize_handle_zero_vectors(Ku1_axis_field)) {}
+
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array Ku1_axis_field)
-    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field), Ku1_axis_field(Ku1_axis_field) {
+    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field),
+      Ku1_axis_field(normalize_handle_zero_vectors(Ku1_axis_field)) {
     if (Ku1_field.dims(3) == 3) {
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
@@ -33,9 +38,14 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array 
     }
 }
 
+// // TODO Ku1 implicitly converted to af::array (as af::array ctor not explicit)!!!
+// UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
+//     : UniaxialAnisotropyField(Ku1, *(new af::array(*((void**)Ku1_axis_field_ptr)))) {
+// }
+
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
-    : UniaxialAnisotropyField(Ku1, *(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
+    : Ku1(Ku1), Ku1_axis_field(normalize_handle_zero_vectors(*(new af::array(*((void**)Ku1_axis_field_ptr))))) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long int Ku1_axis_field_ptr)
