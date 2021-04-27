@@ -33,41 +33,24 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array 
     }
 }
 
+// For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
-    : Ku1(Ku1), Ku1_axis_field(*(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
+    : UniaxialAnisotropyField(Ku1, *(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long int Ku1_axis_field_ptr)
-    : Ku1_field((*(new af::array(*((void**)Ku1_field_ptr)))).dims(3) == 1
-                    ? af::tile(*(new af::array(*((void**)Ku1_field_ptr))), 1, 1, 1, 3)
-                    : *(new af::array(*((void**)Ku1_field_ptr)))),
-      Ku1_axis_field(*(new af::array(*((void**)Ku1_axis_field_ptr)))) {
-    if ((*(new af::array(*((void**)Ku1_field_ptr)))).dims(3) == 3) {
-        printf("%s UniaxialAnisotropyField You are using legacy dimension [nx, "
-               "ny, nz, 3] for Ku1, please now use scalar field dimensions "
-               "[nx, ny, nz, 1].\n",
-               color_string::warning());
-    }
-}
+    : UniaxialAnisotropyField(*(new af::array(*((void**)Ku1_field_ptr))),
+                              *(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2)
-    : Ku1(Ku1), Ku1_axis(normalize_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {}
+    : UniaxialAnisotropyField(Ku1, std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2}) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1,
                                                  double Ku1_axis_2)
-    : Ku1_field((*(new af::array(*((void**)Ku1_field_ptr)))).dims(3) == 1
-                    ? af::tile(*(new af::array(*((void**)Ku1_field_ptr))), 1, 1, 1, 3)
-                    : *(new af::array(*((void**)Ku1_field_ptr)))),
-      Ku1_axis(normalize_vector(std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2})) {
-    if ((*(new af::array(*((void**)Ku1_field_ptr)))).dims(3) == 3) {
-        printf("%s UniaxialAnisotropyField: You are using legacy dimension "
-               "[nx, ny, nz, 3] for Ku1, please now use scalar field "
-               "dimensions [nx, ny, nz, 1].\n",
-               color_string::warning());
-    }
-}
+    : UniaxialAnisotropyField(*(new af::array(*((void**)Ku1_field_ptr))),
+                              std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2}) {}
 
 af::array UniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
     // switch Ku1_axis and Ku1_axis_field

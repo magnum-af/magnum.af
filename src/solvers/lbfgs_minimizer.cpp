@@ -143,7 +143,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
             if (verbose_ > 2) {
                 std::cout << "descent " << std::endl;
             }
-            phiPrime0 = -mydot(grad, q);
+            phiPrime0 = -mydot(grad, q); // TODO Value stored to 'phiPrime0' is never read (form clang analyzer)
         }
 
         // TODO objFunc.updateTol(gradNorm);
