@@ -12,7 +12,7 @@ af::array SparseExchangeField::impl_H_in_Apm(const State& state) const {
         return exch / state.Ms;
     } else {
         af::array heff = exch / state.Ms_field;
-        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
