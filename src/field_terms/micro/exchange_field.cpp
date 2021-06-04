@@ -65,13 +65,13 @@ af::array ExchangeField::h_withedges(const State& state) const {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
         af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
-        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
         af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
-        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
@@ -94,13 +94,13 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
         af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
-        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
         af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
-        replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
