@@ -77,14 +77,20 @@ class DoubleOrArray {
         const auto visitor = overloaded{
             [&b](double d) { return d / b; },
             [&b](const af::array& a) {
-                if (a.dims() == b.dims()) {
-                    return a / b;
-                } else if (a.dims(0) == b.dims(0) and a.dims(1) == b.dims(1) and a.dims(2) == b.dims(2) and
-                           b.dims(3) == 3) {
-                    return af::tile(a, 1, 1, 1, 3) / b;
-                } else {
-                    throw std::runtime_error("DoubleOrArray::operator/: array dims do not match.");
-                }
+                const auto divide = [&b](const af::array& a) {
+                    if (a.dims() == b.dims()) {
+                        return a / b;
+                    } else if (a.dims(0) == b.dims(0) and a.dims(1) == b.dims(1) and a.dims(2) == b.dims(2) and
+                               b.dims(3) == 3) {
+                        return af::tile(a, 1, 1, 1, 3) / b;
+                    } else {
+                        throw std::runtime_error("DoubleOrArray::operator/: array dims do not match.");
+                    }
+                };
+                auto result = divide(a);
+                af::replace(result, b != 0, 0); // replacing potential divs by null (i.e. NaN) with zeros.
+                                                // Optional optimization: cache whether a has zero vals
+                return result;
             },
         };
         return std::visit(visitor, variant_);
@@ -94,7 +100,15 @@ class DoubleOrArray {
     af::array operator()(af::dim4 dims, af::dtype type) const {
         const auto visitor = overloaded{
             [&](double d) { return af::constant(d, dims, type); },
-            [&](const af::array& a) { return a.as(type); },
+            [&](const af::array& a) {
+                if (a.dims() == dims) {
+                    return a.as(type);
+                } else if (a.dims(0) == dims[0] and a.dims(1) == dims[1] and a.dims(2) == dims[2] and dims[3] == 3) {
+                    return af::tile(a, 1, 1, 1, 3).as(type);
+                } else {
+                    throw std::runtime_error("DoubleOrArray::operator(): array dims do not match.");
+                }
+            },
         };
         return std::visit(visitor, variant_);
     }
@@ -117,11 +131,21 @@ inline af::array get_as_vec(const DoubleOrArray& a, af::dim4 dims, af::dtype typ
 
 inline af::array operator+(const af::array& a, const DoubleOrArray& b) { return b + a; }
 
-// not commutative //inline af::array operator-(const af::array& a, const DoubleOrArray& b) { return ; }
+// not commutative
+inline af::array operator-(const af::array& a, const DoubleOrArray& b) {
+    const auto btemp = b(a.dims(), a.type());
+    return a - btemp;
+}
 
 inline af::array operator*(const af::array& a, const DoubleOrArray& b) { return b * a; }
 
-// not commutative //inline af::array operator/(const af::array& a, const DoubleOrArray& b) { return ; }
+// not commutative
+inline af::array operator/(const af::array& a, const DoubleOrArray& b) {
+    const auto btemp = b(a.dims(), a.type());
+    af::array result = a / btemp;
+    af::replace(result, btemp != 0, 0);
+    return result;
+}
 
 af::array operator+(double a, const DoubleOrArray& b) = delete;
 af::array operator-(double a, const DoubleOrArray& b) = delete;
