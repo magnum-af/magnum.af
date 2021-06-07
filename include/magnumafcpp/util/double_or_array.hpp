@@ -97,6 +97,7 @@ class DoubleOrArray {
     }
 
     // Getter function, returns stored value as af::array
+    // if dims is vector field (dims[3] = 3), tiles internal af::array from dims[3] = 1 to dims[3] = 3
     af::array operator()(af::dim4 dims, af::dtype type) const {
         const auto visitor = overloaded{
             [&](double d) { return af::constant(d, dims, type); },
@@ -125,8 +126,9 @@ class DoubleOrArray {
     af::array operator/(double b) const = delete;
 };
 
+// uses dims[0-2], ignoring dims[3] and using 1 so operator() returns scalar field so we always tile
 inline af::array get_as_vec(const DoubleOrArray& a, af::dim4 dims, af::dtype type) {
-    return af::tile(a(dims, type), 1, 1, 1, 3);
+    return af::tile(a(af::dim4(dims[0], dims[1], dims[2], 1), type), 1, 1, 1, 3);
 }
 
 inline af::array operator+(const af::array& a, const DoubleOrArray& b) { return b + a; }
