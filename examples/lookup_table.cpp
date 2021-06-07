@@ -23,20 +23,14 @@ template <typename T> af::array make_afarray_from_container(T const& container) 
     return af::array(container.size(), container.data());
 }
 
-// inline const auto do_lookup_from_container = [](auto values, af::array const& region) {
-// creates an af::array via lookup from values container for given region af::array;
-template <typename T> auto do_lookup_from_container(T const& values, af::array const& region) {
-    return do_multidim_lookup(make_afarray_from_container(values), region);
-};
-
 // Lookup on optional region.
-// If region not set, uses mesh to extract dims
+// If region not set, uses backup_dims for return size
 inline af::array apply_lookup_on_optional(af::array const& values, std::optional<af::array> const& opt_region,
-                                          magnumafcpp::Mesh const& backup_mesh) {
+                                          af::dim4 const& backup_dims) {
     if (opt_region) {
         return do_multidim_lookup(values, opt_region.value());
     } else {
-        return do_multidim_lookup(values, af::constant(0, magnumafcpp::mesh::dims_s(backup_mesh), u8));
+        return do_multidim_lookup(values, af::constant(0, backup_dims, u8));
     }
 }
 
@@ -53,9 +47,10 @@ struct RegionState {
 // lookup wrapper for RegionState.
 // We use free function with wrapper to keeping logic more seperated from data structure
 inline af::array apply_lookup(af::array const& values, RegionState const& region_state) {
-    return apply_lookup_on_optional(values, region_state.regions, region_state.mesh);
+    return apply_lookup_on_optional(values, region_state.regions, magnumafcpp::mesh::dims_s(region_state.mesh));
 }
 
+// convenience wrapper
 template <typename T> auto apply_lookup_from_container(T const& values, RegionState const& region_state) {
     return apply_lookup(make_afarray_from_container(values), region_state);
 }
@@ -141,7 +136,7 @@ int main() {
 
         // using an af::array region for lookup
         auto print_array_and_type0 = [i = 0](auto const& values, af::array const& region) mutable {
-            const auto result = do_lookup_from_container(values, region);
+            const auto result = do_multidim_lookup(make_afarray_from_container(values), region);
             af::print(("lookup" + std::to_string(i)).c_str(), result);
             std::cout << result.type() << std::endl;
             i++;
