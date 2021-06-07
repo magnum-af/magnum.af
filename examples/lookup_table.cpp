@@ -29,6 +29,17 @@ template <typename T> auto do_lookup_from_container(T const& values, af::array c
     return do_multidim_lookup(make_afarray_from_container(values), region);
 };
 
+// Lookup on optional region.
+// If region not set, uses mesh to extract dims
+inline af::array apply_lookup_on_optional(af::array const& values, std::optional<af::array> const& opt_region,
+                                          magnumafcpp::Mesh const& backup_mesh) {
+    if (opt_region) {
+        return do_multidim_lookup(values, opt_region.value());
+    } else {
+        return do_multidim_lookup(values, af::constant(0, magnumafcpp::mesh::dims_s(backup_mesh), u8));
+    }
+}
+
 // Idea: unique m, region (= index), A = {A0, A1, A2, ...}
 // State has m, Ms and region, field_terms only have vecs with values
 // TODO: how to handle m, Ms ODR for zero values?
@@ -39,19 +50,17 @@ struct RegionState {
     std::optional<af::array> regions;
 };
 
-// const auto apply_lookup = [](auto const& values, RegionState const& region_state) {
+// lookup wrapper for RegionState.
+// We use free function with wrapper to keeping logic more seperated from data structure
 inline af::array apply_lookup(af::array const& values, RegionState const& region_state) {
-    if (region_state.regions) {
-        return do_multidim_lookup(values, region_state.regions.value());
-    } else {
-        return do_multidim_lookup(values, af::constant(0, magnumafcpp::mesh::dims_s(region_state.mesh), u8));
-    }
-};
+    return apply_lookup_on_optional(values, region_state.regions, region_state.mesh);
+}
 
 template <typename T> auto apply_lookup_from_container(T const& values, RegionState const& region_state) {
     return apply_lookup(make_afarray_from_container(values), region_state);
-};
+}
 
+// exemplary interaction which holds af::array values internally, not std::vector or such
 struct Interaction {
     af::array values{};
     Interaction(af::array values) : values(std::move(values)) {}
