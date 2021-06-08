@@ -111,8 +111,5 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
     integrate_dense(state, time_in_s, write_every_dt_in_s, stream, verbose);
 }
 
-long int LLGIntegrator::h_addr(const State& state) const {
-    af::array* heff = new af::array(fheff(state));
-    return (long int)heff->get();
-}
+long int LLGIntegrator::h_addr(const State& state) const { return util::pywrap::send_copy_to_py(fheff(state)); }
 } // namespace magnumafcpp

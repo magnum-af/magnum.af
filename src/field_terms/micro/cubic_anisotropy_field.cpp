@@ -1,6 +1,6 @@
 #include "field_terms/micro/cubic_anisotropy_field.hpp"
 #include "math.hpp"
-#include "util.hpp"
+#include "util/util.hpp"
 #include <variant>
 namespace magnumafcpp {
 
@@ -44,7 +44,7 @@ CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_ar
     }
 }
 
-af::array ptr_to_array(long int array_ptr) { return *(new af::array(*((void**)array_ptr))); }
+af::array ptr_to_array(long int array_ptr) { return util::pywrap::make_copy_form_py(array_ptr); }
 
 // Wrapping
 CubicAnisotropyField::CubicAnisotropyField(long int Kc1_array_ptr, long int Kc2_array_ptr, long int Kc3_array_ptr,

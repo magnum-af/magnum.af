@@ -1,7 +1,8 @@
 #include "micro/exchange_field_pbc.hpp"
+#include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/color_string.hpp"
+#include "util/util.hpp"
 #include <optional>
 
 namespace magnumafcpp {
@@ -199,6 +200,6 @@ ExchangeFieldPBC::ExchangeFieldPBC(const af::array& A_exchange_field, Mesh mesh,
 
 // For wrapping only: constructor version taking A_exchange_field
 ExchangeFieldPBC::ExchangeFieldPBC(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
-    : matr(PBC_CSR_matrix((*(new af::array(*((void**)A_exchange_field_ptr)))).as(f64), std::nullopt, mesh, verbose)) {}
+    : matr(PBC_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr).as(f64), std::nullopt, mesh, verbose)) {}
 
 } // namespace magnumafcpp

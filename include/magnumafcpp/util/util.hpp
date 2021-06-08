@@ -1,4 +1,5 @@
 #pragma once
+#include "arrayfire.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -6,6 +7,21 @@
 #include <utility>
 
 namespace magnumafcpp {
+
+namespace util::pywrap {
+
+/// Copies an af::array from python.
+/// Make an af::array from a pointer obtained from python
+inline af::array make_copy_form_py(long int py_ptr_to_afarray) {
+    return *(new af::array(*((void**)py_ptr_to_afarray)));
+}
+
+/// Passes a copy of the passed array to python.
+/// Allocates a copy of passed af::array, returns the af_array handle as a long int
+// alternative technical name: get_ptr_to_copy
+inline long int send_copy_to_py(const af::array& afarray) { return (long int)(new af::array(afarray))->get(); }
+
+} // namespace util::pywrap
 
 /// template function calculating the mean and the standard deviation of a given
 /// template container data standard deviation with -1

@@ -1,7 +1,8 @@
 #include "micro/sparse_exchange_field.hpp"
+#include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/color_string.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -383,6 +384,6 @@ SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh
 
 // For wrapping only: constructor version taking A_exchange_field
 SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
-    : matr(calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), mesh, verbose)) {}
+    : matr(calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), mesh, verbose)) {}
 
 } // namespace magnumafcpp

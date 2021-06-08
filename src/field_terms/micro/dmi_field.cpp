@@ -1,5 +1,6 @@
 #include "field_terms/micro/dmi_field.hpp"
 #include "math.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -25,7 +26,7 @@ DmiField::DmiField(double D, double D_axis_x, double D_axis_y, double D_axis_z)
     : D(D), D_axis({D_axis_x, D_axis_y, D_axis_z}) {}
 
 DmiField::DmiField(long int D_constants_ptr, double D_axis_x, double D_axis_y, double D_axis_z)
-    : DmiField(*(new af::array(*((void**)D_constants_ptr))), {D_axis_x, D_axis_y, D_axis_z}) {}
+    : DmiField(util::pywrap::make_copy_form_py(D_constants_ptr), {D_axis_x, D_axis_y, D_axis_z}) {}
 
 ///
 /// Bulk Dzyaloshinskii–Moriya interaction.

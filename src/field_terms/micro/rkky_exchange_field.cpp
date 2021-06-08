@@ -1,7 +1,8 @@
 #include "micro/rkky_exchange_field.hpp"
+#include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/color_string.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -12,8 +13,8 @@ RKKYExchangeField::RKKYExchangeField(RKKY_values rkky_values, Exchange_values ex
 
 RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                                      bool verbose)
-    : matr(calc_COO_matrix(*(new af::array(*((void**)rkky_values))), *(new af::array(*((void**)exchange_values))), mesh,
-                           *(new af::array(*((void**)rkky_indices))), verbose)) {}
+    : matr(calc_COO_matrix(util::pywrap::make_copy_form_py(rkky_values), util::pywrap::make_copy_form_py(exchange_values), mesh,
+                           util::pywrap::make_copy_form_py(rkky_indices), verbose)) {}
 
 af::array RKKYExchangeField::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));

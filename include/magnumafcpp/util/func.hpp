@@ -1,5 +1,6 @@
 #pragma once
 #include "arrayfire.h"
+#include "util/util.hpp"
 #include <array>
 #include <chrono> //for af::randomEngine
 #include <iostream>

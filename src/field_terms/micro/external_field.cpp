@@ -1,11 +1,12 @@
 #include "field_terms/micro/external_field.hpp"
 #include "util/func.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
 ExternalField::ExternalField(af::array zee_in) : zee_field(zee_in) {}
 
-ExternalField::ExternalField(long int aptr) : zee_field(*(new af::array(*((void**)aptr)))) {}
+ExternalField::ExternalField(long int aptr) : zee_field(util::pywrap::make_copy_form_py(aptr)) {}
 
 ExternalField::ExternalField(af::array (*callback_func_in)(State state))
     : callback_func(callback_func_in), callback(true) {}

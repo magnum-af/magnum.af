@@ -3,6 +3,7 @@
 #include "util/af_overloads.hpp" // for 'os << af::array'
 #include "util/color_string.hpp"
 #include "util/func.hpp"
+#include "util/util.hpp"
 #include "vtk_IO.hpp"
 #include <iomanip>
 
@@ -151,34 +152,24 @@ State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
 
 // Wrapping:
 State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
-    : State(mesh, Ms, *(new af::array(*((void**)m))), verbose, mute_warning) {}
+    : State(mesh, Ms, util::pywrap::make_copy_form_py(m), verbose, mute_warning) {}
 
 // Wrapping only, memory management to be done by python:
 State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning)
-    : State(mesh, *(new af::array(*((void**)Ms_field_ptr))), *(new af::array(*((void**)m))), verbose, mute_warning) {}
+    : State(mesh, util::pywrap::make_copy_form_py(Ms_field_ptr), util::pywrap::make_copy_form_py(m), verbose, mute_warning) {}
 
 void State::Normalize() { this->m = normalize(this->m); }
 
 void State::set_m(long int aptr) {
-    void** a = (void**)aptr;
-    m = *(new af::array(*a));
+    m = util::pywrap::make_copy_form_py(aptr);
     normalize_inplace(this->m);
 }
 
-long int State::get_m_addr() const {
-    af::array* a = new af::array(m);
-    return (long int)a->get();
-}
+long int State::get_m_addr() const { return util::pywrap::send_copy_to_py(m); }
 
-void State::set_Ms_field(long int aptr) {
-    void** a = (void**)aptr;
-    Ms_field = *(new af::array(*a)); // TODO rename Ms_field -> micro_Ms_field
-}
+void State::set_Ms_field(long int aptr) { Ms_field = util::pywrap::make_copy_form_py(aptr); }
 
-long int State::wrapping_get_Ms_field() const {
-    af::array* a = new af::array(Ms_field);
-    return (long int)a->get();
-}
+long int State::wrapping_get_Ms_field() const { return util::pywrap::send_copy_to_py(Ms_field); }
 
 void State::write_vti(std::string outputname) const { vti_writer_micro(m.as(f64), mesh, outputname); }
 void State::_vti_writer_atom(std::string outputname) const { vti_writer_atom(m.as(f64), mesh, outputname); }

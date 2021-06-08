@@ -2,6 +2,7 @@
 #include "arrayfire.h"
 #include "constants.hpp"
 #include "state.hpp"
+#include "util/util.hpp"
 #include <memory>
 #include <numeric>
 
@@ -37,7 +38,7 @@ class FieldTerm {
     }
 
     /// For wrapping only: raw pointer to copy of H_in_Apm(state)
-    long int _pywrap_H_in_Apm(const State& state) const { return (long int)(new af::array(H_in_Apm(state)))->get(); }
+    long int _pywrap_H_in_Apm(const State& state) const { return util::pywrap::send_copy_to_py(H_in_Apm(state)); }
 
   private:
     ///< Calculating the micromagnetic energy from the h field

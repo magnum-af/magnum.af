@@ -1,5 +1,6 @@
 #include "field_terms/micro/exchange_field.hpp"
 #include "util/func.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -35,7 +36,7 @@ ExchangeField::ExchangeField(af::array A_field)
 }
 
 // For wrapping only // TODO remove; use SparseExchange
-ExchangeField::ExchangeField(long int A_field_ptr) : ExchangeField(*(new af::array(*((void**)A_field_ptr)))) {}
+ExchangeField::ExchangeField(long int A_field_ptr) : ExchangeField(util::pywrap::make_copy_form_py(A_field_ptr)) {}
 
 af::array ExchangeField::h_withedges(const State& state) const {
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);

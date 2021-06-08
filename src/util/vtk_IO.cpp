@@ -1,4 +1,5 @@
 #include "vtk_IO.hpp"
+#include "util/util.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
@@ -100,7 +101,7 @@ void vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outp
 
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz,
                              const std::string outputname) {
-    af::array afarray = *(new af::array(*((void**)afarray_ptr)));
+    af::array afarray = util::pywrap::make_copy_form_py(afarray_ptr);
     Mesh mesh{afarray.dims(0), afarray.dims(1), afarray.dims(2), dx, dy, dz};
     implementation_vti_writer_micro(afarray, mesh, outputname);
 }

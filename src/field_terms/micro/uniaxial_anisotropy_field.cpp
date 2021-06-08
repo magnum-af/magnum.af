@@ -3,9 +3,9 @@
 // With higher order (not implemented): Hu(r)=2 Ku1 /(mu0 Ms) eu ( eu . m) ( + 4
 // Ku2 /(mu0 Ms) eu ( eu . m)^3
 #include "micro/uniaxial_anisotropy_field.hpp"
-#include "util.hpp"
-#include "util/func.hpp"
 #include "util/color_string.hpp" // color_string::warning()
+#include "util/func.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -40,17 +40,17 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array 
 
 // // TODO Ku1 implicitly converted to af::array (as af::array ctor not explicit)!!!
 // UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
-//     : UniaxialAnisotropyField(Ku1, *(new af::array(*((void**)Ku1_axis_field_ptr)))) {
+//     : UniaxialAnisotropyField(Ku1, util::pywrap::make_copy_form_py(Ku1_axis_field_ptr)) {
 // }
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
-    : Ku1(Ku1), Ku1_axis_field(normalize_handle_zero_vectors(*(new af::array(*((void**)Ku1_axis_field_ptr))))) {}
+    : Ku1(Ku1), Ku1_axis_field(normalize_handle_zero_vectors(util::pywrap::make_copy_form_py(Ku1_axis_field_ptr))) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long int Ku1_axis_field_ptr)
-    : UniaxialAnisotropyField(*(new af::array(*((void**)Ku1_field_ptr))),
-                              *(new af::array(*((void**)Ku1_axis_field_ptr)))) {}
+    : UniaxialAnisotropyField(util::pywrap::make_copy_form_py(Ku1_field_ptr),
+                              util::pywrap::make_copy_form_py(Ku1_axis_field_ptr)) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2)
@@ -59,7 +59,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, double Ku1_axis_0, 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, double Ku1_axis_0, double Ku1_axis_1,
                                                  double Ku1_axis_2)
-    : UniaxialAnisotropyField(*(new af::array(*((void**)Ku1_field_ptr))),
+    : UniaxialAnisotropyField(util::pywrap::make_copy_form_py(Ku1_field_ptr),
                               std::array<double, 3>{Ku1_axis_0, Ku1_axis_1, Ku1_axis_2}) {}
 
 af::array UniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
@@ -97,13 +97,6 @@ af::array UniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
 
 double UniaxialAnisotropyField::get_ku1_axis(int i) { return Ku1_axis[i]; }
 
-// void UniaxialAnisotropyField::set_Ku1_field(long int aptr){
-//    void **a = (void **)aptr;
-//    micro_Ku1_field = *( new af::array( *a ));
-//}
+long int UniaxialAnisotropyField::get_Ku1_field() { return util::pywrap::send_copy_to_py(Ku1_field); }
 
-long int UniaxialAnisotropyField::get_Ku1_field() {
-    af::array* a = new af::array(Ku1_field);
-    return (long int)a->get();
-}
 } // namespace magnumafcpp

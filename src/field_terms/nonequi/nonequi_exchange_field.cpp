@@ -1,7 +1,8 @@
 #include "nonequi/nonequi_exchange_field.hpp"
+#include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
-#include "util/color_string.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -620,7 +621,7 @@ NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& 
 // For wrapping only: constructor version taking A_exchange_field
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
     : NonequiTerm(nemesh),
-      matr(COO ? calc_COO_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)
-               : calc_CSR_matrix(*(new af::array(*((void**)A_exchange_field_ptr))), nemesh, verbose)) {}
+      matr(COO ? calc_COO_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)
+               : calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)) {}
 
 } // namespace magnumafcpp

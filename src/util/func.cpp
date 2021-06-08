@@ -1,4 +1,5 @@
 #include "util/func.hpp"
+#include "util/util.hpp"
 
 namespace magnumafcpp {
 
@@ -22,22 +23,16 @@ std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const
 }
 
 std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region) {
-    return spacial_mean_in_region(*(new af::array(*((void**)vectorfield))), *(new af::array(*((void**)region))));
+    return spacial_mean_in_region(util::pywrap::make_copy_form_py(vectorfield), util::pywrap::make_copy_form_py(region));
 }
 
 WrappedArray::WrappedArray(af::array array) : array(array) {}
 
 WrappedArray::WrappedArray(long int array_ptr) { set_array(array_ptr); }
 
-void WrappedArray::set_array(long int array_ptr) {
-    void** a = (void**)array_ptr;
-    this->array = *(new af::array(*a));
-}
+void WrappedArray::set_array(long int array_ptr) { this->array = util::pywrap::make_copy_form_py(array_ptr); }
 
-long int WrappedArray::get_array_addr() {
-    af::array* a = new af::array(this->array);
-    return (long int)a->get();
-}
+long int WrappedArray::get_array_addr() { return util::pywrap::send_copy_to_py(this->array); }
 
 /// Returns the value of array with only one element
 double afvalue(const af::array& a) {
