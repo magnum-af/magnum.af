@@ -245,7 +245,11 @@ cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "m
         SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e, double fl_thickness);
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
-        double elapsed_eval_time();
+        double j_e;
+        double eta_damping;
+        double eta_field;
+        double fl_thickness;
+        # double elapsed_eval_time();
         # WrappedArray polarization_field;
 
 cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumafcpp":

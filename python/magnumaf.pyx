@@ -1439,6 +1439,35 @@ cdef class SpinTransferTorqueField(HeffTerm):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+    @property
+    def eta_damping(self):
+        return self._thisptr.eta_damping
+    @eta_damping.setter
+    def eta_damping(self, value):
+        self._thisptr.eta_damping = value
+
+    @property
+    def eta_field(self):
+        return self._thisptr.eta_field
+    @eta_field.setter
+    def eta_field(self, value):
+        self._thisptr.eta_field = value
+
+    @property
+    def j_e(self):
+        return self._thisptr.j_e
+    @j_e.setter
+    def j_e(self, value):
+        self._thisptr.j_e = value
+
+    @property
+    def fl_thickness(self):
+        return self._thisptr.fl_thickness
+    @fl_thickness.setter
+    def fl_thickness(self, value):
+        self._thisptr.fl_thickness = value
+
+
     # @property
     # def polarization_field(self):
     #     return array_from_addr(self._thisptr.polarization_field.get_array_addr())
