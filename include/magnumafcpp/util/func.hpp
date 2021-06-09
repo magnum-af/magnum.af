@@ -7,18 +7,6 @@
 
 namespace magnumafcpp {
 
-class WrappedArray {
-  public:
-    WrappedArray(af::array array);
-    WrappedArray(long int array_ptr);
-    ~WrappedArray(){};
-    af::array array{};
-    void set_array(long int array_ptr);
-    long int get_array_addr();
-
-  private:
-};
-
 ///
 /// Function calculating the spacial mean (i.e. mean along first three
 /// dimensions) in a specified region only of a given vectorfield with size [nx,

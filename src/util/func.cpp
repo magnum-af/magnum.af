@@ -26,14 +26,6 @@ std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int regi
     return spacial_mean_in_region(util::pywrap::make_copy_form_py(vectorfield), util::pywrap::make_copy_form_py(region));
 }
 
-WrappedArray::WrappedArray(af::array array) : array(array) {}
-
-WrappedArray::WrappedArray(long int array_ptr) { set_array(array_ptr); }
-
-void WrappedArray::set_array(long int array_ptr) { this->array = util::pywrap::make_copy_form_py(array_ptr); }
-
-long int WrappedArray::get_array_addr() { return util::pywrap::send_copy_to_py(this->array); }
-
 /// Returns the value of array with only one element
 double afvalue(const af::array& a) {
     if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1) {

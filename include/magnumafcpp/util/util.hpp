@@ -21,6 +21,14 @@ inline af::array make_copy_form_py(long int py_ptr_to_afarray) {
 // alternative technical name: get_ptr_to_copy
 inline long int send_copy_to_py(const af::array& afarray) { return (long int)(new af::array(afarray))->get(); }
 
+struct WrappedArray {
+    explicit WrappedArray(af::array array) : array(std::move(array)) {}
+    explicit WrappedArray(long int array_ptr) : array(make_copy_form_py(array_ptr)) {}
+    af::array array{};
+    void set_array(long int array_ptr) { this->array = make_copy_form_py(array_ptr); }
+    long int get_array_copy_as_ptr() const { return send_copy_to_py(this->array); }
+};
+
 } // namespace util::pywrap
 
 /// template function calculating the mean and the standard deviation of a given

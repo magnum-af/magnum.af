@@ -30,7 +30,7 @@ class SpinTransferTorqueField : public MicroTerm {
     double nu_damping;      ///< Damping like constant in [a.u.]
     double nu_field;        ///< Field like constant in [a.u.]
     double j_e;             ///< Current in [A]
-    double fl_thickness{};  ///< Free layer thickness in [m]
+    double fl_thickness;    ///< Free layer thickness in [m]
 
   private:
     virtual af::array impl_H_in_Apm(const State& state) const override; ///< Effective field term contribution

@@ -233,12 +233,12 @@ cdef extern from "solvers/lbfgs_minimizer.hpp" namespace "magnumafcpp":
         LBFGS_Minimizer(vector[unique_ptr[FieldTerm]] vector_in, double tolerance_, size_t maxIter_, int verbose);
         double Minimize(State& state);
 
-cdef extern from "util/func.hpp" namespace "magnumafcpp":
+cdef extern from "util/util.hpp" namespace "magnumafcpp::util::pywrap":
     cdef cppclass WrappedArray:
         WrappedArray(array);
         WrappedArray(long int array_ptr);
         void set_array(long int array_ptr);
-        long int get_array_addr();
+        long int get_array_copy_as_ptr();
 
 cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "magnumafcpp":
     cdef cppclass SpinTransferTorqueField:
@@ -246,7 +246,7 @@ cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "m
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
         double elapsed_eval_time();
-        WrappedArray polarization_field;
+        # WrappedArray polarization_field;
 
 cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass RKKYExchangeField:
