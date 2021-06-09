@@ -242,7 +242,7 @@ cdef extern from "util/func.hpp" namespace "magnumafcpp":
 
 cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "magnumafcpp":
     cdef cppclass SpinTransferTorqueField:
-        SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e);
+        SpinTransferTorqueField (long int polarization_field_ptr, double nu_dampinglike, double nu_field, double j_e, double fl_thickness);
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
         double elapsed_eval_time();

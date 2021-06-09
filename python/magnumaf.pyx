@@ -1411,9 +1411,25 @@ cdef class AtomisticExternalField(HeffTerm):
 
 
 cdef class SpinTransferTorqueField(HeffTerm):
+    """
+    Slonczewski Spin Transfer Torque model
+
+    Parameters
+    ----------
+    pol : af.array [nx, ny, nz, 3]
+        Unit length polarization magnetization vector at each cell in [a.u.].
+    nu_damp : float
+        Damping like constant in [a.u.]
+    nu_field : float
+        Field like constant in [a.u.]
+    j_e : float
+        Current in [A]
+    fl_thickness : float
+        Free layer thickness in [m]
+    """
     cdef cSpinTransferTorqueField* _thisptr
-    def __cinit__(self, pol, nu_damp,  nu_field, j_e):
-        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e)
+    def __cinit__(self, pol, nu_damp : float,  nu_field : float, j_e : float, fl_thickness : float):
+        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e, fl_thickness)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
@@ -1423,12 +1439,12 @@ cdef class SpinTransferTorqueField(HeffTerm):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
-    @property
-    def polarization_field(self):
-        return array_from_addr(self._thisptr.polarization_field.get_array_addr())
-    @polarization_field.setter
-    def polarization_field(self, array):
-        self._thisptr.polarization_field.set_array(addressof(array.arr))
+    # @property
+    # def polarization_field(self):
+    #     return array_from_addr(self._thisptr.polarization_field.get_array_addr())
+    # @polarization_field.setter
+    # def polarization_field(self, array):
+    #     self._thisptr.polarization_field.set_array(addressof(array.arr))
 
 
 cdef class RKKYExchangeField(HeffTerm):
