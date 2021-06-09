@@ -1418,9 +1418,9 @@ cdef class SpinTransferTorqueField(HeffTerm):
     ----------
     pol : af.array [nx, ny, nz, 3]
         Unit length polarization magnetization vector at each cell in [a.u.].
-    nu_damp : float
+    eta_damp : float
         Damping like constant in [a.u.]
-    nu_field : float
+    eta_field : float
         Field like constant in [a.u.]
     j_e : float
         Current in [A]
@@ -1428,8 +1428,8 @@ cdef class SpinTransferTorqueField(HeffTerm):
         Free layer thickness in [m]
     """
     cdef cSpinTransferTorqueField* _thisptr
-    def __cinit__(self, pol, nu_damp : float,  nu_field : float, j_e : float, fl_thickness : float):
-        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), nu_damp, nu_field, j_e, fl_thickness)
+    def __cinit__(self, pol, eta_damp : float,  eta_field : float, j_e : float, fl_thickness : float):
+        self._thisptr = new cSpinTransferTorqueField (addressof(pol.arr), eta_damp, eta_field, j_e, fl_thickness)
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
