@@ -29,7 +29,7 @@ ExchangeField::ExchangeField(double A) : A(A) {}
 /// Constructor taking spacially varying exchange constant af af::array
 // TODO remove; use SparseExchange
 ExchangeField::ExchangeField(af::array A_field)
-    : A_field(A_field.dims(3) == 1 ? af::tile(A_field, 1, 1, 1, 3) : A_field) {
+    : A_field(A_field.dims(3) == 1 ? af::tile(A_field, 1, 1, 1, 3) : std::move(A_field)) {
     printf("\33[1;31mWarning:\33[0m ExchangeField: This is legacy code, to use "
            "spacially varying A values with correct jump conditions, use "
            "SparseExchangeField or RKKYExchangeField!\n");

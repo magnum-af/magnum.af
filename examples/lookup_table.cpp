@@ -72,7 +72,7 @@ struct Interaction {
 
 inline af::array apply_lookup(Interaction const& inter, RegionState const& region_state) {
     return apply_lookup(inter.values, region_state);
-};
+}
 
 int main() {
     using namespace magnumafcpp; // Note: gets << operator overload into scope

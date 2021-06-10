@@ -13,7 +13,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, std::array<double, 
     : Ku1(Ku1), Ku1_axis(normalize_vector(Ku1_axis)) {}
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array<double, 3> Ku1_axis)
-    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field),
+    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : std::move(Ku1_field)),
       Ku1_axis(normalize_vector(Ku1_axis)) {
     if (Ku1_field.dims(3) == 3) {
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
@@ -28,7 +28,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array
 //     : Ku1(Ku1), Ku1_axis_field(normalize_handle_zero_vectors(Ku1_axis_field)) {}
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array Ku1_axis_field)
-    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : Ku1_field),
+    : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : std::move(Ku1_field)),
       Ku1_axis_field(normalize_handle_zero_vectors(Ku1_axis_field)) {
     if (Ku1_field.dims(3) == 3) {
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "

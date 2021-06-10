@@ -6,8 +6,8 @@
 
 namespace magnumafcpp {
 
-using RKKY_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
-using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>;
+using RKKY_values = NamedType<af::array, struct NamedTypeRKKY_values>;
+using Exchange_values = NamedType<af::array, struct NamedTypeRKKY_values>;
 
 /// Combined Field for RKKY interaction between z-neighbour-cells and exchange
 /// interaction between not-RKKY-coupled cells.
@@ -37,7 +37,7 @@ using Exchange_values = NamedType<const af::array&, struct NamedTypeRKKY_values>
 class RKKYExchangeField : public MicroTerm {
   public:
     RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
-                      const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);
+                      af::array rkky_indices = af::array(), bool verbose = true, bool COO = true);
     RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                       bool verbose = true);
 

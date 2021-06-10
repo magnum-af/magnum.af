@@ -14,7 +14,8 @@ void correct_edges(af::array& out, const af::array& in, Mesh mesh);
 DmiField::DmiField(double D, std::array<double, 3> D_axis) : D(D), D_axis(D_axis) {}
 
 DmiField::DmiField(af::array D_constants, std::array<double, 3> D_axis)
-    : D_constants(D_constants.dims(3) == 1 ? af::tile(D_constants, 1, 1, 1, 3) : D_constants), D_axis(D_axis) {
+    : D_constants(D_constants.dims(3) == 1 ? af::tile(D_constants, 1, 1, 1, 3) : std::move(D_constants)),
+      D_axis(D_axis) {
     if (D_constants.dims(3) == 3) {
         printf("\33[1;31mWarning:\33[0m DmiField: You are using legacy "
                "dimension [nx, ny, nz, 3] for D, please now use scalar field "

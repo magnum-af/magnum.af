@@ -23,7 +23,8 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
 
 CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_array, af::array Kc3_array, af::array c1,
                                            af::array c2)
-    : Kc1(Kc1_array), Kc2(Kc2_array), Kc3(Kc3_array), c1(c1), c2(c2),
+    : Kc1(std::move(Kc1_array)), Kc2(std::move(Kc2_array)), Kc3(std::move(Kc3_array)), c1(std::move(c1)),
+      c2(std::move(c2)),
       c3(math::cross4(std::get<af::array>(this->c1.variant), std::get<af::array>(this->c2.variant))) {
     // check input vectors c1, c2
     const double precision = 1e-12;

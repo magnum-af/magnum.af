@@ -379,8 +379,9 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
 SparseExchangeField::SparseExchangeField(double A_exchange, Mesh mesh, bool verbose, bool COO)
     : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose) : calc_CSR_matrix(A_exchange, mesh, verbose)) {}
 
-SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh mesh, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose) : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
+SparseExchangeField::SparseExchangeField(af::array A_exchange_field, Mesh mesh, bool verbose, bool COO)
+    : matr(COO ? calc_COO_matrix(std::move(A_exchange_field), mesh, verbose)
+               : calc_CSR_matrix(std::move(A_exchange_field), mesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
 SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)

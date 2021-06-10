@@ -4,7 +4,7 @@
 
 namespace magnumafcpp {
 
-ExternalField::ExternalField(af::array zee_in) : zee_field(zee_in) {}
+ExternalField::ExternalField(af::array zee_in) : zee_field(std::move(zee_in)) {}
 
 ExternalField::ExternalField(long int aptr) : zee_field(util::pywrap::make_copy_form_py(aptr)) {}
 
