@@ -30,6 +30,7 @@ inline std::ostream& operator<<(std::ostream& os, const NonequiMesh& nemesh) {
 
 namespace nemesh {
 /// Dimension for vector field on nemesh, i.e. af::dim4(nx, ny, nz, 3)
+inline af::dim4 dims_s(NonequiMesh nemesh) { return af::dim4(nemesh.nx, nemesh.ny, nemesh.nz, 1); }
 inline af::dim4 dims_v(NonequiMesh nemesh) { return af::dim4(nemesh.nx, nemesh.ny, nemesh.nz, 3); }
 } // namespace nemesh
 

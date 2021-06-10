@@ -67,10 +67,11 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
         }
         af::array nzero = !af::iszero(vecnorm(m));
         n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
-        if (Ms == 0)
+        if (Ms == 0) {
             printf("Wraning: State::set_Ms_field: State.Ms is used but set to "
                    "zero. It appears that you are using a legacy constuctor. "
                    "Please pass Ms in constructor!\n");
+        }
         Ms_field = af::constant(this->Ms, nzero.dims(),
                                 m.type()); // TODO this yields probem as Ms is not set in constuctor!
         Ms_field *= nzero;
@@ -113,42 +114,33 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 
 // Micromagnetic:
 State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
-    : mesh(mesh), m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
+    : mesh(mesh), m(std::move(m)), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
     normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
     // check_discretization();
 }
 
-State::State(Mesh mesh, af::array Ms_field, af::array m, bool verbose, bool mute_warning)
-    : mesh(mesh), m(m), Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3) : Ms_field), verbose(verbose),
-      mute_warning(mute_warning) {
-    if (Ms_field.dims(3) == 3) {
-        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
-               "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               color_string::warning());
-    }
+State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, bool mute_warning)
+    : mesh(mesh), m(std::move(m_in)),
+      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(std::move(Ms_field_in), 1, 1, 1, 3) : std::move(Ms_field_in)),
+      verbose(verbose), mute_warning(mute_warning) {
+
+    // Using Ms_field after move causes segfault:
+    // if (Ms_field.dims(3) == 3) {
+    //     printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
+    //            "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
+    //            color_string::warning());
+    // }
 
     normalize_inplace(this->m);
 }
 
 // No Mesh:
 State::State(af::array m, double Ms, bool verbose, bool mute_warning)
-    : m(m), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
-    normalize_inplace(this->m);
-    set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
-}
+    : State(Mesh{0, 0, 0, 0, 0, 0}, Ms, std::move(m), verbose, mute_warning) {}
 
 State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
-    : m(m), Ms_field(Ms_field.dims(3) == 1 ? af::tile(Ms_field, 1, 1, 1, 3) : Ms_field), verbose(verbose),
-      mute_warning(mute_warning) {
-    if (Ms_field.dims(3) == 3) {
-        printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
-               "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-               color_string::warning());
-    }
-
-    normalize_inplace(this->m);
-}
+    : State(Mesh{0, 0, 0, 0, 0, 0}, std::move(Ms_field), std::move(m), verbose, mute_warning) {}
 
 // Wrapping:
 State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
