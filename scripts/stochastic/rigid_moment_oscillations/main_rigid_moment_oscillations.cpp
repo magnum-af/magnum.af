@@ -117,8 +117,8 @@ int main(int argc, char** argv) {
             }
             // std::cout << "y Zerocrossing at t= " << state.t << std::endl;
         }
-        // mean_mz+=afvalue(state.m(0, 0, 0, 2));
-        // abs_mean_mz+=fabs(afvalue(state.m(0, 0, 0, 2)));
+        // mean_mz+=util::afvalue_as_f64(state.m(0, 0, 0, 2));
+        // abs_mean_mz+=fabs(util::afvalue_as_f64(state.m(0, 0, 0, 2)));
     }
     std::cout << "Zerocrossings in x = " << count_zero_x << std::endl;
     std::cout << "Zerocrossings in y = " << count_zero_y << std::endl;

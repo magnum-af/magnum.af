@@ -58,14 +58,14 @@ af::array State::get_Ms_field_in_vector_dims() const {
 
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {
     // Initializes Ms_field if any entry of initial m has zero norm
-    if (min_4d(vecnorm(m)) == 0) {
+    if (util::min_4d(util::vecnorm(m)) == 0) {
         if (verbose) {
             printf("%s in state.cpp: initial m has values with zero norm, "
                    "building Ms_field array\n",
                    color_string::info());
         }
-        af::array nzero = !af::iszero(vecnorm(m));
-        n_cells_ = afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
+        af::array nzero = !af::iszero(util::vecnorm(m));
+        n_cells_ = util::afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
         if (Ms == 0) {
             printf("Wraning: State::set_Ms_field: State.Ms is used but set to "
                    "zero. It appears that you are using a legacy constuctor. "
@@ -94,8 +94,8 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 //}
 
 // void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
-//    af::array one_when_value_is_zero = af::iszero(vecnorm(m));
-//    double meannorm = af::mean(af::mean(af::mean(af::mean(vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
+//    af::array one_when_value_is_zero = af::iszero(util::vecnorm(m));
+//    double meannorm = af::mean(af::mean(af::mean(af::mean(util::vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
 //                          .as(f64)
 //                          .scalar<double>();
 //    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
@@ -114,7 +114,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 // Micromagnetic:
 State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
     : mesh(mesh), m(std::move(m)), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
-    normalize_inplace(this->m);
+    util::normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
     // check_discretization();
 }
@@ -131,7 +131,7 @@ State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, boo
     //            color_string::warning());
     // }
 
-    normalize_inplace(this->m);
+    util::normalize_inplace(this->m);
 }
 
 // No Mesh:
@@ -149,11 +149,11 @@ State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
 State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning)
     : State(mesh, util::pywrap::make_copy_form_py(Ms_field_ptr), util::pywrap::make_copy_form_py(m), verbose, mute_warning) {}
 
-void State::Normalize() { this->m = normalize(this->m); }
+void State::Normalize() { this->m = util::normalize(this->m); }
 
 void State::set_m(long int aptr) {
     m = util::pywrap::make_copy_form_py(aptr);
-    normalize_inplace(this->m);
+    util::normalize_inplace(this->m);
 }
 
 long int State::get_m_addr() const { return util::pywrap::send_copy_to_py(m); }

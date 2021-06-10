@@ -7,8 +7,8 @@ using namespace af;
 
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) << "\t"
-           << afvalue(sum_dim3(span, span, span, 1)) << "\t" << afvalue(sum_dim3(span, span, span, 2)) << "\t" << hzee
+    myfile << std::setw(12) << state.t << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 0)) << "\t"
+           << util::afvalue_as_f64(sum_dim3(span, span, span, 1)) << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 2)) << "\t" << hzee
            << std::endl;
 }
 
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
     // minimizer.llgterms.push_back( uptr_FieldTerm (new ExternalField(&zee_func)));
     // while (state.t < 4* hzee_max/rate){
     //    minimizer.minimize(state);
-    //    calc_mean_m(state, stream, afvalue(minimizer.llgterms[4]->H_in_Apm(state)(0,
+    //    calc_mean_m(state, stream, util::afvalue_as_f64(minimizer.llgterms[4]->H_in_Apm(state)(0,
     //    0, 0, 0))); state.t+=1.; state.steps++; if( state.steps % 1 == 0){
     //        vti_writer_micro(state.m, mesh , (filepath +
     //        "m_hysteresis_"+std::to_string(state.steps)).c_str());
@@ -164,11 +164,11 @@ int main(int argc, char** argv) {
     while (state.t < 4 * hzee_max / rate) {
         state.m = llg.step(state);
         if (state.steps % 2000 == 0) {
-            calc_mean_m(state, stream, afvalue(llg.Fieldterms[4]->H_in_Apm(state)(0, 0, 0, 0)));
+            calc_mean_m(state, stream, util::afvalue_as_f64(llg.Fieldterms[4]->H_in_Apm(state)(0, 0, 0, 0)));
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
         // std::cout << state.t << "\t" <<
-        // afvalue(sum(sum(sum(sum(llg.Fieldterms[2]->H_in_Apm(state), 3), 2), 1),
+        // util::afvalue_as_f64(sum(sum(sum(sum(llg.Fieldterms[2]->H_in_Apm(state), 3), 2), 1),
         // 0))<< std::endl;
     }
     stream.close();

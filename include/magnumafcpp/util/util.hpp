@@ -1,14 +1,11 @@
 #pragma once
 #include "arrayfire.h"
 #include <algorithm>
-#include <array>
-#include <cmath>
 #include <numeric>
-#include <utility>
 
-namespace magnumafcpp {
+namespace magnumafcpp::util {
 
-namespace util::pywrap {
+namespace pywrap {
 
 /// Copies an af::array from python.
 /// Make an af::array from a pointer obtained from python
@@ -29,7 +26,7 @@ struct WrappedArray {
     long int get_array_copy_as_ptr() const { return send_copy_to_py(this->array); }
 };
 
-} // namespace util::pywrap
+} // namespace pywrap
 
 /// template function calculating the mean and the standard deviation of a given
 /// template container data standard deviation with -1
@@ -66,7 +63,7 @@ inline double vector_norm(std::array<double, 3> vector) {
 }
 
 inline std::array<double, 3> normalize_vector(std::array<double, 3> vector) {
-    double norm = vector_norm(vector);
+    double norm = util::vector_norm(vector);
     return {vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
 
@@ -87,7 +84,7 @@ af::array normalize(const af::array& a);
 af::array normalize_handle_zero_vectors(const af::array& a);
 void normalize_inplace(af::array& a);
 af::array vecnorm(const af::array& a);
-double afvalue(const af::array& a);           // give value of a 1, 1, 1, 1 af af::array
+double afvalue_as_f64(const af::array& a); // give value of a 1, 1, 1, 1 af af::array
 // Returns value an af::array of type u32 == 6
 // and size [1, 1, 1, 1]
 inline unsigned int afvalue_u32(const af::array& a) { return a.scalar<unsigned int>(); }
@@ -118,7 +115,6 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose 
                            double factor2 = 0.9); //!< Calculates upper bound with rel_diff_lt_precision
 
 // utility functions
-namespace util {
 std::pair<int, int> k2ij(const int k,
                          const int n); //!< returns indices i, j from a
                                        //!< serialized triangular matrix index k
@@ -134,6 +130,5 @@ unsigned int stride(const unsigned int i, const unsigned int j, const unsigned i
                     const unsigned int ni, const unsigned int nj, const unsigned int nk);
 
 af::randomEngine rand_engine_current_time();
-} // namespace util
 
-} // namespace magnumafcpp
+} // namespace magnumafcpp::util

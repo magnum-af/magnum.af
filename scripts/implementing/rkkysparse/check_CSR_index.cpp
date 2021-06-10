@@ -117,11 +117,11 @@ int main(int argc, char** argv) {
     af::print("min  diff", af::min(af::flat(csr_to_dense - coo_to_dense)));
     // if ( csr == coo ) std::cout << "csr == coo" << std::endl;
     // if ( csr != coo ) std::cout << "csr != coo" << std::endl;
-    if (afvalue(csr_max_val) == afvalue(coo_max_val))
+    if (util::afvalue_as_f64(csr_max_val) == util::afvalue_as_f64(coo_max_val))
         std::cout << " maxvals equal" << std::endl;
     else
         std::cout << " maxvals not equal" << std::endl;
-    if (afvalue(af::mean(af::flat(coo_to_dense))) == afvalue(af::mean(af::flat(csr_to_dense))))
+    if (util::afvalue_as_f64(af::mean(af::flat(coo_to_dense))) == util::afvalue_as_f64(af::mean(af::flat(csr_to_dense))))
         std::cout << " mean equal" << std::endl;
     else
         std::cout << " mean not equal" << std::endl;

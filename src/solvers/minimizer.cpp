@@ -102,9 +102,9 @@ void Minimizer::minimize(State& state) const {
         // Next stepsize alternating tau1 and tau2
 
         if (step % 2 == 0) {
-            tau = full_inner_product(m_diff, m_diff) / full_inner_product(m_diff, dm_diff);
+            tau = util::full_inner_product(m_diff, m_diff) / util::full_inner_product(m_diff, dm_diff);
         } else {
-            tau = full_inner_product(m_diff, dm_diff) / full_inner_product(dm_diff, dm_diff);
+            tau = util::full_inner_product(m_diff, dm_diff) / util::full_inner_product(dm_diff, dm_diff);
         }
         // TODO handly zero division
 

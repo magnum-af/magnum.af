@@ -461,7 +461,7 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
                     // x
                     // Note: poor indexing performace. TODO improve
                     // performance: directly accessing values with
-                    // afvalue increades sp4 assembly from ~0.4 s to
+                    // util::afvalue_as_f64 increades sp4 assembly from ~0.4 s to
                     // ~1.4 s! maybe access full host array once? is
                     // host data then in correct order for adapted
                     // findex for scalar field, i.e. i0 + mesh.nx * (i1

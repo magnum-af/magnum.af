@@ -34,16 +34,16 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
         state.m(af::span, af::span, af::span, 0) = x;
         state.m(af::span, af::span, af::span, 1) = y;
         state.m(af::span, af::span, af::span, 2) = z;
-        normalize_inplace(state.m);
+        util::normalize_inplace(state.m);
 
-        const std::array<double, 3> m = normalize_vector({x, y, z});
+        const std::array<double, 3> m = util::normalize_vector({x, y, z});
         const std::array<double, 3> c1 = {1, 0, 0};
         const std::array<double, 3> c2 = {0, 1, 0};
         const std::array<double, 3> c3 = {0, 0, 1};
 
-        const double c1m2 = std::pow(dot_product(c1, m), 2);
-        const double c2m2 = std::pow(dot_product(c2, m), 2);
-        const double c3m2 = std::pow(dot_product(c3, m), 2);
+        const double c1m2 = std::pow(util::dot_product(c1, m), 2);
+        const double c2m2 = std::pow(util::dot_product(c2, m), 2);
+        const double c3m2 = std::pow(util::dot_product(c3, m), 2);
         std::cout.precision(16);
 
         // Kc1
@@ -115,9 +115,9 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
         // Kc3
         {
             CubicAnisotropyField Kc3_caniso(0, 0, Kc3, c1, c2);
-            const double c1m4 = std::pow(dot_product(c1, m), 4);
-            const double c2m4 = std::pow(dot_product(c2, m), 4);
-            const double c3m4 = std::pow(dot_product(c3, m), 4);
+            const double c1m4 = std::pow(util::dot_product(c1, m), 4);
+            const double c2m4 = std::pow(util::dot_product(c2, m), 4);
+            const double c3m4 = std::pow(util::dot_product(c3, m), 4);
             const double Kc3_E_density_analytic = num_of_cells * Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc3_E_calculated = Kc3_caniso.Energy_in_J(state);
@@ -138,9 +138,9 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
             auto c2_ = af::constant(0, mesh::dims_v(mesh), f64);
             c2_(af::span, af::span, af::span, 1) = 1;
             CubicAnisotropyField Kc3_caniso(Kc1_, Kc2_, Kc3_, c1_, c2_);
-            const double c1m4 = std::pow(dot_product(c1, m), 4);
-            const double c2m4 = std::pow(dot_product(c2, m), 4);
-            const double c3m4 = std::pow(dot_product(c3, m), 4);
+            const double c1m4 = std::pow(util::dot_product(c1, m), 4);
+            const double c2m4 = std::pow(util::dot_product(c2, m), 4);
+            const double c3m4 = std::pow(util::dot_product(c3, m), 4);
             const double Kc3_E_density_analytic = num_of_cells * Kc3 * (c1m4 * c2m4 + c1m4 * c3m4 + c2m4 * c3m4);
             const double Kc3_E_analytic = Kc3_E_density_analytic * (mesh.dx * mesh.dy * mesh.dz);
             const double Kc3_E_calculated = Kc3_caniso.Energy_in_J(state);

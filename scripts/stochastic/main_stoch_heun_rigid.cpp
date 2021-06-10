@@ -98,13 +98,13 @@ int main(int argc, char** argv) {
         mean_mz = 0;
         abs_mean_mz = 0;
         for (unsigned long int i = 0; i < measure_steps; i++) {
-            // std::cout << i << " " << state.t << " " << afvalue(state.m(0, 0,
+            // std::cout << i << " " << state.t << " " << util::afvalue_as_f64(state.m(0, 0,
             // 0, 2)) << " " << state.t << std::endl;
             Stoch.step(state);
-            // std::cout << i << " " << state.t << " " << afvalue(state.m(0, 0,
+            // std::cout << i << " " << state.t << " " << util::afvalue_as_f64(state.m(0, 0,
             // 0, 2)) << " " << state.t << std::endl;
-            mean_mz += afvalue(state.m(0, 0, 0, 2));
-            abs_mean_mz += fabs(afvalue(state.m(0, 0, 0, 2)));
+            mean_mz += util::afvalue_as_f64(state.m(0, 0, 0, 2));
+            abs_mean_mz += fabs(util::afvalue_as_f64(state.m(0, 0, 0, 2)));
         }
 
         mean_mz = mean_mz / measure_steps;
@@ -127,8 +127,8 @@ int main(int argc, char** argv) {
         abs_mean_mz = 0;
         for (unsigned long int i = 0; i < measure_steps; i++) {
             Stoch.step(state);
-            mean_mz += afvalue(state.m(0, 0, 0, 2));
-            abs_mean_mz += fabs(afvalue(state.m(0, 0, 0, 2)));
+            mean_mz += util::afvalue_as_f64(state.m(0, 0, 0, 2));
+            abs_mean_mz += fabs(util::afvalue_as_f64(state.m(0, 0, 0, 2)));
         }
 
         mean_mz = mean_mz / measure_steps;
@@ -150,8 +150,8 @@ int main(int argc, char** argv) {
         abs_mean_mz = 0;
         for (unsigned long int i = 0; i < measure_steps; i++) {
             Stoch.step(state);
-            mean_mz += afvalue(state.m(0, 0, 0, 2));
-            abs_mean_mz += fabs(afvalue(state.m(0, 0, 0, 2)));
+            mean_mz += util::afvalue_as_f64(state.m(0, 0, 0, 2));
+            abs_mean_mz += fabs(util::afvalue_as_f64(state.m(0, 0, 0, 2)));
         }
 
         mean_mz = mean_mz / measure_steps;

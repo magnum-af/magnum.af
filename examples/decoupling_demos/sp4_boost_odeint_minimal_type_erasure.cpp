@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
         void operator()(af::array& m, double t) {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
             // ... to renorm after every step, only works with integrate_adaptive()!
-            m = normalize(m); // NOTE: This is a hack!
+            m = util::normalize(m); // NOTE: This is a hack!
 
             const auto [mx, my, mz] = math::mean_3d<double>(m);
 

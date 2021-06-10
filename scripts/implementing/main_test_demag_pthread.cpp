@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
         DemagField Demag(mesh, material, true, false);
 
         unsigned int zero_if_equal =
-            afvalue_u32(af::sum(af::sum(af::sum(af::sum(Demag.Nfft != PthreadDemag.Nfft, 0), 1), 2), 3));
+            util::afvalue_u32(af::sum(af::sum(af::sum(af::sum(Demag.Nfft != PthreadDemag.Nfft, 0), 1), 2), 3));
         if (!zero_if_equal)
             std::cout << "\33[1;32mSucess:\33[0m zero_if_equal = " << zero_if_equal << std::endl;
         else
@@ -31,4 +31,4 @@ int main(int argc, char** argv) {
 // std::cout << boolean.type() << std::endl;
 // af::array zero_if_equal = af::sum(af::sum(af::sum(af::sum(boolean, 0), 1),
 // 2), 3); std::cout << zero_if_equal.type() << std::endl; double zero_if_equal
-// = afvalue(af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3));
+// = util::afvalue_as_f64(af::sum(af::sum(af::sum(af::sum(boolean, 0), 1), 2), 3));

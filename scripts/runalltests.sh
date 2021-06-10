@@ -5,7 +5,7 @@ cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts direc
 # run compiled C++ tests:
 for testbin in ../bin/test*; do
     echo "running test '$testbin':"
-    ./$testbin
+    [ -f "$testbin" ] && ./"$testbin"
     echo ""
 done
 

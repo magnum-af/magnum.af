@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
         void operator()(af::array& m, double t) {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
             // ... to renorm after every step, only works with integrate_adaptive()!
-            m = normalize(m); // NOTE: This is a hack!
+            m = util::normalize(m); // NOTE: This is a hack!
             const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2).as(f64);
             const auto mx = mean(0, 0, 0, 0).scalar<double>();
             const auto my = mean(0, 0, 0, 1).scalar<double>();

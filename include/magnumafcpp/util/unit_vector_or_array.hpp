@@ -11,10 +11,10 @@ namespace magnumafcpp::util {
 /// Wrapper for a unit vector either of type std::array<double, 3> or af::array dims [nx, ny, nz, 3]
 ///
 struct UnitVectorOrArray {
-    explicit UnitVectorOrArray(std::array<double, 3> scalar_vector) : variant(normalize_vector(scalar_vector)) {}
+    explicit UnitVectorOrArray(std::array<double, 3> scalar_vector) : variant(util::normalize_vector(scalar_vector)) {}
 
     // Note: af::array ctor is not explicit, so any further variants s.a. with int/double/... can be mapped to this ctor
-    explicit UnitVectorOrArray(af::array array_vector) : variant(normalize_handle_zero_vectors(array_vector)) {
+    explicit UnitVectorOrArray(af::array array_vector) : variant(util::normalize_handle_zero_vectors(array_vector)) {
         if (array_vector.dims(3) != 3) {
             throw std::runtime_error("VectorOrArray::VectorOrArray(af::array): invalid input dimension, array.dims(3) "
                                      "!= 3. Please provide array of dimension [nx, ny, nz, 3].");

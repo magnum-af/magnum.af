@@ -2,7 +2,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace magnumafcpp {
+namespace magnumafcpp::util {
 
 std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region) {
     if (vectorfield.dims(3) != 3 or region.dims(3) != 1) {
@@ -24,11 +24,11 @@ std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const
 }
 
 std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region) {
-    return spacial_mean_in_region(util::pywrap::make_copy_form_py(vectorfield), util::pywrap::make_copy_form_py(region));
+    return spacial_mean_in_region(pywrap::make_copy_form_py(vectorfield), pywrap::make_copy_form_py(region));
 }
 
 /// Returns the value of array with only one element
-double afvalue(const af::array& a) {
+double afvalue_as_f64(const af::array& a) {
     if (a.dims(0) != 1 || a.dims(1) != 1 || a.dims(2) != 1 || a.dims(3) != 1) {
         std::cout << "\33[1;31mWarning:\33[0m afvalue requested from array "
                      "with dim4 =["
@@ -37,12 +37,11 @@ double afvalue(const af::array& a) {
                      "may lead to unexpected behaviour."
                   << std::endl;
     }
-    return a.scalar<double>();
+    return a.as(f64).scalar<double>();
 }
 
-
 double full_inner_product(const af::array& a, const af::array& b) {
-    return afvalue(sum(sum(sum(sum(a * b, 3), 2), 1), 0));
+    return afvalue_as_f64(sum(sum(sum(sum(a * b, 3), 2), 1), 0));
 }
 
 af::array normalize(const af::array& a) { return a / tile(sqrt(sum(a * a, 3)), 1, 1, 1, 3); }
@@ -85,7 +84,7 @@ double euclnorm(const af::array& a) {
 
 /// Mean of absolute difference
 double mean_abs_diff(const af::array& a, const af::array& b) {
-    return afvalue(af::mean(af::mean(af::mean(af::mean(af::abs(a - b), 0), 1), 2), 3));
+    return afvalue_as_f64(af::mean(af::mean(af::mean(af::mean(af::abs(a - b), 0), 1), 2), 3));
 }
 
 /// Mean of relative difference
@@ -95,12 +94,12 @@ double mean_rel_diff(const af::array& first, const af::array& second) {
                 af::constant(0., temp.dims(),
                              f64)); // Avoiding division by zero: setting element to
                                     // zero if both input elements are zero
-    return afvalue(af::mean(af::mean(af::mean(af::mean(temp, 0), 1), 2), 3));
+    return afvalue_as_f64(af::mean(af::mean(af::mean(af::mean(temp, 0), 1), 2), 3));
 }
 
 /// Max of absolute difference
 double max_abs_diff(const af::array& a, const af::array& b) {
-    return afvalue(af::max(af::max(af::max(af::max(af::abs(a - b), 0), 1), 2), 3));
+    return afvalue_as_f64(af::max(af::max(af::max(af::max(af::abs(a - b), 0), 1), 2), 3));
 }
 
 /// Max of relative difference
@@ -110,7 +109,7 @@ double max_rel_diff(const af::array& first, const af::array& second) {
                 af::constant(0., temp.dims(),
                              f64)); // Avoiding division by zero: setting element to
                                     // zero if both input elements are zero
-    return afvalue(af::max(af::max(af::max(af::max(temp, 0), 1), 2), 3));
+    return afvalue_as_f64(af::max(af::max(af::max(af::max(temp, 0), 1), 2), 3));
 }
 
 /// Absolute difference less than precision: Element-wise comparision of
@@ -214,27 +213,25 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
 // Minimum value
 double min_4d(const af::array& a) { return af::min(af::min(af::min(af::min(a.as(f64), 0), 1), 2), 3).scalar<double>(); }
 
-std::pair<int, int> util::k2ij(const int k, const int n) {
+std::pair<int, int> k2ij(const int k, const int n) {
     const int i = n - 1 - static_cast<int>(std::floor(std::sqrt(-8 * k + 4 * n * (n + 1) - 7) / 2.0 - 0.5));
     const int j = k + i - n * (n + 1) / 2 + (n - i) * ((n - i) + 1) / 2;
     return std::make_pair(i, j);
 }
 
-int util::ij2k(const int i, const int j, const int n) {
-    return (n * (n + 1) / 2) - (n - i) * ((n - i) + 1) / 2 + j - i;
-}
+int ij2k(const int i, const int j, const int n) { return (n * (n + 1) / 2) - (n - i) * ((n - i) + 1) / 2 + j - i; }
 
-unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int ni) { return i + ni * j; }
-unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni,
-                          const unsigned int nj) {
+unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int ni) { return i + ni * j; }
+unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int ni,
+                    const unsigned int nj) {
     return i + ni * (j + nj * k);
 }
-unsigned int util::stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l,
-                          const unsigned int ni, const unsigned int nj, const unsigned int nk) {
+unsigned int stride(const unsigned int i, const unsigned int j, const unsigned int k, const unsigned int l,
+                    const unsigned int ni, const unsigned int nj, const unsigned int nk) {
     return i + ni * (j + nj * (k + nk * l));
 }
 
-af::randomEngine util::rand_engine_current_time() {
+af::randomEngine rand_engine_current_time() {
     unsigned long long int seed = static_cast<unsigned long long int>(
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())
             .count());
@@ -282,4 +279,4 @@ af::randomEngine util::rand_engine_current_time() {
 //        return 0;
 //}
 
-} // namespace magnumafcpp
+} // namespace magnumafcpp::util

@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_nonnormalized").c_str());
-    state.m = normalize_handle_zero_vectors(state.m);
+    state.m = util::normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_renorm").c_str());
 
     af::timer timer_llgterms = af::timer::start();
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     for (unsigned i = 0; i < steps_full_hysteresis * 5. / 4.; i++) {
         minimizer.Minimize(state);
         // state.calc_mean_m_steps(stream, constants::mu0 *
-        // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
+        // util::afvalue_as_f64(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
         // 0, 0, im_free_layer)));
         state.calc_mean_m_steps(
             stream, constants::mu0 * minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(state)(0, 0, 0, af::span));
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
         }
         state.steps++;
         std::cout << "i=" << i << ", mean=" << state.meani(im_free_layer)
-                  << ", h=" << constants::mu0 * afvalue(minimizer.llgterms_.back()->H_in_Apm(state)(0, 0, 0, im_free_layer))
+                  << ", h=" << constants::mu0 * util::afvalue_as_f64(minimizer.llgterms_.back()->H_in_Apm(state)(0, 0, 0, im_free_layer))
                   << std::endl;
     }
     stream.close();

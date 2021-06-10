@@ -65,8 +65,8 @@ int main(int argc, char** argv) {
         state.write_vti((filepath + "m_relaxed" + std::to_string(nz)).c_str());
         af::array demagfield = demag->H_in_Apm(state);
         vti_writer_micro(demagfield, mesh, filepath + "relaxed_demag_nz" + std::to_string(nz));
-        double demag_in_center = afvalue(demagfield(nx / 2, ny / 2, 0, 0)) * constants::mu0;
-        double mean_demag = afvalue(af::mean(af::mean(demagfield(af::span, af::span, 0, 0), 0), 1)) * constants::mu0;
+        double demag_in_center = util::afvalue_as_f64(demagfield(nx / 2, ny / 2, 0, 0)) * constants::mu0;
+        double mean_demag = util::afvalue_as_f64(af::mean(af::mean(demagfield(af::span, af::span, 0, 0), 0), 1)) * constants::mu0;
         std::cout << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"
                   << demag_in_center << "\t" << mean_demag << "\t" << std::endl;
         stream << nz << "\t" << state.meani(0) << "\t" << state.meani(1) << "\t" << state.meani(2) << "\t"

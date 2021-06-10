@@ -34,8 +34,8 @@ template <typename T = double, typename Y = af::array> class RK_Integrator {
         } while (!controller.success(error, dt_));
         t_ += dt_;
         dt_ = controller.get_hnext();
-        yn = normalize(y_proposed_);
-        // handle at callsite// yn = normalize(m);
+        yn = util::normalize(y_proposed_);
+        // handle at callsite// yn = util::normalize(m);
     }
 
     template <typename F, typename... Args>
@@ -50,7 +50,7 @@ template <typename T = double, typename Y = af::array> class RK_Integrator {
 
     template <typename F, typename... Args> void stepRK4(Y& yn, F f, Args... args) {
         std::tie(t_, yn) = RK4(t_, dt_, yn, f, args...);
-        yn = normalize(yn);
+        yn = util::normalize(yn);
     }
 };
 

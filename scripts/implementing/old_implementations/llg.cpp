@@ -269,15 +269,15 @@ array LLG::step(State& state) {
     if (state.Ms.isempty())
         return normalize(mtemp);
     else
-        return (normalize_handle_zero_vectors(mtemp)); // Normalized array where all initial values == 0 are set
+        return (util::normalize_handle_zero_vectors(mtemp)); // Normalized array where all initial values == 0 are set
                                                        // to 0
     // return mtemp;
 
     // TODO
-    //    if(fabs(maxnorm(vecnorm(mtemp))-1.) > llg_normtol){
+    //    if(fabs(maxnorm(util::vecnorm(mtemp))-1.) > llg_normtol){
     //      llg_normalize_counter++;
     //      llg_wasnormalized=true;
-    //      std::cout<<"Normalization: "<<maxnorm(vecnorm(mtemp))<<"
+    //      std::cout<<"Normalization: "<<maxnorm(util::vecnorm(mtemp))<<"
     //      Counter="<<llg_normalize_counter<<std::endl; return
     //      normalize(mtemp);
     //    }
@@ -594,7 +594,7 @@ array LLG::BS45de(const array& m, const double dt, double& err) {
     rk_error *= dt;
     err = maxnorm(rk_error / controller.givescale(m)); // TODO we only use m, not max(m, m+sumbk)
                                                        // for error estimate! Is this convenient?
-    // std::cout<<"Test"<<afvalue(rk_error(0, 0, 0,
+    // std::cout<<"Test"<<util::afvalue_as_f64(rk_error(0, 0, 0,
     // 0))<<"\t"<<maxnorm(rk_error)<<"\t"<<err<<std::endl;
     if (err > 1.)
         std::cout << "RKErr>1" << std::endl;
@@ -999,7 +999,7 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  };
 //
 // // if(reject) std::cout<<"!!!!!!!! Prev was rejected"<<std::endl;
-////  std::cout<<"mini = "<<afvalue((m)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"mini = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<std::endl;
 //
 //  if(reject || calls==0 || llg_wasnormalized){
 //    heff =  fheff(m);
@@ -1008,12 +1008,12 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  else
 //    k1=k7;
 //
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
-////  std::cout<<"k1 = "<<afvalue((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"h of k1 = "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"k1 = "<<util::afvalue_as_f64((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
 ////
-////  std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
-///"<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t
-/// dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"m k1 = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
+///"<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<util::afvalue_as_f64(k1(0, 0, 0, 0))<<"\t
+/// dtfdmdt= "<<util::afvalue_as_f64(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl;
 //  heff =  fheff(m + dt *( a[2][1] * k1) ); k2   =  fdmdt(m + dt *( a[2][1] *
 //  k1) , heff); heff =  fheff(m + dt *( a[3][1] * k1 + a[3][2] * k2) ); k3   =
 //  fdmdt(m + dt *( a[3][1] * k1 + a[3][2] * k2) , heff); heff =  fheff(m + dt
@@ -1033,20 +1033,20 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  a[7][6]*k6); rk_error = sumbk - dt*(e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 +
 //  e[5]*k5 + e[6]*k6 + e[7]*k7); err=maxnorm(rk_error/givescale(max(m,
 //  m+sumbk)));
-//  //std::cout<<"mk7  = "<<afvalue((m + a[7][1] * k1                +  a[7][3]
+//  //std::cout<<"mk7  = "<<util::afvalue_as_f64((m + a[7][1] * k1                +  a[7][3]
 //  * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6)(0, 0, 0, 0))<<std::endl;
-////  std::cout<<"after heff = "<<afvalue((m + a[7][1] * k1                +
+////  std::cout<<"after heff = "<<util::afvalue_as_f64((m + a[7][1] * k1                +
 /// a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0, 0, 0,
-/// 0))<<std::endl; /  std::cout<<"after k7   = "<<afvalue((m + a[7][1] * k1 +
+/// 0))<<std::endl; /  std::cout<<"after k7   = "<<util::afvalue_as_f64((m + a[7][1] * k1 +
 /// a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6 )(0, 0, 0,
-/// 0))<<"\n"<<std::endl; /  std::cout<<"h of k7 = "<<afvalue((heff)(0, 0, 0,
+/// 0))<<"\n"<<std::endl; /  std::cout<<"h of k7 = "<<util::afvalue_as_f64((heff)(0, 0, 0,
 /// 0))<<std::endl;
 //
 //  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
 //  //std::cout << maxnorm(k1(0, 0, 0, 0)) << "\t" << maxnorm(k7(0, 0, 0, 0)) <<
 //  std::endl;
-////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"m+sumbk = "<<util::afvalue_as_f64((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //  //rk_error = (a[7][1] - e[1] ) * k1 + (a[7][2] - e[2] * k2 ) + (a[7][3] -
 //  e[3] ) * k3 + ( a[7][4] -e[4] ) * k4 + (a[7][5] - e[5]) * k5 + (a[7][6] -
 //  e[6] )* k6 -e[7] * k7;
@@ -1054,19 +1054,19 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  "<<maxnorm(rk_error)<<" givescale "<< maxnorm(givescale(max(m,
 //  m+sumbk)))<<std::endl;
 //  //rk_abs_error = maxnorm(rk_error);
-//  //std::cout<<"m+s3 = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
+//  //std::cout<<"m+s3 = "<<util::afvalue_as_f64((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //
-////  std::cout<<"k7 = "<<afvalue((dt * fdmdt(m + a[7][1] * k1                +
+////  std::cout<<"k7 = "<<util::afvalue_as_f64((dt * fdmdt(m + a[7][1] * k1                +
 /// a[7][3] * k3 + a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6, heff))(0, 0, 0,
 /// 0))<<std::endl;
-//  //std::cout<<"m k7 = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<"\t"<<"h of k7 =
-//  "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0,
+//  //std::cout<<"m k7 = "<<util::afvalue_as_f64((m+sumbk)(0, 0, 0, 0))<<"\t"<<"h of k7 =
+//  "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<util::afvalue_as_f64(k7(0, 0, 0,
 //  0))<<std::endl;
 //
-////  std::cout<<"m k7 = "<<afvalue((m + dt*(a[7][1] * k1+  a[7][3] * k3 +
+////  std::cout<<"m k7 = "<<util::afvalue_as_f64((m + dt*(a[7][1] * k1+  a[7][3] * k3 +
 /// a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6))(0, 0, 0, 0))<<"\t"<<"h of k7 =
-///"<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<"\t
-/// dtfdmdt= "<<afvalue(fdmdt(m + dt*(a[7][1] * k1                +  a[7][3] *
+///"<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<util::afvalue_as_f64(k7(0, 0, 0, 0))<<"\t
+/// dtfdmdt= "<<util::afvalue_as_f64(fdmdt(m + dt*(a[7][1] * k1                +  a[7][3] *
 /// k3
 ///+ a[7][4] * k4 + a[7][5] * k5 + a[7][6] * k6), heff)(0, 0, 0, 0))<<std::endl;
 //  return sumbk;
@@ -1082,9 +1082,9 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  else
 //    k1=k7;
 //
-//  //std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
-//  "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t
-//  dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl; rktemp = m
+//  //std::cout<<"m k1 = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
+//  "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<util::afvalue_as_f64(k1(0, 0, 0, 0))<<"\t
+//  dtfdmdt= "<<util::afvalue_as_f64(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl; rktemp = m
 //  + dt * (1./5. *k1);
 //
 //  heff = fheff(rktemp      );
@@ -1122,9 +1122,9 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  125./192. * k4 -2187./6784. * k5 + 11./84. * k6); rk_error = sumbk - dt * (
 //  5179./57600. * k1           + 7571./16695. * k3 + 393/640. * k4
 //  -92097./339200.* k5 + 187./2100. * k6 + 1./40. * k7);
-//  //std::cout<<"m k7 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k7 =
-//  "<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<afvalue(k7(0, 0, 0, 0))<<"\t
-//  dtfdmdt= "<<afvalue(fdmdt(m+sumbk, heff)(0, 0, 0, 0))<<std::endl;
+//  //std::cout<<"m k7 = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<"\t"<<"h of k7 =
+//  "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k7= "<<util::afvalue_as_f64(k7(0, 0, 0, 0))<<"\t
+//  dtfdmdt= "<<util::afvalue_as_f64(fdmdt(m+sumbk, heff)(0, 0, 0, 0))<<std::endl;
 //
 //  err=maxnorm(rk_error/givescale(max(m, m+sumbk)));
 //  return sumbk;
@@ -1680,11 +1680,11 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  //TODO rk_error = sumbk - dt*(e[1]*k1 + e[2]*k2 + e[3]*k3 + e[4]*k4 +
 //  e[5]*k5 + e[6]*k6 + e[7]*k7 + ?);
 //
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
-////  std::cout<<"k1 = "<<afvalue((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
-////  std::cout<<"m k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
-///"<<afvalue((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t
-/// dtfdmdt= "<<afvalue(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl; / Start
+////  std::cout<<"h of k1 = "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"k1 = "<<util::afvalue_as_f64((k1)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"m k1 = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<"\t"<<"h of k1 =
+///"<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<"\t"<<"k1= "<<util::afvalue_as_f64(k1(0, 0, 0, 0))<<"\t
+/// dtfdmdt= "<<util::afvalue_as_f64(fdmdt(m, heff)(0, 0, 0, 0))<<"\n"<<std::endl; / Start
 /// Alternative /  if(reject || calls==0 || llg_wasnormalized){ /    heff =
 /// fheff(m); /    k1   =  fdmdt(m, heff); /    } /  else /    k1=k8; /  heff =
 /// fheff(m + dt *( a[2][1] * k1) ); /  k2   =  fdmdt(m + dt *( a[2][1] * k1) ,
@@ -1814,9 +1814,9 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //    {0, a71, 0  , a73, a74, a75, a76, 0.}
 //  };
 //
-////  std::cout<<"m of k1 = "<<afvalue((m)(0, 0, 0, 0))<<"\n"<<std::endl;
-////  std::cout<<"h of k1 = "<<afvalue((heff)(0, 0, 0, 0))<<std::endl;
-////  std::cout<<"k1= "<<afvalue(k1(0, 0, 0, 0))<<"\t"<<afvalue(k1(1, 1, 0,
+////  std::cout<<"m of k1 = "<<util::afvalue_as_f64((m)(0, 0, 0, 0))<<"\n"<<std::endl;
+////  std::cout<<"h of k1 = "<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"k1= "<<util::afvalue_as_f64(k1(0, 0, 0, 0))<<"\t"<<util::afvalue_as_f64(k1(1, 1, 0,
 /// 1))<<"\n"<<std::endl;
 //  if(reject) std::cout<<"!!!!!!!! Prev was rejected"<<std::endl; if(reject){
 //    heff =       fheff(m                               );
@@ -1848,17 +1848,17 @@ LLG::LLG(State state0_in, std::vector<std::unique_ptr<FieldTerm>> Fieldterms_in)
 //  sumbk=    a[7][1] * k1                 + a[7][3] * k3 + a[7][4] * k4 +
 //  a[7][5] * k5 + a[7][6] * k6; heff =       fheff(m + sumbk      ); k7   =  dt
 //  * fdmdt(m + sumbk, heff);
-////  std::cout<<"m of k7 = "<<afvalue((m + a[7][1]*k1 + a[7][3]*k3 + a[7][4]*k4
+////  std::cout<<"m of k7 = "<<util::afvalue_as_f64((m + a[7][1]*k1 + a[7][3]*k3 + a[7][4]*k4
 ///+ a[7][5]*k5 + a[7][6]*k6)(0, 0, 0, 0))<<std::endl; /  std::cout<<"h of k7 =
-///"<<afvalue((heff)(0, 0, 0, 0))<<std::endl; /  std::cout<<"k7=
-///"<<afvalue(k7(0, 0, 0, 0))<<"\t"<<afvalue(k7(1, 1, 0, 1))<<std::endl;
+///"<<util::afvalue_as_f64((heff)(0, 0, 0, 0))<<std::endl; /  std::cout<<"k7=
+///"<<util::afvalue_as_f64(k7(0, 0, 0, 0))<<"\t"<<util::afvalue_as_f64(k7(1, 1, 0, 1))<<std::endl;
 //
 //  //Todo: not differs in 7th digit
 //  //std::cout.precision(12);
 //  //std::cout << maxnorm(k1(0, 0, 0, 0)) << "\t" << maxnorm(k7(0, 0, 0, 0)) <<
 //  std::endl;
 //
-////  std::cout<<"m+sumbk = "<<afvalue((m+sumbk)(0, 0, 0, 0))<<std::endl;
+////  std::cout<<"m+sumbk = "<<util::afvalue_as_f64((m+sumbk)(0, 0, 0, 0))<<std::endl;
 //  //rk_error = (a[7][1] - e[1] ) * k1 + (a[7][2] - e[2] * k2 ) + (a[7][3] -
 //  e[3] ) * k3 + ( a[7][4] -e[4] ) * k4 + (a[7][5] - e[5]) * k5 + (a[7][6] -
 //  e[6] )* k6 -e[7] * k7;

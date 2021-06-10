@@ -61,7 +61,7 @@ TEST(Func, spacial_mean_in_region) {
     region(1) = 2; // only non-zero is checked: non-one values are converted to
                    // ones, so this is also fine
     region(2) = 3;
-    auto mean = spacial_mean_in_region(vectorfield, region);
+    auto mean = magnumafcpp::util::spacial_mean_in_region(vectorfield, region);
     EXPECT_EQ(mean[0], 2.5);
     EXPECT_EQ(mean[1], 3.5);
     EXPECT_EQ(mean[2], 4.5);

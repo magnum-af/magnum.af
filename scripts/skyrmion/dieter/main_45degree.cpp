@@ -8,8 +8,8 @@ using namespace af;
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     const int ncells = state.mesh.nx * state.mesh.ny * state.mesh.nz;
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) / ncells << "\t"
-           << afvalue(sum_dim3(span, span, span, 1)) / ncells << "\t" << afvalue(sum_dim3(span, span, span, 2)) / ncells
+    myfile << std::setw(12) << state.t << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 0)) / ncells << "\t"
+           << util::afvalue_as_f64(sum_dim3(span, span, span, 1)) / ncells << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 2)) / ncells
            << "\t" << hzee << std::endl;
 }
 

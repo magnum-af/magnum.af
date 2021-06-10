@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
     stream.precision(12);
     stream.open(filepath + "m.dat");
 
-    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, index_free_layer, 0)) << ", "
-           << afvalue(h(nx / 2, ny / 2, index_free_layer, 1)) << ", " << afvalue(h(nx / 2, ny / 2, index_free_layer, 2))
+    stream << z_spacing[1] << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, index_free_layer, 0)) << ", "
+           << util::afvalue_as_f64(h(nx / 2, ny / 2, index_free_layer, 1)) << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, index_free_layer, 2))
            << std::endl;
     stream.close();
     return 0;

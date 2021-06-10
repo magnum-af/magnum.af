@@ -14,7 +14,7 @@ TEST(Util, mean_stdev_no_minus) {
     for (int i = 1; i <= nn; i++) {
         vec.push_back(i);
     }
-    auto res = mean_stdev_no_minus(vec);
+    auto res = util::mean_stdev_no_minus(vec);
     double n = nn;
     EXPECT_EQ(res.first, n * (n + 1.) / 2. / n);
     EXPECT_NEAR(res.second, std::sqrt((std::pow(n, 2) - 1) / 12.), 0.);
@@ -28,7 +28,7 @@ TEST(Util, mean_stdev_w_minus) {
     for (int i = 1; i <= nn; i++) {
         vec.push_back(i);
     }
-    auto res = mean_stdev_w_minus(vec);
+    auto res = util::mean_stdev_w_minus(vec);
     double n = nn;
     EXPECT_EQ(res.first, n * (n + 1.) / 2. / n);
     EXPECT_NEAR(res.second, std::sqrt((std::pow(n, 2) - 1) / 12.), 0.15);
@@ -37,35 +37,35 @@ TEST(Util, mean_stdev_w_minus) {
 }
 
 TEST(Util, cross_product) {
-    EXPECT_THAT(cross_product({1, 0, 0}, {1, 0, 0}), testing::ElementsAre(0, 0, 0));
-    EXPECT_THAT(cross_product({1, 0, 0}, {0, 1, 0}), testing::ElementsAre(0, 0, 1));
-    EXPECT_THAT(cross_product({2, 0, 0}, {0, 2, 0}), testing::ElementsAre(0, 0, 4));
+    EXPECT_THAT(util::cross_product({1, 0, 0}, {1, 0, 0}), testing::ElementsAre(0, 0, 0));
+    EXPECT_THAT(util::cross_product({1, 0, 0}, {0, 1, 0}), testing::ElementsAre(0, 0, 1));
+    EXPECT_THAT(util::cross_product({2, 0, 0}, {0, 2, 0}), testing::ElementsAre(0, 0, 4));
 }
 
 TEST(Util, dot_product) {
-    EXPECT_EQ(dot_product({0, 0, 0}, {0, 0, 0}), 0);
-    EXPECT_EQ(dot_product({1, 0, 0}, {1, 0, 0}), 1);
-    EXPECT_EQ(dot_product({2, 0, 0}, {2, 0, 0}), 4);
-    EXPECT_EQ(dot_product({1, 0, 0}, {0, 1, 0}), 0);
-    EXPECT_EQ(dot_product({1, 2, 3}, {1, 2, 3}), 14);
-    EXPECT_EQ(dot_product({1, 1, 1}, {1, 1, 1}), 3);
+    EXPECT_EQ(util::dot_product({0, 0, 0}, {0, 0, 0}), 0);
+    EXPECT_EQ(util::dot_product({1, 0, 0}, {1, 0, 0}), 1);
+    EXPECT_EQ(util::dot_product({2, 0, 0}, {2, 0, 0}), 4);
+    EXPECT_EQ(util::dot_product({1, 0, 0}, {0, 1, 0}), 0);
+    EXPECT_EQ(util::dot_product({1, 2, 3}, {1, 2, 3}), 14);
+    EXPECT_EQ(util::dot_product({1, 1, 1}, {1, 1, 1}), 3);
 }
 
 TEST(Util, vector_norm) {
-    EXPECT_EQ(vector_norm({0, 0, 0}), 0);
-    EXPECT_EQ(vector_norm({1, 0, 0}), 1);
-    EXPECT_EQ(vector_norm({2, 0, 0}), 2);
-    EXPECT_EQ(vector_norm({0, 3, 0}), 3);
-    EXPECT_EQ(vector_norm({0, 0, 4}), 4);
-    EXPECT_EQ(vector_norm({1, 1, 1}), std::sqrt(3));
+    EXPECT_EQ(util::vector_norm({0, 0, 0}), 0);
+    EXPECT_EQ(util::vector_norm({1, 0, 0}), 1);
+    EXPECT_EQ(util::vector_norm({2, 0, 0}), 2);
+    EXPECT_EQ(util::vector_norm({0, 3, 0}), 3);
+    EXPECT_EQ(util::vector_norm({0, 0, 4}), 4);
+    EXPECT_EQ(util::vector_norm({1, 1, 1}), std::sqrt(3));
 }
 
 TEST(Util, normalize_vector) {
-    EXPECT_THAT(normalize_vector({2, 0, 0}), testing::ElementsAre(1, 0, 0));
-    EXPECT_THAT(normalize_vector({0, 2, 0}), testing::ElementsAre(0, 1, 0));
-    EXPECT_THAT(normalize_vector({0, 0, 2}), testing::ElementsAre(0, 0, 1));
-    EXPECT_THAT(normalize_vector({2, 2, 0}), testing::ElementsAre(1 / std::sqrt(2), 1 / std::sqrt(2), 0));
-    EXPECT_THAT(normalize_vector({2, 2, 2}),
+    EXPECT_THAT(util::normalize_vector({2, 0, 0}), testing::ElementsAre(1, 0, 0));
+    EXPECT_THAT(util::normalize_vector({0, 2, 0}), testing::ElementsAre(0, 1, 0));
+    EXPECT_THAT(util::normalize_vector({0, 0, 2}), testing::ElementsAre(0, 0, 1));
+    EXPECT_THAT(util::normalize_vector({2, 2, 0}), testing::ElementsAre(1 / std::sqrt(2), 1 / std::sqrt(2), 0));
+    EXPECT_THAT(util::normalize_vector({2, 2, 2}),
                 testing::ElementsAre(1 / std::sqrt(3), 1 / std::sqrt(3), 1 / std::sqrt(3)));
 }
 

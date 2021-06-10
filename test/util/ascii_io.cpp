@@ -1,5 +1,5 @@
 #include "ascii_io.hpp"
-#include "util/util.hpp" // for max_abs_diff
+#include "util/util.hpp" // for util::max_abs_diff
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;
@@ -20,7 +20,7 @@ TEST(ascii_io, ascii_io_test_vector_field) {
     EXPECT_EQ(read_mesh.dx, 0.1);
     EXPECT_EQ(read_mesh.dy, 0.2);
     EXPECT_EQ(read_mesh.dz, 0.3);
-    EXPECT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(util::max_abs_diff(read_a, a), 0);
 }
 
 TEST(ascii_io, ascii_io_test_scalar_field) {
@@ -39,7 +39,7 @@ TEST(ascii_io, ascii_io_test_scalar_field) {
     EXPECT_EQ(read_mesh.dx, 0.1);
     EXPECT_EQ(read_mesh.dy, 0.2);
     EXPECT_EQ(read_mesh.dz, 0.3);
-    EXPECT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(util::max_abs_diff(read_a, a), 0);
 }
 
 TEST(ascii_io, ascii_io_test_10d_field) {
@@ -58,7 +58,7 @@ TEST(ascii_io, ascii_io_test_10d_field) {
     EXPECT_EQ(read_mesh.dx, 0.2);
     EXPECT_EQ(read_mesh.dy, 0.3);
     EXPECT_EQ(read_mesh.dz, 0.4);
-    EXPECT_EQ(max_abs_diff(read_a, a), 0);
+    EXPECT_EQ(util::max_abs_diff(read_a, a), 0);
 }
 
 int main(int argc, char** argv) {

@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
         llg.step(state);
         stream << state << std::endl;
         // state.calc_mean_m(std::cout);
-        // std::cout << afvalue(m(0, 0, 0, 0)) << " " << afvalue(m(0, 0, 0, 1))
-        // << " " << afvalue(m(0, 0, 0, 2)) << " " << std::endl;
+        // std::cout << util::afvalue_as_f64(m(0, 0, 0, 0)) << " " << util::afvalue_as_f64(m(0, 0, 0, 1))
+        // << " " << util::afvalue_as_f64(m(0, 0, 0, 2)) << " " << std::endl;
     }
     std::cout << "timerelax [af-s]: " << af::timer::stop(t) << std::endl;
     vti_writer_micro(state.m, mesh, (filepath + "relax").c_str());

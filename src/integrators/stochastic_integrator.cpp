@@ -48,7 +48,7 @@ void Stochastic_Integrator::step(State& state) { // TODO remove dt as parameter 
     } else if (mode == 2) {
         state.m += detRK4(state);
     }
-    state.m = normalize(state.m);
+    state.m = util::normalize(state.m);
     state.t += dt;
     calls++;
     timer += af::timer::stop(timer_stoch);

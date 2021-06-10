@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
             std::cout << ", max [s] " << *std::max_element(times.begin(), times.end());
             std::cout << ", min [s] " << *std::min_element(times.begin(), times.end());
 
-            auto m_stdev = mean_stdev_w_minus(times);
+            auto m_stdev = util::mean_stdev_w_minus(times);
             std::cout << ", mean = " << m_stdev.first;
             std::cout << ", stdev = " << m_stdev.second;
             stream << m_stdev.first << "\t" << m_stdev.second << "\t";
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
             std::cout << ", max [s] " << *std::max_element(times.begin(), times.end());
             std::cout << ", min [s] " << *std::min_element(times.begin(), times.end());
 
-            auto m_stdev = mean_stdev_w_minus(times);
+            auto m_stdev = util::mean_stdev_w_minus(times);
             std::cout << ", mean = " << m_stdev.first;
             std::cout << ", stdev = " << m_stdev.second << std::endl;
             stream << m_stdev.first << "\t" << m_stdev.second << std::endl;

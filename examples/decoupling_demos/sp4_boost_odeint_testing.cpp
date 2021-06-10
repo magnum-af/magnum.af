@@ -172,9 +172,9 @@ int main(int argc, char** argv) {
 
         state.t = t;
         if (state.Ms_field.isempty()) {
-            state.m = normalize(m_in);
+            state.m = util::normalize(m_in);
         } else {
-            state.m = normalize_handle_zero_vectors(m_in);
+            state.m = util::normalize_handle_zero_vectors(m_in);
         }
 
         const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
@@ -299,7 +299,7 @@ int main(int argc, char** argv) {
 
                 sucessful_steps++;
                 if (llg_normalize == LlgNormalize::off) {
-                    m = normalize(m); // NOTE: using non_normalizing_llg
+                    m = util::normalize(m); // NOTE: using non_normalizing_llg
                 }
                 observer(m, t);
             }
@@ -340,7 +340,7 @@ int main(int argc, char** argv) {
 
                 sucessful_steps++;
                 if (llg_normalize == LlgNormalize::off) {
-                    m = normalize(m); // NOTE: using non_normalizing_llg
+                    m = util::normalize(m); // NOTE: using non_normalizing_llg
                 }
                 if (std::abs(t - t_next_observer_call) < 1e-16) { //  or t == end_time
                     // if (t == t_next_observer_call) { //  or t == end_time

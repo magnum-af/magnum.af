@@ -48,7 +48,7 @@ TEST(Util, 2DimStrideAccessTest) {
     util::HostPtrAccessor<double> host(a);
     for (int i = 0; i < ni; i++) {
         for (int j = 0; j < nj; j++) {
-            EXPECT_EQ(afvalue(a(i, j)), util::stride(i, j, ni));
+            EXPECT_EQ(util::afvalue_as_f64(a(i, j)), util::stride(i, j, ni));
         }
     }
 }
@@ -61,7 +61,7 @@ TEST(Util, 3DimStrideAccessTest) {
     for (int i = 0; i < ni; i++) {
         for (int j = 0; j < nj; j++) {
             for (int k = 0; k < nk; k++) {
-                EXPECT_EQ(afvalue(a(i, j, k)), util::stride(i, j, k, ni, nj));
+                EXPECT_EQ(util::afvalue_as_f64(a(i, j, k)), util::stride(i, j, k, ni, nj));
             }
         }
     }
@@ -77,7 +77,7 @@ TEST(Util, 4DimStrideAccessTest) {
         for (int j = 0; j < nj; j++) {
             for (int k = 0; k < nk; k++) {
                 for (int l = 0; l < nl; l++) {
-                    EXPECT_EQ(afvalue(a(i, j, k, l)), util::stride(i, j, k, l, ni, nj, nk));
+                    EXPECT_EQ(util::afvalue_as_f64(a(i, j, k, l)), util::stride(i, j, k, l, ni, nj, nk));
                 }
             }
         }

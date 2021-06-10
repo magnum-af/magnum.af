@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh, (outdir / "minit_nonnormalized").c_str());
-    state.m = normalize_handle_zero_vectors(state.m);
+    state.m = util::normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (outdir / "minit_renorm").c_str());
 
     DemagField dmag(mesh);

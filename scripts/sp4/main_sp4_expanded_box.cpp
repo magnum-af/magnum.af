@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     //    print ("test_renorm", test_renorm);
     //    print ("normalized test_renorm", normalize(test_renorm));
     //    print ("normalized handle zero  test_renorm",
-    //    normalize_handle_zero_vectors(test_renorm));
+    //    util::normalize_handle_zero_vectors(test_renorm));
     //    //END TEST RENORMALIZE
 
     // Parameter initialization

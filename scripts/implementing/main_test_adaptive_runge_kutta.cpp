@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     array m = constant(1.0, 1, f64);
     for (int i = 0; i < 1e4; i++) {
         rkf.step(m, t);
-        double mcalc = afvalue(m);
+        double mcalc = util::afvalue_as_f64(m);
         double manal = 1. / 16. * pow(pow(t, 2) + 4, 2);
         std::cout << "t= " << t << ", m= " << mcalc << ", analy= " << manal
                   << ", rel_err= " << (mcalc - manal) / (mcalc + manal) << std::endl;

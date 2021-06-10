@@ -8,8 +8,8 @@ using namespace af;
 void calc_mean_m(const State& state, std::ostream& myfile, double hzee) {
     const array sum_dim3 = sum(sum(sum(state.m, 0), 1), 2);
     const int ncells = state.mesh.nx * state.mesh.ny * state.mesh.nz;
-    myfile << std::setw(12) << state.t << "\t" << afvalue(sum_dim3(span, span, span, 0)) / ncells << "\t"
-           << afvalue(sum_dim3(span, span, span, 1)) / ncells << "\t" << afvalue(sum_dim3(span, span, span, 2)) / ncells
+    myfile << std::setw(12) << state.t << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 0)) / ncells << "\t"
+           << util::afvalue_as_f64(sum_dim3(span, span, span, 1)) / ncells << "\t" << util::afvalue_as_f64(sum_dim3(span, span, span, 2)) / ncells
            << "\t" << hzee << std::endl;
 }
 
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     while (state.t < simtime) {
         state.m = llg.step(state);
         if (state.steps % 1000 == 0) {
-            calc_mean_m(state, stream, afvalue(llg.Fieldterms[llg.Fieldterms.size() - 1]->H_in_Apm(state)(0, 0, 0, 2)));
+            calc_mean_m(state, stream, util::afvalue_as_f64(llg.Fieldterms[llg.Fieldterms.size() - 1]->H_in_Apm(state)(0, 0, 0, 2)));
             vti_writer_atom(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
     }

@@ -8,10 +8,10 @@ af::array dot_4d(const af::array& a, const af::array& b) { return af::tile(af::s
 
 CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, std::array<double, 3> c1,
                                            std::array<double, 3> c2)
-    : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(c1), c2(c2), c3(normalize_vector(cross_product(c1, c2))) {
+    : Kc1(Kc1), Kc2(Kc2), Kc3(Kc3), c1(c1), c2(c2), c3(util::normalize_vector(util::cross_product(c1, c2))) {
     // check input vectors c1, c2
     const double precision = 1e-12;
-    const double abs_dot_c1c2 = std::fabs(dot_product(std::get<std::array<double, 3>>(this->c1.variant),
+    const double abs_dot_c1c2 = std::fabs(util::dot_product(std::get<std::array<double, 3>>(this->c1.variant),
                                                       std::get<std::array<double, 3>>(this->c2.variant)));
     if (abs_dot_c1c2 > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. (c1 . c2) = "

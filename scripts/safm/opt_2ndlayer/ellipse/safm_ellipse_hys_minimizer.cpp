@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_nonnormalized").c_str());
-    state.m = normalize_handle_zero_vectors(state.m);
+    state.m = util::normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_renorm").c_str());
 
     af::timer timer_llgterms = af::timer::start();
@@ -74,14 +74,14 @@ int main(int argc, char** argv) {
     af::timer t_hys = af::timer::start();
     for (unsigned i = 0; i < steps_full_hysteresis * 5. / 4.; i++) {
         minimizer.Minimize(state);
-        state.calc_mean_m_steps(stream, constants::mu0 * afvalue(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(
+        state.calc_mean_m_steps(stream, constants::mu0 * util::afvalue_as_f64(minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(
                                                              state)(0, 0, 0, 0)));
         if (state.steps % 10 == 0) {
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
         state.steps++;
         std::cout << "i=" << i << ", mean=" << state.meani(0)
-                  << ", h=" << constants::mu0 * afvalue(minimizer.llgterms_.back()->H_in_Apm(state)(0, 0, 0, 0)) << std::endl;
+                  << ", h=" << constants::mu0 * util::afvalue_as_f64(minimizer.llgterms_.back()->H_in_Apm(state)(0, 0, 0, 0)) << std::endl;
     }
     stream.close();
     std::cout << "time full hysteresis [af-s]: " << af::timer::stop(t_hys) << std::endl;

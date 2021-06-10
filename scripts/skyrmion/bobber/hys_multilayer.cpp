@@ -304,7 +304,7 @@ int main(int argc, char** argv) {
             llg.llgterms.push_back(uptr_FieldTerm(new ExternalField(zee)));
             llg.relax(state_1, 1e-10);
             // TODO mean must account for empty layers
-            auto mean = spacial_mean_in_region(state_1.m, eval_mean_region);
+            auto mean = util::spacial_mean_in_region(state_1.m, eval_mean_region);
             std::cout << Hz_current * constants::mu0 << "\t" << mean[2] << "\t"
                       << af::mean(af::mean(af::mean(state_1.m, 2), 1), 0)(0, 0, 0, 2).scalar<double>() << "\t"
                       << Hz_current << "\t" << meani(state_1.m, 0) << "\t" << meani(state_1.m, 1) << "\t"

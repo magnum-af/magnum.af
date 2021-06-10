@@ -4,13 +4,13 @@ using namespace magnumafcpp;
 
 void print_m(const af::array& m, std::string name, std::ostream& stream = std::cout) {
     af::array mean_m = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << name << ": " << afvalue(mean_m(0, 0, 0, 0)) << ", " << afvalue(mean_m(0, 0, 0, 1)) << ", "
-           << afvalue(mean_m(0, 0, 0, 2)) << std::endl;
+    stream << name << ": " << util::afvalue_as_f64(mean_m(0, 0, 0, 0)) << ", " << util::afvalue_as_f64(mean_m(0, 0, 0, 1)) << ", "
+           << util::afvalue_as_f64(mean_m(0, 0, 0, 2)) << std::endl;
 }
 void print_m(const af::array& m, std::ostream& stream = std::cout, double factor = 1) {
     af::array mean_m = af::mean(af::mean(af::mean(m, 0), 1), 2);
-    stream << std::fixed << factor * afvalue(mean_m(0, 0, 0, 0)) << "\t" << std::fixed
-           << factor * afvalue(mean_m(0, 0, 0, 1)) << "\t" << std::fixed << factor * afvalue(mean_m(0, 0, 0, 2));
+    stream << std::fixed << factor * util::afvalue_as_f64(mean_m(0, 0, 0, 0)) << "\t" << std::fixed
+           << factor * util::afvalue_as_f64(mean_m(0, 0, 0, 1)) << "\t" << std::fixed << factor * util::afvalue_as_f64(mean_m(0, 0, 0, 2));
 }
 
 void print_layers(const af::array& m) {
@@ -114,8 +114,8 @@ int main(int argc, char** argv) {
     std::ofstream stream;
     stream.precision(12);
     stream.open(filepath + "h.dat");
-    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", " << afvalue(h(nx / 2, ny / 2, 3, 1))
-           << ", " << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
+    stream << z_spacing[1] << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 0)) << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 1))
+           << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 2)) << std::endl;
     stream.close();
     timer.print_stage("calc h");
 
@@ -184,14 +184,14 @@ int main(int argc, char** argv) {
                     print_m(state.m(af::span, af::span, -1, af::span), std::cout, 1 / (0.25 * M_PI));
                     std::cout << ", safm_l2=";
                     print_m(state.m(af::span, af::span, 2, af::span), std::cout, 1 / (0.25 * M_PI));
-                    std::cout << ", zee=" << std::fixed << afvalue(h_zee(0, 0, 0, 0)) << "\t" << std::fixed
-                              << afvalue(h_zee(0, 0, 0, 1)) << "\t" << std::fixed << afvalue(h_zee(0, 0, 0, 2));
+                    std::cout << ", zee=" << std::fixed << util::afvalue_as_f64(h_zee(0, 0, 0, 0)) << "\t" << std::fixed
+                              << util::afvalue_as_f64(h_zee(0, 0, 0, 1)) << "\t" << std::fixed << util::afvalue_as_f64(h_zee(0, 0, 0, 2));
                     std::cout << std::endl;
                     // stream << state.steps << "\t";
                     stream << state.t << "\t";
                     print_m(state.m(af::span, af::span, -1, af::span), stream, 1 / (0.25 * M_PI));
-                    stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
-                           << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
+                    stream << "\t" << util::afvalue_as_f64(h_zee(0, 0, 0, 0)) << ", " << util::afvalue_as_f64(h_zee(0, 0, 0, 1)) << ", "
+                           << util::afvalue_as_f64(h_zee(0, 0, 0, 2)) << std::endl;
                 }
                 if (state.steps % 100 == 0) {
                     state.vtr_writer(filepath + "m_int" + std::to_string(state.steps));
@@ -245,17 +245,17 @@ int main(int argc, char** argv) {
         while (state.t < 4 * hzee_max / rate) {
             minimizer.Minimize(state);
             // state.calc_mean_m(stream,
-            // afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
+            // util::afvalue_as_f64(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
             // 0, 0, 2)));
             af::array h_zee = minimizer.llgterms_[minimizer.llgterms_.size() - 1]->H_in_Apm(state) * constants::mu0;
             std::cout << state.steps << "\t";
             print_m(state.m(af::span, af::span, -1, af::span), std::cout);
-            std::cout << ", zee=" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
-                      << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
+            std::cout << ", zee=" << util::afvalue_as_f64(h_zee(0, 0, 0, 0)) << ", " << util::afvalue_as_f64(h_zee(0, 0, 0, 1)) << ", "
+                      << util::afvalue_as_f64(h_zee(0, 0, 0, 2)) << std::endl;
             stream << state.steps << "\t";
             print_m(state.m, stream);
-            stream << "\t" << afvalue(h_zee(0, 0, 0, 0)) << ", " << afvalue(h_zee(0, 0, 0, 1)) << ", "
-                   << afvalue(h_zee(0, 0, 0, 2)) << std::endl;
+            stream << "\t" << util::afvalue_as_f64(h_zee(0, 0, 0, 0)) << ", " << util::afvalue_as_f64(h_zee(0, 0, 0, 1)) << ", "
+                   << util::afvalue_as_f64(h_zee(0, 0, 0, 2)) << std::endl;
             if (state.steps % 1 == 0) {
                 state.vtr_writer(filepath + "m_minimzed" + std::to_string(state.steps));
                 // vtr_writer(state.m, Mesh(nx, ny, nz, x/nx, y/ny, 0) ,

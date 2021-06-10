@@ -122,7 +122,7 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
 ////Eex=-mu0/2 integral(M . Hex) dx
 // double ExchangeField::impl_E_in_J(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
-//  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
+//  util::afvalue_as_f64(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;
 //}
 //
@@ -303,7 +303,7 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
 ////Eex=-mu0/2 integral(M . Hex) dx
 // double ExchangeField::impl_E_in_J(const State& state) const{
 //  return -constants::mu0/2. * state.Ms *
-//  afvalue(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
+//  util::afvalue_as_f64(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
 //  mesh.dx * mesh.dy * mesh.dz;
 //}
 //

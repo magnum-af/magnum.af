@@ -123,9 +123,9 @@ TEST(NonequiDemagField, RandomMagnetizationHeffTest) {
     af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.04); // Note: this is for opencl, cpu and cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::mean_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.009); // Note: this is for opencl, cpu and cuda achieve
 }
 
@@ -165,9 +165,9 @@ TEST(NonequiDemagField, RandomMagnetizationSwappedZindexHeffTest) {
     af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 1, af::span);
     // af::print("demag_ed_h", demag_ed_h);
     // af::print("demag_ne_h", demag_ne_h);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.04); // Note: this is for opencl, cpu and cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::mean_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.009); // Note: this is for opencl, cpu and cuda achieve 0.0009
 }
 
@@ -206,9 +206,9 @@ TEST(NonequiDemagField, RandomMagnetizationWithZeroLayerHeffTest) {
 
     af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.004); // cpu and cuda 0.001; 100x25x3: 0.01
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::mean_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.0009); // cpu and cuda 0.0003; 100x25x3:  0.003
 }
 
@@ -247,10 +247,10 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
 
     af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.002); // 0.0001; 100x25x3: 0.01, Note: this is for opencl, cpu and
                         // cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::mean_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.0002); // 0.000008; 100x25x3: 0.0008, Note: this is for opencl, cpu
                          // and cuda achieve 0.0006
 }
@@ -282,10 +282,10 @@ TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
 
     af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
     af::array demag_ne_h = demag_ne.H_in_Apm(state_ne)(af::span, af::span, 0, af::span);
-    EXPECT_NEAR(max_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::max_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.04); // 0.0004; 100x25x3: 0.04 Note: this is for opencl, cpu and
                        // cuda achieve 0.007
-    EXPECT_NEAR(mean_abs_diff(demag_ed_h, demag_ne_h), 0,
+    EXPECT_NEAR(util::mean_abs_diff(demag_ed_h, demag_ne_h), 0,
                 0.01); // 0.0001; 100x25x3: 0.01 Note: this is for opencl, cpu and
                        // cuda achieve 0.0003
 }

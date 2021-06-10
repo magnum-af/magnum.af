@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     std::cout << "ncells= " << state.get_n_cells_() << std::endl;
 
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_nonnormalized").c_str());
-    state.m = normalize_handle_zero_vectors(state.m);
+    state.m = util::normalize_handle_zero_vectors(state.m);
     vti_writer_micro(state.m, mesh, (filepath + "2nd_minit_renorm").c_str());
 
     af::timer timer_llgterms = af::timer::start();
@@ -99,9 +99,9 @@ int main(int argc, char** argv) {
         if (state.steps % 100 == 0)
             std::cout << "%=" << state.t / integr_time * 4. / 5. << ", i=" << state.steps << ", t=" << state.t
                       << ", <m>=" << state.meani(0)
-                      << ", hzee=" << constants::mu0 * afvalue(llg.llgterms.back()->H_in_Apm(state)(0, 0, 0, 0)) << std::endl;
+                      << ", hzee=" << constants::mu0 * util::afvalue_as_f64(llg.llgterms.back()->H_in_Apm(state)(0, 0, 0, 0)) << std::endl;
         llg.step(state);
-        state.calc_mean_m_steps(stream, constants::mu0 * afvalue(llg.llgterms.back()->H_in_Apm(state)(0, 0, 0, 0)));
+        state.calc_mean_m_steps(stream, constants::mu0 * util::afvalue_as_f64(llg.llgterms.back()->H_in_Apm(state)(0, 0, 0, 0)));
         if (state.steps % 1000 == 0) {
             vti_writer_micro(state.m, mesh, (filepath + "m_hysteresis_" + std::to_string(state.steps)).c_str());
         }
@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
     // for (unsigned i = 0; i < steps_full_hysteresis; i++){
     //    minimizer.Minimize(state);
     //    state.calc_mean_m_steps(stream,
-    //    afvalue(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
+    //    util::afvalue_as_f64(minimizer.llgterms_[minimizer.llgterms_.size()-1]->H_in_Apm(state)(0,
     //    0, 0, 0))); if( state.steps % 10 == 0){
     //        vti_writer_micro(state.m, mesh , (filepath +
     //        "m_hysteresis_"+std::to_string(state.steps)).c_str());

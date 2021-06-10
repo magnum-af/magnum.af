@@ -30,12 +30,12 @@ double calc_hz(double dz) {
     // af::print("h slice", h(nx/2, ny/2, af::span, af::span));
     // af::print("h softmagnetic", h(nx/2, ny/2, 3, af::span));
     // stream << mesh << std::endl;
-    stream << z_spacing[1] << ", " << afvalue(h(nx / 2, ny / 2, 3, 0)) << ", " << afvalue(h(nx / 2, ny / 2, 3, 1))
-           << ", " << afvalue(h(nx / 2, ny / 2, 3, 2)) << std::endl;
-    // std::cout << z_spacing[1] << ", " << afvalue(h(nx/2, ny/2, 3, 0)) << ", "
-    // << afvalue(h(nx/2, ny/2, 3, 1)) << ", " << afvalue(h(nx/2, ny/2, 3, 2))
+    stream << z_spacing[1] << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 0)) << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 1))
+           << ", " << util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 2)) << std::endl;
+    // std::cout << z_spacing[1] << ", " << util::afvalue_as_f64(h(nx/2, ny/2, 3, 0)) << ", "
+    // << util::afvalue_as_f64(h(nx/2, ny/2, 3, 1)) << ", " << util::afvalue_as_f64(h(nx/2, ny/2, 3, 2))
     // << std::endl;
-    return afvalue(h(nx / 2, ny / 2, 3, 2));
+    return util::afvalue_as_f64(h(nx / 2, ny / 2, 3, 2));
 }
 
 int main(int argc, char** argv) {

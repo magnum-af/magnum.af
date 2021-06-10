@@ -56,7 +56,7 @@ void StringMethod::calc_x() {
     x.clear();
     x.push_back(0.);
     for (unsigned int i = 1; i < images.size(); i++) {
-        x.push_back(x[i - 1] + FrobeniusNorm(images[i].m - images[i - 1].m));
+        x.push_back(x[i - 1] + util::FrobeniusNorm(images[i].m - images[i - 1].m));
     }
     x_interp.clear();
     for (int i = 0; i < n_interp; i++) {
@@ -68,7 +68,7 @@ void StringMethod::calc_x(std::vector<State> inputimages) {
     x.clear();
     x.push_back(0.);
     for (unsigned int i = 1; i < inputimages.size(); i++) {
-        x.push_back(x[i - 1] + FrobeniusNorm(inputimages[i].m - inputimages[i - 1].m));
+        x.push_back(x[i - 1] + util::FrobeniusNorm(inputimages[i].m - inputimages[i - 1].m));
     }
     x_interp.clear();
     for (int i = 0; i < n_interp; i++) {
@@ -125,7 +125,7 @@ void StringMethod::step() {
 
 void StringMethod::vec_normalize() {
     for (unsigned int i = 0; i < images.size(); i++) {
-        images[i].m = normalize_handle_zero_vectors(images[i].m);
+        images[i].m = util::normalize_handle_zero_vectors(images[i].m);
         // af::eval avoids JIT crash here!
         af::eval(images[i].m); // TODO reassess necessity for newer af-versions
     }

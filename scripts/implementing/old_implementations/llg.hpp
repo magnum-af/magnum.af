@@ -49,7 +49,7 @@ class LLG {
                                   // DP45 uses this to decide wether k1 and heff has to be
                                   // calculated
                                   // -> leave the value true if normalization is on default
-    double llg_normtol{1e-5};     // If maxnorm(vecnorm(mtemp)) exceedes this value,
+    double llg_normtol{1e-5};     // If maxnorm(util::vecnorm(mtemp)) exceedes this value,
                                   // normalize is called
     int llg_normalize_counter{0}; // number of normalizations performed
 

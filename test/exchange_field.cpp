@@ -22,8 +22,8 @@ TEST(ExchangeField, A_scalar_vs_array_value) {
         for (unsigned ny = 0; ny < mesh.ny; ny++) {
             for (unsigned nz = 0; nz < mesh.nz; nz++) {
                 for (unsigned n3 = 0; n3 < 3; n3++) {
-                    // std::cout << afvalue(constantA(nx, ny, nz, n3)) << "\t"
-                    // <<  afvalue(variableA(nx, ny, nz, n3)) << std::endl;
+                    // std::cout << util::afvalue_as_f64(constantA(nx, ny, nz, n3)) << "\t"
+                    // <<  util::afvalue_as_f64(variableA(nx, ny, nz, n3)) << std::endl;
                     EXPECT_EQ(globalA(nx, ny, nz, n3).scalar<double>(), localA(nx, ny, nz, n3).scalar<double>());
                 }
             }

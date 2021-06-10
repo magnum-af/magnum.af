@@ -46,7 +46,7 @@ std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_upt
     return {energy, Gradient(state, heff)};
 }
 
-double mydot(const af::array& a, const af::array& b) { return full_inner_product(a, b); }
+double mydot(const af::array& a, const af::array& b) { return util::full_inner_product(a, b); }
 double mynorm(const af::array& a) { return sqrt(mydot(a, a)); }
 
 double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
@@ -329,7 +329,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         // objFunc.update(stp, wa, s, x);
         state.m = wa + stp * s; // TODO check// this should be equivalent to
                                 // objFunc.update(stp, wa, s, x);
-        state.m = normalize_handle_zero_vectors(state.m);
+        state.m = util::normalize_handle_zero_vectors(state.m);
         std::tie(f, g) = EnergyAndGradient(state, fieldterms_);
         // Note: using struc-binding via 'auto [f, g] = ' is a bug
         // as it would declare f,g in this while scope and shadow outer f,g
