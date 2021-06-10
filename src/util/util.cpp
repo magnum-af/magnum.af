@@ -1,5 +1,6 @@
-#include "util/func.hpp"
 #include "util/util.hpp"
+#include <chrono>
+#include <iostream>
 
 namespace magnumafcpp {
 
@@ -39,7 +40,6 @@ double afvalue(const af::array& a) {
     return a.scalar<double>();
 }
 
-unsigned int afvalue_u32(const af::array& a) { return a.scalar<unsigned int>(); }
 
 double full_inner_product(const af::array& a, const af::array& b) {
     return afvalue(sum(sum(sum(sum(a * b, 3), 2), 1), 0));

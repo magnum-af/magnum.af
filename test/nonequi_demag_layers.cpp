@@ -1,6 +1,6 @@
 #include "field_terms/micro/demag_field.hpp"
 #include "field_terms/nonequi/nonequi_demag_field.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;

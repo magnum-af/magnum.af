@@ -1,7 +1,7 @@
 #include "stochastic_llg.hpp"
 #include "equations.hpp"
 #include "field_terms/field_term.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include <memory>
 
 namespace magnumafcpp {

@@ -1,4 +1,4 @@
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include "util/host_ptr_accessor.hpp"
 #include <gtest/gtest.h>
 

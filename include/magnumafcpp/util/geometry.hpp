@@ -1,6 +1,6 @@
 #pragma once
 #include "arrayfire.h"
-#include "util/func.hpp" // for handle zero vals
+#include "util/util.hpp" // for handle zero vals
 #include "mesh.hpp"
 
 namespace magnumafcpp::util {

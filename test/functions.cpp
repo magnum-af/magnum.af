@@ -1,4 +1,4 @@
-#include "util/func.hpp" // legacy location partial_mean
+#include "util/util.hpp" // legacy location partial_mean
 #include "math.hpp"
 #include <gtest/gtest.h>
 

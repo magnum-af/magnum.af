@@ -1,6 +1,5 @@
 #include "micro/exchange_field_pbc.hpp"
 #include "util/color_string.hpp"
-#include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
 #include "util/util.hpp"
 #include <optional>

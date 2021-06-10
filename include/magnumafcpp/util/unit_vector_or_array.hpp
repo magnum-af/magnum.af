@@ -1,6 +1,5 @@
 #pragma once
-#include "util.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include "util/variant_helper.hpp"
 #include <array>
 #include <arrayfire.h>

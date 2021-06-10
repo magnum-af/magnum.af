@@ -1,6 +1,5 @@
 #include "micro/cubic_anisotropy_field.hpp"
-#include "util/func.hpp"
-#include "util.hpp"
+#include "util/util.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 using namespace magnumafcpp;

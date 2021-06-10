@@ -1,6 +1,6 @@
 #include "adaptive_runge_kutta.hpp"
 #include "math.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include "util/color_string.hpp"
 
 namespace magnumafcpp {

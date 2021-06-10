@@ -1,5 +1,4 @@
 #include "field_terms/micro/exchange_field.hpp"
-#include "util/func.hpp"
 #include "util/util.hpp"
 
 namespace magnumafcpp {

@@ -1,6 +1,5 @@
 #include "nonequi/nonequi_exchange_field.hpp"
 #include "util/color_string.hpp"
-#include "util/func.hpp"
 #include "util/host_ptr_accessor.hpp"
 #include "util/util.hpp"
 

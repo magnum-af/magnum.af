@@ -4,7 +4,7 @@
 #include "controller.hpp"
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include <initializer_list>
 #include <memory>
 #include <vector>

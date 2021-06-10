@@ -1,6 +1,6 @@
 #include "nonequi/nonequi_demag_field.hpp"
 #include "util/cache_manager.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include "util/color_string.hpp"
 #include "util/prime_factors.hpp"
 #include <iostream>

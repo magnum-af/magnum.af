@@ -5,7 +5,7 @@
 #include "math.hpp"
 #include "state.hpp"
 #include "util/color_string.hpp"
-#include "util/func.hpp" // full inter product (TODO move to math namespace)
+#include "util/util.hpp" // full inter product (TODO move to math namespace)
 #include <algorithm>
 #include <iomanip>
 #include <list>

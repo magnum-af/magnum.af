@@ -1,5 +1,5 @@
 #include "field_terms/atom/atomistic_dipole_dipole_field.hpp"
-#include "util/func.hpp"
+#include "util/util.hpp"
 #include <vector>
 
 namespace magnumafcpp {

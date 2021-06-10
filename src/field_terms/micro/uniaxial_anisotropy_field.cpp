@@ -4,7 +4,6 @@
 // Ku2 /(mu0 Ms) eu ( eu . m)^3
 #include "micro/uniaxial_anisotropy_field.hpp"
 #include "util/color_string.hpp" // color_string::warning()
-#include "util/func.hpp"
 #include "util/util.hpp"
 
 namespace magnumafcpp {

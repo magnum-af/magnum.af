@@ -2,7 +2,6 @@
 #include "math.hpp"
 #include "util/af_overloads.hpp" // for 'os << af::array'
 #include "util/color_string.hpp"
-#include "util/func.hpp"
 #include "util/util.hpp"
 #include "vtk_io.hpp"
 #include <iomanip>

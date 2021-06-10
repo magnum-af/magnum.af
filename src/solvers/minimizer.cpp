@@ -1,6 +1,6 @@
 #include "minimizer.hpp"
 #include "math.hpp"
-#include "util/func.hpp" // TODO mv to math::
+#include "util/util.hpp" // TODO mv to math::
 #include <algorithm>
 #include <list>
 #include <memory>
