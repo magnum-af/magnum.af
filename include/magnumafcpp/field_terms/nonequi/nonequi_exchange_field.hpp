@@ -23,7 +23,7 @@ namespace magnumafcpp {
 class NonequiExchangeField : public NonequiTerm {
   public:
     NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose = true, bool COO = true);
-    NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose = true, bool COO = true);
+    NonequiExchangeField(NonequiMesh nemesh, af::array A_exchange_field, bool verbose = true, bool COO = true);
     NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose = true, bool COO = true);
 
     af::array get_matr() const { return matr; };

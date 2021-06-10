@@ -613,10 +613,9 @@ NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
 
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, const af::array& A_exchange_field, bool verbose,
-                                           bool COO)
-    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
-                                    : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
+NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, af::array A_exchange_field, bool verbose, bool COO)
+    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(std::move(A_exchange_field), nemesh, verbose)
+                                    : calc_CSR_matrix(std::move(A_exchange_field), nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
 NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
