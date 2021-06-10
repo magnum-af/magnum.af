@@ -38,4 +38,4 @@
 #include "util/util.hpp"
 #include "util/version.hpp"
 #include "util/zero_crossing.hpp"
-#include "vtk_IO.hpp"
+#include "vtk_io.hpp"

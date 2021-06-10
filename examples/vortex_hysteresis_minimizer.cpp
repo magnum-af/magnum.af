@@ -5,7 +5,7 @@
 #include "util/arg_parser.hpp"
 #include "util/geometry.hpp"
 #include "util/timer.hpp"
-#include "util/vtk_IO.hpp"
+#include "util/vtk_io.hpp"
 #include <filesystem>
 
 namespace fs = std::filesystem;

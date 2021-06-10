@@ -2,7 +2,7 @@
 #include "field_terms/micro/demag_field_pbc.hpp"
 #include "util/arg_parser.hpp"
 #include "util/prime_factors.hpp"
-#include "util/vtk_IO.hpp"
+#include "util/vtk_io.hpp"
 #include <chrono>
 
 using namespace magnumafcpp;

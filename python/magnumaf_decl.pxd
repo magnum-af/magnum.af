@@ -258,7 +258,7 @@ cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumaf
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
 
-cdef extern from "vtk_IO.hpp" namespace "magnumafcpp":
+cdef extern from "vtk_io.hpp" namespace "magnumafcpp":
     void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);
 
 cdef extern from "solvers/string_method.hpp" namespace "magnumafcpp":

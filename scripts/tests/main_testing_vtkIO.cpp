@@ -8,7 +8,7 @@
 #include "micro/exchange_field.hpp"
 #include "micro/external_field.hpp"
 #include "solvers/string_method.hpp"
-#include "vtk_IO.hpp"
+#include "vtk_io.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>

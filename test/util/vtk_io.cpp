@@ -1,4 +1,4 @@
-#include "vtk_IO.hpp"
+#include "vtk_io.hpp"
 #include "util/func.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>

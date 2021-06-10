@@ -6,7 +6,7 @@
 #include "integrators/llg_integrator.hpp"
 #include "solvers/string_method.hpp"
 #include "util/arg_parser.hpp"
-#include "util/vtk_IO.hpp"
+#include "util/vtk_io.hpp"
 
 using namespace magnumafcpp;
 

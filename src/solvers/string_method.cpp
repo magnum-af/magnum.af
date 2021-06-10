@@ -1,7 +1,7 @@
 #include "solvers/string_method.hpp"
 #include "arrayfire.h"
 #include "util/func.hpp"
-#include "vtk_IO.hpp"
+#include "vtk_io.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>

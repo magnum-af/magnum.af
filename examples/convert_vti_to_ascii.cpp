@@ -1,7 +1,7 @@
 // usage: ./convert_vti_to_ascii /path/to/vtifile.vti /path/to/newascii.txt
 
 #include "util/ascii_io.hpp"
-#include "util/vtk_IO.hpp"
+#include "util/vtk_io.hpp"
 
 using namespace magnumafcpp;
 

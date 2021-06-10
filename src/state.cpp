@@ -4,7 +4,7 @@
 #include "util/color_string.hpp"
 #include "util/func.hpp"
 #include "util/util.hpp"
-#include "vtk_IO.hpp"
+#include "vtk_io.hpp"
 #include <iomanip>
 
 namespace magnumafcpp {
