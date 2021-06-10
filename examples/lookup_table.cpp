@@ -14,7 +14,7 @@
 
 inline af::array do_multidim_lookup(const af::array& values, const af::array& index) {
     return af::moddims(af::lookup(values, af::flat(index)), index.dims());
-};
+}
 
 template <typename T> af::array make_afarray_from_container(T const& container) {
     if (container.size() == 0) {
