@@ -1,5 +1,10 @@
-#include "magnum_af.hpp"
+#include "equations.hpp"
+#include "micro/demag_field.hpp"
+#include "micro/exchange_field.hpp"
+#include "micro/external_field.hpp"
+#include "util/arg_parser.hpp"
 #include <boost/numeric/odeint.hpp>
+#include <filesystem>
 #include <iostream>
 
 // Necessary template specialization for af::array

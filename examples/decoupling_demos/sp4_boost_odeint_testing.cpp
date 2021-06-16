@@ -1,5 +1,9 @@
-#include "arg_parser.hpp"
-#include "magnum_af.hpp"
+#include "equations.hpp"
+#include "math.hpp"
+#include "micro/demag_field.hpp"
+#include "micro/exchange_field.hpp"
+#include "micro/external_field.hpp"
+#include "util/arg_parser.hpp"
 #include <algorithm>
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
