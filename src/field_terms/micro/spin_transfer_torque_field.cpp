@@ -6,8 +6,8 @@ namespace magnumafcpp {
 
 SpinTransferTorqueField::SpinTransferTorqueField(af::array polarization, double eta_damping, double eta_field,
                                                  double j_e, double fl_thickness)
-    : polarization(std::move(polarization)), eta_damping(eta_damping), eta_field(eta_field), j_e(j_e),
-      fl_thickness(fl_thickness) {}
+    : polarization(util::normalize_handle_zero_vectors(std::move(polarization))), eta_damping(eta_damping),
+      eta_field(eta_field), j_e(j_e), fl_thickness(fl_thickness) {}
 
 SpinTransferTorqueField::SpinTransferTorqueField(long int polarization_ptr, double eta_damping, double eta_field,
                                                  double j_e, double fl_thickness)
