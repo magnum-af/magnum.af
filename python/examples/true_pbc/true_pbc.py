@@ -2,6 +2,7 @@
 # Credit: Florian Bruckner, Amil Ducevic
 # [1] F. Bruckner et al., “Strayfield calculation for micromagnetic simulations using true periodic boundary conditions,” Scientific Reports, vol. 11, p. 9202, Dec. 2021.
 # expects N as first positional argument
+# PBC demag is replaced by regular demag if secod pos argumet is "NOPBC"
 
 import arrayfire as af
 import numpy as np
@@ -10,6 +11,8 @@ import time
 
 args = parse()
 N = int(args.posargs[0])
+use_true_pbc = False if args.posargs[1] == "NOPBC" else True
+print("use_true_pbc =", use_true_pbc, flush = True)
 
 f = 1e8
 
@@ -82,7 +85,11 @@ Kdir[nx%Nx:,ny%Ny:,nz%Nz:,:] = af.from_ndarray(k_dir.repeat(nx//Nx,0).repeat(ny/
 start = time.time()
 state = State(mesh, Ms, m = m0)
 
-demag = DemagFieldPBC()
+if use_true_pbc:
+    demag = DemagFieldPBC()
+else:
+    demag = DemagField(mesh, verbose = True)
+
 exch = ExchangeFieldPBC(A,mesh)
 aniso = UniaxialAnisotropyField(Ku, Kdir) 
 zee = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
@@ -94,7 +101,10 @@ with open(args.outdir + "m_gap%02.2fnm.dat" % (dx*1e9), "w") as fd:
 
     while state.t < 5/f/4 + 1e-9:
         t0 = state.t
-        H = H_ext(1/f, 0.1/Constants.mu0 , state.t-1e-9)
+        if use_true_pbc:
+            H = H_ext(1/f, 0.1/Constants.mu0 , state.t-1e-9)
+        else:
+            H = H_ext(1/f, 2.5/Constants.mu0 , state.t-1e-9)
         zee.set_homogeneous_field(H, 0, 0)
         fd.write("%.15e, %.15e, %.15e, %.15e, %.15e, %.15e, %.15e, %.15e, \n" % (state.t, state.t-t0, H, 0, 0, state.mean_mx(), state.mean_my(), state.mean_mz()))
         fd.flush()
