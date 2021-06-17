@@ -1,5 +1,6 @@
 #pragma once
 #include "arrayfire.h"
+#include "math.hpp"
 #include <algorithm>
 #include <numeric>
 
@@ -67,13 +68,6 @@ inline std::array<double, 3> normalize_vector(std::array<double, 3> vector) {
     return {vector[0] / norm, vector[1] / norm, vector[2] / norm};
 }
 
-template <typename T> std::array<T, 3> get_vec_scalars(const af::array& afvec) {
-    const T xval = afvec(0, 0, 0, 0).scalar<T>();
-    const T yval = afvec(0, 0, 0, 1).scalar<T>();
-    const T zval = afvec(0, 0, 0, 2).scalar<T>();
-    return {xval, yval, zval};
-}
-
 ///
 /// Function calculating the spacial mean (i.e. mean along first three
 /// dimensions) in a specified region only of a given vectorfield with size [nx,
@@ -88,7 +82,7 @@ template <typename T> std::array<T, 3> get_vec_scalars(const af::array& afvec) {
 af::array spacial_mean_in_region_afarray(const af::array& vectorfield, const af::array& region);
 
 inline std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region) {
-    return get_vec_scalars<double>(spacial_mean_in_region_afarray(vectorfield, region).as(f64));
+    return math::vec_components<double>(spacial_mean_in_region_afarray(vectorfield, region).as(f64));
 }
 
 // Wrapping only
