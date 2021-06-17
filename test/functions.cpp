@@ -43,28 +43,33 @@ TEST(Func, Cross4shift_nxzy) {
 }
 
 TEST(Func, spacial_mean_in_region) {
-    af::array vectorfield = af::constant(0, 6, 1, 1, 3, f64);
-    vectorfield(0, 0, 0, 0) = 2.5;
-    vectorfield(1, 0, 0, 0) = 2.5;
-    vectorfield(2, 0, 0, 0) = 2.5;
+    const auto test = [](af::dtype vec_type, af::dtype region_type = af::dtype::u32) {
+        af::array vectorfield = af::constant(0.0, 6, 1, 1, 3, vec_type);
+        vectorfield(0, 0, 0, 0) = 2.5;
+        vectorfield(1, 0, 0, 0) = 2.5;
+        vectorfield(2, 0, 0, 0) = 2.5;
 
-    vectorfield(0, 0, 0, 1) = 3.5;
-    vectorfield(1, 0, 0, 1) = 3.5;
-    vectorfield(2, 0, 0, 1) = 3.5;
+        vectorfield(0, 0, 0, 1) = 3.5;
+        vectorfield(1, 0, 0, 1) = 3.5;
+        vectorfield(2, 0, 0, 1) = 3.5;
 
-    vectorfield(0, 0, 0, 2) = 4.5;
-    vectorfield(1, 0, 0, 2) = 4.5;
-    vectorfield(2, 0, 0, 2) = 4.5;
+        vectorfield(0, 0, 0, 2) = 4.5;
+        vectorfield(1, 0, 0, 2) = 4.5;
+        vectorfield(2, 0, 0, 2) = 4.5;
 
-    af::array region = af::constant(0, 6, 1, 1, 1, f64);
-    region(0) = 1;
-    region(1) = 2; // only non-zero is checked: non-one values are converted to
-                   // ones, so this is also fine
-    region(2) = 3;
-    auto mean = magnumafcpp::util::spacial_mean_in_region(vectorfield, region);
-    EXPECT_EQ(mean[0], 2.5);
-    EXPECT_EQ(mean[1], 3.5);
-    EXPECT_EQ(mean[2], 4.5);
+        af::array region = af::constant(0, 6, 1, 1, 1, region_type);
+        region(0) = 1;
+        region(1) = 2; // only non-zero is checked: non-one values are converted to
+                       // ones, so this is also fine
+        region(2) = 3;
+        auto mean = magnumafcpp::util::spacial_mean_in_region(vectorfield, region);
+        EXPECT_EQ(mean[0], 2.5);
+        EXPECT_EQ(mean[1], 3.5);
+        EXPECT_EQ(mean[2], 4.5);
+    };
+    test(af::dtype::f64);
+    test(af::dtype::f32);
+    test(af::dtype::f16);
 }
 
 int main(int argc, char** argv) {

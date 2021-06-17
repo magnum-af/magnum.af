@@ -87,12 +87,12 @@ template <typename T> std::array<T, 3> get_vec_scalars(const af::array& afvec) {
 ///
 af::array spacial_mean_in_region_afarray(const af::array& vectorfield, const af::array& region);
 
-std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region) {
+inline std::array<double, 3> spacial_mean_in_region(const af::array& vectorfield, const af::array& region) {
     return get_vec_scalars<double>(spacial_mean_in_region_afarray(vectorfield, region).as(f64));
 }
 
 // Wrapping only
-std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region) {
+inline std::array<double, 3> spacial_mean_in_region(long int vectorfield, long int region) {
     return spacial_mean_in_region(pywrap::make_copy_form_py(vectorfield), pywrap::make_copy_form_py(region));
 }
 
