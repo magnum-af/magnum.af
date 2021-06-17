@@ -264,6 +264,13 @@ class Util:
 
     @staticmethod
     def spacial_mean_in_region(vectorfield, region):
+        """
+        Evaluates mean values of vectorfield in every cell where region is not null.
+        vectorfield: afarray [nx ny nz 3]
+        region: afarray [nx ny nz 1]
+            Each cell where region is not null is counted.
+            Cells with zero are ignored.
+        """
         a = cspacial_mean_in_region(addressof(vectorfield.arr), addressof(region.arr))
         return a[0], a[1], a[2]
 
