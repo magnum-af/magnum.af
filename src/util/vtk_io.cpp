@@ -39,6 +39,8 @@
 
 #include "util/host_ptr_accessor.hpp"
 #include <string>
+#include <utility>
+
 #include <vector>
 
 namespace magnumafcpp {
@@ -96,11 +98,11 @@ void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, s
 }
 
 void vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outputname) {
-    implementation_vti_writer_micro(field, mesh, outputname);
+    implementation_vti_writer_micro(field, mesh, std::move(outputname));
 }
 
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz,
-                             const std::string outputname) {
+                             const std::string& outputname) {
     af::array afarray = util::pywrap::make_copy_form_py(afarray_ptr);
     Mesh mesh{afarray.dims(0), afarray.dims(1), afarray.dims(2), dx, dy, dz};
     implementation_vti_writer_micro(afarray, mesh, outputname);
@@ -145,7 +147,7 @@ void vti_writer_atom(const af::array& field, const Mesh& mesh, std::string outpu
     writer->Write();
 }
 
-std::pair<af::array, Mesh> vti_reader(std::string filepath) {
+std::pair<af::array, Mesh> vti_reader(const std::string& filepath) {
     af::array A_out; // returned array
     // void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
     int dim4th = 3; // This is the number of the components of the 3D Field
@@ -222,13 +224,13 @@ std::pair<af::array, Mesh> vti_reader(std::string filepath) {
 }
 
 // legacy/wrapping method returns via ref parameter
-void vti_reader(af::array& field, Mesh& mesh, std::string filepath) {
+void vti_reader(af::array& field, Mesh& mesh, const std::string& filepath) {
     auto [a_returned, mesh_returned] = vti_reader(filepath);
     field = a_returned;
     mesh = mesh_returned;
 }
 
-void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double> z_spacing,
+void vtr_writer(const af::array& field, const double dx, const double dy, const std::vector<double>& z_spacing,
                 std::string outputname, const bool verbose) {
     // writes af::array field as vtkRectilinearGrid to file outputname.vtr
     // Uses cell data, thus xyz dimensions are increased by 1:  field.dims(0)+1,
@@ -315,7 +317,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 
 // wrapped function
 void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname, const bool verbose) {
-    vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, outputname, verbose);
+    vtr_writer(field, nonequimesh.dx, nonequimesh.dy, nonequimesh.z_spacing, std::move(outputname), verbose);
 }
 
 std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool verbose) {
@@ -342,17 +344,23 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
 
     // Calculating spacings from coordinate vectors
     std::vector<double> x_spacings;
-    for (int i = 0; i < output_data->GetDimensions()[0] - 1; i++) {
+    x_spacings.reserve(output_data->GetDimensions()[0] - 1);
+
+for (int i = 0; i < output_data->GetDimensions()[0] - 1; i++) {
         x_spacings.push_back(xcoords[i + 1] - xcoords[i]);
     }
 
     std::vector<double> y_spacings;
-    for (int i = 0; i < output_data->GetDimensions()[1] - 1; i++) {
+    y_spacings.reserve(output_data->GetDimensions()[1] - 1);
+
+for (int i = 0; i < output_data->GetDimensions()[1] - 1; i++) {
         y_spacings.push_back(ycoords[i + 1] - ycoords[i]);
     }
 
     std::vector<double> vec_z_spacing;
-    for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
+    vec_z_spacing.reserve(output_data->GetDimensions()[2] - 1);
+
+for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
         vec_z_spacing.push_back(zcoords[i + 1] - zcoords[i]);
     }
 
@@ -382,7 +390,7 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
 
 // legacy/wrapper for returning via parameter ref
 void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose) {
-    auto [A_returned, mesh_returned] = vtr_reader(filepath, verbose);
+    auto [A_returned, mesh_returned] = vtr_reader(std::move(filepath), verbose);
     field = A_returned;
     mesh = mesh_returned;
 }

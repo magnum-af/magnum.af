@@ -6,6 +6,8 @@
 #include "util/arg_parser.hpp"
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
+#include <utility>
+
 
 // Necessary template specialization for af::array
 namespace boost::numeric::odeint {
@@ -131,7 +133,7 @@ int main(int argc, char** argv) {
 
     struct observe_m {
         std::filesystem::path outdir_;
-        observe_m(std::filesystem::path outdir) : outdir_(outdir) {}
+        observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
         // this renorms m, thus taking by ref
         // NOT handling zero vals in m

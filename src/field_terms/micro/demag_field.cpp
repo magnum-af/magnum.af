@@ -151,7 +151,7 @@ af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
     return result;
 }
 
-void warn_if_maxprime_gt_13(std::size_t n, std::string ni) {
+void warn_if_maxprime_gt_13(std::size_t n, const std::string& ni) {
     if (util::max_of_prime_factors(n) > 13) {
         std::cout << color_string::warning() << "DemagField::DemagField: maximum prime factor of mesh." << ni << "="
                   << n << " is " << util::max_of_prime_factors(n)

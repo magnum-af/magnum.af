@@ -4,7 +4,7 @@
 using namespace magnumafcpp;
 
 // tests commutivity of * and + operators for DOA Class, compares with DOA()
-auto test = [](util::DoubleOrArray a, af::array b) {
+auto test = [](const util::DoubleOrArray& a, const af::array& b) {
     const double aa = a(b.dims(), b.type()).scalar<double>();
     const double bb = b.scalar<double>();
     EXPECT_EQ((a + b).scalar<double>(), aa + bb);

@@ -9,7 +9,7 @@ namespace magnumafcpp {
 
 class AdaptiveRungeKutta {
   public:
-    AdaptiveRungeKutta(std::string scheme_ = "RKF45", Controller controller_ = Controller(),
+    AdaptiveRungeKutta(const std::string& scheme_ = "RKF45", Controller controller_ = Controller(),
                        const bool normalize_ = true, const bool verbose = false);
     void step(State&);
     double get_time_allsteps() const { return time_allsteps_; }

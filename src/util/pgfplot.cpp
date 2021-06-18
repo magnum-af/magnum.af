@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice) {
+void pgfplot_mz(af::array m, Mesh mesh, const std::string& outputfile, int mz_slice) {
     std::cout << "pgfplot_mz writing file " << outputfile << std::endl;
 
     std::ofstream stream;
@@ -28,7 +28,7 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice) {
     stream.close();
 }
 
-void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice, int nmod) {
+void pgfplot_mz(af::array m, Mesh mesh, const std::string& outputfile, int mz_slice, int nmod) {
     std::cout << "pgfplot_mz writing file " << outputfile << std::endl;
 
     std::ofstream stream;
@@ -50,7 +50,7 @@ void pgfplot_mz(af::array m, Mesh mesh, std::string outputfile, int mz_slice, in
     stream.close();
 }
 
-void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i, int mz_slice, int nmod) {
+void pgfplot_mi(af::array m, Mesh mesh, const std::string& outputfile, int i, int mz_slice, int nmod) {
     std::cout << "pgfplot_mz writing file " << outputfile << std::endl;
 
     std::ofstream stream;
@@ -72,7 +72,7 @@ void pgfplot_mi(af::array m, Mesh mesh, std::string outputfile, int i, int mz_sl
     stream.close();
 }
 
-void pgfplot_nz_quiver(af::array m, Mesh mesh, std::string outputfile, int mz_slice, int nmod) {
+void pgfplot_nz_quiver(af::array m, Mesh mesh, const std::string& outputfile, int mz_slice, int nmod) {
     std::cout << "pgfplot_nz_quiver writing file " << outputfile << std::endl;
     std::ofstream stream;
     stream.precision(6);

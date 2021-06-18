@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <boost/numeric/odeint.hpp>
 #include <iostream>
+#include <utility>
+
 
 namespace custom_ode {
 
@@ -195,7 +197,7 @@ int main(int argc, char** argv) {
 
     struct observe_m {
         std::filesystem::path outdir_;
-        observe_m(std::filesystem::path outdir) : outdir_(outdir) {}
+        observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
         void operator()(const af::array& m, double t) {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:

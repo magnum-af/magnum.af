@@ -102,7 +102,7 @@ double max_rel_diff(const af::array& first, const af::array& second) {
 /// Absolute difference less than precision: Element-wise comparision of
 /// absolute difference of two arrays. Checks whether | x - y | < precision.
 /// Returns true if all values are below precision and false otherwise.
-bool abs_diff_lt_precision(af::array first, af::array second, double precision, bool verbose) {
+bool abs_diff_lt_precision(const af::array& first, const af::array& second, double precision, bool verbose) {
     unsigned int zero_if_equal =
         afvalue_u32(af::sum(af::sum(af::sum(af::sum(!(af::abs(first - second) < precision), 0), 1), 2), 3));
     if (verbose) {
@@ -128,7 +128,7 @@ bool abs_diff_lt_precision(af::array first, af::array second, double precision, 
 /// relative difference of two arrays. Checks whether | 2(x-y)/(x+y) | <
 /// precision. Returns true if all values are below precision and false
 /// otherwise.
-bool rel_diff_lt_precision(af::array first, af::array second, double precision, bool verbose) {
+bool rel_diff_lt_precision(const af::array& first, const af::array& second, double precision, bool verbose) {
     af::array temp = af::abs(2 * (first - second) / (first + second));
     af::replace(temp, first != 0 || second != 0,
                 af::constant(0., temp.dims(),

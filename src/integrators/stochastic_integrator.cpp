@@ -1,6 +1,8 @@
 #include "stochastic_integrator.hpp"
 #include "util/util.hpp"
 #include <chrono>
+#include <utility>
+
 
 namespace magnumafcpp {
 
@@ -55,7 +57,7 @@ void Stochastic_Integrator::step(State& state) { // TODO remove dt as parameter 
     // std::cout<<" TIME  = "<<timer<<std::endl;
 }
 
-int get_mode(std::string smode) {
+int get_mode(const std::string& smode) {
     // Setting int mode for usage in void step(...)
     if (smode == "Heun" || smode == "0") {
         return 0;
@@ -71,8 +73,8 @@ int get_mode(std::string smode) {
     }
 }
 
-Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, State state,
-                                             std::vector<std::unique_ptr<FieldTerm>> fieldterms_in, std::string smode)
+Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, const State& state,
+                                             std::vector<std::unique_ptr<FieldTerm>> fieldterms_in, const std::string& smode)
     : alpha(alpha), T(T), dt(dt), fieldterms(std::move(fieldterms_in)), m_prev(state.m), mode(get_mode(smode)) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);

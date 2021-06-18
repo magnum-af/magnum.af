@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 
     unsigned current_step = 0;
     // Defining H_zee via lamdas
-    auto zee_func = [H_af, &current_step, hzee_max](State state) -> af::array {
+    auto zee_func = [H_af, &current_step, hzee_max](const State& state) -> af::array {
         double field_Tesla;
         if (current_step < steps_full_hysteresis / 4) {
             field_Tesla = hzee_max * 4. * current_step / steps_full_hysteresis;

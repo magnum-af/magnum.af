@@ -169,7 +169,7 @@ double Nxy(const double x, const double y, const double z, const double dx, cons
             G0(x - dx + dX, y, z, dy, dY, dz, dZ));
 }
 
-double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j,
+double nonequi_index_distance(const std::vector<double>& spacings, const unsigned i, const unsigned j,
                               const bool verbose) {
     // Calculates the signed distance beween elements by summing up i < j:
     // sum_(k=i)^(j-1)[spacings[k]] or i > j: sum_(k=j)^(i-1)[ - spacings[k]]
@@ -279,7 +279,7 @@ std::string to_string(const NonequiMesh& nemesh) {
            std::to_string(1e9 * nemesh.dy) + "_dz_" + dz_string;
 }
 
-void warn_if_maxprime_lt_13(unsigned n, std::string ni) {
+void warn_if_maxprime_lt_13(unsigned n, const std::string& ni) {
     if (util::max_of_prime_factors(n) > 13) {
         std::cout << color_string::warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh." << ni << "="
                   << n << " is " << util::max_of_prime_factors(n)
@@ -298,7 +298,7 @@ void warn_if_maxprime_lt_13(const NonequiMesh& nemesh) {
 }
 } // namespace nonequi_util
 
-af::array get_Nfft(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthreads) {
+af::array get_Nfft(const NonequiMesh& nemesh, bool verbose, bool caching, unsigned nthreads) {
     nonequi_util::warn_if_maxprime_lt_13(nemesh);
 
     if (caching == false) {
@@ -317,7 +317,7 @@ af::array get_Nfft(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthr
     }
 }
 
-NonequiDemagField::NonequiDemagField(NonequiMesh nemesh, bool verbose, bool caching, unsigned nthreads)
+NonequiDemagField::NonequiDemagField(const NonequiMesh& nemesh, bool verbose, bool caching, unsigned nthreads)
     : NonequiTerm(nemesh),
       Nfft(get_Nfft(nemesh, verbose, caching, nthreads > 0 ? nthreads : std::thread::hardware_concurrency())) {}
 

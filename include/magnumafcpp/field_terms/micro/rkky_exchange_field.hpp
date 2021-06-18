@@ -37,7 +37,7 @@ using Exchange_values = NamedType<af::array, struct NamedTypeRKKY_values>;
 class RKKYExchangeField : public MicroTerm {
   public:
     RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
-                      af::array rkky_indices = af::array(), bool verbose = true, bool COO = true);
+                      const af::array& rkky_indices = af::array(), bool verbose = true, bool COO = true);
     RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                       bool verbose = true);
 

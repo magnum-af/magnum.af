@@ -40,7 +40,7 @@ TEST(State, mean_m) {
     Mesh mesh(2, 2, 2, 1e-9, 1e-9, 1e-9);
     double Ms = 1e6;
 
-    auto test = [](State state, std::array<double, 3> res) { EXPECT_THAT(state.mean_m(), res); };
+    auto test = [](const State& state, std::array<double, 3> res) { EXPECT_THAT(state.mean_m(), res); };
 
     // vec_as_array method:
     auto m = [dims = mesh::dims_s(mesh)](std::array<double, 3> vec) {

@@ -10,7 +10,7 @@ class UniaxialAnisotropyField : public MicroTerm {
     UniaxialAnisotropyField(double Ku1, std::array<double, 3> Ku1_axis = {0, 0, 1});
     UniaxialAnisotropyField(af::array Ku1_field, std::array<double, 3> Ku1_axis = {0, 0, 1});
     // Would be ambigous// UniaxialAnisotropyField(double Ku1, af::array Ku1_axis_field);
-    UniaxialAnisotropyField(af::array Ku1_field, af::array Ku1_axis_field);
+    UniaxialAnisotropyField(af::array Ku1_field, const af::array& Ku1_axis_field);
     UniaxialAnisotropyField(double Ku1, double Ku1_axis_0, double Ku1_axis_1, double Ku1_axis_2);
     UniaxialAnisotropyField(long int Ku1, double Ku1_axis_0, double Ku1_axis_1,
                             double Ku1_axis_2); //!< wrapping only

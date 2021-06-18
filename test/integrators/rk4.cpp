@@ -21,7 +21,7 @@ TEST(RK4, Integrate_Analytical_in_double) {
 }
 
 TEST(RK4, Integrate_Analytical_in_af_array) {
-    auto f = [](double t, af::array y0) { return t * af::sqrt(y0); };
+    auto f = [](double t, const af::array& y0) { return t * af::sqrt(y0); };
     double t = 0;
     af::array y = af::constant(1., 1, f64);
     const double dt = 1e-2;

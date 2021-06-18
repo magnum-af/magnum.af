@@ -9,7 +9,7 @@
 
 namespace magnumafcpp {
 
-StringMethod::StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
+StringMethod::StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
     : llg(std::move(llg)), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
@@ -131,7 +131,7 @@ void StringMethod::vec_normalize() {
     }
 }
 
-void StringMethod::write_vti(std::string file) {
+void StringMethod::write_vti(const std::string& file) {
     for (unsigned j = 0; j < images.size(); j++) {
         vti_writer_micro(images[j].m, images[j].mesh, file + std::to_string(j));
         // vti_writer_atom(images[j].m, images[j].mesh , file +
@@ -139,7 +139,7 @@ void StringMethod::write_vti(std::string file) {
     }
 }
 
-void write_plotfile(const std::string filepath) {
+void write_plotfile(const std::string& filepath) {
     std::ofstream stream(filepath + "plot_string_method.gpi");
     stream << "set terminal pdf" << std::endl;
     stream << "set key left top Left" << std::endl << std::endl;
@@ -165,7 +165,7 @@ void write_plotfile(const std::string filepath) {
     stream.close();
 }
 
-double StringMethod::run(std::string filepath, double string_abort_rel_diff, double string_abort_abs_diff,
+double StringMethod::run(const std::string& filepath, double string_abort_rel_diff, double string_abort_abs_diff,
                          int string_steps, int every_string_to_vti, bool verbose) {
     write_plotfile(filepath);
 

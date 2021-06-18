@@ -22,7 +22,7 @@ TEST(util_vector_or_array, ctor_array) {
 
 TEST(util_vector_or_array, get_as_array) {
     auto test_get_as_array = [](const util::UnitVectorOrArray& uvec, std::array<double, 3> expected_unitvec,
-                                af::dim4 dims_scalar) {
+                                const af::dim4& dims_scalar) {
         auto dims_vector = dims_scalar;
         dims_vector[3] = 3;
         auto type = af::dtype::f64;
@@ -39,7 +39,7 @@ TEST(util_vector_or_array, get_as_array) {
     };
 
     auto test_both_scalar_and_array = [test_get_as_array](std::array<double, 3> in_vec,
-                                                          std::array<double, 3> expected_vec, af::dim4 dims_scalar) {
+                                                          std::array<double, 3> expected_vec, const af::dim4& dims_scalar) {
         test_get_as_array(util::UnitVectorOrArray(in_vec), expected_vec, dims_scalar);
         test_get_as_array(util::UnitVectorOrArray(af::tile(af::array(1, 1, 1, 3, in_vec.data()), dims_scalar)),
                           expected_vec, dims_scalar);

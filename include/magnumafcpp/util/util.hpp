@@ -113,9 +113,9 @@ double max_abs_diff(const af::array& a,
                     const af::array& b); //!< absolute difference
 double max_rel_diff(const af::array& a,
                     const af::array& b); //!< relative difference
-bool abs_diff_lt_precision(af::array first, af::array second, double precision = 4e-8,
+bool abs_diff_lt_precision(const af::array& first, const af::array& second, double precision = 4e-8,
                            bool verbose = true); //!< Absolute difference less than precision
-bool rel_diff_lt_precision(af::array first, af::array second, double precision = 2e-3,
+bool rel_diff_lt_precision(const af::array& first, const af::array& second, double precision = 2e-3,
                            bool verbose = true); //!< Relative difference less than precision
 double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose = true, double start_precision = 1e0,
                            double factor1 = 0.1,

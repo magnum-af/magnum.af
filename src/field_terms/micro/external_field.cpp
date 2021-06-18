@@ -1,4 +1,8 @@
 #include "field_terms/micro/external_field.hpp"
+
+
+#include <utility>
+
 #include "util/util.hpp"
 
 namespace magnumafcpp {
@@ -11,7 +15,7 @@ ExternalField::ExternalField(af::array (*callback_func_in)(State state))
     : callback_func(callback_func_in), callback(true) {}
 
 ExternalField::ExternalField(std::function<af::array(State)> lamda_callback)
-    : lamda_callback(lamda_callback), is_lamda(true) {}
+    : lamda_callback(std::move(lamda_callback)), is_lamda(true) {}
 
 ///< Sets internal af::array to a global field (x, y, z) for all spacial
 ///< dimensions

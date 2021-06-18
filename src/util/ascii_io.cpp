@@ -12,7 +12,7 @@ unsigned colum_major_stride(const unsigned i, const unsigned j, const unsigned k
     return i + ni * (j + nj * (k + nk * l));
 }
 
-void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, bool verbose, int precision) {
+void write_ascii(const af::array& a, const Mesh& mesh, const std::string& filename, bool verbose, int precision) {
     const unsigned nx = a.dims(0);
     const unsigned ny = a.dims(1);
     const unsigned nz = a.dims(2);
@@ -92,7 +92,7 @@ void write_ascii(const af::array& a, const Mesh& mesh, std::string filename, boo
         }
     }
 }
-std::pair<af::array, Mesh> read_ascii(std::string filename, bool verbose) {
+std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose) {
     std::ifstream infile(filename);
     if (!infile.is_open()) {
         printf("read_ascii: Could not read file! Aborting...\n");

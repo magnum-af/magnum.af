@@ -6,11 +6,13 @@
 #include "rk4.hpp"
 #include "state.hpp"
 #include "util/arg_parser.hpp"
-#include "util/util.hpp" // normalize
 #include "util/timer.hpp"
+#include "util/util.hpp" // normalize
 #include <array>
 #include <cmath>
 #include <fstream>
+#include <utility>
+
 #include <gtest/gtest.h>
 
 using namespace magnumafcpp;
@@ -34,7 +36,7 @@ int main(int argc, char** argv) {
     auto fieldterms = fieldterm::to_vec(dmag, exch);
 
     auto f = [&alpha, mesh, Ms, &fieldterms](double t, af::array m_in) {
-        State state(mesh, Ms, m_in);
+        State state(mesh, Ms, std::move(m_in));
         state.t = t;
         auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
         return equations::LLG(alpha, state.m, H_eff_in_Apm);

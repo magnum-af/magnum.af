@@ -6,10 +6,10 @@
 namespace magnumafcpp {
 
 RKKYExchangeField::RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
-                                     af::array rkky_indices, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(std::move(rkky_values.get()), exchange_values.get(), mesh, std::move(rkky_indices),
+                                     const af::array& rkky_indices, bool verbose, bool COO)
+    : matr(COO ? calc_COO_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices,
                                  verbose)
-               : calc_CSR_matrix(std::move(rkky_values.get()), exchange_values.get(), mesh, std::move(rkky_indices),
+               : calc_CSR_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices,
                                  verbose)) {}
 
 RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,

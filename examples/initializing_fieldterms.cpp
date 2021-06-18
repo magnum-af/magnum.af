@@ -53,9 +53,11 @@ int main() {
     {
         const DemagField dmag(mesh, false, true, 0);
         const ExchangeField exch(A);
-        LLGIntegrator llg1(
-            alpha, fieldterm::to_vec(std::move(dmag), std::move(exch))); // does not move as dmag, exch are const
-        LLGIntegrator llg2(alpha, fieldterm::mv_to_vec(dmag, exch));     // does not move as dmag, exch are const
+        // Would not move as dmag, exch are const
+        // Note: LLGIntegrator llg1(alpha, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+
+        LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
+        LLGIntegrator llg2(alpha, fieldterm::mv_to_vec(dmag, exch)); // does not move as dmag, exch are const
         // we can still use them
         exch.H_in_Apm(state);
         dmag.H_in_Apm(state);

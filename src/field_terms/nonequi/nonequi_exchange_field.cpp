@@ -608,16 +608,16 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
     return result;
 }
 
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, double A_exchange, bool verbose, bool COO)
+NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, double A_exchange, bool verbose, bool COO)
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
 
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, af::array A_exchange_field, bool verbose, bool COO)
-    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(std::move(A_exchange_field), nemesh, verbose)
-                                    : calc_CSR_matrix(std::move(A_exchange_field), nemesh, verbose)) {}
+NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, const af::array& A_exchange_field, bool verbose, bool COO)
+    : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
+                                    : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
-NonequiExchangeField::NonequiExchangeField(NonequiMesh nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
+NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)
                : calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)) {}

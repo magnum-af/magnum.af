@@ -21,7 +21,7 @@ class SpinTransferTorqueField : public MicroTerm {
     /// \param eta_field unit-less field like factor in []
     /// \param j_e current in [A]
     /// \param fl_thickness free-layer thickness in [m]
-    SpinTransferTorqueField(af::array polarization, double eta_damping, double eta_field, double j_e,
+    SpinTransferTorqueField(const af::array& polarization, double eta_damping, double eta_field, double j_e,
                             double fl_thickness);
     SpinTransferTorqueField(long int polarization_ptr, double eta_damping, double eta_field, double j_e,
                             double fl_thickness);

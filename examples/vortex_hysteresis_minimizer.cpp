@@ -9,8 +9,8 @@
 #include <filesystem>
 
 namespace fs = std::filesystem;
-void write_plotfile(fs::path outdir, std::string plotfile = "plotfile.gpi");
-void plot(fs::path outdir, std::string plotfile = "plotfile.gpi");
+void write_plotfile(const fs::path& outdir, const std::string& plotfile = "plotfile.gpi");
+void plot(const fs::path& outdir, const std::string& plotfile = "plotfile.gpi");
 
 using namespace magnumafcpp;
 
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     std::cout.precision(24);
 
     // Defining H_zee via lamdas
-    auto zee_func = [hzee_max, steps_full_hysteresis](State state) -> af::array {
+    auto zee_func = [hzee_max, steps_full_hysteresis](const State& state) -> af::array {
         double field_Tesla;
         if (state.steps < steps_full_hysteresis / 4) {
             field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis;
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void write_plotfile(fs::path outdir, std::string plotfile) {
+void write_plotfile(const fs::path& outdir, const std::string& plotfile) {
     std::ofstream o(outdir / plotfile);
     o << "set terminal pdf;\n"
       << "set xlabel 'mu_0*H_ext [T]';\n"
@@ -107,12 +107,12 @@ void write_plotfile(fs::path outdir, std::string plotfile) {
       << "'m.dat' u 4:3 w l t '<m_z>'";
 }
 
-void plot(fs::path outdir, std::string plotfile) {
+void plot(const fs::path& outdir, const std::string& plotfile) {
     int syscall = std::system(("cd " + outdir.string() + " && gnuplot " + plotfile).c_str());
     syscall != 0 ? std::cout << "syscall plotting with gnuplot failed" << std::endl : std::cout << "";
 }
 
-void write_and_plot(fs::path outdir, std::string plotfile = "plotfile.gpi") {
+void write_and_plot(const fs::path& outdir, const std::string& plotfile = "plotfile.gpi") {
     write_plotfile(outdir, plotfile);
     plot(outdir, plotfile);
 }

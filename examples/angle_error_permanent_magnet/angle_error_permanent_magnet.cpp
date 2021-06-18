@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 
     unsigned current_step = 0;
     // Defining H_zee via lamdas
-    auto zee_func = [&current_step, hzee_max](State state) -> af::array {
+    auto zee_func = [&current_step, hzee_max](const State& state) -> af::array {
         const double hx = hzee_max / constants::mu0 * std::cos(current_step * M_PI / 180.);
         const double hy = hzee_max / constants::mu0 * std::sin(current_step * M_PI / 180.);
 

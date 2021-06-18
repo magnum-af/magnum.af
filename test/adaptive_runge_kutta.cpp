@@ -2,11 +2,15 @@
 #include "util/util.hpp"
 #include <gtest/gtest.h>
 
+
+#include <utility>
+
+
 using namespace magnumafcpp;
 
 class RK : public AdaptiveRungeKutta {
   public:
-    RK(std::string scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false){};
+    RK(const std::string& scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false){};
 
   private:
     af::array f(const State& state) const override { return state.t * sqrt(state.m); }

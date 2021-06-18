@@ -1,5 +1,7 @@
 #include "arrayfire.h"
 #include <iostream>
+#include <utility>
+
 
 // struct naming: if callsite passes by lval: first term (e.g. CpCp is copy and copy)
 // if callsite passes by rval (via std::move): second term (e.g. MvCp is move and copy)
@@ -7,6 +9,8 @@
 struct CpCp_or_MvCp {
     af::array data;
     CpCp_or_MvCp(af::array data) : data(data) {}
+    // Backup (clang-tidy performance):
+    // Reference: CpCp_or_MvCp(af::array data) : data(data) {}
 };
 
 struct CpMv_or_MvMv {

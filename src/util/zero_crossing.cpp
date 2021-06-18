@@ -1,12 +1,14 @@
 #include "zero_crossing.hpp"
 #include <iostream>
+#include <utility>
+
 #include <math.h>
 
 namespace magnumafcpp {
 
 ZeroCrossing::ZeroCrossing(std::function<double(double)> f, double precision, int max_runs, double ix_min,
                            double ix_max, int ix_n, int verbose)
-    : f(f), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose) {}
+    : f(std::move(f)), precision(precision), max_runs(max_runs), ix_min(ix_min), ix_max(ix_max), ix_n(ix_n), verbose(verbose) {}
 
 std::array<double, 4> ZeroCrossing::run_loop() {
     double x_max_minus_sign = -1e300;

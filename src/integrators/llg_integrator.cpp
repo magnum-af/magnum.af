@@ -4,20 +4,22 @@
 #include "state.hpp"
 #include <fstream>
 #include <memory>
+#include <utility>
+
 
 namespace magnumafcpp {
 
-LLGIntegrator::LLGIntegrator(double alpha, std::string scheme, Controller controller, bool dissipation_term_only)
+LLGIntegrator::LLGIntegrator(double alpha, const std::string& scheme, Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, std::string scheme, Controller controller,
+LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme, Controller controller,
                              bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
 
 LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il, std::string scheme,
                              Controller controller, bool dissipation_term_only)
-    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
+    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, std::move(scheme),
                     controller, dissipation_term_only) {}
 
 af::array LLGIntegrator::fheff(const State& state) const {
@@ -105,7 +107,7 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
     }
 }
 
-void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::string filename,
+void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, const std::string& filename,
                                     bool verbose, bool append) {
     auto stream = std::ofstream(filename, append ? std::ios::app : std::ios::out);
     integrate_dense(state, time_in_s, write_every_dt_in_s, stream, verbose);

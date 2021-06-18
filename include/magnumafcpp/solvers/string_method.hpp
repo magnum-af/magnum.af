@@ -8,13 +8,13 @@ namespace magnumafcpp {
 
 class StringMethod {
   public:
-    StringMethod(State state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
+    StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
     ///
     /// Runs the string method.
     /// This populates files in \param filepath.
     /// Returns dE in [J] of the minimal energy barrier found
     ///
-    double run(std::string filepath, double string_abort_rel_diff = 1e-12, double string_abort_abs_diff = 1e-27,
+    double run(const std::string& filepath, double string_abort_rel_diff = 1e-12, double string_abort_abs_diff = 1e-27,
                int string_steps = 10000, int every_string_to_vti = 50, bool verbose = true);
 
   private:
@@ -35,7 +35,7 @@ class StringMethod {
     void integrate(); // Integrate all images for dt
     void step();
     void vec_normalize();
-    void write_vti(std::string file);
+    void write_vti(const std::string& file);
 };
 
 } // namespace magnumafcpp

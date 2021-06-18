@@ -26,7 +26,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array
 // UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, af::array Ku1_axis_field)
 //     : Ku1(Ku1), Ku1_axis_field(util::normalize_handle_zero_vectors(Ku1_axis_field)) {}
 
-UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, af::array Ku1_axis_field)
+UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, const af::array& Ku1_axis_field)
     : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : std::move(Ku1_field)),
       Ku1_axis_field(util::normalize_handle_zero_vectors(Ku1_axis_field)) {
     if (Ku1_field.dims(3) == 3) {

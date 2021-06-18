@@ -32,7 +32,7 @@ TEST(BS23, integrate_analytical_in_double) {
 }
 
 TEST(BS23, integrate_analytical_in_af_array) {
-    const auto f = [](double t, af::array y0) { return t * af::sqrt(y0); };
+    const auto f = [](double t, const af::array& y0) { return t * af::sqrt(y0); };
     double t = 0;
     af::array y = af::constant(1., 1, f64);
     constexpr double dt = 1e-2;

@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <list>
 #include <memory>
+#include <utility>
+
 
 namespace magnumafcpp {
 
@@ -12,7 +14,7 @@ namespace magnumafcpp {
 double Minimizer::E(const State& state) const { return fieldterm::Eeff_in_J(fieldterms, state); }
 
 Minimizer::Minimizer(std::string scheme, double tau_min, double tau_max, double dm_max, int samples, bool info)
-    : scheme(scheme), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info) {}
+    : scheme(std::move(scheme)), tau_min(tau_min), tau_max(tau_max), dm_max(dm_max), samples(samples), info(info) {}
 
 // Calculation of effective field
 af::array Minimizer::h(const State& state) const {

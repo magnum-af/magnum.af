@@ -8,7 +8,7 @@ namespace magnumafcpp {
 class SparseExchangeField : public MicroTerm {
   public:
     SparseExchangeField(double A_exchange, Mesh, bool verbose = true, bool COO = true);
-    SparseExchangeField(af::array A_exchange_field, Mesh, bool verbose = true, bool COO = true);
+    SparseExchangeField(const af::array& A_exchange_field, Mesh, bool verbose = true, bool COO = true);
     SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose = true);
 
     af::array get_matr() const { return matr; };

@@ -24,9 +24,9 @@ template <class T> struct movable_il {
 
 class LLGIntegrator : public AdaptiveRungeKutta {
   public:
-    LLGIntegrator(double alpha, std::string scheme = "RKF45", Controller controller = Controller(),
+    LLGIntegrator(double alpha, const std::string& scheme = "RKF45", Controller controller = Controller(),
                   bool dissipation_term_only = false);
-    LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, std::string scheme = "RKF45",
+    LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
                   Controller controller = Controller(), bool dissipation_term_only = false);
     LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,
                   std::string scheme = "RKF45", Controller controller = Controller(),
@@ -50,7 +50,7 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::ostream& os = std::cout,
                          bool verbose = true);
     // wrapping using filename to omit stream:
-    void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::string filename,
+    void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, const std::string& filename,
                          bool verbose = true, bool append = false);
     double get_time_heff() const { return time_heff; }
     long int h_addr(const State& state) const;

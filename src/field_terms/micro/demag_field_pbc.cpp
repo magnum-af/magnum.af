@@ -30,7 +30,7 @@ auto fftC2R_dim2switch = [](const af::array& h_fft) {
     }
 };
 
-void warn_if_maxprime_gt_13_opencl(std::size_t n, std::string ni) {
+void warn_if_maxprime_gt_13_opencl(std::size_t n, const std::string& ni) {
     if (util::max_of_prime_factors(n) > 13) {
         std::cout << color_string::warning() << "DemagFieldPBC: maximum prime factor of 'mesh." << ni << "'=" << n
                   << " is " << util::max_of_prime_factors(n)

@@ -7,7 +7,7 @@ namespace magnumafcpp {
 
 class NonequiDemagField : public NonequiTerm {
   public:
-    NonequiDemagField(NonequiMesh nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
+    NonequiDemagField(const NonequiMesh& nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
 
   private:
     af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
@@ -20,7 +20,7 @@ double Nxx(const double x, const double y, const double z, const double dx, cons
            const double dX, const double dY, const double dZ);
 double Nxy(const double x, const double y, const double z, const double dx, const double dy, const double dz,
            const double dX, const double dY, const double dZ);
-double nonequi_index_distance(const std::vector<double> spacings, const unsigned i, const unsigned j,
+double nonequi_index_distance(const std::vector<double>& spacings, const unsigned i, const unsigned j,
                               const bool verbose = true);
 
 } // namespace newell_nonequi

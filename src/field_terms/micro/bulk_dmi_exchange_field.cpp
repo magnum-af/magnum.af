@@ -9,7 +9,7 @@ namespace magnumafcpp {
 BulkDMIExchangeField::BulkDMIExchangeField(double D, double A) : D_bulk_(D), A_(A) {
 }
 
-af::array get_m_with_BC_ghost_cells(double D, double A, const af::array m, double dx, double dy, double dz) {
+af::array get_m_with_BC_ghost_cells(double D, double A, const af::array& m, double dx, double dy, double dz) {
     const auto x = 0;                    // for readability of last dim
     const auto y = 1;                    // for readability of last dim
     const auto z = 2;                    // for readability of last dim

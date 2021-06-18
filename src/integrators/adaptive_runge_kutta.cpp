@@ -5,7 +5,7 @@
 
 namespace magnumafcpp {
 
-AdaptiveRungeKutta::AdaptiveRungeKutta(std::string scheme_, Controller controller_, const bool normalize_,
+AdaptiveRungeKutta::AdaptiveRungeKutta(const std::string& scheme_, Controller controller_, const bool normalize_,
                                        const bool verbose)
     : scheme_(scheme_), controller_(controller_), normalize_(normalize_) {
     if (scheme_ == "RKF45") {

@@ -5,6 +5,8 @@
 #include "util/util.hpp"
 #include "vtk_io.hpp"
 #include <iomanip>
+#include <utility>
+
 
 namespace magnumafcpp {
 
@@ -121,7 +123,7 @@ State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
 
 State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, bool mute_warning)
     : mesh(mesh), m(std::move(m_in)),
-      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(std::move(Ms_field_in), 1, 1, 1, 3) : std::move(Ms_field_in)),
+      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(Ms_field_in, 1, 1, 1, 3) : std::move(Ms_field_in)),
       verbose(verbose), mute_warning(mute_warning) {
 
     // Using Ms_field after move causes segfault:
@@ -162,9 +164,9 @@ void State::set_Ms_field(long int aptr) { Ms_field = util::pywrap::make_copy_for
 
 long int State::wrapping_get_Ms_field() const { return util::pywrap::send_copy_to_py(Ms_field); }
 
-void State::write_vti(std::string outputname) const { vti_writer_micro(m.as(f64), mesh, outputname); }
-void State::_vti_writer_atom(std::string outputname) const { vti_writer_atom(m.as(f64), mesh, outputname); }
-void State::_vti_reader(std::string inputname) { vti_reader(m, mesh, inputname); }
+void State::write_vti(std::string outputname) const { vti_writer_micro(m.as(f64), mesh, std::move(outputname)); }
+void State::_vti_writer_atom(std::string outputname) const { vti_writer_atom(m.as(f64), mesh, std::move(outputname)); }
+void State::_vti_reader(std::string inputname) { vti_reader(m, mesh, std::move(inputname)); }
 
 double State::meani(const int i) const {
     auto m = mean_m();
