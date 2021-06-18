@@ -252,13 +252,13 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
     // Calculate and populate coordinate vectors
     // x
     for (int j = 0; j < field.dims(0) + 1; ++j) {
-        double val = (double)j * dx;
+        double val = static_cast<double>(j) * dx;
         coords[0]->SetTuple(j, &val);
     }
 
     // y
     for (int j = 0; j < field.dims(1) + 1; ++j) {
-        double val = (double)j * dy;
+        double val = static_cast<double>(j) * dy;
         coords[1]->SetTuple(j, &val);
     }
 
@@ -300,12 +300,16 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 
     // Writing output
     vtkXMLRectilinearGridWriter* writer = vtkXMLRectilinearGridWriter::New();
-    if (std::string(outputname.end() - 4, outputname.end()) != ".vtr")
+    if (std::string(outputname.end() - 4, outputname.end()) != ".vtr") {
         outputname.append(".vtr"); // adding file extensions if needed
 
-    if (verbose)
+}
+
+    if (verbose) {
         std::cout << "vtk_writer: writing array of dimension [" << field.dims(0) << " " << field.dims(1) << " "
                   << field.dims(2) << " " << field.dims(3) << "] to '" << outputname << "'" << std::endl;
+
+}
 
     writer->SetFileName(outputname.c_str());
     writer->SetInputData(grid);
@@ -326,8 +330,10 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
     // https://lorensen.github.io/VTKExamples/site/Cxx/IO/ReadRectilinearGrid/
     // https://vtk.org/gitweb?p=VTK.git;a=blob;f=Filters/Extraction/Testing/Cxx/TestExtractRectilinearGrid.cxx
 
-    if (std::string(filepath.end() - 4, filepath.end()) != ".vtr")
+    if (std::string(filepath.end() - 4, filepath.end()) != ".vtr") {
         filepath.append(".vtr"); // adding file extension if needed
+
+}
 
     // Obtain vktRectilinearGrid object from reader
     vtkSmartPointer<vtkXMLRectilinearGridReader> reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
@@ -338,9 +344,9 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
 
     // Converting coordinate vectors to spacing vectors
     // E.g. double[4] = {0, 1, 2, 3} -> double[3] = {1, 1, 1}
-    double* xcoords = (double*)output_data->GetXCoordinates()->GetVoidPointer(0);
-    double* ycoords = (double*)output_data->GetYCoordinates()->GetVoidPointer(0);
-    double* zcoords = (double*)output_data->GetZCoordinates()->GetVoidPointer(0);
+    double* xcoords = static_cast<double*>(output_data->GetXCoordinates()->GetVoidPointer(0));
+    double* ycoords = static_cast<double*>(output_data->GetYCoordinates()->GetVoidPointer(0));
+    double* zcoords = static_cast<double*>(output_data->GetZCoordinates()->GetVoidPointer(0));
 
     // Calculating spacings from coordinate vectors
     std::vector<double> x_spacings;
@@ -381,9 +387,11 @@ for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
     A = af::reorder(A, 1, 2, 3, 0);
 
     // Printing dimension info
-    if (verbose)
+    if (verbose) {
         std::cout << "vtr_reader: read vtkCellData of dimension [" << grid_dims[0] - 1 << ", " << grid_dims[1] - 1
                   << ", " << grid_dims[2] - 1 << ", " << data_dim << "] from '" << filepath << "'" << std::endl;
+
+}
 
     return {A, NonequiMesh{grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing}};
 }

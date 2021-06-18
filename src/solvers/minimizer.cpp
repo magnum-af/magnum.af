@@ -98,8 +98,10 @@ void Minimizer::minimize(State& state) const {
         // Compute dm_max for convergence estimation
         dm_max = math::max_4d_abs(dm_next);
         last_dm_max.push_back(dm_max);
-        if (last_dm_max.size() > samples)
+        if (last_dm_max.size() > samples) {
             last_dm_max.pop_front();
+
+}
 
         // Next stepsize alternating tau1 and tau2
 
@@ -110,24 +112,30 @@ void Minimizer::minimize(State& state) const {
         }
         // TODO handly zero division
 
-        if (tau >= 0)
+        if (tau >= 0) {
             tau = std::max(std::min(fabs(tau), tau_max), tau_min);
-        else
+        } else {
             tau = -std::max(std::min(fabs(tau), tau_max), tau_min);
+
+}
         // Increase step count
         step++;
-        if (info)
+        if (info) {
             std::cout << "step=" << step << " rate=" << 1. / af::timer::stop(t) << " tau=" << tau
                       << " last_dm_max.size()=" << last_dm_max.size() << " dm_max=" << dm_max
                       << " *std::max_element()=" << *std::max_element(std::begin(last_dm_max), std::end(last_dm_max))
                       << std::endl;
+
+}
         // std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<<
         // tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " <<
         // dm_max <<"*std::max_element()"<<
         // *std::max_element(std::begin(last_dm_max), std::end(last_dm_max)) <<
         // std::endl;
     }
-    if (info)
+    if (info) {
         std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
+
+}
 }
 } // namespace magnumafcpp

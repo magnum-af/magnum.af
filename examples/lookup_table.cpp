@@ -58,16 +58,16 @@ template <typename T> auto apply_lookup_from_container(T const& values, RegionSt
 // exemplary interaction which holds af::array values internally, not std::vector or such
 struct Interaction {
     af::array values{};
-    Interaction(af::array values) : values(std::move(values)) {}
+    explicit Interaction(af::array values) : values(std::move(values)) {}
     // template <typename T> Interaction(T const& values) : Interaction(make_afarray_from_container(values)) {}
     // convenience ctor for passing std containers:
     // NOTE: could/should be constrained to std::is_floating_point, i.e. float, double as std::is_integral types like
     // int, uint, char not wanted in most cases
     template <typename T>
-    Interaction(std::vector<T> const& values) : Interaction(make_afarray_from_container(values)) {}
+    explicit Interaction(std::vector<T> const& values) : Interaction(make_afarray_from_container(values)) {}
     // convenience ctor for passing single values like float, double:
     // Note: using vector overload instead of af::array i.o.t. deduce af::array type
-    template <typename T> Interaction(T const& value) : Interaction(std::vector<T>{value}) {}
+    template <typename T> explicit Interaction(T const& value) : Interaction(std::vector<T>{value}) {}
 };
 
 inline af::array apply_lookup(Interaction const& inter, RegionState const& region_state) {

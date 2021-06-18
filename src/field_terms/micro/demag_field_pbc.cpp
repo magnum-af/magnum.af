@@ -15,10 +15,12 @@ af::array calc_m_mfft(const State& state) {
             return af::fftR2C<2>(state.Ms_field * state.m);
         }
     } else {
-        if (state.Ms_field.isempty())
+        if (state.Ms_field.isempty()) {
             return af::fftR2C<3>(state.Ms * state.m);
-        else
+        } else {
             return af::fftR2C<3>(state.Ms_field * state.m);
+
+}
     }
 }
 

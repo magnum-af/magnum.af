@@ -319,8 +319,10 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         if ((brackt && ((stp <= stmin) | (stp >= stmax))) | (nfev >= maxfev - 1) | (infoc == 0) |
             (brackt & (stmax - stmin <= xtol * stmax))) {
             stp = stx;
-            if (verbose_ > 0)
+            if (verbose_ > 0) {
                 std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
+
+}
         }
 
         //// test new point
@@ -340,28 +342,42 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         double ft = 2 * ftol - 1;
 
         // all possible convergence tests
-        if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0))
+        if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0)) {
             info = 6;
 
+}
+
         // if ((stp == stpmax) & (f <= ftest1) & (dg <= dgtest))
-        if ((stp == stpmax) & (f <= ftest2) & (dg <= dgtest))
+        if ((stp == stpmax) & (f <= ftest2) & (dg <= dgtest)) {
             info = 5;
 
+}
+
         // if ((stp == stpmin) & ((f > ftest1) | (dg >= dgtest)))
-        if ((stp == stpmin) & ((f > ftest2) | (dg >= dgtest)))
+        if ((stp == stpmin) & ((f > ftest2) | (dg >= dgtest))) {
             info = 4;
 
-        if (nfev >= maxfev)
+}
+
+        if (nfev >= maxfev) {
             info = 3;
 
-        if (brackt & (stmax - stmin <= xtol * stmax))
+}
+
+        if (brackt & (stmax - stmin <= xtol * stmax)) {
             info = 2;
 
-        if ((f <= ftest1) & (fabs(dg) <= gtol * (-dginit)))
+}
+
+        if ((f <= ftest1) & (fabs(dg) <= gtol * (-dginit))) {
             info = 1;
 
-        if (((f <= ftest2) && (ft * dginit >= dg)) && (fabs(dg) <= gtol * (-dginit)))
+}
+
+        if (((f <= ftest2) && (ft * dginit >= dg)) && (fabs(dg) <= gtol * (-dginit))) {
             info = 1;
+
+}
 
         // terminate when convergence reached
         if (info != 0) {
@@ -369,8 +385,10 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         }
 
         // if (stage1 & (f <= ftest1) & (dg >= std::min(ftol, gtol)*dginit))
-        if (stage1 & ((f <= ftest2) && (ft * dginit >= dg)) & (dg >= std::min(ftol, gtol) * dginit)) // approx wolfe 1
+        if (stage1 & ((f <= ftest2) && (ft * dginit >= dg)) & (dg >= std::min(ftol, gtol) * dginit)) { // approx wolfe 1
             stage1 = false;
+
+}
 
         // if (stage1 & (f <= fx) & (f > ftest1)) {
         if (stage1 & (f <= fx) & (not((f <= ftest2) && (ft * dginit >= dg)))) { // not wolfe 1 --> not approx wolfe 1
@@ -396,8 +414,10 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         }
 
         if (brackt) {
-            if (fabs(sty - stx) >= 0.66 * width1)
+            if (fabs(sty - stx) >= 0.66 * width1) {
                 stp = stx + 0.5 * (sty - stx);
+
+}
             width1 = width;
             width = fabs(sty - stx);
         }
@@ -433,17 +453,21 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double theta = 3. * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
         double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
-        if (stp < stx)
+        if (stp < stx) {
             gamma = -gamma;
+
+}
         double p = (gamma - dx) + theta;
         double q = ((gamma - dx) + gamma) + dp;
         double r = p / q;
         stpc = stx + r * (stp - stx);
         stpq = stx + ((dx / ((fx - fp) / (stp - stx) + dx)) / 2.) * (stp - stx);
-        if (fabs(stpc - stx) < fabs(stpq - stx))
+        if (fabs(stpc - stx) < fabs(stpq - stx)) {
             stpf = stpc;
-        else
+        } else {
             stpf = stpc + (stpq - stpc) / 2;
+
+}
         brackt = true;
     } else if (sgnd < 0.0) {
         info = 2;
@@ -451,18 +475,22 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
         double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
-        if (stp > stx)
+        if (stp > stx) {
             gamma = -gamma;
+
+}
 
         double p = (gamma - dp) + theta;
         double q = ((gamma - dp) + gamma) + dx;
         double r = p / q;
         stpc = stp + r * (stx - stp);
         stpq = stp + (dp / (dp - dx)) * (stx - stp);
-        if (fabs(stpc - stp) > fabs(stpq - stp))
+        if (fabs(stpc - stp) > fabs(stpq - stp)) {
             stpf = stpc;
-        else
+        } else {
             stpf = stpq;
+
+}
         brackt = true;
     } else if (fabs(dp) < fabs(dx)) {
         info = 3;
@@ -470,8 +498,10 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
         double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
-        if (stp > stx)
+        if (stp > stx) {
             gamma = -gamma;
+
+}
         double p = (gamma - dp) + theta;
         double q = (gamma + (dx - dp)) + gamma;
         double r = p / q;
@@ -503,17 +533,19 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
             double theta = 3 * (fp - fy) / (sty - stp) + dy + dp;
             double s = std::max(theta, std::max(dy, dp));
             double gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
-            if (stp > sty)
+            if (stp > sty) {
                 gamma = -gamma;
+
+}
 
             double p = (gamma - dp) + theta;
             double q = ((gamma - dp) + gamma) + dy;
             double r = p / q;
             stpc = stp + r * (sty - stp);
             stpf = stpc;
-        } else if (stp > stx)
+        } else if (stp > stx) {
             stpf = stpmax;
-        else {
+        } else {
             stpf = stpmin;
         }
     }

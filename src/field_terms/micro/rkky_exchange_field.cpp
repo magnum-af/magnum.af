@@ -178,7 +178,7 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     // for (auto const& value: CSR_JA){
     //    std::cout << "CSR_JA=" << value << std::endl;
     //}
-    af::array result = af::sparse((dim_t)dimension, (dim_t)dimension, (dim_t)CSR_values.size(),
+    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
                                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse CSR RKKY-exchange matrix in %f [s]. "
@@ -315,7 +315,7 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
             }
         }
     }
-    af::array matr_COO = af::sparse((dim_t)dimension, (dim_t)dimension,
+    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension),
                                     af::array(static_cast<dim_t>(COO_values.size()), COO_values.data()),
                                     af::array(static_cast<dim_t>(COO_ROW.size()), COO_ROW.data()),
                                     af::array(static_cast<dim_t>(COO_COL.size()), COO_COL.data()), AF_STORAGE_COO);

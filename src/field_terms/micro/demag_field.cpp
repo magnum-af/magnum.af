@@ -27,12 +27,18 @@ double f(double x, double y, double z) {
     const double zz = pow(z, 2);
 
     double result = 1.0 / 6.0 * (2.0 * xx - yy - zz) * R;
-    if (xx + zz > 0)
+    if (xx + zz > 0) {
         result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
-    if (xx + yy > 0)
+
+}
+    if (xx + yy > 0) {
         result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
-    if (x * R > 0)
+
+}
+    if (x * R > 0) {
         result += -x * y * z * atan(y * z / (x * R));
+
+}
     return result;
 }
 
@@ -44,18 +50,30 @@ double g(const double x, const double y, double z) {
     const double zz = pow(z, 2);
 
     double result = -x * y * R / 3.0;
-    if (xx + yy > 0)
+    if (xx + yy > 0) {
         result += x * y * z * asinh(z / (sqrt(xx + yy)));
-    if (yy + zz > 0)
+
+}
+    if (yy + zz > 0) {
         result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
-    if (xx + zz > 0)
+
+}
+    if (xx + zz > 0) {
         result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-    if (z * R > 0)
+
+}
+    if (z * R > 0) {
         result += -pow(z, 3) / 6.0 * atan(x * y / (z * R));
-    if (y * R != 0)
+
+}
+    if (y * R != 0) {
         result += -z * yy / 2.0 * atan(x * z / (y * R));
-    if (x * R != 0)
+
+}
+    if (x * R != 0) {
         result += -z * xx / 2.0 * atan(y * z / (x * R));
+
+}
     return result;
 }
 
@@ -118,8 +136,8 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
     std::vector<std::thread> t;
 
     for (unsigned i = 0; i < nthreads; i++) {
-        unsigned ix_start = i * (double)nx_exp(mesh.nx) / nthreads;
-        unsigned ix_end = (i + 1) * (double)nx_exp(mesh.nx) / nthreads;
+        unsigned ix_start = i * static_cast<double>(nx_exp(mesh.nx)) / nthreads;
+        unsigned ix_end = (i + 1) * static_cast<double>(nx_exp(mesh.nx)) / nthreads;
         t.push_back(std::thread(newell::setup_N, std::ref(mesh), std::ref(N_values), ix_start, ix_end));
     }
 
@@ -211,17 +229,21 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
     // FFT with zero-padding of the m field
     af::array mfft;
     if (nz_exp(state.mesh.nz) == 1) {
-        if (state.Ms_field.isempty())
+        if (state.Ms_field.isempty()) {
             mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-        else
+        } else {
             mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
+
+}
     } else {
-        if (state.Ms_field.isempty())
+        if (state.Ms_field.isempty()) {
             mfft = af::fftR2C<3>(state.Ms * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-        else
+        } else {
             mfft = af::fftR2C<3>(state.Ms_field * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
+
+}
     }
 
     // Pointwise product

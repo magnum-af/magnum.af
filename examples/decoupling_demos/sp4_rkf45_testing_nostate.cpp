@@ -18,7 +18,7 @@ using namespace magnumafcpp;
 
 template <typename T = double, typename Y = af::array> class RK_Integrator {
   public:
-    RK_Integrator(T dt = 1.01e-15) : dt_(dt) {}
+    explicit RK_Integrator(T dt = 1.01e-15) : dt_(dt) {}
     T t_{0};
     T dt_{1.01e-15};
     Controller controller{};

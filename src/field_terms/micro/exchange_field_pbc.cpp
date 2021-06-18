@@ -90,7 +90,7 @@ af::array PBC_CSR_matrix(const std::optional<af::array>& A_exchange_field, const
             }
         }
     }
-    af::array result = af::sparse((dim_t)dimension, (dim_t)dimension, (dim_t)CSR_values.size(),
+    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
                                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
@@ -163,7 +163,7 @@ af::array PBC_COO_matrix(const std::optional<af::array>& A_exchange_field, const
             }
         }
     }
-    af::array matr_COO = af::sparse((dim_t)dimension, (dim_t)dimension, af::array(COO_values.size(), COO_values.data()),
+    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
                                     af::array(COO_ROW.size(), COO_ROW.data()),
                                     af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();

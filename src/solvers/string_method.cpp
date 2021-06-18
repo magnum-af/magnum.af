@@ -60,7 +60,7 @@ void StringMethod::calc_x() {
     }
     x_interp.clear();
     for (int i = 0; i < n_interp; i++) {
-        x_interp.push_back((double)i / (double)(n_interp - 1) * x.back());
+        x_interp.push_back(static_cast<double>(i) / static_cast<double>(n_interp - 1) * x.back());
     }
 }
 
@@ -72,7 +72,7 @@ void StringMethod::calc_x(std::vector<State> inputimages) {
     }
     x_interp.clear();
     for (int i = 0; i < n_interp; i++) {
-        x_interp.push_back((double)i / (double)(n_interp - 1) * x.back());
+        x_interp.push_back(static_cast<double>(i) / static_cast<double>(n_interp - 1) * x.back());
     }
 }
 
@@ -80,10 +80,14 @@ void StringMethod::lin_interpolate() {
     std::vector<State> images_temp = images;
     for (int i = 0; i < n_interp; i++) {
         int j = 0;
-        while (x[j] < x_interp[i] && j < n_interp)
+        while (x[j] < x_interp[i] && j < n_interp) {
             j++;
-        if (j > 0)
+
+}
+        if (j > 0) {
             j--;
+
+}
         if (j < n_interp - 1) {
             images[i].m =
                 images_temp[j].m + (x_interp[i] - x[j]) * (images_temp[j + 1].m - images_temp[j].m) / (x[j + 1] - x[j]);

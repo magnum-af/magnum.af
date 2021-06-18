@@ -10,8 +10,10 @@ namespace magnumafcpp {
 
 double GradientDecent::calc_df(double x_current) {
     double f_x_current = f(x_current);
-    if (verbose.get())
+    if (verbose.get()) {
         std::cout << "calc_df: x_current=" << x_current << ", f_x_current=" << f_x_current << std::endl;
+
+}
     return (f(x_current + epsilon.get()) - f_x_current) / epsilon.get();
 }
 
@@ -31,11 +33,15 @@ std::pair<double, double> GradientDecent::minimize() {
             x_next = x_min;
         }
         double step = x_next - x_current;
-        if (verbose.get())
+        if (verbose.get()) {
             std::cout << "minimi: x_current=" << x_current << ", x_next= " << x_next << ", step=" << step
                       << ", df=" << df << std::endl;
-        if (std::fabs(step) < precision.get())
+
+}
+        if (std::fabs(step) < precision.get()) {
             break;
+
+}
     }
 
     return std::pair<double, double>(x_next, f(x_next));

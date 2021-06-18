@@ -31,8 +31,10 @@ af::array ExternalField::impl_H_in_Apm(const State& state) const {
         return lamda_callback(state);
     } else if (callback) {
         return callback_func(state);
-    } else
+    } else {
         return zee_field;
+
+}
 }
 
 double ExternalField::impl_E_in_J(const State& state, const af::array& h) const {

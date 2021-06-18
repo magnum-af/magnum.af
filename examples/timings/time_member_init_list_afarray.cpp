@@ -8,20 +8,20 @@
 
 struct CpCp_or_MvCp {
     af::array data;
-    CpCp_or_MvCp(af::array data) : data(data) {}
+    explicit CpCp_or_MvCp(af::array data) : data(data) {}
     // Backup (clang-tidy performance):
     // Reference: CpCp_or_MvCp(af::array data) : data(data) {}
 };
 
 struct CpMv_or_MvMv {
     af::array data;
-    CpMv_or_MvMv(af::array data) : data(std::move(data)) {}
+    explicit CpMv_or_MvMv(af::array data) : data(std::move(data)) {}
 };
 
 struct Cp_or_Mv {
     af::array data;
-    Cp_or_Mv(af::array const& data) : data(data) {}
-    Cp_or_Mv(af::array&& data) : data(std::move(data)) {}
+    explicit Cp_or_Mv(af::array const& data) : data(data) {}
+    explicit Cp_or_Mv(af::array&& data) : data(std::move(data)) {}
 };
 
 int main() {

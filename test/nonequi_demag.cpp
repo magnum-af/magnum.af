@@ -16,9 +16,9 @@ TEST(NonEquiDemag, NxxNxyNearTest) {
     double dX = dx;
     double dY = dy;
     double dZ = dz;
-    double x = (double)ix * dx;
-    double y = (double)iy * dy;
-    double z = (double)iz * dz;
+    double x = static_cast<double>(ix) * dx;
+    double y = static_cast<double>(iy) * dy;
+    double z = static_cast<double>(iz) * dz;
 
     double Nxx_non = newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) /
                      (dX * dY * dZ); // multiply by 1/tau as tau is now added in Heff calculation
@@ -45,9 +45,9 @@ TEST(NonEquiDemag, NxxNxyFarTest) {
     double dX = dx;
     double dY = dy;
     double dZ = dz;
-    double x = (double)ix * dx;
-    double y = (double)iy * dy;
-    double z = (double)iz * dz;
+    double x = static_cast<double>(ix) * dx;
+    double y = static_cast<double>(iy) * dy;
+    double z = static_cast<double>(iz) * dz;
 
     double Nxx_non = newell_nonequi::Nxx(x, y, z, dx, dy, dz, dX, dY, dZ) / (dX * dY * dZ);
     double Nxx_f = newell::Nxx(ix, iy, iz, dx, dy, dz);

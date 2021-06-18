@@ -41,8 +41,10 @@ int main(int argc, char** argv) {
             const double rx = double(ix) - mesh.nx / 2.;
             const double ry = double(iy) - mesh.ny / 2.;
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
-            if (r > 30 / 4.)
+            if (r > 30 / 4.) {
                 m(ix, iy, af::span, 2) = 1.;
+
+}
         }
     }
 

@@ -81,12 +81,18 @@ double f(double x, double y, double z) {
     const double zz = pow(z, 2);
 
     double result = 1.0 / 6.0 * (2.0 * xx - yy - zz) * R;
-    if (xx + zz > 0)
+    if (xx + zz > 0) {
         result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
-    if (xx + yy > 0)
+
+}
+    if (xx + yy > 0) {
         result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
-    if (x * R > 0)
+
+}
+    if (x * R > 0) {
         result += -x * y * z * atan(y * z / (x * R));
+
+}
     return result;
 }
 
@@ -98,18 +104,30 @@ double g(double x, double y, double z) {
     const double zz = pow(z, 2);
 
     double result = -x * y * R / 3.0;
-    if (xx + yy > 0)
+    if (xx + yy > 0) {
         result += x * y * z * asinh(z / (sqrt(xx + yy)));
-    if (yy + zz > 0)
+
+}
+    if (yy + zz > 0) {
         result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
-    if (xx + zz > 0)
+
+}
+    if (xx + zz > 0) {
         result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-    if (z * R > 0)
+
+}
+    if (z * R > 0) {
         result += -pow(z, 3) / 6.0 * atan(x * y / (z * R));
-    if (y * R != 0)
+
+}
+    if (y * R != 0) {
         result += -z * yy / 2.0 * atan(x * z / (y * R));
-    if (x * R != 0)
+
+}
+    if (x * R != 0) {
         result += -z * xx / 2.0 * atan(y * z / (x * R));
+
+}
     return result;
 }
 
@@ -208,8 +226,8 @@ void init_N(const NonequiMesh& nemesh, std::vector<double>& N, unsigned ix_start
                         // std::cout << "idx=" << idx << " of " <<
                         // nx_expanded(nemesh.nx) * ny_expanded(nemesh.ny) * (nemesh.nz *
                         // (nemesh.nz + 1))/2 * 6 << std::endl;
-                        const double x = nemesh.dx * (double)jx;
-                        const double y = nemesh.dy * (double)jy;
+                        const double x = nemesh.dx * static_cast<double>(jx);
+                        const double y = nemesh.dy * static_cast<double>(jy);
                         const double z = nonequi_index_distance(nemesh.z_spacing, i_source, i_target, true);
 
                         N[idx + 0] = newell_nonequi::Nxx(x, y, z, nemesh.dx, nemesh.dy, nemesh.z_spacing[i_source],
@@ -237,8 +255,8 @@ af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads) {
 
     std::vector<std::thread> t;
     for (unsigned i = 0; i < nthreads; i++) {
-        unsigned ix_start = i * (double)nx_expanded(nemesh.nx) / nthreads;
-        unsigned ix_end = (i + 1) * (double)nx_expanded(nemesh.nx) / nthreads;
+        unsigned ix_start = i * static_cast<double>(nx_expanded(nemesh.nx)) / nthreads;
+        unsigned ix_end = (i + 1) * static_cast<double>(nx_expanded(nemesh.nx)) / nthreads;
         t.push_back(std::thread(init_N, std::ref(nemesh), std::ref(N_values), ix_start, ix_end));
     }
 

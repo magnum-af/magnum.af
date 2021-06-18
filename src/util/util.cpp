@@ -106,22 +106,24 @@ bool abs_diff_lt_precision(const af::array& first, const af::array& second, doub
     unsigned int zero_if_equal =
         afvalue_u32(af::sum(af::sum(af::sum(af::sum(!(af::abs(first - second) < precision), 0), 1), 2), 3));
     if (verbose) {
-        if (zero_if_equal == 0)
+        if (zero_if_equal == 0) {
             std::cout << "\33[1;32mSucess:\33[0m All " << first.elements()
                       << " absolute values of element-wise differences are "
                          "below precision of "
                       << precision << std::endl;
-        else {
+        } else {
             std::cout << "\33[1;31mError!\33[0m " << zero_if_equal << " out of " << first.elements()
                       << " absolute values of element-wise differences are "
                          "above precision of "
                       << precision << std::endl;
         }
     }
-    if (zero_if_equal == 0)
+    if (zero_if_equal == 0) {
         return true;
-    else
+    } else {
         return false;
+
+}
 }
 
 /// Relative difference less than precision: Element-wise comparision of
@@ -135,22 +137,24 @@ bool rel_diff_lt_precision(const af::array& first, const af::array& second, doub
                              f64)); // set element to zero if both input elements are zero
     unsigned int zero_if_equal = afvalue_u32(af::sum(af::sum(af::sum(af::sum(!(temp < precision), 0), 1), 2), 3));
     if (verbose) {
-        if (zero_if_equal == 0)
+        if (zero_if_equal == 0) {
             std::cout << "\33[1;32mSucess:\33[0m All " << first.elements()
                       << " relative values of element-wise differences are "
                          "below precision of "
                       << precision << std::endl;
-        else {
+        } else {
             std::cout << "\33[1;31mError!\33[0m " << zero_if_equal << " out of " << first.elements()
                       << " relative values of element-wise differences are "
                          "above precision of "
                       << precision << std::endl;
         }
     }
-    if (zero_if_equal == 0)
+    if (zero_if_equal == 0) {
         return true;
-    else
+    } else {
         return false;
+
+}
 }
 
 /// Upper bound for absolute difference
@@ -159,16 +163,20 @@ double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     double prec = start_precision;
     double prec_prev = prec;
     while (abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
-        if (verbose)
+        if (verbose) {
             std::cout << "prec = " << prec << std::endl;
+
+}
         prec_prev = prec;
         prec = factor1 * prec;
     }
 
     prec = prec_prev;
     while (abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
-        if (verbose)
+        if (verbose) {
             std::cout << "prec = " << prec << std::endl;
+
+}
         prec_prev = prec;
         prec = factor2 * prec;
     }
@@ -181,16 +189,20 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     double prec = start_precision;
     double prec_prev = prec;
     while (rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
-        if (verbose)
+        if (verbose) {
             std::cout << "prec = " << prec << std::endl;
+
+}
         prec_prev = prec;
         prec = factor1 * prec;
     }
 
     prec = prec_prev;
     while (rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
-        if (verbose)
+        if (verbose) {
             std::cout << "prec = " << prec << std::endl;
+
+}
         prec_prev = prec;
         prec = factor2 * prec;
     }

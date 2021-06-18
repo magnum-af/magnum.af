@@ -110,7 +110,7 @@ class runge_kutta_fehlberg54
     typedef typename stepper_base_type::wrapped_state_type wrapped_state_type;
     typedef typename stepper_base_type::wrapped_deriv_type wrapped_deriv_type;
 
-    runge_kutta_fehlberg54(const algebra_type& algebra = algebra_type())
+    explicit runge_kutta_fehlberg54(const algebra_type& algebra = algebra_type())
         : stepper_base_type(
               boost::fusion::make_vector(rk54_fehlberg_coefficients_a1<Value>(), rk54_fehlberg_coefficients_a2<Value>(),
                                          rk54_fehlberg_coefficients_a3<Value>(), rk54_fehlberg_coefficients_a4<Value>(),
@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
 
     struct observe_m {
         std::filesystem::path outdir_;
-        observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
+        explicit observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
         void operator()(const af::array& m, double t) {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
