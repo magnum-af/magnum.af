@@ -24,7 +24,7 @@ af::array Minimizer::h(const State& state) const {
                   << std::endl;
         exit(EXIT_FAILURE);
     }
-    const auto solution = fieldterm::Heff_in_Apm(fieldterms, state);
+    auto solution = fieldterm::Heff_in_Apm(fieldterms, state);
     return solution;
 }
 

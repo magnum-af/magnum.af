@@ -47,7 +47,7 @@ class State {
 
     void write_vti(std::string outputname) const;
     void _vti_writer_atom(std::string outputname) const;
-    void _vti_reader(std::string inputname);
+    void _vti_reader(const std::string& inputname);
 
     /// Get the i'th component of <m>: 0 == mx, 1 == my, 2 == mz
     double meani(const int i) const;

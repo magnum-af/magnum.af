@@ -52,7 +52,7 @@ af::array central_diff(const af::array& a, double grid_spacing, Axis axis, Trunc
         filter(1, 1, 2) = -0.5 / grid_spacing;
     }
 
-    const auto conv = af::convolve(a, filter, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    auto conv = af::convolve(a, filter, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
     if (trunc_out == TruncateOutput::on) {
         return conv(af::seq(1, -2), af::seq(1, -2), af::seq(1, -2), af::span); // stripping off BC ghost cells
@@ -109,7 +109,7 @@ af::array laplace_3D(const af::array& a, const double dx, const double dy, const
     filter(1, 2, 1) = 1. / std::pow(dy, 2);
     filter(1, 1, 0) = 1. / std::pow(dz, 2);
     filter(1, 1, 2) = 1. / std::pow(dz, 2);
-    const auto conv = convolve(a, filter, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
+    auto conv = convolve(a, filter, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
     if (trunc_out == TruncateOutput::on) {
         return conv(af::seq(1, -2), af::seq(1, -2), af::seq(1, -2), af::span); // stripping off BC ghost cells
     } else {

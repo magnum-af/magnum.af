@@ -17,14 +17,14 @@ LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const st
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il, std::string scheme,
+LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il, const std::string& scheme,
                              Controller controller, bool dissipation_term_only)
-    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, std::move(scheme),
+    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
                     controller, dissipation_term_only) {}
 
 af::array LLGIntegrator::fheff(const State& state) const {
     af::timer timer_heff = af::timer::start();
-    const auto solution = fieldterm::Heff_in_Apm(llgterms, state);
+    auto solution = fieldterm::Heff_in_Apm(llgterms, state);
     time_heff += af::timer::stop(timer_heff);
     return solution;
 }

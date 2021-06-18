@@ -10,7 +10,7 @@ af::array spacial_mean_in_region_afarray(const af::array& vectorfield, const af:
         af::sum(af::sum(af::sum(zero_if_input_is_zero_else_one, 0), 1), 2).scalar<unsigned>();
     const af::array considered_values = vectorfield * af::tile(zero_if_input_is_zero_else_one, 1, 1, 1, 3);
     const af::array sum_considered_values = af::sum(af::sum(af::sum(considered_values, 0), 1), 2);
-    const af::array mean_considered_values = sum_considered_values / number_of_nonzero_elements;
+    af::array mean_considered_values = sum_considered_values / number_of_nonzero_elements;
     return mean_considered_values;
 }
 

@@ -17,7 +17,7 @@ void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
 // Calculation of effective field
 af::array CG_Minimizer::Heff(const State& state) const {
     abort_on_empty_size(fieldterms);
-    const auto solution = fieldterm::Heff_in_Apm(fieldterms, state);
+    auto solution = fieldterm::Heff_in_Apm(fieldterms, state);
     return solution;
 }
 
