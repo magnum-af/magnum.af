@@ -69,7 +69,10 @@ TEST(Func, spacial_mean_in_region) {
     };
     test(af::dtype::f64);
     test(af::dtype::f32);
-    test(af::dtype::f16);
+
+    if (af::isHalfAvailable(af::getDevice())) {
+        test(af::dtype::f16);
+    }
 }
 
 int main(int argc, char** argv) {
