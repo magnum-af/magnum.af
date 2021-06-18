@@ -14,7 +14,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, std::array<double, 
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array<double, 3> Ku1_axis)
     : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : std::move(Ku1_field)),
       Ku1_axis(util::normalize_vector(Ku1_axis)) {
-    if (Ku1_field.dims(3) == 3) {
+    if (this->Ku1_field.dims(3) == 3) {
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
                "dimensions [nx, ny, nz, 1].\n",
