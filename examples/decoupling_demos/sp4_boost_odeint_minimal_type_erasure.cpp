@@ -57,9 +57,9 @@ class HfieldType {
     // enable with c++20 // template <HasHfield T>
     template <typename T> struct Model final : public Concept {
         Model(T&& term) : term_(std::forward<T>(term)) {}
-        af::array wrap_H_in_Apm(State const& state) const final override { return term_.H_in_Apm(state); }
-        double wrap_Energy_in_J(State const& state) const final override { return term_.Energy_in_J(state); }
-        std::unique_ptr<Concept> clone() const final override { return std::make_unique<Model>(*this); }
+        af::array wrap_H_in_Apm(State const& state) const override { return term_.H_in_Apm(state); }
+        double wrap_Energy_in_J(State const& state) const override { return term_.Energy_in_J(state); }
+        std::unique_ptr<Concept> clone() const override { return std::make_unique<Model>(*this); }
         T term_;
     };
 
