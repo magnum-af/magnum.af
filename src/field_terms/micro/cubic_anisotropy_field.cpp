@@ -28,7 +28,7 @@ CubicAnisotropyField::CubicAnisotropyField(af::array Kc1_array, af::array Kc2_ar
       c3(math::cross4(std::get<af::array>(this->c1.variant), std::get<af::array>(this->c2.variant))) {
     // check input vectors c1, c2
     const double precision = 1e-12;
-    const double max_abs_c1_c2_dot =
+    const auto max_abs_c1_c2_dot =
         af::max(af::max(af::max(af::max(af::abs(dot_4d(std::get<af::array>(this->c1.variant),
                                                        std::get<af::array>(this->c2.variant))),
                                         0),

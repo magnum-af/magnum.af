@@ -30,7 +30,7 @@ int main() {
         };
     };
 
-    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    using stepper_type = ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra>;
     // typedef ode::runge_kutta_cash_karp54_classic<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type; typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double,
     // ode::vector_space_algebra> stepper_type;

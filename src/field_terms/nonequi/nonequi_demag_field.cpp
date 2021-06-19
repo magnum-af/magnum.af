@@ -257,7 +257,7 @@ af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads) {
     for (unsigned i = 0; i < nthreads; i++) {
         unsigned ix_start = i * static_cast<double>(nx_expanded(nemesh.nx)) / nthreads;
         unsigned ix_end = (i + 1) * static_cast<double>(nx_expanded(nemesh.nx)) / nthreads;
-        t.push_back(std::thread(init_N, std::ref(nemesh), std::ref(N_values), ix_start, ix_end));
+        t.emplace_back(init_N, std::ref(nemesh), std::ref(N_values), ix_start, ix_end);
     }
 
     for (unsigned i = 0; i < nthreads; i++) {

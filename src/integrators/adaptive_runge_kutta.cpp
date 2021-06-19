@@ -118,9 +118,10 @@ af::array AdaptiveRungeKutta::RKF45(const State& state, const double dt, double&
 af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& err_) {
     State tempstate = state;
 
-    double a[8][7] = {{0}};
-    double e[8] = {0};
-    double c[8] = {0};
+    // Alterat:
+    std::array<std::array<double, 7>, 8> a = {{{0}}};
+    std::array<double, 8> e = {0};
+    std::array<double, 8> c = {0};
 
     c[2] = 0.2, c[3] = 0.3, c[4] = 0.8, c[5] = 8.0 / 9.0, c[6] = 1, c[7] = 1;
     e[1] = 71.0 / 57600.0, e[3] = -71.0 / 16695.0, e[4] = 71.0 / 1920.0, e[5] = -17253.0 / 339200.0,
@@ -180,9 +181,9 @@ af::array AdaptiveRungeKutta::DP45(const State& state, const double dt, double& 
 af::array AdaptiveRungeKutta::BS45(const State& state, const double dt, double& err_) {
     State tempstate = state;
 
-    double a[9][8] = {{0.}};
-    double b[9] = {0.};
-    double c[9] = {0.};
+    std::array<std::array<double, 8>, 9> a = {{{0.}}};
+    std::array<double, 9> b = {0.};
+    std::array<double, 9> c = {0.};
 
     a[2][1] = 1.0e0 / 6.0e0;
     a[3][1] = 2.e0 / 27.e0;
@@ -287,10 +288,10 @@ af::array AdaptiveRungeKutta::BS45(const State& state, const double dt, double& 
 af::array AdaptiveRungeKutta::DP78(const State& state, const double dt, double& err_) const {
     State tempstate = state;
 
-    double a[14][13] = {{0.}};
-    double b[14] = {0.};
-    double bhat[14] = {0.};
-    double c[14] = {0.};
+    std::array<std::array<double, 13>, 14> a = {{{0.}}};
+    std::array<double, 14> b = {0.};
+    std::array<double, 14> bhat = {0.};
+    std::array<double, 14> c = {0.};
 
     a[2][1] = 5.55555555555555555555555555556e-2;
     a[3][1] = 2.08333333333333333333333333333e-2;

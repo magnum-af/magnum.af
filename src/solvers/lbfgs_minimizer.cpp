@@ -494,7 +494,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         brackt = true;
     } else if (fabs(dp) < fabs(dx)) {
         info = 3;
-        bound = 1;
+        bound = true;
         double theta = 3 * (fx - fp) / (stp - stx) + dx + dp;
         double s = std::max(theta, std::max(dx, dp));
         double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));

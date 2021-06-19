@@ -13,7 +13,7 @@ class RK : public AdaptiveRungeKutta {
     RK(const std::string& scheme, Controller controller) : AdaptiveRungeKutta(scheme, controller, false){};
 
   private:
-    af::array f(const State& state) const override { return state.t * sqrt(state.m); }
+    [[nodiscard]] af::array f(const State& state) const override { return state.t * sqrt(state.m); }
 };
 
 double analytic_result(double time) { return 1. / 16. * pow(pow(time, 2) + 4, 2); }

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <utility>
 
-#include <math.h>
+#include <cmath>
 
 namespace magnumafcpp {
 

@@ -88,8 +88,8 @@ Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, 
 
 double Stochastic_Integrator::cpu_time() {
     double cpu_time = 0.;
-    for (unsigned i = 0; i < fieldterms.size(); ++i) {
-        cpu_time += fieldterms[i]->elapsed_eval_time();
+    for (auto & fieldterm : fieldterms) {
+        cpu_time += fieldterm->elapsed_eval_time();
     }
     return cpu_time;
 }

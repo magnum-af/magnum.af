@@ -1,7 +1,7 @@
 #include "vtk_io.hpp"
 #include "util/util.hpp"
+#include <cstdio>
 #include <gtest/gtest.h>
-#include <stdio.h>
 
 using namespace magnumafcpp;
 

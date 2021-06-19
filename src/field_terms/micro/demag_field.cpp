@@ -138,7 +138,7 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
     for (unsigned i = 0; i < nthreads; i++) {
         unsigned ix_start = i * static_cast<double>(nx_exp(mesh.nx)) / nthreads;
         unsigned ix_end = (i + 1) * static_cast<double>(nx_exp(mesh.nx)) / nthreads;
-        t.push_back(std::thread(newell::setup_N, std::ref(mesh), std::ref(N_values), ix_start, ix_end));
+        t.emplace_back(newell::setup_N, std::ref(mesh), std::ref(N_values), ix_start, ix_end);
     }
 
     for (unsigned i = 0; i < nthreads; i++) {

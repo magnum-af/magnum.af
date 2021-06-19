@@ -2,10 +2,10 @@
 #include "arrayfire.h"
 #include "util/util.hpp"
 #include "vtk_io.hpp"
+#include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
-#include <stdio.h>
 
 namespace magnumafcpp {
 
@@ -17,10 +17,9 @@ StringMethod::StringMethod(const State& state, std::vector<State> inputimages, i
     for (int i = 0; i < n_interp; i++) {
         // Note: this is set to m=|1| to // avoid tate.Ms_field creation
         if (state.Ms_field.isempty()) {
-            images.push_back(State(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64)));
+            images.emplace_back(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         } else {
-            images.push_back(
-                State(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64)));
+            images.emplace_back(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         }
     }
     for (int i = 0; i < n_interp; i++) {
@@ -106,10 +105,10 @@ void StringMethod::lin_interpolate() {
 }
 
 void StringMethod::integrate() {
-    for (unsigned int i = 0; i < images.size(); i++) {
-        double imagtime = images[i].t;
-        while (images[i].t < imagtime + dt) {
-            llg.step(images[i]);
+    for (auto & image : images) {
+        double imagtime = image.t;
+        while (image.t < imagtime + dt) {
+            llg.step(image);
         }
         // Now skipping step backwards
         // double h=imagtime+dt-images[i].t;
@@ -128,10 +127,10 @@ void StringMethod::step() {
 }
 
 void StringMethod::vec_normalize() {
-    for (unsigned int i = 0; i < images.size(); i++) {
-        images[i].m = util::normalize_handle_zero_vectors(images[i].m);
+    for (auto & image : images) {
+        image.m = util::normalize_handle_zero_vectors(image.m);
         // af::eval avoids JIT crash here!
-        af::eval(images[i].m); // TODO reassess necessity for newer af-versions
+        af::eval(image.m); // TODO reassess necessity for newer af-versions
     }
 }
 

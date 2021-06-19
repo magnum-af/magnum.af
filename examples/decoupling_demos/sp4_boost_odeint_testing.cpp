@@ -13,18 +13,18 @@
 namespace custom_ode {
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a1 : boost::array<Value, 1> {
-    rk54_fehlberg_coefficients_a1(void) { (*this)[0] = static_cast<Value>(1) / static_cast<Value>(4); }
+    rk54_fehlberg_coefficients_a1() { (*this)[0] = static_cast<Value>(1) / static_cast<Value>(4); }
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a2 : boost::array<Value, 2> {
-    rk54_fehlberg_coefficients_a2(void) {
+    rk54_fehlberg_coefficients_a2() {
         (*this)[0] = static_cast<Value>(3) / static_cast<Value>(32);
         (*this)[1] = static_cast<Value>(9) / static_cast<Value>(32);
     }
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a3 : boost::array<Value, 3> {
-    rk54_fehlberg_coefficients_a3(void) {
+    rk54_fehlberg_coefficients_a3() {
         (*this)[0] = static_cast<Value>(1932) / static_cast<Value>(2197);
         (*this)[1] = static_cast<Value>(-7200) / static_cast<Value>(2197);
         (*this)[2] = static_cast<Value>(7296) / static_cast<Value>(2197);
@@ -32,7 +32,7 @@ template <class Value = double> struct rk54_fehlberg_coefficients_a3 : boost::ar
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a4 : boost::array<Value, 4> {
-    rk54_fehlberg_coefficients_a4(void) {
+    rk54_fehlberg_coefficients_a4() {
         (*this)[0] = static_cast<Value>(439) / static_cast<Value>(216);
         (*this)[1] = static_cast<Value>(-8);
         (*this)[2] = static_cast<Value>(3680) / static_cast<Value>(513);
@@ -41,7 +41,7 @@ template <class Value = double> struct rk54_fehlberg_coefficients_a4 : boost::ar
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a5 : boost::array<Value, 5> {
-    rk54_fehlberg_coefficients_a5(void) {
+    rk54_fehlberg_coefficients_a5() {
         (*this)[0] = static_cast<Value>(-8) / static_cast<Value>(27);
         (*this)[1] = static_cast<Value>(2);
         (*this)[2] = static_cast<Value>(-3544) / static_cast<Value>(2565);
@@ -51,7 +51,7 @@ template <class Value = double> struct rk54_fehlberg_coefficients_a5 : boost::ar
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_b : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_b(void) {
+    rk54_fehlberg_coefficients_b() {
         (*this)[0] = static_cast<Value>(16) / static_cast<Value>(135);
         (*this)[1] = static_cast<Value>(0);
         (*this)[2] = static_cast<Value>(6656) / static_cast<Value>(12825);
@@ -62,7 +62,7 @@ template <class Value = double> struct rk54_fehlberg_coefficients_b : boost::arr
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_db : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_db(void) {
+    rk54_fehlberg_coefficients_db() {
         (*this)[0] =
             static_cast<Value>(16) / static_cast<Value>(135) - static_cast<Value>(25) / static_cast<Value>(216);
         (*this)[1] = static_cast<Value>(0);
@@ -76,7 +76,7 @@ template <class Value = double> struct rk54_fehlberg_coefficients_db : boost::ar
 };
 
 template <class Value = double> struct rk54_fehlberg_coefficients_c : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_c(void) {
+    rk54_fehlberg_coefficients_c() {
         (*this)[0] = static_cast<Value>(0);
         (*this)[1] = static_cast<Value>(1) / static_cast<Value>(4);
         (*this)[2] = static_cast<Value>(3) / static_cast<Value>(8);
@@ -98,17 +98,17 @@ class runge_kutta_fehlberg54
     typedef boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time, Algebra,
                                                               Operations, Resizer>
         stepper_base_type;
-    typedef typename stepper_base_type::state_type state_type;
-    typedef typename stepper_base_type::value_type value_type;
-    typedef typename stepper_base_type::deriv_type deriv_type;
-    typedef typename stepper_base_type::time_type time_type;
-    typedef typename stepper_base_type::algebra_type algebra_type;
-    typedef typename stepper_base_type::operations_type operations_type;
-    typedef typename stepper_base_type::resizer_type resizer_typ;
+    using state_type = typename stepper_base_type::state_type;
+    using value_type = typename stepper_base_type::value_type;
+    using deriv_type = typename stepper_base_type::deriv_type;
+    using time_type = typename stepper_base_type::time_type;
+    using algebra_type = typename stepper_base_type::algebra_type;
+    using operations_type = typename stepper_base_type::operations_type;
+    using resizer_typ = typename stepper_base_type::resizer_type;
 
-    typedef typename stepper_base_type::stepper_type stepper_type;
-    typedef typename stepper_base_type::wrapped_state_type wrapped_state_type;
-    typedef typename stepper_base_type::wrapped_deriv_type wrapped_deriv_type;
+    using stepper_type = typename stepper_base_type::stepper_type;
+    using wrapped_state_type = typename stepper_base_type::wrapped_state_type;
+    using wrapped_deriv_type = typename stepper_base_type::wrapped_deriv_type;
 
     explicit runge_kutta_fehlberg54(const algebra_type& algebra = algebra_type())
         : stepper_base_type(
@@ -124,8 +124,8 @@ namespace boost::numeric::odeint {
 // Specializations for runge_kutta_cash_karp54
 template <class State, class Value, class Deriv, class Time, class Algebra, class Operations, class Resize>
 struct get_controller<custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>> {
-    typedef custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize> stepper_type;
-    typedef controlled_runge_kutta<stepper_type> type;
+    using stepper_type = custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>;
+    using type = controlled_runge_kutta<stepper_type>;
 };
 
 } // namespace boost::numeric::odeint
@@ -135,7 +135,7 @@ struct get_controller<custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Ti
 // and boost/numeric/odeint/external/vexcl/vexcl_norm_inf.hpp
 namespace boost::numeric::odeint {
 template <> struct vector_space_norm_inf<af::array> {
-    typedef double result_type; // typedef definition is explicitly needed here for odeint internals.
+    using result_type = double; // typedef definition is explicitly needed here for odeint internals.
     result_type operator()(const af::array& x) const {
         return af::max(af::max(af::max(af::max(af::abs(x), 0), 1), 2), 3).as(f64).scalar<double>();
     }
@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
     // choosing an integrator via typedef
     // typedef ode::runge_kutta_fehlberg78<af::array, double, af::array, double, ode::vector_space_algebra>
     // stepper_type;
-    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    using stepper_type = ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra>;
     // typedef custom_ode::runge_kutta_fehlberg54<af::array, double, af::array, double, ode::vector_space_algebra>
     //     stepper_type;
     // typedef ode::runge_kutta_cash_karp54<af::array, double, af::array, double, ode::vector_space_algebra>

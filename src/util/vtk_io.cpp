@@ -1,5 +1,6 @@
 #include "vtk_io.hpp"
 #include "util/util.hpp"
+#include <array>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
@@ -68,7 +69,7 @@ void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, s
             for (int y = 0; y < dims[1]; y++) {
                 for (int x = 0; x < dims[0]; x++) {
                     for (int im = 0; im < field.dims(3); im++) {
-                        double* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x, y, z));
+                        auto* pixel = static_cast<double*>(imageDataPointCentered->GetScalarPointer(x, y, z));
                         pixel[im] = field_handle[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
                     }
                 }
@@ -128,7 +129,7 @@ void vti_writer_atom(const af::array& field, const Mesh& mesh, std::string outpu
         for (int y = 0; y < dims[1]; y++) {
             for (int x = 0; x < dims[0]; x++) {
                 for (int im = 0; im < field.dims(3); im++) {
-                    double* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
+                    auto* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
                     pixel[im] = field_handle[x + dims[0] * (y + dims[1] * (z + dims[2] * im))];
                 }
             }
@@ -160,8 +161,8 @@ std::pair<af::array, Mesh> vti_reader(const std::string& filepath) {
 
     // Check whether input is vtkCellData or vtkPointData
     bool celldata = false; // If true, vtkCellData, if false, vtkPointData
-    double* test_pixel = static_cast<double*>(imageData->GetScalarPointer(0, 0, 0));
-    if (test_pixel == NULL) {
+    auto* test_pixel = static_cast<double*>(imageData->GetScalarPointer(0, 0, 0));
+    if (test_pixel == nullptr) {
         std::cout << "vti_reader: Reading vtkCellData from " << filepath << std::endl;
         celldata = true;
     } else {
@@ -208,7 +209,7 @@ std::pair<af::array, Mesh> vti_reader(const std::string& filepath) {
         for (int z = 0; z < dims[2]; z++) {
             for (int y = 0; y < dims[1]; y++) {
                 for (int x = 0; x < dims[0]; x++) {
-                    double* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
+                    auto* pixel = static_cast<double*>(imageData->GetScalarPointer(x, y, z));
                     for (int im = 0; im < dim4th; im++) {
                         A_host[x + dims[0] * (y + dims[1] * (z + dims[2] * im))] = pixel[im];
                     }
@@ -243,7 +244,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
                         field.dims(2) + 1); // Adding one node per dimension as we use cell data
 
     // declare xyz coordinate vectors
-    vtkDataArray* coords[3];
+    std::array<vtkDataArray*, 3> coords;
     for (int i = 0; i < 3; ++i) {
         coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
         coords[i]->SetNumberOfTuples(field.dims(i) + 1);
@@ -344,9 +345,9 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
 
     // Converting coordinate vectors to spacing vectors
     // E.g. double[4] = {0, 1, 2, 3} -> double[3] = {1, 1, 1}
-    double* xcoords = static_cast<double*>(output_data->GetXCoordinates()->GetVoidPointer(0));
-    double* ycoords = static_cast<double*>(output_data->GetYCoordinates()->GetVoidPointer(0));
-    double* zcoords = static_cast<double*>(output_data->GetZCoordinates()->GetVoidPointer(0));
+    auto* xcoords = static_cast<double*>(output_data->GetXCoordinates()->GetVoidPointer(0));
+    auto* ycoords = static_cast<double*>(output_data->GetYCoordinates()->GetVoidPointer(0));
+    auto* zcoords = static_cast<double*>(output_data->GetZCoordinates()->GetVoidPointer(0));
 
     // Calculating spacings from coordinate vectors
     std::vector<double> x_spacings;
@@ -373,9 +374,9 @@ for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
     // Copying vtkCellData to af::array
     int* grid_dims = output_data->GetDimensions(); // equivalent to int[3] array. Note: this
                                                    // accesses the raw data
-    vtkDoubleArray* xyz_data = vtkArrayDownCast<vtkDoubleArray>(output_data->GetCellData()->GetArray(0)); ///("xyz")
+    auto* xyz_data = vtkArrayDownCast<vtkDoubleArray>(output_data->GetCellData()->GetArray(0)); ///("xyz")
     const int data_dim = xyz_data->GetNumberOfComponents();
-    double* xyz = static_cast<double*>(xyz_data->GetVoidPointer(0));
+    auto* xyz = static_cast<double*>(xyz_data->GetVoidPointer(0));
     std::vector<double> A_host(data_dim * output_data->GetNumberOfCells());
 
     for (int i = 0; i < data_dim * output_data->GetNumberOfCells(); i++) {

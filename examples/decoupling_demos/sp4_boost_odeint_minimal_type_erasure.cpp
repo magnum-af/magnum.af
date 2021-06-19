@@ -50,18 +50,18 @@ class HfieldType {
 
     struct Concept {
         virtual ~Concept() = default;
-        virtual af::array wrap_H_in_Apm(State const&) const = 0;
-        virtual double wrap_Energy_in_J(State const&) const = 0;
-        virtual std::unique_ptr<Concept> clone() const = 0; // Prototype design pattern
+        [[nodiscard]] virtual af::array wrap_H_in_Apm(State const&) const = 0;
+        [[nodiscard]] virtual double wrap_Energy_in_J(State const&) const = 0;
+        [[nodiscard]] virtual std::unique_ptr<Concept> clone() const = 0; // Prototype design pattern
     };
 
     // ctor: perfect-forwarding
     // enable with c++20 // template <HasHfield T>
     template <typename T> struct Model final : public Concept {
         explicit Model(T&& term) : term_(std::forward<T>(term)) {}
-        af::array wrap_H_in_Apm(State const& state) const override { return term_.H_in_Apm(state); }
-        double wrap_Energy_in_J(State const& state) const override { return term_.Energy_in_J(state); }
-        std::unique_ptr<Concept> clone() const override { return std::make_unique<Model>(*this); }
+        [[nodiscard]] af::array wrap_H_in_Apm(State const& state) const override { return term_.H_in_Apm(state); }
+        [[nodiscard]] double wrap_Energy_in_J(State const& state) const override { return term_.Energy_in_J(state); }
+        [[nodiscard]] std::unique_ptr<Concept> clone() const override { return std::make_unique<Model>(*this); }
         T term_;
     };
 
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
     std::vector<std::size_t> steps;
     namespace ode = boost::numeric::odeint;
 
-    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    using stepper_type = ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra>;
     constexpr double eps_abs = 1e-6;
     constexpr double eps_rel = 1e-6;
     const auto stepper = make_controlled(eps_abs, eps_rel, stepper_type());
@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
     af::array external = af::constant(0.0, nx, ny, nz, 3, type);
     external(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     external(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
-    fieldterms.push_back(ExternalField(external));
+    fieldterms.emplace_back(ExternalField(external));
     alpha = 0.02;
 
     steps.push_back(integrate_adaptive(stepper, llg_regular, m, middle_time, end_time, dt, observe_m{outdir}));

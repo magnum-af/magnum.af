@@ -97,10 +97,10 @@ int main(int argc, char** argv) {
         current_step = i; // update for lambda
         llg.relax(state);
         const double Hx_component = llg.llgterms[2]->H_in_Apm(state)(0, 0, 1, 0).scalar<double>() * constants::mu0;
-        const double mx_z0 = state.m(0, 0, 0, 0).scalar<double>();
-        const double mx_z1 = state.m(0, 0, 1, 0).scalar<double>();
-        const double my_z0 = state.m(0, 0, 0, 1).scalar<double>();
-        const double my_z1 = state.m(0, 0, 1, 1).scalar<double>();
+        const auto mx_z0 = state.m(0, 0, 0, 0).scalar<double>();
+        const auto mx_z1 = state.m(0, 0, 1, 0).scalar<double>();
+        const auto my_z0 = state.m(0, 0, 0, 1).scalar<double>();
+        const auto my_z1 = state.m(0, 0, 1, 1).scalar<double>();
         abs_my_rl.push_back(std::abs(my_z1));
 
         std::cout << i << "\t" << Hx_component << "\t" << mx_z0 << "\t" << mx_z1 << "\t" << my_z0 << "\t" << my_z1

@@ -1,6 +1,6 @@
 #include "gradient_decent.hpp"
+#include <cmath>
 #include <iostream>
-#include <math.h>
 
 namespace magnumafcpp {
 // magnumafcpp::GradientDecent::GradientDecent(std::function<double (double)> f,

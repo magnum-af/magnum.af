@@ -6,7 +6,7 @@ namespace magnumafcpp::util {
 
 af::array spacial_mean_in_region_afarray(const af::array& vectorfield, const af::array& region) {
     const af::array zero_if_input_is_zero_else_one = !af::iszero(region);
-    const unsigned number_of_nonzero_elements =
+    const auto number_of_nonzero_elements =
         af::sum(af::sum(af::sum(zero_if_input_is_zero_else_one, 0), 1), 2).scalar<unsigned>();
     const af::array considered_values = vectorfield * af::tile(zero_if_input_is_zero_else_one, 1, 1, 1, 3);
     const af::array sum_considered_values = af::sum(af::sum(af::sum(considered_values, 0), 1), 2);

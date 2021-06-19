@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     std::vector<std::size_t> steps;
     namespace ode = boost::numeric::odeint;
 
-    typedef ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra> stepper_type;
+    using stepper_type = ode::runge_kutta_dopri5<af::array, double, af::array, double, ode::vector_space_algebra>;
     constexpr double eps_abs = 1e-6;
     constexpr double eps_rel = 1e-6;
     const auto stepper =
