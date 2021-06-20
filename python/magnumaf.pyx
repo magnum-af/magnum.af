@@ -689,8 +689,8 @@ cdef class State:
         self._thisptr.write_vti( outputname.encode('utf-8'))
     def write_vti_atomistic(self, outputname):
         self._thisptr._vti_writer_atom( outputname.encode('utf-8'))
-    def read_vti(self, outputname):
-        self._thisptr._vti_reader( outputname.encode('utf-8'))
+    def read_vti(self, inputname):
+        self._thisptr._vti_reader( inputname.encode('utf-8'))
 
     #def py_vtr_writer(self, outputname):
     #  self._thisptr._vtr_writer( outputname.encode('utf-8'))

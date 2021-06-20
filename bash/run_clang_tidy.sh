@@ -9,3 +9,4 @@ run-clang-tidy -checks='-*,cppcoreguidelines*,-cppcoreguidelines-avoid-magic-num
 run-clang-tidy -checks='-*,modernize-use-override' # -fix
 run-clang-tidy -checks='-*,modernize*' # -fix
 run-clang-tidy -checks='-*,modernize*,-modernize-use-trailing-return-type' # -fix
+run-clang-tidy -checks='readability-make-member-function-const' -fix

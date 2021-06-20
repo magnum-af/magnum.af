@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
 
         // this renorms m, thus taking by ref
         // NOT handling zero vals in m
-        void operator()(af::array& m, double t) {
+        void operator()(af::array& m, double t) const {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
             // ... to renorm after every step, only works with integrate_adaptive()!
             m = util::normalize(m); // NOTE: This is a hack!

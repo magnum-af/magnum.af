@@ -29,7 +29,7 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, std::array
 UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, const af::array& Ku1_axis_field)
     : Ku1_field(Ku1_field.dims(3) == 1 ? af::tile(Ku1_field, 1, 1, 1, 3) : std::move(Ku1_field)),
       Ku1_axis_field(util::normalize_handle_zero_vectors(Ku1_axis_field)) {
-    if (Ku1_field.dims(3) == 3) {
+    if (this->Ku1_field.dims(3) == 3) {
         printf("%s UniaxialAnisotropyField: You are using legacy dimension "
                "[nx, ny, nz, 3] for Ku1, please now use scalar field "
                "dimensions [nx, ny, nz, 1].\n",
@@ -96,6 +96,6 @@ af::array UniaxialAnisotropyField::impl_H_in_Apm(const State& state) const {
 
 double UniaxialAnisotropyField::get_ku1_axis(int i) { return Ku1_axis[i]; }
 
-long int UniaxialAnisotropyField::get_Ku1_field() { return util::pywrap::send_copy_to_py(Ku1_field); }
+long int UniaxialAnisotropyField::get_Ku1_field() const { return util::pywrap::send_copy_to_py(Ku1_field); }
 
 } // namespace magnumafcpp

@@ -29,7 +29,7 @@ class State {
     double t{0.};       // time
     af::array m;        //!< magnetic field configuration
     double Ms{0};       //!< Saturation magnetization in [J/T/m^3]
-    af::array Ms_field; //!< Non-homugenuous, mesh dependent saturation magnetization
+    af::array Ms_field; //!< Inhomogeneous, mesh dependent saturation magnetization
                         //!< defined at every node in units of [J/T/m^3]. Is impicitly
                         //!< set and used when magnetization has values of norm 0.
     //!< return Ms as af::array. If Ms_field is not set, scalar Ms is tiled to dims [nx, ny, nz, 1].

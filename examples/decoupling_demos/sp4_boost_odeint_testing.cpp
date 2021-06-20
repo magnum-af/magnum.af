@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
         std::filesystem::path outdir_;
         explicit observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
-        void operator()(const af::array& m, double t) {
+        void operator()(const af::array& m, double t) const {
             // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
             // TODO // m = normalize(m);
             const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2).as(f64);
