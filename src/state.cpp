@@ -39,6 +39,20 @@ af::array State::mean_m_as_afarray() const {
 
 std::array<double, 3> State::mean_m() const { return math::vec_components<double>(mean_m_as_afarray().as(f64)); }
 
+auto State::mean_M_as_afarray() const -> af::array {
+    af::array nzero = !af::iszero(util::vecnorm(m));
+    const auto no_nonzero_cells = util::afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
+    if (Ms_field.isempty()) {
+        return af::sum(af::sum(af::sum(Ms * m, 0), 1), 2) / no_nonzero_cells;
+    } else {
+        return af::sum(af::sum(af::sum(Ms_field * m, 0), 1), 2) / no_nonzero_cells;
+    }
+}
+
+auto State::mean_M() const -> std::array<double, 3> {
+    return math::vec_components<double>(mean_M_as_afarray().as(f64));
+}
+
 af::array State::get_Ms_field() const {
     if (Ms_field.isempty()) {
         return af::constant(Ms, m.dims(0), m.dims(1), m.dims(2), 1, m.type());

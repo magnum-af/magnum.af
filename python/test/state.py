@@ -61,6 +61,25 @@ class StateTest(unittest.TestCase):
     self.assertEqual(4, state.mesh.dx)
     self.assertEqual(5, state.mesh.dy)
     self.assertEqual(6, state.mesh.dz)
+  def test_mean_M(self):
+    Ms = 1e8
+    Ms_field = af.constant(Ms, 1, 1, 1, 1)
+    m0 = af.constant(0, 1, 1, 1, 3)
+    m0[0, 0, 0, 0] = 1 # x dir
+    state=magnumaf.State(self.mesh, Ms = Ms_field, m = m0)
+    Mx, My, Mz = state.mean_M()
+    self.assertEqual(Ms, Mx)
+    self.assertEqual(0, My)
+    self.assertEqual(0, Mz)
+  def test_mean_M_no_Ms_field(self):
+    Ms = 1e8
+    m0 = af.constant(0, 1, 1, 1, 3)
+    m0[0, 0, 0, 0] = 1 # x dir
+    state=magnumaf.State(self.mesh, Ms = Ms, m = m0)
+    Mx, My, Mz = state.mean_M()
+    self.assertEqual(Ms, Mx)
+    self.assertEqual(0, My)
+    self.assertEqual(0, Mz)
 
 
 class StateMsDimTest(unittest.TestCase):

@@ -87,6 +87,8 @@ cdef extern from "state.hpp" namespace "magnumafcpp":
         void set_Ms_field(long int aptr);
         long int wrapping_get_Ms_field();
 
+        long int wrapping_mean_M_as_afarray();
+
         double t;
         unsigned long long steps;
         Mesh mesh;

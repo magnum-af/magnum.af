@@ -70,6 +70,53 @@ TEST(State, mean_m) {
     // EXPECT_THAT(res, {0, 0, 1});
     // EXPECT_THAT(res, std::array<double, 3>({0, 0, 1}));
 }
+
+TEST(State, mean_M) {
+    const auto get_mean_M = [](af::array const& Ms_field, af::array const& m0) {
+        auto nx = m0.dims(0);
+        auto ny = m0.dims(0);
+        auto nz = m0.dims(0);
+        Mesh mesh(nx, ny, nz, 1e-9, 1e-9, 1e-9);
+        auto state = State(mesh, Ms_field, m0);
+        auto mean_M = state.mean_M();
+        return mean_M;
+    };
+    double Ms = 1e6;
+    const af::dim4 dim_s(4, 1, 1, 1);
+    const af::dim4 dim_v(4, 1, 1, 3);
+    {
+        auto m0 = af::constant(0.0, dim_v, f64);
+        m0(af::span, af::span, af::span, 0) = 1;
+        auto mean_M = get_mean_M(af::constant(Ms, dim_s, f64), m0);
+        EXPECT_THAT(mean_M, testing::ElementsAre(Ms, 0, 0));
+    }
+    // Testing zero-values m0
+    {
+        auto m0 = af::constant(0.0, dim_v, f64);
+        m0(0, 0, 0, 0) = 1;
+        m0(1, 0, 0, 0) = 1;
+        auto mean_M = get_mean_M(af::constant(Ms, dim_s, f64), m0);
+        EXPECT_THAT(mean_M, testing::ElementsAre(Ms, 0, 0));
+    }
+    // Testing zero-values Ms_field
+    {
+        auto Ms_field = af::constant(0.0, dim_s, f64);
+        Ms_field(af::seq(0, 1), 0, 0) = Ms;
+        auto m0 = af::constant(0.0, dim_v, f64);
+        m0(af::span, af::span, af::span, 0) = 1;
+        auto mean_M = get_mean_M(Ms_field, m0);
+        EXPECT_THAT(mean_M, testing::ElementsAre(Ms / 2, 0, 0));
+    }
+    // Testing <Ms>=0
+    {
+        auto m0 = af::constant(0.0, dim_v, f64);
+        m0(af::seq(0, 1), af::span, af::span, 1) = 1;
+        m0(af::seq(2, 3), af::span, af::span, 1) = -1;
+        auto mean_M = get_mean_M(af::constant(Ms, dim_s, f64), m0);
+        EXPECT_THAT(mean_M, testing::ElementsAre(0, 0, 0));
+    }
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

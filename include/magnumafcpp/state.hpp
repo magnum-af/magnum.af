@@ -1,6 +1,7 @@
 #pragma once
 #include "arrayfire.h"
 #include "mesh.hpp"
+#include "util/util.hpp"
 #include <array>
 #include <iostream>
 
@@ -60,6 +61,12 @@ class State {
     double mean_my() const { return mean_m()[1]; }
     /// Returns <mz>, i.e. average magnetisation in z-direction
     double mean_mz() const { return mean_m()[2]; }
+
+    /// Spacial Average Magnetic Moment per volume <M> in [J/T/m^3],
+    /// defined as ( /sum_i m_i Ms_i ) / N, where N is no of cells where |m| != 0
+    auto mean_M_as_afarray() const -> af::array;
+    long int wrapping_mean_M_as_afarray() const { return util::pywrap::send_copy_to_py(mean_M_as_afarray()); }
+    auto mean_M() const -> std::array<double, 3>;
 
     unsigned int get_n_cells_() const { return n_cells_; };
 

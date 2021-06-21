@@ -754,6 +754,11 @@ cdef class State:
     @property
     def steps(self):
         return self._thisptr.steps
+    def mean_M(self):
+        """Spacial average <M>"""
+        a = array_from_addr(self._thisptr.wrapping_mean_M_as_afarray())
+        return a[0,0,0,0].scalar(), a[0,0,0,1].scalar(), a[0,0,0,2].scalar()
+
     def mean_m(self, i = None):
         """
         Method calculating the average magnetization along all (i = None) or along a specific dimension ( i = {0, 1, 2})
