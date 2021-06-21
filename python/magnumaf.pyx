@@ -30,39 +30,47 @@ from math import pi
 import numpy as np
 # from numpy import zeros as np_zeros
 
+#from magnumaf_decl cimport array_d3 as carray_d3
 from magnumaf_decl cimport Mesh as cMesh
-from magnumaf_decl cimport NonequiMesh as cNonequiMesh
 from magnumaf_decl cimport State as cState
 from magnumaf_decl cimport Controller as cController
 from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
 from magnumaf_decl cimport Stochastic_LLG as cStochastic_LLG
+from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
+from magnumaf_decl cimport StringMethod as cString
+
+## FieldTerms
+from magnumaf_decl cimport FieldTerm as cFieldterm
+# Micro
+from magnumaf_decl cimport ExternalField as cExternalField
 from magnumaf_decl cimport DemagField as cDemagField
 from magnumaf_decl cimport DemagFieldPBC as cDemagFieldPBC
 from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
-#from magnumaf_decl cimport array_d3 as carray_d3
 from magnumaf_decl cimport CubicAnisotropyField as cCubicAnisotropyField
-from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
 from magnumaf_decl cimport ExchangeField as cExchangeField
 from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumaf_decl cimport ExchangeFieldPBC as cExchangeFieldPBC
-from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
 from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
 from magnumaf_decl cimport DmiField as cDmiField
 from magnumaf_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
 
+# Nonequi
+from magnumaf_decl cimport NonequiMesh as cNonequiMesh
+from magnumaf_decl cimport NonequiDemagField as cNonequiDemagField
+from magnumaf_decl cimport NonequiExternalField as cNonequiExternalField
+from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
+from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
+
+# Atomistic
 from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
 from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
 from magnumaf_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
 from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
-from magnumaf_decl cimport ExternalField as cExternalField
 from magnumaf_decl cimport AtomisticExternalField as cAtomisticExternalField
-from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
-from magnumaf_decl cimport FieldTerm as cFieldterm
 
+# Util
 from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
-from magnumaf_decl cimport StringMethod as cString
-
 from magnumaf_decl cimport double_array3
 from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
@@ -1152,6 +1160,42 @@ cdef class DmiField(HeffTerm):
         return self._thisptr.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
+
+
+cdef class NonequiDemagField(HeffTerm):
+    cdef cNonequiDemagField* _thisptr
+    def __cinit__(self, NonequiMesh mesh, verbose = True, caching = True, nthreads : int = 8):
+        self._thisptr = new cNonequiDemagField (deref(mesh._thisptr), <bool> verbose, <bool> caching, nthreads)
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
+    def _get_thisptr(self):
+        return <size_t><void*>self._thisptr
+
+
+cdef class NonequiExternalField(HeffTerm):
+    cdef cNonequiExternalField* _thisptr
+    def __cinit__(self, NonequiMesh mesh, array_in):
+        self._thisptr = new cNonequiExternalField (deref(mesh._thisptr), addressof(array_in.arr))
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
+    # def set_homogeneous_field(self, x, y, z):
+    #         self._thisptr.set_homogeneous_field(x, y, z)
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 

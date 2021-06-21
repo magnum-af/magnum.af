@@ -35,6 +35,22 @@ cdef extern from "field_terms/micro/exchange_field_pbc.hpp" namespace "magnumafc
         double Energy_in_J(const State& state);
         double elapsed_eval_time();
 
+cdef extern from "field_terms/nonequi/nonequi_demag_field.hpp" namespace "magnumafcpp":
+    cdef cppclass NonequiDemagField:
+        NonequiDemagField(const NonequiMesh& nonequimesh, bool verbose, bool caching, unsigned nthreads);
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
+        double elapsed_eval_time();
+
+cdef extern from "field_terms/nonequi/nonequi_external_field.hpp" namespace "magnumafcpp":
+    cdef cppclass NonequiExternalField:
+        NonequiExternalField (NonequiMesh nonequimesh, long int m_in);
+        # long int get_m_addr();
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
+        double elapsed_eval_time();
+        # void set_homogeneous_field(const double x, const double y, const double z);
+
 cdef extern from "field_terms/nonequi/nonequi_exchange_field.hpp" namespace "magnumafcpp":
     cdef cppclass NonequiExchangeField:
         NonequiExchangeField (NonequiMesh mesh, long int A_exchange_field_ptr, bool verbose);
