@@ -72,7 +72,7 @@ TEST(State, mean_m) {
 }
 
 TEST(State, mean_M) {
-    const auto get_mean_M = [](af::array const& Ms_field, af::array const& m0) {
+    const auto get_mean_M = [](auto const& Ms_field, af::array const& m0) {
         auto nx = m0.dims(0);
         auto ny = m0.dims(0);
         auto nz = m0.dims(0);
@@ -114,6 +114,13 @@ TEST(State, mean_M) {
         m0(af::seq(2, 3), af::span, af::span, 1) = -1;
         auto mean_M = get_mean_M(af::constant(Ms, dim_s, f64), m0);
         EXPECT_THAT(mean_M, testing::ElementsAre(0, 0, 0));
+    }
+    // Testing scalar Ms (i.e. no Ms_field)
+    {
+        auto m0 = af::constant(0.0, dim_v, f64);
+        m0(af::span, af::span, af::span, 1) = 1;
+        auto mean_M = get_mean_M(Ms, m0);
+        EXPECT_THAT(mean_M, testing::ElementsAre(0, Ms, 0));
     }
 }
 
