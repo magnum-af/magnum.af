@@ -244,7 +244,7 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
                         field.dims(2) + 1); // Adding one node per dimension as we use cell data
 
     // declare xyz coordinate vectors
-    std::array<vtkDataArray*, 3> coords;
+    std::array<vtkDataArray*, 3> coords{};
     for (int i = 0; i < 3; ++i) {
         coords[i] = vtkDataArray::CreateDataArray(VTK_DOUBLE);
         coords[i]->SetNumberOfTuples(field.dims(i) + 1);

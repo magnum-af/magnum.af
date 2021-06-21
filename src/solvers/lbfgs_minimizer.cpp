@@ -2,6 +2,8 @@
 #include "arrayfire.h"
 #include "equations.hpp"
 #include "field_terms/field_term.hpp"
+#include "math.h"
+
 #include "math.hpp"
 #include "state.hpp"
 #include "util/color_string.hpp"
@@ -297,8 +299,8 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
     double fy = finit;
     double dgy = dginit;
 
-    double stmin;
-    double stmax;
+    double stmin = NAN;
+    double stmax = NAN;
 
     while (true) {
 

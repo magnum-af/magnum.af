@@ -1,4 +1,6 @@
 #include "ascii_io.hpp"
+#include "math.h"
+
 #include "util/host_ptr_accessor.hpp"
 #include <cstdlib>
 #include <fstream>
@@ -106,8 +108,8 @@ std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose)
     std::string line;
 
     // Getting mesh size and discretization
-    unsigned nx, ny, nz, n_scalar;
-    double dx, dy, dz;
+    unsigned nx = 0, ny = 0, nz = 0, n_scalar = 0;
+    double dx = NAN, dy = NAN, dz = NAN;
     std::getline(infile, line);
     line.erase(0, 2);
     std::istringstream iss1(line);
@@ -127,13 +129,13 @@ std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose)
             for (unsigned iy = 0; iy < ny; iy++) {
                 for (unsigned iz = 0; iz < nz; iz++) {
                     std::istringstream iss(line);
-                    double ddx, ddy, ddz;
+                    double ddx = NAN, ddy = NAN, ddz = NAN;
                     if (!(iss >> ddx >> ddy >> ddz)) {
                         printf("Error while reading line!\n");
                         break;
                     }
                     for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
-                        double value;
+                        double value = NAN;
                         if (!(iss >> value)) {
                             printf("Error while reading line!\n");
                             break;

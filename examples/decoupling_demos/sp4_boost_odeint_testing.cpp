@@ -287,7 +287,7 @@ int main(int argc, char** argv) {
                 // while (step_was_not_sucess) {
                 //    step_was_not_sucess = stepper.try_step(llg_regular, m, t, try_dt);
 
-                ode::controlled_step_result step_result;
+                auto step_result = ode::controlled_step_result::fail;
                 do {
                     if (t + try_dt > end_time) { // Assure, we end at end_time
                         try_dt = end_time - t;
@@ -323,7 +323,7 @@ int main(int argc, char** argv) {
                 enum class LlgNormalize { on, off };
                 constexpr auto llg_normalize = LlgNormalize::on;
                 // constexpr auto llg_normalize = LlgNormalize::off;
-                ode::controlled_step_result step_result;
+                auto step_result = ode::controlled_step_result::fail;
                 do {
                     // Call observer only at intervals dt_view
                     // TODO handle edge cases when step is much larger than view_dt

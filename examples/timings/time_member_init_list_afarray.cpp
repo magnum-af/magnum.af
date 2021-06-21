@@ -1,4 +1,6 @@
 #include "arrayfire.h"
+#include "math.h"
+
 #include <iostream>
 #include <utility>
 
@@ -44,7 +46,7 @@ int main() {
     }
 
     // Ref timing
-    double time_ctor;
+    double time_ctor = NAN;
     {
         auto timer = af::timer::start();
         for (auto n = 0; n < N; ++n) {

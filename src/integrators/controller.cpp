@@ -1,4 +1,6 @@
 #include "controller.hpp"
+#include "math.h"
+
 #include "util/color_string.hpp" // for red
 #include <cmath>
 
@@ -32,7 +34,7 @@ void info_h_gt_hmax(double h, double hmax) {
 }
 
 bool Controller::success(const double err, double& h) {
-    double scale;
+    double scale = NAN;
 
     if (err <= 1.0) {
         if (err == 0.0) {

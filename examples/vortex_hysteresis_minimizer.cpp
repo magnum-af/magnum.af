@@ -1,6 +1,8 @@
 #include "field_terms/micro/demag_field.hpp"
 #include "field_terms/micro/exchange_field.hpp"
 #include "field_terms/micro/external_field.hpp"
+#include "math.h"
+
 #include "solvers/lbfgs_minimizer.hpp"
 #include "util/arg_parser.hpp"
 #include "util/geometry.hpp"
@@ -25,7 +27,7 @@ int main(int argc, char** argv) {
 
     // Defining H_zee via lamdas
     auto zee_func = [hzee_max, steps_full_hysteresis](const State& state) -> af::array {
-        double field_Tesla;
+        double field_Tesla = NAN;
         if (state.steps < steps_full_hysteresis / 4) {
             field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis;
         } else if (state.steps < 3 * steps_full_hysteresis / 4) {

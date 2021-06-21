@@ -20,7 +20,7 @@ class ExternalField : public FieldTerm {
 
   private:
     af::array zee_field;
-    af::array (*callback_func)(State state);
+    af::array (*callback_func)(State state){};
     bool callback{false};
     std::function<af::array(State)> lamda_callback;
     bool is_lamda{false};

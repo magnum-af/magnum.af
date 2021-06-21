@@ -1,3 +1,5 @@
+#include "math.h"
+
 #include "state.hpp"
 #include "util/arg_parser.hpp"
 #include "util/geometry.hpp"
@@ -40,8 +42,8 @@ void process_mem_usage(double& vm_usage, double& resident_set) {
 
     // the two fields we want
     //
-    unsigned long vsize;
-    long rss;
+    unsigned long vsize = 0;
+    long rss = 0;
 
     stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags >> minflt >> cminflt >>
         majflt >> cmajflt >> utime >> stime >> cutime >> cstime >> priority >> nice >> O >> itrealvalue >> starttime >>
@@ -66,7 +68,7 @@ int main(int argc, char** argv) {
     // Initial magnetic field
     State state(mesh, 8e5, util::init_sp4(mesh));
     for (int i = 0; i < n_writes; i++) {
-        double vm, rss;
+        double vm = NAN, rss = NAN;
         process_mem_usage(vm, rss);
         std::cout << std::left << "i=" << std::setw(6) << i << "[%]=" << std::setw(5)
                   << 100. * (static_cast<double>(i)) / (static_cast<double>(n_writes)) << "VIRT[GB]=" << std::setw(10) << vm / 1e6

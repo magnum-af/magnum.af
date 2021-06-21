@@ -1,5 +1,7 @@
 #include "bs23.hpp"
 #include "arrayfire.h"
+#include "math.h"
+
 #include <cmath>
 #include <gtest/gtest.h>
 #include <tuple>
@@ -16,8 +18,8 @@ TEST(BS23, integrate_analytical_in_double) {
     const std::size_t imax = 100000;
 
     // initial step
-    double rkerror;
-    double k4;
+    double rkerror = NAN;
+    double k4 = NAN;
     std::tie(t, y, rkerror, k4) = integrator::BS23(t, dt, y, f);
     EXPECT_NEAR(y, analytic_result(t), 4e-6);
 

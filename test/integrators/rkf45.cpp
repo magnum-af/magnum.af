@@ -1,5 +1,7 @@
 #include "rkf45.hpp"
 #include "arrayfire.h"
+#include "math.h"
+
 #include <cmath>
 #include <gtest/gtest.h>
 #include <tuple>
@@ -15,7 +17,7 @@ TEST(RKF45, integrate_analytical_in_double) {
     const double dt = 1e-2;
     const std::size_t imax = 1000;
     for (std::size_t i = 0; i < imax; i++) {
-        double rkerror;
+        double rkerror = NAN;
         std::tie(t, y, rkerror) = RKF45(t, dt, y, f);
         EXPECT_NEAR(y, analytic_result(t), 1e-8);
         // std::cout << std::setprecision(32) << "i=" << i << ", t= " << t << ", y= " << y << '\n';
