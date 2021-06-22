@@ -198,6 +198,44 @@ def array_from_addr(array_addr):
     array.arr=c_void_p(array_addr)
     return array
 
+def get_dim4(array):
+    """Retruns list containing array.dims() as [n0, n1, n2, n3] """
+    dim4 = [1] * 4
+    for i,val in enumerate(array.dims(), start = 0):
+        dim4[i] = val
+    return dim4
+
+def lookup_4d(values : af.Array, index : af.Array):
+    """
+    Performs af.lookup(values, af.flat(index)) and tiles to index.dims()
+    values : [n_regions, 1, 1, 1]
+    index  : [n0, n1, n2, n3]
+    """
+    look = af.lookup(values, af.flat(index))
+    dims = get_dim4(index)
+    return af.moddims(look, d0 = dims[0], d1 = dims[1], d2 = dims[2], d3 = dims[3])
+
+def lookup(values : [float], index : af.Array, as_type = af.Dtype.f64):
+    """
+    Create array from lookup-table, unsing index as keys.
+        values: lookup-table. Keys encoded as position.
+                values[0] has key 0, values[1] has key 1, ...
+        index:  Array holding keys to values.
+                0 maps to values[0], 1 to values[1], ...
+        returns: array containing values for respective keys.
+    """
+    values_array = af.array.Array(values).as_type(as_type)
+    return lookup_4d(values_array, index)
+
+def make_nonzeros_ones(array):
+    """
+    Zero valus stay zero.
+    Non-zero values become Ones.
+    Aternative names: isnotzero, make_binary, one_if_nonzero_else_zero
+    """
+    return af.iszero(af.iszero(array))
+
+
 class Conversion:
     @staticmethod
     def Apm_to_Tesla(value_Apm):

@@ -29,7 +29,7 @@ class State {
     Mesh mesh{0, 0, 0, 0, 0, 0};
     double t{0.};       // time
     af::array m;        //!< magnetic field configuration
-    double Ms{0};       //!< Saturation magnetization in [J/T/m^3]
+    double Ms{0};       //!< Saturation magnetization in [J/T/m^3] or [A/m]
     af::array Ms_field; //!< Inhomogeneous, mesh dependent saturation magnetization
                         //!< defined at every node in units of [J/T/m^3]. Is impicitly
                         //!< set and used when magnetization has values of norm 0.
@@ -62,7 +62,7 @@ class State {
     /// Returns <mz>, i.e. average magnetisation in z-direction
     double mean_mz() const { return mean_m()[2]; }
 
-    /// Spacial Average Magnetic Moment per volume <M> in [J/T/m^3],
+    /// Spacial Average Magnetic Moment per volume <M> in [J/T/m^3] or [A/m],
     /// defined as ( /sum_i m_i Ms_i ) / N, where N is no of cells where |m| != 0
     auto mean_M_as_afarray() const -> af::array;
     long int wrapping_mean_M_as_afarray() const { return util::pywrap::send_copy_to_py(mean_M_as_afarray()); }
