@@ -4,53 +4,47 @@ import numpy as np
 import magnumaf as maf
 args = maf.parse()
 
-# Define layers as regions
-def setup_layers(nx : int):
-    Regions = {"none" : 0, "skyrmion" : 1, "interlayer" : 2, "platinum" : 3}
-    layers = [0] * 33
-    layers [0] = Regions["skyrmion"]
-    layers [1] = Regions["none"]
-    layers [2] = Regions["none"]
-    layers [3] = Regions["skyrmion"]
-    layers [4] = Regions["none"]
-    layers [5] = Regions["none"]
-    layers [6] = Regions["skyrmion"]
-    layers [7] = Regions["none"]
-    layers [8] = Regions["none"]
-    layers [9] = Regions["skyrmion"]
-    layers[10] = Regions["none"]
-    layers[11] = Regions["none"]
-    layers[12] = Regions["skyrmion"]
-    layers[13] = Regions["platinum"]
-    layers[14] = Regions["interlayer"]
-    layers[15] = Regions["interlayer"]
-    layers[16] = Regions["interlayer"]
-    layers[17] = Regions["interlayer"]
-    layers[18] = Regions["none"]
-    layers[19] = Regions["none"]
-    layers[20] = Regions["skyrmion"]
-    layers[21] = Regions["none"]
-    layers[22] = Regions["none"]
-    layers[23] = Regions["skyrmion"]
-    layers[24] = Regions["none"]
-    layers[25] = Regions["none"]
-    layers[26] = Regions["skyrmion"]
-    layers[27] = Regions["none"]
-    layers[28] = Regions["none"]
-    layers[29] = Regions["skyrmion"]
-    layers[30] = Regions["none"]
-    layers[31] = Regions["none"]
-    layers[32] = Regions["skyrmion"]
-    return layers
-
 def setup_regions(nx : int, ny : int, nz : int, dtype=af.Dtype.u32):
-    layers = setup_layers(nz)
-    regions = af.constant(0, 1, 1, len(layers), dtype = dtype)
-    for i in range(len(layers)):
-        regions[:, :, i] = layers[i]
-    return af.tile(regions, nx, ny)
+    """Define region array from multi-layer layout."""
+    Regions = {"none" : 0, "skyrmion" : 1, "interlayer" : 2, "platinum" : 3}
+    regions = af.constant(0, nx, ny, nz, dtype = dtype)
+    regions[:, :, 0]  = Regions["skyrmion"]
+    regions[:, :, 1]  = Regions["none"]
+    regions[:, :, 2]  = Regions["none"]
+    regions[:, :, 3]  = Regions["skyrmion"]
+    regions[:, :, 4]  = Regions["none"]
+    regions[:, :, 5]  = Regions["none"]
+    regions[:, :, 6]  = Regions["skyrmion"]
+    regions[:, :, 7]  = Regions["none"]
+    regions[:, :, 8]  = Regions["none"]
+    regions[:, :, 9]  = Regions["skyrmion"]
+    regions[:, :, 10] = Regions["none"]
+    regions[:, :, 11] = Regions["none"]
+    regions[:, :, 12] = Regions["skyrmion"]
+    regions[:, :, 13] = Regions["platinum"]
+    regions[:, :, 14] = Regions["interlayer"]
+    regions[:, :, 15] = Regions["interlayer"]
+    regions[:, :, 16] = Regions["interlayer"]
+    regions[:, :, 17] = Regions["interlayer"]
+    regions[:, :, 18] = Regions["none"]
+    regions[:, :, 19] = Regions["none"]
+    regions[:, :, 20] = Regions["skyrmion"]
+    regions[:, :, 21] = Regions["none"]
+    regions[:, :, 22] = Regions["none"]
+    regions[:, :, 23] = Regions["skyrmion"]
+    regions[:, :, 24] = Regions["none"]
+    regions[:, :, 25] = Regions["none"]
+    regions[:, :, 26] = Regions["skyrmion"]
+    regions[:, :, 27] = Regions["none"]
+    regions[:, :, 28] = Regions["none"]
+    regions[:, :, 29] = Regions["skyrmion"]
+    regions[:, :, 30] = Regions["none"]
+    regions[:, :, 31] = Regions["none"]
+    regions[:, :, 32] = Regions["skyrmion"]
+    return regions
 
-def setup_init_skyrmion(dims_3d : [int], r = 0.25):
+def setup_init_skyrmion(dims_3d : [int], R = 0.25):
+    """ set m [0,0,-1] for r <= R, else [0,0,1]"""
     nx, ny, nz = dims_3d[0], dims_3d[1], dims_3d[2]
     m = np.zeros((nx, ny, nz, 3))
     for ix in range (0, nx):
@@ -59,14 +53,15 @@ def setup_init_skyrmion(dims_3d : [int], r = 0.25):
             b= ny/2
             rx=ix-nx/2.
             ry=iy-ny/2.
-            rr = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-            if(rr <= r):
-                m[ix, iy, :, :] =-1.
+            r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
+            if(r <= R):
+                m[ix, iy, :, 2] = -1.
             else:
-                m[ix, iy, :, :] = 1.
+                m[ix, iy, :, 2] = 1.
     return af.from_ndarray(m)
     
 def setup_m(regions):
+    """Setup m, applying magnetization on geometry."""
     binary_region_as_vec = maf.make_nonzeros_ones(regions)
     return af.tile(binary_region_as_vec, 1, 1, 1, 3) * setup_init_skyrmion(regions.dims())
 
