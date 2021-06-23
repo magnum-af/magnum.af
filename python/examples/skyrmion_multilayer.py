@@ -5,7 +5,7 @@ import magnumaf as maf
 args = maf.parse()
 
 def setup_regions(nx : int, ny : int, nz : int, dtype=af.Dtype.u32):
-    """Define region array from multi-layer layout."""
+    """Define region array for multi-layer layout."""
     Regions = {"none" : 0, "skyrmion" : 1, "interlayer" : 2, "platinum" : 3}
     regions = af.constant(0, nx, ny, nz, dtype = dtype)
     regions[:, :, 0]  = Regions["skyrmion"]
