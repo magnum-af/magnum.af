@@ -118,3 +118,6 @@ Install to system directories using:
 For python to find the shared library, add the install directory to the PYTHONPATH:
 
 `$ echo 'export PYTHONPATH=/usr/local/lib/:$PYTHONPATH' >> .bashrc`
+
+or alternatively, add a symbolic link to a folder in the PYTHONPATH, e.g. for python 3.6
+$ `sudo ln -s /usr/local/lib/magnumaf.so /usr/lib/python3.6/
