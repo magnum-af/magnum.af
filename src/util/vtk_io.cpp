@@ -1,6 +1,7 @@
 #include "vtk_io.hpp"
 #include "util/util.hpp"
 #include <array>
+#include <thread>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
@@ -48,7 +49,7 @@ namespace magnumafcpp {
 
 // 3D vtkImageData vtkCellData writer
 // Optimization should avoid generation of two vtkImageData objects
-void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outputname) {
+void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, const std::string& outputname) {
 
     try {
         util::HostPtrAccessor<double> field_handle(field);
@@ -83,7 +84,10 @@ void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, s
         imageDataCellCentered->GetCellData()->SetScalars(imageDataPointCentered->GetPointData()->GetScalars());
 
         vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
-        writer->SetFileName((outputname.append(".vti")).c_str());
+        auto outputname_w_extension =
+            outputname.substr(outputname.size() - 4) == ".vti" ? outputname : outputname + ".vti";
+        // writer->SetFileName((outputname.append(".vti")).c_str());
+        writer->SetFileName(outputname_w_extension.c_str());
 // std::cout<<"vti_writer_micro: Writing vtkCellData with "<< field.dims(0)*
 // field.dims(1)* field.dims(2)
 //    << " Cells in file "<<outputname<<std::endl;
@@ -98,8 +102,31 @@ void implementation_vti_writer_micro(const af::array& field, const Mesh& mesh, s
     }
 }
 
-void vti_writer_micro(const af::array& field, const Mesh& mesh, std::string outputname) {
-    implementation_vti_writer_micro(field, mesh, std::move(outputname));
+/// Problem with return val of f when return val is void
+// template <typename F, typename... Args> auto timeit(F f, Args&&... args) {
+//     auto timer = af::timer::start();
+//     auto result = f(std::forward<Args>(args)...);
+//     auto stop_time_in_sec = timer.stop();
+//     return std::make_pair(stop_time_in_sec, result);
+// }
+
+// time function, neglecting return value
+template <typename F, typename... Args> auto timeit_voidlike(F f, Args&&... args) {
+    auto timer = af::timer::start();
+    f(std::forward<Args>(args)...);
+    return timer.stop();
+}
+
+void vti_writer_micro(const af::array& field, const Mesh& mesh, const std::string& outputname) {
+    implementation_vti_writer_micro(field, mesh, outputname);
+}
+
+// Copy-then-move, avoiding const& signature which suggests wrong behaviour
+// N.B.: Only copy arguments, do not pass const& using std::cref(), as field can be changes outside!
+// Note: with std::async, returned future dtor blocks until function is finished, gaining nothing
+// Solution: use thread.datach()
+void async_vti_writer_micro(af::array field, Mesh mesh, std::string outputname) {
+    std::thread(vti_writer_micro, std::move(field), std::move(mesh), std::move(outputname)).detach();
 }
 
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz,
