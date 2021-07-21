@@ -8,39 +8,40 @@
 
 using namespace magnumafcpp;
 
-TEST(vtkIO, async_vtiWriteReadTest) {
-    const auto dims = af::dim4(60, 5, 4, 3);
-    const auto sleep_milis = 500; // for  60, 5, 4, 3, async takes 0.005614s
-    const double dx = 0.1, dy = 0.2, dz = 0.3;
-    af::array a = af::randu(dims, f64);
-    const auto a_ref = a;
-    Mesh mesh(dims.dims[0], dims.dims[1], dims.dims[2], dx, dy, dz);
-
-    // auto timer = af::timer::start();
-    async_vti_writer_micro(a, mesh, "vti_unittest.vti");
-    // std::cout << "async vti [s]: " << timer.stop() << std::endl;
-
-    a = 0; // Note: modifying a while async write runs must not change the output
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_milis)); // waiting for output to finish
-
-    // // Alternative: use future and wait for it:
-    // auto future = std::async(std::launch::async, vti_writer_micro, a, mesh, "vti_unittest.vti");
-    // future.wait();
-
-    af::array read_a;
-    Mesh read_mesh(0, 0, 0, 0, 0, 0);
-
-    vti_reader(read_a, read_mesh, "vti_unittest.vti");
-    EXPECT_EQ(remove("vti_unittest.vti"), 0);
-
-    EXPECT_EQ(read_mesh.nx, dims.dims[0]);
-    EXPECT_EQ(read_mesh.ny, dims.dims[1]);
-    EXPECT_EQ(read_mesh.nz, dims.dims[2]);
-    EXPECT_EQ(read_mesh.dx, dx);
-    EXPECT_EQ(read_mesh.dy, dy);
-    EXPECT_EQ(read_mesh.dz, dz);
-    EXPECT_EQ(util::max_abs_diff(read_a, a_ref), 0);
-}
+// TODO sleep is bad, enable with std::async call using future to wait for filewrite
+// TEST(vtkIO, async_vtiWriteReadTest) {
+//     const auto dims = af::dim4(60, 5, 4, 3);
+//     const auto sleep_milis = 500; // for  60, 5, 4, 3, async takes 0.005614s
+//     const double dx = 0.1, dy = 0.2, dz = 0.3;
+//     af::array a = af::randu(dims, f64);
+//     const auto a_ref = a;
+//     Mesh mesh(dims.dims[0], dims.dims[1], dims.dims[2], dx, dy, dz);
+//
+//     // auto timer = af::timer::start();
+//     async_vti_writer_micro(a, mesh, "vti_unittest.vti");
+//     // std::cout << "async vti [s]: " << timer.stop() << std::endl;
+//
+//     a = 0; // Note: modifying a while async write runs must not change the output
+//     std::this_thread::sleep_for(std::chrono::milliseconds(sleep_milis)); // waiting for output to finish
+//
+//     // // Alternative: use future and wait for it:
+//     // auto future = std::async(std::launch::async, vti_writer_micro, a, mesh, "vti_unittest.vti");
+//     // future.wait();
+//
+//     af::array read_a;
+//     Mesh read_mesh(0, 0, 0, 0, 0, 0);
+//
+//     vti_reader(read_a, read_mesh, "vti_unittest.vti");
+//     EXPECT_EQ(remove("vti_unittest.vti"), 0);
+//
+//     EXPECT_EQ(read_mesh.nx, dims.dims[0]);
+//     EXPECT_EQ(read_mesh.ny, dims.dims[1]);
+//     EXPECT_EQ(read_mesh.nz, dims.dims[2]);
+//     EXPECT_EQ(read_mesh.dx, dx);
+//     EXPECT_EQ(read_mesh.dy, dy);
+//     EXPECT_EQ(read_mesh.dz, dz);
+//     EXPECT_EQ(util::max_abs_diff(read_a, a_ref), 0);
+// }
 
 TEST(vtkIO, vtiWriteReadTest) {
     const auto dims = af::dim4(6, 5, 4, 3);
