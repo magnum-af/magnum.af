@@ -18,9 +18,15 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 * Python bindings
   * Script-style user interface, compatible with numpy input arrays (see python/examples for more)
 
+# Example Scripts
+various example scripts are found in the respective directories for python in [python/examples/](python/examples/) and for c++ in [examples/](examples/)
+
 # Installation Guide
 ## Docker:
-For GPU support build the image provided in the Dockerfile by running the following command in the project's root directory:
+The easiest way to get started is to download the current docker image from our [gitlab registry](https://git.exp.univie.ac.at/paul/magnum.af/container_registry)
+There you can choose between the CPU image or der CUDA image.
+
+Otherwise, you could build the GPU image provided in the Dockerfile by running the following command in the project's root directory:
 
 `$ nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .`
 
@@ -28,7 +34,7 @@ For CPU support only use:
 
 `$ docker build -t magnum.af.cpu -f Dockerfile.cpu --build-arg user="$UID" .`
 
-For running simulations, use the provided script in 'scripts/magnum.af.docker', e.g.:
+For running simulations, you may use the provided script in 'bash/magnum.af.docker', e.g.:
 
 `$ magnum.af.docker sp4.py`
 
