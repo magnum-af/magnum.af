@@ -9,14 +9,14 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 * String Method for Energy Barrier Calculations
 
 
-# Main Features
+# Architecture
 * Support for CUDA, OpenCL and CPU backends.
   * This enables a high degree of flexibility in terms of user hardware as the
     code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
 * C++ Project
-  * Optimized for performance
+  * Core functionality including all interactions and solvers
 * Python bindings
-  * For an easy user-interface
+  * Script-style user interface, compatible with numpy input arrays (see python/examples for more)
 
 # Installation Guide
 ## Docker:
