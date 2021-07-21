@@ -121,9 +121,6 @@ if(TESTS)
   add_subdirectory(test) # adding unit tests
 endif()
 
-# build single scripts for simulations
-add_subdirectory(scripts/single_script_build)
-
 # build python bindings
 if(PYTHON)
   message(STATUS "Building python bindings (option 'PYTHON_BINDINGS').")
