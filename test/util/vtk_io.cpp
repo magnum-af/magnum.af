@@ -10,7 +10,7 @@ using namespace magnumafcpp;
 
 TEST(vtkIO, async_vtiWriteReadTest) {
     const auto dims = af::dim4(60, 5, 4, 3);
-    const auto sleep_milis = 20; // for  60, 5, 4, 3, async takes 0.005614s
+    const auto sleep_milis = 500; // for  60, 5, 4, 3, async takes 0.005614s
     const double dx = 0.1, dy = 0.2, dz = 0.3;
     af::array a = af::randu(dims, f64);
     const auto a_ref = a;
