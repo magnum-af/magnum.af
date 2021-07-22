@@ -5,12 +5,12 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION}) # NOTE: setting project agai
 
 # This is redundant, as mentioned in c++ part already:
 include_directories(
-  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp
-  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/field_terms
-  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/solvers
-  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/util
-  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/integrators
-  ${CMAKE_BINARY_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/ # for configured headers
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/field_terms
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/solvers
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/util
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/integrators
+  ${CMAKE_BINARY_DIR}/${magnumaf_core_dir_name}/include/magnumaf/ # for configured headers
 )
 
 

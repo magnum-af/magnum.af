@@ -67,23 +67,23 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # build library Generate Version Config Header
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig.hpp.in
-               ${CMAKE_BINARY_DIR}/include/magnumafcpp/magnumafConfig.hpp)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/magnumafConfig.hpp.in
+               ${CMAKE_BINARY_DIR}/include/magnumaf/magnumafConfig.hpp)
 
 # Generate Git Config header
 set(PRE_CONFIGURE_FILE
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/magnumafConfig_git.hpp.in")
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/magnumafConfig_git.hpp.in")
 set(POST_CONFIGURE_FILE
-    "${CMAKE_BINARY_DIR}/include/magnumafcpp/magnumafConfig_git.hpp")
+    "${CMAKE_BINARY_DIR}/include/magnumaf/magnumafConfig_git.hpp")
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/git_watcher.cmake)
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/field_terms
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/solvers
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/util
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumafcpp/integrators
-  ${CMAKE_BINARY_DIR}/include/magnumafcpp/ # for configured headers
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/field_terms
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/solvers
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/util
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/integrators
+  ${CMAKE_BINARY_DIR}/include/magnumaf/ # for configured headers
 )
 
 add_subdirectory(src)
