@@ -54,14 +54,14 @@ include(UseCython)
 # or directory compilation terminated." If the pyx file is a C++ file, we should
 # specify that here.
 set_source_files_properties(
-  ${magnum.af_SOURCE_DIR}/magnumafpy.pyx
+  ${magnum.af_SOURCE_DIR}/magnumaf.pyx
   # Additional files would come here as follows:
   # ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/src/FurtherFiles.pyx
   PROPERTIES CYTHON_IS_CXX TRUE)
 
 # FILE(GLOB SOURCE_FOR_PYBINDING "../src/*.cpp" "../src/*/*.cpp")
 # cython_add_module_w_AF_VTK( magnumaf magnumaf.pyx ${SOURCE_FOR_PYBINDING})
-cython_add_module_w_af_vtk(magnumaf magnumafpy.pyx
+cython_add_module_w_af_vtk(magnumaf magnumaf.pyx
                            $<TARGET_OBJECTS:magnumaf_object_lib>)
 
 if(SETINSTALL)
