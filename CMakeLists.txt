@@ -16,6 +16,11 @@ option(OPENCL "Build OPENCL backend." ON)
 set(magnumaf_core_dir_name "magnumaf") # note: variable is used in python/CMakeLists.txt
 add_subdirectory(${magnumaf_core_dir_name})
 
+if(TESTS)
+  message(STATUS "Enable unit testing (option 'TESTING').")
+  enable_testing() # enables CTest with 'make test' and 'ctest' commands
+endif()
+
 # build python bindings
 if(PYTHON)
   message(STATUS "Building python bindings (option 'PYTHON').")

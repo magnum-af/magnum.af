@@ -96,8 +96,6 @@ endif()
 
 # build tests
 if(TESTS)
-  message(STATUS "Enable unit testing (option 'TESTING').")
-  enable_testing() # enables CTest with 'make test' and 'ctest' commands
   add_subdirectory(test) # adding unit tests
 endif()
 
