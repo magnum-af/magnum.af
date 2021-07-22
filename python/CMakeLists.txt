@@ -1,8 +1,18 @@
-cmake_minimum_required(VERSION 3.0)
-project(magnum.af VERSION 0.1) # setting project prevents 'operation only
-                               # allowed in c++ file error, but this kills
-                               # version numbering
-# MESSAGE( STATUS "-ooooo-->>>> ${PROJECT_VERSION_MAJOR}" )
+project(${PROJECT_NAME} VERSION ${PROJECT_VERSION}) # NOTE: setting project again prevents 'operation only allowed in c++ file error"
+# sets magnum.af_VERSION_XXX and
+# PROJECT_VERSION_XXX variables,
+# with XXX = MAJOR,MINOR,PATCH,TWEAK
+
+# This is redundant, as mentioned in c++ part already:
+include_directories(
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/field_terms
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/solvers
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/util
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/integrators
+  ${CMAKE_BINARY_DIR}/${magnumaf_core_dir_name}/include/magnumafcpp/ # for configured headers
+)
+
 
 # disables warning caused by cython compiled file
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")
