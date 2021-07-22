@@ -30,49 +30,49 @@ from math import pi
 import numpy as np
 # from numpy import zeros as np_zeros
 
-#from magnumaf_decl cimport array_d3 as carray_d3
-from magnumaf_decl cimport Mesh as cMesh
-from magnumaf_decl cimport State as cState
-from magnumaf_decl cimport Controller as cController
-from magnumaf_decl cimport LLGIntegrator as cLLGIntegrator
-from magnumaf_decl cimport Stochastic_LLG as cStochastic_LLG
-from magnumaf_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
-from magnumaf_decl cimport StringMethod as cString
+#from magnumafpy_decl cimport array_d3 as carray_d3
+from magnumafpy_decl cimport Mesh as cMesh
+from magnumafpy_decl cimport State as cState
+from magnumafpy_decl cimport Controller as cController
+from magnumafpy_decl cimport LLGIntegrator as cLLGIntegrator
+from magnumafpy_decl cimport Stochastic_LLG as cStochastic_LLG
+from magnumafpy_decl cimport LBFGS_Minimizer as cLBFGS_Minimizer
+from magnumafpy_decl cimport StringMethod as cString
 
 ## FieldTerms
-from magnumaf_decl cimport FieldTerm as cFieldterm
+from magnumafpy_decl cimport FieldTerm as cFieldterm
 # Micro
-from magnumaf_decl cimport ExternalField as cExternalField
-from magnumaf_decl cimport DemagField as cDemagField
-from magnumaf_decl cimport DemagFieldPBC as cDemagFieldPBC
-from magnumaf_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
-from magnumaf_decl cimport CubicAnisotropyField as cCubicAnisotropyField
-from magnumaf_decl cimport ExchangeField as cExchangeField
-from magnumaf_decl cimport SparseExchangeField as cSparseExchangeField
-from magnumaf_decl cimport ExchangeFieldPBC as cExchangeFieldPBC
-from magnumaf_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
-from magnumaf_decl cimport RKKYExchangeField as cRKKYExchangeField
-from magnumaf_decl cimport DmiField as cDmiField
-from magnumaf_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
+from magnumafpy_decl cimport ExternalField as cExternalField
+from magnumafpy_decl cimport DemagField as cDemagField
+from magnumafpy_decl cimport DemagFieldPBC as cDemagFieldPBC
+from magnumafpy_decl cimport UniaxialAnisotropyField as cUniaxialAnisotropyField
+from magnumafpy_decl cimport CubicAnisotropyField as cCubicAnisotropyField
+from magnumafpy_decl cimport ExchangeField as cExchangeField
+from magnumafpy_decl cimport SparseExchangeField as cSparseExchangeField
+from magnumafpy_decl cimport ExchangeFieldPBC as cExchangeFieldPBC
+from magnumafpy_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
+from magnumafpy_decl cimport RKKYExchangeField as cRKKYExchangeField
+from magnumafpy_decl cimport DmiField as cDmiField
+from magnumafpy_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
 
 # Nonequi
-from magnumaf_decl cimport NonequiMesh as cNonequiMesh
-from magnumaf_decl cimport NonequiDemagField as cNonequiDemagField
-from magnumaf_decl cimport NonequiExternalField as cNonequiExternalField
-from magnumaf_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
-from magnumaf_decl cimport NonequiExchangeField as cNonequiExchangeField
+from magnumafpy_decl cimport NonequiMesh as cNonequiMesh
+from magnumafpy_decl cimport NonequiDemagField as cNonequiDemagField
+from magnumafpy_decl cimport NonequiExternalField as cNonequiExternalField
+from magnumafpy_decl cimport NonequiUniaxialAnisotropyField as cNonequiUniaxialAnisotropyField
+from magnumafpy_decl cimport NonequiExchangeField as cNonequiExchangeField
 
 # Atomistic
-from magnumaf_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
-from magnumaf_decl cimport AtomisticExchangeField as cAtomisticExchangeField
-from magnumaf_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
-from magnumaf_decl cimport AtomisticDmiField as cAtomisticDmiField
-from magnumaf_decl cimport AtomisticExternalField as cAtomisticExternalField
+from magnumafpy_decl cimport AtomisticDipoleDipoleField as cAtomisticDipoleDipoleField
+from magnumafpy_decl cimport AtomisticExchangeField as cAtomisticExchangeField
+from magnumafpy_decl cimport AtomisticUniaxialAnisotropyField as cAtomisticUniaxialAnisotropyField
+from magnumafpy_decl cimport AtomisticDmiField as cAtomisticDmiField
+from magnumafpy_decl cimport AtomisticExternalField as cAtomisticExternalField
 
 # Util
-from magnumaf_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
-from magnumaf_decl cimport double_array3
-from magnumaf_decl cimport spacial_mean_in_region as cspacial_mean_in_region
+from magnumafpy_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
+from magnumafpy_decl cimport double_array3
+from magnumafpy_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
 # wrapping std::move
 # runs with cython 0.29.14 (ubuntu 20.04 distro version), not working with cython 0.26 (ubuntu 18.04)

@@ -461,7 +461,7 @@ EXTRACT_STATIC         = NO
 # for Java sources.
 # The default value is: YES.
 
-EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_CLASSES  = NO
 
 # This flag is only useful for Objective-C code. If set to YES, local methods,
 # which are defined in the implementation section but not in the interface are
@@ -790,7 +790,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = README.md magnumaf/ python/magnumaf.pyx #NOTE: python namespace is defined by the filename (i.e. magnumaf.pyx), renaming the file changes the python namespace
+INPUT                  = README.md magnumaf/ python/magnumafpy.pyx #NOTE: python namespace is defined by the filename (i.e. magnumaf.pyx), renaming the file changes the python namespace
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
