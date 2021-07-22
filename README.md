@@ -124,9 +124,14 @@ Prerequisites:
 
 Install to system directories using:
 
-`$ make install`
+`$ sudo make install`
 
-For python to find the shared library, add the install directory to the PYTHONPATH:
+To uninstall afterwards, use:
+
+`$ sudo make uninstall`
+
+
+For python to find the shared library, add the install directory to the PYTHONPATH, e.g.:
 
 `$ echo 'export PYTHONPATH=/usr/local/lib/:$PYTHONPATH' >> .bashrc`
 
