@@ -7,8 +7,6 @@ find_package(ArrayFire REQUIRED)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-
 # Link runTests with what we want to test and the GTest and pthread library
 file(
   GLOB APP_SOURCES
@@ -27,8 +25,7 @@ foreach(testsourcefile ${APP_SOURCES})
                         ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} pthread)
   add_test(
     NAME ${testname}
-    COMMAND ${testname}
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+    COMMAND ${testname})
 endforeach(testsourcefile ${APP_SOURCES})
 
 find_package(OpenCL)
@@ -46,8 +43,7 @@ if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
       ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} pthread)
     add_test(
       NAME ${testname}
-      COMMAND ${testname}
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+      COMMAND ${testname})
     # add_test(test_opencl_${testname} test_opencl_${testname})
   endforeach(testsourcefile ${APP_SOURCES})
 endif()
@@ -77,7 +73,6 @@ if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
       pthread)
     add_test(
       NAME ${testname}
-      COMMAND ${testname}
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+      COMMAND ${testname})
   endforeach(testsourcefile ${APP_SOURCES})
 endif()

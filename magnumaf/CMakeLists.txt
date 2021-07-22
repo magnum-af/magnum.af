@@ -62,7 +62,8 @@ endif()
 
 
 # indicate we wish for the binaries to be written to the bin directory
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+
 # we have custom CMake configuration files, tell CMake to use them:
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
@@ -96,6 +97,7 @@ endif()
 
 # build tests
 if(TESTS)
+  message(STATUS "Enable unit testing (option 'TESTING').")
   add_subdirectory(test) # adding unit tests
 endif()
 

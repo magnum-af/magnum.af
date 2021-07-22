@@ -3,7 +3,7 @@
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # call this scripts directory
 
 # run compiled C++ tests:
-for testbin in ../bin/test*; do
+for testbin in ../build/magnumaf/test/test*; do
     echo "running test '$testbin':"
     [ -f "$testbin" ] && ./"$testbin"
     echo ""
