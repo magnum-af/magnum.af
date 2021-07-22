@@ -1,7 +1,7 @@
 #pragma once
 #include "named_type.hpp"
 #include <functional>
-namespace magnumafcpp {
+namespace magnumaf {
 
 using X_start_val = NamedType<double, struct NamedTypeX_start_val>;
 using Gamma = NamedType<double, struct NamedTypeGamma>;
@@ -32,4 +32,4 @@ class GradientDecent {
     Verbose verbose;
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -3,7 +3,7 @@
 #include "field_terms/micro/micro_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 ///
 /// Slonczewski Spin Transfer Torque model
@@ -35,4 +35,4 @@ class SpinTransferTorqueField : public MicroTerm {
   private:
     virtual af::array impl_H_in_Apm(const State& state) const override; ///< Effective field term contribution
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

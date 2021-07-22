@@ -3,7 +3,7 @@
 #include "util/host_ptr_accessor.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 RKKYExchangeField::RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
                                      const af::array& rkky_indices, bool verbose, bool COO)
@@ -336,4 +336,4 @@ af::array RKKYExchangeField::calc_COO_matrix(const af::array& RKKY_field, const 
     return matr_CSR;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

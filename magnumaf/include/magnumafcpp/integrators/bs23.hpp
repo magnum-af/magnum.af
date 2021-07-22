@@ -2,7 +2,7 @@
 #include <tuple>
 
 /// Runge-Kutta methods for the integration of ordinary differential equations.
-namespace magnumafcpp::integrator {
+namespace magnumaf::integrator {
 
 /// Bogacki–Shampine 2nd/3rd order method using FSAL property
 /// \param k1 FSAL k4 stage of previous step, used as k1
@@ -27,4 +27,4 @@ std::tuple<D, T, T, T> BS23(const D t_n, const D dt, const T& y_n, const F& f, c
     return BS23(t_n, dt, y_n, k1, f, args...);
 }
 
-} // namespace magnumafcpp::integrator
+} // namespace magnumaf::integrator

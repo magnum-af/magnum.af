@@ -1,7 +1,7 @@
 #include "field_terms/micro/demag_field_pbc.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 auto test(Mesh mesh, double Ms = 8e5, std::size_t m_layer = 7, std::size_t nm = 0, double gpuerr = 4e-3,
           double err = 0.0) {
     DemagFieldPBC demag_pbc;

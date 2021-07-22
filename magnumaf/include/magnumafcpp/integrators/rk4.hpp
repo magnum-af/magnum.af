@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include <utility>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// RK4 Method
 /// Returns {tn + dt, yn + dy}
@@ -27,4 +27,4 @@ std::pair<D, T> RK4(const D tn, const D dt, const T& yn, const F& f, const Args&
     ksum += f(tn + dt, yn + dt * k, args...);
     return {tn + dt, yn + 1. / 6. * dt * (ksum)};
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

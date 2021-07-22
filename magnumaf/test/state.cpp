@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 TEST(State, Init_Ms_field) {
     int nx = 1, ny = 1, nz = 1;
     auto m = af::constant(0, nx, ny, nz, 3, f64);

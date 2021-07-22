@@ -3,7 +3,7 @@
 #include <array>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(Math, central_diff) {
     // Checks wether central_diff of iota values (0, 1, 2, ...) is 1/h for all cells,
@@ -45,7 +45,7 @@ TEST(Math, curl) {
     const auto dims = af::dim4(4, 5, 6, 3);
     const std::array<double, 3> d = {0.1, 0.2, 0.3};
     const auto a = af::constant(1.0, dims, f64);
-    const auto curl = ::magnumafcpp::math::curl_3D(a, d[0], d[1], d[2], math::TruncateOutput::off);
+    const auto curl = ::magnumaf::math::curl_3D(a, d[0], d[1], d[2], math::TruncateOutput::off);
 
     // for constant field, curl should be zero (except for unhandled boundary)
     const auto curl_no_bound = curl(af::seq(1, -2), af::seq(1, -2), af::seq(1, -2), af::span); // without edges

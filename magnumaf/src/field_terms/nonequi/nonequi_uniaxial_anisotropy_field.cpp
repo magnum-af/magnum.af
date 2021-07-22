@@ -5,7 +5,7 @@
 
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 NonequiUniaxialAnisotropyField::NonequiUniaxialAnisotropyField(NonequiMesh nemesh, double Ku1,
                                                                std::array<double, 3> Ku1_axis)
@@ -83,4 +83,4 @@ std::array<double, 3> NonequiUniaxialAnisotropyField::get_normalized_vector(std:
 double NonequiUniaxialAnisotropyField::get_ku1_axis(int i) const { return Ku1_axis[i]; }
 
 long int NonequiUniaxialAnisotropyField::get_Ku1_field() const { return util::pywrap::send_copy_to_py(Ku1_field); }
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -5,7 +5,7 @@
 #include <regex>
 #include <string>
 
-namespace magnumafcpp {
+namespace magnumaf {
 ///
 /// Struct for version comparison.
 /// Using: major_.minor_.revision_.build_, e.g: 3.7.2.0
@@ -95,4 +95,4 @@ Version version_from_string(std::string s,
     }
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

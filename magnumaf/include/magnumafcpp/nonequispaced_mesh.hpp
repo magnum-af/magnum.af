@@ -4,7 +4,7 @@
 #include <iostream>
 #include <ostream>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 using std::size_t;
 
@@ -34,4 +34,4 @@ inline af::dim4 dims_s(NonequiMesh nemesh) { return af::dim4(nemesh.nx, nemesh.n
 inline af::dim4 dims_v(NonequiMesh nemesh) { return af::dim4(nemesh.nx, nemesh.ny, nemesh.nz, 3); }
 } // namespace nemesh
 
-} // namespace magnumafcpp
+} // namespace magnumaf

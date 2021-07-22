@@ -3,7 +3,7 @@
 #include "field_terms/nonequi/nonequi_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class NonequiDemagField : public NonequiTerm {
   public:
@@ -24,4 +24,4 @@ double nonequi_index_distance(const std::vector<double>& spacings, const unsigne
                               const bool verbose = true);
 
 } // namespace newell_nonequi
-} // namespace magnumafcpp
+} // namespace magnumaf

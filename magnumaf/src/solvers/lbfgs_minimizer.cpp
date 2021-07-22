@@ -13,7 +13,7 @@
 #include <list>
 #include <memory>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 LBFGS_Minimizer::LBFGS_Minimizer(double tolerance, size_t maxIter, int verbose)
     : tolerance_(tolerance), maxIter_(maxIter), verbose_(verbose) {}
@@ -582,4 +582,4 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
 
     return 0;
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

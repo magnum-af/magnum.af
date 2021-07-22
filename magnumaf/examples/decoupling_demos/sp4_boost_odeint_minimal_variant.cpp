@@ -18,7 +18,7 @@ template <> struct vector_space_norm_inf<af::array> {
 };
 } // namespace boost::numeric::odeint
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Oneliner:
 template <typename T> af::array Heff_in_Apm_onliner(const T& fieldterms, const State& state) {
@@ -36,7 +36,7 @@ template <typename T> af::array Heff_in_Apm(const T& fieldterms, const State& st
     };
     return std::accumulate(std::begin(fieldterms) + 1, std::end(fieldterms), initial_H, accumul_H);
 }
-} // namespace magnumafcpp
+} // namespace magnumaf
 
 // // Possible lamda implementation:
 // const auto Heff_in_Apm_lamda = [](const FieldtermsVari& fieldterms, const State& state) {
@@ -50,7 +50,7 @@ template <typename T> af::array Heff_in_Apm(const T& fieldterms, const State& st
 int main(int argc, char** argv) {
     std::cout << "Start" << std::endl;
 
-    using namespace magnumafcpp;
+    using namespace magnumaf;
     const auto [outdir_tmp, posargs] = ArgParser(argc, argv).outdir_posargs;
     const auto outdir = outdir_tmp;
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "arrayfire.h"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 namespace ads_control {
 inline af::array givescale(const af::array& val, double atol, double rtol) { return atol + rtol * af::abs(val); }
@@ -59,4 +59,4 @@ class Controller {
     // Member of LLG:
     // double  err{0};      // Estimated error
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

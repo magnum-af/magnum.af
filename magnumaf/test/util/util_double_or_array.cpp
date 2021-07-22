@@ -1,7 +1,7 @@
 #include "double_or_array.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // tests commutivity of * and + operators for DOA Class, compares with DOA()
 auto test = [](const util::DoubleOrArray& a, const af::array& b) {

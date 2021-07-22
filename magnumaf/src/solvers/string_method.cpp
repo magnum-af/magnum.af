@@ -7,7 +7,7 @@
 #include <fstream>
 #include <iomanip>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 StringMethod::StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
     : llg(std::move(llg)), n_interp(n_interp), dt(dt) {
@@ -313,4 +313,4 @@ double StringMethod::run(const std::string& filepath, double string_abort_rel_di
     return max_lowest;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

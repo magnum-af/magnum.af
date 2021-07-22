@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // calculating arithmetic series a_n = n i.e:  {1, 2, ..., n-1, n}
 // standard deviation following

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class AdaptiveRungeKutta {
   public:
@@ -44,4 +44,4 @@ class AdaptiveRungeKutta {
                       // same as last (FSAL) property
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

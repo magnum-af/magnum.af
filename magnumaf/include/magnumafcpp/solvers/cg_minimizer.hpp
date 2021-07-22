@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include <utility>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // For second Method, use interface class:
 // https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
@@ -23,4 +23,4 @@ class CG_Minimizer {
     std::pair<double, af::array> EnergyAndGradient(const State& state) const;
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

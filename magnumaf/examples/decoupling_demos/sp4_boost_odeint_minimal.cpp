@@ -25,7 +25,7 @@ template <> struct vector_space_norm_inf<af::array> {
 int main(int argc, char** argv) {
     std::cout << "Start" << std::endl;
 
-    using namespace magnumafcpp;
+    using namespace magnumaf;
     const auto [outdir_tmp, posargs] = ArgParser(argc, argv).outdir_posargs;
     const auto outdir = outdir_tmp;
 

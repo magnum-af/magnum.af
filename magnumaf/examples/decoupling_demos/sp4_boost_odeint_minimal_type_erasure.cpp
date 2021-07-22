@@ -19,7 +19,7 @@ template <> struct vector_space_norm_inf<af::array> {
 };
 } // namespace boost::numeric::odeint
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // // C++20 concept
 // template <typename T> concept HasHfield = requires(T field_term, const State& state) { field_term.H_in_Apm(state); };

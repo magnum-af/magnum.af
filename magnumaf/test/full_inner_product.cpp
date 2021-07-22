@@ -2,7 +2,7 @@
 #include "util/util.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // Exemplary unit test
 TEST(FullInnerProductTest, n) {

@@ -1,7 +1,7 @@
 #include "math.hpp"
 #include <cassert>
 #include <cmath>
-namespace magnumafcpp::math{
+namespace magnumaf::math{
 
 double max_4d_abs(const af::array& a) {
     return af::max(af::max(af::max(af::max(af::abs(a), 0), 1), 2), 3).as(f64).scalar<double>();
@@ -117,4 +117,4 @@ af::array laplace_3D(const af::array& a, const double dx, const double dy, const
     }
 }
 
-} // namespace magnumafcpp::math
+} // namespace magnumaf::math

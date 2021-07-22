@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <tuple>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 double analytic_result(double time) { return 1. / 16. * std::pow(std::pow(time, 2) + 4, 2); }
 

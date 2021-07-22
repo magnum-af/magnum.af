@@ -45,7 +45,7 @@
 
 #include <vector>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // 3D vtkImageData vtkCellData writer
 // Optimization should avoid generation of two vtkImageData objects
@@ -431,5 +431,5 @@ void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const
     mesh = mesh_returned;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf
 #pragma GCC diagnostic pop

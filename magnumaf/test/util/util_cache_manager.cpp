@@ -1,7 +1,7 @@
 #include "cache_manager.hpp"
 #include <filesystem>
 #include <gtest/gtest.h>
-using namespace magnumafcpp::util;
+using namespace magnumaf::util;
 namespace fs = std::filesystem;
 
 const auto cm_path = fs::temp_directory_path() / "test_magnumaf_cache";

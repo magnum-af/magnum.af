@@ -2,7 +2,7 @@
 #include "micro/exchange_field_pbc.hpp"
 #include <gtest/gtest.h>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 TEST(micro_exch_pbc, scalar_A_COO_CSR_comparison) {
     unsigned nx = 10, ny = 10, nz = 10;
@@ -102,7 +102,7 @@ TEST(micro_exch_pbc, H_field_homogenuous_cube) {
 //     auto h = exch_COO.H_in_Apm(state);
 // }
 
-} // namespace magnumafcpp
+} // namespace magnumaf
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

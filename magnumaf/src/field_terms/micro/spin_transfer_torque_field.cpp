@@ -2,7 +2,7 @@
 #include "math.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 SpinTransferTorqueField::SpinTransferTorqueField(const af::array& polarization, double eta_damping, double eta_field,
                                                  double j_e, double fl_thickness)
@@ -26,4 +26,4 @@ af::array SpinTransferTorqueField::impl_H_in_Apm(const State& state) const {
         return h_sot;
     }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

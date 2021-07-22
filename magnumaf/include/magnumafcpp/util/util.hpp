@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <numeric>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 namespace pywrap {
 
@@ -141,4 +141,4 @@ unsigned int stride(const unsigned int i, const unsigned int j, const unsigned i
 
 af::randomEngine rand_engine_current_time();
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

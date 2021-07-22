@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include <functional>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class ExternalField : public FieldTerm {
   public:
@@ -33,4 +33,4 @@ class ExternalField : public FieldTerm {
 
 // for wrapping:
 // https://stackoverflow.com/questions/8800838/how-to-pass-a-function-pointer-to-an-external-program-in-cython
-} // namespace magnumafcpp
+} // namespace magnumaf

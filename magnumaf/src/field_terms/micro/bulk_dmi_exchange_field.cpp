@@ -4,7 +4,7 @@
 #include <array>
 #include <iostream>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 BulkDMIExchangeField::BulkDMIExchangeField(double D, double A) : D_bulk_(D), A_(A) {
 }
@@ -119,4 +119,4 @@ af::array BulkDMIExchangeField::impl_H_in_Apm(const State& state) const {
     }
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

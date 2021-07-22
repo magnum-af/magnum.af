@@ -1,7 +1,7 @@
 #include "field_terms/atom/atomistic_exchange_field.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 AtomisticExchangeField::AtomisticExchangeField(double J_atom) : J_atom(J_atom) {}
 
@@ -259,4 +259,4 @@ af::array AtomisticExchangeField::impl_H_in_Apm(const State& state) const {
 //}
 //
 //
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -3,7 +3,7 @@
 #include "util/util.hpp"
 #include "util/color_string.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 AdaptiveRungeKutta::AdaptiveRungeKutta(const std::string& scheme_, Controller controller_, const bool normalize_,
                                        const bool verbose)
@@ -699,4 +699,4 @@ af::array AdaptiveRungeKutta::BS23(const State& state, const double dt, double& 
 //
 //    return sumbk;
 //}
-} // namespace magnumafcpp
+} // namespace magnumaf

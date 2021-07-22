@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include <array>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class AtomisticUniaxialAnisotropyField : public AtomTerm {
   public:
@@ -19,4 +19,4 @@ class AtomisticUniaxialAnisotropyField : public AtomTerm {
 
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

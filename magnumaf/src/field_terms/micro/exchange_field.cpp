@@ -1,7 +1,7 @@
 #include "field_terms/micro/exchange_field.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Energy calculation
 // Eex=-mu0/2 integral(M . Hex) dx
@@ -468,4 +468,4 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
 //    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
 //  }
 //}
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 ZeroCrossing::ZeroCrossing(std::function<double(double)> f, double precision, int max_runs, double ix_min,
                            double ix_max, int ix_n, int verbose)
@@ -108,4 +108,4 @@ std::pair<double, double> ZeroCrossing::calc_x_and_f() {
 
 }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

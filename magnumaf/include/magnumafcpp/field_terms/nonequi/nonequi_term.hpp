@@ -3,7 +3,7 @@
 #include "field_term.hpp"
 #include "nonequispaced_mesh.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class NonequiTerm : public FieldTerm {
   public:
@@ -40,4 +40,4 @@ class NonequiTerm : public FieldTerm {
         return -constants::mu0 / 2. * xyz_integral.as(f64).scalar<double>();
     }
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

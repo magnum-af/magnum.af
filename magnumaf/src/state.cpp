@@ -8,7 +8,7 @@
 #include <utility>
 
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Overloaded '+' operator adds an af::array to af::array this->m
 State State::operator+(const af::array& a) const {
@@ -187,4 +187,4 @@ double State::meani(const int i) const {
     return m[i];
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

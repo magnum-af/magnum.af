@@ -6,7 +6,7 @@
 #include <thread> // for sleep
 // #include <future> // for async
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // TODO sleep is bad, enable with std::async call using future to wait for filewrite
 // TEST(vtkIO, async_vtiWriteReadTest) {

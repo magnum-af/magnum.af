@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <variant>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 /// Class for handling a variable/value which is either a double or an af::array of size [nx, ny, nz, 1]
 /// overloads operators + - * / for usage.
@@ -154,4 +154,4 @@ af::array operator-(double a, const DoubleOrArray& b) = delete;
 af::array operator*(double a, const DoubleOrArray& b) = delete;
 af::array operator/(double a, const DoubleOrArray& b) = delete;
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

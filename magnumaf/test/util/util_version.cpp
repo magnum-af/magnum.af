@@ -1,7 +1,7 @@
 #include "util/version.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(Util, Version) {
     EXPECT_TRUE(Version("3.7.8.0") == Version("3.7.8.0"));

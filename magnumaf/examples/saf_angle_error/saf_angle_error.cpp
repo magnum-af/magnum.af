@@ -6,7 +6,7 @@
 #include "integrators/llg_integrator.hpp"
 #include "util/arg_parser.hpp"
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;

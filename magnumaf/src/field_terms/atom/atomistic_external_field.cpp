@@ -1,6 +1,6 @@
 #include "field_terms/atom/atomistic_external_field.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 double AtomisticExternalField::impl_E_in_J(const State& state, const af::array& h) const {
     if (state.Ms_field.isempty()) {
@@ -10,4 +10,4 @@ double AtomisticExternalField::impl_E_in_J(const State& state, const af::array& 
     }
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -4,7 +4,7 @@
 #include <iostream>
 
 //! C++ magnum.af library
-namespace magnumafcpp {
+namespace magnumaf {
 
 using std::size_t;
 
@@ -32,4 +32,4 @@ inline af::dim4 dims_s(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 1
 // Dimension for vector field on mesh, i.e. af::dim4(nx, ny, nz, 3)
 inline af::dim4 dims_v(Mesh mesh) { return af::dim4(mesh.nx, mesh.ny, mesh.nz, 3); }
 } // namespace mesh
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -5,7 +5,7 @@
 #include <arrayfire.h>
 #include <variant>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 ///
 /// Wrapper for a unit vector either of type std::array<double, 3> or af::array dims [nx, ny, nz, 3]
@@ -41,4 +41,4 @@ struct UnitVectorOrArray {
         return std::visit(visitor, variant);
     }
 };
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

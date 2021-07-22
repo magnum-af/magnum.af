@@ -3,7 +3,7 @@
 #include "util/util.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(NonequiDemagField, energy_homogenuous_cube) {
     // Compare SP4 layer with homogeneous z-magnetization once with nz = 3

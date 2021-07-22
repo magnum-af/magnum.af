@@ -6,7 +6,7 @@
 #include "unit_vector_or_array.hpp"
 #include <array>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class CubicAnisotropyField : public MicroTerm {
   public:
@@ -31,4 +31,4 @@ class CubicAnisotropyField : public MicroTerm {
     std::array<af::array, 3> h_1to3(const State& state) const;
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

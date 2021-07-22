@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 TEST(State, integral_nonequimesh_dz_as_gauss_sum) {
     const double dx = 1e-9, dy = 2e-9, dz = 3e-9;
     const int nx = 1, ny = 1, nz = 10;

@@ -1,7 +1,7 @@
 #include "field_terms/micro/demag_field.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(MicroDemag, EnergyOfHomogeneousCube) {
     const double x = 1.e-9, y = 1.e-9, z = 1.e-9;

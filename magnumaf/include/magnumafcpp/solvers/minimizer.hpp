@@ -3,7 +3,7 @@
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // For second Method, use interface class:
 // https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
@@ -34,4 +34,4 @@ class Minimizer {
     bool info; // if ture, prints step info to cout
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

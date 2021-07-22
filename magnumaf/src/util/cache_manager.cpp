@@ -5,7 +5,7 @@
 #include <utility>
 
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 namespace fs = std::filesystem;
 
@@ -100,4 +100,4 @@ void CacheManager::shrink_cache_if_gt_maxsize() const {
     }
 }
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

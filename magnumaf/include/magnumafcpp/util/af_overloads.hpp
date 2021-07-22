@@ -3,7 +3,7 @@
 #include "math.hpp" // vec_components
 #include <stdexcept>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Overload printing af::dtype enum as readable string ( as opposed to enum/int).
 inline std::ostream& operator<<(std::ostream& os, af::dtype c) {
@@ -86,4 +86,4 @@ inline std::ostream& operator<<(std::ostream& os, const af::array& a_vector) {
     return os;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

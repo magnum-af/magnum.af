@@ -2,7 +2,7 @@
 #include "math.hpp"
 #include "util/color_string.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
     if (fieldterms.size() == 0) {
@@ -33,4 +33,4 @@ void CG_Minimizer::Minimize(State& state) const {
 
     std::cout << "CG_Minimizer: time = " << af::timer::stop(timer) << std::endl;
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

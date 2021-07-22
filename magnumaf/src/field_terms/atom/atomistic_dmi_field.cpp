@@ -1,7 +1,7 @@
 #include "field_terms/atom/atomistic_dmi_field.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 std::array<double, 3> get_normalized_vector(std::array<double, 3> vector) {
     double norm = sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));
@@ -48,4 +48,4 @@ af::array AtomisticDmiField::impl_H_in_Apm(const State& state) const {
     return D_atom / (constants::mu0 * state.Ms) * (first - second);
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

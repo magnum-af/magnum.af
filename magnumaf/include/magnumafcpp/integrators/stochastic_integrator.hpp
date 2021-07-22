@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include <memory>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class Stochastic_Integrator {
   public:
@@ -46,4 +46,4 @@ class Stochastic_Integrator {
     af::randomEngine rand_engine;
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

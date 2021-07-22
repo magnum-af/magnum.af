@@ -4,7 +4,7 @@
 #include <utility>
 
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 af::array Stochastic_Integrator::Heun(const State& state) {
     const double D = (alpha * constants::kb * T) /
@@ -93,4 +93,4 @@ double Stochastic_Integrator::cpu_time() {
     }
     return cpu_time;
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -6,7 +6,7 @@
 #include <memory>
 #include <numeric>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Abstract basis class for all terms in the LLG equation.
 class FieldTerm {
@@ -163,4 +163,4 @@ template <typename... Args> auto mv_to_vec(Args&&... args) {
 }
 
 } // namespace fieldterm
-} // namespace magnumafcpp
+} // namespace magnumaf

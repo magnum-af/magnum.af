@@ -38,7 +38,7 @@ inline af::array apply_lookup_on_optional(af::array const& values, std::optional
 // State has m, Ms and region, field_terms only have vecs with values
 // TODO: how to handle m, Ms ODR for zero values?
 struct RegionState {
-    magnumafcpp::Mesh mesh;
+    magnumaf::Mesh mesh;
     af::array m;
     af::array Ms;
     std::optional<af::array> regions;
@@ -47,7 +47,7 @@ struct RegionState {
 // lookup wrapper for RegionState.
 // We use free function with wrapper to keeping logic more seperated from data structure
 inline af::array apply_lookup(af::array const& values, RegionState const& region_state) {
-    return apply_lookup_on_optional(values, region_state.regions, magnumafcpp::mesh::dims_s(region_state.mesh));
+    return apply_lookup_on_optional(values, region_state.regions, magnumaf::mesh::dims_s(region_state.mesh));
 }
 
 // convenience wrapper
@@ -75,7 +75,7 @@ inline af::array apply_lookup(Interaction const& inter, RegionState const& regio
 }
 
 int main() {
-    using namespace magnumafcpp; // Note: gets << operator overload into scope
+    using namespace magnumaf; // Note: gets << operator overload into scope
 
     {
         std::vector<double> _values = {0.5, 1.5, 2.5, 3.5};

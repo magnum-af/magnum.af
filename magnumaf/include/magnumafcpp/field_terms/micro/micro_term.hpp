@@ -5,7 +5,7 @@
 #include "field_term.hpp"
 #include <memory>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class MicroTerm : public FieldTerm {
   public:
@@ -30,4 +30,4 @@ class MicroTerm : public FieldTerm {
     }
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -4,7 +4,7 @@
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 template <class T> struct movable_il {
     mutable T t;
     operator T() const&& { return std::move(t); }
@@ -63,4 +63,4 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     mutable double time_heff{0};
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

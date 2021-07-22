@@ -7,7 +7,7 @@
 #include <utility>
 
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 LLGIntegrator::LLGIntegrator(double alpha, const std::string& scheme, Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
@@ -114,4 +114,4 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
 }
 
 long int LLGIntegrator::h_addr(const State& state) const { return util::pywrap::send_copy_to_py(fheff(state)); }
-} // namespace magnumafcpp
+} // namespace magnumaf

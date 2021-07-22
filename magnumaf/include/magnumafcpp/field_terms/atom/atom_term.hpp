@@ -1,7 +1,7 @@
 #pragma once
 #include "arrayfire.h"
 #include "field_term.hpp"
-namespace magnumafcpp {
+namespace magnumaf {
 
 class AtomTerm : public FieldTerm {
   public:
@@ -15,4 +15,4 @@ class AtomTerm : public FieldTerm {
     };
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

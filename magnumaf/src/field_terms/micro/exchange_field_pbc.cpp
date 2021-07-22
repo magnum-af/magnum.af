@@ -4,7 +4,7 @@
 #include "util/util.hpp"
 #include <optional>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 af::array ExchangeFieldPBC::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));
@@ -201,4 +201,4 @@ ExchangeFieldPBC::ExchangeFieldPBC(const af::array& A_exchange_field, Mesh mesh,
 ExchangeFieldPBC::ExchangeFieldPBC(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
     : matr(PBC_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr).as(f64), std::nullopt, mesh, verbose)) {}
 
-} // namespace magnumafcpp
+} // namespace magnumaf

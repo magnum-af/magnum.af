@@ -2,7 +2,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 af::array spacial_mean_in_region_afarray(const af::array& vectorfield, const af::array& region) {
     const af::array zero_if_input_is_zero_else_one = !af::iszero(region);
@@ -278,4 +278,4 @@ af::randomEngine rand_engine_current_time() {
 //        return 0;
 //}
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

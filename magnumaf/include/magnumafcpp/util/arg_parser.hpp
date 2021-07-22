@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-namespace magnumafcpp{
+namespace magnumaf{
 
 
 template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {

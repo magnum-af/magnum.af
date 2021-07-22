@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include "constants.hpp"
 #include "math.hpp"
-namespace magnumafcpp::equations {
+namespace magnumaf::equations {
 
 /// LLG precession term
 inline af::array LLG_precession(double alpha, const af::array& m_x_h) {
@@ -20,4 +20,4 @@ inline af::array LLG(double alpha, const af::array& m, const af::array& h_eff) {
     return LLG_precession(alpha, m_x_h) + LLG_damping(alpha, m, m_x_h);
 }
 
-} // namespace magnumafcpp::equations
+} // namespace magnumaf::equations

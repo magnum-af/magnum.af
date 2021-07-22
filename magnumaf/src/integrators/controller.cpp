@@ -4,7 +4,7 @@
 #include "util/color_string.hpp" // for red
 #include <cmath>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 void warning_hnext_lt_hmin(double hnext, double hmin) {
     printf("%s Runge Kutta Adaptive Stepsize Controller: proposed "
@@ -93,4 +93,4 @@ bool Controller::success(const double err, double& h) {
         }
     }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

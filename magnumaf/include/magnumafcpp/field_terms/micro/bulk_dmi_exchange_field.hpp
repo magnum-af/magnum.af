@@ -4,7 +4,7 @@
 #include "math.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Combined bulk DMI and exchange Field. Implements
 /// \f[ H_{eff} = \frac{-1}{\mu_0 M_s} (2 D_b \ \nabla \times \boldsymbol{m} -2 \nabla \cdot (A \nabla \boldsymbol{m})
@@ -27,4 +27,4 @@ class BulkDMIExchangeField : public MicroTerm {
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

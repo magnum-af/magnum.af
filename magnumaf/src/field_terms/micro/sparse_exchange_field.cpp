@@ -3,7 +3,7 @@
 #include "util/host_ptr_accessor.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 af::array SparseExchangeField::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));
@@ -388,4 +388,4 @@ SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh
 SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
     : matr(calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), mesh, verbose)) {}
 
-} // namespace magnumafcpp
+} // namespace magnumaf

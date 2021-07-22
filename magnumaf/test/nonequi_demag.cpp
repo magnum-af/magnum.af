@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // Exemplary unit test
 TEST(NonEquiDemag, NxxNxyNearTest) {

@@ -7,7 +7,7 @@
 #include <thread>
 #include <vector>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Expanded cell size for demag FFT
 inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }
@@ -339,4 +339,4 @@ NonequiDemagField::NonequiDemagField(const NonequiMesh& nemesh, bool verbose, bo
     : NonequiTerm(nemesh),
       Nfft(get_Nfft(nemesh, verbose, caching, nthreads > 0 ? nthreads : std::thread::hardware_concurrency())) {}
 
-} // namespace magnumafcpp
+} // namespace magnumaf

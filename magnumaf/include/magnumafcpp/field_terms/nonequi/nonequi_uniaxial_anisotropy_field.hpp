@@ -3,7 +3,7 @@
 #include "field_terms/nonequi/nonequi_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class NonequiUniaxialAnisotropyField : public NonequiTerm {
   public:
@@ -33,4 +33,4 @@ class NonequiUniaxialAnisotropyField : public NonequiTerm {
     virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
                                                                         //!< [J/m^3] defined at each node
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

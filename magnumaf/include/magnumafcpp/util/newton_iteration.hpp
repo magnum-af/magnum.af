@@ -3,7 +3,7 @@
 #include <functional>
 #include <iostream>
 #include <math.h>
-namespace magnumafcpp {
+namespace magnumaf {
 
 using X0 = NamedType<double, struct NamedTypeX0>;
 using Imax = NamedType<unsigned, struct NamedTypeImax>;
@@ -65,4 +65,4 @@ class NewtonIteration {
     Verbose verbose;
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

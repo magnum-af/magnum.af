@@ -3,7 +3,7 @@
 #include "field_terms/micro/micro_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class DmiField : public MicroTerm {
   public:
@@ -21,4 +21,4 @@ class DmiField : public MicroTerm {
     void apply_boundary_condition(af::array& hfield, const State& state) const;
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -2,7 +2,7 @@
 #include "util/util.hpp"
 #include <vector>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Expanded cell sizes for demag FFT
 inline unsigned nx_exp(unsigned nx) { return 2 * nx; }
@@ -116,4 +116,4 @@ af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
     }
     return Naf;
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

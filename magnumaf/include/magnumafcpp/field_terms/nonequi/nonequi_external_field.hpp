@@ -6,7 +6,7 @@
 #include "util/util.hpp"
 #include <functional>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class NonequiExternalField : public NonequiTerm {
   public:
@@ -39,4 +39,4 @@ class NonequiExternalField : public NonequiTerm {
     }
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

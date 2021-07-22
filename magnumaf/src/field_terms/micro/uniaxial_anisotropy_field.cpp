@@ -6,7 +6,7 @@
 #include "util/color_string.hpp" // color_string::warning()
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1_in, std::array<double, 3> Ku1_axis)
     : Ku1(Ku1_in), Ku1_axis(util::normalize_vector(Ku1_axis)) {}
@@ -98,4 +98,4 @@ double UniaxialAnisotropyField::get_ku1_axis(int i) { return Ku1_axis[i]; }
 
 long int UniaxialAnisotropyField::get_Ku1_field() const { return util::pywrap::send_copy_to_py(Ku1_field); }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

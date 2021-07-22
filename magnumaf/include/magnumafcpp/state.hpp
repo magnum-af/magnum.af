@@ -5,7 +5,7 @@
 #include <array>
 #include <iostream>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class State {
   public:
@@ -77,4 +77,4 @@ class State {
     ///< Number of cells with Ms != 0
     unsigned int n_cells_{0};
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

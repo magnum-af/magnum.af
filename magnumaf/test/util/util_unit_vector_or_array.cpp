@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 TEST(util_vector_or_array, ctor_vec) {
     util::UnitVectorOrArray a(std::array<double, 3>{1, 1, 1});
     const auto a_normed = std::get<std::array<double, 3>>(a.variant);

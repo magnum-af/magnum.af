@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 void write_plotfile(const fs::path& outdir, const std::string& plotfile = "plotfile.gpi");
 void plot(const fs::path& outdir, const std::string& plotfile = "plotfile.gpi");
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;

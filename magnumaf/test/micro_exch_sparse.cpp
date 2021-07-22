@@ -3,7 +3,7 @@
 #include "util/af_overloads.hpp" // TODO DEL
 #include <gtest/gtest.h>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 TEST(micro_exch_sparse, scalar_A_COO_CSR_comparison) {
     unsigned nx = 10, ny = 10, nz = 10;
@@ -82,7 +82,7 @@ TEST(micro_exch_sparse, compare_a_fields) {
     // TODO make random m field and compare exch vs sparse and PBC
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

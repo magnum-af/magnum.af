@@ -7,7 +7,7 @@
 #include <string>
 #include <thread>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 namespace {
 // Expanded cell sizes for demag FFT
@@ -215,7 +215,7 @@ af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
 } // namespace
 
 DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
-    : Nfft(::magnumafcpp::get_Nfft(mesh, verbose, caching,
+    : Nfft(::magnumaf::get_Nfft(mesh, verbose, caching,
                                    in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
 af::array DemagField::impl_H_in_Apm(const State& state) const {
@@ -274,4 +274,4 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
     }
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

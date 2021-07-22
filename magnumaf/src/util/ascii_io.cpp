@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 unsigned colum_major_stride(const unsigned i, const unsigned j, const unsigned k, const unsigned l, const unsigned ni,
                             const unsigned nj, const unsigned nk) {
@@ -153,4 +153,4 @@ std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose)
     return {af::array(nx, ny, nz, n_scalar, raw_read_a.data()), Mesh{nx, ny, nz, dx, dy, dz}};
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

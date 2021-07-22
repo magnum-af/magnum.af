@@ -1,7 +1,7 @@
 #include "field_terms/atom/atomistic_uniaxial_anisotropy_field.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 std::array<double, 3> AtomisticUniaxialAnisotropyField::get_normalized_vector(std::array<double, 3> vector) {
     double norm = sqrt(pow(vector[0], 2) + pow(vector[1], 2) + pow(vector[2], 2));
@@ -33,4 +33,4 @@ af::array AtomisticUniaxialAnisotropyField::impl_H_in_Apm(const State& state) co
     return 2 * K_atom / (constants::mu0 * state.Ms) * anisotropy * eu;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

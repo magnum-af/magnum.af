@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 /// Returns all prime factors of a given number n
 /// Special cases: n == 0 returns {0}, n == 1 returns {1}
@@ -44,4 +44,4 @@ inline unsigned max_of_prime_factors(unsigned n) {
     return *std::max_element(primes.begin(), primes.end());
 }
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

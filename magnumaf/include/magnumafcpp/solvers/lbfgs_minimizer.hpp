@@ -3,7 +3,7 @@
 #include <fstream>
 #include <utility>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // For second Method, use interface class:
 // https://stackoverflow.com/questions/40624175/c-how-to-implement-a-switch-between-class-members
@@ -35,4 +35,4 @@ class LBFGS_Minimizer {
     const int verbose_;                ///< Setting output options, valid values are 0, 1, 2, 3, 4
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

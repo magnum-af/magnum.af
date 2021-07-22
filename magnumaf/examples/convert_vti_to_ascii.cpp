@@ -3,7 +3,7 @@
 #include "util/ascii_io.hpp"
 #include "util/vtk_io.hpp"
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 int main(int argc, char** argv) {
     // Checking input variables and setting GPU Device

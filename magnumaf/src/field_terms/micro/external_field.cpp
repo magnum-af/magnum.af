@@ -5,7 +5,7 @@
 
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 ExternalField::ExternalField(af::array zee_in) : zee_field(std::move(zee_in)) {}
 
@@ -48,4 +48,4 @@ double ExternalField::impl_E_in_J(const State& state, const af::array& h) const 
                state.mesh.dy * state.mesh.dz;
     }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

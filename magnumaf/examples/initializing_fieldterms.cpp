@@ -6,7 +6,7 @@
 // Demonstrating initialization of fieldterms
 // Mainly with helper function templates fieldterm::to_vec and fieldterm::mv_to_vec
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 int main() {
     // Parameter initialization
     const double x = 5.e-7, y = 1.25e-7, z = 3.e-9;
@@ -72,7 +72,7 @@ int main() {
         LLGIntegrator llg1(alpha, fieldterm::to_vec(dmag, exch));
 
         // copy the fieldterms into a vector-of-pointer using cp_to_uptr helper
-        LLGIntegrator llg2(alpha, {magnumafcpp::fieldterm::cp_to_uptr(dmag), magnumafcpp::fieldterm::cp_to_uptr(exch)});
+        LLGIntegrator llg2(alpha, {magnumaf::fieldterm::cp_to_uptr(dmag), magnumaf::fieldterm::cp_to_uptr(exch)});
 
         // state explicitly what's going on
         LLGIntegrator llg3(alpha, {std::unique_ptr<FieldTerm>(std::make_unique<DemagField>(dmag)),

@@ -3,7 +3,7 @@
 #include "util/host_ptr_accessor.hpp"
 #include "util/util.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 af::array NonequiExchangeField::impl_H_in_Apm(const State& state) const {
     af::array exch = af::matmul(matr, af::flat(state.m));
@@ -624,4 +624,4 @@ NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, long int A
       matr(COO ? calc_COO_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)
                : calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)) {}
 
-} // namespace magnumafcpp
+} // namespace magnumaf

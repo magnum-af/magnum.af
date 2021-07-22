@@ -3,7 +3,7 @@
 
 // Exemplary unit test
 TEST(Mesh, InitTest) {
-    magnumafcpp::Mesh mesh(1, 2, 3, 0.1, 0.2, 0.3);
+    magnumaf::Mesh mesh(1, 2, 3, 0.1, 0.2, 0.3);
     EXPECT_EQ(1, mesh.nx);
     EXPECT_EQ(2, mesh.ny);
     EXPECT_EQ(3, mesh.nz);

@@ -3,7 +3,7 @@
 #include "util/version.hpp"
 #include <gtest/gtest.h>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 TEST(micro_exch_sparse, COO_CSR_array_A) {
     if (Version(af_version_string()) >= Version("3.7.0")) {
@@ -34,7 +34,7 @@ TEST(micro_exch_sparse, COO_CSR_const_A) {
         EXPECT_EQ(m.scalar<double>(), 0);
     }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

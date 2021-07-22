@@ -3,7 +3,7 @@
 #include "field_terms/micro/micro_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Exporting functions for unit tests
 namespace newell {
@@ -24,4 +24,4 @@ class DemagField : public MicroTerm {
     mutable af::array Nfft; // mutable for c64-c32 conversion
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

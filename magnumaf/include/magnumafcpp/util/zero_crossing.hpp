@@ -2,7 +2,7 @@
 #include <array>
 #include <functional>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Class calculating the zero crossing of a monotonic function f(x) up to a
 /// given precision.
@@ -41,4 +41,4 @@ class ZeroCrossing {
     std::array<double, 4> run_loop();
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

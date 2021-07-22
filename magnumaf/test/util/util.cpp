@@ -2,7 +2,7 @@
 #include "util/host_ptr_accessor.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(Util, SerialTriangularMatrixTest) {
     // serialized index k, matrix indices i, j

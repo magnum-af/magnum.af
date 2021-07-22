@@ -6,7 +6,7 @@
 #include <utility>
 
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 class RK : public AdaptiveRungeKutta {
   public:

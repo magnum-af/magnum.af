@@ -3,7 +3,7 @@
 #include "util/util.hpp" // for handle zero vals
 #include "mesh.hpp"
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 inline af::array skyrmconf(const Mesh& mesh, const bool point_up = false) {
     // Returns a initial configuration to be relaxed into a skyrmion
@@ -139,4 +139,4 @@ inline af::array init_sp4(const Mesh& mesh) {
     return m;
 }
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

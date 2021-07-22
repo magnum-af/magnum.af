@@ -7,7 +7,7 @@
 #include <utility>
 
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 // Energy calculation
 // only for testing, remove?
@@ -138,4 +138,4 @@ void Minimizer::minimize(State& state) const {
 
 }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

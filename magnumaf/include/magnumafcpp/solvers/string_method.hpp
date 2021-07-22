@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class StringMethod {
   public:
@@ -38,4 +38,4 @@ class StringMethod {
     void write_vti(const std::string& file);
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

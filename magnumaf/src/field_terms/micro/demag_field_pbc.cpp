@@ -4,7 +4,7 @@
 #include "util/prime_factors.hpp"
 #include <cmath>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 namespace {
 af::array calc_m_mfft(const State& state) {
@@ -89,4 +89,4 @@ af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
     const auto h_fft = af::join(3, h_fft_x, h_fft_y, h_fft_z);
     return fftC2R_dim2switch(h_fft);
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

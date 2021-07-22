@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include <memory>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 /// Wrapper for a std::unique_ptr<T[], > with custom deleter to read af::array raw data.
 /// Typename T must match array type. If a.isempty() ptr is set to nullptr.
@@ -50,4 +50,4 @@ template <typename T> class HostRawPtrManipulator {
     T* const ptr;
 };
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

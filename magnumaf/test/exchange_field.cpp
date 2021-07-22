@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // Testing whether material.A and state.micro_A_field yield same result
 TEST(ExchangeField, A_scalar_vs_array_value) {

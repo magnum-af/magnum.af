@@ -3,7 +3,7 @@
 #include <array>
 
 /// Common math functions for af::array container.
-namespace magnumafcpp::math{
+namespace magnumaf::math{
 
 /// Get vector components of af::array sized [1 1 1 3].
 template <typename T> std::array<T, 3> vec_components(const af::array& a) {
@@ -46,4 +46,4 @@ af::array curl_3D(const af::array& vector_field, const double dx, const double d
 /// Laplace operation.
 af::array laplace_3D(const af::array& a, const double dx, const double dy, const double dz, TruncateOutput);
 
-} // namespace magnumafcpp::math
+} // namespace magnumaf::math

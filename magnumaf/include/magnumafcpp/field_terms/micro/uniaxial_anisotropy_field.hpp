@@ -3,7 +3,7 @@
 #include "field_terms/micro/micro_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class UniaxialAnisotropyField : public MicroTerm {
   public:
@@ -33,4 +33,4 @@ class UniaxialAnisotropyField : public MicroTerm {
   private:
     virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

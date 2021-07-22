@@ -1,7 +1,7 @@
 #pragma once
 #include <math.h>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 namespace constants {
 // The following values are obtained from CODATA/NIST as of 04.03.2019:
@@ -36,4 +36,4 @@ template <typename T> T J_to_eV(T Joule) { return Joule / constants::e_abs; }
 template <typename T> T eV_to_J(T eV) { return eV * constants::e_abs; }
 } // namespace conversion
 
-} // namespace magnumafcpp
+} // namespace magnumaf

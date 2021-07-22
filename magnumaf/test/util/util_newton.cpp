@@ -2,7 +2,7 @@
 #include <cmath>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 double x_sqare(double x) { return pow(x, 2) - 1; }
 

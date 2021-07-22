@@ -56,7 +56,7 @@ void process_mem_usage(double& vm_usage, double& resident_set) {
     resident_set = rss * page_size_kb;
 }
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 int main(int argc, char** argv) {
     const auto [outdir, posargs] = ArgParser(argc, argv).outdir_posargs;

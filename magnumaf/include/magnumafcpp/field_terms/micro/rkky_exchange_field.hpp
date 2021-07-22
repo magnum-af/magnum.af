@@ -4,7 +4,7 @@
 #include "state.hpp"
 #include "util/named_type.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 using RKKY_values = NamedType<af::array, struct NamedTypeRKKY_values>;
 using Exchange_values = NamedType<af::array, struct NamedTypeRKKY_values>;
@@ -53,4 +53,4 @@ class RKKYExchangeField : public MicroTerm {
 
     virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -4,7 +4,7 @@
 #include "nonequispaced_mesh.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Nonequispaced Exchange Field.
 
@@ -33,4 +33,4 @@ class NonequiExchangeField : public NonequiTerm {
     virtual af::array impl_H_in_Apm(const State& state) const override; // Field contribution
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

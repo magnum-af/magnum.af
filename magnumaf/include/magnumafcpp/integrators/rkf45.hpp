@@ -1,7 +1,7 @@
 #pragma once
 #include <tuple>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 /// Runge-Kutta-Fehlberg 4th/5th order method
 /// Returns {tn + dt, yn + dy(Ord5), rk_error ^= dy(Ord4)}
@@ -20,4 +20,4 @@ std::tuple<D, T, T> RKF45(const D tn, const D dt, const T& yn, const F& f, const
     T rk_error = dy - (25. / 216. * k1 + 1408. / 2565. * k3 + 2197. / 4104. * k4 - 1. / 5. * k5);
     return {tn + dt, yn + dy, rk_error};
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

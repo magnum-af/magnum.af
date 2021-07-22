@@ -1,7 +1,7 @@
 #include "util/zero_crossing.hpp"
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 double x(double x) { return x; }
 

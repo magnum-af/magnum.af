@@ -14,7 +14,7 @@
 #include <integrators/controller.hpp>
 #include <integrators/rkf45.hpp>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 template <typename T = double, typename Y = af::array> class RK_Integrator {
   public:

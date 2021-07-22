@@ -2,7 +2,7 @@
 #include "util/util.hpp" // for util::max_abs_diff
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(ascii_io, ascii_io_test_vector_field) {
     af::array a = af::randu(6, 5, 4, 3, f64);

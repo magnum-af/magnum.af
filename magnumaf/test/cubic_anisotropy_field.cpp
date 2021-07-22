@@ -2,7 +2,7 @@
 #include "util/util.hpp"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-using namespace magnumafcpp;
+using namespace magnumaf;
 TEST(CubicAnisotropyField, Constructor) {
     CubicAnisotropyField caniso(1, 1, 1, {1, 1, 0}, {-1, 1, 0});
     const auto c1 = std::get<std::array<double, 3>>(caniso.c1.variant);

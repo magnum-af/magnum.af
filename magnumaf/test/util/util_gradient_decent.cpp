@@ -2,7 +2,7 @@
 #include <cmath>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 double polyn(double x) { return pow(x, 4) - 3 * pow(x, 3) + 2; }
 

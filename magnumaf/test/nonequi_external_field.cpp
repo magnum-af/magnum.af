@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 // TEST(NonequiExternalField, E) {
 //    int nx = 1;

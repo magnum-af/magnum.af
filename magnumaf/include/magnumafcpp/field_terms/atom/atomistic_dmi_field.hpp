@@ -3,7 +3,7 @@
 #include "field_terms/atom/atom_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class AtomisticDmiField : public AtomTerm {
   public:
@@ -16,4 +16,4 @@ class AtomisticDmiField : public AtomTerm {
 
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

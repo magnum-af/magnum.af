@@ -6,7 +6,7 @@
 #include <cmath>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp;
+using namespace magnumaf;
 
 TEST(RKKY, mumax3test) {
 

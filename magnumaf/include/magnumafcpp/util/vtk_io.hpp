@@ -4,7 +4,7 @@
 #include "nonequispaced_mesh.hpp"
 #include <utility>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 void vti_writer_micro(const af::array& field, const Mesh& mesh,
                       const std::string& outputname); // 3D Image data
@@ -26,4 +26,4 @@ void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::str
 
 std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool verbose = false);
 void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose = false);
-} // namespace magnumafcpp
+} // namespace magnumaf

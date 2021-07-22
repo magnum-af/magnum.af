@@ -3,7 +3,7 @@
 #include "field_terms/atom/atom_term.hpp"
 #include "state.hpp"
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class AtomisticExchangeField : public AtomTerm {
   public:
@@ -13,4 +13,4 @@ class AtomisticExchangeField : public AtomTerm {
     double J_atom; //!< Atomistic exchange energy [J]
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -2,7 +2,7 @@
 #include "math.hpp"
 #include "util/util.hpp"
 #include <variant>
-namespace magnumafcpp {
+namespace magnumaf {
 
 af::array dot_4d(const af::array& a, const af::array& b) { return af::tile(af::sum(a * b, 3), 1, 1, 1, 3); }
 
@@ -112,4 +112,4 @@ double CubicAnisotropyField::impl_E_in_J(const State& state, const af::array& h)
            state.mesh.dx * state.mesh.dy * state.mesh.dz;
 }
 
-} // namespace magnumafcpp
+} // namespace magnumaf

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ostream>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 class StageTimer {
   public:
@@ -34,4 +34,4 @@ class StageTimer {
     bool sync{true};
 };
 
-} // namespace magnumafcpp
+} // namespace magnumaf

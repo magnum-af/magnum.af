@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace magnumafcpp::util;
+using namespace magnumaf::util;
 
 TEST(Util, prime_factors) {
     EXPECT_THAT(prime_factors(0), testing::ElementsAre(0));

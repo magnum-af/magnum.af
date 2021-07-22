@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <optional>
 
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 class CacheManager {
   public:
     CacheManager(bool verbose = true,
@@ -24,4 +24,4 @@ class CacheManager {
     void shrink_cache_if_gt_maxsize() const;
 };
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util

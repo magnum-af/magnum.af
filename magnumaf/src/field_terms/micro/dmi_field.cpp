@@ -3,7 +3,7 @@
 #include "util/util.hpp"
 #include <array>
 
-namespace magnumafcpp {
+namespace magnumaf {
 
 void showdims(const af::array& a) {
     std::cout << "Exchange matrix: dims=" << a.dims(0) << "\t" << a.dims(1) << "\t" << a.dims(2) << "\t" << a.dims(3)
@@ -267,4 +267,4 @@ void DmiField::apply_boundary_condition(af::array& hfield, const State& state) c
         hfield(af::span, af::span, -1, 2) += 0.5 * z_i_plus_1 / state.mesh.dz;
     }
 }
-} // namespace magnumafcpp
+} // namespace magnumaf

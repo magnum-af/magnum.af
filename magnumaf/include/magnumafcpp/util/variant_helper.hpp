@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-namespace magnumafcpp::util {
+namespace magnumaf::util {
 
 // helper constant for type-matching visitor (#3) (https://en.cppreference.com/w/cpp/utility/variant/visit)
 template <class> inline constexpr bool always_false_v = false;
@@ -27,4 +27,4 @@ template <class F0> struct mk_vis_overload<F0> : F0 {
 template <class... Fs> auto make_visitor(Fs&&... fs) { return mk_vis_overload<Fs...>(std::forward<Fs>(fs)...); }
 #endif
 
-} // namespace magnumafcpp::util
+} // namespace magnumaf::util
