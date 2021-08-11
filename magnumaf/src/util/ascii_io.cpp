@@ -109,7 +109,8 @@ std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose)
 
     // Getting mesh size and discretization
     unsigned nx = 0, ny = 0, nz = 0, n_scalar = 0;
-    double dx = NAN, dy = NAN, dz = NAN;
+    double dx = std::numeric_limits<double>::quiet_NaN(), dy = std::numeric_limits<double>::quiet_NaN(),
+           dz = std::numeric_limits<double>::quiet_NaN();
     std::getline(infile, line);
     line.erase(0, 2);
     std::istringstream iss1(line);
@@ -129,13 +130,15 @@ std::pair<af::array, Mesh> read_ascii(const std::string& filename, bool verbose)
             for (unsigned iy = 0; iy < ny; iy++) {
                 for (unsigned iz = 0; iz < nz; iz++) {
                     std::istringstream iss(line);
-                    double ddx = NAN, ddy = NAN, ddz = NAN;
+                    double ddx = std::numeric_limits<double>::quiet_NaN(),
+                           ddy = std::numeric_limits<double>::quiet_NaN(),
+                           ddz = std::numeric_limits<double>::quiet_NaN();
                     if (!(iss >> ddx >> ddy >> ddz)) {
                         printf("Error while reading line!\n");
                         break;
                     }
                     for (unsigned i_scalar = 0; i_scalar < n_scalar; i_scalar++) {
-                        double value = NAN;
+                        double value = std::numeric_limits<double>::quiet_NaN();
                         if (!(iss >> value)) {
                             printf("Error while reading line!\n");
                             break;

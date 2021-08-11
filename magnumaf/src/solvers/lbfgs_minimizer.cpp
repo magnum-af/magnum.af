@@ -299,8 +299,8 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
     double fy = finit;
     double dgy = dginit;
 
-    double stmin = NAN;
-    double stmax = NAN;
+    double stmin = std::numeric_limits<double>::quiet_NaN();
+    double stmax = std::numeric_limits<double>::quiet_NaN();
 
     while (true) {
 

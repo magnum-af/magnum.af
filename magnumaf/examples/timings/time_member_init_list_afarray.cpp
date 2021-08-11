@@ -45,7 +45,7 @@ int main() {
     }
 
     // Ref timing
-    double time_ctor = NAN;
+    double time_ctor = std::numeric_limits<double>::quiet_NaN();
     {
         auto timer = af::timer::start();
         for (auto n = 0; n < N; ++n) {

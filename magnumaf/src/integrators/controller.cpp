@@ -34,7 +34,7 @@ void info_h_gt_hmax(double h, double hmax) {
 }
 
 bool Controller::success(const double err, double& h) {
-    double scale = NAN;
+    double scale = std::numeric_limits<double>::quiet_NaN();
 
     if (err <= 1.0) {
         if (err == 0.0) {

@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     // Initial magnetic field
     State state(mesh, 8e5, util::init_sp4(mesh));
     for (int i = 0; i < n_writes; i++) {
-        double vm = NAN, rss = NAN;
+        double vm = std::numeric_limits<double>::quiet_NaN(), rss = std::numeric_limits<double>::quiet_NaN();
         process_mem_usage(vm, rss);
         std::cout << std::left << "i=" << std::setw(6) << i << "[%]=" << std::setw(5)
                   << 100. * (static_cast<double>(i)) / (static_cast<double>(n_writes)) << "VIRT[GB]=" << std::setw(10) << vm / 1e6

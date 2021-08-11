@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 
     // Defining H_zee via lamdas
     auto zee_func = [hzee_max, steps_full_hysteresis](const State& state) -> af::array {
-        double field_Tesla = NAN;
+        double field_Tesla = std::numeric_limits<double>::quiet_NaN();
         if (state.steps < steps_full_hysteresis / 4) {
             field_Tesla = hzee_max * 4. * state.steps / steps_full_hysteresis;
         } else if (state.steps < 3 * steps_full_hysteresis / 4) {
