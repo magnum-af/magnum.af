@@ -95,9 +95,8 @@ class runge_kutta_fehlberg54
                                                                Operations, Resizer> {
 
   public:
-    typedef boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time, Algebra,
-                                                              Operations, Resizer>
-        stepper_base_type;
+    using stepper_base_type = boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time,
+                                                                                Algebra, Operations, Resizer>;
     using state_type = typename stepper_base_type::state_type;
     using value_type = typename stepper_base_type::value_type;
     using deriv_type = typename stepper_base_type::deriv_type;

@@ -1,6 +1,5 @@
 #include "arrayfire.h"
-#include "math.h"
-
+#include <cmath>
 #include <iostream>
 #include <utility>
 

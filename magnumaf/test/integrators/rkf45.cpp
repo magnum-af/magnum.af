@@ -1,6 +1,6 @@
 #include "rkf45.hpp"
 #include "arrayfire.h"
-#include "math.h"
+#include <cmath>
 
 #include <cmath>
 #include <gtest/gtest.h>

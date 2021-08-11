@@ -7,7 +7,7 @@ namespace boost::numeric::odeint {
 // Adapted form boost/numeric/odeint/external/vexcl/vexcl_norm_inf.hpp
 // This works:
 template <> struct vector_space_norm_inf<af::array> {
-    typedef double result_type; // Needed for internals
+    using result_type = double; // Needed for internals
     result_type operator()(const af::array& x) const {
         return af::max(af::max(af::max(af::max(af::abs(x), 0), 1), 2), 3).as(f64).scalar<double>();
     }

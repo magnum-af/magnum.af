@@ -1,7 +1,7 @@
 #include "field_terms/micro/demag_field.hpp"
 #include "field_terms/micro/exchange_field.hpp"
 #include "field_terms/micro/external_field.hpp"
-#include "math.h"
+#include <cmath>
 
 #include "solvers/lbfgs_minimizer.hpp"
 #include "util/arg_parser.hpp"

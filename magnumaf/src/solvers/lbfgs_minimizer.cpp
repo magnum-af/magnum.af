@@ -2,7 +2,7 @@
 #include "arrayfire.h"
 #include "equations.hpp"
 #include "field_terms/field_term.hpp"
-#include "math.h"
+#include <cmath>
 
 #include "math.hpp"
 #include "state.hpp"

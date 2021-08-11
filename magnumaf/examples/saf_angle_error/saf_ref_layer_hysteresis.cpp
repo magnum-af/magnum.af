@@ -3,7 +3,7 @@
 #include "field_terms/micro/external_field.hpp"
 #include "field_terms/micro/rkky_exchange_field.hpp"
 #include "integrators/llg_integrator.hpp"
-#include "math.h"
+#include <cmath>
 
 #include "util/arg_parser.hpp"
 

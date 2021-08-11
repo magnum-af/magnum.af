@@ -1,4 +1,4 @@
-#include "math.h"
+#include <cmath>
 
 #include "state.hpp"
 #include "util/arg_parser.hpp"

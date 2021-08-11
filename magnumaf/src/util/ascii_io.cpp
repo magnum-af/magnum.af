@@ -1,5 +1,5 @@
 #include "ascii_io.hpp"
-#include "math.h"
+#include <cmath>
 
 #include "util/host_ptr_accessor.hpp"
 #include <cstdlib>

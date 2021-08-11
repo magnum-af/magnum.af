@@ -1,5 +1,5 @@
 #include "controller.hpp"
-#include "math.h"
+#include <cmath>
 
 #include "util/color_string.hpp" // for red
 #include <cmath>
