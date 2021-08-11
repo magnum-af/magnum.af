@@ -178,7 +178,7 @@ void State::set_Ms_field(long int aptr) { Ms_field = util::pywrap::make_copy_for
 
 long int State::wrapping_get_Ms_field() const { return util::pywrap::send_copy_to_py(Ms_field); }
 
-void State::write_vti(std::string outputname) const { vti_writer_micro(m.as(f64), mesh, std::move(outputname)); }
+void State::write_vti(const std::string& outputname) const { vti_writer_micro(m.as(f64), mesh, outputname); }
 void State::_vti_writer_atom(std::string outputname) const { vti_writer_atom(m.as(f64), mesh, std::move(outputname)); }
 void State::_vti_reader(const std::string& inputname) { vti_reader(m, mesh, inputname); }
 

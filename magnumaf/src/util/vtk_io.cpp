@@ -126,7 +126,7 @@ void vti_writer_micro(const af::array& field, const Mesh& mesh, const std::strin
 // Note: with std::async, returned future dtor blocks until function is finished, gaining nothing
 // Solution: use thread.datach()
 void async_vti_writer_micro(af::array field, Mesh mesh, std::string outputname) {
-    std::thread(vti_writer_micro, std::move(field), std::move(mesh), std::move(outputname)).detach();
+    std::thread(vti_writer_micro, std::move(field), mesh, std::move(outputname)).detach();
 }
 
 void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz,

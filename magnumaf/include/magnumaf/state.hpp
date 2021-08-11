@@ -46,7 +46,7 @@ class State {
     // af::array m_out;
     // long int get_m_addr(){m.lock(); return (long int) m.get();}
 
-    void write_vti(std::string outputname) const;
+    void write_vti(const std::string& outputname) const;
     void _vti_writer_atom(std::string outputname) const;
     void _vti_reader(const std::string& inputname);
 

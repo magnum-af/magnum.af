@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.2)
-
+cmake_minimum_required(VERSION 3.5)
 project(magnum.af VERSION 0.1.0)
 message(STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}.")
 
-option(PYTHON "Build python bindings" ON)
-# consumed in ${magnumaf_core_dir_name}:
+# options consumed in ${magnumaf_core_dir_name}:
 option(EXAMPLES "Build examples." ON)
 option(TESTS "Build unit tests." ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
@@ -12,6 +10,9 @@ option(SETINSTALL "Building shared library, configuring install directories." ON
 option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." ON)
 option(CUDA "Build CUDA backend if available." ON)
 option(OPENCL "Build OPENCL backend if available." ON)
+
+# option consumed in python/
+option(PYTHON "Build python bindings" ON)
 
 if(TESTS)
   message(STATUS "Enable unit testing (option 'TESTING').")
