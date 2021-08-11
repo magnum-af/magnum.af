@@ -10,16 +10,16 @@ option(TESTS "Build unit tests." ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
 option(SETINSTALL "Building shared library, configuring install directories." ON)
 option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." ON)
-option(CUDA "Build CUDA backend." ON)
-option(OPENCL "Build OPENCL backend." ON)
-
-set(magnumaf_core_dir_name "magnumaf") # note: variable is used in python/CMakeLists.txt
+option(CUDA "Build CUDA backend if available." ON)
+option(OPENCL "Build OPENCL backend if available." ON)
 
 if(TESTS)
+  message(STATUS "Enable unit testing (option 'TESTING').")
   enable_testing() # enables CTest with 'make test' and 'ctest' commands
   # note: enable must come before we include tests below
 endif()
 
+set(magnumaf_core_dir_name "magnumaf") # note: variable is used in python/CMakeLists.txt
 add_subdirectory(${magnumaf_core_dir_name})
 
 # build python bindings

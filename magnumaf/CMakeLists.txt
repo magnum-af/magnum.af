@@ -2,12 +2,12 @@
 # worked only after removing all global and local .ycm_extra_conf.py files with
 # .json comile file only in project dir Found this hint in
 # https://www.reddit.com/r/emacs/comments/7zxl37/trouble_setting_up_ycmd/
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # this writes file ${CMAKE_BINARY_DIR}/compile_commands.json
+if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
   execute_process(
     COMMAND
       ${CMAKE_COMMAND} -E copy_if_different
-      ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+      ${CMAKE_BINARY_DIR}/compile_commands.json
       ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json)
 endif()
 
@@ -97,7 +97,6 @@ endif()
 
 # build tests
 if(TESTS)
-  message(STATUS "Enable unit testing (option 'TESTING').")
   add_subdirectory(test) # adding unit tests
 endif()
 
