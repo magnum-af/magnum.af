@@ -90,8 +90,9 @@ af::array PBC_CSR_matrix(const std::optional<af::array>& A_exchange_field, const
             }
         }
     }
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
@@ -163,9 +164,9 @@ af::array PBC_COO_matrix(const std::optional<af::array>& A_exchange_field, const
             }
         }
     }
-    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
-                                    af::array(COO_ROW.size(), COO_ROW.data()),
-                                    af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    af::array matr_COO = af::sparse(
+        static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
+        af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
@@ -199,6 +200,7 @@ ExchangeFieldPBC::ExchangeFieldPBC(const af::array& A_exchange_field, Mesh mesh,
 
 // For wrapping only: constructor version taking A_exchange_field
 ExchangeFieldPBC::ExchangeFieldPBC(long int A_exchange_field_ptr, Mesh mesh, bool verbose)
-    : matr(PBC_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr).as(f64), std::nullopt, mesh, verbose)) {}
+    : matr(PBC_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr).as(f64), std::nullopt, mesh, verbose)) {
+}
 
 } // namespace magnumaf

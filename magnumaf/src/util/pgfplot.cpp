@@ -18,8 +18,8 @@ void pgfplot_mz(af::array m, Mesh mesh, const std::string& outputfile, int mz_sl
             // big for latex
             stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 2))
                    << std::endl;
-            std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 2))
-                      << std::endl;
+            std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                      << util::afvalue_as_f64(m(x, y, mz_slice, 2)) << std::endl;
             //}
         }
         stream << std::endl;
@@ -38,10 +38,10 @@ void pgfplot_mz(af::array m, Mesh mesh, const std::string& outputfile, int mz_sl
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
             if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 2))
-                       << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 2))
-                          << std::endl;
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                       << util::afvalue_as_f64(m(x, y, mz_slice, 2)) << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                          << util::afvalue_as_f64(m(x, y, mz_slice, 2)) << std::endl;
             }
         }
         stream << std::endl;
@@ -60,10 +60,10 @@ void pgfplot_mi(af::array m, Mesh mesh, const std::string& outputfile, int i, in
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
             if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, i))
-                       << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, i))
-                          << std::endl;
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                       << util::afvalue_as_f64(m(x, y, mz_slice, i)) << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                          << util::afvalue_as_f64(m(x, y, mz_slice, i)) << std::endl;
             }
         }
         stream << std::endl;
@@ -88,10 +88,12 @@ void pgfplot_nz_quiver(af::array m, Mesh mesh, const std::string& outputfile, in
     for (int y = 0; y < m.dims(1); y++) {
         for (int x = 0; x < m.dims(0); x++) {
             if (x % nmod == nmod / 2 && y % nmod == nmod / 2) { // NOTE: needed if file becomes too big for latex
-                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 0)) << " "
+                stream << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                       << util::afvalue_as_f64(m(x, y, mz_slice, 0)) << " "
                        << util::afvalue_as_f64(m(x, y, mz_slice, 1)) << std::endl;
-                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " " << util::afvalue_as_f64(m(x, y, mz_slice, 0))
-                          << " " << util::afvalue_as_f64(m(x, y, mz_slice, 1)) << std::endl;
+                std::cout << 1e9 * mesh.dx * x << " " << 1e9 * mesh.dy * y << " "
+                          << util::afvalue_as_f64(m(x, y, mz_slice, 0)) << " "
+                          << util::afvalue_as_f64(m(x, y, mz_slice, 1)) << std::endl;
             }
         }
         stream << std::endl;

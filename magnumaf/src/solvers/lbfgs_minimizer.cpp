@@ -24,8 +24,8 @@ LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, 
 void abort_if_size_is_zero(std::size_t size) {
     if (size == 0) {
         std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
-                              "_llgterms == 0. Please add at least one term to "
-                              "LBFGS_Minimizer.fieldterms_! Aborting...")
+                                            "_llgterms == 0. Please add at least one term to "
+                                            "LBFGS_Minimizer.fieldterms_! Aborting...")
                   << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -33,13 +33,15 @@ void abort_if_size_is_zero(std::size_t size) {
 
 ///< Calculate gradient as m x (m x Heff), which is proportional to energy-dissipation term of the LLG
 af::array Gradient(const State& state, const af::array& heff) {
-    return math::cross4(state.m, math::cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
+    return math::cross4(state.m,
+                        math::cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
 }
 
 // Alternatives
 // af::array Gradient(const State& state, const af::array& heff) {
-//    return 1. / (constants::mu0 * state.Ms) * math::cross4(state.m, math::cross4(state.m, heff)); // NOTE: state.Ms must not be 0!
-//    return -equations::LLG_damping(1, state.m, math::cross4(state.m, heff)); // Also works, but is stuck at step 15 in
+//    return 1. / (constants::mu0 * state.Ms) * math::cross4(state.m, math::cross4(state.m, heff)); // NOTE: state.Ms
+//    must not be 0! return -equations::LLG_damping(1, state.m, math::cross4(state.m, heff)); // Also works, but is
+//    stuck at step 15 in
 //}
 
 std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {
@@ -166,8 +168,8 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         if (rate == 0.0) {
             if (verbose_ > 0) {
                 std::cout << color_string::red("Warning: LBFGS_Minimizer: linesearch returned rate "
-                                 "== 0.0. This should not happen, elaborate! (maybe "
-                                 "m is already relaxed?)")
+                                               "== 0.0. This should not happen, elaborate! (maybe "
+                                               "m is already relaxed?)")
                           << std::endl;
                 // std::cout << color_string::bold_red("Error: LBFGS_Minimizer: linesearch
                 // failed, rate == 0.0") << std::endl;
@@ -192,8 +194,8 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         if (of_convergence_.is_open()) {
             of_convergence_ << std::setprecision(std::numeric_limits<double>::digits10 + 12);
             of_convergence_ << (f_old - f) / (tolerance_ * f1) << "\t"
-                            << math::max_4d_abs(s) / (tolf2 * (1 + math::max_4d_abs(state.m))) << "\t" << gradNorm / (tolf3 * f1)
-                            << std::endl;
+                            << math::max_4d_abs(s) / (tolf2 * (1 + math::max_4d_abs(state.m))) << "\t"
+                            << gradNorm / (tolf3 * f1) << std::endl;
         }
 
         if (((f_old - f) < (tolerance_ * f1)) && (math::max_4d_abs(s) < (tolf2 * (1 + math::max_4d_abs(state.m)))) &&
@@ -323,8 +325,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
             stp = stx;
             if (verbose_ > 0) {
                 std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
-
-}
+            }
         }
 
         //// test new point
@@ -346,40 +347,33 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         // all possible convergence tests
         if ((brackt & ((stp <= stmin) | (stp >= stmax))) | (infoc == 0)) {
             info = 6;
-
-}
+        }
 
         // if ((stp == stpmax) & (f <= ftest1) & (dg <= dgtest))
         if ((stp == stpmax) & (f <= ftest2) & (dg <= dgtest)) {
             info = 5;
-
-}
+        }
 
         // if ((stp == stpmin) & ((f > ftest1) | (dg >= dgtest)))
         if ((stp == stpmin) & ((f > ftest2) | (dg >= dgtest))) {
             info = 4;
-
-}
+        }
 
         if (nfev >= maxfev) {
             info = 3;
-
-}
+        }
 
         if (brackt & (stmax - stmin <= xtol * stmax)) {
             info = 2;
-
-}
+        }
 
         if ((f <= ftest1) & (fabs(dg) <= gtol * (-dginit))) {
             info = 1;
-
-}
+        }
 
         if (((f <= ftest2) && (ft * dginit >= dg)) && (fabs(dg) <= gtol * (-dginit))) {
             info = 1;
-
-}
+        }
 
         // terminate when convergence reached
         if (info != 0) {
@@ -389,8 +383,7 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         // if (stage1 & (f <= ftest1) & (dg >= std::min(ftol, gtol)*dginit))
         if (stage1 & ((f <= ftest2) && (ft * dginit >= dg)) & (dg >= std::min(ftol, gtol) * dginit)) { // approx wolfe 1
             stage1 = false;
-
-}
+        }
 
         // if (stage1 & (f <= fx) & (f > ftest1)) {
         if (stage1 & (f <= fx) & (not((f <= ftest2) && (ft * dginit >= dg)))) { // not wolfe 1 --> not approx wolfe 1
@@ -418,15 +411,14 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         if (brackt) {
             if (fabs(sty - stx) >= 0.66 * width1) {
                 stp = stx + 0.5 * (sty - stx);
-
-}
+            }
             width1 = width;
             width = fabs(sty - stx);
         }
     }
 
     std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
-                          "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
+                                        "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
               << std::endl;
     exit(0);
     return 0;
@@ -457,8 +449,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
         if (stp < stx) {
             gamma = -gamma;
-
-}
+        }
         double p = (gamma - dx) + theta;
         double q = ((gamma - dx) + gamma) + dp;
         double r = p / q;
@@ -468,8 +459,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
             stpf = stpc;
         } else {
             stpf = stpc + (stpq - stpc) / 2;
-
-}
+        }
         brackt = true;
     } else if (sgnd < 0.0) {
         info = 2;
@@ -479,8 +469,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double gamma = s * sqrt((theta / s) * (theta / s) - (dx / s) * (dp / s));
         if (stp > stx) {
             gamma = -gamma;
-
-}
+        }
 
         double p = (gamma - dp) + theta;
         double q = ((gamma - dp) + gamma) + dx;
@@ -491,8 +480,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
             stpf = stpc;
         } else {
             stpf = stpq;
-
-}
+        }
         brackt = true;
     } else if (fabs(dp) < fabs(dx)) {
         info = 3;
@@ -502,8 +490,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
         double gamma = s * sqrt(std::max(0., (theta / s) * (theta / s) - (dx / s) * (dp / s)));
         if (stp > stx) {
             gamma = -gamma;
-
-}
+        }
         double p = (gamma - dp) + theta;
         double q = (gamma + (dx - dp)) + gamma;
         double r = p / q;
@@ -537,8 +524,7 @@ int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, dou
             double gamma = s * sqrt((theta / s) * (theta / s) - (dy / s) * (dp / s));
             if (stp > sty) {
                 gamma = -gamma;
-
-}
+            }
 
             double p = (gamma - dp) + theta;
             double q = ((gamma - dp) + gamma) + dy;

@@ -44,12 +44,14 @@ file(GLOB SOURCE "*.cpp" "*/*.cpp" "*/*/*.cpp")
 # have to recompile all sources:
 add_library(magnumaf_object_lib OBJECT ${SOURCE})
 
-# adding shared library from object library for linking targets
-# (also avoids recompile on source change via set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE))
-# (would not be possible when adding object lib to executable instad of linking against shared lib)
+# adding shared library from object library for linking targets (also avoids
+# recompile on source change via set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)) (would
+# not be possible when adding object lib to executable instad of linking against
+# shared lib)
 add_library(magnumafcpp SHARED $<TARGET_OBJECTS:magnumaf_object_lib>)
 
-# explicitly turning POSITION_INDEPENDENT_CODE (PIC) on (in case the compiler flag is not set):
+# explicitly turning POSITION_INDEPENDENT_CODE (PIC) on (in case the compiler
+# flag is not set):
 set_property(TARGET magnumaf_object_lib PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(SETINSTALL)

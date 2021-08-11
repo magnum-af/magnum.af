@@ -21,7 +21,7 @@ class NonequiUniaxialAnisotropyField : public NonequiTerm {
 
     long int get_Ku1_field() const;
 
-    double Ku1{0};              //!< [J/m^3]  Uniaxial Anisotropy
+    double Ku1{0};                    //!< [J/m^3]  Uniaxial Anisotropy
     double get_ku1_axis(int i) const; // For wrapping only
   private:
     af::array Ku1_field{};                      //!< Spacially varying anisotropy energy in

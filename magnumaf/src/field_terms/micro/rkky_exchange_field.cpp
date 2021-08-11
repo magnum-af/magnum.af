@@ -7,14 +7,13 @@ namespace magnumaf {
 
 RKKYExchangeField::RKKYExchangeField(RKKY_values rkky_values, Exchange_values exchange_values, Mesh mesh,
                                      const af::array& rkky_indices, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices,
-                                 verbose)
-               : calc_CSR_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices,
-                                 verbose)) {}
+    : matr(COO ? calc_COO_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices, verbose)
+               : calc_CSR_matrix(rkky_values.get(), exchange_values.get(), mesh, rkky_indices, verbose)) {}
 
 RKKYExchangeField::RKKYExchangeField(long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices,
                                      bool verbose)
-    : matr(calc_COO_matrix(util::pywrap::make_copy_form_py(rkky_values), util::pywrap::make_copy_form_py(exchange_values), mesh,
+    : matr(calc_COO_matrix(util::pywrap::make_copy_form_py(rkky_values),
+                           util::pywrap::make_copy_form_py(exchange_values), mesh,
                            util::pywrap::make_copy_form_py(rkky_indices), verbose)) {}
 
 af::array RKKYExchangeField::impl_H_in_Apm(const State& state) const {
@@ -178,8 +177,9 @@ af::array RKKYExchangeField::calc_CSR_matrix(const af::array& RKKY_field, const 
     // for (auto const& value: CSR_JA){
     //    std::cout << "CSR_JA=" << value << std::endl;
     //}
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse CSR RKKY-exchange matrix in %f [s]. "
                "Sparsity of CSR_matrix = %f\n",

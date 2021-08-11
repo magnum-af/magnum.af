@@ -1,9 +1,9 @@
 #include "field_terms/micro/demag_field.hpp"
-#include "util/util.hpp"
-#include "util/color_string.hpp"
 #include "util/af_overloads.hpp"
 #include "util/cache_manager.hpp"
+#include "util/color_string.hpp"
 #include "util/prime_factors.hpp"
+#include "util/util.hpp"
 #include <string>
 #include <thread>
 
@@ -29,16 +29,13 @@ double f(double x, double y, double z) {
     double result = 1.0 / 6.0 * (2.0 * xx - yy - zz) * R;
     if (xx + zz > 0) {
         result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
-
-}
+    }
     if (xx + yy > 0) {
         result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
-
-}
+    }
     if (x * R > 0) {
         result += -x * y * z * atan(y * z / (x * R));
-
-}
+    }
     return result;
 }
 
@@ -52,28 +49,22 @@ double g(const double x, const double y, double z) {
     double result = -x * y * R / 3.0;
     if (xx + yy > 0) {
         result += x * y * z * asinh(z / (sqrt(xx + yy)));
-
-}
+    }
     if (yy + zz > 0) {
         result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
-
-}
+    }
     if (xx + zz > 0) {
         result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-
-}
+    }
     if (z * R > 0) {
         result += -pow(z, 3) / 6.0 * atan(x * y / (z * R));
-
-}
+    }
     if (y * R != 0) {
         result += -z * yy / 2.0 * atan(x * z / (y * R));
-
-}
+    }
     if (x * R != 0) {
         result += -z * xx / 2.0 * atan(y * z / (x * R));
-
-}
+    }
     return result;
 }
 
@@ -216,7 +207,7 @@ af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
 
 DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
     : Nfft(::magnumaf::get_Nfft(mesh, verbose, caching,
-                                   in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
+                                in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
 
 af::array DemagField::impl_H_in_Apm(const State& state) const {
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
@@ -233,8 +224,7 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
             mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
         } else {
             mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-
-}
+        }
     } else {
         if (state.Ms_field.isempty()) {
             mfft = af::fftR2C<3>(state.Ms * state.m,
@@ -242,8 +232,7 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
         } else {
             mfft = af::fftR2C<3>(state.Ms_field * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-
-}
+        }
     }
 
     // Pointwise product

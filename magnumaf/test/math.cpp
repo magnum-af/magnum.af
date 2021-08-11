@@ -25,7 +25,7 @@ TEST(Math, af_diff1) {
     auto a = af::iota(af::dim4(n, 1, 1, 1)).as(f64);
     {
         const auto diff = af::diff1(a);
-        EXPECT_EQ(diff.dims(0), a.dims(0) - 1); // sesulting array has reduced dim by 1
+        EXPECT_EQ(diff.dims(0), a.dims(0) - 1);        // sesulting array has reduced dim by 1
         EXPECT_EQ(af::mean(diff).scalar<double>(), 1); // diff1 of iota is 1
     }
 

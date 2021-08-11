@@ -6,7 +6,6 @@
 #include <memory>
 #include <utility>
 
-
 namespace magnumaf {
 
 // Energy calculation
@@ -100,8 +99,7 @@ void Minimizer::minimize(State& state) const {
         last_dm_max.push_back(dm_max);
         if (last_dm_max.size() > samples) {
             last_dm_max.pop_front();
-
-}
+        }
 
         // Next stepsize alternating tau1 and tau2
 
@@ -116,8 +114,7 @@ void Minimizer::minimize(State& state) const {
             tau = std::max(std::min(fabs(tau), tau_max), tau_min);
         } else {
             tau = -std::max(std::min(fabs(tau), tau_max), tau_min);
-
-}
+        }
         // Increase step count
         step++;
         if (info) {
@@ -125,8 +122,7 @@ void Minimizer::minimize(State& state) const {
                       << " last_dm_max.size()=" << last_dm_max.size() << " dm_max=" << dm_max
                       << " *std::max_element()=" << *std::max_element(std::begin(last_dm_max), std::end(last_dm_max))
                       << std::endl;
-
-}
+        }
         // std::cout << "step "<< step << " Energy= "<<E(state) << " tau= "<<
         // tau << " last_dm_max.size()= "<< last_dm_max.size()<< " dm_max= " <<
         // dm_max <<"*std::max_element()"<<
@@ -135,7 +131,6 @@ void Minimizer::minimize(State& state) const {
     }
     if (info) {
         std::cout << "Minimizer: time = " << af::timer::stop(timer) << std::endl;
-
-}
+    }
 }
 } // namespace magnumaf

@@ -12,7 +12,7 @@ CubicAnisotropyField::CubicAnisotropyField(double Kc1, double Kc2, double Kc3, s
     // check input vectors c1, c2
     const double precision = 1e-12;
     const double abs_dot_c1c2 = std::fabs(util::dot_product(std::get<std::array<double, 3>>(this->c1.variant),
-                                                      std::get<std::array<double, 3>>(this->c2.variant)));
+                                                            std::get<std::array<double, 3>>(this->c2.variant)));
     if (abs_dot_c1c2 > precision) {
         std::cout << "Warning in CubicAnisotropyField: provided c1 and c2 are not perpendicular, i.e. (c1 . c2) = "
                   << abs_dot_c1c2 << " > 0" << std::endl;

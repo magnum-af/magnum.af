@@ -1,7 +1,9 @@
-project(${PROJECT_NAME} VERSION ${PROJECT_VERSION}) # NOTE: setting project again prevents 'operation only allowed in c++ file error"
-# sets magnum.af_VERSION_XXX and
-# PROJECT_VERSION_XXX variables,
-# with XXX = MAJOR,MINOR,PATCH,TWEAK
+project(${PROJECT_NAME} VERSION ${PROJECT_VERSION}) # NOTE: setting project
+                                                    # again prevents 'operation
+                                                    # only allowed in c++ file
+                                                    # error"
+# sets magnum.af_VERSION_XXX and PROJECT_VERSION_XXX variables, with XXX =
+# MAJOR,MINOR,PATCH,TWEAK
 
 # This is redundant, as mentioned in c++ part already:
 include_directories(
@@ -10,9 +12,10 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/solvers
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/util
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/integrators
-  ${CMAKE_BINARY_DIR}/${magnumaf_core_dir_name}/include/magnumaf/ # for configured headers
+  ${CMAKE_BINARY_DIR}/${magnumaf_core_dir_name}/include/magnumaf/ # for
+                                                                  # configured
+                                                                  # headers
 )
-
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
@@ -29,11 +32,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=0")
 # building with python3 only
 set(PYTHON_EXECUTABLE "/usr/bin/python3")
 # equivalent to cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 # hint from
-# https://github.com/pytorch/ELF/issues/98
-# Note: if python3 is not aviable use:# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
-# -fno-strict-aliasing") # in response to "dereferencing type-punned pointer
-# will break strict-aliasing rules" warning # hint:
-# https://github.com/cython/cython/issues/958
+# https://github.com/pytorch/ELF/issues/98 Note: if python3 is not aviable use:#
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing") # in response
+# to "dereferencing type-punned pointer will break strict-aliasing rules"
+# warning # hint: https://github.com/cython/cython/issues/958
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 # Include the CMake script UseCython.cmake.  This defines add_cython_module().
@@ -50,9 +52,9 @@ include(UseCython)
 # ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ReplicatePythonSourceTree.cmake
 # ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 # include_directories( ${CYTHON_CMAKE_EXAMPLE_SOURCE_DIR}/include ) # Warning:
-# commenting this out leads to "fatal error: ../../src/field_term.hpp: No such file
-# or directory compilation terminated." If the pyx file is a C++ file, we should
-# specify that here.
+# commenting this out leads to "fatal error: ../../src/field_term.hpp: No such
+# file or directory compilation terminated." If the pyx file is a C++ file, we
+# should specify that here.
 set_source_files_properties(
   ${magnum.af_SOURCE_DIR}/magnumaf.pyx
   # Additional files would come here as follows:

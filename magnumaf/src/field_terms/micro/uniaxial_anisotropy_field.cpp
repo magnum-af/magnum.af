@@ -37,7 +37,8 @@ UniaxialAnisotropyField::UniaxialAnisotropyField(af::array Ku1_field, const af::
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(double Ku1, long int Ku1_axis_field_ptr)
-    : Ku1(Ku1), Ku1_axis_field(util::normalize_handle_zero_vectors(util::pywrap::make_copy_form_py(Ku1_axis_field_ptr))) {}
+    : Ku1(Ku1),
+      Ku1_axis_field(util::normalize_handle_zero_vectors(util::pywrap::make_copy_form_py(Ku1_axis_field_ptr))) {}
 
 // For wrapping only
 UniaxialAnisotropyField::UniaxialAnisotropyField(long int Ku1_field_ptr, long int Ku1_axis_field_ptr)

@@ -9,7 +9,6 @@
 #include <iostream>
 #include <utility>
 
-
 namespace custom_ode {
 
 template <class Value = double> struct rk54_fehlberg_coefficients_a1 : boost::array<Value, 1> {

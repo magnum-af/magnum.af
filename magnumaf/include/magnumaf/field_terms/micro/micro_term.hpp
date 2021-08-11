@@ -1,8 +1,8 @@
 #pragma once
 #include "arrayfire.h"
 #include "constants.hpp"
-#include "state.hpp"
 #include "field_term.hpp"
+#include "state.hpp"
 #include <memory>
 
 namespace magnumaf {

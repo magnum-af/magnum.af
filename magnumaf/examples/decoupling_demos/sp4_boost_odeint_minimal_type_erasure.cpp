@@ -8,7 +8,6 @@
 #include <iostream>
 #include <utility>
 
-
 // Necessary template specialization for af::array
 namespace boost::numeric::odeint {
 template <> struct vector_space_norm_inf<af::array> {

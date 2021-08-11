@@ -17,16 +17,16 @@ TEST(micro_exch_pbc, scalar_A_COO_CSR_comparison) {
 }
 
 TEST(micro_exch_pbc, array_A_COO_CSR_comparison) {
-        unsigned nx = 10, ny = 10, nz = 10;
-        const double A = 1e-12;
-        Mesh mesh(nx, ny, nz, 1e-9, 2e-9, 3e-9);
-        af::array A_arr = af::constant(A, nx, ny, nz, f64);
-        A_arr(nx / 2, ny / 2, nz / 2) = 0.0;
-        auto exch_COO = ExchangeFieldPBC(A_arr, mesh, true, true);
-        auto exch_CSR = ExchangeFieldPBC(A_arr, mesh, true, false);
-        af::array diff = af::sum(
-            af::matmul(exch_COO.get_matr() - exch_CSR.get_matr(), af::flat(af::constant(1., nx, ny, nz, 3, f64))));
-        EXPECT_EQ(diff.scalar<double>(), 0);
+    unsigned nx = 10, ny = 10, nz = 10;
+    const double A = 1e-12;
+    Mesh mesh(nx, ny, nz, 1e-9, 2e-9, 3e-9);
+    af::array A_arr = af::constant(A, nx, ny, nz, f64);
+    A_arr(nx / 2, ny / 2, nz / 2) = 0.0;
+    auto exch_COO = ExchangeFieldPBC(A_arr, mesh, true, true);
+    auto exch_CSR = ExchangeFieldPBC(A_arr, mesh, true, false);
+    af::array diff =
+        af::sum(af::matmul(exch_COO.get_matr() - exch_CSR.get_matr(), af::flat(af::constant(1., nx, ny, nz, 3, f64))));
+    EXPECT_EQ(diff.scalar<double>(), 0);
 }
 
 TEST(micro_exch_pbc, H_field_homogenuous_cube) {
@@ -73,8 +73,6 @@ TEST(micro_exch_pbc, H_field_homogenuous_cube) {
         EXPECT_NE(sum3d(af::abs(h_m2(af::span, af::span, 0, 2))), 0);
         EXPECT_NE(sum3d(af::abs(h_m2(af::span, af::span, af::seq(nz / 2 - 1, nz / 2), 2))), 0);
         EXPECT_NE(sum3d(af::abs(h_m2(af::span, af::span, nz - 1, 2))), 0);
-
-
     }
     {
         // Looks good, affects over boundary:

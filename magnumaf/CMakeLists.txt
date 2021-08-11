@@ -2,7 +2,8 @@
 # worked only after removing all global and local .ycm_extra_conf.py files with
 # .json comile file only in project dir Found this hint in
 # https://www.reddit.com/r/emacs/comments/7zxl37/trouble_setting_up_ycmd/
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # this writes file ${CMAKE_BINARY_DIR}/compile_commands.json
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON
+)# this writes file ${CMAKE_BINARY_DIR}/compile_commands.json
 if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
   execute_process(
     COMMAND
@@ -23,12 +24,12 @@ else()
   )
 endif()
 
-# avoid redundant linking when modifying shared libraries
-# (especially when an executables source file changes)
+# avoid redundant linking when modifying shared libraries (especially when an
+# executables source file changes)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -M") # test linking
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H") # test linking tree
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -M") # test linking
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H") # test linking tree
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -49,27 +50,26 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wstrict-aliasing")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpessimizing-move")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wredundant-move")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow") # shadowing caused a nasty bug
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") set(CMAKE_CXX_FLAGS
+# "${CMAKE_CXX_FLAGS} -Wsign-conversion") set(CMAKE_CXX_FLAGS
+# "${CMAKE_CXX_FLAGS} -Wconversion") set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
+# -Weffc++") set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow") # shadowing
+# caused a nasty bug set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
 
 if(DEBUG)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
-
 # indicate we wish for the binaries to be written to the bin directory
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+# set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 # we have custom CMake configuration files, tell CMake to use them:
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # build library Generate Version Config Header
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/magnumafConfig.hpp.in
-               ${CMAKE_BINARY_DIR}/include/magnumaf/magnumafConfig.hpp)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/magnumafConfig.hpp.in
+  ${CMAKE_BINARY_DIR}/include/magnumaf/magnumafConfig.hpp)
 
 # Generate Git Config header
 set(PRE_CONFIGURE_FILE

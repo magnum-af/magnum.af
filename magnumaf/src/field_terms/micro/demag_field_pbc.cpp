@@ -19,8 +19,7 @@ af::array calc_m_mfft(const State& state) {
             return af::fftR2C<3>(state.Ms * state.m);
         } else {
             return af::fftR2C<3>(state.Ms_field * state.m);
-
-}
+        }
     }
 }
 

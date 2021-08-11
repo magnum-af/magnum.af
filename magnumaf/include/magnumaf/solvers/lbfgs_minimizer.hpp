@@ -30,9 +30,9 @@ class LBFGS_Minimizer {
     int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp,
               double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) const;
 
-    const double tolerance_;           ///< Error tolerance with default 1e-6
-    const size_t maxIter_;             ///< Maximum number of iterations
-    const int verbose_;                ///< Setting output options, valid values are 0, 1, 2, 3, 4
+    const double tolerance_; ///< Error tolerance with default 1e-6
+    const size_t maxIter_;   ///< Maximum number of iterations
+    const int verbose_;      ///< Setting output options, valid values are 0, 1, 2, 3, 4
 };
 
 } // namespace magnumaf

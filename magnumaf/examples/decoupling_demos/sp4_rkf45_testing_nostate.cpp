@@ -6,8 +6,8 @@
 #include "rk4.hpp"
 #include "state.hpp"
 #include "util/arg_parser.hpp"
-#include "util/util.hpp" // normalize
 #include "util/timer.hpp"
+#include "util/util.hpp" // normalize
 #include <cmath>
 #include <fstream>
 #include <gtest/gtest.h>

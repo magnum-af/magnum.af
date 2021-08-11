@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 # assumes dir ../ is project root dir
 
 # call this scripts directory
@@ -14,4 +14,4 @@ set -o xtrace
 find . -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format -i --style=file
 
 # format CMake
-find . -iname 'CMakeLists.txt' | xargs cmake-format -i
+find . -iname 'CMakeLists.txt' | xargs cmake-format -i --line-width=120

@@ -3,7 +3,7 @@
 #include <array>
 
 /// Common math functions for af::array container.
-namespace magnumaf::math{
+namespace magnumaf::math {
 
 /// Get vector components of af::array sized [1 1 1 3].
 template <typename T> std::array<T, 3> vec_components(const af::array& a) {
@@ -17,9 +17,7 @@ template <typename T> std::array<T, 3> vec_components(const af::array& a) {
 inline af::array mean_3d_af(const af::array& m) { return af::mean(af::mean(af::mean(m, 0), 1), 2); }
 
 /// Calculate mean along first three dimensions of af::array, [nx ny nz :] -> [1 1 1 :]
-template <typename T> std::array<T, 3> mean_3d(const af::array& m) {
-    return vec_components<T>(mean_3d_af(m));
-}
+template <typename T> std::array<T, 3> mean_3d(const af::array& m) { return vec_components<T>(mean_3d_af(m)); }
 
 /// Absolute value of maximum of all values in array
 double max_4d_abs(const af::array& a);

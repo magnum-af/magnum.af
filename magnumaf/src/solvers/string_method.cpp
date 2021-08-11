@@ -9,7 +9,8 @@
 
 namespace magnumaf {
 
-StringMethod::StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg)
+StringMethod::StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt,
+                           LLGIntegrator llg)
     : llg(std::move(llg)), n_interp(n_interp), dt(dt) {
 
     calc_x(inputimages);
@@ -19,7 +20,8 @@ StringMethod::StringMethod(const State& state, std::vector<State> inputimages, i
         if (state.Ms_field.isempty()) {
             images.emplace_back(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         } else {
-            images.emplace_back(state.mesh, state.Ms_field, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
+            images.emplace_back(state.mesh, state.Ms_field,
+                                af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         }
     }
     for (int i = 0; i < n_interp; i++) {
@@ -81,12 +83,10 @@ void StringMethod::lin_interpolate() {
         int j = 0;
         while (x[j] < x_interp[i] && j < n_interp) {
             j++;
-
-}
+        }
         if (j > 0) {
             j--;
-
-}
+        }
         if (j < n_interp - 1) {
             images[i].m =
                 images_temp[j].m + (x_interp[i] - x[j]) * (images_temp[j + 1].m - images_temp[j].m) / (x[j + 1] - x[j]);
@@ -105,7 +105,7 @@ void StringMethod::lin_interpolate() {
 }
 
 void StringMethod::integrate() {
-    for (auto & image : images) {
+    for (auto& image : images) {
         double imagtime = image.t;
         while (image.t < imagtime + dt) {
             llg.step(image);
@@ -127,7 +127,7 @@ void StringMethod::step() {
 }
 
 void StringMethod::vec_normalize() {
-    for (auto & image : images) {
+    for (auto& image : images) {
         image.m = util::normalize_handle_zero_vectors(image.m);
         // af::eval avoids JIT crash here!
         af::eval(image.m); // TODO reassess necessity for newer af-versions

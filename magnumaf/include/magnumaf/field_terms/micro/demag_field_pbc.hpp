@@ -6,4 +6,4 @@ class DemagFieldPBC : public MicroTerm {
   private:
     virtual af::array impl_H_in_Apm(const State& state) const override;
 };
-}
+} // namespace magnumaf

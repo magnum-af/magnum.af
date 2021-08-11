@@ -3,7 +3,6 @@
 #include <chrono>
 #include <utility>
 
-
 namespace magnumaf {
 
 af::array Stochastic_Integrator::Heun(const State& state) {
@@ -74,7 +73,8 @@ int get_mode(const std::string& smode) {
 }
 
 Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, const State& state,
-                                             std::vector<std::unique_ptr<FieldTerm>> fieldterms_in, const std::string& smode)
+                                             std::vector<std::unique_ptr<FieldTerm>> fieldterms_in,
+                                             const std::string& smode)
     : alpha(alpha), T(T), dt(dt), fieldterms(std::move(fieldterms_in)), m_prev(state.m), mode(get_mode(smode)) {
     const double D = (alpha * constants::kb * T) /
                      (constants::gamma * constants::mu0 * state.Ms * state.mesh.dx * state.mesh.dy * state.mesh.dz);
@@ -88,7 +88,7 @@ Stochastic_Integrator::Stochastic_Integrator(double alpha, double T, double dt, 
 
 double Stochastic_Integrator::cpu_time() {
     double cpu_time = 0.;
-    for (auto & fieldterm : fieldterms) {
+    for (auto& fieldterm : fieldterms) {
         cpu_time += fieldterm->elapsed_eval_time();
     }
     return cpu_time;

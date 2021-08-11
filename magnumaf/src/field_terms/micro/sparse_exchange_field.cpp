@@ -82,9 +82,9 @@ af::array calc_COO_matrix(const double A_exchange, const Mesh& mesh, const bool 
             }
         }
     }
-    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
-                                    af::array(COO_ROW.size(), COO_ROW.data()),
-                                    af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    af::array matr_COO = af::sparse(
+        static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
+        af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
@@ -168,15 +168,15 @@ af::array calc_CSR_matrix(const double A_exchange, const Mesh& mesh, const bool 
         }
     }
 
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
                color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
-
-}
+    }
     return result;
 }
 
@@ -270,8 +270,9 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
             }
         }
     }
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
@@ -358,9 +359,9 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
             }
         }
     }
-    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
-                                    af::array(COO_ROW.size(), COO_ROW.data()),
-                                    af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    af::array matr_COO = af::sparse(
+        static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
+        af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
@@ -381,8 +382,7 @@ SparseExchangeField::SparseExchangeField(double A_exchange, Mesh mesh, bool verb
     : matr(COO ? calc_COO_matrix(A_exchange, mesh, verbose) : calc_CSR_matrix(A_exchange, mesh, verbose)) {}
 
 SparseExchangeField::SparseExchangeField(const af::array& A_exchange_field, Mesh mesh, bool verbose, bool COO)
-    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose)
-               : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
+    : matr(COO ? calc_COO_matrix(A_exchange_field, mesh, verbose) : calc_CSR_matrix(A_exchange_field, mesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
 SparseExchangeField::SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose)

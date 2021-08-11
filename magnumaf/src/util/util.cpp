@@ -122,8 +122,7 @@ bool abs_diff_lt_precision(const af::array& first, const af::array& second, doub
         return true;
     } else {
         return false;
-
-}
+    }
 }
 
 /// Relative difference less than precision: Element-wise comparision of
@@ -153,8 +152,7 @@ bool rel_diff_lt_precision(const af::array& first, const af::array& second, doub
         return true;
     } else {
         return false;
-
-}
+    }
 }
 
 /// Upper bound for absolute difference
@@ -165,8 +163,7 @@ double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     while (abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
         if (verbose) {
             std::cout << "prec = " << prec << std::endl;
-
-}
+        }
         prec_prev = prec;
         prec = factor1 * prec;
     }
@@ -175,8 +172,7 @@ double abs_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     while (abs_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
         if (verbose) {
             std::cout << "prec = " << prec << std::endl;
-
-}
+        }
         prec_prev = prec;
         prec = factor2 * prec;
     }
@@ -191,8 +187,7 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     while (rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
         if (verbose) {
             std::cout << "prec = " << prec << std::endl;
-
-}
+        }
         prec_prev = prec;
         prec = factor1 * prec;
     }
@@ -201,8 +196,7 @@ double rel_diff_upperbound(const af::array& a, const af::array& b, bool verbose,
     while (rel_diff_lt_precision(a, b, prec, false) and prec > 1e-300) {
         if (verbose) {
             std::cout << "prec = " << prec << std::endl;
-
-}
+        }
         prec_prev = prec;
         prec = factor2 * prec;
     }

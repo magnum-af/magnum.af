@@ -1,6 +1,5 @@
 #include "nonequi/nonequi_uniaxial_anisotropy_field.hpp"
 
-
 #include <utility>
 
 #include "util/util.hpp"

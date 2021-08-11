@@ -43,8 +43,7 @@ int main(int argc, char** argv) {
             const double r = sqrt(pow(rx, 2) + pow(ry, 2));
             if (r > 30 / 4.) {
                 m(ix, iy, af::span, 2) = 1.;
-
-}
+            }
         }
     }
 

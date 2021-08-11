@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
         double vm = std::numeric_limits<double>::quiet_NaN(), rss = std::numeric_limits<double>::quiet_NaN();
         process_mem_usage(vm, rss);
         std::cout << std::left << "i=" << std::setw(6) << i << "[%]=" << std::setw(5)
-                  << 100. * (static_cast<double>(i)) / (static_cast<double>(n_writes)) << "VIRT[GB]=" << std::setw(10) << vm / 1e6
-                  << "RES[GB]=" << std::setw(9) << rss / 1e6 << "VIRT=" << std::setw(8) << vm << "RES=" << std::setw(6)
-                  << rss << std::endl;
+                  << 100. * (static_cast<double>(i)) / (static_cast<double>(n_writes)) << "VIRT[GB]=" << std::setw(10)
+                  << vm / 1e6 << "RES[GB]=" << std::setw(9) << rss / 1e6 << "VIRT=" << std::setw(8) << vm
+                  << "RES=" << std::setw(6) << rss << std::endl;
         state.write_vti(outdir / "minit");
     }
     return 0;

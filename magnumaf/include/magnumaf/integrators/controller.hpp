@@ -34,8 +34,8 @@ class Controller {
     const double hmin_;
     const double hmax_;
     // Scale function return= atol + abs(y) * rtol
-    const double atol_; // Tolerated absolute error
-    const double rtol_; // Tolerated relative error
+    const double atol_;   // Tolerated absolute error
+    const double rtol_;   // Tolerated relative error
     bool verbose_{false}; // Switch verbose mode
 
     // Numerical Recipies 3rd Edition suggests these values:

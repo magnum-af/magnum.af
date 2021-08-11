@@ -3,7 +3,6 @@
 #include <iostream>
 #include <utility>
 
-
 // struct naming: if callsite passes by lval: first term (e.g. CpCp is copy and copy)
 // if callsite passes by rval (via std::move): second term (e.g. MvCp is move and copy)
 

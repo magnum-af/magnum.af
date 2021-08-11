@@ -4,7 +4,6 @@
 #include <numeric>
 #include <utility>
 
-
 namespace magnumaf::util {
 
 namespace fs = std::filesystem;
@@ -48,7 +47,8 @@ void remove_last_file_until_below(std::uintmax_t size_in_byte, std::vector<fs::d
 
 CacheManager::CacheManager(bool verbose, fs::path p, std::uintmax_t max_size_in_byte,
                            std::uintmax_t shrink_size_in_byte)
-    : verbose(verbose), cache_folder(std::move(p)), max_size_in_byte(max_size_in_byte), shrink_size_in_byte(shrink_size_in_byte) {
+    : verbose(verbose), cache_folder(std::move(p)), max_size_in_byte(max_size_in_byte),
+      shrink_size_in_byte(shrink_size_in_byte) {
     // create dir if not existing
     fs::create_directories(cache_folder);
 }

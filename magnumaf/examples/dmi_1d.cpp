@@ -48,8 +48,7 @@ int main(int argc, char** argv) {
         stream << state << std::endl;
         if (state.steps % 100 == 0) {
             state.write_vti(outdir / ("m_step" + std::to_string(state.steps)));
-
-}
+        }
     }
     // llg.relax(state, 1e-10, 100, 1);
     stream.close();

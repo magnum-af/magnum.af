@@ -17,7 +17,7 @@ namespace magnumaf {
 class CG_Minimizer {
   public:
     vec_uptr_FieldTerm fieldterms{};
-    void Minimize(State&) const;                                // Minimization routine
+    void Minimize(State&) const; // Minimization routine
   private:
     af::array Heff(const State& m) const; ///< Effective Field
     std::pair<double, af::array> EnergyAndGradient(const State& state) const;

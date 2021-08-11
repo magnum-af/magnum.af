@@ -1,6 +1,5 @@
 #include "field_terms/micro/external_field.hpp"
 
-
 #include <utility>
 
 #include "util/util.hpp"
@@ -33,8 +32,7 @@ af::array ExternalField::impl_H_in_Apm(const State& state) const {
         return callback_func(state);
     } else {
         return zee_field;
-
-}
+    }
 }
 
 double ExternalField::impl_E_in_J(const State& state, const af::array& h) const {

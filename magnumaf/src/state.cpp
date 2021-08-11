@@ -7,7 +7,6 @@
 #include <iomanip>
 #include <utility>
 
-
 namespace magnumaf {
 
 /// Overloaded '+' operator adds an af::array to af::array this->m
@@ -111,7 +110,8 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
 
 // void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
 //    af::array one_when_value_is_zero = af::iszero(util::vecnorm(m));
-//    double meannorm = af::mean(af::mean(af::mean(af::mean(util::vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2), 3)
+//    double meannorm = af::mean(af::mean(af::mean(af::mean(util::vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2),
+//    3)
 //                          .as(f64)
 //                          .scalar<double>();
 //    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
@@ -137,8 +137,8 @@ State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
 
 State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, bool mute_warning)
     : mesh(mesh), m(std::move(m_in)),
-      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(Ms_field_in, 1, 1, 1, 3) : std::move(Ms_field_in)),
-      verbose(verbose), mute_warning(mute_warning) {
+      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(Ms_field_in, 1, 1, 1, 3) : std::move(Ms_field_in)), verbose(verbose),
+      mute_warning(mute_warning) {
 
     // Using Ms_field after move causes segfault:
     // if (Ms_field.dims(3) == 3) {
@@ -163,7 +163,8 @@ State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)
 
 // Wrapping only, memory management to be done by python:
 State::State(Mesh mesh, long int Ms_field_ptr, long int m, bool verbose, bool mute_warning)
-    : State(mesh, util::pywrap::make_copy_form_py(Ms_field_ptr), util::pywrap::make_copy_form_py(m), verbose, mute_warning) {}
+    : State(mesh, util::pywrap::make_copy_form_py(Ms_field_ptr), util::pywrap::make_copy_form_py(m), verbose,
+            mute_warning) {}
 
 void State::Normalize() { this->m = util::normalize(this->m); }
 

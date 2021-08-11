@@ -1,7 +1,7 @@
 #include "adaptive_runge_kutta.hpp"
 #include "math.hpp"
-#include "util/util.hpp"
 #include "util/color_string.hpp"
+#include "util/util.hpp"
 
 namespace magnumaf {
 
@@ -11,28 +11,23 @@ AdaptiveRungeKutta::AdaptiveRungeKutta(const std::string& scheme_, Controller co
     if (scheme_ == "RKF45") {
         if (verbose) {
             printf("Adaptive Runge Kutta: Initializing RKF45 method.\n");
-
-}
+        }
     } else if (scheme_ == "DP45") {
         if (verbose) {
             printf("Adaptive Runge Kutta: Initializing DP45 method.\n");
-
-}
+        }
     } else if (scheme_ == "BS45") {
         if (verbose) {
             printf("Adaptive Runge Kutta: Initializing BS45 method.\n");
-
-}
+        }
     } else if (scheme_ == "DP78") {
         if (verbose) {
             printf("Adaptive Runge Kutta: Initializing DP78 method.\n");
-
-}
+        }
     } else if (scheme_ == "BS23") {
         if (verbose) {
             printf("Adaptive Runge Kutta: Initializing BS23 method.\n");
-
-}
+        }
     } else {
         printf("%s Integration method not found. Valid arguments are 'RKF45' "
                "(default) , 'DP45', 'BS45', 'DP78', 'BS23'\n",

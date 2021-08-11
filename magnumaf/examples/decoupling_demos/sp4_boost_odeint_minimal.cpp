@@ -8,7 +8,6 @@
 #include <iostream>
 #include <utility>
 
-
 // Necessary template specialization for af::array
 // Adapted form boost/numeric/odeint/algebra/vector_space_algebra.hpp
 // and boost/numeric/odeint/external/vexcl/vexcl_norm_inf.hpp
@@ -20,7 +19,6 @@ template <> struct vector_space_norm_inf<af::array> {
     }
 };
 } // namespace boost::numeric::odeint
-
 
 int main(int argc, char** argv) {
     std::cout << "Start" << std::endl;

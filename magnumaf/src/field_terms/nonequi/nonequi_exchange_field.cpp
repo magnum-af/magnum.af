@@ -119,9 +119,9 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
             }
         }
     }
-    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
-                                    af::array(COO_ROW.size(), COO_ROW.data()),
-                                    af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    af::array matr_COO = af::sparse(
+        static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
+        af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
@@ -292,9 +292,9 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
             }
         }
     }
-    af::array matr_COO = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
-                                    af::array(COO_ROW.size(), COO_ROW.data()),
-                                    af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
+    af::array matr_COO = af::sparse(
+        static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), af::array(COO_values.size(), COO_values.data()),
+        af::array(COO_ROW.size(), COO_ROW.data()), af::array(COO_COL.size(), COO_COL.data()), AF_STORAGE_COO);
     double time = t.stop();
 
     af::timer timer_convert = af::timer::start();
@@ -415,15 +415,15 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
         }
     }
 
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
                color_string::info(), t.stop(),
                static_cast<double>(af::sparseGetNNZ(result)) / static_cast<double>(result.elements()));
-
-}
+    }
     return result;
 }
 
@@ -598,8 +598,9 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& 
             }
         }
     }
-    af::array result = af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
-                                  (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
+    af::array result =
+        af::sparse(static_cast<dim_t>(dimension), static_cast<dim_t>(dimension), static_cast<dim_t>(CSR_values.size()),
+                   (void*)CSR_values.data(), CSR_IA.data(), CSR_JA.data(), f64);
     if (verbose) {
         printf("%s Initialized sparse exchange matrix in %f [s]. Sparsity of "
                "CSR_matrix = %f\n",
@@ -614,12 +615,14 @@ NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, double A_e
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(A_exchange, nemesh, verbose) : calc_CSR_matrix(A_exchange, nemesh, verbose)) {}
 
-NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, const af::array& A_exchange_field, bool verbose, bool COO)
+NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, const af::array& A_exchange_field, bool verbose,
+                                           bool COO)
     : NonequiTerm(nemesh), matr(COO ? calc_COO_matrix(A_exchange_field, nemesh, verbose)
                                     : calc_CSR_matrix(A_exchange_field, nemesh, verbose)) {}
 
 // For wrapping only: constructor version taking A_exchange_field
-NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, long int A_exchange_field_ptr, bool verbose, bool COO)
+NonequiExchangeField::NonequiExchangeField(const NonequiMesh& nemesh, long int A_exchange_field_ptr, bool verbose,
+                                           bool COO)
     : NonequiTerm(nemesh),
       matr(COO ? calc_COO_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)
                : calc_CSR_matrix(util::pywrap::make_copy_form_py(A_exchange_field_ptr), nemesh, verbose)) {}

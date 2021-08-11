@@ -6,19 +6,18 @@
 #include <memory>
 #include <utility>
 
-
 namespace magnumaf {
 
 LLGIntegrator::LLGIntegrator(double alpha, const std::string& scheme, Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme, Controller controller,
-                             bool dissipation_term_only)
+LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme,
+                             Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
 
-LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il, const std::string& scheme,
-                             Controller controller, bool dissipation_term_only)
+LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il,
+                             const std::string& scheme, Controller controller, bool dissipation_term_only)
     : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
                     controller, dissipation_term_only) {}
 
@@ -107,8 +106,8 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
     }
 }
 
-void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, const std::string& filename,
-                                    bool verbose, bool append) {
+void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s,
+                                    const std::string& filename, bool verbose, bool append) {
     auto stream = std::ofstream(filename, append ? std::ios::app : std::ios::out);
     integrate_dense(state, time_in_s, write_every_dt_in_s, stream, verbose);
 }

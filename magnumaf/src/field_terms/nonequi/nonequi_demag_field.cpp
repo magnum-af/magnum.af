@@ -1,8 +1,8 @@
 #include "nonequi/nonequi_demag_field.hpp"
 #include "util/cache_manager.hpp"
-#include "util/util.hpp"
 #include "util/color_string.hpp"
 #include "util/prime_factors.hpp"
+#include "util/util.hpp"
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -83,16 +83,13 @@ double f(double x, double y, double z) {
     double result = 1.0 / 6.0 * (2.0 * xx - yy - zz) * R;
     if (xx + zz > 0) {
         result += y / 2.0 * (zz - xx) * asinh(y / (sqrt(xx + zz)));
-
-}
+    }
     if (xx + yy > 0) {
         result += z / 2.0 * (yy - xx) * asinh(z / (sqrt(xx + yy)));
-
-}
+    }
     if (x * R > 0) {
         result += -x * y * z * atan(y * z / (x * R));
-
-}
+    }
     return result;
 }
 
@@ -106,28 +103,22 @@ double g(double x, double y, double z) {
     double result = -x * y * R / 3.0;
     if (xx + yy > 0) {
         result += x * y * z * asinh(z / (sqrt(xx + yy)));
-
-}
+    }
     if (yy + zz > 0) {
         result += y / 6.0 * (3.0 * zz - yy) * asinh(x / (sqrt(yy + zz)));
-
-}
+    }
     if (xx + zz > 0) {
         result += x / 6.0 * (3.0 * zz - xx) * asinh(y / (sqrt(xx + zz)));
-
-}
+    }
     if (z * R > 0) {
         result += -pow(z, 3) / 6.0 * atan(x * y / (z * R));
-
-}
+    }
     if (y * R != 0) {
         result += -z * yy / 2.0 * atan(x * z / (y * R));
-
-}
+    }
     if (x * R != 0) {
         result += -z * xx / 2.0 * atan(y * z / (x * R));
-
-}
+    }
     return result;
 }
 
@@ -274,8 +265,8 @@ af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads) {
 af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads, bool verbose) {
     af::timer timer = af::timer::start();
     if (verbose) {
-        printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
-               std::thread::hardware_concurrency());
+        printf("%s Starting Nonequidistant Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(),
+               nthreads, std::thread::hardware_concurrency());
     }
     af::array result = calculate_N(nemesh, nthreads);
     if (verbose) {
@@ -299,8 +290,8 @@ std::string to_string(const NonequiMesh& nemesh) {
 
 void warn_if_maxprime_lt_13(unsigned n, const std::string& ni) {
     if (util::max_of_prime_factors(n) > 13) {
-        std::cout << color_string::warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh." << ni << "="
-                  << n << " is " << util::max_of_prime_factors(n)
+        std::cout << color_string::warning() << " NonequiDemagField::NonequiDemagField: maximum prime factor of nemesh."
+                  << ni << "=" << n << " is " << util::max_of_prime_factors(n)
                   << ", which is > 13. FFT on the OpenCL backend only supports dimensions with the maximum prime "
                      "factor <= 13. Please use either the CUDA or CPU backend or choose an alternative discretization "
                      "where max_prime(n) <= 13."

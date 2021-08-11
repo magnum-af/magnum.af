@@ -2,9 +2,7 @@
 #include "util/util.hpp"
 #include <gtest/gtest.h>
 
-
 #include <utility>
-
 
 using namespace magnumaf;
 

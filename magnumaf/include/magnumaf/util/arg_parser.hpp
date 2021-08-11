@@ -8,8 +8,7 @@
 #include <iostream>
 #include <string>
 
-namespace magnumaf{
-
+namespace magnumaf {
 
 template <class T> std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
     copy(std::begin(v), std::end(v), std::ostream_iterator<T>(std::cout, " "));
@@ -169,4 +168,4 @@ class ArgParser {
 
   private:
 };
-}
+} // namespace magnumaf

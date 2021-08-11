@@ -9,9 +9,10 @@ namespace magnumaf {
 using std::size_t;
 
 struct Mesh {
+    size_t nx, ny, nz; ///< Number of cells in x, y, z
+    double dx, dy, dz; ///< Length of a cell in x, y, z in [m]
+
     constexpr Mesh(size_t nx, size_t ny, size_t nz, double dx, double dy, double dz); // get rid of ctor?
-    size_t nx, ny, nz;   ///< Number of cells in x, y, z
-    double dx, dy, dz;   ///< Length of a cell in x, y, z in [m]
 };
 
 // avoiding shadow warning:

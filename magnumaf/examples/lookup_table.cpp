@@ -142,7 +142,7 @@ int main() {
             i++;
         };
         print_array_and_type0(std::vector{0.5, 1.5, 2.5}, region);
-        print_array_and_type0(std::vector{0, 1, -2}, region); // implicit <int>
+        print_array_and_type0(std::vector{0, 1, -2}, region);   // implicit <int>
         print_array_and_type0(std::vector{0U, 1U, 2U}, region); // <unsigned>
 
         // using RegionState for lookup
@@ -158,9 +158,9 @@ int main() {
             std::cout << result.type() << std::endl;
         };
 
-        print_array_and_type(std::vector{0.5, 1.5, 2.5});   // <double>
-        print_array_and_type(std::vector{-1, 0, 1, 2});     // <int>
-        print_array_and_type(std::vector{0U, 1U, 2U});      // unsigned
+        print_array_and_type(std::vector{0.5, 1.5, 2.5}); // <double>
+        print_array_and_type(std::vector{-1, 0, 1, 2});   // <int>
+        print_array_and_type(std::vector{0U, 1U, 2U});    // unsigned
 
         const auto noregion_state = RegionState{mesh, m, Ms, {}};
         try {

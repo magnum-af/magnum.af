@@ -7,8 +7,8 @@ namespace magnumaf {
 void abort_on_empty_size(const vec_uptr_FieldTerm& fieldterms) {
     if (fieldterms.size() == 0) {
         std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
-                              "_llgterms == 0. Please add at least one term to "
-                              "LBFGS_Minimizer.fieldterms! Aborting...")
+                                            "_llgterms == 0. Please add at least one term to "
+                                            "LBFGS_Minimizer.fieldterms! Aborting...")
                   << std::endl;
         exit(EXIT_FAILURE);
     }

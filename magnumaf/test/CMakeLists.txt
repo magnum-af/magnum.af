@@ -23,9 +23,7 @@ foreach(testsourcefile ${APP_SOURCES})
   add_executable(${testname} ${testsourcefile})
   target_link_libraries(${testname} magnumafcpp ${GTEST_LIBRARIES}
                         ${ArrayFire_CPU_LIBRARIES} ${VTK_LIBRARIES} pthread)
-  add_test(
-    NAME ${testname}
-    COMMAND ${testname})
+  add_test(NAME ${testname} COMMAND ${testname})
 endforeach(testsourcefile ${APP_SOURCES})
 
 find_package(OpenCL)
@@ -39,11 +37,14 @@ if(${ArrayFire_OpenCL_FOUND} AND ${OpenCL_FOUND})
     # Adding executables and linking
     add_executable(${testname} ${testsourcefile})
     target_link_libraries(
-      ${testname} magnumafcpp ${GTEST_LIBRARIES} ${ArrayFire_OpenCL_LIBRARIES}
-      ${OpenCL_LIBRARIES} ${VTK_LIBRARIES} pthread)
-    add_test(
-      NAME ${testname}
-      COMMAND ${testname})
+      ${testname}
+      magnumafcpp
+      ${GTEST_LIBRARIES}
+      ${ArrayFire_OpenCL_LIBRARIES}
+      ${OpenCL_LIBRARIES}
+      ${VTK_LIBRARIES}
+      pthread)
+    add_test(NAME ${testname} COMMAND ${testname})
     # add_test(test_opencl_${testname} test_opencl_${testname})
   endforeach(testsourcefile ${APP_SOURCES})
 endif()
@@ -71,8 +72,6 @@ if(${ArrayFire_CUDA_FOUND} AND ${CUDA_FOUND})
       ${NVVM_LIB}
       ${VTK_LIBRARIES}
       pthread)
-    add_test(
-      NAME ${testname}
-      COMMAND ${testname})
+    add_test(NAME ${testname} COMMAND ${testname})
   endforeach(testsourcefile ${APP_SOURCES})
 endif()

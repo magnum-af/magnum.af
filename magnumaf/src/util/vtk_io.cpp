@@ -330,14 +330,12 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
     vtkXMLRectilinearGridWriter* writer = vtkXMLRectilinearGridWriter::New();
     if (std::string(outputname.end() - 4, outputname.end()) != ".vtr") {
         outputname.append(".vtr"); // adding file extensions if needed
-
-}
+    }
 
     if (verbose) {
         std::cout << "vtk_writer: writing array of dimension [" << field.dims(0) << " " << field.dims(1) << " "
                   << field.dims(2) << " " << field.dims(3) << "] to '" << outputname << "'" << std::endl;
-
-}
+    }
 
     writer->SetFileName(outputname.c_str());
     writer->SetInputData(grid);
@@ -360,8 +358,7 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
 
     if (std::string(filepath.end() - 4, filepath.end()) != ".vtr") {
         filepath.append(".vtr"); // adding file extension if needed
-
-}
+    }
 
     // Obtain vktRectilinearGrid object from reader
     vtkSmartPointer<vtkXMLRectilinearGridReader> reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
@@ -380,21 +377,21 @@ std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool ve
     std::vector<double> x_spacings;
     x_spacings.reserve(output_data->GetDimensions()[0] - 1);
 
-for (int i = 0; i < output_data->GetDimensions()[0] - 1; i++) {
+    for (int i = 0; i < output_data->GetDimensions()[0] - 1; i++) {
         x_spacings.push_back(xcoords[i + 1] - xcoords[i]);
     }
 
     std::vector<double> y_spacings;
     y_spacings.reserve(output_data->GetDimensions()[1] - 1);
 
-for (int i = 0; i < output_data->GetDimensions()[1] - 1; i++) {
+    for (int i = 0; i < output_data->GetDimensions()[1] - 1; i++) {
         y_spacings.push_back(ycoords[i + 1] - ycoords[i]);
     }
 
     std::vector<double> vec_z_spacing;
     vec_z_spacing.reserve(output_data->GetDimensions()[2] - 1);
 
-for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
+    for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
         vec_z_spacing.push_back(zcoords[i + 1] - zcoords[i]);
     }
 
@@ -418,8 +415,7 @@ for (int i = 0; i < output_data->GetDimensions()[2] - 1; i++) {
     if (verbose) {
         std::cout << "vtr_reader: read vtkCellData of dimension [" << grid_dims[0] - 1 << ", " << grid_dims[1] - 1
                   << ", " << grid_dims[2] - 1 << ", " << data_dim << "] from '" << filepath << "'" << std::endl;
-
-}
+    }
 
     return {A, NonequiMesh{grid_dims[0] - 1, grid_dims[1] - 1, x_spacings[0], y_spacings[1], vec_z_spacing}};
 }
