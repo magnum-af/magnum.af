@@ -12,5 +12,5 @@ done
 # run python tests
 for filename in ../python/test/*.py; do
     echo "running test '$filename'"
-    PYTHONPATH=../build/python/ python3 $filename
+    python3 $filename
 done

@@ -1,56 +1,24 @@
-# build: $ docker build -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest -f Dockerfile.cpu --build-arg user="$UID" .
-# push:  $ docker push git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev:latest
-# test:  $ docker run --rm -t git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev ./scripts/runalltests.sh .
-# run:   $ docker run --rm -ti git.exp.univie.ac.at:4567/paul/magnum.af/cpu-dev /bin/bash
+# build: $ docker build -t magnum.af/cpu -f Dockerfile.cpu --build-arg user="$UID" .
+# test:  $ docker run --rm -t magnum.af/cpu ./bash/runalltests.sh .
+# run:   $ docker run --rm -ti magnum.af/cpu /bin/bash
 
-FROM ubuntu:20.04
-MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
+FROM ubuntu:latest
+MAINTAINER Paul Heistracher <paul.thomas.heistracher@univie.ac.at>
 
-# install apt packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt update && apt install -y gnupg curl && \
+    curl -sSL 'https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB' | apt-key add - && \
+    echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu focal main" | tee /etc/apt/sources.list.d/arrayfire.list && \
+    apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     build-essential \
-    vim \
-    htop \
     git \
     cmake \
-    # af:
-    #libglfw3-dev \ # graphics only
-    libboost-all-dev \
-    liblapacke-dev \
-    libopenblas-dev \
-    libfftw3-dev \
-    # magaf:
+    gnuplot \
+    libboost-program-options-dev \
     libvtk7-dev \
-    ipython3 \
-    python3-pip \
-    libgtest-dev \
-    && \
-    rm -rf /var/lib/apt/lists/*
-
-# build and install arrayfire
-RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.7.2 && \
-    cd arrayfire && mkdir build && cd build && \
-    cmake .. \
-        -DCMAKE_INSTALL_PREFIX=/opt/arrayfire/ \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DAF_BUILD_CUDA=OFF \
-        -DAF_BUILD_OPENCL=OFF \
-        && \
-    make -j && \
-    make install && \
-    echo /opt/arrayfire/lib/ > /etc/ld.so.conf.d/arrayfire.conf && \
-    ldconfig && \
-    rm -rf ../../arrayfire
-
-# Install pip packages and Google Test
-RUN pip3 install arrayfire cython numpy && \
-    apt update && DEBIAN_FRONTEND=noninteractive apt install -y libgmock-dev \
-    gnuplot && \
-    cd /usr/src/googletest/googlemock && \
-    cmake CMakeLists.txt && \
-    make && \
-    ls lib/ && \
-    cp lib/*.a /usr/lib
+    libgmock-dev \
+    arrayfire-cpu3-dev \
+    python3-pip && \
+    pip3 install arrayfire numpy
 
 # Setting user from build-arg with 999 as default
 ARG user=999
@@ -64,12 +32,12 @@ COPY --chown=magnum.af.user . /home/magnum.af/
 
 # building magnum.af and docu
 WORKDIR /home/magnum.af/
-RUN (mkdir build && cd build && cmake .. && make -j && make install) && \
-    chmod -R 777 /home/magnum.af/
+RUN chmod -R 777 /home/magnum.af/ && \
+    (mkdir build && cd build && cmake .. && make -j && ctest -j && make install) && \
+    rm -r build/
 
 # set non-root user
 USER magnum.af.user
 
 ENV HOME=/home/magnum.af.user/ \
-    PYTHONPATH=/home/magnum.af/build/python/ \
-    LD_LIBRARY_PATH=/opt/arrayfire/lib/
+    PYTHONPATH=/usr/local/lib/
