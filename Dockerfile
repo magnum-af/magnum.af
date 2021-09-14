@@ -1,102 +1,36 @@
 # build: $ docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .
-# push:  $ docker push magnum.af
-# test:  $ docker run --rm -t magnum.af ./scripts/runalltests.sh .
-# run:   $ docker run --rm -ti magnum.af /bin/bash
+# test:  $ docker run --rm --gpus all -t magnum.af ./bash/runalltests.sh .
+# run:   $ docker run --rm --gpus all -ti magnum.af /bin/bash
 
-FROM nvidia/cuda:10.1-devel-ubuntu18.04
+FROM nvidia/cuda:11.4.1-devel-ubuntu20.04
+MAINTAINER Paul Heistracher <paul.thomas.heistracher@univie.ac.at>
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# Important note for the following RUN command:
+#   Arrayfire packages must be in seperate 'apt install' call!
+#   Otherwise causing build warnings/errors:
+#     '/usr/bin/ld: warning: libcuda.so.1, needed by /usr/lib/libafcuda.so.3.8.0, not found'
+#     '/usr/bin/ld: /usr/lib/libafcuda.so.3.8.0: undefined reference to `cu<...>'
+#   Somehow 'arrayfire-cuda3-dev' and 'arrayfire' cannot be in same 'apt install' as other packages.
+#   Maybe some path becomes overwritten or not set otherwise?
+# Note: Package 'ocl-icd-opencl-dev' needed for cmake to find OpenCL
+
+RUN apt update && apt install -y gnupg curl && \
+    curl -sSL "https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB" | apt-key add - && \
+    echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu focal main" | tee /etc/apt/sources.list.d/arrayfire.list && \
+    apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     build-essential \
-    ca-certificates \
     git \
     cmake \
-    vim \
-    # af:
-    # avoiding boost 'fatal error: pyconfig.h':
-    python-dev \
-    #libboost-all-dev \ # manual below
-    libglfw3-dev \
-    libglu1-mesa-dev \
-    clinfo \
-    libfreeimage-dev \
-    libfftw3-dev \
-    libfontconfig1-dev \
-    libfreeimage-dev \
-    liblapacke-dev \
-    libopenblas-dev \
-    ocl-icd-opencl-dev \
-    opencl-headers \
-    wget \
-    # magaf:
-    software-properties-common \
+    gnuplot \
+    libboost-program-options-dev \
     libvtk7-dev \
-    ipython3 \
-    python3-pip \
-    # magaf docu:
-    doxygen \
-    python-pydot \
-    python-pydot-ng \
-    graphviz \
-    && \
-    # Pumping g++ version to 9
-    add-apt-repository ppa:ubuntu-toolchain-r/test && \
-    apt update && \
-    DEBIAN_FRONTEND=noninteractive apt install -y \
-    g++-9 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9 && \
-    update-alternatives --auto g++ \
-    #g++ --version
-    && \
-    rm -rf /var/lib/apt/lists/*
-
-# installing boost 1.73
-# TODO move before apt installs if fails
-RUN wget https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.bz2 && \
-    tar --bzip2 -xf boost_*.tar.bz2 && \
-    cd boost_* && \
-    ./bootstrap.sh --prefix=/usr/include/boost/ && \
-    ./b2 && \
-    ./b2 install && \
-    cd ../ && rm -r boost_*
-
-# building arrayfire
-RUN git clone --recursive https://github.com/arrayfire/arrayfire.git -b v3.7.2 && \
-    cd arrayfire && mkdir build && cd build && \
-    cmake .. -DBOOST_ROOT=/usr/include/boost/ && \
-    make -j && \
-    make install && \
-    echo usr/local/lib/ > /etc/ld.so.conf.d/arrayfire.conf && \
-    ldconfig && \
-    rm -rf ../../arrayfire
-
-# Setting up symlinks for libcuda and OpenCL ICD
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/lib/libcuda.so.1 && \
-    ln -s /usr/lib/libcuda.so.1 /usr/lib/libcuda.so && \
-    mkdir -p /etc/OpenCL/vendors && \
-    echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd && \
-    echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
-    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
-ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-
-# Install pip packages and Google Test
-RUN apt-get update && \
-    apt-get install -y googletest \
-    python3-setuptools \
-    gnuplot && \
+    libgmock-dev \
+    ocl-icd-opencl-dev \
+    python3-pip && \
     pip3 install arrayfire numpy && \
-    # install cython 0.29 (pip3 would install 0.26)
-    wget https://files.pythonhosted.org/packages/6c/9f/f501ba9d178aeb1f5bf7da1ad5619b207c90ac235d9859961c11829d0160/Cython-0.29.21.tar.gz && \
-    tar -xzf Cython-*.tar.gz && \
-    cd Cython-*/ && \
-    python3 setup.py install && \
-    cd .. && rm -r Cython-*/ && \
-    # install gtest
-    cd /usr/src/googletest/googlemock/build-aux && \
-    cmake .. && \
-    make && \
-    cp *.a /usr/lib && \
-    cp gtest/*.a /usr/lib
-
+    apt update && apt install -y \
+    arrayfire-cuda3-dev \
+    arrayfire
 
 # Setting user from build-arg with 999 as default
 ARG user=999
@@ -110,12 +44,11 @@ COPY --chown=magnum.af.user . /home/magnum.af/
 
 # building magnum.af and docu
 WORKDIR /home/magnum.af/
-RUN (mkdir build && cd build && cmake .. -DBOOST_ROOT=/usr/include/boost/ && make -j && make install) && \
-    doxygen .doxygen-config && \
-    chmod -R 777 /home/magnum.af/
+RUN chmod -R 777 /home/magnum.af/ && \
+    (mkdir build && cd build && cmake .. && make -j && make install)
 
 # set non-root user
 USER magnum.af.user
-ENV HOME=/home/magnum.af.user \
-    PYTHONPATH=/home/magnum.af/build/python/ \
-    LD_LIBRARY_PATH=/usr/local/lib/
+
+ENV HOME=/home/magnum.af.user/ \
+    PYTHONPATH=/usr/local/lib/
