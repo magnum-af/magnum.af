@@ -37,6 +37,7 @@ cdef extern from "field_terms/micro/exchange_field_pbc.hpp" namespace "magnumaf"
 
 cdef extern from "field_terms/nonequi/nonequi_demag_field.hpp" namespace "magnumaf":
     cdef cppclass NonequiDemagField:
+        long int get_Nfft_ptr();
         NonequiDemagField(const NonequiMesh& nonequimesh, bool verbose, bool caching, unsigned nthreads);
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);

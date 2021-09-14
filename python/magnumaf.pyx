@@ -1214,6 +1214,8 @@ cdef class NonequiDemagField(HeffTerm):
     def __dealloc__(self):
         del self._thisptr
         self._thisptr = NULL
+    def get_Nfft(self):
+        return array_from_addr(self._thisptr.get_Nfft_ptr())
     def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
     def Energy_in_J(self, State state):

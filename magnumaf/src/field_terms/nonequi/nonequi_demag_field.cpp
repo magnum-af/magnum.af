@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace magnumaf {
+long int NonequiDemagField::get_Nfft_ptr() const { return util::pywrap::send_copy_to_py(this->Nfft); }
 
 /// Expanded cell size for demag FFT
 inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }

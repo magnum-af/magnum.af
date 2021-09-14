@@ -8,6 +8,7 @@ namespace magnumaf {
 class NonequiDemagField : public NonequiTerm {
   public:
     NonequiDemagField(const NonequiMesh& nonequimesh, bool verbose = true, bool caching = false, unsigned nthreads = 0);
+    long int get_Nfft_ptr() const;
 
   private:
     af::array Nfft; //!< Array storing the Fourier transfrom of the demag tensor.
