@@ -939,12 +939,12 @@ cdef class LLGIntegrator:
             Integrate for time_in_s, using with dense output.
         """
         self._thisptr.integrate_dense(deref(state._thisptr), time_in_s, write_every_dt_in_s, filename.encode('utf-8'), verbose, append)
-    @property
-    def alpha(self):
-        return self._thisptr.alpha
-    @alpha.setter
-    def alpha(self, value):
-        self._thisptr.alpha=value
+    # @property
+    # def alpha(self):
+    #     return self._thisptr.alpha
+    # @alpha.setter
+    # def alpha(self, value):
+    #     self._thisptr.alpha=value
 
     @property
     def accumulated_steps(self):

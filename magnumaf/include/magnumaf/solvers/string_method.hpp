@@ -8,7 +8,7 @@ namespace magnumaf {
 
 class StringMethod {
   public:
-    StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator llg);
+    StringMethod(const State& state, std::vector<State> inputimages, int n_interp, double dt, LLGIntegrator<double> llg);
     ///
     /// Runs the string method.
     /// This populates files in \param filepath.
@@ -18,7 +18,7 @@ class StringMethod {
                int string_steps = 10000, int every_string_to_vti = 50, bool verbose = true);
 
   private:
-    LLGIntegrator llg; //(state_relax, atol, rtol, hmax, hmin);
+    LLGIntegrator<double> llg; //(state_relax, atol, rtol, hmax, hmin);
     const int n_interp;
     const double dt;
     double time{0};

@@ -7,25 +7,16 @@
 #include <utility>
 
 namespace magnumaf {
-
-LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme,
-                             Controller controller, bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
-      dissipation_term_only(dissipation_term_only) {}
-
-LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il,
-                             const std::string& scheme, Controller controller, bool dissipation_term_only)
-    : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(il)), std::make_move_iterator(std::end(il))}, scheme,
-                    controller, dissipation_term_only) {}
-
-af::array LLGIntegrator::fheff(const State& state) const {
+template<typename T>
+af::array LLGIntegrator<T>::fheff(const State& state) const {
     af::timer timer_heff = af::timer::start();
     auto solution = fieldterm::Heff_in_Apm(llgterms, state);
     time_heff += af::timer::stop(timer_heff);
     return solution;
 }
 
-af::array LLGIntegrator::f(const State& state) const {
+template<typename T>
+af::array LLGIntegrator<T>::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
@@ -38,9 +29,11 @@ af::array LLGIntegrator::f(const State& state) const {
 }
 
 // Energy calculation
-double LLGIntegrator::E(const State& state) const { return fieldterm::Eeff_in_J(llgterms, state); }
+template<typename T>
+double LLGIntegrator<T>::E(const State& state) const { return fieldterm::Eeff_in_J(llgterms, state); }
 
-void LLGIntegrator::relax(State& state, double precision, unsigned eval_E, unsigned iwritecout, bool verbose) {
+template<typename T>
+void LLGIntegrator<T>::relax(State& state, double precision, unsigned eval_E, unsigned iwritecout, bool verbose) {
     double start_time = state.t;
     af::timer t = af::timer::start();
     double E_prev = 1e20;
@@ -65,7 +58,8 @@ void LLGIntegrator::relax(State& state, double precision, unsigned eval_E, unsig
     }
 }
 
-void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::ostream& os,
+template<typename T>
+void LLGIntegrator<T>::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, std::ostream& os,
                                     bool verbose) {
     const double time_init = state.t;
     const double time_final = time_init + time_in_s;
@@ -103,11 +97,18 @@ void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write
     }
 }
 
-void LLGIntegrator::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s,
+template<typename T>
+void LLGIntegrator<T>::integrate_dense(State& state, double time_in_s, double write_every_dt_in_s,
                                     const std::string& filename, bool verbose, bool append) {
     auto stream = std::ofstream(filename, append ? std::ios::app : std::ios::out);
     integrate_dense(state, time_in_s, write_every_dt_in_s, stream, verbose);
 }
 
-long int LLGIntegrator::h_addr(const State& state) const { return util::pywrap::send_copy_to_py(fheff(state)); }
+template<typename T>
+long int LLGIntegrator<T>::h_addr(const State& state) const { return util::pywrap::send_copy_to_py(fheff(state)); }
+
+// NOTE: either declare all types used here, or move all into .hpp file:
+template class LLGIntegrator<double>;
+template class LLGIntegrator<af::array>;
+
 } // namespace magnumaf

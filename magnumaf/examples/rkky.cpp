@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     auto rkky = uptr_FieldTerm(new RKKYExchangeField(RKKY_values(rkkyvals), Exchange_values(exchvals), mesh));
 
     auto demag = uptr_FieldTerm(new DemagField(mesh, true, true, 0));
-    LLGIntegrator llg(1, {std::move(demag), std::move(rkky)});
+    LLGIntegrator llg(1.0, {std::move(demag), std::move(rkky)});
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);

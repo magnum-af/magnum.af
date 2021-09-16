@@ -133,7 +133,7 @@ cdef extern from "integrators/controller.hpp" namespace "magnumaf":
         Controller(double hmin, double hmax, double atol, double rtol);
 
 cdef extern from "integrators/llg_integrator.hpp" namespace "magnumaf":
-    cdef cppclass LLGIntegrator:
+    cdef cppclass LLGIntegrator[double]:
         LLGIntegrator (double alpha, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
         vector[unique_ptr[FieldTerm]] llgterms;
         void step(State& state);
@@ -141,7 +141,7 @@ cdef extern from "integrators/llg_integrator.hpp" namespace "magnumaf":
         void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
         void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, string filename, bool verbose, bool append);
         long int h_addr(const State& state);
-        double alpha;
+        # T alpha;
         unsigned long long accumulated_steps;
 
 cdef extern from "integrators/stochastic_llg.hpp" namespace "magnumaf":

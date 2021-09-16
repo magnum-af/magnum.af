@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 
     DemagField dmag(mesh, true, true, 0);
     ExchangeField exch(A);
-    LLGIntegrator llg(1, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+    LLGIntegrator llg(1.0, fieldterm::to_vec(std::move(dmag), std::move(exch)));
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);

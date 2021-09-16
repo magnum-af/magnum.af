@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     auto exch = uptr_FieldTerm(new ExchangeField(A));
     auto aniso = uptr_FieldTerm(new UniaxialAnisotropyField(Ku, {0, 0, 1}));
     auto dmi = uptr_FieldTerm(new DmiField(D, {0, 0, 1}));
-    LLGIntegrator llg(1, {std::move(exch), std::move(aniso), std::move(dmi)});
+    LLGIntegrator llg(1.0, {std::move(exch), std::move(aniso), std::move(dmi)});
 
     std::ofstream stream;
     stream.precision(12);

@@ -22,15 +22,19 @@ template <class T> struct movable_il {
 /// \f]
 ///
 
-class LLGIntegrator : public AdaptiveRungeKutta {
+template <typename T> class LLGIntegrator : public AdaptiveRungeKutta {
   public:
-    LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
-                  Controller controller = Controller(), bool dissipation_term_only = false);
-    LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,
+    LLGIntegrator(T alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
+                  Controller controller = Controller(), bool dissipation_term_only = false)
+        : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
+          dissipation_term_only(dissipation_term_only) {}
+    LLGIntegrator(T alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,
                   const std::string& scheme = "RKF45", Controller controller = Controller(),
-                  bool dissipation_term_only = false);
-    double alpha{0}; //!< Unitless damping constant in the
-                     //!< Landau-Lifshitz-Gilbert equation
+                  bool dissipation_term_only = false)
+        : LLGIntegrator(alpha, {std::make_move_iterator(std::begin(llgterms)), std::make_move_iterator(std::end(llgterms))}, scheme,
+                        controller, dissipation_term_only) {}
+    T alpha{}; //!< Unitless damping constant in the
+               //!< Landau-Lifshitz-Gilbert equation
 
     vec_uptr_FieldTerm llgterms;
 
