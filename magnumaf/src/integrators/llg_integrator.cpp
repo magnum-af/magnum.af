@@ -9,11 +9,11 @@
 namespace magnumaf {
 
 LLGIntegrator::LLGIntegrator(double alpha, const std::string& scheme, Controller controller, bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
+    : AdaptiveRungeKutta(scheme, controller), alpha_(alpha), dissipation_term_only(dissipation_term_only) {}
 
 LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme,
                              Controller controller, bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
+    : AdaptiveRungeKutta(scheme, controller), alpha_(alpha), llgterms(std::move(llgterms)),
       dissipation_term_only(dissipation_term_only) {}
 
 LLGIntegrator::LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> il,
@@ -32,10 +32,10 @@ af::array LLGIntegrator::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
-        return equations::LLG_damping(util::DoubleOrArray(alpha), state.m, math::cross4(state.m, fheff(state)));
+        return equations::LLG_damping(alpha_, state.m, math::cross4(state.m, fheff(state)));
 
     } else {
-        return equations::LLG(util::DoubleOrArray(alpha), state.m, fheff(state));
+        return equations::LLG(alpha_, state.m, fheff(state));
     }
     // time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

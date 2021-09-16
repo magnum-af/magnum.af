@@ -40,12 +40,8 @@ int main(int argc, char** argv) {
     // Relax
     StageTimer timer;
     while (state.t < 1e-9) {
-        //af::print("m", state.m);
         llg.step(state);
         stream << state << std::endl;
-        // std::cout << state << std::endl;
-        auto [mx, my, mz ] = state.mean_m();
-        std::cout << state.t << '\t' << mx << '\t' << my << '\t' << mz << std::endl;
     }
     timer.print_stage("relax ");
     state.write_vti(outdir / "relax");
@@ -55,13 +51,12 @@ int main(int argc, char** argv) {
     external(af::span, af::span, af::span, 0) = -24.6e-3 / constants::mu0;
     external(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
     llg.llgterms.push_back(fieldterm::to_uptr<ExternalField>(external));
-    llg.alpha = util::DoubleOrArray(0.02);
+    llg.alpha_ = util::DoubleOrArray(0.02);
 
     // Switch
     while (state.t < 2e-9) {
         llg.step(state);
         stream << state << std::endl;
-        std::cout << state << std::endl;
     }
     state.write_vti(outdir / "2ns");
     stream.close();

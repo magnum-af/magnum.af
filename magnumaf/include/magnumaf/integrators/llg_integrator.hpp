@@ -34,7 +34,7 @@ class LLGIntegrator : public AdaptiveRungeKutta {
                   bool dissipation_term_only = false);
     // double alpha{0}; //!< Unitless damping constant in the
     //                  //!< Landau-Lifshitz-Gilbert equation
-    util::DoubleOrArray alpha{0.0};
+    util::DoubleOrArray alpha_{0.0};
 
     vec_uptr_FieldTerm llgterms;
 

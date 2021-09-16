@@ -164,7 +164,7 @@ af::array operator*(double a, const DoubleOrArray& b) = delete;
 af::array operator/(double a, const DoubleOrArray& b) = delete;
 
 inline af::array pow2_vec(const DoubleOrArray& a, af::dim4 dims, af::dtype type) {
-    return af::pow2(get_as_vec(a, dims, type));
+    return af::pow(get_as_vec(a, dims, type), 2.0); // Note: do not use af::pow2(a), that is 2**a, not a**2 !
 }
 
 } // namespace magnumaf::util

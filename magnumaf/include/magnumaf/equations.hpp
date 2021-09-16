@@ -14,7 +14,7 @@ inline af::array LLG_precession(util::DoubleOrArray const& alpha, const af::arra
 /// LLG damping term
 inline af::array LLG_damping(util::DoubleOrArray const& alpha, const af::array& m, const af::array& m_x_h) {
     const auto alpha_pow2 = pow2_vec(alpha, m_x_h.dims(), m_x_h.type());
-    return alpha * (-constants::gamma / (1. + alpha_pow2 * math::cross4(m, m_x_h)));
+    return alpha * (-constants::gamma / (1. + alpha_pow2) * math::cross4(m, m_x_h));
 }
 
 /// LLG equation
