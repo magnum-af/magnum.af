@@ -67,11 +67,11 @@ inline std::ostream& operator<<(std::ostream& os, const af::array& a_vector) {
     switch (a_vector.type()) {
     case f64: {
         const auto [mx, my, mz] = math::vec_components<double>(a_vector);
-        os << '\t' << my << '\t' << mz;
+        os << mx << '\t' << my << '\t' << mz;
     } break;
     case f32: {
         const auto [mx, my, mz] = math::vec_components<float>(a_vector);
-        os << '\t' << my << '\t' << mz;
+        os << mx << '\t' << my << '\t' << mz;
     } break;
     case f16: {
         const auto [mx, my, mz] = math::vec_components<float>(a_vector.as(f32));
