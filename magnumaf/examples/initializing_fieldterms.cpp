@@ -99,10 +99,9 @@ int main() {
         assert(exch == nullptr);
     }
 
-    // creating to_uptr in place:
+    // adding to_uptr after ctor place:
     {
-        LLGIntegrator llg(alpha);
-        llg.llgterms.push_back(std::make_unique<DemagField>(mesh, false, true, 0));
+        LLGIntegrator llg(alpha, fieldterm::to_vec(DemagField(mesh, false, true, 0)));
         llg.llgterms.push_back(std::make_unique<ExchangeField>(A));
     }
 

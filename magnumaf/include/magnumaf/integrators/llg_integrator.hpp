@@ -24,8 +24,6 @@ template <class T> struct movable_il {
 
 class LLGIntegrator : public AdaptiveRungeKutta {
   public:
-    LLGIntegrator(double alpha, const std::string& scheme = "RKF45", Controller controller = Controller(),
-                  bool dissipation_term_only = false);
     LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
                   Controller controller = Controller(), bool dissipation_term_only = false);
     LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,

@@ -8,9 +8,6 @@
 
 namespace magnumaf {
 
-LLGIntegrator::LLGIntegrator(double alpha, const std::string& scheme, Controller controller, bool dissipation_term_only)
-    : AdaptiveRungeKutta(scheme, controller), alpha(alpha), dissipation_term_only(dissipation_term_only) {}
-
 LLGIntegrator::LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme,
                              Controller controller, bool dissipation_term_only)
     : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
