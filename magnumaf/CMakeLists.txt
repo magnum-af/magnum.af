@@ -79,6 +79,7 @@ set(POST_CONFIGURE_FILE
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/git_watcher.cmake)
 
 include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/mpark
   ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf
   ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/field_terms
   ${CMAKE_CURRENT_SOURCE_DIR}/include/magnumaf/solvers

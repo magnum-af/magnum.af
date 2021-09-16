@@ -7,6 +7,7 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION}) # NOTE: setting project
 
 # This is redundant, as mentioned in c++ part already:
 include_directories(
+  ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/mpark
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/field_terms
   ${CMAKE_SOURCE_DIR}/${magnumaf_core_dir_name}/include/magnumaf/solvers

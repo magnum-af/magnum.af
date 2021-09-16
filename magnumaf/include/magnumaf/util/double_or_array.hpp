@@ -1,4 +1,5 @@
 #pragma once
+#include "mpark_variant.hpp"
 #include "util/variant_helper.hpp"
 #include <arrayfire.h>
 #include <iostream>
@@ -38,7 +39,7 @@ class DoubleOrArray {
                 }
             }
         };
-        return std::visit(Add{b}, variant_);
+        return mpark::visit(Add{b}, variant_);
     }
 
     af::array operator-(const af::array& b) const {
@@ -54,7 +55,7 @@ class DoubleOrArray {
                                  throw std::runtime_error("DoubleOrArray::operator-: array dims do not match.");
                              }
                          });
-        return std::visit(visitor, variant_);
+        return mpark::visit(visitor, variant_);
     }
 
     af::array operator*(const af::array& b) const {
@@ -71,7 +72,7 @@ class DoubleOrArray {
                 }
             },
         };
-        return std::visit(visitor, variant_);
+        return mpark::visit(visitor, variant_);
     }
 
     af::array operator/(const af::array& b) const {
@@ -94,7 +95,7 @@ class DoubleOrArray {
                 return result;
             },
         };
-        return std::visit(visitor, variant_);
+        return mpark::visit(visitor, variant_);
     }
 
     // Getter function, returns stored value as af::array
@@ -112,7 +113,7 @@ class DoubleOrArray {
                 }
             },
         };
-        return std::visit(visitor, variant_);
+        return mpark::visit(visitor, variant_);
     }
 
     void print() const {
@@ -120,12 +121,12 @@ class DoubleOrArray {
             [&](double d) { std::cout << "DoubleOrArray: type is double with value:" << d <<  std::endl; },
             [&](const af::array& a) { std::cout << "DoubleOrArray: type is af::array" << std::endl; af::print("a", a);},
         };
-        std::visit(visitor, variant_);
+        mpark::visit(visitor, variant_);
     }
 
   private:
-    std::variant<double, af::array> variant_; // Note: be careful when adding variant types which can be implicitly
-                                              // converted to af::array (s.a. int/float)
+    mpark::variant<double, af::array> variant_; // Note: be careful when adding variant types which can be implicitly
+                                                // converted to af::array (s.a. int/float)
 
     // Preventing erroneous operators
     // double/int/.. b deduces af::array(b), which creates an [b,1,1,1] array type f32 type

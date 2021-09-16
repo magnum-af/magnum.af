@@ -141,7 +141,7 @@ cdef extern from "integrators/llg_integrator.hpp" namespace "magnumaf":
         void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
         void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, string filename, bool verbose, bool append);
         long int h_addr(const State& state);
-        double alpha;
+        # TODO double alpha_;
         unsigned long long accumulated_steps;
 
 cdef extern from "integrators/stochastic_llg.hpp" namespace "magnumaf":
