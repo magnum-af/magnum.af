@@ -1,6 +1,7 @@
 #pragma once
 #include "util/variant_helper.hpp"
 #include <arrayfire.h>
+#include <iostream>
 #include <stdexcept>
 #include <variant>
 
@@ -114,6 +115,14 @@ class DoubleOrArray {
         return std::visit(visitor, variant_);
     }
 
+    void print() const {
+        const auto visitor = overloaded{
+            [&](double d) { std::cout << "DoubleOrArray: type is double with value:" << d <<  std::endl; },
+            [&](const af::array& a) { std::cout << "DoubleOrArray: type is af::array" << std::endl; af::print("a", a);},
+        };
+        std::visit(visitor, variant_);
+    }
+
   private:
     std::variant<double, af::array> variant_; // Note: be careful when adding variant types which can be implicitly
                                               // converted to af::array (s.a. int/float)
@@ -153,5 +162,9 @@ af::array operator+(double a, const DoubleOrArray& b) = delete;
 af::array operator-(double a, const DoubleOrArray& b) = delete;
 af::array operator*(double a, const DoubleOrArray& b) = delete;
 af::array operator/(double a, const DoubleOrArray& b) = delete;
+
+inline af::array pow2_vec(const DoubleOrArray& a, af::dim4 dims, af::dtype type) {
+    return af::pow2(get_as_vec(a, dims, type));
+}
 
 } // namespace magnumaf::util

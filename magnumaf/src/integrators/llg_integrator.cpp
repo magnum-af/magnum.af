@@ -32,10 +32,10 @@ af::array LLGIntegrator::f(const State& state) const {
     // calls_fdmdt++;
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
-        return equations::LLG_damping(alpha, state.m, math::cross4(state.m, fheff(state)));
+        return equations::LLG_damping(util::DoubleOrArray(alpha), state.m, math::cross4(state.m, fheff(state)));
 
     } else {
-        return equations::LLG(alpha, state.m, fheff(state));
+        return equations::LLG(util::DoubleOrArray(alpha), state.m, fheff(state));
     }
     // time_fdmdt+=af::timer::stop(timer_fdmdt);
 }

@@ -2,6 +2,7 @@
 #include "adaptive_runge_kutta.hpp"
 #include "arrayfire.h"
 #include "field_terms/field_term.hpp"
+#include "util/double_or_array.hpp"
 #include "state.hpp"
 
 namespace magnumaf {
@@ -31,8 +32,9 @@ class LLGIntegrator : public AdaptiveRungeKutta {
     LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,
                   const std::string& scheme = "RKF45", Controller controller = Controller(),
                   bool dissipation_term_only = false);
-    double alpha{0}; //!< Unitless damping constant in the
-                     //!< Landau-Lifshitz-Gilbert equation
+    // double alpha{0}; //!< Unitless damping constant in the
+    //                  //!< Landau-Lifshitz-Gilbert equation
+    util::DoubleOrArray alpha{0.0};
 
     vec_uptr_FieldTerm llgterms;
 

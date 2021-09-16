@@ -13,12 +13,12 @@ af::array Stochastic_LLG::fheff(const State& state) const { return fieldterm::He
 
 af::array Stochastic_LLG::detfdmdt(const State& state) const {
     fdmdt_calls++;
-    return equations::LLG(alpha, state.m, fheff(state));
+    return equations::LLG(util::DoubleOrArray(this->alpha), state.m, fheff(state));
 }
 
 af::array Stochastic_LLG::stochfdmdt(const State& state, const af::array& h_th) const {
     stochfdmdt_calls++;
-    return equations::LLG(alpha, state.m, fheff(state) + h_th);
+    return equations::LLG(util::DoubleOrArray(this->alpha), state.m, fheff(state) + h_th);
 }
 
 } // namespace magnumaf

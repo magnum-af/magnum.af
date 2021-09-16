@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
         state.t = t;
         state.m = m_in;
         const auto H_eff_in_Apm = value_Heff_in_Apm(fieldterms, state);
-        dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
+        dxdt = equations::LLG(util::DoubleOrArray(alpha), state.m, H_eff_in_Apm);
     };
 
     struct observe_m {

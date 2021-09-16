@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
         dummy_state.t = t;
         dummy_state.m = m_in;
         const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, dummy_state);
-        return equations::LLG(alpha, dummy_state.m, H_eff_in_Apm);
+        return equations::LLG(util::DoubleOrArray(alpha), dummy_state.m, H_eff_in_Apm);
     };
 
     std::ofstream os(outdir / "m.dat");

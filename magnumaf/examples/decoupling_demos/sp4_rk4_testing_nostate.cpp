@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         State state(mesh, Ms, std::move(m_in));
         state.t = t;
         auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
-        return equations::LLG(alpha, state.m, H_eff_in_Apm);
+        return equations::LLG(util::DoubleOrArray(alpha), state.m, H_eff_in_Apm);
     };
 
     double t = 0;
