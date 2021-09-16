@@ -26,7 +26,7 @@ build_and_test_gpu:
   script:
     - docker pull $CUDA_TEST_IMAGE || true
     - docker build -t $CUDA_TEST_IMAGE -f Dockerfile .
-    - nvidia-docker run --rm -t $CUDA_TEST_IMAGE ./bash/runalltests.sh
+    - docker run --rm --gpus all -t $CUDA_TEST_IMAGE ./bash/runalltests.sh
     - docker push $CUDA_TEST_IMAGE
     - ./bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
     - docker push $CUDA_RELEASE_IMAGE # check if push is necessary or already done implicitly
