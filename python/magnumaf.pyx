@@ -905,15 +905,26 @@ cdef class LLGIntegrator:
     llg.step(state)
     print(llg.Eeff_in_J(state))
     """
+
+    cdef bool _alpha_is_array
+
     cdef cLLGIntegrator* _thisptr
-    def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
+    def __cinit__(self, alpha, terms, mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
         cdef vector[unique_ptr[cFieldterm]] vector_in
-        if not terms:
-            print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
+        # if not terms:
+        #     print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
+        # else:
+        for arg in terms:
+            vector_in.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
+
+        # TODO we neet types for every var?
+        if hasattr(alpha, 'arr'):
+            self._thisptr = new cLLGIntegrator (<long int> addressof(alpha.arr), move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            self._alpha_is_array = True
         else:
-            for arg in terms:
-                vector_in.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLLGIntegrator (alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            # TODO #  self._thisptr = new cLLGIntegrator (<double> alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            self._alpha_is_array = False
+            raise RuntimeError("Disabled DEBUG")
     #def __dealloc__(self):
     #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
     #    # NOTE is also problematic in minimizer class
@@ -941,10 +952,17 @@ cdef class LLGIntegrator:
         self._thisptr.integrate_dense(deref(state._thisptr), time_in_s, write_every_dt_in_s, filename.encode('utf-8'), verbose, append)
     @property
     def alpha(self):
-        return self._thisptr.alpha
+        if self._alpha_is_array:
+            return array_from_addr(self._thisptr.get_alpha_field_ptr())
+        else:
+            return self._thisptr.alpha
+        # return self._thisptr.alpha
     @alpha.setter
     def alpha(self, value):
-        self._thisptr.alpha=value
+        if self._alpha_is_array:
+            self._thisptr.set_alpha_field(addressof(value.arr))
+        else:
+            self._thisptr.alpha=value
 
     @property
     def accumulated_steps(self):

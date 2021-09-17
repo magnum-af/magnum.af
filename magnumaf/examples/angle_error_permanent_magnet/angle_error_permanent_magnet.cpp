@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
         return zee;
     };
     auto external = uptr_FieldTerm(new ExternalField(zee_func));
-    LLGIntegrator llg(1, {std::move(demag), std::move(rkky), std::move(external), std::move(aniso)});
+    LLGIntegrator llg(1.0, {std::move(demag), std::move(rkky), std::move(external), std::move(aniso)});
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);

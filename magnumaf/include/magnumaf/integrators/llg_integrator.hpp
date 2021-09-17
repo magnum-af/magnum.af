@@ -3,6 +3,7 @@
 #include "arrayfire.h"
 #include "field_terms/field_term.hpp"
 #include "state.hpp"
+#include <optional>
 
 namespace magnumaf {
 template <class T> struct movable_il {
@@ -25,12 +26,31 @@ template <class T> struct movable_il {
 class LLGIntegrator : public AdaptiveRungeKutta {
   public:
     LLGIntegrator(double alpha, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
-                  Controller controller = Controller(), bool dissipation_term_only = false);
+                  Controller controller = Controller(), bool dissipation_term_only = false)
+        : AdaptiveRungeKutta(scheme, controller), alpha(alpha), llgterms(std::move(llgterms)),
+          dissipation_term_only(dissipation_term_only) {}
+
+    LLGIntegrator(af::array alpha_field, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
+                  Controller controller = Controller(), bool dissipation_term_only = false)
+        : AdaptiveRungeKutta(scheme, controller), alpha_field_(alpha_field), llgterms(std::move(llgterms)),
+          dissipation_term_only(dissipation_term_only) {}
+
+    LLGIntegrator(long int alpha_field_ptr, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
+                  Controller controller = Controller(), bool dissipation_term_only = false)
+        : AdaptiveRungeKutta(scheme, controller), alpha_field_(util::pywrap::make_copy_form_py(alpha_field_ptr)),
+          llgterms(std::move(llgterms)), dissipation_term_only(dissipation_term_only) {}
+
     LLGIntegrator(double alpha, std::initializer_list<movable_il<uptr_FieldTerm>> llgterms,
                   const std::string& scheme = "RKF45", Controller controller = Controller(),
-                  bool dissipation_term_only = false);
-    double alpha{0}; //!< Unitless damping constant in the
-                     //!< Landau-Lifshitz-Gilbert equation
+                  bool dissipation_term_only = false)
+        : LLGIntegrator(alpha,
+                        {std::make_move_iterator(std::begin(llgterms)), std::make_move_iterator(std::end(llgterms))},
+                        scheme, controller, dissipation_term_only) {}
+    double alpha{0};                         //!< Unitless damping constant in the
+                                             //!< Landau-Lifshitz-Gilbert equation
+    std::optional<af::array> alpha_field_{}; //!< Cell-wise unitless damping constant with dims [nx, ny, nz, 1]
+    long int get_alpha_field_ptr() const { return util::pywrap::send_copy_to_py(alpha_field_.value()); }
+    void set_alpha_field(long int alpha_field_ptr) { alpha_field_ = util::pywrap::make_copy_form_py(alpha_field_ptr); }
 
     vec_uptr_FieldTerm llgterms;
 

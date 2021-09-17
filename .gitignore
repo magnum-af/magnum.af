@@ -8,3 +8,5 @@ src/tags
 scripts/wrapping_github/
 compile_commands.json
 docu/
+.cache/
+build*/

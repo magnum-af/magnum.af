@@ -32,7 +32,8 @@ int main(int argc, char** argv) {
 
     DemagField dmag(mesh, true, true, 0);
     ExchangeField exch(A);
-    LLGIntegrator llg(1, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+    LLGIntegrator llg(1.0, fieldterm::to_vec(std::move(dmag), std::move(exch)));
+    // LLGIntegrator llg(af::constant(1.0, nx, ny, nz, 3, f64), fieldterm::to_vec(std::move(dmag), std::move(exch)));
 
     std::ofstream stream(outdir / "m.dat");
     stream.precision(12);
@@ -52,6 +53,7 @@ int main(int argc, char** argv) {
     external(af::span, af::span, af::span, 1) = +4.3e-3 / constants::mu0;
     llg.llgterms.push_back(fieldterm::to_uptr<ExternalField>(external));
     llg.alpha = 0.02;
+    // llg.alpha_field_ = af::constant(0.02, nx, ny, nz, 3, f64);
 
     // Switch
     while (state.t < 2e-9) {
