@@ -9,7 +9,8 @@ cdef extern from "field_terms/field_term.hpp" namespace "magnumaf":
 
 cdef extern from "<arrayfire.h>" namespace "af":
     cdef cppclass array:
-        array()
+        # array()
+        array(long int)
 
 cdef extern from "field_terms/micro/exchange_field.hpp" namespace "magnumaf":
     cdef cppclass ExchangeField:
@@ -133,15 +134,15 @@ cdef extern from "integrators/controller.hpp" namespace "magnumaf":
         Controller(double hmin, double hmax, double atol, double rtol);
 
 cdef extern from "integrators/llg_integrator.hpp" namespace "magnumaf":
-    cdef cppclass LLGIntegrator[double]:
-        LLGIntegrator (double alpha, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
+    cdef cppclass LLGIntegrator[T]:
+        LLGIntegrator (T alpha, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
         vector[unique_ptr[FieldTerm]] llgterms;
         void step(State& state);
         double E(const State& state);
         void relax(State& state, double precision, const unsigned iloop, const unsigned iwritecout, const bool verbose);
         void integrate_dense(State& state, double time_in_s, double write_every_dt_in_s, string filename, bool verbose, bool append);
         long int h_addr(const State& state);
-        # T alpha;
+        T alpha;
         unsigned long long accumulated_steps;
 
 cdef extern from "integrators/stochastic_llg.hpp" namespace "magnumaf":
@@ -282,7 +283,7 @@ cdef extern from "vtk_io.hpp" namespace "magnumaf":
 
 cdef extern from "solvers/string_method.hpp" namespace "magnumaf":
     cdef cppclass StringMethod:
-        StringMethod(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);
+        StringMethod(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator[double] llg);
         double run(const string filepath, const double string_abort_rel_diff, const double string_abort_abs_diff, const int string_steps, const int every_string_to_vti, const bool verbose);
 
 

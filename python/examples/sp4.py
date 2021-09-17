@@ -29,7 +29,7 @@ m0[-1, :, :, 1]   = 1.
 state = State(mesh, Ms = 8e5, m = m0)
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
 exch = ExchangeField(A = 1.3e-11)
-llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
+llg = LLGIntegratorAlphaPerCell(alpha = af.constant(1.0, nx, ny, nz, 3, dtype=af.Dtype.f64), terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")

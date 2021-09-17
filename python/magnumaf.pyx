@@ -31,6 +31,7 @@ import numpy as np
 # from numpy import zeros as np_zeros
 
 #from magnumafpy_decl cimport array_d3 as carray_d3
+from magnumafpy_decl cimport array as cAfArray
 from magnumafpy_decl cimport Mesh as cMesh
 from magnumafpy_decl cimport State as cState
 from magnumafpy_decl cimport Controller as cController
@@ -905,7 +906,7 @@ cdef class LLGIntegrator:
     llg.step(state)
     print(llg.Eeff_in_J(state))
     """
-    cdef cLLGIntegrator* _thisptr
+    cdef cLLGIntegrator[double]* _thisptr
     def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
         cdef vector[unique_ptr[cFieldterm]] vector_in
         if not terms:
@@ -913,12 +914,15 @@ cdef class LLGIntegrator:
         else:
             for arg in terms:
                 vector_in.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
-            self._thisptr = new cLLGIntegrator (alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+
+            self._thisptr = new cLLGIntegrator[double] (alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
     #def __dealloc__(self):
     #    # TODO maybe leads to segfault on cleanup, compiler warning eleminated by adding virtual destructor in adaptive_rk.hpp
     #    # NOTE is also problematic in minimizer class
     #    del self._thisptr
     #    self._thisptr = NULL
+    #    del self._thisptr_array
+    #    self._thisptr_array = NULL
     def step(self, State state):
         self._thisptr.step(deref(state._thisptr))
     def Eeff_in_J(self, State state):
@@ -939,13 +943,12 @@ cdef class LLGIntegrator:
             Integrate for time_in_s, using with dense output.
         """
         self._thisptr.integrate_dense(deref(state._thisptr), time_in_s, write_every_dt_in_s, filename.encode('utf-8'), verbose, append)
-    # @property
-    # def alpha(self):
-    #     return self._thisptr.alpha
-    # @alpha.setter
-    # def alpha(self, value):
-    #     self._thisptr.alpha=value
-
+    @property
+    def alpha(self):
+        return self._thisptr.alpha
+    @alpha.setter
+    def alpha(self, value):
+        self._thisptr.alpha=value
     @property
     def accumulated_steps(self):
         return self._thisptr.accumulated_steps
@@ -961,6 +964,43 @@ cdef class LLGIntegrator:
     #  return self._thisptr.cpu_time()
     #def set_state0_alpha(self, value):
     #  self._thisptr.state0.material.alpha=value
+
+
+cdef class LLGIntegratorAlphaPerCell:
+    cdef cLLGIntegrator[cAfArray]* _thisptr
+    def __cinit__(self, alpha, terms=[], mode="RKF45", hmin = 1e-15, hmax = 3.5e-10, atol = 1e-6, rtol = 1e-6, dissipation_term_only = False):
+        cdef vector[unique_ptr[cFieldterm]] vector_in
+        if not terms:
+            print("LLGIntegrator: no terms provided, please add some either by providing a list LLGIntegrator(terms=[...]) or calling add_terms(*args) after declaration.")
+        else:
+            for arg in terms:
+                vector_in.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
+
+            # print("Warning, ctor segfaults!!!:")
+            # TODO #   self._thisptr = new cLLGIntegrator[long int] (addressof(alpha.arr), move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            # TODO #   self._thisptr = new cLLGIntegrator[cAfArray] (<long int> addressof(alpha.arr), move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            # TODO #-> self._thisptr = new cLLGIntegrator[cAfArray] (<cAfArray> alpha, move(vector_in), mode.encode('utf-8'), cController(hmin, hmax, atol, rtol), dissipation_term_only)
+            raise RuntimeError("cell-dependent alpha array not supported yet.")
+    def step(self, State state):
+        self._thisptr.step(deref(state._thisptr))
+    def Eeff_in_J(self, State state):
+        return self._thisptr.E(deref(state._thisptr))
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr.h_addr(deref(state._thisptr)))
+    def add_terms(self, *args):
+        for arg in args:
+            self._thisptr.llgterms.push_back(unique_ptr[cFieldterm] (<cFieldterm*><size_t>arg._get_thisptr()))
+    def relax(self, State state, precision = 1e-10, ncalcE = 100, nprint = 1000, verbose = True):
+        """
+        relax(State state, precision = 1e-10, ncalcE = 100, nprint = 1000)
+            Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
+        """
+        self._thisptr.relax(deref(state._thisptr), precision, ncalcE, nprint, verbose)
+    def integrate_dense(self, State state, double time_in_s, double write_every_dt_in_s, filename, verbose = False, append = False):
+        """
+            Integrate for time_in_s, using with dense output.
+        """
+        self._thisptr.integrate_dense(deref(state._thisptr), time_in_s, write_every_dt_in_s, filename.encode('utf-8'), verbose, append)
 
 cdef class StringMethod:
     """
