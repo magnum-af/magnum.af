@@ -36,7 +36,8 @@ class LLGIntegrator : public AdaptiveRungeKutta {
           dissipation_term_only(dissipation_term_only) {}
 
     LLGIntegrator(long int alpha_field_ptr, vec_uptr_FieldTerm llgterms, const std::string& scheme = "RKF45",
-                  Controller controller = Controller(), bool dissipation_term_only = false)
+                  Controller controller = Controller(), bool dissipation_term_only = false,
+                  bool /*dummy for cython*/ = true)
         : AdaptiveRungeKutta(scheme, controller), alpha_field_(util::pywrap::make_copy_form_py(alpha_field_ptr)),
           llgterms(std::move(llgterms)), dissipation_term_only(dissipation_term_only) {}
 

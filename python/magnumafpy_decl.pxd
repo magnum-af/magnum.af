@@ -134,8 +134,11 @@ cdef extern from "integrators/controller.hpp" namespace "magnumaf":
 
 cdef extern from "integrators/llg_integrator.hpp" namespace "magnumaf":
     cdef cppclass LLGIntegrator:
-        LLGIntegrator (long int alpha_ptr, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
-        # TODO #  LLGIntegrator (double alpha, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
+        # TODO note: error only if both ctors are declared
+        # TODO note: compiles if one field in 2nd ctor is omitted
+        # TODO # somehow number of arguments must differ, thus dummy is used, otherwise cython error: 'no suitable method found'
+        LLGIntegrator (long int alpha_ptr, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only, bool dummy);
+        LLGIntegrator (double alpha, vector[unique_ptr[FieldTerm]] vector_in, string mode, Controller, bool dissipation_term_only);
         long int get_alpha_field_ptr() const;
         void set_alpha_field(long int alpha_field_ptr);
         vector[unique_ptr[FieldTerm]] llgterms;

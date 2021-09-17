@@ -20,14 +20,16 @@ af::array LLGIntegrator::f(const State& state) const {
     // timer_fdmdt=timer::start();
     if (dissipation_term_only) {
         if (alpha_field_) {
-            return equations::LLG_damping(alpha_field_.value(), state.m, math::cross4(state.m, fheff(state)));
+            const auto alpha_tiled = af::tile(alpha_field_.value(), 1, 1, 1, 3);
+            return equations::LLG_damping(alpha_tiled, state.m, math::cross4(state.m, fheff(state)));
         } else {
             return equations::LLG_damping(alpha, state.m, math::cross4(state.m, fheff(state)));
         }
 
     } else {
         if (alpha_field_) {
-            return equations::LLG(alpha_field_.value(), state.m, fheff(state));
+            const auto alpha_tiled = af::tile(alpha_field_.value(), 1, 1, 1, 3);
+            return equations::LLG(alpha_tiled, state.m, fheff(state));
         } else {
             return equations::LLG(alpha, state.m, fheff(state));
         }
