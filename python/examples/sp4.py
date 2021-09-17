@@ -29,7 +29,12 @@ m0[-1, :, :, 1]   = 1.
 state = State(mesh, Ms = 8e5, m = m0)
 demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
 exch = ExchangeField(A = 1.3e-11)
-llg = LLGIntegrator(alpha = af.constant(1.0, nx, ny, nz, 3, dtype=af.Dtype.f64), terms = [demag, exch])
+
+alpha_is_field = True
+if alpha_is_field:
+    llg = LLGIntegrator(alpha = af.constant(1.0, nx, ny, nz, 1, dtype=af.Dtype.f64), terms = [demag, exch])
+else:
+    llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")
@@ -42,8 +47,12 @@ while state.t < inttime:
 print("relaxed in", time.time() - timer, "[s]")
 
 # Preparing switch by resetting alpha and adding Zeeman field
-llg.alpha=af.constant(0.02, nx, ny, nz, 3, dtype=af.Dtype.f64)
-zeeswitch = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
+if alpha_is_field:
+    llg.alpha=af.constant(0.02, nx, ny, nz, 3, dtype=af.Dtype.f64)
+else:
+    llg.alpha=0.02
+
+zeeswitch = af.constant(0.0, nx, ny, nz, 1, dtype=af.Dtype.f64)
 zeeswitch[:, :, :, 0] = -24.6e-3/Constants.mu0
 zeeswitch[:, :, :, 1] = +4.3e-3/Constants.mu0
 zeeswitch[:, :, :, 2] = 0.0
