@@ -48,7 +48,7 @@ print("relaxed in", time.time() - timer, "[s]")
 
 # Preparing switch by resetting alpha and adding Zeeman field
 if alpha_is_field:
-    llg.alpha=af.constant(0.02, nx, ny, nz, 3, dtype=af.Dtype.f64)
+    llg.alpha=af.constant(0.02, nx, ny, nz, 1, dtype=af.Dtype.f64)
 else:
     llg.alpha=0.02
 
