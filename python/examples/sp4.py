@@ -34,7 +34,7 @@ alpha_is_field = True
 if alpha_is_field:
     llg = LLGIntegrator(alpha = af.constant(1.0, nx, ny, nz, 1, dtype=af.Dtype.f64), terms = [demag, exch])
 else:
-    llg = LLGIntegrator(alpha = 1, terms = [demag, exch])
+    llg = LLGIntegrator(alpha = 1.0, terms = [demag, exch])
 
 # Relaxing
 print("relaxing 1ns")
@@ -52,7 +52,7 @@ if alpha_is_field:
 else:
     llg.alpha=0.02
 
-zeeswitch = af.constant(0.0, nx, ny, nz, 1, dtype=af.Dtype.f64)
+zeeswitch = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 zeeswitch[:, :, :, 0] = -24.6e-3/Constants.mu0
 zeeswitch[:, :, :, 1] = +4.3e-3/Constants.mu0
 zeeswitch[:, :, :, 2] = 0.0
