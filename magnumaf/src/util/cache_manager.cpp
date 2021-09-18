@@ -59,10 +59,15 @@ CacheManager::CacheManager(bool verbose, fs::path p, std::uintmax_t max_size_in_
 }
 
 CacheManager::~CacheManager() {
-    // remove cache_folder if empty
-    shrink_cache_if_gt_maxsize();
-    if (fs::is_empty(cache_folder)) {
-        fs::remove(cache_folder);
+    try {
+        // checking cleanup
+        shrink_cache_if_gt_maxsize();
+        // remove cache_folder if empty
+        if (fs::is_empty(cache_folder)) {
+            fs::remove(cache_folder);
+        }
+    } catch (const af::exception& e) {
+        std::cout << e.what() << "\33[1;31mWarning:\33[0m clearing chache failed." << std::endl;
     }
 }
 
