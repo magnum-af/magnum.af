@@ -50,10 +50,12 @@ CacheManager::CacheManager(bool verbose, fs::path p, std::uintmax_t max_size_in_
     : verbose(verbose), cache_folder(std::move(p)), max_size_in_byte(max_size_in_byte),
       shrink_size_in_byte(shrink_size_in_byte) {
     // create dir if not existing
-    fs::create_directories(cache_folder);
-    // setting file permissions to linux '777'
-    fs::permissions(cache_folder, fs::perms::owner_all | fs::perms::group_all | fs::perms::others_all,
-                    fs::perm_options::add);
+    if (!fs::exists(cache_folder)) {
+        fs::create_directories(cache_folder);
+        // setting file permissions to linux '777'
+        fs::permissions(cache_folder, fs::perms::owner_all | fs::perms::group_all | fs::perms::others_all,
+                        fs::perm_options::add);
+    }
 }
 
 CacheManager::~CacheManager() {
