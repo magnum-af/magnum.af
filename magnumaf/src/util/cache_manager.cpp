@@ -1,5 +1,6 @@
 #include "cache_manager.hpp"
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <numeric>
 #include <utility>
@@ -53,8 +54,7 @@ CacheManager::CacheManager(bool verbose, fs::path p, std::uintmax_t max_size_in_
     if (!fs::exists(cache_folder)) {
         fs::create_directories(cache_folder);
         // setting file permissions to linux '777'
-        fs::permissions(cache_folder, fs::perms::owner_all | fs::perms::group_all | fs::perms::others_all,
-                        fs::perm_options::add);
+        fs::permissions(cache_folder, fs::perms::all);
     }
 }
 
@@ -96,7 +96,10 @@ void CacheManager::write_array(const af::array& a, const std::string& filename, 
         std::cout << "\33[0;32mInfo:\33[0m Saving array to " << cache_folder / filename << std::endl;
     }
     try {
-        af::saveArray(key.c_str(), a, (cache_folder / filename).c_str());
+        const auto array_filename = cache_folder / filename;
+        af::saveArray(key.c_str(), a, (array_filename).c_str());
+        fs::permissions(array_filename, fs::perms::others_write,
+                        fs::perm_options::add); // changes 'rw-rw-r--' to 'rw-rw-rw-'
     } catch (const af::exception& e) {
         std::cout << e.what() << "\33[1;31mWarning:\33[0m af::saveArray failed, omit saving demag tensor." << std::endl;
     }
