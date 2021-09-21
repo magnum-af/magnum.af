@@ -1,20 +1,14 @@
-# image: magnum.af-docu
-# build: docker build -t magnum.af-docu -f Dockerfile.docu .
-# run  : docker run --rm -ti magnum.af-docu /bin/bash
-
-FROM ubuntu:18.04
-MAINTAINER Paul <paul.thomas.heistracher@univie.ac.at>
-
+FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Note: texlive-latex-extra pachage causing:  File `wasysym.sty' not found.
 RUN apt update && \
     apt install -y --no-install-recommends \
         doxygen \
+        graphviz \
         make \
         texlive-full
 
-#RUN apt install -y --no-install-recommends \
-        #texlive-latex-extra#causing:  File `wasysym.sty' not found.
 
 # Setting user from build-arg with 999 as default
 ARG user=999
