@@ -1,6 +1,11 @@
+# For Doxygen (package name must match filename):
+## @package magnumafpy
+# magnum.af python bindings.
+
 """@package magnum.af
 A finite differences GPU-accelerated micromagnetic and atomistic simulation software.
 """
+
 #!python
 #distutils: language = c++
 #cython: language_level=3

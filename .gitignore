@@ -7,6 +7,5 @@ src/tags
 *.swp
 scripts/wrapping_github/
 compile_commands.json
-docu/
 .cache/
 build*/
