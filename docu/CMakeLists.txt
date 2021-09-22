@@ -11,7 +11,14 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
     set(DOXYGEN_USE_MATHJAX YES) # better formula rendering
     set(DOXYGEN_JAVADOC_AUTOBRIEF "YES") # for short '///' docstring support
-    set(DOXYGEN_EXTRACT_LOCAL_CLASSES "NO")
+    set(DOXYGEN_EXTRACT_ALL YES) # Note: generates nice sub-sectioning for README.md, but also generates docu for all elements, including .cpp files
+    set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+    set(DOXYGEN_EXTRACT_LOCAL_CLASSES NO)
+
+    # nicer graphics
+    set(DOXYGEN_HAVE_DOT YES) # default anyway
+    set(DOXYGEN_DOT_IMAGE_FORMAT svg) # use vector graphics, not png
+    set(DOXYGEN_DOT_TRANSPARENT YES) # especially good for dark mode
     
     # resetting defaults to make sure:
     set(DOXYGEN_RECURSIVE "YES") # is default anyway
@@ -28,7 +35,22 @@ if (DOXYGEN_FOUND)
     # TODO remove symlink, rename file with cmake only in build dir!
     set(DOXYGEN_EXTENSION_MAPPING ".pyx=python")
     set(DOXYGEN_FILE_PATTERNS *.cpp *.hpp *.md *.py *.pyx) # Note: don't use quotes here
-    set(DOXYGEN_EXCLUDE_PATTERNS "*/test/*;*/examples/*;magnumaf.pyx")
+    # TODO : if skipping examples here, README.md files are in docu, but not with folder hierarchy
+    set(DOXYGEN_EXCLUDE_PATTERNS "*/examples/*;*/test/*;magnumaf.pyx")
+
+    # use modern CSS from https://github.com/jothepro/doxygen-awesome-css :
+    if(FALSE) # TOGGLE_DARKMODE
+      # TODO enable only if header/footer are temporary build files, not tracked doxygen-version dependent ones.
+      set(DOXYGEN_HTML_EXTRA_STYLESHEET "css/doxygen-awesome.css;css/doxygen-awesome-sidebar-only.css;css/darkmode/doxygen-awesome-sidebar-only-darkmode-toggle.css")
+      set(DOXYGEN_GENERATE_TREEVIEW YES)
+      set(DOXYGEN_HTML_EXTRA_FILES "css/darkmode/doxygen-awesome-darkmode-toggle.js")
+      set(DOXYGEN_HTML_HEADER "css/darkmode/header.html")
+      set(DOXYGEN_HTML_FOOTER "css/darkmode/footer.html")
+    else()
+      set(DOXYGEN_HTML_EXTRA_STYLESHEET "css/doxygen-awesome.css;css/doxygen-awesome-sidebar-only.css")
+      set(DOXYGEN_GENERATE_TREEVIEW YES)
+    endif() # TOGGLE_DARKMODE
+
 
     # make latex output and cmake target if found
     find_package(LATEX COMPONENTS PDFLATEX)
