@@ -13,6 +13,7 @@ before_script:
 build_and_test_cpu:
   stage: build_and_test
   script:
+    - docker pull $CPU_TEST_IMAGE || true # update cache if existant
     - docker build --pull -t $CPU_TEST_IMAGE -f Dockerfile.cpu .
     - docker run --rm $CPU_TEST_IMAGE ./bash/runalltests.sh
     - docker push $CPU_TEST_IMAGE
@@ -23,6 +24,7 @@ build_and_test_cpu:
 build_and_test_gpu:
   stage: build_and_test
   script:
+    - docker pull $CUDA_TEST_IMAGE || true # update cache if existant
     - docker build --pull -t $CUDA_TEST_IMAGE -f Dockerfile .
     - docker run --rm --gpus all -t $CUDA_TEST_IMAGE ./bash/runalltests.sh
     - docker push $CUDA_TEST_IMAGE
