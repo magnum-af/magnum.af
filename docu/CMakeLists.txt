@@ -18,7 +18,7 @@ if (DOXYGEN_FOUND)
     # nicer graphics
     set(DOXYGEN_HAVE_DOT YES) # default anyway
     set(DOXYGEN_DOT_IMAGE_FORMAT svg) # use vector graphics, not png
-    set(DOXYGEN_DOT_TRANSPARENT YES) # especially good for dark mode
+    set(DOXYGEN_DOT_TRANSPARENT YES) # especially good for dark mode (at least in firefox, currently not chrome)
     
     # resetting defaults to make sure:
     set(DOXYGEN_RECURSIVE "YES") # is default anyway
@@ -39,13 +39,19 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_EXCLUDE_PATTERNS "*/examples/*;*/test/*;magnumaf.pyx")
 
     # use modern CSS from https://github.com/jothepro/doxygen-awesome-css :
-    if(FALSE) # TOGGLE_DARKMODE
-      # TODO enable only if header/footer are temporary build files, not tracked doxygen-version dependent ones.
+    if(TRUE) # TOGGLE_DARKMODE
+      # generate header.html and footer.html files with custom commands in WORKIND_DIRECTORY
+      execute_process(COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/css/darkmode/generate_html_header_and_footer_inserting_custom_commands.sh
+        ${CMAKE_CURRENT_SOURCE_DIR}/css/darkmode/insert_header.html
+        ${CMAKE_CURRENT_SOURCE_DIR}/css/darkmode/insert_footer.html
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      )
+
       set(DOXYGEN_HTML_EXTRA_STYLESHEET "css/doxygen-awesome.css;css/doxygen-awesome-sidebar-only.css;css/darkmode/doxygen-awesome-sidebar-only-darkmode-toggle.css")
       set(DOXYGEN_GENERATE_TREEVIEW YES)
       set(DOXYGEN_HTML_EXTRA_FILES "css/darkmode/doxygen-awesome-darkmode-toggle.js")
-      set(DOXYGEN_HTML_HEADER "css/darkmode/header.html")
-      set(DOXYGEN_HTML_FOOTER "css/darkmode/footer.html")
+      set(DOXYGEN_HTML_HEADER "${CMAKE_CURRENT_BINARY_DIR}/header.html")
+      set(DOXYGEN_HTML_FOOTER "${CMAKE_CURRENT_BINARY_DIR}/footer.html")
     else()
       set(DOXYGEN_HTML_EXTRA_STYLESHEET "css/doxygen-awesome.css;css/doxygen-awesome-sidebar-only.css")
       set(DOXYGEN_GENERATE_TREEVIEW YES)
