@@ -2,7 +2,7 @@
 
 find_package(
     Doxygen
-    REQUIRED dot
+    COMPONENTS dot
     OPTIONAL_COMPONENTS mscgen dia
 )
 
