@@ -123,33 +123,40 @@ def parse():
             help="Output directory. Will be created and is accessible via 'parse.outdir'. Defaults to 'output_<scriptname>'.",
             )
     parser.add_argument(
-            '-n',
-            '--no-overwrite',
-            help='Abort if outdir already exists. Prevents file overwriting.',
-            action='store_true'
-            )
-    parser.add_argument(
             '-b',
             '--backend',
             type=str,
-            help="'cuda', 'opencl' or 'cpu'. Select arrayfire backend via 'af::setBackend(b)'."
+            help="'cuda', 'opencl' or 'cpu'. Select arrayfire backend via 'af.set_backend(b)'."
             )
     parser.add_argument(
             '-d',
             '--device',
             type=int,
-            help="Set 'af::setDevice(d)', e.g. used for selecting a GPU."
+            help="Set 'af.set_device(d)', e.g. used for selecting a GPU."
+            )
+    parser.add_argument(
+            '-i',
+            '--info',
+            help='Prints af.info() to display active backend and device.',
+            action='store_true' # defaults to 'False'
+            )
+    parser.add_argument(
+            '-n',
+            '--no-overwrite',
+            help='Abort if outdir already exists. Prevents file overwriting.',
+            action='store_true' # defaults to 'False'
+            )
+    parser.add_argument(
+            '-N',
+            '--nocopy',
+            help='Skip copying this script into outdir/ as backup.',
+            action='store_true' # defaults to 'False'
             )
     parser.add_argument(
             '-v',
             '--verbose',
             help="Make this parser verbose, printing parsing steps.",
             action='store_true'
-            )
-    parser.add_argument(
-            '--nocopy',
-            help='Skip copying this script into outdir/ as backup.',
-            action='store_true' # defaults to 'False'
             )
     parser.add_argument(
             'posargs',
@@ -189,6 +196,9 @@ def parse():
         targetname = args.outdir + os.path.basename(sys.argv[0]) + '.copy'
         print_if(args.verbose, '--nocopy (not set): copying script "', os.path.basename(sys.argv[0]), '" into "', targetname, '"')
         copy(sys.argv[0], targetname)
+
+    if args.info is True:
+        af.info()
 
     return args
 
@@ -450,6 +460,16 @@ class Magnetization:
         array [0, 0, 0, 1] = axis[1]/norm
         array [0, 0, 0, 2] = axis[2]/norm
         return af.tile(array, nx, ny, nz)
+
+class Field:
+    @staticmethod
+    def homogeneous(Hext, nx: int, ny: int, nz: int, dtype=af.Dtype.f64):
+        """Returns a homogeneous field with values Hext = [Hx, Hy, Hz] for each cell and dimension [nx, ny, nz, 3]."""
+        field = af.constant(0.0, nx, ny, nz, 3, dtype)
+        field[:, :, :, 0]  = Hext[0]
+        field[:, :, :, 1]  = Hext[1]
+        field[:, :, :, 2]  = Hext[2]
+        return field
 
 # For adding methods as properties (e.g. the State class method m_partial as attribute)
 # From http://code.activestate.com/recipes/440514-dictproperty-properties-for-dictionary-attributes/
@@ -720,6 +740,14 @@ cdef class State:
     def __dealloc__(self): # causes segfault on every cleanup
         del self._thisptr
         self._thisptr = NULL
+    def __str__(self):
+        """Convenience function, returns a string in the form 'state.t state.mean_mx() state.mean_my() state.mean_mz()'."""
+        mx, my, mz = self.mean_m()
+        return str(self.t) + " " + str(mx) + " " + str(my) + " " + str(mz)
+        # return str(mx) + " " + str(my) + " " + str(mz)
+        # return str(mx) + '\t' + str(my) + '\t' + str(mz)
+        # return '<mx>=' + str(mx) + ', <my>=' + str(my) + ', <mz>=' + str(mz)
+
     @property
     def t(self):
         return self._thisptr.t
