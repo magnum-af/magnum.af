@@ -16,7 +16,7 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 * C++ Project
   * Core functionality including all interactions and solvers
 * Python bindings
-  * Script-style user interface, compatible with numpy input arrays (see python/examples for more)
+  * Script-style user interface, compatible with numpy input arrays
 
 # Example Scripts
 Various example scripts are found in the respective directories for python in [python/examples/](python/examples/) and for c++ in [magnumaf/examples/](magnumaf/examples/).
@@ -28,7 +28,7 @@ Currently, generated documentation is provided by the CI pipeline and can be dow
 
 Alternatively, install doxygen and build your own documentation by running the following command in the root directory:
 
-`$ doxygen docu/.doxygen-legacy-configg`
+`$ mkdir build && cd build && cmake .. && make docu_html`
 
 # Installation Guide
 ## Docker:

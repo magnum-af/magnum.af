@@ -1,5 +1,5 @@
 " F2: Run Doxygen
-nnoremap <F2> :!( cd .. && doxygen docu/.doxygen-legacy-configg && cd latex && make )<CR>
+nnoremap <F2> :!( cd .. && doxygen docu/.doxygen-legacy-config && cd latex && make )<CR>
 " F3: make clean
 nnoremap <F3> :! cd ../build  && make clean && cd - <cr>
 " F4: cmake ..

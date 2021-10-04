@@ -24,6 +24,6 @@ COPY --chown=magnum.af.user . /home/magnum.af
 
 WORKDIR /home/magnum.af
 
-RUN doxygen docu/.doxygen-legacy-configg && \
+RUN doxygen docu/.doxygen-legacy-config && \
     cd docu/latex && \
     make all
