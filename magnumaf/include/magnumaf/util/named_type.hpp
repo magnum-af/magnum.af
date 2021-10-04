@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 
+namespace magnumaf {
 // from:
 // https://www.fluentcpp.com/2017/03/06/passing-strong-types-reference-revisited/
 template <typename T, typename Parameter> class NamedType {
@@ -16,3 +17,4 @@ template <typename T, typename Parameter> class NamedType {
   private:
     T value_;
 };
+} // namespace magnumaf

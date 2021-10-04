@@ -11,7 +11,7 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
     set(DOXYGEN_USE_MATHJAX YES) # better formula rendering
     set(DOXYGEN_JAVADOC_AUTOBRIEF "YES") # for short '///' docstring support
-    set(DOXYGEN_EXTRACT_ALL YES) # Note: generates nice sub-sectioning for README.md, but also generates docu for all elements, including .cpp files
+    # set(DOXYGEN_EXTRACT_ALL YES) # Note: generates nice sub-sectioning for README.md, but also generates docu for all elements, including .cpp files
     set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
     set(DOXYGEN_EXTRACT_LOCAL_CLASSES NO)
 
@@ -70,7 +70,7 @@ if (DOXYGEN_FOUND)
         set(DOXYGEN_GENERATE_LATEX YES)
         set(DOXYGEN_EXTRA_PACKAGES "{amsmath};{bm}")
         add_custom_target(
-            docu_latex
+            docu_pdf
             COMMAND make
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/latex"
             COMMENT "Building doxygen latex pdf documentation."
