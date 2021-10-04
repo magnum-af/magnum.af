@@ -28,7 +28,7 @@ Currently, generated documentation is provided by the CI pipeline and can be dow
 
 Alternatively, install doxygen and build your own documentation by running the following command in the root directory:
 
-`$ doxygen .doxygen-config`
+`$ doxygen docu/.doxygen-legacy-configg`
 
 # Installation Guide
 ## Docker:
