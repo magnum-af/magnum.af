@@ -25,6 +25,7 @@ m0[    -1, :, :, 1] = 1.0
 # Creating magnum.af objects
 mesh = maf.Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 state = maf.State(mesh, Ms = 8e5, m = m0)
+state.write_vti(args.outdir + "m_initial.vti")
 
 # define interactions
 dmg = maf.DemagField(mesh, verbose = True, caching = True, nthreads = 6)
@@ -44,6 +45,8 @@ while state.t < dt_in_sec:
     llg.step(state)
     mx, my, mz = state.mean_m()
     outfile.write("%e, %e, %e, %e\n" %(state.t, mx, my, mz))
+
+state.write_vti(args.outdir + "m_relaxed.vti")
 
 print("relaxing  for", 1e9 * dt_in_sec, "[ns] took", time.time() - timer, "[s]")
 
@@ -66,6 +69,8 @@ while state.t < 2 * dt_in_sec:
     llg.step(state)
     mx, my, mz = state.mean_m()
     outfile.write("%e, %e, %e, %e\n" %(state.t, mx, my, mz))
+
+state.write_vti(args.outdir + "m_switched.vti")
 
 outfile.close()
 print("switching for", 1e9 * dt_in_sec, "[ns] took", time.time() - timer, "[s]")
