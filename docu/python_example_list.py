@@ -1,0 +1,20 @@
+# Examples for doxygen:
+## @example python/examples/sp4_extended_demo.py
+## @example python/examples/sp4.py
+## @example python/examples/sp4_compact.py
+## @example python/examples/demag_nonquidistant.py
+## @example python/examples/domain_wall_pinning.py
+## @example python/examples/ellipse_rkky_hys.py
+## @example python/examples/ellipse_rkky_hys_var_Ms.py
+## @example python/examples/loop_external_field.py
+## @example python/examples/NdFeB_ellipse.py
+## @example python/examples/regions.py
+## @example python/examples/rkky_compare_to_analytical_pinned.py
+## @example python/examples/rkky_compare_to_analytical.py
+## @example python/examples/rkky.py
+## @example python/examples/saf_only.py
+## @example python/examples/skyrmion_multilayer.py
+## @example python/examples/skyrmion_stringmethod.py
+## @example python/examples/stochastic_particle.py
+## @example python/examples/vortex_saf.py
+## @example python/examples/zoo.py

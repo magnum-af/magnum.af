@@ -35,13 +35,13 @@ if (DOXYGEN_FOUND)
     # TODO remove symlink, rename file with cmake only in build dir!
     set(DOXYGEN_EXTENSION_MAPPING ".pyx=python")
     set(DOXYGEN_FILE_PATTERNS *.cpp *.hpp *.md *.py *.pyx) # Note: don't use quotes here
-    # TODO : if skipping examples here, README.md files are in docu, but not with folder hierarchy
-    set(DOXYGEN_EXCLUDE_PATTERNS "*/examples/*;*/test/*;magnumaf.pyx")
 
-    # # Note: if adding examples to docu:
-    # set(DOXYGEN_EXCLUDE_PATTERNS "*/test/*;magnumaf.pyx") # Note disable above
-    # set(DOXYGEN_EXAMPLE_PATH "${CMAKE_SOURCE_DIR}/python/examples/;${CMAKE_SOURCE_DIR}/magnumaf/examples/")
-    # # for files to be added, use '## @example' in python example or '/// @example' for cpp in script, better though to mention at other place in src with e.g. ' \example sp4.cpp'
+    # excluding examples/*.py to avoid polluting documented namespace, skipp examples/README.md due to not working file links:
+    set(DOXYGEN_EXCLUDE_PATTERNS "*/python/examples/*.py;*/test/*;magnumaf.pyx;*/magnumaf/examples/README.md;")
+
+    # adding examples to docu:
+    set(DOXYGEN_EXAMPLE_PATH "${CMAKE_SOURCE_DIR}/python/examples/;${CMAKE_SOURCE_DIR}/magnumaf/examples/")
+    # for files to be added, use '## @example' in python example or '/// @example' for cpp in script, better though to mention at other place in src with e.g. '## @example sp4.py' or '\example sp4.cpp'.
 
     # use modern CSS from https://github.com/jothepro/doxygen-awesome-css :
     if(TRUE) # TOGGLE_DARKMODE
