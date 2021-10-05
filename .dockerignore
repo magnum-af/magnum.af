@@ -1,7 +1,10 @@
 .git/
 .gitignore
 build/
+build_*/
+output_*/
 bin/
 *.vti
 *.vtk
 *.dat
+Dockerfile*

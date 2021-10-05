@@ -10,6 +10,7 @@ Required positional argument:
 
 Optional arguments (before <script.py>):
     -d|--detach         Run docker in detached mode.
+    -t|--tag            Select docker image tag to run.
     -h|--help           Show this help.
 
 Examples:
@@ -20,11 +21,19 @@ Examples:
 
 # parsing pre-script arguments
 d_flag=''
+t_flag=''
+t_flag_value=''
 for arg in "$@"
 do
     case $arg in
         -d|--detach)
 	    d_flag='true'
+            shift
+        ;;
+        -t|--tag)
+	    t_flag='true'
+            shift
+            t_flag_value="$1"
             shift
         ;;
         -h|--help)
@@ -80,7 +89,8 @@ function get_outdir(){
 
 input_file_path=$(realpath "$1")
 outdir=$(get_outdir "$@")
-docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
+[ "$t_flag" == "true" ] && docker_tag="$t_flag_value" || docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
+#docker_tag="git.exp.univie.ac.at:4567/paul/magnum.af"
 magaf_cache_dir="/tmp/magnumaf.cache/"
 
 # making sure volumes exist before mounting.
@@ -89,8 +99,9 @@ mkdir -p "$outdir"
 mkdir -p "$magaf_cache_dir"
 
 # assembling docker command
-dock="nvidia-docker run \
+dock="docker run \
     --rm \
+    --gpus all \
     --user $UID \
     -v $input_file_path:$input_file_path \
     -v $outdir:$outdir \

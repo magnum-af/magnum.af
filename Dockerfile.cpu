@@ -2,8 +2,7 @@
 # test:  $ docker run --rm -t magnum.af/cpu ./bash/runalltests.sh .
 # run:   $ docker run --rm -ti magnum.af/cpu /bin/bash
 
-FROM ubuntu:latest
-MAINTAINER Paul Heistracher <paul.thomas.heistracher@univie.ac.at>
+FROM ubuntu:latest as builder
 
 RUN apt update && apt install -y gnupg curl && \
     curl -sSL 'https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB' | apt-key add - && \
@@ -20,21 +19,33 @@ RUN apt update && apt install -y gnupg curl && \
     python3-pip && \
     pip3 install arrayfire numpy
 
+COPY . .
+
+RUN (mkdir build && cd build && cmake .. && make -j && ctest -j && make install) && \
+    rm -r build/
+
+
+FROM ubuntu:latest as runtime
+
+RUN apt update && apt install -y gnupg2 ca-certificates apt-utils software-properties-common && \
+    apt-key adv --fetch-key https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB && \
+    echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu focal main" | tee /etc/apt/sources.list.d/arrayfire.list && \
+    apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
+    gnuplot \
+    evince \
+    vtk7 \
+    arrayfire-cpu3-openblas \
+    python3-pip && \
+    pip3 install arrayfire numpy
+
+COPY --from=builder /usr/local/lib/magnumaf.so /usr/local/lib
+
 # Setting user from build-arg with 999 as default
 ARG user=999
 RUN groupadd -g $user magnum.af.user && \
     useradd -r -u $user -g magnum.af.user magnum.af.user && \
     mkdir /home/magnum.af.user && \
     chown -R magnum.af.user /home/magnum.af.user
-
-# Add magnum.af repository
-COPY --chown=magnum.af.user . /home/magnum.af/
-
-# building magnum.af and docu
-WORKDIR /home/magnum.af/
-RUN chmod -R 777 /home/magnum.af/ && \
-    (mkdir build && cd build && cmake .. && make -j && ctest -j && make install) && \
-    rm -r build/
 
 # set non-root user
 USER magnum.af.user
