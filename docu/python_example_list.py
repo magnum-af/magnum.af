@@ -1,6 +1,7 @@
 # Examples for doxygen:
 ## @example python/examples/sp4_extended_demo.py
 ## @example python/examples/sp4.py
+## @example python/examples/sp_domain_wall_pinning_magnumaf.py
 ## @example python/examples/sp4_compact.py
 ## @example python/examples/domain_wall_pinning.py
 ## @example python/examples/ellipse_rkky_hys.py
