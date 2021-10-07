@@ -187,8 +187,6 @@ inline auto lapA(const double A_i, const double A_pm, const double dxyz) {
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
-    printf("%s SparseExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
     const unsigned dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 
@@ -286,8 +284,6 @@ af::array calc_CSR_matrix(const af::array& A_exchange_field, const Mesh& mesh, c
 // Assembly of COO sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_COO_matrix(const af::array& A_exchange_field, const Mesh& mesh, const bool verbose) {
-    printf("%s SparseExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
     const std::size_t dimension = mesh.nx * mesh.ny * mesh.nz * 3;
 

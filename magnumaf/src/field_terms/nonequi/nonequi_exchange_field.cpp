@@ -23,8 +23,6 @@ unsigned findex(unsigned i0, unsigned i1, unsigned i2, unsigned im, const Nonequ
 }
 
 af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
@@ -141,8 +139,6 @@ af::array calc_COO_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_COO_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
@@ -313,8 +309,6 @@ af::array calc_COO_matrix(const af::array& A_exchange_field, const NonequiMesh& 
 }
 
 af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
@@ -430,8 +424,6 @@ af::array calc_CSR_matrix(const double A_exchange, const NonequiMesh& mesh, cons
 // Assembly of sparse matrix for spacially varying exchange energy
 // A_exchange_field
 af::array calc_CSR_matrix(const af::array& A_exchange_field, const NonequiMesh& mesh, const bool verbose) {
-    printf("%s NonequiExchangeField::calc_CSR_matrix unit testing not finished!\n", color_string::warning());
-    fflush(stdout);
     af::timer t = af::timer::start();
 
     std::vector<double> h; // spacings between discretization points h = (dz[n] + dz[n+1])/2
