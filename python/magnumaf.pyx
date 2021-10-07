@@ -1113,23 +1113,64 @@ cdef class DemagFieldPBC(HeffTerm):
 
 
 cdef class ExchangeField(HeffTerm):
-    cdef cExchangeField* _thisptr
-    def __cinit__(self, A):
-        if hasattr(A, 'arr'):
-            self._thisptr = new cExchangeField (<long int> addressof(A.arr))
+    cdef bool _is_sparse
+    cdef cExchangeField* _thisptr_conv
+    cdef cSparseExchangeField* _thisptr_sparse
+    def __cinit__(self, A, Mesh mesh = None, verbose = False):
+        status_info = "\33[0;32mInfo:\33[0m"
+        if mesh is None:
+            if type(A) is af.Array:
+                 raise RuntimeError("When passing A as af.Array, you must provide a mesh, i.e. ExchangeField(A, mesh).")
+            elif type(A) is float:
+                if verbose:
+                    print(status_info, "ExchangeField.H_in_Apm using convolution")
+                self._is_sparse = False
+                self._thisptr_conv = new cExchangeField (<double> A)
+            else:
+                 raise RuntimeError("A must be float or af.Array!")
+        elif type(mesh) is Mesh:
+            self._is_sparse = True
+            if verbose:
+                print(status_info, "ExchangeField.H_in_Apm using sparse-matrix product")
+            if type(A) is af.Array:
+                self._thisptr_sparse = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
+            elif type(A) is float:
+                # print("Note: you are using ExchangeField(float, Mesh) ")
+                self._thisptr_sparse = new cSparseExchangeField (<double> A, deref(mesh._thisptr), <bool> verbose)
+            else:
+                raise RuntimeError("A must be either af.Array or float.")
         else:
-            self._thisptr = new cExchangeField (<double> A)
+            raise RuntimeError("mesh must be of type magnmaf.Mesh!")
+
     def __dealloc__(self):
-        del self._thisptr
-        self._thisptr = NULL
+        if self._is_sparse:
+            del self._thisptr_sparse
+            self._thisptr_sparse = NULL
+        else:
+            del self._thisptr_conv
+            self._thisptr_conv = NULL
+
     def H_in_Apm(self, State state):
-        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+        if self._is_sparse:
+            return array_from_addr(self._thisptr_sparse._pywrap_H_in_Apm(deref(state._thisptr)))
+        else:
+            return array_from_addr(self._thisptr_conv._pywrap_H_in_Apm(deref(state._thisptr)))
+
     def Energy_in_J(self, State state):
-        return self._thisptr.Energy_in_J(deref(state._thisptr))
+        if self._is_sparse:
+            return self._thisptr_sparse.Energy_in_J(deref(state._thisptr))
+        else:
+            return self._thisptr_conv.Energy_in_J(deref(state._thisptr))
     def cpu_time(self):
-        return self._thisptr.elapsed_eval_time()
+        if self._is_sparse:
+            return self._thisptr_sparse.elapsed_eval_time()
+        else:
+            return self._thisptr_conv.elapsed_eval_time()
     def _get_thisptr(self):
-            return <size_t><void*>self._thisptr
+        if self._is_sparse:
+            return <size_t><void*>self._thisptr_sparse
+        else:
+            return <size_t><void*>self._thisptr_conv
     ## Add when needed:
     # @property
     # def A(self):
@@ -1148,6 +1189,8 @@ cdef class ExchangeField(HeffTerm):
 cdef class SparseExchangeField(HeffTerm):
     cdef cSparseExchangeField* _thisptr
     def __cinit__(self, A, Mesh mesh, verbose = True):
+        status_warning = "\33[1;31mWarning:\33[0m"
+        print(status_warning, "SparseExchangeField is depricated and will be removed in the future, please use ExchangeField(A_field, mesh) instead.")
         if hasattr(A, 'arr'):
             self._thisptr = new cSparseExchangeField (<long int> addressof(A.arr), deref(mesh._thisptr), <bool> verbose)
         else:
