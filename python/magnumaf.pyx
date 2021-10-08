@@ -1113,6 +1113,32 @@ cdef class DemagFieldPBC(HeffTerm):
 
 
 cdef class ExchangeField(HeffTerm):
+    """
+    Calculated field contribution of the exchange interaction, either by convolution (A is float) or as a sparse-matrix vector product (A is af.Array).
+    The latter method properly handles jump conditions at material interfaces.
+
+    Parameters
+    ----------
+    A : float or af.Array
+        Exchange constant in  [J/m].
+        If float: global exchange constant
+        If af.Array: cell-wise defined exchange parameter.
+    mesh : Mesh
+        Discretization needed for setup of the sparse-matrix. Optional if A is float, must be provided otherwise.
+
+    Examples
+    ----------
+    # (1) global value:
+    A = 1e-15 # [J/m]
+    SparseExchangeField(A)
+
+    # (2) cell-wise value:
+    mesh = Mesh(2, 1, 1, 1e-9, 1e-9, 1e-9)
+    A_field = af.constant(0.0, mesh.nx, mesh.ny, mesh.nz, af.Dtype.f64)
+    A_field[0] = 2e-15 # [J/m]
+    A_field[1] = 3e-15 # [J/m]
+    SparseExchangeField(A, mesh)
+    """
     cdef bool _is_sparse
     cdef cExchangeField* _thisptr_conv
     cdef cSparseExchangeField* _thisptr_sparse

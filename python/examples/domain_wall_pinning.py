@@ -135,7 +135,7 @@ state.write_vti(args.outdir + "minit")
 
 fields = [
     ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)),
-    SparseExchangeField(A_field, mesh),
+    ExchangeField(A_field, mesh),
     UniaxialAnisotropyField(Ku1_field, Ku1_axis),
 ]
 
