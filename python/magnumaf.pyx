@@ -870,8 +870,8 @@ cdef class Stochastic_LLG:
         Temperature in Kelvin [K]
     dt : float
         Fixed time step in [s]
-    terms : [HeffTerm]
-        A python list constisting of HeffTerm objects s.a. ExchangeField or DemagField
+    terms : [FieldTerm]
+        A python list constisting of FieldTerm objects s.a. ExchangeField or DemagField
     smode : str ("Heun")
         Integration scheme. Either "Heun" or "SemiHeun".
     """
@@ -899,8 +899,8 @@ cdef class LLGIntegrator:
     ----------
     alpha : float
         The unitless damping constant in the LLG equation
-    terms : [HeffTerm]
-        A python list constisting of HeffTerm objects s.a. ExchangeField or DemagField
+    terms : [FieldTerm]
+        A python list constisting of FieldTerm objects s.a. ExchangeField or DemagField
     mode : str
         Switch between Adapitve Runge Kutta schemes. Options are "RKF45", "DP45", "BS45", "DP78", "BS23"
     hmin : float
@@ -927,7 +927,7 @@ cdef class LLGIntegrator:
     H_in_Apm(State) : af.array
         Returns the effective field H_in_Apm for the magnetization state.m
     add_terms(*args)
-        Adds an HeffTerm object (s.a. ExchangeField) to be included in the effective field
+        Adds an FieldTerm object (s.a. ExchangeField) to be included in the effective field
     relax(State, precision, ncalcE, nprint)
         Relaxes the magnetization until the energy difference between ncalcE steps is less than precision
 
@@ -1045,21 +1045,23 @@ cdef class StringMethod:
     def run(self, filepath, string_abort_rel_diff = 1e-12, string_abort_abs_diff = 1e-27, string_steps = 10000, every_string_to_vti = 50, verbose = True):
         return self._thisptr.run(filepath.encode('utf-8'), string_abort_rel_diff, string_abort_abs_diff, string_steps, every_string_to_vti, <bool> verbose)
 
-# base class for clearification (especially for heritage diagramms in docu)
-cdef class HeffTerm:
+cdef class FieldTerm:
+    """ Field term base class, defines interface for calculating the effective field and micromagnetic energy."""
     def H_in_Apm(self, State state):
-        """H-field in Ampere per meter [A/m]"""
+        """Effective field H in Ampere per meter [A/m]"""
         pass
     def H_in_T(self, State state):
-        """H-field in Tesla [T]"""
+        """Effective field H in Tesla [T]"""
         return Conversion.Apm_to_Tesla(self.H_in_Apm(state))
     def Energy_in_J(self, State state):
+        """Micromagnetic energy in Joule [J]"""
         pass
     def Energy_in_eV(self, State state):
+        """Micromagnetic energy in electronvolt [eV]"""
         return Conversion.J_to_eV(self.Energy_in_J(state))
 
 
-cdef class DemagField(HeffTerm):
+cdef class DemagField(FieldTerm):
     """
     Demagnetization Field Object.
 
@@ -1092,7 +1094,7 @@ cdef class DemagField(HeffTerm):
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
-cdef class DemagFieldPBC(HeffTerm):
+cdef class DemagFieldPBC(FieldTerm):
     """
     Demagnetization Field with Periodic Boundary Conditions.
     """
@@ -1112,7 +1114,7 @@ cdef class DemagFieldPBC(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class ExchangeField(HeffTerm):
+cdef class ExchangeField(FieldTerm):
     """
     Calculated field contribution of the exchange interaction, either by convolution (A is float) or as a sparse-matrix vector product (A is af.Array).
     The latter method properly handles jump conditions at material interfaces.
@@ -1212,7 +1214,7 @@ cdef class ExchangeField(HeffTerm):
     #       self._thisptr.set_micro_A_field(addressof(micro_A_field_in.arr))
 
 
-cdef class SparseExchangeField(HeffTerm):
+cdef class SparseExchangeField(FieldTerm):
     cdef cSparseExchangeField* _thisptr
     def __cinit__(self, A, Mesh mesh, verbose = True):
         status_warning = "\33[1;31mWarning:\33[0m"
@@ -1235,7 +1237,7 @@ cdef class SparseExchangeField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class ExchangeFieldPBC(HeffTerm):
+cdef class ExchangeFieldPBC(FieldTerm):
     """
     Exchange Field with Periodic Boundary Condition (PBC). Implemented as sparse matrix.
     """
@@ -1268,7 +1270,7 @@ cdef class ExchangeFieldPBC(HeffTerm):
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
-cdef class BulkDMIExchangeField(HeffTerm):
+cdef class BulkDMIExchangeField(FieldTerm):
     """
     Bulk Dzyaloshinskii–Moriya interaction (DMI) field.
     """
@@ -1291,7 +1293,7 @@ cdef class BulkDMIExchangeField(HeffTerm):
     def cpu_time(self):
         return self._thisptr.elapsed_eval_time()
 
-cdef class DmiField(HeffTerm):
+cdef class DmiField(FieldTerm):
     """
     Interface Dzyaloshinskii–Moriya interaction (DMI) field.
     """
@@ -1325,7 +1327,7 @@ cdef class DmiField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class NonequiDemagField(HeffTerm):
+cdef class NonequiDemagField(FieldTerm):
     cdef cNonequiDemagField* _thisptr
     def __cinit__(self, NonequiMesh mesh, verbose = True, caching = True, nthreads : int = 8):
         self._thisptr = new cNonequiDemagField (deref(mesh._thisptr), <bool> verbose, <bool> caching, nthreads)
@@ -1344,7 +1346,7 @@ cdef class NonequiDemagField(HeffTerm):
         return <size_t><void*>self._thisptr
 
 
-cdef class NonequiExternalField(HeffTerm):
+cdef class NonequiExternalField(FieldTerm):
     cdef cNonequiExternalField* _thisptr
     def __cinit__(self, NonequiMesh mesh, array_in):
         self._thisptr = new cNonequiExternalField (deref(mesh._thisptr), addressof(array_in.arr))
@@ -1363,7 +1365,7 @@ cdef class NonequiExternalField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class NonequiExchangeField(HeffTerm):
+cdef class NonequiExchangeField(FieldTerm):
     cdef cNonequiExchangeField* _thisptr
     def __cinit__(self, NonequiMesh mesh, A, verbose = True):
         if hasattr(A, 'arr'):
@@ -1383,7 +1385,7 @@ cdef class NonequiExchangeField(HeffTerm):
     def _get_thisptr(self):
         return <size_t><void*>self._thisptr
 
-cdef class CubicAnisotropyField(HeffTerm):
+cdef class CubicAnisotropyField(FieldTerm):
     """
     Cubic magneto-crystalline anisotropy.
     """
@@ -1427,7 +1429,7 @@ cdef class CubicAnisotropyField(HeffTerm):
         return <size_t><void*>self._thisptr
 
 
-cdef class UniaxialAnisotropyField(HeffTerm):
+cdef class UniaxialAnisotropyField(FieldTerm):
     cdef cUniaxialAnisotropyField* _thisptr
     def __cinit__(self, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
@@ -1472,7 +1474,7 @@ cdef class UniaxialAnisotropyField(HeffTerm):
     #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
 
-cdef class NonequiUniaxialAnisotropyField(HeffTerm):
+cdef class NonequiUniaxialAnisotropyField(FieldTerm):
     cdef cNonequiUniaxialAnisotropyField* _thisptr
     def __cinit__(self, NonequiMesh mesh, Ku1, Ku1_axis = [0, 0, 1]):
         if hasattr(Ku1, 'arr') and hasattr(Ku1_axis, 'arr'):
@@ -1517,7 +1519,7 @@ cdef class NonequiUniaxialAnisotropyField(HeffTerm):
     #  self._thisptr.set_micro_Ku1_field(addressof(micro_Ku1_field_in.arr))
 
 
-cdef class AtomisticDipoleDipoleField(HeffTerm):
+cdef class AtomisticDipoleDipoleField(FieldTerm):
     cdef cAtomisticDipoleDipoleField* _thisptr
     def __cinit__(self, Mesh mesh):
         self._thisptr = new cAtomisticDipoleDipoleField (deref(mesh._thisptr))
@@ -1534,7 +1536,7 @@ cdef class AtomisticDipoleDipoleField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
+cdef class AtomisticUniaxialAnisotropyField(FieldTerm):
     cdef cAtomisticUniaxialAnisotropyField* _thisptr
     def __cinit__(self, double K_atom, K_atom_axis = [0., 0., 1.]):
     #def __cinit__(self, double K_atom, double K_atom_axis_x, double K_atom_axis_y, double K_atom_axis_z):
@@ -1552,7 +1554,7 @@ cdef class AtomisticUniaxialAnisotropyField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticExchangeField(HeffTerm):
+cdef class AtomisticExchangeField(FieldTerm):
     cdef cAtomisticExchangeField* _thisptr
     def __cinit__(self, double J_atom):
         self._thisptr = new cAtomisticExchangeField (J_atom)
@@ -1569,7 +1571,7 @@ cdef class AtomisticExchangeField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticDmiField(HeffTerm):
+cdef class AtomisticDmiField(FieldTerm):
     cdef cAtomisticDmiField* _thisptr
     def __cinit__(self, double D_atom, D_atom_axis = [0., 0., -1.]):
         self._thisptr = new cAtomisticDmiField (D_atom, D_atom_axis[0], D_atom_axis[1], D_atom_axis[2])
@@ -1586,7 +1588,7 @@ cdef class AtomisticDmiField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class ExternalField(HeffTerm):
+cdef class ExternalField(FieldTerm):
     cdef cExternalField* _thisptr
     def __cinit__(self, array_in):
         self._thisptr = new cExternalField (addressof(array_in.arr))
@@ -1605,7 +1607,7 @@ cdef class ExternalField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class AtomisticExternalField(HeffTerm):
+cdef class AtomisticExternalField(FieldTerm):
     cdef cAtomisticExternalField* _thisptr
     def __cinit__(self, array_in):
         self._thisptr = new cAtomisticExternalField (addressof(array_in.arr))
@@ -1624,7 +1626,7 @@ cdef class AtomisticExternalField(HeffTerm):
             return <size_t><void*>self._thisptr
 
 
-cdef class SpinTransferTorqueField(HeffTerm):
+cdef class SpinTransferTorqueField(FieldTerm):
     """
     Slonczewski Spin Transfer Torque model
 
@@ -1690,7 +1692,7 @@ cdef class SpinTransferTorqueField(HeffTerm):
     #     self._thisptr.polarization_field.set_array(addressof(array.arr))
 
 
-cdef class RKKYExchangeField(HeffTerm):
+cdef class RKKYExchangeField(FieldTerm):
     cdef cRKKYExchangeField* _thisptr
     def __cinit__(self, rkky_values, exchange_values, Mesh mesh, rkky_indices = None, verbose = True):
         if rkky_indices is None: # setting default zeros as passing empty array is not possible
@@ -1709,12 +1711,12 @@ cdef class RKKYExchangeField(HeffTerm):
 
 cdef class LBFGS_Minimizer:
     """
-    The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the HeffTerm objects.
+    The LBFGS_Minimizer object implements an Limited-memory Broyden–Fletcher–Goldfarb–Shanno (LBFGS) algorithm, minimizing a magentization configuratio with respect to the micromagnetic energy. This energy is obtained via the effective field given by the FieldTerm objects.
 
     Parameters
     ----------
-    terms : [HeffTerm]
-        List of HeffTerm objects
+    terms : [FieldTerm]
+        List of FieldTerm objects
     tol : float (1e-6)
         Defines tolerance of the LBFGS algorithm
     maxiter : int (230)
@@ -1726,10 +1728,10 @@ cdef class LBFGS_Minimizer:
     -------
     minimize(State)
         Runns the minimization algorithm
-    add_terms([HeffTerm])
-        Adds a list of HeffTerm objects to the existing terms
+    add_terms([FieldTerm])
+        Adds a list of FieldTerm objects to the existing terms
     delete_last_term()
-        Delets the lst HeffTerm object in the list
+        Delets the lst FieldTerm object in the list
 
     Examples
     --------
