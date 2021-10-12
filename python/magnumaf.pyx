@@ -59,6 +59,7 @@ from magnumafpy_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
 from magnumafpy_decl cimport RKKYExchangeField as cRKKYExchangeField
 from magnumafpy_decl cimport DmiField as cDmiField
 from magnumafpy_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
+from magnumafpy_decl cimport DMI_D2d_Field as cDMI_D2d_Field
 
 # Nonequi
 from magnumafpy_decl cimport NonequiMesh as cNonequiMesh
@@ -1326,6 +1327,39 @@ cdef class DmiField(FieldTerm):
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
 
+cdef class DMI_D2d_Field(FieldTerm):
+    """
+    Dzyaloshinskii–Moriya interaction (DMI) for materials of crystallographic class D2d.
+    """
+    cdef cDMI_D2d_Field* _thisptr
+    def __cinit__(self, D, PBC = False):
+        """
+        Parameters
+        ----------
+        D : float
+            DMI constant in units of [J/m^2]
+        PBC : bool
+            if true, use periodic boundary conditions.
+        """
+        self._thisptr = new cDMI_D2d_Field (<double> D, <bool> PBC)
+    @property
+    def D_in_J_per_m2_(self):
+        return self._thisptr.D_in_J_per_m2_
+    @D_in_J_per_m2_.setter
+    def D_in_J_per_m2_(self, value):
+      self._thisptr.D_in_J_per_m2_=value
+
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def cpu_time(self):
+        return self._thisptr.elapsed_eval_time()
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class NonequiDemagField(FieldTerm):
     cdef cNonequiDemagField* _thisptr
@@ -1454,9 +1488,9 @@ cdef class UniaxialAnisotropyField(FieldTerm):
     @property
     def Ku1(self):
         return self._thisptr.Ku1
-    #@Ku1.setter
-    #def Ku1(self, value):
-    #  self._thisptr.Ku1=value
+    @Ku1.setter
+    def Ku1(self, value):
+      self._thisptr.Ku1=value
 
     @property
     def Ku1_axis(self):
