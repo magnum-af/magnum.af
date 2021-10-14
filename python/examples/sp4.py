@@ -7,7 +7,7 @@ import magnumaf as maf
 args = maf.parse() # perform CLI argument parsing (use -h flag for details)
 
 # physical dimensions in [m]
-x, y, z = 5.e-7, 1.25e-7, 3.e-9
+x, y, z = 500e-9, 125e-9, 3e-9
 
 # discretization
 nx, ny, nz = 100, 25, 1

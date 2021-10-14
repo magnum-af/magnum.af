@@ -32,6 +32,56 @@ Documentation is available on [https://magnum-af.github.io](https://magnum-af.gi
 # Example Simulation Scripts
 Various example scripts are found in the respective directories for python in [python/examples/](python/examples/) and for c++ in [magnumaf/examples/](magnumaf/examples/) as well as in the html-documentation under 'Examples'.
 
+The following is an example of the python API for the standard problem 4 (full example under [python/examples/sp4.py](python/examples/sp4.py)):
+```python
+import arrayfire as af
+import magnumaf as maf
+
+# physical dimensions in [m] and discretization
+x, y, z = 500e-9, 125e-9, 3e-9
+nx, ny, nz = 100, 25, 1
+
+# initial magnetization
+m0 = af.constant(0.0, nx, ny, nz, 3, af.Dtype.f64)
+m0[1:nx-1, :, :, 0] = 1.0
+m0[     0, :, :, 1] = 1.0
+m0[    -1, :, :, 1] = 1.0
+
+# creating magnum.af objects
+mesh = maf.Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
+state = maf.State(mesh, Ms = 8e5, m = m0)
+
+# define interactions
+dmg = maf.DemagField(mesh)
+exc = maf.ExchangeField(A = 1.3e-11)
+
+# setup integrator
+llg = maf.LLGIntegrator(alpha = 1.0, terms = [dmg, exc])
+outfile = open("m.dat", "w")
+
+# relaxing
+while state.t < 1e-9:
+    llg.step(state)
+    print(state, file = outfile)
+
+# preparing switch
+H_ext = af.constant(0.0, nx, ny, nz, 3, af.Dtype.f64)
+H_ext[:, :, :, 0] = -24.6e-3/maf.Constants.mu0
+H_ext[:, :, :, 1] = 4.3e-3/maf.Constants.mu0
+ext = maf.ExternalField(H_ext)
+llg.add_terms(ext)
+llg.alpha=0.02
+
+# switching
+while state.t < 2e-9:
+    llg.step(state)
+    print(state, file = outfile)
+```
+
+Plotting the generated data yields:
+
+![docu/sp4_m.png](docu/sp4_m.png)
+
 # Installation Guide
 ## Docker:
 The easiest way to get started is to download the current docker image from our [gitlab registry](https://git.exp.univie.ac.at/paul/magnum.af/container_registry).
