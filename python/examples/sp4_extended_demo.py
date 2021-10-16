@@ -76,4 +76,4 @@ outfile.close()
 print("switching for", 1e9 * dt_in_sec, "[ns] took", time.time() - timer, "[s]")
 print("simulating   ", 2e9 * dt_in_sec, "[ns] took",  time.time() - start, "[s]")
 
-maf.Util.plot(outputdir = args.outdir, lines = ['u ($1 * 1e9):2 w l t "<mx>"', 'u ($1 * 1e9):3 w l t "<my>"', 'u ($1 * 1e9):4 w l t "<mz>"'])
+maf.Util.plot(outputdir = args.outdir, lines = ['u 1:2 w l t "<mx>"', 'u 1:3 w l t "<my>"', 'u 1:4 w l t "<mz>"'])

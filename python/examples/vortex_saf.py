@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-# Example demonstrating the MuMAG Standard Problem 4
-# Run with 'magnum.af sp4.py' or 'python3 sp4.py $PWD'
 
 import os
 import numpy as np
