@@ -20,7 +20,7 @@ StringMethod::StringMethod(const State& state, std::vector<State> inputimages, i
         if (state.Ms_field.isempty()) {
             images.emplace_back(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         } else {
-            images.emplace_back(state.mesh, state.Ms_field,
+            images.emplace_back(state.mesh, state.get_Ms_field_in_vec_dims(),
                                 af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
         }
     }

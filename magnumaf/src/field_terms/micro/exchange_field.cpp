@@ -17,7 +17,7 @@ double ExchangeField::impl_E_in_J(const State& state, const af::array& h) const 
                state.mesh.dy * state.mesh.dz;
     } else {
         return -constants::mu0 / 2. *
-               af::sum(af::sum(af::sum(af::sum(state.Ms_field * htemp * state.m, 0), 1), 2), 3).scalar<double>() *
+               af::sum(af::sum(af::sum(af::sum(state.get_Ms_field_in_vec_dims() * htemp * state.m, 0), 1), 2), 3).scalar<double>() *
                state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
 }
@@ -64,14 +64,14 @@ af::array ExchangeField::h_withedges(const State& state) const {
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
-        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::array heff = (2. * this->A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
-        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
@@ -93,14 +93,14 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
     if (state.Ms_field.isempty() && this->A_field.isempty()) {
         return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
     } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff = (2. * this->A) / (constants::mu0 * state.Ms_field) * exch;
-        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::array heff = (2. * this->A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
         return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff = (2. * this->A_field) / (constants::mu0 * state.Ms_field) * exch;
-        af::replace(heff, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::array heff = (2. * this->A_field) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }

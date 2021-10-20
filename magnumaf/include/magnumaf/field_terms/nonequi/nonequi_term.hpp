@@ -32,7 +32,7 @@ class NonequiTerm : public FieldTerm {
             ms_h_times_m = state.Ms * h_times_m;
             ;
         } else {
-            ms_h_times_m = state.Ms_field * h_times_m;
+            ms_h_times_m = state.get_Ms_field_in_vec_dims() * h_times_m;
         }
 
         af::array xy_integral = af::sum(af::sum(af::sum(ms_h_times_m, 0), 1), 3) * nemesh.dx * nemesh.dy;

@@ -40,8 +40,8 @@ af::array DMI_D2d_Field::impl_H_in_Apm(const State& state) const {
     if (state.Ms_field.isempty()) {
         return Heff / state.Ms;
     } else {
-        af::array result = Heff / state.Ms_field;
-        af::replace(result, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::array result = Heff / state.get_Ms_field_in_vec_dims();
+        af::replace(result, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return result;
     }
 }

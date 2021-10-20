@@ -114,8 +114,7 @@ class StateMsDimTest(unittest.TestCase):
 
   def test_Ms_dim(self):
       Ms_field = self.state.Ms_field
-      dims = Ms_field.dims()
-      self.assertEqual(dims[3], 3)
+      self.assertEqual(Ms_field.dims(), self.Ms.dims())
 
 
 class StateMsLegacyDimTest(unittest.TestCase):
@@ -127,8 +126,9 @@ class StateMsLegacyDimTest(unittest.TestCase):
 
   def test_legacy_Ms_dim(self):
       Ms_field = self.state_legacy.Ms_field
-      dims = Ms_field.dims()
-      self.assertEqual(dims[3], 3)
+      self.assertNotEqual(Ms_field.dims(), self.Ms_legacy.dims())
+      self.assertEqual(Ms_field.dims()[0], 1)
+      self.assertEqual(len(Ms_field.dims()), 1)
 
 if __name__ == '__main__':
   unittest.main()

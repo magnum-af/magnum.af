@@ -20,9 +20,9 @@ af::array SpinTransferTorqueField::impl_H_in_Apm(const State& state) const {
                (eta_damping * math::cross4(state.m, polarization) + eta_field * polarization);
     } else {
         af::array h_sot = -j_e * constants::hbar /
-                          (2. * constants::e_neg * constants::mu0 * state.Ms_field * fl_thickness) *
+                          (2. * constants::e_neg * constants::mu0 * state.get_Ms_field_in_vec_dims() * fl_thickness) *
                           (eta_damping * math::cross4(state.m, polarization) + eta_field * polarization);
-        af::replace(h_sot, state.Ms_field != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(h_sot, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return h_sot;
     }
 }

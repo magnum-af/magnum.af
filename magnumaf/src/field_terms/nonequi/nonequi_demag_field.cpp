@@ -20,7 +20,7 @@ af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
     if (state.Ms_field.isempty()) {
         mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
     } else {
-        mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
+        mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
     }
 
     // Pointwise product

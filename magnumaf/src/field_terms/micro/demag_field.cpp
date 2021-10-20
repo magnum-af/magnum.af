@@ -223,14 +223,14 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
         if (state.Ms_field.isempty()) {
             mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
         } else {
-            mfft = af::fftR2C<2>(state.Ms_field * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
+            mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
         }
     } else {
         if (state.Ms_field.isempty()) {
             mfft = af::fftR2C<3>(state.Ms * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
         } else {
-            mfft = af::fftR2C<3>(state.Ms_field * state.m,
+            mfft = af::fftR2C<3>(state.get_Ms_field_in_vec_dims() * state.m,
                                  af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
         }
     }

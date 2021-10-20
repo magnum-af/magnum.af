@@ -22,7 +22,7 @@ class MicroTerm : public FieldTerm {
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;
         } else {
             return -constants::mu0 / 2. *
-                   af::sum(af::sum(af::sum(af::sum(state.Ms_field * h * state.m, 0), 1), 2), 3)
+                   af::sum(af::sum(af::sum(af::sum(state.get_Ms_field_in_vec_dims() * h * state.m, 0), 1), 2), 3)
                        .as(f64)
                        .scalar<double>() *
                    state.mesh.dx * state.mesh.dy * state.mesh.dz;

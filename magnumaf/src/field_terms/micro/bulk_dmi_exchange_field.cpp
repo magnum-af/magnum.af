@@ -114,7 +114,7 @@ af::array BulkDMIExchangeField::impl_H_in_Apm(const State& state) const {
     if (state.Ms_field.isempty()) {
         return result / (-constants::mu0 * state.Ms);
     } else {
-        return result / (-constants::mu0 * state.Ms_field);
+        return result / (-constants::mu0 * state.get_Ms_field_in_vec_dims());
     }
 }
 

@@ -12,13 +12,13 @@ af::array calc_m_mfft(const State& state) {
         if (state.Ms_field.isempty()) {
             return af::fftR2C<2>(state.Ms * state.m);
         } else {
-            return af::fftR2C<2>(state.Ms_field * state.m);
+            return af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m);
         }
     } else {
         if (state.Ms_field.isempty()) {
             return af::fftR2C<3>(state.Ms * state.m);
         } else {
-            return af::fftR2C<3>(state.Ms_field * state.m);
+            return af::fftR2C<3>(state.get_Ms_field_in_vec_dims() * state.m);
         }
     }
 }

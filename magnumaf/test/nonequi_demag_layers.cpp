@@ -35,7 +35,7 @@ TEST(NonequiDemagField, energy_homogenuous_cube) {
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-19);
 
     // testing state.Ms_field switch
-    state.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64); // TODO change to dims_s
+    state.Ms_field = af::constant(8e5, nemesh::dims_s(mesh_ne), f64);
     h_demag = demag.H_in_Apm(state);
     EXPECT_NEAR(demag.Energy_in_J(state), E_analytic, 3.7e-20); // 10x10x10 := 3.7e-19
     EXPECT_NEAR(demag.Energy_in_J(state, h_demag), E_analytic, 3.7e-20);
@@ -242,7 +242,7 @@ TEST(NonequiDemagField, UMagnetizationHeffTest) {
     m2(af::span, af::span, 0, af::span) = 0;
 
     State state_ne(m2, 8e5, false, true);
-    state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64); // TODO
+    state_ne.Ms_field = af::constant(8e5, nemesh::dims_s(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);
@@ -277,7 +277,7 @@ TEST(NonequiDemagField, HomogenuousMagnetizationHeffTest) {
     m2(af::span, af::span, af::span, 2) = 1;
 
     State state_ne(m2, 8e5, false, true);
-    state_ne.Ms_field = af::constant(8e5, nemesh::dims_v(mesh_ne), f64); // TODO
+    state_ne.Ms_field = af::constant(8e5, nemesh::dims_s(mesh_ne), f64);
     NonequiDemagField demag_ne = NonequiDemagField(mesh_ne, false, false, 1);
 
     af::array demag_ed_h = demag_ed.H_in_Apm(state_ed)(af::span, af::span, 0, af::span);

@@ -5,6 +5,7 @@
 #include "util/util.hpp"
 #include "vtk_io.hpp"
 #include <iomanip>
+#include <stdexcept>
 #include <utility>
 
 namespace magnumaf {
@@ -44,7 +45,7 @@ auto State::mean_M_as_afarray() const -> af::array {
     if (Ms_field.isempty()) {
         return af::sum(af::sum(af::sum(Ms * m, 0), 1), 2) / no_nonzero_cells;
     } else {
-        return af::sum(af::sum(af::sum(Ms_field * m, 0), 1), 2) / no_nonzero_cells;
+        return af::sum(af::sum(af::sum(get_Ms_field_in_vec_dims() * m, 0), 1), 2) / no_nonzero_cells;
     }
 }
 
@@ -56,15 +57,7 @@ af::array State::get_Ms_as_field() const {
     if (Ms_field.isempty()) {
         return af::constant(Ms, m.dims(0), m.dims(1), m.dims(2), 1, m.type());
     } else {
-        // TODO enable after changing Ms_field.dims(4) to 1:
-        // TODO return Ms_field;
-        if (Ms_field.dims(3) == 1) {
-            return Ms_field;
-        }
-        // Current workaround:
-        else {
-            return Ms_field(af::span, af::span, af::span, 0);
-        }
+        return Ms_field;
     }
 }
 af::array State::get_Ms_as_field_in_vector_dims() const {
@@ -89,64 +82,31 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
         Ms_field = af::constant(this->Ms, nzero.dims(),
                                 m.type()); // TODO this yields probem as Ms is not set in constuctor!
         Ms_field *= nzero;
-        Ms_field = af::tile(Ms_field, 1, 1, 1, 3);
     }
 }
 
-// void State::check_nonequispaced_discretization(){
-//    if ( this->material.A != 0 && this->material.Ku1 != 0) { // TODO implement
-//    better way of checking
-//        const double max_allowed_cellsize =
-//        sqrt(this->material.A/this->material.Ku1); const double max_dz =
-//        *std::max_element(nonequimesh.z_spacing.begin(),
-//        nonequimesh.z_spacing.end()); if (verbose && (this->mesh.dx >
-//        max_allowed_cellsize || this->mesh.dy > max_allowed_cellsize || max_dz
-//        > max_allowed_cellsize )){
-//            if( ! mute_warning) printf("%s State::check_discretization: cell
-//            size is too large (greater than sqrt(A/Ku1)\n", color_string::warning());
-//        }
-//    }
-//}
-
-// void State::check_m_norm(double tol) { // allowed norm is 1 or 0 (for no Ms_field)
-//    af::array one_when_value_is_zero = af::iszero(util::vecnorm(m));
-//    double meannorm = af::mean(af::mean(af::mean(af::mean(util::vecnorm(m) + 1. * one_when_value_is_zero, 0), 1), 2),
-//    3)
-//                          .as(f64)
-//                          .scalar<double>();
-//    if ((std::fabs(meannorm - 1.) > tol) && (this->mute_warning == false)) {
-//        printf("%s State::check_m_norm: non-zero parts of the magnetization are "
-//               "not normalized to 1! Results won't be physically meaningfull.\n",
-//               color_string::warning());
-//    }
-//}
-
-// long int State::get_m_addr(){
-//    u_out = this->m.copy();
-//    return (long int) m_out.get();
-//}
-//
-
-// Micromagnetic:
 State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
     : mesh(mesh), m(std::move(m)), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
     util::normalize_inplace(this->m);
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
-    // check_discretization();
+}
+
+af::array check_Ms_field_dims(af::array Ms_field) {
+    if (Ms_field.dims(3) == 1) {
+        return Ms_field;
+    } else if (Ms_field.dims(3) == 3) {
+        std::cout << "Note: Legacy State.Ms_field dims with [nx, ny, nz , 3] used. Dim 3 will be cropped to 1. Now "
+                     "please use [nx, ny, nz , 1]."
+                  << std::endl;
+        return Ms_field(af::span, af::span, af::span, 0);
+    } else {
+        throw std::invalid_argument("Ms_field dimension expected to be [nx, ny, nz , 1]");
+    }
 }
 
 State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, bool mute_warning)
-    : mesh(mesh), m(std::move(m_in)),
-      Ms_field(Ms_field_in.dims(3) == 1 ? af::tile(Ms_field_in, 1, 1, 1, 3) : std::move(Ms_field_in)), verbose(verbose),
+    : mesh(mesh), m(std::move(m_in)), Ms_field(check_Ms_field_dims(std::move(Ms_field_in))), verbose(verbose),
       mute_warning(mute_warning) {
-
-    // Using Ms_field after move causes segfault:
-    // if (Ms_field.dims(3) == 3) {
-    //     printf("%s State: You are using legacy dimension [nx, ny, nz, 3] for "
-    //            "Ms, please now use scalar field dimensions [nx, ny, nz, 1].\n",
-    //            color_string::warning());
-    // }
-
     util::normalize_inplace(this->m);
 }
 
