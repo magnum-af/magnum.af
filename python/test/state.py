@@ -4,6 +4,9 @@ import magnumaf
 from numpy import zeros, ones
 from math import pi, sqrt
 
+verbose = False
+# verbose = True  # enable for dev
+
 class StateTest(unittest.TestCase):
 
   x = 1.e-9
@@ -50,6 +53,26 @@ class StateTest(unittest.TestCase):
     Ms=1000
     state=magnumaf.State(magnumaf.Mesh(0, 0, 0, 0, 0, 0), Ms = Ms, m = self.m_af)
     self.assertEqual(Ms, state.Ms)
+
+  def test_material_setter_and_getter_for_Ms_field(self):
+    Msval = 1001.0
+    Ms_field = af.constant(Msval, 1, 1, 1, 1, af.Dtype.f64)
+    state=magnumaf.State(self.mesh, Ms = Ms_field, m = self.m_af)
+    if verbose: print(state.Ms)
+    self.assertEqual(Msval, state.Ms.scalar()) # test getter
+    state.Ms = af.constant(Msval + 1.5, 1, 1, 1, 1, af.Dtype.f64) # setter
+    if verbose: print(state.Ms)
+    self.assertEqual(Msval + 1.5, state.Ms.scalar()) # test setter-getter
+
+  # # Note: Ms switching between float and af.Array is not supported
+  # def test_material_setter_and_getter_for_Ms_field_scalar_init(self):
+  #   Msval = 1001
+  #   Ms_field = af.constant(Msval, 1, 1, 1, 1, af.Dtype.f64)
+  #   state=magnumaf.State(self.mesh, Ms = 0.0, m = self.m_af)
+  #   if verbose: print(state.Ms)
+  #   state.Ms = Ms_field # setter
+  #   if verbose: print(state.Ms)
+  #   self.assertEqual(Msval, state.Ms.scalar())
 
   def test_mesh_setter_and_getter(self):
     state=magnumaf.State(magnumaf.Mesh(0, 0, 0, 0, 0, 0), Ms = 0, m = self.m_af)

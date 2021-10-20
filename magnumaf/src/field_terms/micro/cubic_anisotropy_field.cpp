@@ -77,7 +77,7 @@ std::array<af::array, 3> CubicAnisotropyField::h_1to3(const State& state) const 
     af::array c2m3 = af::pow(c2m, 3);
     af::array c3m3 = af::pow(c3m, 3);
 
-    const af::array Ms_ = state.get_Ms_field_in_vector_dims();
+    const af::array Ms_ = state.get_Ms_as_field_in_vector_dims();
 
     af::array h1 = -2 / (constants::mu0 * Ms_) * Kc1 *
                    ((c2m2 + c3m2) * c1m * c1_ + (c1m2 + c3m2) * c2m * c2_ + (c1m2 + c2m2) * c3m * c3_);
@@ -99,7 +99,7 @@ double CubicAnisotropyField::impl_E_in_J(const State& state, const af::array& h)
     // Note, h is ignored here, we need h_1to3
     // would require interface exception
     h.isempty(); // avoiding unused warning
-    const af::array Ms = state.get_Ms_field_in_vector_dims();
+    const af::array Ms = state.get_Ms_as_field_in_vector_dims();
     auto htemp = h_1to3(state);
     return constants::mu0 *
            af::sum(

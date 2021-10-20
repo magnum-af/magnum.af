@@ -733,7 +733,7 @@ cdef class State:
     cdef cState* _thisptr
     def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False):
         # switch for evaluate_mean value
-        if hasattr(Ms, 'arr'):
+        if type(Ms) is af.Array:
             self._thisptr = new cState (deref(mesh._thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         else:
             self._thisptr = new cState (deref(mesh._thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
@@ -759,10 +759,19 @@ cdef class State:
             return <size_t><void*>self._thisptr
     @property
     def Ms(self):
-        return self._thisptr.Ms
-    #@Ms.setter
-    #def Ms(self, value):
-    #  self._thisptr.Ms=value
+        Ms_field = array_from_addr(self._thisptr.wrapping_get_Ms_field())
+        if Ms_field.is_empty():
+            return self._thisptr.Ms
+        else:
+            return array_from_addr(self._thisptr.wrapping_get_Ms_field())
+    @Ms.setter
+    def Ms(self, value):
+        if type(value) is af.Array:
+            self._thisptr.set_Ms_field(<long int> addressof(value.arr))
+        elif type(value) is float:
+            self._thisptr.Ms = value
+        else:
+            raise RuntimeError("Ms.setter: value must be float or af.Array!")
 
 
     def write_vti(self, outputname):

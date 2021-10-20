@@ -52,7 +52,7 @@ auto State::mean_M() const -> std::array<double, 3> {
     return math::vec_components<double>(mean_M_as_afarray().as(f64));
 }
 
-af::array State::get_Ms_field() const {
+af::array State::get_Ms_as_field() const {
     if (Ms_field.isempty()) {
         return af::constant(Ms, m.dims(0), m.dims(1), m.dims(2), 1, m.type());
     } else {
@@ -67,8 +67,8 @@ af::array State::get_Ms_field() const {
         }
     }
 }
-af::array State::get_Ms_field_in_vector_dims() const {
-    return af::tile(get_Ms_field(), 1, 1, 1, 3);
+af::array State::get_Ms_as_field_in_vector_dims() const {
+    return af::tile(get_Ms_as_field(), 1, 1, 1, 3);
 } //!< return Ms tiled to dims [nx, ny, nz, 3].
 
 void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field) {

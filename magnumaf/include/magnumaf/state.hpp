@@ -4,6 +4,7 @@
 #include "util/util.hpp"
 #include <array>
 #include <iostream>
+#include <limits>
 
 namespace magnumaf {
 
@@ -29,13 +30,13 @@ class State {
     Mesh mesh{0, 0, 0, 0, 0, 0};
     double t{0.};       // time
     af::array m;        //!< magnetic field configuration
-    double Ms{0};       //!< Saturation magnetization in [J/T/m^3] or [A/m]
+    double Ms{std::numeric_limits<double>::quiet_NaN()}; //!< Saturation magnetization in [J/T/m^3] or [A/m]
     af::array Ms_field; //!< Inhomogeneous, mesh dependent saturation magnetization
                         //!< defined at every node in units of [J/T/m^3]. Is impicitly
                         //!< set and used when magnetization has values of norm 0.
     //!< return Ms as af::array. If Ms_field is not set, scalar Ms is tiled to dims [nx, ny, nz, 1].
-    af::array get_Ms_field() const;
-    af::array get_Ms_field_in_vector_dims() const; //!< return Ms tiled to dims [nx, ny, nz, 3].
+    af::array get_Ms_as_field() const;
+    af::array get_Ms_as_field_in_vector_dims() const; //!< return Ms tiled to dims [nx, ny, nz, 3].
     void set_Ms_field(long int afarray_ptr);       // for wrapping only
     long int wrapping_get_Ms_field() const;
 
