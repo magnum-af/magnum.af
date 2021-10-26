@@ -1,16 +1,19 @@
 #include "field_terms/micro/exchange_field.hpp"
+#include "math.hpp"
 #include "util/util.hpp"
+#include <cmath> // std::pow
 
 namespace magnumaf {
+
+af::array h_withedges(double A, const State& state);
 
 // Energy calculation
 // Eex=-mu0/2 integral(M . Hex) dx
 // virtual parent method is overwritten as to use h_withedges
 // Note: maybe this is irrelevant and can be dropped.
-double ExchangeField::impl_E_in_J(const State& state, const af::array& h) const {
-    h.isempty();
+double ExchangeField::impl_E_in_J(const State& state, const af::array& /* h */) const {
     // TODO use h or h_widtheges?
-    const auto htemp = h_withedges(state);
+    const auto htemp = h_withedges(this->A, state);
     if (state.Ms_field.isempty()) {
         return -constants::mu0 / 2. * state.Ms *
                af::sum(af::sum(af::sum(af::sum(htemp * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx *
@@ -22,31 +25,17 @@ double ExchangeField::impl_E_in_J(const State& state, const af::array& h) const 
     }
 }
 
-/// Constructor for a global exchange constant
-ExchangeField::ExchangeField(double A) : A(A) {}
-
-/// Constructor taking spacially varying exchange constant af af::array
-// TODO remove; use SparseExchange
-ExchangeField::ExchangeField(af::array A_field)
-    : A_field(A_field.dims(3) == 1 ? af::tile(A_field, 1, 1, 1, 3) : std::move(A_field)) {
-    printf("\33[1;31mWarning:\33[0m ExchangeField: This is legacy code, to use "
-           "spacially varying A values with correct jump conditions, use "
-           "SparseExchangeField or RKKYExchangeField!\n");
-}
-
-// For wrapping only // TODO remove; use SparseExchange
-ExchangeField::ExchangeField(long int A_field_ptr) : ExchangeField(util::pywrap::make_copy_form_py(A_field_ptr)) {}
-
-af::array ExchangeField::h_withedges(const State& state) const {
+af::array h_withedges(double A, const State& state) {
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
-    // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
-    // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-    filtr(0, 1, 1) = 1 / pow(state.mesh.dx, 2);
-    filtr(2, 1, 1) = 1 / pow(state.mesh.dx, 2);
-    filtr(1, 0, 1) = 1 / pow(state.mesh.dy, 2);
-    filtr(1, 2, 1) = 1 / pow(state.mesh.dy, 2);
-    filtr(1, 1, 0) = 1 / pow(state.mesh.dz, 2);
-    filtr(1, 1, 2) = 1 / pow(state.mesh.dz, 2);
+    // Note: skipped as this term falls out int cross product:
+    filtr(1, 1, 1) =
+        -2. / std::pow(state.mesh.dx, 2.) - 2. / std::pow(state.mesh.dy, 2.) - 2. / std::pow(state.mesh.dz, 2.);
+    filtr(0, 1, 1) = 1 / std::pow(state.mesh.dx, 2.0);
+    filtr(2, 1, 1) = 1 / std::pow(state.mesh.dx, 2.0);
+    filtr(1, 0, 1) = 1 / std::pow(state.mesh.dy, 2.0);
+    filtr(1, 2, 1) = 1 / std::pow(state.mesh.dy, 2.0);
+    filtr(1, 1, 0) = 1 / std::pow(state.mesh.dz, 2.0);
+    filtr(1, 1, 2) = 1 / std::pow(state.mesh.dz, 2.0);
     // Convolution
     af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
 
@@ -61,28 +50,73 @@ af::array ExchangeField::h_withedges(const State& state) const {
     exch(af::span, af::span, 0, af::span) += state.m(af::span, af::span, 0, af::span) / pow(state.mesh.dz, 2);
     exch(af::span, af::span, -1, af::span) += state.m(af::span, af::span, -1, af::span) / pow(state.mesh.dz, 2);
 
-    if (state.Ms_field.isempty() && this->A_field.isempty()) {
-        return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
-    } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff = (2. * this->A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
-        return heff;
-    } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
-        return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
+    if (state.Ms_field.isempty()) {
+        return (2. * A) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff = (2. * this->A_field) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
         af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
 
-// Terms proportional to m dorp out in the cross product of the LLG and thus is
+// Boundary Condition options:
+enum class BC { periodic, neumann, open };
+
+// Calculate exchange field using af::shift
+af::array _shift_impl_exchange_H_in_Apm(double Aex, const State& state, BC bc) {
+    const auto discrete_laplace_operator_3D_shift_impl = [](const af::array& m, double dx, double dy, double dz,
+                                                            BC bc) {
+        // neighbours in x+/x-/y+/y-/z+/z-:
+        af::array x_plus = af::shift(m, 1) / std::pow(dx, 2.0);
+        af::array x_minus = af::shift(m, -1) / std::pow(dx, 2.0);
+        af::array y_plus = af::shift(m, 0, 1) / std::pow(dy, 2.0);
+        af::array y_minus = af::shift(m, 0, -1) / std::pow(dy, 2.0);
+        af::array z_plus = af::shift(m, 0, 0, 1) / std::pow(dz, 2.0);
+        af::array z_minus = af::shift(m, 0, 0, -1) / std::pow(dz, 2.0);
+
+        switch (bc) {
+        case BC::periodic:
+            // nothing to do here, this is default as generated by af::shift
+            break;
+        case BC::neumann:
+            // TODO impl neumann BC
+            throw std::runtime_error("Not yet implemented!");
+            break;
+        case BC::open:
+            x_plus(0, af::span, af::span, af::span) = 0.0;
+            x_minus(-1, af::span, af::span, af::span) = 0.0;
+            y_plus(af::span, 0, af::span, af::span) = 0.0;
+            y_minus(af::span, -1, af::span, af::span) = 0.0;
+            z_plus(af::span, af::span, 0, af::span) = 0.0;
+            z_minus(af::span, af::span, -1, af::span) = 0.0;
+            break;
+        }
+
+        const af::array self = 2.0 * m / std::pow(dx, 2.0) + 2.0 * m / std::pow(dy, 2.0) + 2.0 * m / std::pow(dz, 2.0);
+        const af::array result = x_plus + x_minus + y_plus + y_minus + z_plus + z_minus - self;
+        return result;
+    };
+
+    const af::array dlaplace =
+        discrete_laplace_operator_3D_shift_impl(state.m, state.mesh.dx, state.mesh.dy, state.mesh.dz, bc);
+    if (state.Ms_field.isempty()) {
+        const af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.Ms) * dlaplace;
+        return H_in_Apm;
+    } else {
+        af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * dlaplace;
+        af::replace(H_in_Apm, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        return H_in_Apm;
+    }
+}
+
+// Terms proportional to m drop out in the cross product of the LLG and thus is
 // neglected as arrayfire is extremely slow with indexing operations NOTE: This
 // yields no longer the physical exchange field but optimizes the caluclation
-af::array ExchangeField::impl_H_in_Apm(const State& state) const {
+af::array _convolve_old_impl_exchange_H_in_Apm(double A, const State& state) {
     af::array filtr = af::constant(0.0, 3, 3, 3, f64);
-    // Note: skipped as this term falls out int cross product: //filtr(1, 1, 1)=
-    // -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
+    // Note: skippable as this term falls out int cross product:
+    filtr(1, 1, 1) =
+        -2. / std::pow(state.mesh.dx, 2.) - 2. / std::pow(state.mesh.dy, 2.) - 2. / std::pow(state.mesh.dz, 2.);
     filtr(0, 1, 1) = 1 / pow(state.mesh.dx, 2);
     filtr(2, 1, 1) = 1 / pow(state.mesh.dx, 2);
     filtr(1, 0, 1) = 1 / pow(state.mesh.dy, 2);
@@ -90,382 +124,35 @@ af::array ExchangeField::impl_H_in_Apm(const State& state) const {
     filtr(1, 1, 0) = 1 / pow(state.mesh.dz, 2);
     filtr(1, 1, 2) = 1 / pow(state.mesh.dz, 2);
     af::array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-    if (state.Ms_field.isempty() && this->A_field.isempty()) {
-        return (2. * this->A) / (constants::mu0 * state.Ms) * exch;
-    } else if (!state.Ms_field.isempty() && this->A_field.isempty()) {
-        af::array heff = (2. * this->A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
-        return heff;
-    } else if (state.Ms_field.isempty() && !this->A_field.isempty()) {
-        return (2. * this->A_field) / (constants::mu0 * state.Ms) * exch;
+    if (state.Ms_field.isempty()) {
+        return (2. * A) / (constants::mu0 * state.Ms) * exch;
     } else {
-        af::array heff = (2. * this->A_field) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
+        af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
         af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }
 }
 
-// void showdims2(const array& a){
-//  std::cout<<"Exchange matrix:
-//  dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
-//}
+af::array _convolve_lap_impl_exchange_H_in_Apm(double A, const State& state) {
+    const auto lapl = math::laplace_3D(state.m, state.mesh.dx, state.mesh.dy, state.mesh.dz, math::TruncateOutput::off);
+    if (state.Ms_field.isempty()) {
+        return (2. * A) / (constants::mu0 * state.Ms) * lapl;
+    } else {
+        af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * lapl;
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        return heff;
+    }
+}
 
-////Version with switch conv/sparseMatMul dropping the edges
-//#include "exch.hpp"
-//
-// void showdims2(const array& a){
-//  std::cout<<"Exchange matrix:
-//  dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
-//}
-//
-////Energy calculation
-////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::impl_E_in_J(const State& state) const{
-//  return -constants::mu0/2. * state.Ms *
-//  util::afvalue_as_f64(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
-//  mesh.dx * mesh.dy * mesh.dz;
-//}
-//
-////Function returns index
-// int ExchangeField::findex(int i0, int i1, int i2, int im, int id){
-//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
-//}
-//
-////Inner index (index per matrix column)
-// int ExchangeField::findex(int i0, int i1, int i2, int im){
-//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*im));
-//}
-//
-// ExchangeField::ExchangeField (Mesh meshin, Material paramin) :
-// material(paramin), mesh(meshin){
-//  if(mesh.nx*mesh.ny*mesh.nz>8128){
-//    //initialize filters
-//    filtr=constant(0.0, 3, 3, 3, f64);
-//    //filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-//
-//    filtr(0, 1, 1)= 1 / pow(mesh.dx, 2);
-//    filtr(2, 1, 1)= 1 / pow(mesh.dx, 2);
-//
-//    filtr(1, 0, 1)= 1 / pow(mesh.dy, 2);
-//    filtr(1, 2, 1)= 1 / pow(mesh.dy, 2);
-//
-//    filtr(1, 1, 0)= 1 / pow(mesh.dz, 2);
-//    filtr(1, 1, 2)= 1 / pow(mesh.dz, 2);
-//  }
-//  //Currently better performance for small systems with matmul
-//  else{
-//    const int dimension=mesh.nx*mesh.ny*mesh.nz*3;
-//    double* vmatr = NULL;
-//    vmatr = new double[dimension*dimension];
-//    for (int id = 0; id < dimension; id++){
-//      for (int im = 0; im < 3; im++){
-//        for (int i2 = 0; i2 < mesh.nz; i2++){
-//          for (int i1 = 0; i1 < mesh.ny; i1++){
-//            for (int i0 = 0; i0 < mesh.nx; i0++){
-//              const int index=i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
-//              vmatr[index]=0.;
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    for (int id = 0; id < dimension; id++){
-//      for (int im = 0; im < 3; im++){
-//        for (int i2 = 0; i2 < mesh.nz; i2++){
-//          for (int i1 = 0; i1 < mesh.ny; i1++){
-//            for (int i0 = 0; i0 < mesh.nx; i0++){
-//              const int ind=findex(i0, i1, i2, im);
-//              if(ind==id) {
-//                //vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx,
-//                2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-//                //x
-//                if(i0==0){
-//                  //vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  if (mesh.nx>1) vmatr[findex(i0+1, i1, i2, im,
-//                  id)]+= 1./pow(mesh.dx, 2);
-//                }
-//                if (i0==mesh.nx-1){
-//                  //vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  if (mesh.nx>1) vmatr[findex(i0-1, i1, i2, im,
-//                  id)]+= 1./pow(mesh.dx, 2);
-//                }
-//                if(i0>0 && i0< mesh.nx-1){
-//                  vmatr[findex(i0-1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  vmatr[findex(i0+1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                }
-//
-//                //y
-//                if(i1==0){
-//                  //vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  if (mesh.ny>1) vmatr[findex(i0, i1+1, i2, im,
-//                  id)]+= 1./pow(mesh.dy, 2);
-//                }
-//                if (i1==mesh.ny-1){
-//                  //vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  if (mesh.ny>1) vmatr[findex(i0, i1-1, i2, im,
-//                  id)]+= 1./pow(mesh.dy, 2);
-//                }
-//                if(i1>0 && i1< mesh.ny-1){
-//                  vmatr[findex(i0, i1-1, i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  vmatr[findex(i0, i1+1, i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                }
-//
-//                //z
-//                if (i2==0){
-//                  //vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                  if (mesh.nz>1) vmatr[findex(i0, i1, i2+1, im,
-//                  id)]+= 1./pow(mesh.dz, 2);
-//                }
-//                if (i2==mesh.nz-1){
-//                  //vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                  if (mesh.nz>1) vmatr[findex(i0, i1, i2-1, im,
-//                  id)]+= 1./pow(mesh.dz, 2);
-//                }
-//                if(i2>0 && i2< mesh.nz-1){
-//                  vmatr[findex(i0, i1, i2-1, im, id)]+= 1./pow(mesh.dz, 2);
-//                  vmatr[findex(i0, i1, i2+1, im, id)]+= 1./pow(mesh.dz, 2);
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
-//    array fullmatr(dimension, dimension, vmatr);
-//    delete [] vmatr;
-//    vmatr = NULL;
-//    //showdims2(fullmatr);
-//    matr=sparse(fullmatr);
-//
-//    std::cout << "Sparsity of matr = "
-//              << (float)sparseGetNNZ(matr) / (float)matr.elements()
-//              << std::endl;
-//    }
-//}
-//
-// array ExchangeField::impl_H_in_Apm(const State& state) const{
-//  timer_exchsolve = af::timer::start();
-//
-//  if(mesh.nx*mesh.ny*mesh.nz>8128){
-//    timer_conv = af::timer::start();
-//    //convolution
-//    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-//
-//    if(state.material.afsync) sync();
-//    time_conv += af::timer::stop(timer_conv);
-//
-//    //Accounting for boundary conditions by adding initial m values on the
-//    boundaries by adding all 6 boundary surfaces
-//    //timer_edges = af::timer::start();
-//    //exch(0, af::span, af::span, af::span)+=state.m(0 , af::span, af::span,
-//    af::span)/ pow(mesh.dx, 2);
-//    //exch(-1, af::span, af::span, af::span)+=state.m(-1, af::span, af::span,
-//    af::span)/ pow(mesh.dx, 2);
-//    //
-//    //
-//    //exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span,
-//    af::span)/ pow(mesh.dy, 2);
-//    //exch(af::span, -1, af::span, af::span)+=state.m(af::span, -1, af::span,
-//    af::span)/ pow(mesh.dy, 2);
-//    //
-//    //exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 ,
-//    af::span)/ pow(mesh.dz, 2);
-//    //exch(af::span, af::span, -1, af::span)+=state.m(af::span, af::span, -1,
-//    af::span)/ pow(mesh.dz, 2); if(state.material.afsync) sync();
-//    //time_edges += af::timer::stop(timer_edges);
-//    computation_time_heff += af::timer::stop(timer_exchsolve);
-//    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
-//  }
-//  else{
-//    timer_exchsolve = af::timer::start();
-//    array exch = matmul(matr, flat(state.m));
-//    exch=moddims(exch, mesh.nx, mesh.ny, mesh.nz, 3);
-//
-//    exch.eval();
-//    if(state.material.afsync) sync();
-//    computation_time_heff += af::timer::stop(timer_exchsolve);
-//
-//    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
-//  }
-//}
-
-// Version yielding real Exchange Field with corrected edges and switch
-// conv/sparseMatMul #include "exch.hpp"
-
-//
-// void showdims2(const array& a){
-//  std::cout<<"Exchange matrix:
-//  dims="<<a.dims(0)<<"\t"<<a.dims(1)<<"\t"<<a.dims(2)<<"\t"<<a.dims(3)<<std::endl;
-//}
-//
-////Energy calculation
-////Eex=-mu0/2 integral(M . Hex) dx
-// double ExchangeField::impl_E_in_J(const State& state) const{
-//  return -constants::mu0/2. * state.Ms *
-//  util::afvalue_as_f64(af::sum(af::sum(af::sum(af::sum(h(state)*state.m, 0), 1), 2), 3)) *
-//  mesh.dx * mesh.dy * mesh.dz;
-//}
-//
-////Function returns index
-// int ExchangeField::findex(int i0, int i1, int i2, int im, int id){
-//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
-//}
-//
-////Inner index (index per matrix column)
-// int ExchangeField::findex(int i0, int i1, int i2, int im){
-//  return i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*im));
-//}
-//
-// ExchangeField::ExchangeField (Mesh meshin, Material paramin) :
-// material(paramin), mesh(meshin){
-//  if(mesh.nx*mesh.ny*mesh.nz>8128){
-//    //initialize filters
-//    filtr=constant(0.0, 3, 3, 3, f64);
-//    filtr(1, 1, 1)= -6 / (pow(mesh.dx, 2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-//
-//    filtr(0, 1, 1)= 1 / pow(mesh.dx, 2);
-//    filtr(2, 1, 1)= 1 / pow(mesh.dx, 2);
-//
-//    filtr(1, 0, 1)= 1 / pow(mesh.dy, 2);
-//    filtr(1, 2, 1)= 1 / pow(mesh.dy, 2);
-//
-//    filtr(1, 1, 0)= 1 / pow(mesh.dz, 2);
-//    filtr(1, 1, 2)= 1 / pow(mesh.dz, 2);
-//  }
-//  //Currently better performance for small systems with matmul
-//  else{
-//    const int dimension=mesh.nx*mesh.ny*mesh.nz*3;
-//    double* vmatr = NULL;
-//    vmatr = new double[dimension*dimension];
-//    for (int id = 0; id < dimension; id++){
-//      for (int im = 0; im < 3; im++){
-//        for (int i2 = 0; i2 < mesh.nz; i2++){
-//          for (int i1 = 0; i1 < mesh.ny; i1++){
-//            for (int i0 = 0; i0 < mesh.nx; i0++){
-//              const int index=i0+mesh.nx*(i1+mesh.ny*(i2+mesh.nz*(im+3*id)));
-//              vmatr[index]=0.;
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    for (int id = 0; id < dimension; id++){
-//      for (int im = 0; im < 3; im++){
-//        for (int i2 = 0; i2 < mesh.nz; i2++){
-//          for (int i1 = 0; i1 < mesh.ny; i1++){
-//            for (int i0 = 0; i0 < mesh.nx; i0++){
-//              const int ind=findex(i0, i1, i2, im);
-//              if(ind==id) {
-//                vmatr[findex(i0, i1, i2, im, id)]+=-6./(pow(mesh.dx,
-//                2)+pow(mesh.dy, 2)+pow(mesh.dz, 2));
-//                //x
-//                if(i0==0){
-//                  vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  if (mesh.nx>1) vmatr[findex(i0+1, i1, i2, im,
-//                  id)]+= 1./pow(mesh.dx, 2);
-//                }
-//                if (i0==mesh.nx-1){
-//                  vmatr[findex(i0  , i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  if (mesh.nx>1) vmatr[findex(i0-1, i1, i2, im,
-//                  id)]+= 1./pow(mesh.dx, 2);
-//                }
-//                if(i0>0 && i0< mesh.nx-1){
-//                  vmatr[findex(i0-1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                  vmatr[findex(i0+1, i1, i2, im, id)]+= 1./pow(mesh.dx, 2);
-//                }
-//
-//                //y
-//                if(i1==0){
-//                  vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  if (mesh.ny>1) vmatr[findex(i0, i1+1, i2, im,
-//                  id)]+= 1./pow(mesh.dy, 2);
-//                }
-//                if (i1==mesh.ny-1){
-//                  vmatr[findex(i0, i1  , i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  if (mesh.ny>1) vmatr[findex(i0, i1-1, i2, im,
-//                  id)]+= 1./pow(mesh.dy, 2);
-//                }
-//                if(i1>0 && i1< mesh.ny-1){
-//                  vmatr[findex(i0, i1-1, i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                  vmatr[findex(i0, i1+1, i2, im, id)]+= 1./pow(mesh.dy, 2);
-//                }
-//
-//                //z
-//                if (i2==0){
-//                  vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                  if (mesh.nz>1) vmatr[findex(i0, i1, i2+1, im,
-//                  id)]+= 1./pow(mesh.dz, 2);
-//                }
-//                if (i2==mesh.nz-1){
-//                  vmatr[findex(i0, i1, i2  , im, id)]+= 1./pow(mesh.dz, 2);
-//                  if (mesh.nz>1) vmatr[findex(i0, i1, i2-1, im,
-//                  id)]+= 1./pow(mesh.dz, 2);
-//                }
-//                if(i2>0 && i2< mesh.nz-1){
-//                  vmatr[findex(i0, i1, i2-1, im, id)]+= 1./pow(mesh.dz, 2);
-//                  vmatr[findex(i0, i1, i2+1, im, id)]+= 1./pow(mesh.dz, 2);
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
-//    array fullmatr(dimension, dimension, vmatr);
-//    delete [] vmatr;
-//    vmatr = NULL;
-//    //showdims2(fullmatr);
-//    matr=sparse(fullmatr);
-//
-//    std::cout << "Sparsity of matr = "
-//              << (float)sparseGetNNZ(matr) / (float)matr.elements()
-//              << std::endl;
-//    }
-//}
-//
-// array ExchangeField::impl_H_in_Apm(const State& state) const{
-//  timer_exchsolve = af::timer::start();
-//
-//  if(mesh.nx*mesh.ny*mesh.nz>8128){
-//    timer_conv = af::timer::start();
-//    //convolution
-//    array exch = convolve(state.m, filtr, AF_CONV_DEFAULT, AF_CONV_SPATIAL);
-//
-//    if(state.material.afsync) sync();
-//    time_conv += af::timer::stop(timer_conv);
-//
-//    //Accounting for boundary conditions by adding initial m values on the
-//    boundaries by adding all 6 boundary surfaces timer_edges =
-//    af::timer::start(); exch(0, af::span, af::span, af::span)+=state.m(0 ,
-//    af::span, af::span, af::span)/ pow(mesh.dx, 2); exch(-1, af::span,
-//    af::span, af::span)+=state.m(-1, af::span, af::span, af::span)/
-//    pow(mesh.dx, 2);
-//
-//
-//    exch(af::span, 0 , af::span, af::span)+=state.m(af::span, 0 , af::span,
-//    af::span)/ pow(mesh.dy, 2); exch(af::span, -1, af::span,
-//    af::span)+=state.m(af::span, -1, af::span, af::span)/ pow(mesh.dy, 2);
-//
-//    exch(af::span, af::span, 0 , af::span)+=state.m(af::span, af::span, 0 ,
-//    af::span)/ pow(mesh.dz, 2); exch(af::span, af::span, -1,
-//    af::span)+=state.m(af::span, af::span, -1, af::span)/ pow(mesh.dz, 2);
-//    if(state.material.afsync) sync();
-//    time_edges += af::timer::stop(timer_edges);
-//    computation_time_heff += af::timer::stop(timer_exchsolve);
-//    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
-//  }
-//  else{
-//    timer_exchsolve = af::timer::start();
-//    array exch = matmul(matr, flat(state.m));
-//    exch=moddims(exch, mesh.nx, mesh.ny, mesh.nz, 3);
-//
-//    exch.eval();
-//    if(state.material.afsync) sync();
-//    computation_time_heff += af::timer::stop(timer_exchsolve);
-//
-//    return  (2.* material.A)/(constants::mu0*state.Ms) * exch;
-//  }
-//}
+af::array ExchangeField::impl_H_in_Apm(const State& state) const {
+    if constexpr (false) { // TODO enable as only option
+        return _shift_impl_exchange_H_in_Apm(this->A, state, BC::open);
+    } else {
+        if constexpr (true) {
+            return _convolve_old_impl_exchange_H_in_Apm(this->A, state);
+        } else {
+            return _convolve_lap_impl_exchange_H_in_Apm(this->A, state);
+        }
+    }
+}
 } // namespace magnumaf

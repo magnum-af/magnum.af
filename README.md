@@ -29,7 +29,7 @@ magnum.af is publicly hosted on github as well as self-hosted on our gitlab serv
 # Documentation
 Documentation is available on [https://magnum-af.github.io](https://magnum-af.github.io)
 
-# Example Simulation Scripts
+# Simulation Script Examples
 Various example scripts are found in the respective directories for python in [python/examples/](python/examples/) and for c++ in [magnumaf/examples/](magnumaf/examples/) as well as in the html-documentation under 'Examples'.
 
 The following is an example of the python API for the standard problem 4 (full example under [python/examples/sp4.py](python/examples/sp4.py)):
