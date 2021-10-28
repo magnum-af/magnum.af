@@ -35,9 +35,10 @@
     * Includes all interactions and solvers
     * Example scripts are found in [magnumaf/examples/](magnumaf/examples/)
 * Python bindings in [python/](python/)
-  * Enable a script-style user interface
-  * API compatible with numpy arrays
-  * Provides additional utilities handling user input
+    * Enable a script-style user interface
+    * API compatible with numpy arrays
+    * Provides additional utilities handling user input
+    * Example scripts: [python/examples/](python/examples/)
 
 **magnum.af** makes extensive use of the [arrayfire GPU library](https://github.com/arrayfire/arrayfire):
 * Convenient abstraction of GPU-hardware
@@ -151,8 +152,8 @@ For running simulations, you may use the provided script in [bash/magnum.af.dock
 `$ magnum.af.docker sp4.py`
 
 ## Local installation:
-For optional GPU-support, first install a driver provided by your vendor.
-If you only want CPU-support, proceed to the next section.
+For GPU-support, first install a GPU-driver provided by your vendor.
+<details><summary>Step-by-step GPU Driver Installation</summary>
 
 ### GPU Driver Installation
 
@@ -196,11 +197,15 @@ On the tested system, the install script needed to be invoked with the option `-
 for cmake to find OpenCl run:
 
 `$ sudo apt install ocl-icd-opencl-dev`
+</details>
+
+If you only want CPU-support, the driver installation can be skipped.
 
 ### Further steps
-The up-to-date way for local installation is to manually follow the steps from the [Dockerfile](Dockerfile) or or [Dockerfile.cpu](Dockerfile.cpu), respectively.
+The prefered way for local installation is to manually follow the steps from the [Dockerfile](Dockerfile) or [Dockerfile.cpu](Dockerfile.cpu), respectively.
 
-Alternatively, follow these steps (not always up-to-date):
+Alternatively, follow these steps:
+<details><summary>Step-by-step manual installation</summary>
 
 #### Install Arrayfire
  For version 3.6.2:
@@ -251,3 +256,4 @@ For python to find the shared library, add the install directory to the PYTHONPA
 
 or alternatively, add a symbolic link to a folder in the PYTHONPATH, e.g. for python 3.6
 $ `sudo ln -s /usr/local/lib/magnumaf.so /usr/lib/python3.6/
+</details>
