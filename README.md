@@ -47,6 +47,15 @@
     * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
     * Backends can be set at startup
 
+# Publications
+Working on **magnum.af** led to the following publications:
+* P. Heistracher, C. Abert, F. Bruckner, T. Schrefl, and D. Suess, “Proposal for a micromagnetic standard problem: domain wall pinning at phase boundaries,” arXiv:2107.07855 [physics], July 2021.
+[arxiv.org/abs/2107.07855](https://arxiv.org/abs/2107.07855)
+* P. Heistracher, F. Bruckner, C. Abert, C. Vogler, and D. Suess, “Hybrid FFT algorithm for fast demagnetization field calculations on non-equidistant magnetic layers,” Journal of Magnetism and Magnetic Materials, vol. 503, p. 166592, June 2020.
+[DOI: 10.1016/j.jmmm.2020.166592](https://doi.org/10.1016/j.jmmm.2020.166592)
+* P. Heistracher, C. Abert, F. Bruckner, C. Vogler, and D. Suess, “GPU-Accelerated Atomistic Energy Barrier Calculations of Skyrmion Annihilations,” IEEE Transactions on Magnetics, vol. 54, pp. 1–5, Nov. 2018.
+[DOI: 10.1109/TMAG.2018.2847446](https://doi.org/10.1109/TMAG.2018.2847446)
+
 # Code Repositories
 **magnum.af** is publicly hosted on github as well as self-hosted on our gitlab server:
 * github: [https://github.com/magnum-af/magnum.af](https://github.com/magnum-af/magnum.af)
