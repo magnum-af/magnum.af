@@ -1,11 +1,31 @@
+![docu/images/magnumaf_logo.png](docu/images/magnumaf_logo.png)
 magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
 =====
 # Physical Methods
-* Micromagnetic Model
-* Atomistic Spin Model
-* Solvers for the time-dependent Landau–Lifshitz–Gilbert equation
+* Micromagnetic Model including the following interactions:
+    * Demagnetization (regular, true PBC, non-equidistant)
+    * Exchange (Neumann BC, PBC)
+    * Anisotropy (uniaxial and cubic)
+    * Dzyaloshinskii-Moriya (interface, bulk, D2d)
+    * Ruderman-Kittel-Kasuya-Yosida (RKKY)
+    * Slonczewski spin transfer torque
+    * External field
+* Atomistic Spin Model with interactions:
+    * Dipole-Dipole
+    * Exchange
+    * Uniaxial Anisostropy
+    * Interface Dzyaloshinskii-Moriya
+    * External field
+* Adaptive Runge-Kutta methods for solving the time-dependent Landau-Lifshitz-Gilbert equation:
+    * Runge-Kutta-Fehlberg (RKF45)
+    * Dormand-Prince (DP45 and DP78)
+    * Bogacki-Shampine (BS45 and BS23)
 * Micromagnetic and Atomistic Energy Minimization
+    * LBFGS-Minimizer
+    * Precession-free LLG integration
 * Stochastic Langevin Dynamics
+    * Stochastic Heun
+    * Semi-implicit Heun
 * String Method for Energy Barrier Calculations
 
 
@@ -80,7 +100,7 @@ while state.t < 2e-9:
 
 Plotting the generated data yields:
 
-![docu/sp4_m.png](docu/sp4_m.png)
+![docu/images/sp4_m.png](docu/images/sp4_m.png)
 
 # Installation Guide
 ## Docker:
