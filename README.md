@@ -31,21 +31,21 @@
 
 # Architecture
 **magnum.af** is a monolithic C++ application with python-bindings for a script-style user interface.
-* The C++ core project resides in folder [magnumaf/](magnumaf/)
+* The C++ core project is located at [magnumaf/](magnumaf/)
     * Includes all interactions and solvers
     * Example scripts are found in [magnumaf/examples/](magnumaf/examples/)
 * Python bindings in [python/](python/)
   * Enable a script-style user interface
   * API compatible with numpy arrays
-  * Provides additional utilities handling user input.
+  * Provides additional utilities handling user input
 
 **magnum.af** makes extensive use of the [arrayfire GPU library](https://github.com/arrayfire/arrayfire):
-* Convenient abstraction of GPU-hardware.
+* Convenient abstraction of GPU-hardware
 * Both used in the API and internally
-* Hardware-neutral with support for CUDA, OpenCL and CPU backends.
-    * Provides a common container for all backend.
-    * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU.
-    * Backends can be set at startup.
+* Hardware-neutral with support for CUDA, OpenCL and CPU backends
+    * Provides a common container for all backend
+    * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
+    * Backends can be set at startup
 
 # Repositories
 **magnum.af** is publicly hosted on github as well as self-hosted on our gitlab server:
@@ -54,7 +54,7 @@
 
 
 # Documentation
-Documentation is available on [https://magnum-af.github.io](https://magnum-af.github.io)
+HTML documentation is available on [https://magnum-af.github.io](https://magnum-af.github.io)
 
 # Simulation Script Examples
 Various example scripts are found in the respective directories for python in [python/examples/](python/examples/) and for c++ in [magnumaf/examples/](magnumaf/examples/) as well as in the html-documentation under 'Examples'.
