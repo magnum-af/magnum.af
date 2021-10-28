@@ -29,7 +29,7 @@
 * String Method for Energy Barrier Calculations
 
 
-# Architecture
+# Software Architecture
 **magnum.af** is a monolithic C++ application with python-bindings for a script-style user interface.
 * The C++ core project is located at [magnumaf/](magnumaf/)
     * Includes all interactions and solvers
@@ -47,7 +47,7 @@
     * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
     * Backends can be set at startup
 
-# Repositories
+# Code Repositories
 **magnum.af** is publicly hosted on github as well as self-hosted on our gitlab server:
 * github: [https://github.com/magnum-af/magnum.af](https://github.com/magnum-af/magnum.af)
 * gitlab: [https://git.exp.univie.ac.at/paul/magnum.af](https://git.exp.univie.ac.at/paul/magnum.af)
