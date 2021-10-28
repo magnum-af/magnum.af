@@ -1,5 +1,5 @@
 ![docu/images/magnumaf_logo.png](docu/images/magnumaf_logo.png)
-**magnum.af**: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
+magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
 =====
 # Physical Methods
 * Micromagnetic Model including the following interactions:
