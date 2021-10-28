@@ -49,12 +49,25 @@
 
 # Publications
 Working on **magnum.af** led to the following publications:
-* P. Heistracher, C. Abert, F. Bruckner, T. Schrefl, and D. Suess, “Proposal for a micromagnetic standard problem: domain wall pinning at phase boundaries,” arXiv:2107.07855 [physics], July 2021.
+* P. Heistracher, C. Abert, F. Bruckner, T. Schrefl, and D. Suess, “Proposal for a micromagnetic standard problem: domain wall pinning at phase boundaries,” *arXiv:2107.07855 [physics]*, July 2021.
 [arxiv.org/abs/2107.07855](https://arxiv.org/abs/2107.07855)
-* P. Heistracher, F. Bruckner, C. Abert, C. Vogler, and D. Suess, “Hybrid FFT algorithm for fast demagnetization field calculations on non-equidistant magnetic layers,” Journal of Magnetism and Magnetic Materials, vol. 503, p. 166592, June 2020.
+* P. Heistracher, F. Bruckner, C. Abert, C. Vogler, and D. Suess, “Hybrid FFT algorithm for fast demagnetization field calculations on non-equidistant magnetic layers,” *Journal of Magnetism and Magnetic Materials*, vol. 503, p. 166592, June 2020.
 [DOI: 10.1016/j.jmmm.2020.166592](https://doi.org/10.1016/j.jmmm.2020.166592)
-* P. Heistracher, C. Abert, F. Bruckner, C. Vogler, and D. Suess, “GPU-Accelerated Atomistic Energy Barrier Calculations of Skyrmion Annihilations,” IEEE Transactions on Magnetics, vol. 54, pp. 1–5, Nov. 2018.
+* P. Heistracher, C. Abert, F. Bruckner, C. Vogler, and D. Suess, “GPU-Accelerated Atomistic Energy Barrier Calculations of Skyrmion Annihilations,” *IEEE Transactions on Magnetics*, vol. 54, pp. 1–5, Nov. 2018.
 [DOI: 10.1109/TMAG.2018.2847446](https://doi.org/10.1109/TMAG.2018.2847446)
+
+Moreover, **magnum.af** has been used in the following publications:
+* M. Heigl, S. Koraltan, M. Vaňatka, R. Kraft, C. Abert, C. Vogler, A. Semisalova, P. Che, A. Ullrich, T. Schmidt, J. Hintermayr, D. Grundler, M. Farle, M. Urbánek, D. Suess, and M. Albrecht, “Dipolar-stabilized first and second-order antiskyrmions in ferrimagnetic multilayers,” *Nature Communications*, vol. 12, p. 2611, May 2021.
+[DOI: 10.1038/s41467-021-22600-7](https://doi.org/10.1038/s41467-021-22600-7)
+* F. Bruckner, A. Ducevic, P. Heistracher, C. Abert, and D. Suess, “Strayfield calculation for micromagnetic simulations using true periodic boundary conditions,” *Scientific Reports*, vol. 11, p. 9202, Apr. 2021.
+[DOI: 10.1038/s41598-021-88541-9](https://doi.org/10.1038/s41598-021-88541-9)
+* A.-O. Mandru, O. Yıldırım, R. Tomasello, P. Heistracher, M. Penedo, A. Giordano, D. Suess, G. Finocchio, and H. J. Hug, “Coexistence of distinct skyrmion phases observed in hybrid ferromagnetic/ferrimagnetic multilayers,” *Nature Communications*, vol. 11, p. 6365, Dec. 2020.
+[DOI: 10.1038/s41467-020-20025-2](https://doi.org/10.1038/s41467-020-20025-2)
+* D. Suess, C. Vogler, F. Bruckner, P. Heistracher, F. Slanovc, and C. Abert, “Spin Torque Efficiency and Analytic Error Rate Estimates of Skyrmion Racetrack Memory,” *Scientific Reports*, vol. 9, p. 4827, Mar. 2019.
+[DOI: 10.1038/s41598-019-41062-y](https://doi.org/10.1038/s41598-019-41062-y)
+* D. Suess, C. Vogler, F. Bruckner, P. Heistracher, and C. Abert, “A repulsive skyrmion chain as a guiding track for a racetrack memory,” *AIP Advances*, vol. 8, no. 11, p. 115301, Nov. 2018.
+[DOI: 10.1063/1.4993957](https://doi.org/10.1063/1.4993957)
+
 
 # Code Repositories
 **magnum.af** is publicly hosted on github as well as self-hosted on our gitlab server:
