@@ -1,5 +1,5 @@
 ![docu/images/magnumaf_logo.png](docu/images/magnumaf_logo.png)
-magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
+**magnum.af**: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
 =====
 # Physical Methods
 * Micromagnetic Model including the following interactions:
@@ -30,18 +30,25 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 
 
 # Architecture
-magnum.af makes extensive use of the [arrayfire GPU library](https://github.com/arrayfire/arrayfire):
+**magnum.af** is a monolithic C++ application with python-bindings for a script-style user interface.
+* The C++ core project resides in folder [magnumaf/](magnumaf/)
+    * Includes all interactions and solvers
+    * Example scripts are found in [magnumaf/examples/](magnumaf/examples/)
+* Python bindings in [python/](python/)
+  * Enable a script-style user interface
+  * API compatible with numpy arrays
+  * Provides additional utilities handling user input.
 
-* Support for CUDA, OpenCL and CPU backends.
-  * This enables a high degree of flexibility in terms of user hardware as the
-    code runns on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
-* C++ core Project
-  * The core functionality is implemented in C++, including all interactions and solvers
-* Python bindings
-  * Script-style user interface, compatible with numpy input arrays
+**magnum.af** makes extensive use of the [arrayfire GPU library](https://github.com/arrayfire/arrayfire):
+* Convenient abstraction of GPU-hardware.
+* Both used in the API and internally
+* Hardware-neutral with support for CUDA, OpenCL and CPU backends.
+    * Provides a common container for all backend.
+    * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU.
+    * Backends can be set at startup.
 
 # Repositories
-magnum.af is publicly hosted on github as well as self-hosted on our gitlab server:
+**magnum.af** is publicly hosted on github as well as self-hosted on our gitlab server:
 * github: [https://github.com/magnum-af/magnum.af](https://github.com/magnum-af/magnum.af)
 * gitlab: [https://git.exp.univie.ac.at/paul/magnum.af](https://git.exp.univie.ac.at/paul/magnum.af)
 
@@ -67,7 +74,7 @@ m0[1:nx-1, :, :, 0] = 1.0
 m0[     0, :, :, 1] = 1.0
 m0[    -1, :, :, 1] = 1.0
 
-# creating magnum.af objects
+# creating **magnum.af** objects
 mesh = maf.Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 state = maf.State(mesh, Ms = 8e5, m = m0)
 
@@ -200,7 +207,7 @@ Or add the following line to your .bashrc file:
 
 `$ sudo pip3 install arrayfire`
 
-#### Build magnum.af
+#### Build **magnum.af**
 Prerequisites:
 * A C++17 compiler like gcc or clang
 * [CMake](http://www.cmake.org) 2.8 or newer
