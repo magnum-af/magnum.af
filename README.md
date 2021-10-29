@@ -13,7 +13,7 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 * Atomistic Spin Model with interactions:
     * Dipole-Dipole
     * Exchange
-    * Uniaxial Anisostropy
+    * Uniaxial Anisotropy
     * Interface Dzyaloshinskii-Moriya
     * External field
 * Adaptive Runge-Kutta methods for solving the time-dependent Landau-Lifshitz-Gilbert equation:
@@ -44,9 +44,9 @@ magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simu
 * Convenient abstraction of GPU-hardware
 * Both used in the API and internally
 * Hardware-neutral with support for CUDA, OpenCL and CPU backends
-    * Provides a common container for all backend
+    * Provides a common container for all backends
     * Runs on both Nvidia(R) and AMD(R) devices as well as on any x86 CPU
-    * Backends can be set at startup
+    * Backends can be chosen at startup
 
 # Publications
 Working on **magnum.af** led to the following publications:
@@ -97,7 +97,7 @@ m0[1:nx-1, :, :, 0] = 1.0
 m0[     0, :, :, 1] = 1.0
 m0[    -1, :, :, 1] = 1.0
 
-# creating **magnum.af** objects
+# creating magnum.af objects
 mesh = maf.Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 state = maf.State(mesh, Ms = 8e5, m = m0)
 
