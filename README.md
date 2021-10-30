@@ -130,7 +130,7 @@ while state.t < 2e-9:
 
 Plotting the generated data yields:
 
-![docu/images/sp4_m.png](docu/images/sp4_m.png)
+![docu/images/sp4_m_over_t.svg](docu/images/sp4_m_over_t.svg)
 
 # Installation Guide
 ## Docker:
