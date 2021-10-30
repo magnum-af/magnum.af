@@ -19,6 +19,9 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_HAVE_DOT YES) # default anyway
     set(DOXYGEN_DOT_IMAGE_FORMAT svg) # use vector graphics, not png
     set(DOXYGEN_DOT_TRANSPARENT YES) # especially good for dark mode (at least in firefox, currently not chrome)
+
+    # using graphics from docu/images
+    set(DOXYGEN_IMAGE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/images/")
     
     # resetting defaults to make sure:
     set(DOXYGEN_RECURSIVE "YES") # is default anyway
