@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(magnum.af
-    VERSION 1.1.1
+    VERSION 1.2.0
     DESCRIPTION "A finite differences GPU-accelerated micromagnetic and atomistic simulation software" )
 
 message(STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}.")
