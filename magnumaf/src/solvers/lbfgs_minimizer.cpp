@@ -7,11 +7,12 @@
 #include "math.hpp"
 #include "state.hpp"
 #include "util/color_string.hpp"
-#include "util/util.hpp" // full inter product (TODO move to math namespace)
+#include "util/util.hpp" // util::full_inter_product (move to math namespace)
 #include <algorithm>
 #include <iomanip>
 #include <list>
 #include <memory>
+#include <stdexcept>
 
 namespace magnumaf {
 
@@ -23,11 +24,8 @@ LBFGS_Minimizer::LBFGS_Minimizer(vec_uptr_FieldTerm llgterms, double tolerance, 
 
 void abort_if_size_is_zero(std::size_t size) {
     if (size == 0) {
-        std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer::Heff: Number of "
-                                            "_llgterms == 0. Please add at least one term to "
-                                            "LBFGS_Minimizer.fieldterms_! Aborting...")
-                  << std::endl;
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("LBFGS_Minimizer::Heff: Number of _llgterms == 0. Please add at least one term to "
+                                 "LBFGS_Minimizer.fieldterms_! Aborting...");
     }
 }
 
@@ -36,13 +34,6 @@ af::array Gradient(const State& state, const af::array& heff) {
     return math::cross4(state.m,
                         math::cross4(state.m, heff)); // Note: Works equally well as current grad, is not Ms dependent
 }
-
-// Alternatives
-// af::array Gradient(const State& state, const af::array& heff) {
-//    return 1. / (constants::mu0 * state.Ms) * math::cross4(state.m, math::cross4(state.m, heff)); // NOTE: state.Ms
-//    must not be 0! return -equations::LLG_damping(1, state.m, math::cross4(state.m, heff)); // Also works, but is
-//    stuck at step 15 in
-//}
 
 std::pair<double, af::array> EnergyAndGradient(const State& state, const vec_uptr_FieldTerm& fieldterms) {
     abort_if_size_is_zero(fieldterms.size());
@@ -57,28 +48,22 @@ double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
     return math::max_4d_abs(Gradient(state, fieldterm::Heff_in_Apm(fieldterms, state)));
 }
 
+double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
+                  const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms);
+
 /// LBFGS minimizer from Thomas Schrefl's bvec code
-// TODO Currently Minimize() fails when called second time, i.e. when m already
-// relaxed linesearch rate is 0 even with changed zeeman field
 double LBFGS_Minimizer::Minimize(State& state) const {
     std::cout.precision(24);
     af::timer timer = af::timer::start();
-    // af::print("h in minimize", af::mean(Heff(state)));//TODEL
-    // af::print("Gradient", Gradient(state));//TODEL
 
     double eps = 2.22e-16;
     double eps2 = sqrt(eps);
     double epsr = pow(eps, 0.9);
-    // double tolerance_ = 1e-6; //TODO find value of this->settings_.gradTol;
     double tolf2 = sqrt(tolerance_);
     double tolf3 = pow(tolerance_, 0.3333333333333333333333333);
     auto [f, grad] = EnergyAndGradient(state, fieldterms_);
 
-    // double f = objFunc.both(x0, grad);// objFunc.both calcs Heff and E for
-    // not calculating Heff double
-    // NOTE: objFunc.both calcs gradient and energy E
     double gradNorm = math::max_4d_abs(grad);
-    // af::print("grad", grad);
     if (verbose_ > 0) {
         std::cout << "f= " << f << std::endl;
     }
@@ -92,14 +77,6 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     std::array<af::array, m> sVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
     std::array<af::array, m> yVector{{af_zero, af_zero, af_zero, af_zero, af_zero}};
 
-    // vector container
-    // std::vector<af::array> sVector; //= af::constant(0.0, mesh::dims_v(state.mesh),
-    // f64); std::vector<af::array> yVector; //= af::constant(0.0,
-    // mesh::dims_v(state.mesh), f64); for (size_t i = 0; i < m; i++){
-    //    sVector.push_back(af::constant(0.0, mesh::dims_v(state.mesh), f64));
-    //    yVector.push_back(af::constant(0.0, mesh::dims_v(state.mesh), f64));
-    //}
-
     std::array<double, m> alpha = {0., 0., 0., 0., 0.};
     af::array q = af::constant(0.0, mesh::dims_v(state.mesh), f64);
     af::array s = af::constant(0.0, mesh::dims_v(state.mesh), f64);
@@ -111,18 +88,9 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     size_t iter = 0, globIter = 0;
     double H0k = 1;
     do {
-        // TODO TODEL
-        //
-        // for (size_t i = 0; i < m; i++){
-        //    printf("size svec = %i \n", sVector.size());
-        //    af::print("svec", af::mean(sVector[i], 0));
-        //}
-        // END TODO
         int cgSteps = 0;
-        // this->minIterCount_++;
         f_old = f;
         x_old = state.m;
-        // af::print("state.m", af::mean(state.m, 0));
         grad_old = grad;
 
         q = grad;
@@ -139,7 +107,6 @@ double LBFGS_Minimizer::Minimize(State& state) const {
             q += sVector[i] * (alpha[i] - beta);
         }
 
-        // line 291 in .fe: decent = -grad.dot(q)
         double phiPrime0 = -mydot(grad, q);
         if (phiPrime0 > 0) {
             q = grad;
@@ -147,11 +114,8 @@ double LBFGS_Minimizer::Minimize(State& state) const {
             if (verbose_ > 2) {
                 std::cout << "descent " << std::endl;
             }
-            phiPrime0 = -mydot(grad, q); // TODO Value stored to 'phiPrime0' is never read (form clang analyzer)
         }
 
-        // TODO objFunc.updateTol(gradNorm);
-        // TODO check version Schrefl vs Flo
         if (-mydot(grad, q) > -1e-15) {
             gradNorm = math::max_4d_abs(grad);
             if (gradNorm < eps * (1. + fabs(f)) and verbose_ > 0) {
@@ -160,22 +124,14 @@ double LBFGS_Minimizer::Minimize(State& state) const {
                           << gradNorm << " < " << eps * (1. + fabs(f)) << ")!" << std::endl;
             }
         }
-        // const double rate = MyMoreThuente<T, decltype(objFunc),
-        // 1>::linesearch(f, x_old, x0, grad, -q, objFunc, tolf);
-        const double rate = linesearch(state, f, x_old, grad, -q, tolerance_);
-        // TODO/old/todel//const double rate = this->cvsrch(state, x_old, x0, f,
-        // grad, -q, tolf);
+        const double rate = linesearch(state, f, x_old, grad, -q, tolerance_, verbose_, fieldterms_);
         if (rate == 0.0) {
             if (verbose_ > 0) {
                 std::cout << color_string::red("Warning: LBFGS_Minimizer: linesearch returned rate "
-                                               "== 0.0. This should not happen, elaborate! (maybe "
+                                               "== 0.0. This should not happen. (maybe "
                                                "m is already relaxed?)")
                           << std::endl;
-                // std::cout << color_string::bold_red("Error: LBFGS_Minimizer: linesearch
-                // failed, rate == 0.0") << std::endl;
             }
-            // TODO//exit(0);// why exit with 0 (= sucess)? maybe change to
-            // return(0) or, (if necessary)//exit(EXIT_FAILURE);
         }
         double f1 = 1 + fabs(f);
         gradNorm = math::max_4d_abs(grad);
@@ -184,8 +140,6 @@ double LBFGS_Minimizer::Minimize(State& state) const {
         }
         s = state.m - x_old;
         if (verbose_ > 1) {
-            // std::cout <<
-            // std::setprecision(std::numeric_limits<double>::digits10 + 1);
             std::cout << std::setprecision(std::numeric_limits<double>::digits10 + 12);
             std::cout << "bb> " << globIter << " " << f << " "
                       << " " << gradNorm << " " << cgSteps << " " << rate << std::endl;
@@ -210,9 +164,7 @@ double LBFGS_Minimizer::Minimize(State& state) const {
             }
         } else {
             if (iter < m) {
-                // af::print("s", af::mean(s, 0));
                 sVector[iter] = s;
-                // af::print("svec", af::mean(sVector[iter], 0));
                 yVector[iter] = y;
             } else {
                 std::rotate(sVector.begin(), sVector.begin() + 1, sVector.end());
@@ -245,27 +197,24 @@ double LBFGS_Minimizer::Minimize(State& state) const {
     }
 }
 
-double LBFGS_Minimizer::linesearch(State& state, double& fval, const af::array& x_old, af::array& g,
-                                   const af::array& searchDir, const double tolf) const {
+int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
+           const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms);
+
+double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
+                  const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms) {
     double rate = 1.0;
-    cvsrch(state, x_old, fval, g, rate, searchDir, tolf);
+    cvsrch(state, x_old, fval, g, rate, searchDir, tolf, verbose, fieldterms);
     return rate;
 }
 
-// static int cvsrch(P &objFunc, const vex::vector<double> &wa,
-// vex::vector<double> &x, double &f, vex::vector<double> &g, double &stp, const
-// vex::vector<double> &s, double tolf) {
-// TODO//TODEL//int LBFGS_Minimizer::cvsrch(const State& state, const af::array
-// &wa, af::array &x, double &f, af::array &g, const af::array &s, double tolf)
-// {// ak = 1.0 == double &stp moved into function
-int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
-                            const double tolf) const {
-    // we rewrite this from MIN-LAPACK and some MATLAB code
+int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp,
+          bool& brackt, double& stpmin, double& stpmax, int& info);
 
+int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
+           const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms) {
     int info = 0;
     int infoc = 1;
 
-    //  const int n        = x.dims(0)*x.dims(1)*x.dims(2)*x.dims(3); (void) n;
     const double xtol = 1e-15;
     const double ftol = 1.0e-4; // c1
     const double gtol = 0.9;    // c2
@@ -278,9 +227,8 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
 
     double dginit = mydot(g, s);
     if (dginit >= 0.0) {
-        // no descent direction
-        // TODO: handle this case
         std::cout << color_string::red("WARNING: LBFGS_Minimizer:: no descent ") << dginit << std::endl;
+        // std::runtime_error("LBFGS_Minimizer::cvsrch: no viable descent: gradient >= 0.0");
         return -1;
     }
 
@@ -291,8 +239,6 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
     double dgtest = ftol * dginit;
     double width = stpmax - stpmin;
     double width1 = 2 * width;
-    // vex::vector<double> wa(x.queue_list(), x.size());
-    // wa = x;
 
     double stx = 0.0;
     double fx = finit;
@@ -323,19 +269,14 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         if ((brackt && ((stp <= stmin) | (stp >= stmax))) | (nfev >= maxfev - 1) | (infoc == 0) |
             (brackt & (stmax - stmin <= xtol * stmax))) {
             stp = stx;
-            if (verbose_ > 0) {
-                std::cout << "NOTE: LBFGS_Minimizer:: Oops, stp= " << stp << std::endl;
+            if (verbose > 0) {
+                std::cout << "NOTE: LBFGS_Minimizer::cvsrch: Oops, stp= " << stp << std::endl;
             }
         }
 
-        //// test new point
-        //// x = wa + stp * s;
-        //// objFunc.normalizeVector(x);
-        // objFunc.update(stp, wa, s, x);
-        state.m = wa + stp * s; // TODO check// this should be equivalent to
-                                // objFunc.update(stp, wa, s, x);
+        state.m = wa + stp * s; // this should be equivalent to objFunc.update(stp, wa, s, x)
         state.m = util::normalize_handle_zero_vectors(state.m);
-        std::tie(f, g) = EnergyAndGradient(state, fieldterms_);
+        std::tie(f, g) = EnergyAndGradient(state, fieldterms);
         // Note: using struc-binding via 'auto [f, g] = ' is a bug
         // as it would declare f,g in this while scope and shadow outer f,g
         nfev++;
@@ -402,8 +343,6 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
             dgx = dgxm + dgtest;
             dgy = dgym + dgtest;
         } else {
-            // this is ugly and some variables should be moved to the class
-            // scope
             int rsl = cstep(stx, fx, dgx, sty, fy, dgy, stp, f, dg, brackt, stmin, stmax, infoc);
             (void)rsl;
         }
@@ -417,15 +356,11 @@ int LBFGS_Minimizer::cvsrch(State& state, const af::array& wa, double& f, af::ar
         }
     }
 
-    std::cout << color_string::bold_red("ERROR: LBFGS_Minimizer: cvsrch: XXXXXXXXXXXXXXXXXXXXXXXXXXXX "
-                                        "why I am here ? XXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx ")
-              << std::endl;
-    exit(0);
-    return 0;
+    throw std::runtime_error("LBFGS_Minimizer:cvsrch linesearch failed in unrecoverable state.");
 }
 
-int LBFGS_Minimizer::cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp,
-                           double& fp, double& dp, bool& brackt, double& stpmin, double& stpmax, int& info) const {
+int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& dy, double& stp, double& fp, double& dp,
+          bool& brackt, double& stpmin, double& stpmax, int& info) {
     info = 0;
     bool bound = false;
 

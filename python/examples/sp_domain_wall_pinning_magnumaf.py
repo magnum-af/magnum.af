@@ -18,8 +18,8 @@ dx = dy = dz = 1e-9
 
 # Material parameters
 soft_Aex = 0.25e-11
-soft_Ku  = 1e5
 soft_Ms  = 0.25 / maf.Constants.mu0
+soft_Ku  = 1e5
 
 hard_Aex = 1.0e-11
 hard_Ms  = 1.0 / maf.Constants.mu0

@@ -1,4 +1,4 @@
-![docu/images/magnumaf_logo.png](docu/images/magnumaf_logo.png)
+![magnum.af logo](docu/images/magnumaf_logo.png "magnum.af logo")
 magnum.af: A finite differences GPU-accelerated micromagnetic and atomistic simulation software
 =====
 # Physical Methods
@@ -130,7 +130,7 @@ while state.t < 2e-9:
 
 Plotting the generated data yields:
 
-![docu/images/sp4_m_over_t.svg](docu/images/sp4_m_over_t.svg)
+![muMAG standard problem #4 results](docu/images/sp4_m_over_t.svg "muMAG standard problem #4 results")
 
 # Installation Guide
 ## Docker:
