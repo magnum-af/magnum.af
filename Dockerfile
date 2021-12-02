@@ -14,8 +14,8 @@ MAINTAINER Paul Heistracher <paul.thomas.heistracher@univie.ac.at>
 #   Maybe some path becomes overwritten or not set otherwise?
 # Note: Package 'ocl-icd-opencl-dev' needed for cmake to find OpenCL
 
-RUN apt update && apt install -y gnupg curl && \
-    curl -sSL "https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB" | apt-key add - && \
+RUN apt update && apt install -y gnupg ca-certificates && \
+    apt-key adv --fetch-key https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB && \
     echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu focal main" | tee /etc/apt/sources.list.d/arrayfire.list && \
     apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
     build-essential \
