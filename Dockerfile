@@ -45,7 +45,9 @@ COPY --chown=magnum.af.user . /home/magnum.af/
 # building magnum.af and docu
 WORKDIR /home/magnum.af/
 RUN chmod -R 777 /home/magnum.af/ && \
-    (mkdir build && cd build && cmake .. && make -j && make install)
+    (mkdir build && cd build && cmake .. && make -j8 && make install)
+# Note: -j8 constraint needed to avoid github actions from failing (presumably due to RAM limit)
+
 
 # set non-root user
 USER magnum.af.user
