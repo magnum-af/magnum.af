@@ -134,14 +134,15 @@ Plotting the generated data yields:
 
 # Installation Guide
 ## Docker:
-The easiest way to get started is to download the current docker image from our [gitlab registry](https://git.exp.univie.ac.at/paul/magnum.af/container_registry).
-There you can choose between the CPU image or the CUDA image. To download the CUDA image, use:
+The easiest way to get started is to download the current docker image from this repo's [GitHub packages site](https://github.com/magnum-af/magnum.af/pkgs/container/magnum.af).
 
-`$ docker pull git.exp.univie.ac.at:4567/paul/magnum.af:latest`
+There you can download the latest release image by using:
+
+`$ docker pull ghcr.io/magnum-af/magnum.af:latest`
 
 Otherwise, you could build the GPU image provided in the Dockerfile by running the following command in the project's root directory:
 
-`$ nvidia-docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .`
+`$ docker build -t magnum.af -f Dockerfile --build-arg user="$UID" .`
 
 For CPU support only use:
 
