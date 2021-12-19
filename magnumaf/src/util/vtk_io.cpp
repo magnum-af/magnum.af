@@ -427,5 +427,11 @@ void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const
     mesh = mesh_returned;
 }
 
+void pywrap_vtr_writer(const long int afarray_ptr, const NonequiMesh& nonequimesh, const std::string& outputname,
+                       bool verbose) {
+    af::array afarray = util::pywrap::make_copy_form_py(afarray_ptr);
+    vtr_writer(afarray, nonequimesh, outputname, verbose);
+}
+
 } // namespace magnumaf
 #pragma GCC diagnostic pop

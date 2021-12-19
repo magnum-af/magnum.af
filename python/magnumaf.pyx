@@ -77,6 +77,7 @@ from magnumafpy_decl cimport AtomisticExternalField as cAtomisticExternalField
 
 # Util
 from magnumafpy_decl cimport pywrap_vti_writer_micro as cpywrap_vti_writer_micro
+from magnumafpy_decl cimport pywrap_vtr_writer as cpywrap_vtr_writer
 from magnumafpy_decl cimport double_array3
 from magnumafpy_decl cimport spacial_mean_in_region as cspacial_mean_in_region
 
@@ -414,6 +415,10 @@ class Util:
     @staticmethod
     def write_vti(afarray, dx, dy, dz, filename):
         cpywrap_vti_writer_micro(addressof(afarray.arr), dx, dy, dz, filename.encode('utf-8'))
+
+    @staticmethod
+    def write_vtr(afarray, NonequiMesh nonequi_mesh, filename):
+        cpywrap_vtr_writer(addressof(afarray.arr), deref(nonequi_mesh._thisptr), filename.encode('utf-8'))
 
     @staticmethod
     def gto_gpu_renumeration(gpu_number):

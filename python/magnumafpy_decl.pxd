@@ -295,6 +295,9 @@ cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumaf
 cdef extern from "vtk_io.hpp" namespace "magnumaf":
     void pywrap_vti_writer_micro(const long int afarray_ptr, const double dx, const double dy, const double dz, string outputname);
 
+cdef extern from "vtk_io.hpp" namespace "magnumaf":
+    void pywrap_vtr_writer(const long int afarray_ptr, const NonequiMesh&, string outputname);
+
 cdef extern from "solvers/string_method.hpp" namespace "magnumaf":
     cdef cppclass StringMethod:
         StringMethod(State state, vector[State] inputimages, int n_interp, double dt, LLGIntegrator llg);

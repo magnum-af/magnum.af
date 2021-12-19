@@ -24,6 +24,9 @@ void vtr_writer(const af::array& field, const double dx, const double dy, const 
 void vtr_writer(const af::array& field, const NonequiMesh& nonequimesh, std::string outputname,
                 const bool verbose = false); // Rectilinear grid writer
 
+void pywrap_vtr_writer(const long int afarray_ptr, const NonequiMesh& nonequimesh, const std::string& outputname,
+                       bool verbose = false); // Rectilinear grid writer
+
 std::pair<af::array, NonequiMesh> vtr_reader(std::string filepath, const bool verbose = false);
 void vtr_reader(af::array& field, NonequiMesh& mesh, std::string filepath, const bool verbose = false);
 } // namespace magnumaf
