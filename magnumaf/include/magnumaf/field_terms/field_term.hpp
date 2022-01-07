@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "state.hpp"
 #include "util/util.hpp"
+#include <execution>
 #include <memory>
 #include <numeric>
 
@@ -53,7 +54,7 @@ class FieldTerm {
 constexpr bool timing_is_on{true};
 
 inline af::array FieldTerm::H_in_Apm(const State& state) const {
-    if (timing_is_on) {
+    if constexpr (timing_is_on) {
         af::timer timer = af::timer::start();
         const auto result = impl_H_in_Apm(state);
         accumulated_time_Heff += timer.stop();
@@ -64,7 +65,7 @@ inline af::array FieldTerm::H_in_Apm(const State& state) const {
 }
 
 inline double FieldTerm::Energy_in_J(const State& state, const af::array& h) const {
-    if (timing_is_on) {
+    if constexpr (timing_is_on) {
         af::timer timer = af::timer::start();
         const auto result = impl_E_in_J(state, h);
         accumulated_time_Energy += timer.stop();
@@ -75,7 +76,7 @@ inline double FieldTerm::Energy_in_J(const State& state, const af::array& h) con
 }
 
 inline double FieldTerm::Energy_in_J(const State& state) const {
-    if (timing_is_on) {
+    if constexpr (timing_is_on) {
         af::timer timer = af::timer::start();
         const auto result = impl_E_in_J(state, H_in_Apm(state));
         accumulated_time_Energy += timer.stop();
@@ -102,10 +103,26 @@ template <typename T> void print_elapsed_time(const T& fieldterms, std::ostream&
 
 /// Calculate effective field by accumulating all h(state) terms in container.
 /// Expects non-empty container with at least one element
-template <typename T> af::array Heff_in_Apm(const T& fieldterms, const State& state) {
+
+// parallel iteration over field terms
+template <typename T> af::array parallel_Heff_in_Apm(const T& fieldterms, const State& state) {
+    af::array sum = af::constant(0.0, state.m.dims(), state.m.type());
+    const auto reduce = [](const af::array& sum_result, const af::array& element) { return sum_result + element; };
+    const auto transform = [&state](const auto& elem) -> af::array { return elem->H_in_Apm(state); };
+    return std::transform_reduce(std::execution::par, std::cbegin(fieldterms), std::cend(fieldterms), sum, reduce,
+                                 transform);
+}
+
+// sequential iteration over field terms
+template <typename T> af::array sequential_Heff_in_Apm(const T& fieldterms, const State& state) {
     return std::accumulate(std::begin(fieldterms) + 1, std::end(fieldterms), fieldterms[0]->H_in_Apm(state),
                            [&state](const auto& sum, const auto& elem) { return sum + elem->H_in_Apm(state); });
 }
+
+template <typename T> af::array Heff_in_Apm(const T& fieldterms, const State& state) {
+    return sequential_Heff_in_Apm(fieldterms, state);
+}
+
 template <typename T> af::array Heff_in_T(const T& fieldterms, const State& state) {
     return conversion::Apm_to_Tesla(Heff_in_Apm(fieldterms, state));
 }
