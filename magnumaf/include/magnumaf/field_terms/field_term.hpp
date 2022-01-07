@@ -3,7 +3,6 @@
 #include "constants.hpp"
 #include "state.hpp"
 #include "util/util.hpp"
-#include <execution>
 #include <memory>
 #include <numeric>
 
@@ -109,8 +108,8 @@ template <typename T> af::array parallel_Heff_in_Apm(const T& fieldterms, const 
     af::array sum = af::constant(0.0, state.m.dims(), state.m.type());
     const auto reduce = [](const af::array& sum_result, const af::array& element) { return sum_result + element; };
     const auto transform = [&state](const auto& elem) -> af::array { return elem->H_in_Apm(state); };
-    return std::transform_reduce(std::execution::par, std::cbegin(fieldterms), std::cend(fieldterms), sum, reduce,
-                                 transform);
+    // Note: std::execution::par needs <execution> header, but has build error on intel platform
+    return std::transform_reduce(std::cbegin(fieldterms), std::cend(fieldterms), sum, reduce, transform);
 }
 
 // sequential iteration over field terms
