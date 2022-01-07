@@ -12,6 +12,7 @@ class SparseExchangeField : public MicroTerm {
     SparseExchangeField(long int A_exchange_field_ptr, Mesh mesh, bool verbose = true);
 
     af::array get_matr() const { return matr; };
+    long int pywrap_get_sparse_matrix_ptr() const { return util::pywrap::send_copy_to_py(this->matr); }
 
   private:
     af::array matr;

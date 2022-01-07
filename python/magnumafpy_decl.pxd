@@ -24,6 +24,7 @@ cdef extern from "field_terms/micro/sparse_exchange_field.hpp" namespace "magnum
         SparseExchangeField (long int A_exchange_field_ptr, Mesh mesh, bool verbose);
         SparseExchangeField (double A_exchange, Mesh mesh, bool verbose);
         long int _pywrap_H_in_Apm(const State& state);
+        long int pywrap_get_sparse_matrix_ptr() const;
         double Energy_in_J(const State& state);
         double elapsed_eval_time();
 

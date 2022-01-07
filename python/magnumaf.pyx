@@ -1250,6 +1250,8 @@ cdef class SparseExchangeField(FieldTerm):
         return self._thisptr.elapsed_eval_time()
     def _get_thisptr(self):
             return <size_t><void*>self._thisptr
+    def get_sparse_matrix(self):
+        return array_from_addr(self._thisptr.pywrap_get_sparse_matrix_ptr())
 
 
 cdef class ExchangeFieldPBC(FieldTerm):
