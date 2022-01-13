@@ -71,13 +71,9 @@ class State {
     long int wrapping_mean_M_as_afarray() const { return util::pywrap::send_copy_to_py(mean_M_as_afarray()); }
     auto mean_M() const -> std::array<double, 3>;
 
-    unsigned int get_n_cells_() const { return n_cells_; };
-
     bool verbose{true};
     bool mute_warning{false};
 
   private:
-    ///< Number of cells with Ms != 0
-    unsigned int n_cells_{0};
 };
 } // namespace magnumaf

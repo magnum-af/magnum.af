@@ -29,23 +29,27 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
     return os;
 }
 
+unsigned get_number_of_nonzero_cells_form_vectorfield(const af::array& a) {
+    af::array one_if_val_is_zero_else_zero = !af::iszero(util::vecnorm(a));
+    const auto number_of_nonzero_cells =
+        af::sum(af::sum(af::sum(one_if_val_is_zero_else_zero, 0), 1), 2).scalar<unsigned>();
+    return number_of_nonzero_cells;
+};
+
 af::array State::mean_m_as_afarray() const {
-    if (Ms_field.isempty() or n_cells_ == 0) {
-        return af::mean(af::mean(af::mean(m, 0), 1), 2);
-    } else {
-        return af::sum(af::sum(af::sum(m, 0), 1), 2) / n_cells_;
-    }
+    auto number_of_nonzero_cells = get_number_of_nonzero_cells_form_vectorfield(m);
+    auto mean_m = af::sum(af::sum(af::sum(m, 0), 1), 2) / number_of_nonzero_cells;
+    return mean_m;
 }
 
 std::array<double, 3> State::mean_m() const { return math::vec_components<double>(mean_m_as_afarray().as(f64)); }
 
 auto State::mean_M_as_afarray() const -> af::array {
-    af::array nzero = !af::iszero(util::vecnorm(m));
-    const auto no_nonzero_cells = util::afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
+    auto number_of_nonzero_cells = get_number_of_nonzero_cells_form_vectorfield(m);
     if (Ms_field.isempty()) {
-        return af::sum(af::sum(af::sum(Ms * m, 0), 1), 2) / no_nonzero_cells;
+        return af::sum(af::sum(af::sum(Ms * m, 0), 1), 2) / number_of_nonzero_cells;
     } else {
-        return af::sum(af::sum(af::sum(get_Ms_field_in_vec_dims() * m, 0), 1), 2) / no_nonzero_cells;
+        return af::sum(af::sum(af::sum(get_Ms_field_in_vec_dims() * m, 0), 1), 2) / number_of_nonzero_cells;
     }
 }
 
@@ -73,7 +77,6 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
                    color_string::info());
         }
         af::array nzero = !af::iszero(util::vecnorm(m));
-        n_cells_ = util::afvalue_u32(af::sum(af::sum(af::sum(nzero, 0), 1), 2));
         if (Ms == 0) {
             printf("Wraning: State::set_Ms_field: State.Ms is used but set to "
                    "zero. It appears that you are using a legacy constuctor. "

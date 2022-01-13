@@ -130,5 +130,31 @@ class StateMsLegacyDimTest(unittest.TestCase):
       self.assertEqual(Ms_field.dims()[0], 1)
       self.assertEqual(len(Ms_field.dims()), 1)
 
+
+class State_mean_m_Test(unittest.TestCase):
+  """2x2x2 Cube where m0 points in x-dir and is half empty. Zero cells should be neglected in mean_m calculation"""
+  expected_mean_m = [1, 0, 0]
+  Ms = 8e5
+  mesh=magnumaf.Mesh(2, 2, 2, 1e-9, 1e-9, 1e-9)
+  m0 = af.constant(0.0, mesh.nx, mesh.ny, mesh.nz, 3, af.Dtype.f64)
+  m0[0, :, :, 0] = 1
+  # print(m0)
+
+  def test_scalar_Ms(self):
+    state=magnumaf.State(self.mesh, Ms = self.Ms, m = self.m0)
+    mx, my, mz = state.mean_m()
+    self.assertEqual(mx, self.expected_mean_m[0])
+    self.assertEqual(my, self.expected_mean_m[1])
+    self.assertEqual(mz, self.expected_mean_m[2])
+
+  def test_cell_wise_Ms(self):
+    Ms_field = self.Ms * self.m0[:, :, :, 0]
+    state=magnumaf.State(self.mesh, Ms = Ms_field, m = self.m0)
+    mx, my, mz = state.mean_m()
+    self.assertEqual(mx, self.expected_mean_m[0])
+    self.assertEqual(my, self.expected_mean_m[1])
+    self.assertEqual(mz, self.expected_mean_m[2])
+
+
 if __name__ == '__main__':
   unittest.main()

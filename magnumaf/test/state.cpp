@@ -60,22 +60,73 @@ TEST(State, mean_m) {
     };
 
     // scalar Ms
-    test({mesh, Ms, m({1, 0, 0})}, {1, 0, 0});
-    test({mesh, Ms, m({0, 1, 0})}, {0, 1, 0});
-    test({mesh, Ms, m({0, 0, 1})}, {0, 0, 1});
+    {
+        test(State{mesh, Ms, m({1, 0, 0})}, {1, 0, 0});
+        test(State{mesh, Ms, m({0, 1, 0})}, {0, 1, 0});
+        test(State{mesh, Ms, m({0, 0, 1})}, {0, 0, 1});
+    }
 
     // Ms.field
-    auto Ms_field = af::constant(Ms, mesh::dims_s(mesh), f64);
-    test({mesh, Ms_field, m({1, 0, 0})}, {1, 0, 0});
-    test({mesh, Ms_field, m({0, 1, 0})}, {0, 1, 0});
-    test({mesh, Ms_field, m({0, 0, 1})}, {0, 0, 1});
+    {
+        auto Ms_field = af::constant(Ms, mesh::dims_s(mesh), f64);
+        test(State{mesh, Ms_field, m({1, 0, 0})}, {1, 0, 0});
+        test(State{mesh, Ms_field, m({0, 1, 0})}, {0, 1, 0});
+        test(State{mesh, Ms_field, m({0, 0, 1})}, {0, 0, 1});
+    }
 
     // Ms.field with zeros
-    auto Ms_field_with_zeros = af::constant(0, mesh::dims_s(mesh), f64);
-    Ms_field_with_zeros(0, 0, 0) = Ms;
-    test({mesh, Ms_field_with_zeros, m({1, 0, 0})}, {1, 0, 0});
-    test({mesh, Ms_field_with_zeros, m({0, 1, 0})}, {0, 1, 0});
-    test({mesh, Ms_field_with_zeros, m({0, 0, 1})}, {0, 0, 1});
+    {
+        auto Ms_field_with_zeros = af::constant(0, mesh::dims_s(mesh), f64);
+        Ms_field_with_zeros(0, 0, 0) = Ms;
+        test(State{mesh, Ms_field_with_zeros, m({1, 0, 0})}, {1, 0, 0});
+        test(State{mesh, Ms_field_with_zeros, m({0, 1, 0})}, {0, 1, 0});
+        test(State{mesh, Ms_field_with_zeros, m({0, 0, 1})}, {0, 0, 1});
+    }
+
+    // Ms.field and m with zeros
+    {
+        auto Ms_field_with_zeros = af::constant(0, mesh::dims_s(mesh), f64);
+        Ms_field_with_zeros(0, 0, 0) = Ms;
+
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 0) = 1;
+            test(State{mesh, Ms_field_with_zeros, m0}, {1, 0, 0});
+        }
+
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 1) = 1;
+            test(State{mesh, Ms_field_with_zeros, m0}, {0, 1, 0});
+        }
+
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 2) = 1;
+            test(State{mesh, Ms_field_with_zeros, m0}, {0, 0, 1});
+        }
+    }
+
+    // m with zeros
+    {
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 0) = 1;
+            test(State{mesh, Ms, m0}, {1, 0, 0});
+        }
+
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 1) = 1;
+            test(State{mesh, Ms, m0}, {0, 1, 0});
+        }
+
+        {
+            auto m0 = af::constant(0, mesh::dims_v(mesh), f64);
+            m0(0, af::span, af::span, 2) = 1;
+            test(State{mesh, Ms, m0}, {0, 0, 1});
+        }
+    }
 
     // This should work:
     // auto res = State(mesh, Ms_field_with_zeros, m({0, 0, 1})).mean_m();
