@@ -90,9 +90,11 @@ inline std::array<double, 3> spacial_mean_in_region(long int vectorfield, long i
     return spacial_mean_in_region(pywrap::make_copy_form_py(vectorfield), pywrap::make_copy_form_py(region));
 }
 
-af::array normalize(const af::array& a);
+// normalize vector field to unit vector:
+af::array normalize_even_zero_vectors(const af::array& a);
 af::array normalize_handle_zero_vectors(const af::array& a);
-void normalize_inplace(af::array& a);
+const auto normalize = normalize_handle_zero_vectors; // function alias: set the default to the save case
+
 af::array vecnorm(const af::array& a);
 double afvalue_as_f64(const af::array& a); // give value of a 1, 1, 1, 1 af af::array
 // Returns value an af::array of type u32 == 6

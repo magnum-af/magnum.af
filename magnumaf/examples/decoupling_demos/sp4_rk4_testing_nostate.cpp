@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     StageTimer timer;
     for (std::size_t i = 0; i < imax; i++) {
         std::tie(t, m) = RK4(t, dt, m, f);
-        m = util::normalize_handle_zero_vectors(m);
+        m = util::normalize(m);
         const auto [mx, my, mz] = math::mean_3d<double>(m);
         // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
         os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     alpha = 0.02;
     for (std::size_t i = 0; i < imax; i++) {
         std::tie(t, m) = RK4(t, dt, m, f);
-        m = util::normalize_handle_zero_vectors(m);
+        m = util::normalize(m);
         const auto [mx, my, mz] = math::mean_3d<double>(m);
         // std::cout << t << " " << mx << " " << my << " " << mz << std::endl;
         os << t << "\t" << mx << "\t" << my << "\t" << mz << std::endl;

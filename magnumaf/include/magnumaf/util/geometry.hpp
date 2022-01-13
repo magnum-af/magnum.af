@@ -128,7 +128,7 @@ inline af::array init_vortex(const Mesh& mesh, const bool positive_direction = t
     }
 
     std::cout << "n_cells should be approx nx^2*M_PI/4.= " << pow(mesh.nx, 2) * M_PI / 4. << std::endl;
-    m = util::normalize_handle_zero_vectors(m);
+    m = util::normalize(m);
     return m;
 }
 inline af::array init_sp4(const Mesh& mesh) {

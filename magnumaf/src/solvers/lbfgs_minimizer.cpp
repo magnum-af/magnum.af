@@ -275,7 +275,7 @@ int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& s
         }
 
         state.m = wa + stp * s; // this should be equivalent to objFunc.update(stp, wa, s, x)
-        state.m = util::normalize_handle_zero_vectors(state.m);
+        state.m = util::normalize(state.m);
         std::tie(f, g) = EnergyAndGradient(state, fieldterms);
         // Note: using struc-binding via 'auto [f, g] = ' is a bug
         // as it would declare f,g in this while scope and shadow outer f,g

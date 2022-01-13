@@ -31,7 +31,7 @@ double full_inner_product(const af::array& a, const af::array& b) {
     return afvalue_as_f64(sum(sum(sum(sum(a * b, 3), 2), 1), 0));
 }
 
-af::array normalize(const af::array& a) { return a / tile(sqrt(sum(a * a, 3)), 1, 1, 1, 3); }
+af::array normalize_even_zero_vectors(const af::array& a) { return a / tile(sqrt(sum(a * a, 3)), 1, 1, 1, 3); }
 
 // Normalize all vectors to unit length, empty vectors (i.e. norm 0) are kept empty.
 af::array normalize_handle_zero_vectors(const af::array& a) {
@@ -39,16 +39,6 @@ af::array normalize_handle_zero_vectors(const af::array& a) {
     af::array normalized = a / norm_a;
     af::replace(normalized, norm_a != 0, 0);
     return normalized;
-
-    // TODO for (af::array& a) only: return replace(a/tile(sqrt(sum(a*a, 3)), 1,
-    // 1, 1, 3), a!=0., 0.);
-}
-
-// Normalize all vectors to unit length, empty vectors (i.e. norm 0) are kept empty.
-void normalize_inplace(af::array& a) {
-    af::array norm_a = af::tile(vecnorm(a), 1, 1, 1, 3);
-    a /= norm_a;
-    af::replace(a, norm_a != 0, 0); // setting zero vectors to zero after normalization yields inf
 }
 
 af::array vecnorm(const af::array& a) { return af::sqrt(af::sum(a * a, 3)); }

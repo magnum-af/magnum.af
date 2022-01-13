@@ -59,9 +59,9 @@ void AdaptiveRungeKutta::step(State& state) {
     state.m += mtemp;
     if (normalize_) {
         if (state.Ms_field.isempty()) {
-            state.m = util::normalize(state.m);
+            state.m = util::normalize_even_zero_vectors(state.m);
         } else {
-            state.m = util::normalize_handle_zero_vectors(state.m);
+            state.m = util::normalize(state.m);
         }
     }
     time_allsteps_ += af::timer::stop(timer_allsteps);

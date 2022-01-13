@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
         if (state.Ms_field.isempty()) {
             state.m = util::normalize(m_in);
         } else {
-            state.m = util::normalize_handle_zero_vectors(m_in);
+            state.m = util::normalize(m_in);
         }
 
         const auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);

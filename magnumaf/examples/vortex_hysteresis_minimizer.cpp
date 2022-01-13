@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     vti_writer_micro(state.Ms_field, mesh, outdir / "Ms");
 
     vti_writer_micro(state.m, mesh, (outdir / "minit_nonnormalized").c_str());
-    state.m = util::normalize_handle_zero_vectors(state.m);
+    state.m = util::normalize(state.m);
     vti_writer_micro(state.m, mesh, (outdir / "minit_renorm").c_str());
 
     DemagField dmag(mesh);
