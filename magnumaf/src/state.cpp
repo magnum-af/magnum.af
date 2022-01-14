@@ -34,7 +34,7 @@ unsigned get_number_of_nonzero_cells_form_vectorfield(const af::array& a) {
     const auto number_of_nonzero_cells =
         af::sum(af::sum(af::sum(one_if_val_is_zero_else_zero, 0), 1), 2).scalar<unsigned>();
     return number_of_nonzero_cells;
-};
+}
 
 af::array State::mean_m_as_afarray() const {
     auto number_of_nonzero_cells = get_number_of_nonzero_cells_form_vectorfield(m);

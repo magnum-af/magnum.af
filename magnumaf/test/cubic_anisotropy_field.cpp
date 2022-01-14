@@ -34,7 +34,7 @@ void energy_test_xy_rotation(const double Kc1, const double Kc2, const double Kc
         state.m(af::span, af::span, af::span, 0) = x;
         state.m(af::span, af::span, af::span, 1) = y;
         state.m(af::span, af::span, af::span, 2) = z;
-        m = util::normalize(m);
+        state.m = util::normalize(state.m);
 
         const std::array<double, 3> m = util::normalize_vector({x, y, z});
         const std::array<double, 3> c1 = {1, 0, 0};
