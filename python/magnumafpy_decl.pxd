@@ -172,6 +172,7 @@ cdef extern from "field_terms/micro/demag_field.hpp" namespace "magnumaf":
         long int _pywrap_H_in_Apm(const State& state);
         double Energy_in_J(const State& state);
         void print_Nfft();
+        long int get_Nfft_ptr();
         double elapsed_eval_time();
 
 cdef extern from "field_terms/micro/demag_field_pbc.hpp" namespace "magnumaf":

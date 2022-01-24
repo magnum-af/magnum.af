@@ -16,8 +16,9 @@ class DemagField : public MicroTerm {
     DemagField(Mesh, bool verbose = false, bool caching = true, unsigned nthreads = 0);
 
     ///< Get copy of array storing the Fourier transfrom of the demag tensor.
-    af::array get_Nfft() const { return Nfft; }
+    af::array get_Nfft() const { return this->Nfft; }
     // For wrapping
+    long int get_Nfft_ptr() const { return util::pywrap::send_copy_to_py(this->Nfft); }
     void print_Nfft() const { af::print("Nfft=", Nfft); }
 
   private:

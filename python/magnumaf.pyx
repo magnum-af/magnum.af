@@ -1099,6 +1099,8 @@ cdef class DemagField(FieldTerm):
         self._thisptr = NULL
     def print_Nfft(self):
         self._thisptr.print_Nfft()
+    def get_Nfft(self):
+        return array_from_addr(self._thisptr.get_Nfft_ptr())
     ## Calculate energy contribution in [J]
     def H_in_Apm(self, State state):
         return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
