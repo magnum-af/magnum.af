@@ -91,8 +91,8 @@ inline std::array<double, 3> spacial_mean_in_region(long int vectorfield, long i
 }
 
 // normalize vector field to unit vector:
-af::array normalize_even_zero_vectors(const af::array& a);
-af::array normalize_handle_zero_vectors(const af::array& a);
+[[nodiscard]] af::array normalize_even_zero_vectors(const af::array& a);
+[[nodiscard]] af::array normalize_handle_zero_vectors(const af::array& a);
 const auto normalize = normalize_handle_zero_vectors; // function alias: set the default to the save case
 
 af::array vecnorm(const af::array& a);
