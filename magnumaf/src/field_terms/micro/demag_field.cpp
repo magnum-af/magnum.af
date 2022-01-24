@@ -122,7 +122,7 @@ void setup_N(const Mesh& mesh, std::vector<double>& N, unsigned ix_start, unsign
 } // namespace newell
 
 namespace {
-af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
+af::array calculate_N_real(const Mesh& mesh, unsigned nthreads) {
     std::vector<double> N_values(nx_exp(mesh.nx) * ny_exp(mesh.ny) * nz_exp(mesh.nz) * 6);
     std::vector<std::thread> t;
 
@@ -138,6 +138,11 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
 
     af::array Naf(6, nz_exp(mesh.nz), ny_exp(mesh.ny), nx_exp(mesh.nx), N_values.data());
     Naf = af::reorder(Naf, 3, 2, 1, 0);
+    return Naf;
+}
+
+af::array calculate_Nfft(const Mesh& mesh, unsigned nthreads) {
+    af::array Naf = calculate_N_real(mesh, nthreads);
 
     if (nz_exp(mesh.nz) == 1) {
         Naf = af::fftR2C<2>(Naf);
@@ -147,13 +152,13 @@ af::array calculate_N(const Mesh& mesh, unsigned nthreads) {
     return Naf;
 }
 
-af::array calculate_N(Mesh mesh, bool verbose, unsigned nthreads) {
+af::array calculate_Nfft(Mesh mesh, bool verbose, unsigned nthreads) {
     af::timer demagtimer = af::timer::start();
     if (verbose) {
         printf("%s Starting Demag Tensor Assembly on %u out of %u threads.\n", color_string::info(), nthreads,
                std::thread::hardware_concurrency());
     }
-    auto result = calculate_N(mesh, nthreads);
+    auto result = calculate_Nfft(mesh, nthreads);
     if (verbose) {
         printf("%s Initialized demag tensor in %f [af-s]\n", color_string::info(), af::timer::stop(demagtimer));
     }
@@ -189,7 +194,7 @@ af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
     }
 
     if (caching == false) {
-        return calculate_N(mesh, verbose, nthreads);
+        return calculate_Nfft(mesh, verbose, nthreads);
     } else {
         util::CacheManager cm{verbose};
         const std::string nfft_id = to_string(mesh);
@@ -197,13 +202,17 @@ af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
         if (optional_Nfft) {
             return optional_Nfft.value();
         } else {
-            auto result = calculate_N(mesh, verbose, nthreads);
+            auto result = calculate_Nfft(mesh, verbose, nthreads);
             cm.write_array(result, nfft_id);
             return result;
         }
     }
 }
 } // namespace
+
+af::array DemagField::calc_N(Mesh mesh) const {
+    return ::magnumaf::calculate_N_real(mesh, std::thread::hardware_concurrency());
+}
 
 DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
     : Nfft(::magnumaf::get_Nfft(mesh, verbose, caching,

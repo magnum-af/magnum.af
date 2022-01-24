@@ -21,6 +21,9 @@ class DemagField : public MicroTerm {
     long int get_Nfft_ptr() const { return util::pywrap::send_copy_to_py(this->Nfft); }
     void print_Nfft() const { af::print("Nfft=", Nfft); }
 
+    af::array calc_N(Mesh mesh) const;
+    long int get_N_ptr(Mesh mesh) const { return util::pywrap::send_copy_to_py(calc_N(mesh)); }
+
   private:
     mutable af::array Nfft; // mutable for c64-c32 conversion
     virtual af::array impl_H_in_Apm(const State& state) const override;
