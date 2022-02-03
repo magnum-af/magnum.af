@@ -16,12 +16,12 @@ StringMethod::StringMethod(const State& state, std::vector<State> inputimages, i
     calc_x(inputimages);
 
     for (int i = 0; i < n_interp; i++) {
-        // Note: this is set to m=|1| to // avoid tate.Ms_field creation
+        // Note: setting m=|1| for init, is overwritten in second loop, also avoiding state.Ms_field creation
+        const auto m = af::constant(std::sqrt(1. / 3.), mesh::dims_v(state.mesh), f64);
         if (state.Ms_field.isempty()) {
-            images.emplace_back(state.mesh, state.Ms, af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
+            images.emplace_back(State(state.mesh, state.Ms, m));
         } else {
-            images.emplace_back(state.mesh, state.get_Ms_field_in_vec_dims(),
-                                af::constant(std::sqrt(1 / 3), mesh::dims_v(state.mesh), f64));
+            images.emplace_back(State(state.mesh, state.Ms_field, m));
         }
     }
     for (int i = 0; i < n_interp; i++) {

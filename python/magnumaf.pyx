@@ -739,8 +739,12 @@ cdef class State:
     def __cinit__(self, Mesh mesh, Ms, m, verbose = True, mute_warning = False):
         # switch for evaluate_mean value
         if type(Ms) is af.Array:
+            if mesh == None:
+                mesh = Mesh(0, 0, 0, 0., 0., 0.)
             self._thisptr = new cState (deref(mesh._thisptr), <long int> addressof(Ms.arr), <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         else:
+            if mesh == None:
+                mesh = Mesh(0, 0, 0, 0., 0., 0.)
             self._thisptr = new cState (deref(mesh._thisptr), <double> Ms, <long int> addressof(m.arr), <bool> verbose, <bool> mute_warning)
         #af.device.lock_array(m_in)#This does not avoid memory corruption caused by double free
     def __dealloc__(self): # causes segfault on every cleanup
@@ -1028,21 +1032,23 @@ cdef class LLGIntegrator:
 
 cdef class StringMethod:
     """
-    StringMethod method.
+    StringMethod for calculating energy barriers.
     """
     cdef cString* _thisptr
-    #def __cinit__(self, State state, terms = [], n_interp=60, dt = 1e-13, LLGIntegrator llg):
     def __cinit__(self, State state, inputimages, n_interp, dt, LLGIntegrator llg):
         cdef vector[cState] vector_in
-        if not inputimages:
-            print("StringMethod: no States provided, please add at least two states for interpolation of initial path.")
+        if not inputimages or len(inputimages) == 1:
+            raise RuntimeError("StringMethod: invalid inputimages provided, please add at least two states/magnetizations for interpolation of initial path.")
         else:
-            print(inputimages)
+            # print("StringMethod: inputimages:", inputimages)
             for arg in inputimages:
                 # swtich between state and array
                 if hasattr(arg, 'arr'): # arg is expected to be array
                     mtemp = arg
-                    vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
+                    if state.Ms_field.is_empty():
+                        vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <double> state.Ms, <long int> addressof(mtemp.arr), <bool> True, <bool> True))
+                    else:
+                        vector_in.push_back(cState (cMesh(state.mesh.nx, state.mesh.ny, state.mesh.nz, state.mesh.dx, state.mesh.dy, state.mesh.dz), <long int> addressof(state.Ms_field.arr), <long int> addressof(mtemp.arr), <bool> True, <bool> True))
                 else: # arg is expected to be State
                     mtemp = arg.m
                     if not arg.Ms_field.is_empty():
