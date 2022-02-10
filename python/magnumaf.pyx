@@ -56,6 +56,7 @@ from magnumafpy_decl cimport ExchangeField as cExchangeField
 from magnumafpy_decl cimport SparseExchangeField as cSparseExchangeField
 from magnumafpy_decl cimport ExchangeFieldPBC as cExchangeFieldPBC
 from magnumafpy_decl cimport SpinTransferTorqueField as cSpinTransferTorqueField
+from magnumafpy_decl cimport SpinTransferTorqueZhangLiField as cSpinTransferTorqueZhangLiField
 from magnumafpy_decl cimport RKKYExchangeField as cRKKYExchangeField
 from magnumafpy_decl cimport DmiField as cDmiField
 from magnumafpy_decl cimport BulkDMIExchangeField as cBulkDMIExchangeField
@@ -1751,6 +1752,19 @@ cdef class SpinTransferTorqueField(FieldTerm):
     # def polarization_field(self, array):
     #     self._thisptr.polarization_field.set_array(addressof(array.arr))
 
+cdef class SpinTransferTorqueZhangLiField(FieldTerm):
+    cdef cSpinTransferTorqueZhangLiField* _thisptr
+    def __cinit__(self, j, beta : float,  xi : float):
+        self._thisptr = new cSpinTransferTorqueZhangLiField (addressof(j.arr), beta, xi)
+    def __dealloc__(self):
+        del self._thisptr
+        self._thisptr = NULL
+    def H_in_Apm(self, State state):
+        return array_from_addr(self._thisptr._pywrap_H_in_Apm(deref(state._thisptr)))
+    def Energy_in_J(self, State state):
+        return self._thisptr.Energy_in_J(deref(state._thisptr))
+    def _get_thisptr(self):
+            return <size_t><void*>self._thisptr
 
 cdef class RKKYExchangeField(FieldTerm):
     cdef cRKKYExchangeField* _thisptr

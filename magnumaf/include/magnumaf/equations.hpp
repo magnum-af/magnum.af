@@ -28,7 +28,6 @@ template <typename T> af::array LLG_damping(T alpha, const af::array& m, const a
 
 /// LLG equation
 template <typename T> af::array LLG(T alpha, const af::array& m, const af::array& h_eff) {
-    // std::cout << "DEBUG" << std::endl; // TODO rem
     const af::array m_x_h = math::cross4(m, h_eff);
     return LLG_precession(alpha, m_x_h) + LLG_damping(alpha, m, m_x_h);
 }

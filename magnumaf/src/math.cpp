@@ -41,15 +41,19 @@ af::array cross4shift(const af::array& a, const af::array& b) {
 /// \f]
 af::array central_diff(const af::array& a, double grid_spacing, Axis axis, TruncateOutput trunc_out) {
     af::array filter = af::constant(0.0, 3, 3, 3, 1, a.type());
-    if (axis == Axis::x) {
+    switch (axis) {
+    case Axis::x:
         filter(0, 1, 1) = 0.5 / grid_spacing;
         filter(2, 1, 1) = -0.5 / grid_spacing;
-    } else if (axis == Axis::y) {
+        break;
+    case Axis::y:
         filter(1, 0, 1) = 0.5 / grid_spacing;
         filter(1, 2, 1) = -0.5 / grid_spacing;
-    } else {
+        break;
+    case Axis::z:
         filter(1, 1, 0) = 0.5 / grid_spacing;
         filter(1, 1, 2) = -0.5 / grid_spacing;
+        break;
     }
 
     auto conv = af::convolve(a, filter, AF_CONV_DEFAULT, AF_CONV_SPATIAL);

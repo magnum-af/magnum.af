@@ -289,6 +289,15 @@ cdef extern from "field_terms/micro/spin_transfer_torque_field.hpp" namespace "m
         # double elapsed_eval_time();
         # WrappedArray polarization_field;
 
+
+cdef extern from "field_terms/micro/spin_transfer_torque_zhang_li_field.hpp" namespace "magnumaf":
+    cdef cppclass SpinTransferTorqueZhangLiField:
+        SpinTransferTorqueZhangLiField(long int j_ptr, double beta, double xi);
+        long int _pywrap_H_in_Apm(const State& state);
+        double Energy_in_J(const State& state);
+        double beta_;
+        double xi_;
+
 cdef extern from "field_terms/micro/rkky_exchange_field.hpp" namespace "magnumaf":
     cdef cppclass RKKYExchangeField:
         RKKYExchangeField (long int rkky_values, long int exchange_values, Mesh mesh, long int rkky_indices, bool verbose);
