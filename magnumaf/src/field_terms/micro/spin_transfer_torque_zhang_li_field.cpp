@@ -74,7 +74,7 @@ af::array field_dot_grad(af::array const& field, State const& state) {
 af::array SpinTransferTorqueZhangLiField::impl_H_in_Apm(const State& state) const {
     af::array Ms_field =
         state.Ms_field.isempty() ? af::constant(state.Ms, mesh::dims_s(state.mesh), state.m.type()) : state.Ms_field;
-    af::array b = beta_ * constants::mu0 / (constants::e_abs * Ms_field * (1. + std::pow(xi_, 2.0)));
+    af::array b = (beta_ * constants::mu_b) / (constants::e_abs * Ms_field * (1. + std::pow(xi_, 2.0)));
     b = af::tile(b, 1, 1, 1, 3);
 
     // replacing -inf and inf with zeros, handles cases in division with zero-Ms:
