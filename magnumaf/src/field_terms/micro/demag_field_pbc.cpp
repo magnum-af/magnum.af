@@ -25,9 +25,9 @@ af::array calc_m_mfft(const State& state) {
 
 auto fftC2R_dim2switch = [](const af::array& h_fft) {
     if (h_fft.dims(2) == 1) {
-        return af::fftC2R<2>(h_fft);
+        return af::fftC2R<2>(h_fft, false, 0.0);
     } else {
-        return af::fftC2R<3>(h_fft);
+        return af::fftC2R<3>(h_fft, false, 0.0);
     }
 };
 

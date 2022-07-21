@@ -1,6 +1,5 @@
 #include "field_terms/micro/demag_field.hpp"
 #include "util/af_overloads.hpp"
-#include "util/ascii_io.hpp"
 #include "util/cache_manager.hpp"
 #include "util/color_string.hpp"
 #include "util/prime_factors.hpp"
@@ -229,13 +228,14 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
 
     // FFT with zero-padding of the m field
     af::array mfft;
-    af::array Ms_times_m = state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
-    constexpr double _norm_factor_fft = 1.0;
+
+    const af::array Ms_times_m =
+        state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
+
     if (nz_exp(state.mesh.nz) == 1) {
-        mfft = af::fftR2C<2>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)), _norm_factor_fft);
+        mfft = af::fftR2C<2>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
     } else {
-        mfft = af::fftR2C<3>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)),
-                             _norm_factor_fft);
+        mfft = af::fftR2C<3>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
     }
 
     // Pointwise product
@@ -254,32 +254,19 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
         Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1) +
         Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
 
+    constexpr double legacy_fft_norm_factor = 0.0; // legacy defualt value pre v3.8.1
+    // NOTE: using legacy default norm factor of 0.0 instead of current default 1.0 prevents a bug introduced via
+    // arrayfire v3.8.1 https://github.com/arrayfire/arrayfire/pull/3178
+
     // IFFT reversing padding
-    af::array h_field;
-    if (nz_exp(state.mesh.nz) == 1) {
-        h_field = af::fftC2R<2>(hfft);
-    } else {
-        h_field = af::fftC2R<3>(hfft);
-    }
-
-    af::saveArray("", Ms_times_m, "Ms_times_m_failing.af");
-    af::saveArray("", mfft, "mfft.af");
-    af::saveArray("", hfft, "hfft.af");
-    af::saveArray("", h_field, "h_field.af");
-
-    write_ascii(Ms_times_m, state.mesh, "Ms_times_m.txt", false);
-    write_ascii(af::real(mfft), state.mesh, "mfft_real.txt", false);
-    write_ascii(af::imag(mfft), state.mesh, "mfft_imag.txt", false);
-    write_ascii(af::real(hfft), state.mesh, "hfft_real.txt", false);
-    write_ascii(af::imag(hfft), state.mesh, "hfft_imag.txt", false);
-    write_ascii(h_field, state.mesh, "h_field.txt", false);
-
-    if (nz_exp(state.mesh.nz) == 1) {
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
-    } else {
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
-                       af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
-    }
+    const af::array h_field_padded = nz_exp(state.mesh.nz) == 1 ? af::fftC2R<2>(hfft, false, legacy_fft_norm_factor)
+                                                                : af::fftC2R<3>(hfft, false, legacy_fft_norm_factor);
+    const af::array h_field =
+        nz_exp(state.mesh.nz) == 1
+            ? h_field_padded(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1))
+            : h_field_padded(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
+                             af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
+    return h_field;
 }
 
 } // namespace magnumaf
