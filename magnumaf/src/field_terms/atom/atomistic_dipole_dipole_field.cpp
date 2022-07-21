@@ -41,12 +41,12 @@ af::array AtomisticDipoleDipoleField::impl_H_in_Apm(const State& state) const {
     // IFFT reversing padding
     af::array h_field;
     if (nz_exp(state.mesh.nz) == 1) {
-        h_field = af::fftC2R<2>(hfft);
+        h_field = af::fftC2R<2>(hfft, false, 0.0);
         return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1),
                                   af::seq(0, ny_exp(state.mesh.ny) / 2 - 1)); // TODO consider p density, then we
                                                                               // have to multip at m before fft
     } else {
-        h_field = af::fftC2R<3>(hfft);
+        h_field = af::fftC2R<3>(hfft, false, 0.0);
         return state.Ms * h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
                                   af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
     }

@@ -20,7 +20,8 @@ af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
     if (state.Ms_field.isempty()) {
         mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
     } else {
-        mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
+        mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m,
+                             af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
     }
 
     // Pointwise product
@@ -65,7 +66,7 @@ af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
 
     // IFFT reversing padding
     af::array h_field;
-    h_field = af::fftC2R<2>(hfft);
+    h_field = af::fftC2R<2>(hfft, false, 0.0);
     return one_over_tau_vec *
            h_field(af::seq(0, nx_expanded(nemesh.nx) / 2 - 1), af::seq(0, ny_expanded(nemesh.ny) / 2 - 1));
 }

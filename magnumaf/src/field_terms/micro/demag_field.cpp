@@ -228,20 +228,14 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
 
     // FFT with zero-padding of the m field
     af::array mfft;
+
+    const af::array Ms_times_m =
+        state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
+
     if (nz_exp(state.mesh.nz) == 1) {
-        if (state.Ms_field.isempty()) {
-            mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-        } else {
-            mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-        }
+        mfft = af::fftR2C<2>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
     } else {
-        if (state.Ms_field.isempty()) {
-            mfft = af::fftR2C<3>(state.Ms * state.m,
-                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-        } else {
-            mfft = af::fftR2C<3>(state.get_Ms_field_in_vec_dims() * state.m,
-                                 af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-        }
+        mfft = af::fftR2C<3>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
     }
 
     // Pointwise product
@@ -260,16 +254,19 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
         Nfft(af::span, af::span, af::span, 4) * mfft(af::span, af::span, af::span, 1) +
         Nfft(af::span, af::span, af::span, 5) * mfft(af::span, af::span, af::span, 2);
 
+    constexpr double legacy_fft_norm_factor = 0.0; // legacy defualt value pre v3.8.1
+    // NOTE: using legacy default norm factor of 0.0 instead of current default 1.0 prevents a bug introduced via
+    // arrayfire v3.8.1 https://github.com/arrayfire/arrayfire/pull/3178
+
     // IFFT reversing padding
-    af::array h_field;
-    if (nz_exp(state.mesh.nz) == 1) {
-        h_field = af::fftC2R<2>(hfft);
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1));
-    } else {
-        h_field = af::fftC2R<3>(hfft);
-        return h_field(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
-                       af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
-    }
+    const af::array h_field_padded = nz_exp(state.mesh.nz) == 1 ? af::fftC2R<2>(hfft, false, legacy_fft_norm_factor)
+                                                                : af::fftC2R<3>(hfft, false, legacy_fft_norm_factor);
+    const af::array h_field =
+        nz_exp(state.mesh.nz) == 1
+            ? h_field_padded(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1))
+            : h_field_padded(af::seq(0, nx_exp(state.mesh.nx) / 2 - 1), af::seq(0, ny_exp(state.mesh.ny) / 2 - 1),
+                             af::seq(0, nz_exp(state.mesh.nz) / 2 - 1), af::span);
+    return h_field;
 }
 
 } // namespace magnumaf
