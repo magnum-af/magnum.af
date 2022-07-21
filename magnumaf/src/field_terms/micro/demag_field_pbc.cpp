@@ -8,28 +8,10 @@ namespace magnumaf {
 
 namespace {
 af::array calc_m_mfft(const State& state) {
-    if (state.mesh.nz == 1) {
-        if (state.Ms_field.isempty()) {
-            return af::fftR2C<2>(state.Ms * state.m);
-        } else {
-            return af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m);
-        }
-    } else {
-        if (state.Ms_field.isempty()) {
-            return af::fftR2C<3>(state.Ms * state.m);
-        } else {
-            return af::fftR2C<3>(state.get_Ms_field_in_vec_dims() * state.m);
-        }
-    }
+    const af::array Ms_times_m =
+        state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
+    return state.mesh.nz == 1 ? af::fftR2C<2>(Ms_times_m) : af::fftR2C<3>(Ms_times_m);
 }
-
-auto fftC2R_dim2switch = [](const af::array& h_fft) {
-    if (h_fft.dims(2) == 1) {
-        return af::fftC2R<2>(h_fft, false, 0.0);
-    } else {
-        return af::fftC2R<3>(h_fft, false, 0.0);
-    }
-};
 
 void warn_if_maxprime_gt_13_opencl(std::size_t n, const std::string& ni) {
     if (util::max_of_prime_factors(n) > 13) {
@@ -86,6 +68,6 @@ af::array DemagFieldPBC::impl_H_in_Apm(const State& state) const {
     const auto h_fft_y = (1. - af::exp(to_j(ky_()))) * u_fft / dy;
     const auto h_fft_z = (1. - af::exp(to_j(kz_()))) * u_fft / dz;
     const auto h_fft = af::join(3, h_fft_x, h_fft_y, h_fft_z);
-    return fftC2R_dim2switch(h_fft);
+    return h_fft.dims(2) == 1 ? af::fftC2R<2>(h_fft, false, 0.0) : af::fftC2R<3>(h_fft, false, 0.0);
 }
 } // namespace magnumaf

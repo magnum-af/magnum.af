@@ -109,11 +109,6 @@ af::array N_atomistic(int n0_exp, int n1_exp, int n2_exp, double dx, double dy, 
     Naf *= 1. / (4. * M_PI);
     // print("AtomisticDipoleDipoleField::N_atomistic: Naf", Naf);
     // print("Demag:Naf", Naf(0, 0, 0, af::span));
-    if (n2_exp == 1) {
-        Naf = af::fftR2C<2>(Naf);
-    } else {
-        Naf = af::fftR2C<3>(Naf);
-    }
-    return Naf;
+    return n2_exp == 1 ? af::fftR2C<2>(Naf) : af::fftR2C<3>(Naf);
 }
 } // namespace magnumaf

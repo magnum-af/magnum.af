@@ -142,14 +142,8 @@ af::array calculate_N_real(const Mesh& mesh, unsigned nthreads) {
 }
 
 af::array calculate_Nfft(const Mesh& mesh, unsigned nthreads) {
-    af::array Naf = calculate_N_real(mesh, nthreads);
-
-    if (nz_exp(mesh.nz) == 1) {
-        Naf = af::fftR2C<2>(Naf);
-    } else {
-        Naf = af::fftR2C<3>(Naf);
-    }
-    return Naf;
+    const af::array Naf = calculate_N_real(mesh, nthreads);
+    return nz_exp(mesh.nz) == 1 ? af::fftR2C<2>(Naf) : af::fftR2C<3>(Naf);
 }
 
 af::array calculate_Nfft(Mesh mesh, bool verbose, unsigned nthreads) {

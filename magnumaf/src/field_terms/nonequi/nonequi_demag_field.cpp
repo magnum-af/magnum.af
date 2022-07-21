@@ -15,14 +15,10 @@ inline unsigned nx_expanded(unsigned nx) { return 2 * nx; }
 inline unsigned ny_expanded(unsigned ny) { return 2 * ny; }
 
 af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
+    const af::array Ms_times_m =
+        state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
     // FFT with zero-padding of the m field
-    af::array mfft;
-    if (state.Ms_field.isempty()) {
-        mfft = af::fftR2C<2>(state.Ms * state.m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
-    } else {
-        mfft = af::fftR2C<2>(state.get_Ms_field_in_vec_dims() * state.m,
-                             af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
-    }
+    const af::array mfft = af::fftR2C<2>(Ms_times_m, af::dim4(nx_expanded(nemesh.nx), ny_expanded(nemesh.ny)));
 
     // Pointwise product
     af::array hfft = af::constant(0.0, nx_expanded(nemesh.nx) / 2 + 1, ny_expanded(nemesh.ny), nemesh.nz, 3, c64);
@@ -65,8 +61,7 @@ af::array NonequiDemagField::impl_H_in_Apm(const State& state) const {
     one_over_tau_vec = af::tile(one_over_tau_vec, nemesh.nx, nemesh.ny, 1, 3);
 
     // IFFT reversing padding
-    af::array h_field;
-    h_field = af::fftC2R<2>(hfft, false, 0.0);
+    const af::array h_field = af::fftC2R<2>(hfft, false, 0.0);
     return one_over_tau_vec *
            h_field(af::seq(0, nx_expanded(nemesh.nx) / 2 - 1), af::seq(0, ny_expanded(nemesh.ny) / 2 - 1));
 }
