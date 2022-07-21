@@ -1,4 +1,5 @@
 #include "field_terms/micro/demag_field.hpp"
+#include <cstdlib>
 #include <gtest/gtest.h>
 
 using namespace magnumaf;
@@ -14,6 +15,8 @@ TEST(MicroDemag, EnergyOfHomogeneousCube) {
     m(af::span, af::span, af::span, 0) = 1;
     State state(mesh, Ms, m);
     DemagField demag(mesh);
+    const auto hfft = demag.H_in_Apm(state);
+    std::exit(1); // we exit s.t. written files are not overwriteen here
 
     std::cout.precision(24);
     double demagE = demag.Energy_in_J(state);
