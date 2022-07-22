@@ -182,7 +182,8 @@ std::string to_string(const Mesh& mesh) {
            std::to_string(1e9 * mesh.dy) + "_dz_" + std::to_string(1e9 * mesh.dz);
 }
 
-af::array get_Nfft(Mesh mesh, bool verbose, bool caching, unsigned nthreads) {
+af::array get_Nfft(Mesh mesh, bool verbose, bool caching, std::size_t nthreads) {
+    nthreads = nthreads > 0 ? nthreads : std::thread::hardware_concurrency();
     if (af::getActiveBackend() == AF_BACKEND_OPENCL) {
         warn_if_maxprime_gt_13(mesh);
     }
@@ -208,9 +209,8 @@ af::array DemagField::calc_N(Mesh mesh) const {
     return ::magnumaf::calculate_N_real(mesh, std::thread::hardware_concurrency());
 }
 
-DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned in_nthreads)
-    : Nfft(::magnumaf::get_Nfft(mesh, verbose, caching,
-                                in_nthreads > 0 ? in_nthreads : std::thread::hardware_concurrency())) {}
+DemagField::DemagField(Mesh mesh, bool verbose, bool caching, unsigned nthreads)
+    : Nfft(::magnumaf::get_Nfft(mesh, verbose, caching, nthreads)) {}
 
 af::array DemagField::impl_H_in_Apm(const State& state) const {
     // Converting Nfft from c64 to c32 once if state.m.type() == f32
@@ -220,17 +220,14 @@ af::array DemagField::impl_H_in_Apm(const State& state) const {
         Nfft = Nfft.as(af::dtype::c32);
     }
 
-    // FFT with zero-padding of the m field
-    af::array mfft;
-
     const af::array Ms_times_m =
         state.Ms_field.isempty() ? state.Ms * state.m : state.get_Ms_field_in_vec_dims() * state.m;
 
-    if (nz_exp(state.mesh.nz) == 1) {
-        mfft = af::fftR2C<2>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)));
-    } else {
-        mfft = af::fftR2C<3>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
-    }
+    // FFT with zero-padding of the m field
+    const af::array mfft =
+        nz_exp(state.mesh.nz) == 1
+            ? af::fftR2C<2>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny)))
+            : af::fftR2C<3>(Ms_times_m, af::dim4(nx_exp(state.mesh.nx), ny_exp(state.mesh.ny), nz_exp(state.mesh.nz)));
 
     // Pointwise product
     af::array hfft =
