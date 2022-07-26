@@ -1,0 +1,18 @@
+{
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "python.testing.unittestEnabled": true,
+    // tell unittest where to search for tests:
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./python/test",
+        "-p",
+        "test_*.py"
+    ],
+    // NOTE: Pylance can not interpret compiled modules from cython
+    // SEE: https://github.com/microsoft/pylance-release/issues/242
+    // SEE: https://github.com/microsoft/pylance-release/issues/674
+    // Pylance would need a stub file .pyi to provide completion for compiled packages (huge effort)
+    // Somewhat solution: using ycmd, we get autocompletion (good), but loose pylace support (bad)
+    // It currently we need to choose either one, both is not working at the same time...
+}
