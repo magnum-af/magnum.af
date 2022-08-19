@@ -11,7 +11,12 @@ echo "Running formatting from dir $PWD"
 set -o xtrace
 
 # format C++
-find . -iname '*.hpp' -o -iname '*.cpp' | xargs clang-format -i --style=file
+find magnumaf/ -iname '*.hpp' -o -iname '*.cpp' \
+    | xargs -P 0 -n 8 clang-format -i --style=file --verbose
 
 # format CMake
-find . -iname 'CMakeLists.txt' | xargs cmake-format -i --line-width=120
+find . -iname 'CMakeLists.txt' \
+    | xargs -P 0 cmake-format -i --line-width=120
+
+# format python
+autopep8 python/ --recursive --in-place --verbose
