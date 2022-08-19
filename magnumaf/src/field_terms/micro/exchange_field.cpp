@@ -94,14 +94,14 @@ af::array _shift_impl_exchange_H_in_Apm(double Aex, const State& state, BC bc) {
         }
 
         const af::array self = 2.0 * m / std::pow(dx, 2.0) + 2.0 * m / std::pow(dy, 2.0) + 2.0 * m / std::pow(dz, 2.0);
-        const af::array result = x_plus + x_minus + y_plus + y_minus + z_plus + z_minus - self;
+        af::array result = x_plus + x_minus + y_plus + y_minus + z_plus + z_minus - self;
         return result;
     };
 
     const af::array dlaplace =
         discrete_laplace_operator_3D_shift_impl(state.m, state.mesh.dx, state.mesh.dy, state.mesh.dz, bc);
     if (state.Ms_field.isempty()) {
-        const af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.Ms) * dlaplace;
+        af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.Ms) * dlaplace;
         return H_in_Apm;
     } else {
         af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * dlaplace;

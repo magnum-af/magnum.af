@@ -27,24 +27,25 @@ using namespace magnumaf;
 class HfieldType {
   public:
     // ctor: copy-then-move idiom
-    template <typename T> HfieldType(T term) : pimpl_(std::make_unique<Model<T>>(std::move(term))) {}
+    template <typename T>
+    HfieldType(T term) : _pimpl(std::make_unique<Model<T>>(std::move(term))) {}
 
     ~HfieldType() = default;
-    HfieldType(const HfieldType& s) : pimpl_(s.pimpl_->clone()) {}
+    HfieldType(const HfieldType &s) : _pimpl(s._pimpl->clone()) {}
     HfieldType(HfieldType&& s) = default;
     HfieldType& operator=(const HfieldType& s) {
         HfieldType tmp(s);
-        std::swap(pimpl_, tmp.pimpl_);
+        std::swap(_pimpl, tmp._pimpl);
         return *this;
     }
     HfieldType& operator=(HfieldType&& s) = default;
 
   private:
     friend af::array Expose_H_in_Apm(const HfieldType& term, const State& state) {
-        return term.pimpl_->wrap_H_in_Apm(state);
+      return term._pimpl->wrap_H_in_Apm(state);
     }
     friend double Expose_Energy_in_J(const HfieldType& term, const State& state) {
-        return term.pimpl_->wrap_Energy_in_J(state);
+      return term._pimpl->wrap_Energy_in_J(state);
     }
 
     struct Concept {
@@ -64,7 +65,7 @@ class HfieldType {
         T term_;
     };
 
-    std::unique_ptr<Concept> pimpl_;
+    std::unique_ptr<Concept> _pimpl;
 };
 
 using HfieldTypes = std::vector<HfieldType>;
