@@ -135,7 +135,7 @@ TEST(State, mean_m) {
 }
 
 TEST(State, mean_M) {
-    const auto get_mean_M = [](auto const& Ms_field, af::array const& m0) {
+    const auto get_mean_M = [](const auto& Ms_field, const af::array& m0) {
         auto nx = m0.dims(0);
         auto ny = m0.dims(0);
         auto nz = m0.dims(0);

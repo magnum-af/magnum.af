@@ -20,7 +20,7 @@ struct CpMv_or_MvMv {
 
 struct Cp_or_Mv {
     af::array data;
-    explicit Cp_or_Mv(af::array const& data) : data(data) {}
+    explicit Cp_or_Mv(const af::array& data) : data(data) {}
     explicit Cp_or_Mv(af::array&& data) : data(std::move(data)) {}
 };
 

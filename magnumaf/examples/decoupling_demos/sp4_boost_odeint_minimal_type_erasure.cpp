@@ -30,7 +30,7 @@ class HfieldType {
     template <typename T> HfieldType(T term) : pimpl_(std::make_unique<Model<T>>(std::move(term))) {}
 
     ~HfieldType() = default;
-    HfieldType(HfieldType const& s) : pimpl_(s.pimpl_->clone()) {}
+    HfieldType(const HfieldType& s) : pimpl_(s.pimpl_->clone()) {}
     HfieldType(HfieldType&& s) = default;
     HfieldType& operator=(const HfieldType& s) {
         HfieldType tmp(s);
@@ -40,17 +40,17 @@ class HfieldType {
     HfieldType& operator=(HfieldType&& s) = default;
 
   private:
-    friend af::array Expose_H_in_Apm(HfieldType const& term, State const& state) {
+    friend af::array Expose_H_in_Apm(const HfieldType& term, const State& state) {
         return term.pimpl_->wrap_H_in_Apm(state);
     }
-    friend double Expose_Energy_in_J(HfieldType const& term, State const& state) {
+    friend double Expose_Energy_in_J(const HfieldType& term, const State& state) {
         return term.pimpl_->wrap_Energy_in_J(state);
     }
 
     struct Concept {
         virtual ~Concept() = default;
-        [[nodiscard]] virtual af::array wrap_H_in_Apm(State const&) const = 0;
-        [[nodiscard]] virtual double wrap_Energy_in_J(State const&) const = 0;
+        [[nodiscard]] virtual af::array wrap_H_in_Apm(const State&) const = 0;
+        [[nodiscard]] virtual double wrap_Energy_in_J(const State&) const = 0;
         [[nodiscard]] virtual std::unique_ptr<Concept> clone() const = 0; // Prototype design pattern
     };
 
@@ -58,8 +58,8 @@ class HfieldType {
     // enable with c++20 // template <HasHfield T>
     template <typename T> struct Model final : public Concept {
         explicit Model(T&& term) : term_(std::forward<T>(term)) {}
-        [[nodiscard]] af::array wrap_H_in_Apm(State const& state) const override { return term_.H_in_Apm(state); }
-        [[nodiscard]] double wrap_Energy_in_J(State const& state) const override { return term_.Energy_in_J(state); }
+        [[nodiscard]] af::array wrap_H_in_Apm(const State& state) const override { return term_.H_in_Apm(state); }
+        [[nodiscard]] double wrap_Energy_in_J(const State& state) const override { return term_.Energy_in_J(state); }
         [[nodiscard]] std::unique_ptr<Concept> clone() const override { return std::make_unique<Model>(*this); }
         T term_;
     };

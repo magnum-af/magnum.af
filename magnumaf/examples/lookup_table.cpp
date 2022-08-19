@@ -25,8 +25,8 @@ template <typename T> af::array make_afarray_from_container(T const& container) 
 
 // Lookup on optional region.
 // If region not set, uses backup_dims for return size
-inline af::array apply_lookup_on_optional(af::array const& values, std::optional<af::array> const& opt_region,
-                                          af::dim4 const& backup_dims) {
+inline af::array apply_lookup_on_optional(const af::array& values, const std::optional<af::array>& opt_region,
+                                          const af::dim4& backup_dims) {
     if (opt_region) {
         return do_multidim_lookup(values, opt_region.value());
     } else {
@@ -46,12 +46,12 @@ struct RegionState {
 
 // lookup wrapper for RegionState.
 // We use free function with wrapper to keeping logic more seperated from data structure
-inline af::array apply_lookup(af::array const& values, RegionState const& region_state) {
+inline af::array apply_lookup(const af::array& values, const RegionState& region_state) {
     return apply_lookup_on_optional(values, region_state.regions, magnumaf::mesh::dims_s(region_state.mesh));
 }
 
 // convenience wrapper
-template <typename T> auto apply_lookup_from_container(T const& values, RegionState const& region_state) {
+template <typename T> auto apply_lookup_from_container(T const& values, const RegionState& region_state) {
     return apply_lookup(make_afarray_from_container(values), region_state);
 }
 
@@ -64,13 +64,13 @@ struct Interaction {
     // NOTE: could/should be constrained to std::is_floating_point, i.e. float, double as std::is_integral types like
     // int, uint, char not wanted in most cases
     template <typename T>
-    explicit Interaction(std::vector<T> const& values) : Interaction(make_afarray_from_container(values)) {}
+    explicit Interaction(const std::vector<T>& values) : Interaction(make_afarray_from_container(values)) {}
     // convenience ctor for passing single values like float, double:
     // Note: using vector overload instead of af::array i.o.t. deduce af::array type
     template <typename T> explicit Interaction(T const& value) : Interaction(std::vector<T>{value}) {}
 };
 
-inline af::array apply_lookup(Interaction const& inter, RegionState const& region_state) {
+inline af::array apply_lookup(const Interaction& inter, const RegionState& region_state) {
     return apply_lookup(inter.values, region_state);
 }
 
@@ -135,7 +135,7 @@ int main() {
         af::print("region", region);
 
         // using an af::array region for lookup
-        auto print_array_and_type0 = [i = 0](auto const& values, af::array const& region) mutable {
+        auto print_array_and_type0 = [i = 0](const auto& values, const af::array& region) mutable {
             const auto result = do_multidim_lookup(make_afarray_from_container(values), region);
             af::print(("lookup" + std::to_string(i)).c_str(), result);
             std::cout << result.type() << std::endl;
@@ -152,7 +152,7 @@ int main() {
         af::array Ms = af::constant(0, dims_scal, af::dtype::f64);
         const auto region_state = RegionState{mesh, m, Ms, region};
 
-        const auto print_array_and_type = [&rs = std::as_const(region_state)](auto const& values) {
+        const auto print_array_and_type = [&rs = std::as_const(region_state)](const auto& values) {
             const auto result = apply_lookup_from_container(values, rs);
             af::print("", result);
             std::cout << result.type() << std::endl;
@@ -165,7 +165,7 @@ int main() {
         const auto noregion_state = RegionState{mesh, m, Ms, {}};
         try {
             af::print("noregion_state", apply_lookup_from_container(std::vector<double>{}, noregion_state));
-        } catch (std::exception const& e) {
+        } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
 

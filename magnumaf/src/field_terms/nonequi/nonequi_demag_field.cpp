@@ -277,7 +277,7 @@ af::array calculate_N(const NonequiMesh& nemesh, unsigned nthreads, bool verbose
 namespace nonequi_util {
 std::string to_string(const NonequiMesh& nemesh) {
     std::string dz_string;
-    for (auto const& dz : nemesh.z_spacing) {
+    for (const auto& dz : nemesh.z_spacing) {
         dz_string.append(std::to_string(1e9 * dz));
     }
     return "n0exp_" + std::to_string(nx_expanded(nemesh.nx)) + "_n1exp_" + std::to_string(ny_expanded(nemesh.ny)) +

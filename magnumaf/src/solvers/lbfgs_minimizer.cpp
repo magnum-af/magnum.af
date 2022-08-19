@@ -49,7 +49,7 @@ double mxmxhMax(const State& state, const vec_uptr_FieldTerm& fieldterms) {
 }
 
 double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
-                  const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms);
+                  const double tolf, int verbose, const vec_uptr_FieldTerm& fieldterms);
 
 /// LBFGS minimizer from Thomas Schrefl's bvec code
 double LBFGS_Minimizer::Minimize(State& state) const {
@@ -198,10 +198,10 @@ double LBFGS_Minimizer::Minimize(State& state) const {
 }
 
 int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
-           const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms);
+           const double tolf, int verbose, const vec_uptr_FieldTerm& fieldterms);
 
 double linesearch(State& state, double& fval, const af::array& x_old, af::array& g, const af::array& searchDir,
-                  const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms) {
+                  const double tolf, int verbose, const vec_uptr_FieldTerm& fieldterms) {
     double rate = 1.0;
     cvsrch(state, x_old, fval, g, rate, searchDir, tolf, verbose, fieldterms);
     return rate;
@@ -211,7 +211,7 @@ int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& 
           bool& brackt, double& stpmin, double& stpmax, int& info);
 
 int cvsrch(State& state, const af::array& wa, double& f, af::array& g, double& stp, const af::array& s,
-           const double tolf, int verbose, vec_uptr_FieldTerm const& fieldterms) {
+           const double tolf, int verbose, const vec_uptr_FieldTerm& fieldterms) {
     int info = 0;
     int infoc = 1;
 

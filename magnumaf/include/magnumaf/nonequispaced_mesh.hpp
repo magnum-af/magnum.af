@@ -22,7 +22,7 @@ inline NonequiMesh::NonequiMesh(size_t nx_, size_t ny_, double dx_, double dy_, 
 inline std::ostream& operator<<(std::ostream& os, const NonequiMesh& nemesh) {
     os << "nx=" << nemesh.nx << " ny=" << nemesh.ny << " nz=" << nemesh.nz << " dx=" << nemesh.dx << " dy=" << nemesh.dy
        << " dz: ";
-    for (auto const& dz : nemesh.z_spacing) {
+    for (const auto& dz : nemesh.z_spacing) {
         os << dz << " ";
     }
     return os;

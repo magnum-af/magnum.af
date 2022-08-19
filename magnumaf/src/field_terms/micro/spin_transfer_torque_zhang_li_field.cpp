@@ -10,13 +10,13 @@ namespace magnumaf {
 SpinTransferTorqueZhangLiField::SpinTransferTorqueZhangLiField(long int j_ptr, double beta, double xi)
     : SpinTransferTorqueZhangLiField(util::pywrap::make_copy_form_py(j_ptr), beta, xi) {}
 
-af::array field_dot_grad(af::array const& field, af::array const& m, std::array<double, 3> dx) {
+af::array field_dot_grad(const af::array& field, const af::array& m, std::array<double, 3> dx) {
     // TODO truncate on?
 
     // adding ghost cells like numpy 'mirror' mode
     // adding  | a b c d ... -> b | a b c d ...
     // s.t. central diff on boundary becomes zero
-    auto add_ghost_cells = [](af::array const& m) {
+    auto add_ghost_cells = [](const af::array& m) {
         af::array m_ghost = af::constant(0.0, m.dims(0) + 2, m.dims(1) + 2, m.dims(2) + 2, 3, m.type());
         const auto seq_red = af::seq(1, -2);              // selecting m from m_expanded
         m_ghost(seq_red, seq_red, seq_red, af::span) = m; // setting m
@@ -67,7 +67,7 @@ af::array field_dot_grad(af::array const& field, af::array const& m, std::array<
     return field_dot_grad;
 }
 
-af::array field_dot_grad(af::array const& field, State const& state) {
+af::array field_dot_grad(const af::array& field, const State& state) {
     return field_dot_grad(field, state.m, {state.mesh.dx, state.mesh.dy, state.mesh.dz});
 }
 
