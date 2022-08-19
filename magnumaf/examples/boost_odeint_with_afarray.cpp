@@ -22,7 +22,7 @@ int main() {
     namespace ode = boost::numeric::odeint;
     auto boost_callback = [](const af::array& y0, af::array& dxdt, const double t) { dxdt = t * af::sqrt(y0); };
 
-    struct cout_m_and_time {
+    struct CoutMAndTime {
         void operator()(const af::array& y, double t) {
             const auto y_ = y.scalar<double>();
             const auto analyt = analytic_result(t);
@@ -42,7 +42,7 @@ int main() {
     const double dt = 1e-3;
     af::array y = af::constant(1.0, af::dim4(1, 1, 1, 1), f64);
     size_t steps = integrate_adaptive(make_controlled(eps_abs, eps_rel, stepper_type()), boost_callback, y, start_time,
-                                      end_time, dt, cout_m_and_time{});
+                                      end_time, dt, CoutMAndTime{});
     std::cout << "Finished after steps=" << steps << std::endl;
     return 0;
 }

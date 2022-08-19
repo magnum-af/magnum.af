@@ -6,22 +6,22 @@
 // struct naming: if callsite passes by lval: first term (e.g. CpCp is copy and copy)
 // if callsite passes by rval (via std::move): second term (e.g. MvCp is move and copy)
 
-struct CpCp_or_MvCp {
+struct CpCpOrMvCp {
     af::array data;
-    explicit CpCp_or_MvCp(af::array data) : data(data) {} // NOLINT
-    // Backup (clang-tidy performance):
-    // Reference: CpCp_or_MvCp(af::array data) : data(data) {}
+    explicit CpCpOrMvCp(af::array data) : data(data) {} // NOLINT
+                                                        // Backup (clang-tidy performance):
+                                                        // Reference: CpCp_or_MvCp(af::array data) : data(data) {}
 };
 
-struct CpMv_or_MvMv {
+struct CpMvOrMvMv {
     af::array data;
-    explicit CpMv_or_MvMv(af::array data) : data(std::move(data)) {}
+    explicit CpMvOrMvMv(af::array data) : data(std::move(data)) {}
 };
 
-struct Cp_or_Mv {
+struct CpOrMv {
     af::array data;
-    explicit Cp_or_Mv(const af::array& data) : data(data) {}
-    explicit Cp_or_Mv(af::array&& data) : data(std::move(data)) {}
+    explicit CpOrMv(const af::array& data) : data(data) {}
+    explicit CpOrMv(af::array&& data) : data(std::move(data)) {}
 };
 
 int main() {
@@ -81,12 +81,12 @@ int main() {
         timeit("Ctor warm", [](auto&& data) { return data; });
         timeit("Ctor copy", [](auto&& data) { return data; });
         timeit("Ctor move", [](auto&& data) { return std::move(data); });
-        timeit("Ctor Copy Copy", [](auto&& data) { return CpCp_or_MvCp{data}; });
-        timeit("Ctor Move Copy", [](auto&& data) { return CpCp_or_MvCp{std::move(data)}; });
-        timeit("Ctor Copy Move", [](auto&& data) { return CpMv_or_MvMv{data}; });
-        timeit("Ctor Move Move", [](auto&& data) { return CpMv_or_MvMv{std::move(data)}; });
-        timeit("Ctor Only Copy", [](auto&& data) { return Cp_or_Mv{data}; });
-        timeit("Ctor Only Move", [](auto&& data) { return Cp_or_Mv{std::move(data)}; });
+        timeit("Ctor Copy Copy", [](auto&& data) { return CpCpOrMvCp{data}; });
+        timeit("Ctor Move Copy", [](auto&& data) { return CpCpOrMvCp{std::move(data)}; });
+        timeit("Ctor Copy Move", [](auto&& data) { return CpMvOrMvMv{data}; });
+        timeit("Ctor Move Move", [](auto&& data) { return CpMvOrMvMv{std::move(data)}; });
+        timeit("Ctor Only Copy", [](auto&& data) { return CpOrMv{data}; });
+        timeit("Ctor Only Move", [](auto&& data) { return CpOrMv{std::move(data)}; });
     }
 
     // Explicit Timings
@@ -95,7 +95,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_copy_copy = CpCp_or_MvCp(data);
+                auto data_copy_copy = CpCpOrMvCp(data);
             }
             double time = af::timer::stop(timer);
             // std::cout << "Time copy copy = " << time << " [s]\n";
@@ -105,7 +105,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_move_copy = CpCp_or_MvCp(std::move(data));
+                auto data_move_copy = CpCpOrMvCp(std::move(data));
             }
             double time = af::timer::stop(timer);
             std::cout << "Time move copy = " << time << " [s], t-ref= " << time - time_ctor << " [s]\n";
@@ -114,7 +114,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_copy_move = CpMv_or_MvMv(data);
+                auto data_copy_move = CpMvOrMvMv(data);
             }
             double time = af::timer::stop(timer);
             std::cout << "Time copy move = " << time << " [s], t-ref= " << time - time_ctor << " [s]\n";
@@ -123,7 +123,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_move_move = CpMv_or_MvMv(std::move(data));
+                auto data_move_move = CpMvOrMvMv(std::move(data));
             }
             double time = af::timer::stop(timer);
             std::cout << "Time move move = " << time << " [s], t-ref= " << time - time_ctor << " [s]\n";
@@ -132,7 +132,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_copy_copy = Cp_or_Mv(data);
+                auto data_copy_copy = CpOrMv(data);
             }
             double time = af::timer::stop(timer);
             std::cout << "Time single copy = " << time << " [s], t-ref= " << time - time_ctor << " [s]\n";
@@ -141,7 +141,7 @@ int main() {
             auto timer = af::timer::start();
             for (auto n = 0; n < N; ++n) {
                 auto data = af::constant(42, dims, type);
-                auto data_copy_copy = Cp_or_Mv(std::move(data));
+                auto data_copy_copy = CpOrMv(std::move(data));
             }
             double time = af::timer::stop(timer);
             std::cout << "Time single move = " << time << " [s], t-ref= " << time - time_ctor << " [s]\n";
@@ -178,15 +178,15 @@ int main() {
 
         // Minimal impact lambdas, passed lambda forward-moves arg by rval ref:
         std::cout << std::endl;
-        lambda_cp([](auto&& data) { return CpCp_or_MvCp{data}; }, "Copy Copy");
+        lambda_cp([](auto&& data) { return CpCpOrMvCp{data}; }, "Copy Copy");
         // lambda_cp([](auto&& data) { return CpCp_or_MvCp{std::move(data)}; }, "Copy Copy"); // NOTE This moves data
         // anyway, even though not stated in body
-        lambda_mv([](auto&& data) { return CpCp_or_MvCp{std::move(data)}; }, "Move Copy");
-        lambda_cp([](auto&& data) { return CpMv_or_MvMv{data}; }, "Copy Move");
+        lambda_mv([](auto&& data) { return CpCpOrMvCp{std::move(data)}; }, "Move Copy");
+        lambda_cp([](auto&& data) { return CpMvOrMvMv{data}; }, "Copy Move");
         // lambda_cp([](auto&& data) { return CpMv_or_MvMv{std::move(data)}; }, "Copy Move");
-        lambda_mv([](auto&& data) { return CpMv_or_MvMv{std::move(data)}; }, "Move Move");
-        lambda_cp([](auto&& data) { return Cp_or_Mv{data}; }, "Single Copy");
-        lambda_mv([](auto&& data) { return Cp_or_Mv{std::move(data)}; }, "Single Move");
+        lambda_mv([](auto&& data) { return CpMvOrMvMv{std::move(data)}; }, "Move Move");
+        lambda_cp([](auto&& data) { return CpOrMv{data}; }, "Single Copy");
+        lambda_mv([](auto&& data) { return CpOrMv{std::move(data)}; }, "Single Move");
 
         // // Minimal impact lambdas, passed lambda forward-moves arg by rval ref:
         // // This way of lambda arguments causes an additional copy, bat for timing:

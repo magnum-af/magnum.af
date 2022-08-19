@@ -95,14 +95,15 @@ int main(int argc, char** argv) {
         dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
     };
 
-    struct observe_m {
+    struct ObserveM {
         std::filesystem::path outdir_;
-        explicit observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
+        explicit ObserveM(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
         // this renorms m, thus taking by ref
         // NOT handling zero vals in m
         void operator()(af::array& m, double t) const {
-            // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
+            // Possible renorm location, when observer is called after every step,
+            // i.e. adaptive mode:
             // ... to renorm after every step, only works with integrate_adaptive()!
             m = util::normalize(m); // NOTE: This is a hack!
             const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2).as(f64);
@@ -131,7 +132,7 @@ int main(int argc, char** argv) {
     constexpr double end_time = 2e-9;
     constexpr double dt = 1e-11; // Initial step for ADS control
 
-    steps.push_back(integrate_adaptive(stepper, llg_regular, m, start_time, middle_time, dt, observe_m{outdir}));
+    steps.push_back(integrate_adaptive(stepper, llg_regular, m, start_time, middle_time, dt, ObserveM{outdir}));
     std::cout << "steps=" << steps << std::endl;
 
     // Setting external field
@@ -141,7 +142,7 @@ int main(int argc, char** argv) {
     fieldterms_vari.push_back(ExternalField(external));
     alpha = 0.02;
 
-    steps.push_back(integrate_adaptive(stepper, llg_regular, m, middle_time, end_time, dt, observe_m{outdir}));
+    steps.push_back(integrate_adaptive(stepper, llg_regular, m, middle_time, end_time, dt, ObserveM{outdir}));
 
     std::cout << "steps=" << steps << std::endl;
     std::cout << "accum_steps=" << std::accumulate(steps.begin(), steps.end(), 0) << std::endl;

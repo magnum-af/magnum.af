@@ -14,8 +14,8 @@ class State {
     State(Mesh mesh_in, double Ms, const af::array& m_in, bool verbose = true, bool mute_warning = false);
     State(Mesh mesh_in, af::array Ms_field, const af::array& m_in, bool verbose = true, bool mute_warning = false);
     // No Mesh:
-    State(af::array m, double Ms, bool verbose = true, bool mute_warning = false);
-    State(af::array m, af::array Ms_field, bool verbose = true, bool mute_warning = false);
+    State(const af::array& m, double Ms, bool verbose = true, bool mute_warning = false);
+    State(const af::array& m, af::array Ms_field, bool verbose = true, bool mute_warning = false);
     // Wrapping:
     State(Mesh mesh_in, double Ms, long int m_in, bool verbose = true, bool mute_warning = false);
     State(Mesh mesh_in, long int Ms_field_ptr, long int m_in, bool verbose = true, bool mute_warning = false);

@@ -35,8 +35,8 @@ int main(int argc, char** argv) {
 
     auto fieldterms = fieldterm::to_vec(dmag, exch);
 
-    auto f = [&alpha, mesh, Ms, &fieldterms](double t, af::array m_in) {
-        State state(mesh, Ms, std::move(m_in));
+    auto f = [&alpha, mesh, Ms, &fieldterms](double t, const af::array& m_in) {
+        State state(mesh, Ms, m_in);
         state.t = t;
         auto H_eff_in_Apm = fieldterm::Heff_in_Apm(fieldterms, state);
         return equations::LLG(alpha, state.m, H_eff_in_Apm);

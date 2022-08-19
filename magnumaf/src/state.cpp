@@ -111,11 +111,11 @@ State::State(Mesh mesh, af::array Ms_field_in, const af::array& m_in, bool verbo
       mute_warning(mute_warning) {}
 
 // No Mesh:
-State::State(af::array m, double Ms, bool verbose, bool mute_warning)
-    : State(Mesh{0, 0, 0, 0, 0, 0}, Ms, std::move(m), verbose, mute_warning) {}
+State::State(const af::array& m, double Ms, bool verbose, bool mute_warning)
+    : State(Mesh{0, 0, 0, 0, 0, 0}, Ms, m, verbose, mute_warning) {}
 
-State::State(af::array m, af::array Ms_field, bool verbose, bool mute_warning)
-    : State(Mesh{0, 0, 0, 0, 0, 0}, std::move(Ms_field), std::move(m), verbose, mute_warning) {}
+State::State(const af::array& m, af::array Ms_field, bool verbose, bool mute_warning)
+    : State(Mesh{0, 0, 0, 0, 0, 0}, std::move(Ms_field), m, verbose, mute_warning) {}
 
 // Wrapping:
 State::State(Mesh mesh, double Ms, long int m, bool verbose, bool mute_warning)

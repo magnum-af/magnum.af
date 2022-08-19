@@ -11,27 +11,27 @@
 
 namespace custom_ode {
 
-template <class Value = double> struct rk54_fehlberg_coefficients_a1 : boost::array<Value, 1> {
-    rk54_fehlberg_coefficients_a1() { (*this)[0] = static_cast<Value>(1) / static_cast<Value>(4); }
+template <class Value = double> struct Rk54FehlbergCoefficientsA1 : boost::array<Value, 1> {
+    Rk54FehlbergCoefficientsA1() { (*this)[0] = static_cast<Value>(1) / static_cast<Value>(4); }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_a2 : boost::array<Value, 2> {
-    rk54_fehlberg_coefficients_a2() {
+template <class Value = double> struct Rk54FehlbergCoefficientsA2 : boost::array<Value, 2> {
+    Rk54FehlbergCoefficientsA2() {
         (*this)[0] = static_cast<Value>(3) / static_cast<Value>(32);
         (*this)[1] = static_cast<Value>(9) / static_cast<Value>(32);
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_a3 : boost::array<Value, 3> {
-    rk54_fehlberg_coefficients_a3() {
+template <class Value = double> struct Rk54FehlbergCoefficientsA3 : boost::array<Value, 3> {
+    Rk54FehlbergCoefficientsA3() {
         (*this)[0] = static_cast<Value>(1932) / static_cast<Value>(2197);
         (*this)[1] = static_cast<Value>(-7200) / static_cast<Value>(2197);
         (*this)[2] = static_cast<Value>(7296) / static_cast<Value>(2197);
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_a4 : boost::array<Value, 4> {
-    rk54_fehlberg_coefficients_a4() {
+template <class Value = double> struct Rk54FehlbergCoefficientsA4 : boost::array<Value, 4> {
+    Rk54FehlbergCoefficientsA4() {
         (*this)[0] = static_cast<Value>(439) / static_cast<Value>(216);
         (*this)[1] = static_cast<Value>(-8);
         (*this)[2] = static_cast<Value>(3680) / static_cast<Value>(513);
@@ -39,8 +39,8 @@ template <class Value = double> struct rk54_fehlberg_coefficients_a4 : boost::ar
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_a5 : boost::array<Value, 5> {
-    rk54_fehlberg_coefficients_a5() {
+template <class Value = double> struct Rk54FehlbergCoefficientsA5 : boost::array<Value, 5> {
+    Rk54FehlbergCoefficientsA5() {
         (*this)[0] = static_cast<Value>(-8) / static_cast<Value>(27);
         (*this)[1] = static_cast<Value>(2);
         (*this)[2] = static_cast<Value>(-3544) / static_cast<Value>(2565);
@@ -49,8 +49,8 @@ template <class Value = double> struct rk54_fehlberg_coefficients_a5 : boost::ar
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_b : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_b() {
+template <class Value = double> struct Rk54FehlbergCoefficientsB : boost::array<Value, 6> {
+    Rk54FehlbergCoefficientsB() {
         (*this)[0] = static_cast<Value>(16) / static_cast<Value>(135);
         (*this)[1] = static_cast<Value>(0);
         (*this)[2] = static_cast<Value>(6656) / static_cast<Value>(12825);
@@ -60,8 +60,8 @@ template <class Value = double> struct rk54_fehlberg_coefficients_b : boost::arr
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_db : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_db() {
+template <class Value = double> struct Rk54FehlbergCoefficientsDb : boost::array<Value, 6> {
+    Rk54FehlbergCoefficientsDb() {
         (*this)[0] =
             static_cast<Value>(16) / static_cast<Value>(135) - static_cast<Value>(25) / static_cast<Value>(216);
         (*this)[1] = static_cast<Value>(0);
@@ -74,8 +74,8 @@ template <class Value = double> struct rk54_fehlberg_coefficients_db : boost::ar
     }
 };
 
-template <class Value = double> struct rk54_fehlberg_coefficients_c : boost::array<Value, 6> {
-    rk54_fehlberg_coefficients_c() {
+template <class Value = double> struct Rk54FehlbergCoefficientsC : boost::array<Value, 6> {
+    Rk54FehlbergCoefficientsC() {
         (*this)[0] = static_cast<Value>(0);
         (*this)[1] = static_cast<Value>(1) / static_cast<Value>(4);
         (*this)[2] = static_cast<Value>(3) / static_cast<Value>(8);
@@ -89,7 +89,7 @@ template <class State, class Value = double, class Deriv = State, class Time = V
           class Algebra = typename boost::numeric::odeint::algebra_dispatcher<State>::algebra_type,
           class Operations = typename boost::numeric::odeint::operations_dispatcher<State>::operations_type,
           class Resizer = boost::numeric::odeint::initially_resizer>
-class runge_kutta_fehlberg54
+class RungeKuttaFehlberg54
     : public boost::numeric::odeint::explicit_error_generic_rk<6, 5, 5, 4, State, Value, Deriv, Time, Algebra,
                                                                Operations, Resizer> {
 
@@ -108,21 +108,21 @@ class runge_kutta_fehlberg54
     using wrapped_state_type = typename stepper_base_type::wrapped_state_type;
     using wrapped_deriv_type = typename stepper_base_type::wrapped_deriv_type;
 
-    explicit runge_kutta_fehlberg54(const algebra_type& algebra = algebra_type())
+    explicit RungeKuttaFehlberg54(const algebra_type& algebra = algebra_type())
         : stepper_base_type(
-              boost::fusion::make_vector(rk54_fehlberg_coefficients_a1<Value>(), rk54_fehlberg_coefficients_a2<Value>(),
-                                         rk54_fehlberg_coefficients_a3<Value>(), rk54_fehlberg_coefficients_a4<Value>(),
-                                         rk54_fehlberg_coefficients_a5<Value>()),
-              rk54_fehlberg_coefficients_b<Value>(), rk54_fehlberg_coefficients_db<Value>(),
-              rk54_fehlberg_coefficients_c<Value>(), algebra) {}
+              boost::fusion::make_vector(Rk54FehlbergCoefficientsA1<Value>(), Rk54FehlbergCoefficientsA2<Value>(),
+                                         Rk54FehlbergCoefficientsA3<Value>(), Rk54FehlbergCoefficientsA4<Value>(),
+                                         Rk54FehlbergCoefficientsA5<Value>()),
+              Rk54FehlbergCoefficientsB<Value>(), Rk54FehlbergCoefficientsDb<Value>(),
+              Rk54FehlbergCoefficientsC<Value>(), algebra) {}
 };
 } // namespace custom_ode
 
 namespace boost::numeric::odeint {
 // Specializations for runge_kutta_cash_karp54
 template <class State, class Value, class Deriv, class Time, class Algebra, class Operations, class Resize>
-struct get_controller<custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>> {
-    using stepper_type = custom_ode::runge_kutta_fehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>;
+struct get_controller<custom_ode::RungeKuttaFehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>> {
+    using stepper_type = custom_ode::RungeKuttaFehlberg54<State, Value, Deriv, Time, Algebra, Operations, Resize>;
     using type = controlled_runge_kutta<stepper_type>;
 };
 
@@ -193,12 +193,13 @@ int main(int argc, char** argv) {
         dxdt = equations::LLG(alpha, state.m, H_eff_in_Apm);
     };
 
-    struct observe_m {
+    struct ObserveM {
         std::filesystem::path outdir_;
-        explicit observe_m(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
+        explicit ObserveM(std::filesystem::path outdir) : outdir_(std::move(outdir)) {}
 
         void operator()(const af::array& m, double t) const {
-            // Possible renorm location, when observer is called after every step, i.e. adaptive mode:
+            // Possible renorm location, when observer is called after every step,
+            // i.e. adaptive mode:
             // TODO // m = normalize(m);
             const auto mean = af::mean(af::mean(af::mean(m, 0), 1), 2).as(f64);
             const auto mx = mean(0, 0, 0, 0).scalar<double>();
@@ -259,19 +260,19 @@ int main(int argc, char** argv) {
         case IntegationMode::times: {
             const auto range = make_range(start_time, end_time, dt_view);
             // std::copy(std::begin(range), std::end(range), std::ostream_iterator<double>(std::cout, " "));
-            steps.push_back(integrate_times(stepper, llg_norm, m, range, dt, observe_m{outdir}));
+            steps.push_back(integrate_times(stepper, llg_norm, m, range, dt, ObserveM{outdir}));
             break;
         }
         case IntegationMode::adaptive:
-            steps.push_back(integrate_adaptive(stepper, llg_norm, m, start_time, end_time, dt, observe_m{outdir}));
+            steps.push_back(integrate_adaptive(stepper, llg_norm, m, start_time, end_time, dt, ObserveM{outdir}));
             break;
         case IntegationMode::constant:
-            steps.push_back(integrate_const(stepper, llg_norm, m, start_time, end_time, dt_view, observe_m{outdir}));
+            steps.push_back(integrate_const(stepper, llg_norm, m, start_time, end_time, dt_view, ObserveM{outdir}));
             break;
         case IntegationMode::steps: {
             double t = start_time;
             double try_dt = dt;
-            auto observer = observe_m{outdir};
+            auto observer = ObserveM{outdir};
             observer(m, t);
             std::size_t sucessful_steps = 0;
             while (t < end_time) {
@@ -313,7 +314,7 @@ int main(int argc, char** argv) {
         case IntegationMode::steps_dense: {
             double t = start_time;
             double try_dt = dt;
-            auto observer = observe_m{outdir};
+            auto observer = ObserveM{outdir};
             observer(m, t);
             std::size_t sucessful_steps = 0;
             double t_next_observer_call = start_time + dt_view;

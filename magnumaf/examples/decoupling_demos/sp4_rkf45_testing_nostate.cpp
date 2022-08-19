@@ -16,9 +16,9 @@
 
 using namespace magnumaf;
 
-template <typename T = double, typename Y = af::array> class RK_Integrator {
+template <typename T = double, typename Y = af::array> class RkIntegrator {
   public:
-    explicit RK_Integrator(T dt = 1.01e-15) : dt_(dt) {}
+    explicit RkIntegrator(T dt = 1.01e-15) : dt_(dt) {}
     T t_{0};
     T dt_{1.01e-15};
     Controller controller{};
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     // relax
     StageTimer timer;
 
-    RK_Integrator rki{};
+    RkIntegrator rki{};
     // RK_Integrator rki{1e-12};
 
     rki.integrateRKF45(1e-9, m, llg, os);
