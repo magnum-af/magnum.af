@@ -2,6 +2,7 @@ import unittest
 import arrayfire as af
 from magnumaf import Mesh
 
+
 class MeshTest(unittest.TestCase):
     nx = 100
     ny = 25
@@ -39,6 +40,7 @@ class MeshTest(unittest.TestCase):
         self.assertEqual(dx, mesh.dx)
         self.assertEqual(dy, mesh.dy)
         self.assertEqual(dz, mesh.dz)
+
 
 if __name__ == '__main__':
     unittest.main()

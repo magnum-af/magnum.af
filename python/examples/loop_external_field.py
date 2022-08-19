@@ -18,9 +18,9 @@ mesh = Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 m0 = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
 m0[:, :, :, 0] = 1.
 
-state = State(mesh, Ms = 8e5, m = m0)
+state = State(mesh, Ms=8e5, m=m0)
 external = ExternalField(af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64))
-llg = LLGIntegrator(alpha = 1, terms = [external])
+llg = LLGIntegrator(alpha=1, terms=[external])
 
 # Using external.set_homogeneous_field()
 for i in range(10):
@@ -34,9 +34,10 @@ for i in range(10):
 print()
 for i in range(10):
     h_current = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.f64)
-    h_current[:, :, :, 0] = i; # Setting Hx component
-    h_current[:, :, :, 1] = i/2; # Setting Hy component
-    external = ExternalField(h_current) # this overwrites the existing object named 'external'
+    h_current[:, :, :, 0] = i  # Setting Hx component
+    h_current[:, :, :, 1] = i/2  # Setting Hy component
+    # this overwrites the existing object named 'external'
+    external = ExternalField(h_current)
     hx = external.H_in_Apm(state)[0, 0, 0, 0].scalar()
     hy = external.H_in_Apm(state)[0, 0, 0, 1].scalar()
     hz = external.H_in_Apm(state)[0, 0, 0, 2].scalar()

@@ -6,7 +6,7 @@ import magnumaf as maf
 x, y, z = 500e-9, 125e-9, 3e-9
 nx, ny, nz = 100, 25, 1
 
-A_matr = af.constant(1.3e-11, nx, ny, nz, 1, dtype = af.Dtype.f64)
+A_matr = af.constant(1.3e-11, nx, ny, nz, 1, dtype=af.Dtype.f64)
 
 mesh = maf.Mesh(nx, ny, nz, dx=x/nx, dy=y/ny, dz=z/nz)
 

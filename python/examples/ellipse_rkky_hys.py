@@ -10,8 +10,8 @@ import time
 args = parse()
 af.info()
 
-minimize = False # True uses minimizer, False uses llg integration
-hys_steps = 100 # hysteresis steps
+minimize = False  # True uses minimizer, False uses llg integration
+hys_steps = 100  # hysteresis steps
 ext_max_field = 100e-3/Constants.mu0
 # Discretization
 nx, ny, nz = 100, 600, 2
@@ -24,16 +24,17 @@ Ms = 1.7/Constants.mu0
 A = 13e-12
 RKKY = -0.1e-3 * dz
 
+
 def m_random_sphere(nx, ny, nz):
     m = np.zeros((nx, ny, nz, 3))
-    for ix in range (0, nx):
+    for ix in range(0, nx):
         for iy in range(0, ny):
-            a= nx/2
-            b= ny/2
-            rx=ix-nx/2.
-            ry=iy-ny/2.
+            a = nx/2
+            b = ny/2
+            rx = ix-nx/2.
+            ry = iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-            if(r<=1):
+            if(r <= 1):
                 for iz in range(0, nz):
                     randx = np.random.normal()
                     randy = np.random.normal()
@@ -50,34 +51,37 @@ def m_random_sphere(nx, ny, nz):
     #print(np.mean(np.mean(np.mean(np.mean( m, axis=0) , axis=1) , axis=2) , axis=3))
     return af.from_ndarray(m)
 
+
 def m_initi(nx, ny, nz):
     m = np.zeros((nx, ny, nz, 3))
-    for ix in range (0, nx):
+    for ix in range(0, nx):
         for iy in range(0, ny):
-            a= nx/2
-            b= ny/2
-            rx=ix-nx/2.
-            ry=iy-ny/2.
+            a = nx/2
+            b = ny/2
+            rx = ix-nx/2.
+            ry = iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-            if(r<=1):
-                m[ix, iy, 0, 1] =  1.
+            if(r <= 1):
+                m[ix, iy, 0, 1] = 1.
                 m[ix, iy, 1, 1] = -1.
                 # tiling m[ix, iy, 0, 0] = 0.001
                 # tiling m[ix, iy, 1, 0] = 0.001
     return af.from_ndarray(m)
 
+
 def disk(nx, ny, nz):
     m = np.zeros((nx, ny, nz))
-    for ix in range (0, nx):
+    for ix in range(0, nx):
         for iy in range(0, ny):
-            a= nx/2
-            b= ny/2
-            rx=ix-nx/2.
-            ry=iy-ny/2.
+            a = nx/2
+            b = ny/2
+            rx = ix-nx/2.
+            ry = iy-ny/2.
             r = pow(rx, 2)/pow(a, 2)+pow(ry, 2)/pow(b, 2)
-            if(r<=1):
+            if(r <= 1):
                 m[ix, iy, :] = 1.
     return af.from_ndarray(m)
+
 
 geom = disk(nx, ny, nz)
 RKKYarr = (geom == 1) * RKKY
@@ -85,13 +89,14 @@ excharr = (geom == 1) * A
 
 # Creating objects
 mesh = Mesh(nx, ny, nz, dx, dy, dz)
-state = State(mesh, Ms, m = m_random_sphere(nx, ny, nz))
+state = State(mesh, Ms, m=m_random_sphere(nx, ny, nz))
 #state = State(mesh, Ms, m = m_initi(nx, ny, nz))
 state.write_vti(args.outdir + "m_init")
 
 
-demag = DemagField(mesh, verbose = True, caching = True, nthreads = 6)
-rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices = af.constant(0, nx, ny, nz, 3, dtype=af.Dtype.u32))
+demag = DemagField(mesh, verbose=True, caching=True, nthreads=6)
+rkkyexch = RKKYExchangeField(RKKYarr, excharr, mesh, rkky_indices=af.constant(
+    0, nx, ny, nz, 3, dtype=af.Dtype.u32))
 
 
 ext_field = af.constant(0.0, nx, ny, nz, 3, dtype=af.Dtype.f64)
@@ -101,19 +106,20 @@ terms = [demag, rkkyexch, ext]
 if minimize:
     minimizer = LBFGS_Minimizer(terms, tol=1e-15, maxiter=1000)
 else:
-    llg = LLGIntegrator(alpha = 1, terms = terms)
+    llg = LLGIntegrator(alpha=1, terms=terms)
+
 
 def hysteresis_factor(i, steps):
     if i < steps/4.:
         return 4 * i/steps
     elif i < 3 * steps/4.:
-        return (4 * -i/steps + 2. )
+        return (4 * -i/steps + 2.)
     else:
-        return (4 * i/steps - 4. )
+        return (4 * i/steps - 4.)
 
 
 # running hysteresis loop
-stream = open(args.outdir + "m.dat", "w", buffering = 1)
+stream = open(args.outdir + "m.dat", "w", buffering=1)
 stream.write("# Hext [T], mx, my, mz")
 for i in range(0, hys_steps + 1):
     extfield = hysteresis_factor(i, hys_steps) * ext_max_field
@@ -121,10 +127,11 @@ for i in range(0, hys_steps + 1):
     if minimize:
         minimizer.minimize(state)
     else:
-        llg.relax(state, precision = 1e-11, verbose = True)
-    state.write_vti(args.outdir + "m_step_"+ str(i))
+        llg.relax(state, precision=1e-11, verbose=True)
+    state.write_vti(args.outdir + "m_step_" + str(i))
     mx, my, mz = state.mean_m()
-    print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
-    stream.write("%e, %e, %e, %e\n" %(extfield * Constants.mu0, mx, my, mz))
+    print(i, 'ext[T]={:2.3f}, mx={:1.3f}, my={:1.3f}, mz={:1.3f}'.format(
+        ext.H_in_Apm(state)[0, 0, 0, 0].scalar() * Constants.mu0, mx, my, mz))
+    stream.write("%e, %e, %e, %e\n" % (extfield * Constants.mu0, mx, my, mz))
 
 stream.close()
