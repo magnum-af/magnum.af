@@ -103,7 +103,8 @@ af::array DmiField::impl_H_in_Apm(const State& state) const {
     } else if (state.Ms_field.isempty() && !this->D_constants.isempty()) {
         return (2. * this->D_constants) / (constants::mu0 * state.Ms) * (first - second);
     } else {
-        af::array heff = (2. * this->D_constants) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * (first - second);
+        af::array heff =
+            (2. * this->D_constants) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * (first - second);
         af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
         return heff;
     }

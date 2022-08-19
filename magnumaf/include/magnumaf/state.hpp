@@ -28,18 +28,18 @@ class State {
                                ///< m to values obtained from wrapped af.array
     long int get_m_addr() const;
     Mesh mesh{0, 0, 0, 0, 0, 0};
-    double t{0.};       // time
-    af::array m;        //!< magnetic field configuration
+    double t{0.};                                        // time
+    af::array m;                                         //!< magnetic field configuration
     double Ms{std::numeric_limits<double>::quiet_NaN()}; //!< Saturation magnetization in [J/T/m^3] or [A/m]
-    af::array Ms_field; //!< Inhomogeneous, mesh dependent saturation magnetization
-                        //!< defined at every node in units of [J/T/m^3]. Is impicitly
-                        //!< set and used when magnetization has values of norm 0.
+    af::array Ms_field;                                  //!< Inhomogeneous, mesh dependent saturation magnetization
+                                                         //!< defined at every node in units of [J/T/m^3]. Is impicitly
+                                                         //!< set and used when magnetization has values of norm 0.
 
     af::array get_Ms_field_in_vec_dims() const { return af::tile(Ms_field, 1, 1, 1, 3); }
     af::array get_Ms_as_field()
         const; //!< return Ms as af::array. If Ms_field is not set, scalar Ms is tiled to dims [nx, ny, nz, 1].
     af::array get_Ms_as_field_in_vector_dims() const; //!< return Ms tiled to dims [nx, ny, nz, 3].
-    void set_Ms_field(long int afarray_ptr);       // for wrapping only
+    void set_Ms_field(long int afarray_ptr);          // for wrapping only
     long int wrapping_get_Ms_field() const;
 
     void set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& Ms_field);

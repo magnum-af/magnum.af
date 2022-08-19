@@ -42,8 +42,8 @@ double ExternalField::impl_E_in_J(const State& state, const af::array& h) const 
     } else {
         return -constants::mu0 *
 
-               sum(sum(sum(sum(state.get_Ms_field_in_vec_dims() * h * state.m, 0), 1), 2), 3).scalar<double>() * state.mesh.dx *
-               state.mesh.dy * state.mesh.dz;
+               sum(sum(sum(sum(state.get_Ms_field_in_vec_dims() * h * state.m, 0), 1), 2), 3).scalar<double>() *
+               state.mesh.dx * state.mesh.dy * state.mesh.dz;
     }
 }
 } // namespace magnumaf
