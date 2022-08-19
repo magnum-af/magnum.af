@@ -88,7 +88,7 @@ void State::set_Ms_field_if_m_minvalnorm_is_zero(const af::array& m, af::array& 
     }
 }
 
-State::State(Mesh mesh, double Ms, af::array m, bool verbose, bool mute_warning)
+State::State(Mesh mesh, double Ms, const af::array& m, bool verbose, bool mute_warning)
     : mesh(mesh), m(util::normalize(m)), Ms(Ms), verbose(verbose), mute_warning(mute_warning) {
     set_Ms_field_if_m_minvalnorm_is_zero(this->m, this->Ms_field);
 }
@@ -106,7 +106,7 @@ af::array check_Ms_field_dims(af::array Ms_field) {
     }
 }
 
-State::State(Mesh mesh, af::array Ms_field_in, af::array m_in, bool verbose, bool mute_warning)
+State::State(Mesh mesh, af::array Ms_field_in, const af::array& m_in, bool verbose, bool mute_warning)
     : mesh(mesh), m(util::normalize(m_in)), Ms_field(check_Ms_field_dims(std::move(Ms_field_in))), verbose(verbose),
       mute_warning(mute_warning) {}
 

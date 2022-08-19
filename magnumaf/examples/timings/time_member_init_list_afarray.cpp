@@ -8,7 +8,7 @@
 
 struct CpCp_or_MvCp {
     af::array data;
-    explicit CpCp_or_MvCp(af::array data) : data(data) {}
+    explicit CpCp_or_MvCp(af::array data) : data(data) {} // NOLINT
     // Backup (clang-tidy performance):
     // Reference: CpCp_or_MvCp(af::array data) : data(data) {}
 };

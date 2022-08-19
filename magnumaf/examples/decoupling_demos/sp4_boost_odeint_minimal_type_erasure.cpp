@@ -11,7 +11,7 @@
 // Necessary template specialization for af::array
 namespace boost::numeric::odeint {
 template <> struct vector_space_norm_inf<af::array> {
-    typedef double result_type; // typedef definition is explicitly needed here for odeint internals.
+    using result_type = double; // typedef definition is explicitly needed here for odeint internals.
     result_type operator()(const af::array& x) const {
         return af::max(af::max(af::max(af::max(af::abs(x), 0), 1), 2), 3).as(f64).scalar<double>();
     }

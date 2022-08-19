@@ -365,7 +365,7 @@ int cstep(double& stx, double& fx, double& dx, double& sty, double& fy, double& 
     bool bound = false;
 
     // Check the input parameters for errors.
-    if ((brackt & ((stp <= std::min(stx, sty)) | (stp >= std::max(stx, sty)))) | (dx * (stp - stx) >= 0.0) |
+    if ((brackt & ((stp <= std::min(stx, sty)) || (stp >= std::max(stx, sty)))) | (dx * (stp - stx) >= 0.0) |
         (stpmax < stpmin)) {
         return -1;
     }
