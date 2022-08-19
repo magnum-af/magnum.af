@@ -1,6 +1,9 @@
 find_package(ArrayFire REQUIRED)
 find_package(VTK REQUIRED)
-find_package(Boost 1.40 COMPONENTS program_options REQUIRED)
+find_package(
+  Boost 1.40
+  COMPONENTS program_options
+  REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 include(${VTK_USE_FILE})
@@ -17,9 +20,10 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
   get_filename_component(EXAMPLE ${EXAMPLE} NAME)
   # MESSAGE("${EXAMPLE}")
   add_executable(${EXAMPLE} ${EXAMPLE_SOURCE_FILE})
-  # Note: ArrayFire::af would only work when arrayfire unified is installed, but not e.g. cpu only:
-  target_link_libraries(${EXAMPLE} ${ArrayFire_LIBRARIES} magnumafcpp ${VTK_LIBRARIES}
-                        ${Boost_LIBRARIES})
+  # Note: ArrayFire::af would only work when arrayfire unified is installed, but
+  # not e.g. cpu only:
+  target_link_libraries(${EXAMPLE} ${ArrayFire_LIBRARIES} magnumafcpp
+                        ${VTK_LIBRARIES} ${Boost_LIBRARIES})
 endforeach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
 
 # Adding magnumafcpp_info binary to installation

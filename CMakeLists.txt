@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
-project(magnum.af
-    VERSION 1.2.3
-    DESCRIPTION "A finite differences GPU-accelerated micromagnetic and atomistic simulation software" )
+project(
+  magnum.af
+  VERSION 1.2.3
+  DESCRIPTION
+    "A finite differences GPU-accelerated micromagnetic and atomistic simulation software"
+)
 
 message(STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}.")
 
@@ -9,8 +12,10 @@ message(STATUS "Setting up project ${PROJECT_NAME} version ${PROJECT_VERSION}.")
 option(EXAMPLES "Build examples." ON)
 option(TESTS "Build unit tests." ON)
 option(DEBUG "Build with debugging flag '-g'." OFF)
-option(SETINSTALL "Building shared library, configuring install directories." ON)
-option(PACK_AS_DEB "Pack as .deb file instead of package script and .tar files." ON)
+option(SETINSTALL "Building shared library, configuring install directories."
+       ON)
+option(PACK_AS_DEB
+       "Pack as .deb file instead of package script and .tar files." ON)
 option(CUDA "Build CUDA backend if available." ON)
 option(OPENCL "Build OPENCL backend if available." ON)
 option(DOCU "Build doxygen documentation if installed." ON)
@@ -24,7 +29,8 @@ if(TESTS)
   # note: enable must come before we include tests below
 endif()
 
-set(magnumaf_core_dir_name "magnumaf") # note: variable is used in python/CMakeLists.txt
+set(magnumaf_core_dir_name "magnumaf") # note: variable is used in
+                                       # python/CMakeLists.txt
 add_subdirectory(${magnumaf_core_dir_name})
 
 # build python bindings
