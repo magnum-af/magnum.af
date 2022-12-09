@@ -19,7 +19,6 @@ build_and_test_cpu:
     - docker push $CPU_TEST_IMAGE
   tags:
     - docker
-    - gpu # temporary, avoiding PC01 runner
 
 build_and_test_gpu:
   stage: build_and_test
