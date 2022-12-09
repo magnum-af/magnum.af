@@ -31,7 +31,6 @@ build_and_test_gpu:
     - docker push $CUDA_RELEASE_IMAGE # check if push is necessary or already done implicitly
   tags:
     - docker
-    - gpu
 
 deploy_GTO:
   stage: deploy
@@ -43,7 +42,6 @@ deploy_GTO:
     - bash/get_docu_from_image.sh magnum.af-docu
   tags:
     - docker
-    - gto1
   artifacts:
     paths:
       - html/
@@ -57,4 +55,3 @@ deploy_GTO2:
     - docker pull $CUDA_RELEASE_IMAGE
   tags:
     - docker
-    - gto2
