@@ -18,7 +18,7 @@ build_and_test_cpu:
     - docker run --rm $CPU_TEST_IMAGE ./bash/runalltests.sh
     - docker push $CPU_TEST_IMAGE
   tags:
-    - docker
+    - shell
 
 build_and_test_gpu:
   stage: build_and_test
@@ -30,7 +30,7 @@ build_and_test_gpu:
     - ./bash/retag_when_on_master.sh $CUDA_TEST_IMAGE $CUDA_RELEASE_IMAGE $CI_COMMIT_REF_NAME
     - docker push $CUDA_RELEASE_IMAGE # check if push is necessary or already done implicitly
   tags:
-    - docker
+    - shell
 
 deploy_GTO:
   stage: deploy
@@ -41,7 +41,7 @@ deploy_GTO:
     - docker build -t magnum.af-docu -f Dockerfile.docu .
     - bash/get_docu_from_image.sh magnum.af-docu
   tags:
-    - docker
+    - shell
   artifacts:
     paths:
       - html/
@@ -54,4 +54,4 @@ deploy_GTO2:
   script:
     - docker pull $CUDA_RELEASE_IMAGE
   tags:
-    - docker
+    - shell
