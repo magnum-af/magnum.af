@@ -18,6 +18,7 @@ af::array cross4(const af::array& a, const af::array& b) {
     return c;
 }
 
+/* af::shift behaviour changed with some af version. Fails since at least since arrayfire 3.8.3:
 af::array cross4shift(const af::array& a, const af::array& b) {
     af::array ashift = af::shift(a, 0, 0, 0, -1);
     af::array ashift2 = af::shift(a, 0, 0, 0, -2);
@@ -25,6 +26,7 @@ af::array cross4shift(const af::array& a, const af::array& b) {
     af::array bshift2 = af::shift(b, 0, 0, 0, -1);
     return ashift * bshift - ashift2 * bshift2;
 }
+*/
 
 /// Boundary condition can by handled by providing ghost cells on expaned input array with
 /// size [nx + 2, ny + 2, nz + 2, : ] and setting TruncateOutput::on, the resulting

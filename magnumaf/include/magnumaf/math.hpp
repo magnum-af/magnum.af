@@ -25,8 +25,10 @@ double max_4d_abs(const af::array& a);
 /// Cross product for vector fields of format [nx, ny, nz, 3]
 af::array cross4(const af::array& a, const af::array& b);
 
-/// Cross product for vector fields of format [nx, ny, nz, 3] using af::shift
+// Cross product for vector fields of format [nx, ny, nz, 3] using af::shift
+/* af::shift behaviour changed with some af version. Fails since at least since arrayfire 3.8.3:
 af::array cross4shift(const af::array& a, const af::array& b); // Note: Slightly slower than cross4
+*/
 
 /// Axis along which to perform operation s.a. central_diff.
 enum class Axis { x, y, z };
