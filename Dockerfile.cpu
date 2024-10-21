@@ -4,7 +4,7 @@
 
 FROM ubuntu:22.04
 
-RUN apt update && apt install -y gnupg ca-certificates && \
+RUN apt update && apt install -y gnupg ca-certificates libfmt-dev && \
     apt-key adv --fetch-key https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB && \
     echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu all main" | tee /etc/apt/sources.list.d/arrayfire.list && \
     apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
