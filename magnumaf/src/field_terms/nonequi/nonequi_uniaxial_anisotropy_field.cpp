@@ -62,14 +62,14 @@ af::array NonequiUniaxialAnisotropyField::calc_heff(const State& state) const {
     } else if (!state.Ms_field.isempty() && Ku1_field.isempty()) {
         af::array result = 2. * Ku1 / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * (eu * anisotropy);
         af::replace(result, !af::iszero(state.get_Ms_field_in_vec_dims()),
-                    0); // Replacing all resulting NaN with 0
+                    0.); // Replacing all resulting NaN with 0
         return result;
     } else if (state.Ms_field.isempty() && !Ku1_field.isempty()) {
         return 2. * Ku1_field / (constants::mu0 * state.Ms) * (eu * anisotropy);
     } else {
         af::array result = 2. * Ku1_field / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * (eu * anisotropy);
         af::replace(result, !af::iszero(state.get_Ms_field_in_vec_dims()),
-                    0); // Replacing all resulting NaN with 0
+                    0.); // Replacing all resulting NaN with 0
         return result;
     }
 }

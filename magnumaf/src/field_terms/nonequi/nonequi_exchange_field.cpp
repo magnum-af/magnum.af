@@ -12,7 +12,7 @@ af::array NonequiExchangeField::impl_H_in_Apm(const State& state) const {
         return exch / state.Ms;
     } else {
         af::array heff = exch / state.get_Ms_field_in_vec_dims();
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0.); // set all cells where Ms==0 to 0
         return heff;
     }
 }

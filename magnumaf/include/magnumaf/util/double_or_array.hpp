@@ -88,8 +88,8 @@ class DoubleOrArray {
                     }
                 };
                 auto result = divide(a);
-                af::replace(result, b != 0, 0); // replacing potential divs by null (i.e. NaN) with zeros.
-                                                // Optional optimization: cache whether a has zero vals
+                af::replace(result, b != 0, 0.); // replacing potential divs by null (i.e. NaN) with zeros.
+                                                 // Optional optimization: cache whether a has zero vals
                 return result;
             },
         };
@@ -145,7 +145,7 @@ inline af::array operator*(const af::array& a, const DoubleOrArray& b) { return 
 inline af::array operator/(const af::array& a, const DoubleOrArray& b) {
     const auto btemp = b(a.dims(), a.type());
     af::array result = a / btemp;
-    af::replace(result, btemp != 0, 0);
+    af::replace(result, btemp != 0, 0.);
     return result;
 }
 

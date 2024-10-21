@@ -55,7 +55,7 @@ af::array h_withedges(double A, const State& state) {
         return (2. * A) / (constants::mu0 * state.Ms) * exch;
     } else {
         af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0.); // set all cells where Ms==0 to 0
         return heff;
     }
 }
@@ -105,7 +105,7 @@ af::array _shift_impl_exchange_H_in_Apm(double Aex, const State& state, BC bc) {
         return H_in_Apm;
     } else {
         af::array H_in_Apm = 2.0 * Aex / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * dlaplace;
-        af::replace(H_in_Apm, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(H_in_Apm, state.get_Ms_field_in_vec_dims() != 0, 0.); // set all cells where Ms==0 to 0
         return H_in_Apm;
     }
 }
@@ -129,7 +129,7 @@ af::array _convolve_old_impl_exchange_H_in_Apm(double A, const State& state) {
         return (2. * A) / (constants::mu0 * state.Ms) * exch;
     } else {
         af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * exch;
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0.); // set all cells where Ms==0 to 0
         return heff;
     }
 }
@@ -140,7 +140,7 @@ af::array _convolve_lap_impl_exchange_H_in_Apm(double A, const State& state) {
         return (2. * A) / (constants::mu0 * state.Ms) * lapl;
     } else {
         af::array heff = (2. * A) / (constants::mu0 * state.get_Ms_field_in_vec_dims()) * lapl;
-        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0); // set all cells where Ms==0 to 0
+        af::replace(heff, state.get_Ms_field_in_vec_dims() != 0, 0.); // set all cells where Ms==0 to 0
         return heff;
     }
 }

@@ -37,7 +37,7 @@ af::array normalize_even_zero_vectors(const af::array& a) { return a / tile(sqrt
 af::array normalize_handle_zero_vectors(const af::array& a) {
     af::array norm_a = af::tile(vecnorm(a), 1, 1, 1, 3);
     af::array normalized = a / norm_a;
-    af::replace(normalized, norm_a != 0, 0);
+    af::replace(normalized, norm_a != 0, 0.);
     return normalized;
 }
 
