@@ -2,7 +2,7 @@
 # test:  $ docker run --rm --gpus all -t magnum.af ./bash/runalltests.sh .
 # run:   $ docker run --rm --gpus all -ti magnum.af /bin/bash
 
-FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.7.1-devel-ubuntu20.04
 
 # Important note for the following RUN command:
 #   Arrayfire packages must be in seperate 'apt install' call!
@@ -13,7 +13,7 @@ FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
 #   Maybe some path becomes overwritten or not set otherwise?
 # Note: Package 'ocl-icd-opencl-dev' needed for cmake to find OpenCL
 
-RUN apt update && apt install -y gnupg ca-certificates && \
+RUN apt update && apt install -y gnupg2 ca-certificates nvidia-cuda-dev libfmt-dev && \
     apt-key adv --fetch-key https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB && \
     echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu all main" | tee /etc/apt/sources.list.d/arrayfire.list && \
     apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \

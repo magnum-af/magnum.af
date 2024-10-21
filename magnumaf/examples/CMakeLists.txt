@@ -22,8 +22,12 @@ foreach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
   add_executable(${EXAMPLE} ${EXAMPLE_SOURCE_FILE})
   # Note: ArrayFire::af would only work when arrayfire unified is installed, but
   # not e.g. cpu only:
-  target_link_libraries(${EXAMPLE} ${ArrayFire_LIBRARIES} magnumafcpp
-                        ${VTK_LIBRARIES} ${Boost_LIBRARIES})
+  target_link_libraries(${EXAMPLE} ${ArrayFire_LIBRARIES}
+                    magnumafcpp
+                    fmt # required by libafcuda.so.3.8.3
+                    ${VTK_LIBRARIES}
+                    ${Boost_LIBRARIES}
+                    )
 endforeach(EXAMPLE_SOURCE_FILE ${EXAMPLES})
 
 # Adding magnumafcpp_info binary to installation
