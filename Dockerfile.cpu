@@ -2,12 +2,15 @@
 # test:  $ docker run --rm -t magnum.af/cpu ./bash/runalltests.sh .
 # run:   $ docker run --rm -ti magnum.af/cpu /bin/bash
 
-FROM ubuntu:22.04
+# NOTE: arrayfire 3.8.3 now links against libfmt-dev v6, which is available only on ubunutu 20, not 22(v8.1.1) or 24(9.1.0):
+FROM ubuntu:20.04
 
-RUN apt update && apt install -y gnupg ca-certificates libfmt-dev && \
+RUN apt update && apt install -y gnupg ca-certificates && \
     apt-key adv --fetch-key https://repo.arrayfire.com/GPG-PUB-KEY-ARRAYFIRE-2020.PUB && \
     echo "deb [arch=amd64] https://repo.arrayfire.com/ubuntu all main" | tee /etc/apt/sources.list.d/arrayfire.list && \
     apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+    # needed by arrayfire v3.8.3:
+    libfmt-dev=6.1.2+ds-2 \
     build-essential \
     git \
     cmake \
@@ -19,6 +22,12 @@ RUN apt update && apt install -y gnupg ca-certificates libfmt-dev && \
     arrayfire-cpu3-dev \
     python3-pip && \
     pip3 install arrayfire numpy
+
+# TODO: build `fmt` by source for ubuntu 22/24 usage: compiles but runns into vtk issue:
+# # [ RUN      ] vtkIO.vtiWriteReadTest
+# # ERROR: In ./IO/XMLParser/vtkXMLParser.cxx, line 389
+# # vtkXMLDataParser (0x59c323aa2380): Error parsing XML in stream at line 14, column 61, byte index 732: not well-formed (invalid token)
+# RUN git clone --depth 1 --branch 6.2.1 https://github.com/fmtlib/fmt && cd fmt && mkdir build && cd build && cmake .. && make install -j
 
 # Setting user from build-arg with 999 as default
 ARG user=999
